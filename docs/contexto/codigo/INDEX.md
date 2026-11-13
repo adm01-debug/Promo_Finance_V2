@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b93354437a1ec7d639cd5ab0c27461ac1e6420d0` (2026-11-13T18:47:12Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `fd8c431a782db5749d4202b321b2a9badc15ae1c` (2026-11-13T19:55:06Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2303), SQL (1084), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2305), SQL (1084), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3823 |
-| arquivos_codigo | 2414 |
-| linhas_codigo | 433268 |
+| arquivos_total | 3825 |
+| arquivos_codigo | 2416 |
+| linhas_codigo | 431274 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -45,10 +45,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 990 |
 | hooks | 273 |
 | edge_functions | 106 |
-| tabelas | 352 |
+| tabelas | 340 |
 | migrations | 1014 |
 | cron_jobs | 21 |
-| testes | 432 |
+| testes | 434 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 190 |
@@ -58,12 +58,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (246), outro (106), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (247), outro (106), co-localizado (*.test) (41)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
 - docs: docs (49), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (81%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (80%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
@@ -447,7 +447,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
-- tabelas_com_drift_migration_vs_types: 136 — ex.: acoes_recomendadas, alertas, alertas_preditivos
+- tabelas_com_drift_migration_vs_types: 156 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 44 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/admin/telemetry/AcessosSuspeitosPanel.tsx, src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `fd8c431` fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)
 - 2026-11-13 `b933544` feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)
 - 2026-11-13 `a49b1c7` fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)
 - 2026-11-13 `095a3f6` fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `51d0405` fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)
 - 2026-11-12 `bd5e644` chore: impede categorias duplicadas por empresa e tipo (#320)
 - 2026-11-12 `8afbe7a` chore: remove categorias duplicadas e repassa referências (#319)
-- 2026-11-12 `05920df` fix: contas a pagar aceita status parcial (#318)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

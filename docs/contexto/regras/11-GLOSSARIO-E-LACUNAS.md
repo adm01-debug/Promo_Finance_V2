@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b93354437a` · branch `main` · 2026-11-13 20:26 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `fd8c431a78` · branch `main` · 2026-11-13 21:16 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -9,10 +9,9 @@
 |---|---|---|---|
 | `_rep` | _(sem COMMENT ON TABLE — significado não documentado)_ | 3 colunas | migration |
 | `account_lockouts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `acessos_suspeitos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `acessos_suspeitos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `acoes_recomendadas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `acordos_parcelamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 25 colunas | migration |
-| `active_tracking` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | types.ts |
 | `alert_configurations` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `alertas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `alertas_preditivos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
@@ -28,7 +27,7 @@
 | `anomalia_detection_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `anomalia_toast_eventos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `anomalias_detectadas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 31 colunas | migration |
-| `api_keys` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `api_keys` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `aprovacao_comentarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 5 colunas | migration |
 | `apuracoes_irpj_csll` | _(sem COMMENT ON TABLE — significado não documentado)_ | 52 colunas | migration |
 | `apuracoes_tributarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 40 colunas | migration |
@@ -44,6 +43,7 @@
 | `asaas_transfers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `audit_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `audit_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `audit_logs_2026_01` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_02` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_03` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_04` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
@@ -53,39 +53,37 @@
 | `audit_logs_2026_08` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_09` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_10` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_11` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_default` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `auditoria_configuracoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `auditoria_financeira` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| `auditoria_tributaria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
+| `auditoria_tributaria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `auth_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `benchmarks_setoriais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `benchmarks_setoriais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
 | `beneficios_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `bitrix24_activities` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `bitrix24_stage_mappings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
-| `bitrix24_sync` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | types.ts |
 | `bitrix24_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `bitrix_field_mappings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `bitrix_oauth_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `bitrix_oauth_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `bitrix_sync_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `bitrix_webhook_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
-| `bling_sync_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `bling_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
-| `bling_webhook_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
+| `bling_sync_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
+| `bling_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `bling_webhook_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `bloat_snapshots` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `blocked_ips` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `bloqueios_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `bloqueios_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
 | `boleto_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `boletos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 38 colunas | migration |
 | `budgets` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `catalogos_fiscais_cargas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
-| `catalogos_tributarios_health_history` | Série diária das invariantes violadas nos catálogos tributários (UF, NCM, CNAE, Simples, ISS, ST). Alimentada por check_catalogos_tributarios_invariants(). | 10 colunas | migration |
+| `catalogos_tributarios_health_history` | Série diária das invariantes violadas nos catálogos tributários (UF, NCM, CNAE, Simples, ISS, ST). Alimentada por check_catalogos_tributarios_invariants(). | 13 colunas | migration |
 | `categorias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `centros_custo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `ci_security_gate_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `clientes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
 | `cnaes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
-| `cnpja_cache` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `cnpja_cache` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `cnpja_rate_limit` | _(sem COMMENT ON TABLE — significado não documentado)_ | 3 colunas | migration |
 | `conciliacao_sugestoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `conciliacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -98,9 +96,9 @@
 | `contas_pagar` | _(sem COMMENT ON TABLE — significado não documentado)_ | 36 colunas | migration |
 | `contas_receber` | _(sem COMMENT ON TABLE — significado não documentado)_ | 43 colunas | migration |
 | `contatos_financeiros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 30 colunas | migration |
-| `contratos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `contratos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `convites` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `convites_contador` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
+| `convites_contador` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `creditos_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `cron.job` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `cron.job_run_details` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
@@ -110,26 +108,23 @@
 | `darfs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `digest_envios_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `dispositivos_conhecidos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
-| `divergencias_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `driver_approval_queue` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | types.ts |
-| `driver_evaluations` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | types.ts |
-| `driver_incidents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | types.ts |
-| `driver_locations` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | types.ts |
-| `drivers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 33 colunas | migration |
+| `divergencias_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
+| `drivers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 0 colunas | migration |
 | `edge_function_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| `elisao_alertas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `elisao_alertas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `elisao_analise_gap` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `elisao_creditos_auditoria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
-| `elisao_regras_creditos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `elisao_simulacoes_regime` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
-| `elisao_tarefas_acionaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `elisao_creditos_auditoria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
+| `elisao_regras_creditos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `elisao_simulacoes_regime` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `elisao_tarefas_acionaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `email_verifications` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `empresas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
 | `empresas_certificados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `entity_versions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `entregas_obrigacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `estrategias_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
-| `eventos_contabilizacao_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `estrategias_elisao_catalogo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
+| `eventos_contabilizacao_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `evidencias_pacotes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `execucoes_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `execucoes_regua_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -138,24 +133,28 @@
 | `extrato_bancario` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `faixas_simples_nacional` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `faturamento_mensal` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
-| `fechamentos_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
+| `fechamentos_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `feedback_conciliacao_ia` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `fila_cobrancas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `fluxos_aprovacao_niveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `folha_pagamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `formas_pagamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `fornecedores` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
-| `frontend_error_alert_state` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
+| `frontend_error_alert_state` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `frontend_error_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `frontend_error_logs_2026_01` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
+| `frontend_error_logs_2026_02` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
+| `frontend_error_logs_2026_03` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
+| `frontend_error_logs_2026_04` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
 | `frontend_error_logs_2026_05` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `frontend_error_logs_2026_06` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `frontend_error_logs_2026_07` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `frontend_error_logs_2026_08` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `frontend_error_logs_2026_09` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `frontend_error_logs_2026_10` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `frontend_error_logs_2026_11` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `frontend_error_logs_2026_11` | _(sem COMMENT ON TABLE — significado não documentado)_ | 0 colunas | migration |
 | `frontend_error_logs_default` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `frontend_error_silence_digest_log` | Gap #28: trilha dos digests de silenciamento enviados. Serve de trava de idempotência para o agendador semanal. | 6 colunas | migration |
+| `frontend_error_silence_digest_log` | Gap #28: trilha dos digests de silenciamento enviados. Serve de trava de idempotência para o agendador semanal. | 9 colunas | migration |
 | `frontend_performance_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `geo_blocks` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `glossario_tributario` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
@@ -168,19 +167,15 @@
 | `historico_relatorios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `historico_score_saude` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `incentivos_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `index_usage_snapshots` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| `indices_uso_excecoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 4 colunas | migration |
+| `index_usage_snapshots` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
+| `indices_uso_excecoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `integration_secrets` | Segredos de integracao. Acesso exclusivo de service_role (edge functions). Clientes anon/authenticated bloqueados por RLS restritiva e ausencia de GRANT. | 8 colunas | migration |
 | `integrity_alerts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `ip_whitelist` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `itens_lista_iss` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `itens_pedido_compra` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `known_devices` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `kpis_operacionais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| `lalamove_orders` | _(sem COMMENT ON TABLE — significado não documentado)_ | 37 colunas | types.ts |
-| `lalamove_status_history` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | types.ts |
-| `lalamove_stops` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | types.ts |
-| `lalamove_uapi_sessions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | types.ts |
+| `kpis_operacionais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `lalur_lancamentos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `lancamentos_contabeis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
@@ -197,19 +192,19 @@
 | `nfe_eventos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `nfe_recebidas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 28 colunas | migration |
 | `notas_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
-| `notas_fiscais_ocr` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
-| `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 11 colunas | migration |
+| `notas_fiscais_ocr` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
+| `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 12 colunas | migration |
 | `obrigacoes_acessorias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `open_finance_consents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `operacoes_icms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
-| `operacoes_tributaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 51 colunas | migration |
-| `oportunidades_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
+| `operacoes_icms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
+| `operacoes_tributaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 53 colunas | migration |
+| `oportunidades_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 29 colunas | migration |
 | `organizacao_membros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `organizacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `overlay_rejeicoes_auditoria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
-| `pagamentos_recorrentes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
+| `organizacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `overlay_rejeicoes_auditoria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
+| `pagamentos_recorrentes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 27 colunas | migration |
 | `parcelas_acordo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `partidas_contabeis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `partidas_contabeis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `password_reset_requests` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `password_reset_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `pedidos_compra` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
@@ -219,7 +214,7 @@
 | `pg_stat_statements_baseline` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `pix_templates` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `plano_contas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
-| `planos_acao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `planos_acao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `ponto_departamentos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `ponto_funcionarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
 | `ponto_registros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 27 colunas | migration |
@@ -228,7 +223,7 @@
 | `portal_cliente_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `prejuizos_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `profiles` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `projecoes_reforma` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `projecoes_reforma` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
 | `protestos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `protocolos_st` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `protocolos_st_ncms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
@@ -243,9 +238,9 @@
 | `regimes_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `registro_duplicidade` | Log de auditoria para tentativas de inserção de pagamentos duplicados e rastreio de integridade. | 6 colunas | migration |
 | `regras_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `regras_contabilizacao_automatica` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `regras_contabilizacao_automatica` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `regras_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
-| `regras_roteamento_financeiro` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `regras_roteamento_financeiro` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `regua_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `regua_cobranca_etapas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `regua_cobranca_status` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
@@ -258,32 +253,31 @@
 | `role_permissions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 4 colunas | migration |
 | `rpc_observability_metrics` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `runtime_error_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
-| `saved_filter_subscriptions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `saved_filter_subscriptions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `saved_filters` | Filtros salvos por usuários para diferentes entidades | 12 colunas | migration |
-| `scim_operations_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `scim_setup_checklist` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `scim_operations_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `scim_setup_checklist` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `scim_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `security_alerts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `security_alerts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `security_audit_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `security_settings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `sefaz_dfe_cursor` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `sessoes_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `simulacao_tributos_detalhados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
-| `simulacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
-| `slo_metrics_diarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
+| `simulacao_tributos_detalhados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
+| `simulacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
+| `slo_metrics_diarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `slow_query_alerts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `solicitacoes_aprovacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `solicitacoes_lgpd` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `sped_contabil_arquivos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
+| `sped_contabil_arquivos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `split_payment_transacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
 | `sso_login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `sso_providers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 34 colunas | migration |
-| `sso_role_mappings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
-| `sso_sandbox_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `sso_user_groups` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `sso_role_mappings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `sso_sandbox_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
+| `sso_user_groups` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `tax_audit_trail` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `templates_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `tracking_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | types.ts |
 | `transacoes_bancarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
 | `transferencias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `ufs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
@@ -307,7 +301,13 @@
 | `webhook_dlq` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `webhook_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `webhook_simulation_results` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| … +270 linhas — lista completa em `context.json` | | | |
+| `webhook_simulation_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `webhooks_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
+| `whatsapp_conversas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
+| `app_role` (enum) | admin, financeiro, operacional, visualizador, contador, viewer, manager, operator |  | banco |
+| `status_pagamento` (enum) | pago, pendente, vencido, parcial, cancelado, atrasado |  | banco |
+| `tipo_transacao` (enum) | receita, despesa |  | banco |
+| … +263 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -405,7 +405,6 @@
 | coluna | coluna `telefone` usada no código não existe no schema de `profiles` |  |
 | coluna | coluna `bitrix_id` usada no código não existe no schema de `clientes` |  |
 | coluna | coluna `empresa_id` usada no código não existe no schema de `transacoes_bancarias` |  |
-| coluna | coluna `resolvido` usada no código não existe no schema de `divergencias_conciliacao` |  |
 | coluna | coluna `categoria` usada no código não existe no schema de `regras_conciliacao` |  |
 | coluna | coluna `ativa` usada no código não existe no schema de `empresas` |  |
 | coluna | coluna `inscricao_municipal` usada no código não existe no schema de `empresas` |  |
@@ -423,7 +422,6 @@
 | rls | `operacoes_tributaveis`: front faz INSERT mas nenhuma política RLS permite INSERT → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | rls | `operacoes_tributaveis`: front faz UPDATE mas nenhuma política RLS permite UPDATE → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | dinheiro | `pg_stat_statements_baseline.total_exec_time` guarda dinheiro em `DOUBLE PRECISION` (ponto flutuante) — arredondamento imprevisível; padrão é numeric |  |
-| rpc | RPC `exec_sql` chamada mas não definida nas migrations/types | `supabase/functions/monitor-health/index.ts` |
 | rpc | RPC `pg_try_advisory_lock` chamada mas não definida nas migrations/types | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | dinâmico | 2 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `eslint-rules/no-floating-supabase-write.js` |
 | dinâmico | 2 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `src/components/relatorios/RelatorioDrillDown.tsx` |
@@ -553,7 +551,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 296/303 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `audit_log`, `entity_versions`, `profiles`, `user_roles`, `empresas`, `contas_bancarias` …
+- 290/297 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `audit_log`, `entity_versions`, `profiles`, `user_roles`, `empresas`, `contas_bancarias` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

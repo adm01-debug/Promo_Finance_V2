@@ -4873,7 +4873,7 @@
    "hooks_exportados": [
     "useOportunidadesElisao"
    ],
-   "linhas": 317,
+   "linhas": 318,
    "dominio": "hooks",
    "tabelas": [
     "elisao_alertas",
@@ -5119,7 +5119,7 @@
     "useIncrementTemplateUso",
     "usePixTemplates"
    ],
-   "linhas": 116,
+   "linhas": 123,
    "dominio": "hooks",
    "tabelas": [
     "pix_templates"
@@ -5137,7 +5137,7 @@
    "usado_por_arquivos": [
     "src/components/pix-hub/PixTemplates.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/usePlanoContaHistory.ts",
@@ -5979,7 +5979,7 @@
    "hooks_exportados": [
     "useScimChecklist"
    ],
-   "linhas": 73,
+   "linhas": 89,
    "dominio": "hooks",
    "tabelas": [
     "scim_setup_checklist"
@@ -6057,7 +6057,7 @@
    "hooks_exportados": [
     "useSecurityAlerts"
    ],
-   "linhas": 212,
+   "linhas": 224,
    "dominio": "hooks",
    "tabelas": [
     "security_alerts"

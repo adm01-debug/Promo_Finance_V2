@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "b93354437a1ec7d639cd5ab0c27461ac1e6420d0",
+  "sha": "fd8c431a782db5749d4202b321b2a9badc15ae1c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 20:26 UTC",
-  "files_total": 3865,
-  "code_files": 3499,
-  "code_lines": 496768
+  "generated_at": "2026-11-13 21:16 UTC",
+  "files_total": 3867,
+  "code_files": 3501,
+  "code_lines": 496888
  },
  "version": "1.3.2",
- "facts_hash": "199de62adaa3d904",
+ "facts_hash": "5f7ffd9800c0eb4a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -331,7 +331,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1216,
+   ".ts": 1218,
    ".tsx": 1087,
    ".sql": 1084,
    ".mjs": 60,
@@ -3259,6 +3259,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "scope",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -4901,6 +4922,48 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728160530_a0e7fc9f-0c43-4400-b662-ff577cc36b88.sql"
+     },
+     {
+      "name": "data_proximo",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "data_vencimento",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "gateway",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "plano",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "status",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "ultima_transacao_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -6240,6 +6303,48 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "descricao",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "resolvido",
+      "type": "boolean | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "severidade",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "tipo",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -7427,6 +7532,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728170640_5f70d392-005d-458f-80ba-f0e573ef414e.sql"
+     },
+     {
+      "name": "municipio_destino",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "municipio_origem",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [],
@@ -9558,6 +9677,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "scope",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -9652,6 +9785,55 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "entity_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "entity_type",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "error_message",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "operation",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "payload",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "response",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -9738,6 +9920,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -12697,6 +12886,69 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "ano",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "cnae",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "indicador",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "mediana",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "percentil_25",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "percentil_75",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "porte_empresa",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "regime_tributario",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -12845,6 +13097,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "cached_at",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -12965,6 +13224,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "status",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "token",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -13300,6 +13573,55 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "created_by",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "observacoes",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "periodo_referencia",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "resultado",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "tipo_auditoria",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "updated_at",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -13425,6 +13747,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "score",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -13553,6 +13882,76 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
+      "name": "cnpj_destinatario",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "cnpj_emitente",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "itens",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "nome_destinatario",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "nome_emitente",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor_cofins",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor_icms",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor_ipi",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor_pis",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "xml_raw",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -14324,6 +14723,48 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "disponibilidade",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "error_rate",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "servico",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "total_requests",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -14704,6 +15145,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "provider_role",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -14972,6 +15427,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825130000_fixes_phd_validation.sql"
+     },
+     {
+      "name": "conta_contabil_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -15102,6 +15564,48 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728162214_d0cd3b7b-ad1c-420d-b4e1-369c0d83fb53.sql"
+     },
+     {
+      "name": "arquivo_hash",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "arquivo_nome",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "arquivo_path",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "competencia",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "gerado_em",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "protocolo",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -15374,6 +15878,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "error_message",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "payload",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "resource_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -15594,6 +16119,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "config_snapshot",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "status",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "test_result",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -15669,6 +16215,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "filter_id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -15841,6 +16394,41 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728162214_d0cd3b7b-ad1c-420d-b4e1-369c0d83fb53.sql"
+     },
+     {
+      "name": "concluido_em",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "etapa",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "mensagem_erro",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "organizacao_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "status",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -15915,6 +16503,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "group_name",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "synced_at",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -16110,6 +16712,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260822105000_reconciliar_notificacoes.sql"
+     },
+     {
+      "name": "source",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -16732,6 +17341,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518190129_a0346fbf-f64f-4872-a0cf-db90ca67ae7c.sql"
+     },
+     {
+      "name": "resolvido",
+      "type": "boolean not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [],
@@ -16831,6 +17447,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "acoes",
+      "type": "Json not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "condicoes",
+      "type": "Json not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -16912,6 +17542,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "error_message",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "evento",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -17002,6 +17653,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "ano_referencia",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -17097,6 +17762,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
+      "name": "fundamento_legal",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "ncm",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "nome",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -17304,6 +17990,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
+      "name": "nota_fiscal_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "observacoes",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor_credito",
+      "type": "number not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -17421,6 +18128,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
+      "name": "data_vencimento",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "economia_associada",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "tipo",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -17523,6 +18251,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
+      "name": "contexto",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "mensagem",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "tipo",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -18440,6 +19189,97 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728170640_5f70d392-005d-458f-80ba-f0e573ef414e.sql"
+     },
+     {
+      "name": "agente",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "campos_conflitantes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "cnpj_fornecedor",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "fornecedor_nome",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "ip_origem",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "match_type",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "mes_vencimento",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "motivo_bloqueio",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "nivel_criticidade",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "numero_documento",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "status",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "tabela",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "usuario_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [],
@@ -18582,6 +19422,13 @@
       "fk": "contas_bancarias.id",
       "generated": "",
       "src": "supabase/migrations/20260519131343_4124cbbb-54e1-442f-a279-11db81413185.sql"
+     },
+     {
+      "name": "ativo",
+      "type": "boolean | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [],
@@ -18809,6 +19656,41 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728164001_5174c249-5001-4445-ad0f-ec0136a10984.sql"
+     },
+     {
+      "name": "ativo",
+      "type": "boolean not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "chave",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "expira_em",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "nome",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "ultimo_uso",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -18906,6 +19788,41 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728161227_9b84ccdf-04dc-47c3-8687-e539e6bbeaa3.sql"
+     },
+     {
+      "name": "categoria",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "esforco",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "impacto",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "metadata",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "origem",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -18988,6 +19905,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728161227_9b84ccdf-04dc-47c3-8687-e539e6bbeaa3.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "periodo",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "referencia",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor",
+      "type": "number not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -19851,6 +20796,41 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql"
+     },
+     {
+      "name": "cliente_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "created_by",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "dias_aviso_renovacao",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "fornecedor_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "observacoes",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [],
@@ -24927,6 +25907,55 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "chave_acesso",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "codigo_rejeicao",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "descricao_rejeicao",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "nota_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "resolved_at",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "resolvido",
+      "type": "boolean | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -24996,6 +26025,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260822110000_reconciliar_organizacoes_convites.sql"
+     },
+     {
+      "name": "email",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "max_empresas",
+      "type": "number not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "plano",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "telefone",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -25249,6 +26306,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "score",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "status",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -25351,7 +26429,7 @@
      },
      {
       "name": "checksum",
-      "type": "string not null",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -25501,6 +26579,41 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "created_by",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "parametros",
+      "type": "Json not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "resultado",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "status",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "tipo",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -25614,6 +26727,62 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "empresa_id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "lucro_presumido",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "lucro_real",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "mei",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "periodo_referencia",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "regime_tributario",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "simples_nacional",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -25759,6 +26928,55 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "aliquota",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "base_calculo",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "cfop",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "cst",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "periodo_referencia",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "reducao_bc",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "valor_icms",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -25879,6 +27097,48 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "ano_referencia",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "carga_atual",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "carga_projetada_iva",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "impacto_percentual",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "regime_atual",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -26054,6 +27314,48 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
+      "name": "descricao",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "economia_percentual",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "estrategia_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "prazo_estimado",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "prioridade",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "titulo",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -26134,6 +27436,55 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "alerted",
+      "type": "boolean | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "count",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "first_seen",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "last_seen",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "signature",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "silenced_until",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -26188,6 +27539,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "detalhes",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "sent_at",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "silenciamentos_incluidos",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -26377,6 +27749,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "details",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "event_type",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "ip_address",
+      "type": "unknown not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_agent",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -26459,6 +27859,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "captured_at",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "idx_tup_fetch",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "idx_tup_read",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "index_size_bytes",
+      "type": "number | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -26498,6 +27926,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
+     },
+     {
+      "name": "aprovado_por",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "justificativa",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
      }
     ],
     "constraints": [
@@ -27936,239 +29385,7 @@
     "origin": "migration"
    },
    "drivers": {
-    "columns": [
-     {
-      "name": "avg_delay_minutes",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "blacklist_reason",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "blacklisted",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "cancelled_deliveries",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "completed_deliveries",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "created_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "empresa_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "external_rating",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "external_success_rate",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "external_total_deliveries",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "failed_deliveries",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "failure_rate",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "first_seen_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "lalamove_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_active_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_delivery_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_evaluated_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "name",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "notes",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "phone",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "photo_url",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "rating",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_level",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_reasons",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_score",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "status",
-      "type": "Database['public']['Enums']['driver_status'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "success_rate",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "total_deliveries",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "updated_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "vehicle_plate",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "vehicle_type",
-      "type": "Database['public']['Enums']['vehicle_type'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "whitelisted",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
+    "columns": [],
     "constraints": [
      "constraint drivers_rating_check CHECK (((rating >= (0)::numeric) AND (rating <= (5)::numeric))) NOT VALID",
      "constraint drivers_risk_score_check CHECK (((risk_score >= (0)::numeric) AND (risk_score <= (10)::numeric))) NOT VALID"
@@ -28178,71 +29395,7 @@
     "origin": "migration"
    },
    "frontend_error_logs_2026_11": {
-    "columns": [
-     {
-      "name": "created_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "error_message",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "error_stack",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "metadata",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "severity",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "url",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "user_agent",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "user_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
+    "columns": [],
     "constraints": [
      "constraint frontend_error_logs_payload_bounds CHECK (((length(COALESCE(error_message, ''::text)) <= 2000) AND (length(COALESCE(error_stack, ''::text)) <= 8000) AND (length(COALESCE(url, ''::text)) <= 2000) AND (length(COALESCE(user_agent, ''::text)) <= 500) AND (pg_column_size(COALESCE(metadata, '{} …",
      "constraint frontend_error_logs_severity_check CHECK ((severity = ANY (ARRAY['error'::text, 'warning'::text, 'critical'::text]))) NOT VALID"
@@ -28315,67 +29468,25 @@
     "comment": "Espelho local de paymentLinks criados via asaas-proxy, com empresa_id — permite a listar_links_pagamento filtrar por empresa, já que a API do Asaas não amarra paymentLinks a empresa.",
     "origin": "migration"
    },
-   "active_tracking": {
+   "audit_logs_2026_01": {
     "columns": [
      {
-      "name": "alerts_sent",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "current_latitude",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "current_longitude",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "destination_lat",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "destination_lng",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "driver_id",
+      "name": "action",
       "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "eta_minutes",
-      "type": "number | null",
+      "name": "created_at",
+      "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "expected_route",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "heading",
-      "type": "number | null",
+      "name": "details",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -28388,77 +29499,56 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "is_on_route",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "is_stopped",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_updated",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "order_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "origin_lat",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "origin_lng",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "speed",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "stopped_since",
+      "name": "ip_address",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "tracking_ended_at",
+      "name": "new_data",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "old_data",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "record_id",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "tracking_started_at",
+      "name": "table_name",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "tracking_status",
+      "name": "user_agent",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_email",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_id",
       "type": "string | null",
       "fk": "",
       "generated": "",
@@ -29298,98 +30388,6 @@
     "comment": "",
     "origin": "types.ts"
    },
-   "audit_logs_2026_11": {
-    "columns": [
-     {
-      "name": "action",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "created_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "details",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "ip_address",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "new_data",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "old_data",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "record_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "table_name",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "user_agent",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "user_email",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "user_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
    "audit_logs_default": {
     "columns": [
      {
@@ -29482,209 +30480,18 @@
     "comment": "",
     "origin": "types.ts"
    },
-   "bitrix24_sync": {
+   "estrategias_elisao_catalogo": {
     "columns": [
      {
-      "name": "created_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "deal_id",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_error",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_synced_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "order_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "sync_status",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "synced_fields",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "updated_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
-   "driver_approval_queue": {
-    "columns": [
-     {
-      "name": "approval_priority",
-      "type": "Database['public']['Enums']['approval_priority'] | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "decision_notes",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "driver_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "driver_name",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "notes",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "order_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "priority",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "requested_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "reviewed_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "reviewed_by",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_factors",
-      "type": "string[] | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_score",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "status",
-      "type": "Database['public']['Enums']['approval_status'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
-   "driver_evaluations": {
-    "columns": [
-     {
-      "name": "action_required",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "approved",
+      "name": "ativo",
       "type": "boolean not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "auto_blocked",
-      "type": "boolean not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "completed_deliveries",
-      "type": "number | null",
+      "name": "codigo",
+      "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -29697,21 +30504,14 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "driver_id",
-      "type": "string not null",
+      "name": "descricao",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "evaluated_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "failure_rate",
+      "name": "economia_estimada_padrao",
       "type": "number | null",
       "fk": "",
       "generated": "",
@@ -29725,71 +30525,15 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "incident_count",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "order_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "recommendation",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "requires_manual",
-      "type": "boolean not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_factors",
-      "type": "Json not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_level",
+      "name": "nome",
       "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "risk_reasons",
-      "type": "string[] | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "risk_score",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "total_deliveries",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "triggered_by",
-      "type": "string not null",
+      "name": "tipo",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -29800,7 +30544,7 @@
     "comment": "",
     "origin": "types.ts"
    },
-   "driver_incidents": {
+   "frontend_error_logs_2026_01": {
     "columns": [
      {
       "name": "created_at",
@@ -29810,22 +30554,15 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "description",
-      "type": "string not null",
+      "name": "error_message",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "driver_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "evidence_urls",
-      "type": "string[] | null",
+      "name": "error_stack",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -29845,50 +30582,22 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "order_id",
+      "name": "url",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "reported_by",
+      "name": "user_agent",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "resolution_notes",
+      "name": "user_id",
       "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "resolved",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "resolved_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "severity",
-      "type": "Database['public']['Enums']['incident_severity'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "type",
-      "type": "Database['public']['Enums']['incident_type'] not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -29899,100 +30608,8 @@
     "comment": "",
     "origin": "types.ts"
    },
-   "driver_locations": {
+   "frontend_error_logs_2026_02": {
     "columns": [
-     {
-      "name": "accuracy_meters",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "heading_degrees",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "is_moving",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "latitude",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "longitude",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "recorded_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "speed_kmh",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "tracking_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
-   "lalamove_orders": {
-    "columns": [
-     {
-      "name": "actual_delivery",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "bitrix24_deal_id",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "cost_center",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
      {
       "name": "created_at",
       "type": "string not null",
@@ -30001,261 +30618,15 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "currency",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "custom_rating",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "customer_name",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "customer_phone",
+      "name": "error_message",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "delay_minutes",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "delivery_address",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "delivery_latitude",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "delivery_longitude",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "department",
+      "name": "error_stack",
       "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "distance_meters",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "driver_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "duration_minutes",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "empresa_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "estimated_delivery",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "internal_notes",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "internal_order_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "internal_status",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "is_urgent",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "lalamove_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "metadata",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "outcome",
-      "type": "Database['public']['Enums']['delivery_outcome'] | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "pickup_address",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "pickup_latitude",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "pickup_longitude",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "quotation_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "scheduled_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "share_link",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "status",
-      "type": "Database['public']['Enums']['order_status'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "tags",
-      "type": "string[] | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "total_cost",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "updated_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "vehicle_type",
-      "type": "Database['public']['Enums']['vehicle_type'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
-   "lalamove_status_history": {
-    "columns": [
-     {
-      "name": "change_reason",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "changed_by",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "created_at",
-      "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -30275,240 +30646,21 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "notes",
+      "name": "url",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "old_status",
+      "name": "user_agent",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "order_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "status",
-      "type": "Database['public']['Enums']['order_status'] not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
-   "lalamove_stops": {
-    "columns": [
-     {
-      "name": "address",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "arrived_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "completed_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "contact_name",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "contact_phone",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "created_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "latitude",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "longitude",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "order_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "pod_delivered_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "pod_image_url",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "pod_status",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "remarks",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "stop_index",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     }
-    ],
-    "constraints": [],
-    "src": "src/integrations/supabase/types.ts",
-    "comment": "",
-    "origin": "types.ts"
-   },
-   "lalamove_uapi_sessions": {
-    "columns": [
-     {
-      "name": "access_token",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "city_id",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "created_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "ep_role",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "is_active",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "last_refreshed_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "refresh_method",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "refresh_token",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "token_expires_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "token_obtained_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "updated_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "user_fid",
+      "name": "user_id",
       "type": "string | null",
       "fk": "",
       "generated": "",
@@ -30520,7 +30672,7 @@
     "comment": "",
     "origin": "types.ts"
    },
-   "tracking_events": {
+   "frontend_error_logs_2026_03": {
     "columns": [
      {
       "name": "created_at",
@@ -30530,22 +30682,15 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "driver_id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "event_type",
+      "name": "error_message",
       "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "heading",
-      "type": "number | null",
+      "name": "error_stack",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -30553,20 +30698,6 @@
      {
       "name": "id",
       "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "latitude",
-      "type": "number not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "longitude",
-      "type": "number not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -30579,15 +30710,86 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "order_id",
+      "name": "url",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_agent",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_id",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     }
+    ],
+    "constraints": [],
+    "src": "src/integrations/supabase/types.ts",
+    "comment": "",
+    "origin": "types.ts"
+   },
+   "frontend_error_logs_2026_04": {
+    "columns": [
+     {
+      "name": "created_at",
       "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "speed",
-      "type": "number | null",
+      "name": "error_message",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "error_stack",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "id",
+      "type": "string not null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "metadata",
+      "type": "Json | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "url",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_agent",
+      "type": "string | null",
+      "fk": "",
+      "generated": "",
+      "src": "src/integrations/supabase/types.ts"
+     },
+     {
+      "name": "user_id",
+      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -45794,7 +45996,18 @@
      "pg_namespace"
     ]
    },
-   "confirmar_conciliacao": {
+   "exec_sql": {
+    "args": "",
+    "returns": "?",
+    "lang": "",
+    "src": "src/integrations/supabase/types.ts",
+    "security_definer": false,
+    "search_path": false,
+    "body": "",
+    "raises": [],
+    "tables": []
+   },
+   "is_user_admin": {
     "args": "",
     "returns": "?",
     "lang": "",
@@ -68169,7 +68382,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 976,
+  "components_count": 977,
   "hooks": [
    {
     "name": "useContacts",
@@ -71184,8 +71397,8 @@
   },
   {
    "module": "src/components",
-   "files": 974,
-   "lines": 161134,
+   "files": 975,
+   "lines": 161162,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71452,8 +71665,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 308,
-   "lines": 44800,
+   "files": 309,
+   "lines": 44892,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -74650,7 +74863,10 @@
     "select": [
      "src/hooks/useScimChecklist.ts"
     ],
-    "upsert": [
+    "update": [
+     "src/hooks/useScimChecklist.ts"
+    ],
+    "insert": [
      "src/hooks/useScimChecklist.ts"
     ]
    },
@@ -76132,6 +76348,7 @@
    "scim_setup_checklist": [
     "confirmed",
     "confirmed_at",
+    "id",
     "item_key",
     "user_id"
    ],
@@ -77603,12 +77820,12 @@
    "_rep",
    "account_lockouts",
    "acessos_suspeitos",
-   "active_tracking",
    "alert_configurations",
    "alerts",
    "alerts_sent",
    "asaas_scheduled_transfers",
    "audit_log",
+   "audit_logs_2026_01",
    "audit_logs_2026_02",
    "audit_logs_2026_03",
    "audit_logs_2026_04",
@@ -77618,12 +77835,10 @@
    "audit_logs_2026_08",
    "audit_logs_2026_09",
    "audit_logs_2026_10",
-   "audit_logs_2026_11",
    "audit_logs_default",
    "auditoria_configuracoes",
    "bitrix24_activities",
    "bitrix24_stage_mappings",
-   "bitrix24_sync",
    "bitrix24_tokens",
    "bloat_snapshots",
    "boleto_events",
@@ -77634,10 +77849,6 @@
    "configuracoes_receber",
    "contatos_financeiros",
    "custom_field_values",
-   "driver_approval_queue",
-   "driver_evaluations",
-   "driver_incidents",
-   "driver_locations",
    "drivers",
    "elisao_analise_gap",
    "elisao_regras_creditos",
@@ -77645,6 +77856,10 @@
    "entity_versions",
    "estrategias_elisao",
    "formas_pagamento",
+   "frontend_error_logs_2026_01",
+   "frontend_error_logs_2026_02",
+   "frontend_error_logs_2026_03",
+   "frontend_error_logs_2026_04",
    "frontend_error_logs_2026_05",
    "frontend_error_logs_2026_06",
    "frontend_error_logs_2026_07",
@@ -77661,10 +77876,6 @@
    "job",
    "job_run_details",
    "known_devices",
-   "lalamove_orders",
-   "lalamove_status_history",
-   "lalamove_stops",
-   "lalamove_uapi_sessions",
    "lalur_lancamentos",
    "mfa_sessions",
    "obrigacoes_acessorias",
@@ -77693,7 +77904,6 @@
    "simulacoes",
    "slo_metrics_diarias",
    "slow_query_alerts",
-   "tracking_events",
    "user_devices",
    "user_onboarding_progress",
    "user_passkeys",
@@ -77714,10 +77924,6 @@
    {
     "table": "transacoes_bancarias",
     "column": "empresa_id"
-   },
-   {
-    "table": "divergencias_conciliacao",
-    "column": "resolvido"
    },
    {
     "table": "regras_conciliacao",
@@ -79409,11 +79615,6 @@
     "file": "src/components/nfe/SefazAnalytics.types.ts",
     "name": "Periodo",
     "values": "24h | 7d | 30d | 90d"
-   },
-   {
-    "file": "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts",
-    "name": "TipoCobranca",
-    "values": "boleto | pix | transferencia | cartao | dinheiro"
    },
    {
     "file": "src/components/reforma-tributaria/ObrigacoesAcessorias.types.ts",
@@ -82049,7 +82250,7 @@
    },
    {
     "file": "src/components/pix-hub/PixTemplates.tsx",
-    "msg": "Preencha nome, favorecido e chave PIX"
+    "msg": "Preencha nome, favorecido, chave PIX e cidade"
    },
    {
     "file": "src/components/profile/SsoProfileSyncBanner.tsx",
@@ -89405,6 +89606,11 @@
    },
    {
     "table": "pagamentos_recorrentes",
+    "column": "status",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "pagamentos_recorrentes",
     "column": "(tabela)",
     "rule": "constraint pag_recorrente_periodo CHECK (((data_fim IS NULL) OR (data_fim >= data_inicio))) NOT VALID"
    },
@@ -89932,6 +90138,16 @@
     "table": "security_alerts",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "security_alerts",
+    "column": "severidade",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "security_alerts",
+    "column": "tipo",
+    "rule": "obrigatório"
    },
    {
     "table": "security_alerts",
@@ -91380,6 +91596,11 @@
    },
    {
     "table": "bling_tokens",
+    "column": "empresa_id",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "bling_tokens",
     "column": "(tabela)",
     "rule": "constraint bling_tokens_pkey PRIMARY KEY (id)"
    },
@@ -92520,6 +92741,11 @@
    },
    {
     "table": "benchmarks_setoriais",
+    "column": "indicador",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "benchmarks_setoriais",
     "column": "(tabela)",
     "rule": "constraint benchmarks_setoriais_pkey PRIMARY KEY (id)"
    },
@@ -92625,6 +92851,11 @@
    },
    {
     "table": "cnpja_cache",
+    "column": "cached_at",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "cnpja_cache",
     "column": "(tabela)",
     "rule": "constraint cnpja_cache_pkey PRIMARY KEY (cnpj)"
    },
@@ -92692,6 +92923,16 @@
     "table": "convites_contador",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "convites_contador",
+    "column": "status",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "convites_contador",
+    "column": "token",
+    "rule": "obrigatório"
    },
    {
     "table": "convites_contador",
@@ -92902,6 +93143,16 @@
     "table": "auditoria_tributaria",
     "column": "criado_em",
     "rule": "default now()"
+   },
+   {
+    "table": "auditoria_tributaria",
+    "column": "created_at",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "auditoria_tributaria",
+    "column": "updated_at",
+    "rule": "obrigatório"
    },
    {
     "table": "auditoria_tributaria",
@@ -93395,6 +93646,21 @@
    },
    {
     "table": "slo_metrics_diarias",
+    "column": "created_at",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "slo_metrics_diarias",
+    "column": "id",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "slo_metrics_diarias",
+    "column": "servico",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "slo_metrics_diarias",
     "column": "(tabela)",
     "rule": "constraint slo_metrics_diarias_pkey PRIMARY KEY (data)"
    },
@@ -93547,6 +93813,11 @@
     "table": "sso_role_mappings",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "sso_role_mappings",
+    "column": "provider_role",
+    "rule": "obrigatório"
    },
    {
     "table": "sso_role_mappings",
@@ -93737,6 +94008,11 @@
     "table": "sped_contabil_arquivos",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "sped_contabil_arquivos",
+    "column": "competencia",
+    "rule": "obrigatório"
    },
    {
     "table": "sped_contabil_arquivos",
@@ -94030,6 +94306,11 @@
    },
    {
     "table": "sso_sandbox_runs",
+    "column": "status",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "sso_sandbox_runs",
     "column": "(tabela)",
     "rule": "constraint sso_sandbox_runs_pkey PRIMARY KEY (id)"
    },
@@ -94082,6 +94363,11 @@
     "table": "saved_filter_subscriptions",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "filter_id",
+    "rule": "obrigatório"
    },
    {
     "table": "saved_filter_subscriptions",
@@ -94200,6 +94486,16 @@
    },
    {
     "table": "scim_setup_checklist",
+    "column": "etapa",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "scim_setup_checklist",
+    "column": "status",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "scim_setup_checklist",
     "column": "(tabela)",
     "rule": "constraint scim_checklist_unico UNIQUE (user_id, item_key)"
    },
@@ -94242,6 +94538,11 @@
     "table": "sso_user_groups",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "sso_user_groups",
+    "column": "group_name",
+    "rule": "obrigatório"
    },
    {
     "table": "sso_user_groups",
@@ -94327,6 +94628,11 @@
     "table": "notification_history",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "notification_history",
+    "column": "source",
+    "rule": "obrigatório"
    },
    {
     "table": "notification_history",
@@ -94659,6 +94965,11 @@
     "rule": "default 'aberta'"
    },
    {
+    "table": "divergencias_conciliacao",
+    "column": "resolvido",
+    "rule": "obrigatório"
+   },
+   {
     "table": "regras_contabilizacao_automatica",
     "column": "id",
     "rule": "default gen_random_uuid()"
@@ -94717,6 +95028,16 @@
     "table": "regras_contabilizacao_automatica",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "regras_contabilizacao_automatica",
+    "column": "acoes",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "regras_contabilizacao_automatica",
+    "column": "condicoes",
+    "rule": "obrigatório"
    },
    {
     "table": "regras_contabilizacao_automatica",
@@ -94792,6 +95113,11 @@
     "table": "eventos_contabilizacao_log",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "eventos_contabilizacao_log",
+    "column": "evento",
+    "rule": "obrigatório"
    },
    {
     "table": "eventos_contabilizacao_log",
@@ -94910,6 +95236,11 @@
    },
    {
     "table": "elisao_regras_creditos",
+    "column": "nome",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "elisao_regras_creditos",
     "column": "(tabela)",
     "rule": "constraint elisao_regras_creditos_aliquota_check CHECK (aliquota IS NULL OR (aliquota >= 0 AND aliquota <= 100))"
    },
@@ -95015,6 +95346,11 @@
    },
    {
     "table": "elisao_creditos_auditoria",
+    "column": "valor_credito",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "elisao_creditos_auditoria",
     "column": "(tabela)",
     "rule": "constraint elisao_creditos_auditoria_nota_id_fkey FOREIGN KEY (nota_id) REFERENCES public.notas_fiscais_ocr(id) ON DELETE SET NULL"
    },
@@ -95075,6 +95411,11 @@
    },
    {
     "table": "elisao_tarefas_acionaveis",
+    "column": "tipo",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "elisao_tarefas_acionaveis",
     "column": "(tabela)",
     "rule": "constraint elisao_tarefas_acionaveis_bitrix_sync_status_check CHECK ((bitrix_sync_status = ANY (ARRAY['nao_sincronizado'::text, 'sincronizando'::text, 'sincronizado'::text, 'erro'::text]))) NOT VALID"
    },
@@ -95132,6 +95473,11 @@
     "table": "elisao_alertas",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "elisao_alertas",
+    "column": "tipo",
+    "rule": "obrigatório"
    },
    {
     "table": "elisao_alertas",
@@ -95755,6 +96101,21 @@
    },
    {
     "table": "api_keys",
+    "column": "ativo",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "api_keys",
+    "column": "chave",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "api_keys",
+    "column": "nome",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "api_keys",
     "column": "(tabela)",
     "rule": "constraint api_keys_hash_unico UNIQUE (key_hash)"
    },
@@ -95862,6 +96223,11 @@
     "table": "kpis_operacionais",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "kpis_operacionais",
+    "column": "valor",
+    "rule": "obrigatório"
    },
    {
     "table": "kpis_operacionais",
@@ -98960,6 +99326,16 @@
    },
    {
     "table": "overlay_rejeicoes_auditoria",
+    "column": "codigo_rejeicao",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "overlay_rejeicoes_auditoria",
+    "column": "empresa_id",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "overlay_rejeicoes_auditoria",
     "column": "(tabela)",
     "rule": "constraint overlay_rejeicoes_auditoria_pkey PRIMARY KEY (id)"
    },
@@ -99017,6 +99393,16 @@
     "table": "organizacoes",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "organizacoes",
+    "column": "max_empresas",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "organizacoes",
+    "column": "plano",
+    "rule": "obrigatório"
    },
    {
     "table": "organizacoes",
@@ -99240,11 +99626,6 @@
    },
    {
     "table": "catalogos_fiscais_cargas",
-    "column": "checksum",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "catalogos_fiscais_cargas",
     "column": "(tabela)",
     "rule": "checksum text NOT NULL"
    },
@@ -99312,6 +99693,21 @@
     "table": "simulacoes",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "simulacoes",
+    "column": "parametros",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "simulacoes",
+    "column": "status",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "simulacoes",
+    "column": "tipo",
+    "rule": "obrigatório"
    },
    {
     "table": "simulacoes",
@@ -99407,6 +99803,11 @@
     "table": "simulacao_tributos_detalhados",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "simulacao_tributos_detalhados",
+    "column": "empresa_id",
+    "rule": "obrigatório"
    },
    {
     "table": "simulacao_tributos_detalhados",
@@ -99690,6 +100091,11 @@
    },
    {
     "table": "oportunidades_elisao",
+    "column": "titulo",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "oportunidades_elisao",
     "column": "(tabela)",
     "rule": "constraint oportunidades_elisao_status_check CHECK ((status = ANY (ARRAY['identificada'::text, 'em_analise'::text, 'aprovada'::text, 'em_execucao'::text, 'implementada'::text, 'descartada'::text]))) NOT VALID"
    },
@@ -99735,6 +100141,16 @@
    },
    {
     "table": "frontend_error_alert_state",
+    "column": "id",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "frontend_error_alert_state",
+    "column": "signature",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "frontend_error_alert_state",
     "column": "(tabela)",
     "rule": "constraint frontend_error_alert_state_pkey PRIMARY KEY (assinatura)"
    },
@@ -99777,6 +100193,11 @@
     "table": "frontend_error_silence_digest_log",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "frontend_error_silence_digest_log",
+    "column": "sent_at",
+    "rule": "obrigatório"
    },
    {
     "table": "frontend_error_silence_digest_log",
@@ -99875,6 +100296,11 @@
    },
    {
     "table": "acessos_suspeitos",
+    "column": "ip_address",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "acessos_suspeitos",
     "column": "(tabela)",
     "rule": "constraint acessos_suspeitos_pkey PRIMARY KEY (id)"
    },
@@ -99940,6 +100366,11 @@
    },
    {
     "table": "index_usage_snapshots",
+    "column": "captured_at",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "index_usage_snapshots",
     "column": "(tabela)",
     "rule": "constraint index_usage_snapshots_pkey PRIMARY KEY (id)"
    },
@@ -99962,6 +100393,16 @@
     "table": "indices_uso_excecoes",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "indices_uso_excecoes",
+    "column": "id",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "indices_uso_excecoes",
+    "column": "justificativa",
+    "rule": "obrigatório"
    },
    {
     "table": "indices_uso_excecoes",
@@ -100570,36 +101011,6 @@
    },
    {
     "table": "drivers",
-    "column": "created_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "drivers",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "drivers",
-    "column": "name",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "drivers",
-    "column": "status",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "drivers",
-    "column": "updated_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "drivers",
-    "column": "vehicle_type",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "drivers",
     "column": "(tabela)",
     "rule": "constraint drivers_rating_check CHECK (((rating >= (0)::numeric) AND (rating <= (5)::numeric))) NOT VALID"
    },
@@ -100607,21 +101018,6 @@
     "table": "drivers",
     "column": "(tabela)",
     "rule": "constraint drivers_risk_score_check CHECK (((risk_score >= (0)::numeric) AND (risk_score <= (10)::numeric))) NOT VALID"
-   },
-   {
-    "table": "frontend_error_logs_2026_11",
-    "column": "created_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "frontend_error_logs_2026_11",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "frontend_error_logs_2026_11",
-    "column": "severity",
-    "rule": "obrigatório"
    },
    {
     "table": "frontend_error_logs_2026_11",
@@ -100664,33 +101060,18 @@
     "rule": "default now()"
    },
    {
-    "table": "active_tracking",
-    "column": "current_latitude",
+    "table": "audit_logs_2026_01",
+    "column": "action",
     "rule": "obrigatório"
    },
    {
-    "table": "active_tracking",
-    "column": "current_longitude",
+    "table": "audit_logs_2026_01",
+    "column": "created_at",
     "rule": "obrigatório"
    },
    {
-    "table": "active_tracking",
-    "column": "driver_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "active_tracking",
+    "table": "audit_logs_2026_01",
     "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "active_tracking",
-    "column": "last_updated",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "active_tracking",
-    "column": "order_id",
     "rule": "obrigatório"
    },
    {
@@ -100829,21 +101210,6 @@
     "rule": "obrigatório"
    },
    {
-    "table": "audit_logs_2026_11",
-    "column": "action",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "audit_logs_2026_11",
-    "column": "created_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "audit_logs_2026_11",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
     "table": "audit_logs_default",
     "column": "action",
     "rule": "obrigatório"
@@ -100859,333 +101225,68 @@
     "rule": "obrigatório"
    },
    {
-    "table": "bitrix24_sync",
+    "table": "estrategias_elisao_catalogo",
+    "column": "ativo",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "estrategias_elisao_catalogo",
+    "column": "codigo",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "estrategias_elisao_catalogo",
     "column": "created_at",
     "rule": "obrigatório"
    },
    {
-    "table": "bitrix24_sync",
-    "column": "deal_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "bitrix24_sync",
+    "table": "estrategias_elisao_catalogo",
     "column": "id",
     "rule": "obrigatório"
    },
    {
-    "table": "bitrix24_sync",
-    "column": "last_synced_at",
+    "table": "estrategias_elisao_catalogo",
+    "column": "nome",
     "rule": "obrigatório"
    },
    {
-    "table": "bitrix24_sync",
-    "column": "sync_status",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "bitrix24_sync",
-    "column": "updated_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_approval_queue",
-    "column": "driver_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_approval_queue",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_approval_queue",
-    "column": "order_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_approval_queue",
-    "column": "requested_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_approval_queue",
-    "column": "risk_score",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_approval_queue",
-    "column": "status",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "approved",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "auto_blocked",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
+    "table": "frontend_error_logs_2026_01",
     "column": "created_at",
     "rule": "obrigatório"
    },
    {
-    "table": "driver_evaluations",
-    "column": "driver_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "evaluated_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
+    "table": "frontend_error_logs_2026_01",
     "column": "id",
     "rule": "obrigatório"
    },
    {
-    "table": "driver_evaluations",
-    "column": "requires_manual",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "risk_factors",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "risk_level",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "risk_score",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_evaluations",
-    "column": "triggered_by",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_incidents",
+    "table": "frontend_error_logs_2026_02",
     "column": "created_at",
     "rule": "obrigatório"
    },
    {
-    "table": "driver_incidents",
-    "column": "description",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_incidents",
-    "column": "driver_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_incidents",
+    "table": "frontend_error_logs_2026_02",
     "column": "id",
     "rule": "obrigatório"
    },
    {
-    "table": "driver_incidents",
-    "column": "severity",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_incidents",
-    "column": "type",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_locations",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_locations",
-    "column": "latitude",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_locations",
-    "column": "longitude",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_locations",
-    "column": "recorded_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "driver_locations",
-    "column": "tracking_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
+    "table": "frontend_error_logs_2026_03",
     "column": "created_at",
     "rule": "obrigatório"
    },
    {
-    "table": "lalamove_orders",
-    "column": "currency",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "customer_name",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "delivery_address",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
+    "table": "frontend_error_logs_2026_03",
     "column": "id",
     "rule": "obrigatório"
    },
    {
-    "table": "lalamove_orders",
-    "column": "lalamove_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "pickup_address",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "scheduled_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "status",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "total_cost",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "updated_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_orders",
-    "column": "vehicle_type",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_status_history",
+    "table": "frontend_error_logs_2026_04",
     "column": "created_at",
     "rule": "obrigatório"
    },
    {
-    "table": "lalamove_status_history",
+    "table": "frontend_error_logs_2026_04",
     "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_status_history",
-    "column": "order_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_status_history",
-    "column": "status",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_stops",
-    "column": "address",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_stops",
-    "column": "created_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_stops",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_stops",
-    "column": "order_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_stops",
-    "column": "stop_index",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_uapi_sessions",
-    "column": "access_token",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_uapi_sessions",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_uapi_sessions",
-    "column": "refresh_token",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_uapi_sessions",
-    "column": "token_expires_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalamove_uapi_sessions",
-    "column": "token_obtained_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "tracking_events",
-    "column": "created_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "tracking_events",
-    "column": "driver_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "tracking_events",
-    "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "tracking_events",
-    "column": "latitude",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "tracking_events",
-    "column": "longitude",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "tracking_events",
-    "column": "order_id",
     "rule": "obrigatório"
    }
   ],
@@ -123453,6 +123554,14 @@
     "name": "falls back to "
    },
    {
+    "file": "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
+    "name": "tipoCobrancaOptions"
+   },
+   {
+    "file": "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
+    "name": "oferece exatamente os valores do enum tipo_cobranca do banco"
+   },
+   {
     "file": "src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx",
     "name": "AnimatedCounter"
    },
@@ -124303,6 +124412,14 @@
    {
     "file": "src/hooks/usePerDcomp.safety.test.ts",
     "name": "falha fechada sem gerar recibo ou alterar créditos"
+   },
+   {
+    "file": "src/hooks/usePixTemplates.test.ts",
+    "name": "useCreatePixTemplate"
+   },
+   {
+    "file": "src/hooks/usePixTemplates.test.ts",
+    "name": "preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade"
    },
    {
     "file": "src/hooks/useSelectiveEmpresaInvalidation.test.tsx",
@@ -151744,7 +151861,18 @@
      "pg_namespace"
     ]
    },
-   "confirmar_conciliacao": {
+   "exec_sql": {
+    "args": "",
+    "returns": "?",
+    "lang": "",
+    "src": "src/integrations/supabase/types.ts",
+    "security_definer": false,
+    "search_path": false,
+    "body": "",
+    "raises": [],
+    "tables": []
+   },
+   "is_user_admin": {
     "args": "",
     "returns": "?",
     "lang": "",
@@ -153580,6 +153708,14 @@
      "type": "TEXT NOT NULL DEFAULT 'pending'"
     },
     {
+     "table": "pagamentos_recorrentes",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string not null"
+    },
+    {
      "table": "regua_cobranca",
      "column": "etapa",
      "enum": "",
@@ -153876,6 +154012,14 @@
      "type": "text"
     },
     {
+     "table": "convites_contador",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string not null"
+    },
+    {
      "table": "verificacoes_conformidade",
      "column": "status",
      "enum": "",
@@ -153968,12 +154112,36 @@
      "type": "TEXT NOT NULL DEFAULT 'gerado'"
     },
     {
+     "table": "sso_sandbox_runs",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string not null"
+    },
+    {
      "table": "anomalia_detection_runs",
      "column": "status",
      "enum": "",
      "allowed": [],
      "default": "queued",
      "type": "TEXT DEFAULT 'queued'"
+    },
+    {
+     "table": "scim_setup_checklist",
+     "column": "etapa",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string not null"
+    },
+    {
+     "table": "scim_setup_checklist",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string not null"
     },
     {
      "table": "anomalia_toast_eventos",
@@ -154166,6 +154334,14 @@
      "type": "TEXT NOT NULL DEFAULT 'PENDING'"
     },
     {
+     "table": "bloqueios_duplicidade",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string | null"
+    },
+    {
      "table": "planos_acao",
      "column": "status",
      "enum": "",
@@ -154313,6 +154489,14 @@
      "type": "TEXT NOT NULL"
     },
     {
+     "table": "catalogos_tributarios_health_history",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string | null"
+    },
+    {
      "table": "catalogos_fiscais_cargas",
      "column": "status",
      "enum": "",
@@ -154323,6 +154507,14 @@
      ],
      "default": "ok",
      "type": "text DEFAULT 'ok'::text NOT NULL"
+    },
+    {
+     "table": "simulacoes",
+     "column": "status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "string not null"
     },
     {
      "table": "oportunidades_elisao",
@@ -154370,106 +154562,6 @@
      "allowed": [],
      "default": "",
      "type": "text"
-    },
-    {
-     "table": "drivers",
-     "column": "status",
-     "enum": "driver_status",
-     "allowed": [
-      "APPROVED",
-      "PENDING_APPROVAL",
-      "BLOCKED",
-      "WHITELIST",
-      "BLACKLIST"
-     ],
-     "default": "",
-     "type": "Database['public']['Enums']['driver_status'] not null"
-    },
-    {
-     "table": "active_tracking",
-     "column": "tracking_status",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "string | null"
-    },
-    {
-     "table": "bitrix24_sync",
-     "column": "sync_status",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "string not null"
-    },
-    {
-     "table": "driver_approval_queue",
-     "column": "status",
-     "enum": "approval_status",
-     "allowed": [
-      "PENDING",
-      "APPROVED",
-      "REJECTED"
-     ],
-     "default": "",
-     "type": "Database['public']['Enums']['approval_status'] not null"
-    },
-    {
-     "table": "lalamove_orders",
-     "column": "internal_status",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "string | null"
-    },
-    {
-     "table": "lalamove_orders",
-     "column": "status",
-     "enum": "order_status",
-     "allowed": [
-      "PENDING",
-      "MATCHED",
-      "ON_GOING",
-      "PICKED_UP",
-      "COMPLETED",
-      "CANCELLED",
-      "REJECTED",
-      "EXPIRED"
-     ],
-     "default": "",
-     "type": "Database['public']['Enums']['order_status'] not null"
-    },
-    {
-     "table": "lalamove_status_history",
-     "column": "old_status",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "string | null"
-    },
-    {
-     "table": "lalamove_status_history",
-     "column": "status",
-     "enum": "order_status",
-     "allowed": [
-      "PENDING",
-      "MATCHED",
-      "ON_GOING",
-      "PICKED_UP",
-      "COMPLETED",
-      "CANCELLED",
-      "REJECTED",
-      "EXPIRED"
-     ],
-     "default": "",
-     "type": "Database['public']['Enums']['order_status'] not null"
-    },
-    {
-     "table": "lalamove_stops",
-     "column": "pod_status",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "string | null"
     }
    ],
    "usage": {
@@ -157331,13 +157423,6 @@
      "authenticated: ((SELECT auth.uid()) = user_id)"
     ]
    },
-   "active_tracking": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
    "alert_configurations": {
     "rls": "enabled",
     "SELECT": [
@@ -157851,6 +157936,21 @@
     "UPDATE": [],
     "DELETE": []
    },
+   "audit_logs_2026_01": {
+    "rls": "não verificado",
+    "SELECT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "INSERT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "UPDATE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "DELETE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ]
+   },
    "audit_logs_2026_02": {
     "rls": "não verificado",
     "SELECT": [
@@ -157986,13 +158086,6 @@
      "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
     ]
    },
-   "audit_logs_2026_11": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
    "audit_logs_default": {
     "rls": "não verificado",
     "SELECT": [
@@ -158121,13 +158214,6 @@
     "DELETE": [
      "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
     ]
-   },
-   "bitrix24_sync": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
    },
    "bitrix24_tokens": {
     "rls": "enabled",
@@ -158864,34 +158950,6 @@
      "authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …"
     ]
    },
-   "driver_approval_queue": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "driver_evaluations": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "driver_incidents": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "driver_locations": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
    "drivers": {
     "rls": "não encontrado",
     "SELECT": [],
@@ -159112,6 +159170,13 @@
     "DELETE": [
      "authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role)"
     ]
+   },
+   "estrategias_elisao_catalogo": {
+    "rls": "não verificado",
+    "SELECT": [],
+    "INSERT": [],
+    "UPDATE": [],
+    "DELETE": []
    },
    "eventos_contabilizacao_log": {
     "rls": "enabled",
@@ -159435,6 +159500,66 @@
     ],
     "UPDATE": [],
     "DELETE": []
+   },
+   "frontend_error_logs_2026_01": {
+    "rls": "não verificado",
+    "SELECT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "INSERT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "UPDATE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "DELETE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ]
+   },
+   "frontend_error_logs_2026_02": {
+    "rls": "não verificado",
+    "SELECT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "INSERT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "UPDATE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "DELETE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ]
+   },
+   "frontend_error_logs_2026_03": {
+    "rls": "não verificado",
+    "SELECT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "INSERT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "UPDATE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "DELETE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ]
+   },
+   "frontend_error_logs_2026_04": {
+    "rls": "não verificado",
+    "SELECT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "INSERT": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "UPDATE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ],
+    "DELETE": [
+     "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
+    ]
    },
    "frontend_error_logs_2026_05": {
     "rls": "não encontrado",
@@ -159860,34 +159985,6 @@
      "public: auth.uid() = user_id",
      "authenticated: (user_id = auth.uid())"
     ]
-   },
-   "lalamove_orders": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "lalamove_status_history": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "lalamove_stops": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "lalamove_uapi_sessions": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
    },
    "lalur_lancamentos": {
     "rls": "enabled",
@@ -161538,13 +161635,6 @@
     "DELETE": [
      "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
-   },
-   "tracking_events": {
-    "rls": "não verificado",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
    },
    "transacoes_bancarias": {
     "rls": "enabled",
@@ -171850,6 +171940,7 @@
    "relatorios_agendados",
    "bitrix_sync_logs",
    "bitrix_field_mappings",
+   "bitrix_oauth_tokens",
    "boletos",
    "historico_cobranca",
    "expert_conversations",
@@ -171863,6 +171954,7 @@
    "historico_cobranca_whatsapp",
    "acordos_parcelamento",
    "vendedores",
+   "security_alerts",
    "apuracoes_tributarias",
    "creditos_tributarios",
    "operacoes_tributaveis",
@@ -171879,6 +171971,9 @@
    "regras_conciliacao",
    "asaas_customers",
    "asaas_payments",
+   "bling_tokens",
+   "bling_sync_logs",
+   "bling_webhook_events",
    "plano_contas",
    "contatos_financeiros",
    "formas_pagamento",
@@ -171910,6 +172005,7 @@
    "anomalias_detectadas",
    "acoes_recomendadas",
    "sso_providers",
+   "sso_role_mappings",
    "lancamentos_contabeis",
    "partidas_contabeis",
    "sped_contabil_arquivos",
@@ -171939,6 +172035,7 @@
    "configuracoes_duplicidade",
    "regras_roteamento_financeiro",
    "api_keys",
+   "kpis_operacionais",
    "pedidos_compra",
    "whatsapp_conversas",
    "fluxos_aprovacao_niveis",
@@ -171956,19 +172053,19 @@
    "entregas_obrigacoes",
    "conformidade_snapshots",
    "integration_secrets",
+   "overlay_rejeicoes_auditoria",
    "simulacoes",
+   "simulacao_tributos_detalhados",
    "operacoes_icms",
    "projecoes_reforma",
    "oportunidades_elisao",
    "risk_rules",
    "acessos_suspeitos",
    "bitrix24_stage_mappings",
-   "drivers",
-   "asaas_payment_links",
-   "lalamove_orders"
+   "asaas_payment_links"
   ],
   "tenant_missing": [],
-  "tenant_cov": 0.43,
+  "tenant_cov": 0.46,
   "soft_delete": [
    [
     "clientes",
@@ -172127,6 +172224,14 @@
     "ativo"
    ],
    [
+    "regras_roteamento_financeiro",
+    "ativo"
+   ],
+   [
+    "api_keys",
+    "ativo"
+   ],
+   [
     "glossario_tributario",
     "ativo"
    ],
@@ -172179,8 +172284,8 @@
     "ativo"
    ],
    [
-    "lalamove_uapi_sessions",
-    "is_active"
+    "estrategias_elisao_catalogo",
+    "ativo"
    ]
   ],
   "audit": {
@@ -172597,7 +172702,10 @@
     "created_at"
    ],
    "auditoria_tributaria": [
-    "criado_em"
+    "created_at",
+    "created_by",
+    "criado_em",
+    "updated_at"
    ],
    "fechamentos_tributarios": [
     "created_at",
@@ -172629,7 +172737,9 @@
     "created_at",
     "updated_at"
    ],
-   "slo_metrics_diarias": [],
+   "slo_metrics_diarias": [
+    "created_at"
+   ],
    "sso_providers": [
     "created_at",
     "created_by",
@@ -172864,7 +172974,8 @@
     "created_at"
    ],
    "contratos": [
-    "created_at"
+    "created_at",
+    "created_by"
    ],
    "regimes_tributarios": [
     "created_at"
@@ -173070,6 +173181,7 @@
    ],
    "simulacoes": [
     "created_at",
+    "created_by",
     "updated_at"
    ],
    "simulacao_tributos_detalhados": [
@@ -173169,18 +173281,15 @@
    "webauthn_challenges": [
     "created_at"
    ],
-   "drivers": [
-    "created_at",
-    "updated_at"
-   ],
-   "frontend_error_logs_2026_11": [
-    "created_at"
-   ],
+   "drivers": [],
+   "frontend_error_logs_2026_11": [],
    "asaas_payment_links": [
     "created_at",
     "created_by"
    ],
-   "active_tracking": [],
+   "audit_logs_2026_01": [
+    "created_at"
+   ],
    "audit_logs_2026_02": [
     "created_at"
    ],
@@ -173208,39 +173317,22 @@
    "audit_logs_2026_10": [
     "created_at"
    ],
-   "audit_logs_2026_11": [
-    "created_at"
-   ],
    "audit_logs_default": [
     "created_at"
    ],
-   "bitrix24_sync": [
-    "created_at",
-    "updated_at"
-   ],
-   "driver_approval_queue": [],
-   "driver_evaluations": [
+   "estrategias_elisao_catalogo": [
     "created_at"
    ],
-   "driver_incidents": [
+   "frontend_error_logs_2026_01": [
     "created_at"
    ],
-   "driver_locations": [],
-   "lalamove_orders": [
-    "created_at",
-    "updated_at"
-   ],
-   "lalamove_status_history": [
+   "frontend_error_logs_2026_02": [
     "created_at"
    ],
-   "lalamove_stops": [
+   "frontend_error_logs_2026_03": [
     "created_at"
    ],
-   "lalamove_uapi_sessions": [
-    "created_at",
-    "updated_at"
-   ],
-   "tracking_events": [
+   "frontend_error_logs_2026_04": [
     "created_at"
    ]
   },
@@ -173458,6 +173550,18 @@
     "cnpj"
    ],
    [
+    "organizacoes",
+    "email"
+   ],
+   [
+    "organizacoes",
+    "telefone"
+   ],
+   [
+    "acessos_suspeitos",
+    "ip_address"
+   ],
+   [
     "email_verifications",
     "email"
    ],
@@ -173470,8 +173574,8 @@
     "ip_address"
    ],
    [
-    "drivers",
-    "phone"
+    "audit_logs_2026_01",
+    "ip_address"
    ],
    [
     "audit_logs_2026_02",
@@ -173510,40 +173614,8 @@
     "ip_address"
    ],
    [
-    "audit_logs_2026_11",
-    "ip_address"
-   ],
-   [
     "audit_logs_default",
     "ip_address"
-   ],
-   [
-    "driver_locations",
-    "latitude"
-   ],
-   [
-    "driver_locations",
-    "longitude"
-   ],
-   [
-    "lalamove_stops",
-    "address"
-   ],
-   [
-    "lalamove_stops",
-    "latitude"
-   ],
-   [
-    "lalamove_stops",
-    "longitude"
-   ],
-   [
-    "tracking_events",
-    "latitude"
-   ],
-   [
-    "tracking_events",
-    "longitude"
    ]
   ],
   "money_float": [
@@ -174080,6 +174152,11 @@
     "NUMERIC"
    ],
    [
+    "benchmarks_setoriais",
+    "valor",
+    "number"
+   ],
+   [
     "verificacoes_conformidade",
     "total_checks",
     "INTEGER"
@@ -174095,6 +174172,26 @@
     "NUMERIC(15,2)"
    ],
    [
+    "notas_fiscais_ocr",
+    "valor_cofins",
+    "number"
+   ],
+   [
+    "notas_fiscais_ocr",
+    "valor_icms",
+    "number"
+   ],
+   [
+    "notas_fiscais_ocr",
+    "valor_ipi",
+    "number"
+   ],
+   [
+    "notas_fiscais_ocr",
+    "valor_pis",
+    "number"
+   ],
+   [
     "anomalias_detectadas",
     "valor_envolvido",
     "numeric"
@@ -174108,6 +174205,11 @@
     "slo_metrics_diarias",
     "taxa_erro_pct",
     "numeric"
+   ],
+   [
+    "slo_metrics_diarias",
+    "total_requests",
+    "number"
    ],
    [
     "lancamentos_contabeis",
@@ -174165,6 +174267,11 @@
     "NUMERIC(15,2)"
    ],
    [
+    "elisao_creditos_auditoria",
+    "valor_credito",
+    "number"
+   ],
+   [
     "elisao_tarefas_acionaveis",
     "valor_envolvido",
     "NUMERIC(15,2)"
@@ -174198,6 +174305,11 @@
     "kpis_operacionais",
     "valor_atual",
     "numeric"
+   ],
+   [
+    "kpis_operacionais",
+    "valor",
+    "number"
    ],
    [
     "pedidos_compra",
@@ -174325,6 +174437,11 @@
     "numeric(15,2)"
    ],
    [
+    "operacoes_icms",
+    "valor_icms",
+    "number"
+   ],
+   [
     "projecoes_reforma",
     "imposto_seletivo",
     "numeric(15,2)"
@@ -174340,44 +174457,9 @@
     "NUMERIC(15,2)"
    ],
    [
-    "drivers",
-    "total_deliveries",
-    "number"
-   ],
-   [
     "asaas_payment_links",
     "valor",
     "NUMERIC(14,2)"
-   ],
-   [
-    "driver_evaluations",
-    "total_deliveries",
-    "number"
-   ],
-   [
-    "lalamove_orders",
-    "cost_center",
-    "string"
-   ],
-   [
-    "lalamove_orders",
-    "custom_rating",
-    "number"
-   ],
-   [
-    "lalamove_orders",
-    "customer_name",
-    "string"
-   ],
-   [
-    "lalamove_orders",
-    "customer_phone",
-    "string"
-   ],
-   [
-    "lalamove_orders",
-    "total_cost",
-    "number"
    ]
   ]
  },
@@ -175007,11 +175089,6 @@
    },
    {
     "kind": "coluna",
-    "msg": "coluna `resolvido` usada no código não existe no schema de `divergencias_conciliacao`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `categoria` usada no código não existe no schema de `regras_conciliacao`",
     "where": []
    },
@@ -175100,13 +175177,6 @@
     "kind": "dinheiro",
     "msg": "`pg_stat_statements_baseline.total_exec_time` guarda dinheiro em `DOUBLE PRECISION` (ponto flutuante) — arredondamento imprevisível; padrão é numeric",
     "where": []
-   },
-   {
-    "kind": "rpc",
-    "msg": "RPC `exec_sql` chamada mas não definida nas migrations/types",
-    "where": [
-     "supabase/functions/monitor-health/index.ts"
-    ]
    },
    {
     "kind": "rpc",
@@ -175380,7 +175450,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "296/303 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `audit_log`, `entity_versions`, `profiles`, `user_roles`, `empresas`, `contas_bancarias` …",
+   "290/297 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `audit_log`, `entity_versions`, `profiles`, `user_roles`, `empresas`, `contas_bancarias` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -193354,7 +193424,7 @@
   },
   "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts": {
    "path": "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts",
-   "lines": 47,
+   "lines": 52,
    "exports": [
     "const formSchema",
     "type FormValues",
@@ -193370,12 +193440,15 @@
      "refines": [],
      "chain": []
     }
-   ],
-   "enums": [
-    {
-     "name": "TipoCobranca",
-     "values": "boleto | pix | transferencia | cartao | dinheiro"
-    }
+   ]
+  },
+  "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts": {
+   "path": "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
+   "lines": 12,
+   "is_test": true,
+   "tests": [
+    "tipoCobrancaOptions",
+    "oferece exatamente os valores do enum tipo_cobranca do banco"
    ]
   },
   "src/components/pix-hub/AprovacaoRapidaMobile.tsx": {
@@ -193489,12 +193562,12 @@
   },
   "src/components/pix-hub/PixTemplates.tsx": {
    "path": "src/components/pix-hub/PixTemplates.tsx",
-   "lines": 346,
+   "lines": 357,
    "exports": [
     "function PixTemplates"
    ],
    "errors": [
-    "Preencha nome, favorecido e chave PIX"
+    "Preencha nome, favorecido, chave PIX e cidade"
    ]
   },
   "src/components/profile/SsoProfileSyncBanner.tsx": {
@@ -205074,7 +205147,7 @@
   },
   "src/hooks/useOportunidadesElisao.ts": {
    "path": "src/hooks/useOportunidadesElisao.ts",
-   "lines": 318,
+   "lines": 319,
    "exports": [
     "function useOportunidadesElisao"
    ],
@@ -205681,9 +205754,18 @@
     "usePermissions"
    ]
   },
+  "src/hooks/usePixTemplates.test.ts": {
+   "path": "src/hooks/usePixTemplates.test.ts",
+   "lines": 56,
+   "is_test": true,
+   "tests": [
+    "useCreatePixTemplate",
+    "preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade"
+   ]
+  },
   "src/hooks/usePixTemplates.ts": {
    "path": "src/hooks/usePixTemplates.ts",
-   "lines": 117,
+   "lines": 124,
    "exports": [
     "interface PixTemplate",
     "const usePixTemplates",
@@ -207284,7 +207366,7 @@
   },
   "src/hooks/useScimChecklist.ts": {
    "path": "src/hooks/useScimChecklist.ts",
-   "lines": 74,
+   "lines": 90,
    "exports": [
     "interface ScimChecklistItem",
     "function useScimChecklist"
@@ -207296,13 +207378,22 @@
     },
     {
      "table": "scim_setup_checklist",
-     "op": "upsert"
+     "op": "select"
+    },
+    {
+     "table": "scim_setup_checklist",
+     "op": "update"
+    },
+    {
+     "table": "scim_setup_checklist",
+     "op": "insert"
     }
    ],
    "table_cols": {
     "scim_setup_checklist": [
      "confirmed",
      "confirmed_at",
+     "id",
      "item_key",
      "user_id"
     ]
@@ -207483,7 +207574,7 @@
   },
   "src/hooks/useSecurityAlerts.ts": {
    "path": "src/hooks/useSecurityAlerts.ts",
-   "lines": 213,
+   "lines": 225,
    "exports": [
     "interface SecurityAlert",
     "function useSecurityAlerts"
@@ -245083,10 +245174,28 @@
   }
  },
  "git": {
-  "sha": "b93354437a1ec7d639cd5ab0c27461ac1e6420d0",
+  "sha": "fd8c431a782db5749d4202b321b2a9badc15ae1c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "fd8c431",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)",
+    "files": [
+     "src/components/asaas/WebhooksLogPanel.tsx",
+     "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
+     "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts",
+     "src/components/pix-hub/PixTemplates.tsx",
+     "src/hooks/useOportunidadesElisao.ts",
+     "src/hooks/usePixTemplates.test.ts",
+     "src/hooks/usePixTemplates.ts",
+     "src/hooks/useScimChecklist.ts",
+     "src/hooks/useSecurityAlerts.ts",
+     "src/integrations/supabase/types.ts"
+    ]
+   },
    {
     "sha": "b933544",
     "date": "2026-11-13",
@@ -245672,36 +245781,11 @@
      "deno.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "5215111",
-    "date": "2026-11-11",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)",
-    "files": [
-     ".github/workflows/actionlint.yml",
-     ".github/workflows/ci.yml",
-     ".github/workflows/codeql.yml",
-     ".github/workflows/deno-tests.yml",
-     ".github/workflows/dependency-review.yml",
-     ".github/workflows/functions-deploy.yml",
-     ".github/workflows/graphify.yml",
-     ".github/workflows/migration-ledger.yml",
-     ".github/workflows/prod-migrate.yml",
-     ".github/workflows/schema-drift.yml",
-     ".github/workflows/staging-migrate.yml",
-     ".github/workflows/supabase-admin-ops.yml",
-     ".github/workflows/supabase-linter.yml"
-    ]
    }
   ],
   "hot_files": [
    [
     "src/components/dashboard/DashboardExecutivo.tsx",
-    3
-   ],
-   [
-    ".github/workflows/ci.yml",
     3
    ],
    [
@@ -245713,7 +245797,7 @@
     2
    ],
    [
-    ".github/workflows/codeql.yml",
+    ".github/workflows/ci.yml",
     2
    ],
    [
@@ -245723,6 +245807,46 @@
    [
     "package.json",
     2
+   ],
+   [
+    "src/components/asaas/WebhooksLogPanel.tsx",
+    1
+   ],
+   [
+    "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
+    1
+   ],
+   [
+    "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts",
+    1
+   ],
+   [
+    "src/components/pix-hub/PixTemplates.tsx",
+    1
+   ],
+   [
+    "src/hooks/useOportunidadesElisao.ts",
+    1
+   ],
+   [
+    "src/hooks/usePixTemplates.test.ts",
+    1
+   ],
+   [
+    "src/hooks/usePixTemplates.ts",
+    1
+   ],
+   [
+    "src/hooks/useScimChecklist.ts",
+    1
+   ],
+   [
+    "src/hooks/useSecurityAlerts.ts",
+    1
+   ],
+   [
+    "src/integrations/supabase/types.ts",
+    1
    ],
    [
     "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
@@ -245738,42 +245862,6 @@
    ],
    [
     "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
-    1
-   ],
-   [
-    "src/components/__tests__/regression-fixes.test.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/CopyField.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/SSOSandboxPanel.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/SSOSandboxPanelSandboxSimulacaoSSO.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/SSOWizardDialog.helpers.ts",
-    1
-   ],
-   [
-    "src/components/admin/sso/SSOWizardDialog.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/SSOWizardDialog.types.ts",
-    1
-   ],
-   [
-    "src/components/admin/sso/SSOWizardDialogDominiosEmailPermitidos.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/ScimSetupGuide.helpers.ts",
     1
    ]
   ]

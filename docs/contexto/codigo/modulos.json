@@ -4352,8 +4352,8 @@
   {
    "modulo": "components/pagamentos-recorrentes",
    "arquivos": 3,
-   "testes": 0,
-   "linhas": 728,
+   "testes": 1,
+   "linhas": 733,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -4411,6 +4411,7 @@
    "depende_de_modulos": [
     "components/ui",
     "hooks",
+    "integrations/supabase",
     "lib"
    ],
    "pacotes_externos": [
@@ -4426,7 +4427,7 @@
    "modulo": "components/pix-hub",
    "arquivos": 4,
    "testes": 0,
-   "linhas": 1149,
+   "linhas": 1160,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -6382,8 +6383,8 @@
   {
    "modulo": "hooks",
    "arquivos": 227,
-   "testes": 7,
-   "linhas": 34897,
+   "testes": 8,
+   "linhas": 34933,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -8369,7 +8370,7 @@
    "modulo": "integrations/supabase",
    "arquivos": 2,
    "testes": 0,
-   "linhas": 21510,
+   "linhas": 19398,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -8428,6 +8429,7 @@
     "components/fluxo-caixa",
     "components/fornecedores",
     "components/integracoes",
+    "components/pagamentos-recorrentes",
     "components/pix-hub",
     "components/relatorios",
     "components/security",

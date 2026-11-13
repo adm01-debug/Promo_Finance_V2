@@ -4742,7 +4742,8 @@
    "src/lib/formatters.ts"
   ],
   "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts": [
-   "src/hooks/usePagamentosRecorrentes.ts"
+   "src/hooks/usePagamentosRecorrentes.ts",
+   "src/integrations/supabase/types.ts"
   ],
   "src/components/pix-hub/AprovacaoRapidaMobile.tsx": [
    "src/components/ui/badge.tsx",

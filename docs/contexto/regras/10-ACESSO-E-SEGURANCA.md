@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b93354437a` · branch `main` · 2026-11-13 20:26 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `fd8c431a78` · branch `main` · 2026-11-13 21:16 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -21,7 +21,6 @@
 | `acessos_suspeitos` | enabled | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) AND ((empresa_id IS NULL) OR empresa_acessivel(empresa_id))) | — | — | — |
 | `acoes_recomendadas` | enabled | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
 | `acordos_parcelamento` | enabled | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: ((SELECT auth.uid()) = user_id) |
-| `active_tracking` | não verificado | ? | ? | ? | ? |
 | `alert_configurations` | enabled | authenticated: public.empresa_membro_ativo(empresa_id) | authenticated: (public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.u … | authenticated: (public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.u … | authenticated: (public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.u … |
 | `alertas` | enabled | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (( SELECT (SELECT auth.uid()) AS uid) = user_id)<br>authenticated: ( auth.uid() = user_id OR ( user_id IS NULL AND public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro': … | authenticated: ((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: (( SELECT auth.uid() AS uid) = user_id)<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (( SELECT (SELECT auth.uid()) AS uid) = user_id) |
 | `alertas_preditivos` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: empresa_acessivel(empresa_id) | authenticated: ( user_id = auth.uid() OR (user_id IS NULL AND public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro':: … | authenticated: ( user_id = auth.uid() OR (user_id IS NULL AND public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro':: … | — |
@@ -53,6 +52,7 @@
 | `asaas_transfers` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))<br>public: empresa_acessivel(empresa_id) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))<br>public: empresa_acessivel(empresa_id) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
 | `audit_log` | enabled | public: auth.uid() = user_id | public: auth.uid() IS NOT NULL AND (user_id = auth.uid() OR user_id IS NULL) | — | — |
 | `audit_logs` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: ((user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email' … | — | — |
+| `audit_logs_2026_01` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `audit_logs_2026_02` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `audit_logs_2026_03` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `audit_logs_2026_04` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
@@ -62,7 +62,6 @@
 | `audit_logs_2026_08` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `audit_logs_2026_09` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `audit_logs_2026_10` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
-| `audit_logs_2026_11` | não verificado | ? | ? | ? | ? |
 | `audit_logs_default` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `auditoria_configuracoes` | enabled | public: EXISTS ( SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (role = 'admin' OR role = 'financeiro') ) | public: auth.uid() = user_id | — | — |
 | `auditoria_financeira` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id) | — | — |
@@ -72,7 +71,6 @@
 | `beneficios_fiscais` | enabled | authenticated: true<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) |
 | `bitrix24_activities` | enabled | authenticated: (EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo …<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: (EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo …<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: (EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo …<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: ((EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativ …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `bitrix24_stage_mappings` | enabled | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role) OR has_role((SELECT a … | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
-| `bitrix24_sync` | não verificado | ? | ? | ? | ? |
 | `bitrix24_tokens` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `bitrix_field_mappings` | enabled | public: auth.uid() IS NOT NULL<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id) | authenticated: has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id) | authenticated: has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id) | authenticated: has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id) |
 | `bitrix_oauth_tokens` | enabled | public: has_role(auth.uid(), 'admin'::app_role)<br>service_role: true | public: has_role(auth.uid(), 'admin'::app_role)<br>service_role: true | public: has_role(auth.uid(), 'admin'::app_role)<br>service_role: true | public: has_role(auth.uid(), 'admin'::app_role)<br>service_role: true |
@@ -120,10 +118,6 @@
 | `digest_envios_log` | enabled | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | — | — | — |
 | `dispositivos_conhecidos` | enabled | authenticated: true<br>authenticated: ((user_id = (SELECT auth.uid())) OR (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((user_id = (SELECT auth.uid())) OR (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((user_id = (SELECT auth.uid())) OR (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((user_id = (SELECT auth.uid())) OR (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND … |
 | `divergencias_conciliacao` | enabled | public: true<br>authenticated: true<br>authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | public: true<br>authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
-| `driver_approval_queue` | não verificado | ? | ? | ? | ? |
-| `driver_evaluations` | não verificado | ? | ? | ? | ? |
-| `driver_incidents` | não verificado | ? | ? | ? | ? |
-| `driver_locations` | não verificado | ? | ? | ? | ? |
 | `drivers` | não encontrado | sem RLS | sem RLS | sem RLS | sem RLS |
 | `edge_function_logs` | enabled | authenticated: public.has_role(auth.uid(), 'admin')<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | service_role: true | — | — |
 | `elisao_alertas` | enabled | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE empresa_id = elisao_alertas.empresa_id AND user_id = auth.uid() )<br>authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) |
@@ -138,6 +132,7 @@
 | `entity_versions` | enabled | public: true | public: auth.uid() = changed_by OR changed_by IS NULL | — | — |
 | `entregas_obrigacoes` | enabled | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (u …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (u …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (u …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
 | `estrategias_elisao` | enabled | authenticated: true<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) |
+| `estrategias_elisao_catalogo` | não verificado | ? | ? | ? | ? |
 | `eventos_contabilizacao_log` | enabled | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role,'financeiro'::app_role]) AND empresa_acessivel(empresa_id) | — | — |
 | `evidencias_pacotes` | enabled | authenticated: public.has_role(auth.uid(), 'admin')<br>authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … | authenticated: public.has_role(auth.uid(), 'admin')<br>authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … | authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … | authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … |
 | `execucoes_cobranca` | enabled | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
@@ -156,6 +151,10 @@
 | `fornecedores` | enabled | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro', 'operacional']::app_role[]) AND empresa_acessivel(empresa_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role, 'operacional'::public.app_role … | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro', 'operacional']::app_role[]) AND empresa_acessivel(empresa_id) | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro', 'operacional']::app_role[]) AND empresa_acessivel(empresa_id) | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro', 'operacional']::app_role[]) AND empresa_acessivel(empresa_id) |
 | `frontend_error_alert_state` | enabled | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | — | — | — |
 | `frontend_error_logs` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: (((SELECT auth.uid()) = user_id) OR (user_id IS NULL)) | — | — |
+| `frontend_error_logs_2026_01` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
+| `frontend_error_logs_2026_02` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
+| `frontend_error_logs_2026_03` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
+| `frontend_error_logs_2026_04` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `frontend_error_logs_2026_05` | não encontrado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `frontend_error_logs_2026_06` | não encontrado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `frontend_error_logs_2026_07` | não encontrado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
@@ -186,10 +185,6 @@
 | `itens_pedido_compra` | enabled | public: EXISTS ( SELECT 1 FROM public.pedidos_compra WHERE pedidos_compra.id = itens_pedido_compra.pedido_id AND pedidos_compra.user_id = au …<br>authenticated: (pedido_id IN ( SELECT pedidos_compra.id FROM pedidos_compra WHERE (pedidos_compra.empresa_id IN ( SELECT user_empresas.empre … | public: EXISTS ( SELECT 1 FROM public.pedidos_compra WHERE pedidos_compra.id = itens_pedido_compra.pedido_id AND pedidos_compra.user_id = au … | — | — |
 | `known_devices` | enabled | public: auth.uid() = user_id | public: auth.uid() = user_id | public: auth.uid() = user_id | public: auth.uid() = user_id |
 | `kpis_operacionais` | enabled | public: auth.uid() = user_id<br>authenticated: (user_id = auth.uid()) | public: auth.uid() = user_id<br>authenticated: (user_id = auth.uid()) | public: auth.uid() = user_id<br>authenticated: (user_id = auth.uid()) | public: auth.uid() = user_id<br>authenticated: (user_id = auth.uid()) |
-| `lalamove_orders` | não verificado | ? | ? | ? | ? |
-| `lalamove_status_history` | não verificado | ? | ? | ? | ? |
-| `lalamove_stops` | não verificado | ? | ? | ? | ? |
-| `lalamove_uapi_sessions` | não verificado | ? | ? | ? | ? |
 | `lalur_lancamentos` | enabled | — | — | — | — |
 | `lancamentos_contabeis` | enabled | authenticated: empresa_acessivel(empresa_id) AND (user_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role) OR empresa_id IN ( SELECT … | authenticated: empresa_acessivel(empresa_id) AND (user_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role) OR empresa_id IN ( SELECT … | authenticated: empresa_acessivel(empresa_id) AND (user_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role) OR empresa_id IN ( SELECT … | authenticated: empresa_acessivel(empresa_id) AND (user_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role) OR empresa_id IN ( SELECT … |
 | `login_attempts` | enabled | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: user_email = (SELECT email FROM public.profiles WHERE id = auth.uid())<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
@@ -292,7 +287,6 @@
 | `sso_user_groups` | enabled | authenticated: auth.uid() = user_id<br>authenticated: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) | authenticated: has_role(auth.uid(), 'admin'::app_role) | authenticated: has_role(auth.uid(), 'admin'::app_role) | authenticated: has_role(auth.uid(), 'admin'::app_role) |
 | `tax_audit_trail` | enabled | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = tax_audit_trail.empresa_id AND user_empresas.user_id = …<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR ((empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id))) | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = tax_audit_trail.empresa_id AND user_empresas.user_id = … | — | — |
 | `templates_cobranca` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
-| `tracking_events` | não verificado | ? | ? | ? | ? |
 | `transacoes_bancarias` | enabled | public: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role])<br>authenticated: (conta_bancaria_id IN ( SELECT contas_bancarias.id FROM contas_bancarias WHERE (contas_bancarias.empresa_id IN ( SELECT user_ … | public: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]) | public: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]) | public: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]) |
 | `transferencias` | enabled | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
 | `ufs` | enabled | authenticated: true<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role …<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role …<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role …<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role …<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) |
@@ -316,7 +310,9 @@
 | `webhook_dlq` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — |
 | `webhook_events` | enabled | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role))<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role))<br>authenticated: has_role((SELECT auth.uid()), 'viewer'::app_role) | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role) OR has_role((SELECT a … | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role)) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `webhook_simulation_results` | enabled | authenticated: (EXISTS ( SELECT 1 FROM webhook_simulation_runs WHERE ((webhook_simulation_runs.id = webhook_simulation_results.run_id) AND ( … | — | — | — |
-| … +3 linhas — lista completa em `context.json` | | | | | |
+| `webhook_simulation_runs` | enabled | authenticated: ((SELECT auth.uid()) = created_by) | authenticated: ((SELECT auth.uid()) = created_by) | — | — |
+| `webhooks_log` | enabled | authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | — |
+| `whatsapp_conversas` | enabled | public: true<br>public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | public: true<br>public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
 
 > `—` com RLS ligado = ninguém além de service_role. `sem RLS` = qualquer chave anon lê/escreve tudo. `?` = tabela só conhecida pelo types.ts (sem migration no repo): RLS e políticas NÃO VERIFICADOS, confira no banco real.
 
@@ -945,8 +941,8 @@ Middleware matcher (Next.js): nenhum
 
 ## Multi-tenancy
 
-- Chave de tenant: **`empresa_id`** presente em 130 tabela(s): `clientes`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `lalur_lancamentos`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `plano_contas`, `contatos_financeiros`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `configuracoes_receber`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_analise_gap`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `auditoria_configuracoes`, `regua_cobranca_status`, `conciliacao_sugestoes`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `asaas_scheduled_transfers`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `obrigacoes_acessorias`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `simulacoes`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `drivers`, `asaas_payment_links`, `lalamove_orders`
-- Cobertura: 43% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
+- Chave de tenant: **`empresa_id`** presente em 137 tabela(s): `clientes`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `bitrix_oauth_tokens`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `security_alerts`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `lalur_lancamentos`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `bling_tokens`, `bling_sync_logs`, `bling_webhook_events`, `plano_contas`, `contatos_financeiros`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `sso_role_mappings`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `configuracoes_receber`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_analise_gap`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `auditoria_configuracoes`, `regua_cobranca_status`, `conciliacao_sugestoes`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `asaas_scheduled_transfers`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `kpis_operacionais`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `obrigacoes_acessorias`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `overlay_rejeicoes_auditoria`, `simulacoes`, `simulacao_tributos_detalhados`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `asaas_payment_links`
+- Cobertura: 46% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
 
 ## Soft delete (registros 'apagados' continuam na tabela — filtre!)
 
@@ -991,6 +987,8 @@ Middleware matcher (Next.js): nenhum
 | `elisao_regras_creditos` | `ativo` |
 | `asaas_config` | `ativo` |
 | `configuracoes_duplicidade` | `ativo` |
+| `regras_roteamento_financeiro` | `ativo` |
+| `api_keys` | `ativo` |
 | `glossario_tributario` | `ativo` |
 | `regua_cobranca_etapas` | `ativo` |
 | `regimes_tributarios` | `ativo` |
@@ -1004,7 +1002,7 @@ Middleware matcher (Next.js): nenhum
 | `organizacao_membros` | `ativo` |
 | `risk_rules` | `is_active` |
 | `retencao_politicas` | `ativo` |
-| `lalamove_uapi_sessions` | `is_active` |
+| `estrategias_elisao_catalogo` | `ativo` |
 
 ## Auditoria (colunas de rastreio)
 
@@ -1120,7 +1118,7 @@ Middleware matcher (Next.js): nenhum
 | `regime_decision_cache` | `created_at`, `updated_at` |
 | `relatorios_tributarios_agendados` | `created_at`, `created_by`, `updated_at` |
 | `verificacoes_conformidade` | `created_at` |
-| `auditoria_tributaria` | `criado_em` |
+| `auditoria_tributaria` | `created_at`, `created_by`, `criado_em`, `updated_at` |
 | `fechamentos_tributarios` | `created_at`, `created_by`, `updated_at` |
 | `notas_fiscais_ocr` | `created_at`, `updated_at` |
 | `resumos_executivos_semanais` | `created_at` |
@@ -1129,6 +1127,7 @@ Middleware matcher (Next.js): nenhum
 | `anomalias_detectadas` | `created_at`, `updated_at` |
 | `acoes_recomendadas` | `created_at` |
 | `user_onboarding_progress` | `created_at`, `updated_at` |
+| `slo_metrics_diarias` | `created_at` |
 | `sso_providers` | `created_at`, `created_by`, `updated_at` |
 | `sso_login_attempts` | `created_at` |
 | `sso_role_mappings` | `created_at`, `updated_at` |
@@ -1193,7 +1192,7 @@ Middleware matcher (Next.js): nenhum
 | `tax_audit_trail` | `created_at` |
 | `regua_cobranca_etapas` | `created_at` |
 | `sessoes_conciliacao` | `created_at` |
-| `contratos` | `created_at` |
+| `contratos` | `created_at`, `created_by` |
 | `regimes_tributarios` | `created_at` |
 | `custom_field_definitions` | `created_at`, `updated_at` |
 | `custom_field_values` | `created_at`, `updated_at` |
@@ -1247,7 +1246,7 @@ Middleware matcher (Next.js): nenhum
 | `convites` | `created_at` |
 | `catalogos_tributarios_health_history` | `created_at`, `updated_at` |
 | `catalogos_fiscais_cargas` | `created_at`, `updated_at` |
-| `simulacoes` | `created_at`, `updated_at` |
+| `simulacoes` | `created_at`, `created_by`, `updated_at` |
 | `simulacao_tributos_detalhados` | `created_at` |
 | `operacoes_icms` | `created_at`, `updated_at` |
 | `projecoes_reforma` | `created_at`, `updated_at` |
@@ -1277,9 +1276,8 @@ Middleware matcher (Next.js): nenhum
 | `user_devices` | `created_at` |
 | `user_passkeys` | `created_at` |
 | `webauthn_challenges` | `created_at` |
-| `drivers` | `created_at`, `updated_at` |
-| `frontend_error_logs_2026_11` | `created_at` |
 | `asaas_payment_links` | `created_at`, `created_by` |
+| `audit_logs_2026_01` | `created_at` |
 | `audit_logs_2026_02` | `created_at` |
 | `audit_logs_2026_03` | `created_at` |
 | `audit_logs_2026_04` | `created_at` |
@@ -1289,16 +1287,12 @@ Middleware matcher (Next.js): nenhum
 | `audit_logs_2026_08` | `created_at` |
 | `audit_logs_2026_09` | `created_at` |
 | `audit_logs_2026_10` | `created_at` |
-| `audit_logs_2026_11` | `created_at` |
 | `audit_logs_default` | `created_at` |
-| `bitrix24_sync` | `created_at`, `updated_at` |
-| `driver_evaluations` | `created_at` |
-| `driver_incidents` | `created_at` |
-| `lalamove_orders` | `created_at`, `updated_at` |
-| `lalamove_status_history` | `created_at` |
-| `lalamove_stops` | `created_at` |
-| `lalamove_uapi_sessions` | `created_at`, `updated_at` |
-| `tracking_events` | `created_at` |
+| `estrategias_elisao_catalogo` | `created_at` |
+| `frontend_error_logs_2026_01` | `created_at` |
+| `frontend_error_logs_2026_02` | `created_at` |
+| `frontend_error_logs_2026_03` | `created_at` |
+| `frontend_error_logs_2026_04` | `created_at` |
 
 ## Dados pessoais / sensíveis (LGPD — cuidado em logs, exports, prompts de IA)
 
@@ -1357,10 +1351,13 @@ Middleware matcher (Next.js): nenhum
 | `sefaz_dfe_cursor` | `cnpj` |
 | `digest_envios_log` | `email` |
 | `organizacoes` | `cnpj` |
+| `organizacoes` | `email` |
+| `organizacoes` | `telefone` |
+| `acessos_suspeitos` | `ip_address` |
 | `email_verifications` | `email` |
 | `mfa_sessions` | `ip_address` |
 | `user_devices` | `ip_address` |
-| `drivers` | `phone` |
+| `audit_logs_2026_01` | `ip_address` |
 | `audit_logs_2026_02` | `ip_address` |
 | `audit_logs_2026_03` | `ip_address` |
 | `audit_logs_2026_04` | `ip_address` |
@@ -1370,15 +1367,7 @@ Middleware matcher (Next.js): nenhum
 | `audit_logs_2026_08` | `ip_address` |
 | `audit_logs_2026_09` | `ip_address` |
 | `audit_logs_2026_10` | `ip_address` |
-| `audit_logs_2026_11` | `ip_address` |
 | `audit_logs_default` | `ip_address` |
-| `driver_locations` | `latitude` |
-| `driver_locations` | `longitude` |
-| `lalamove_stops` | `address` |
-| `lalamove_stops` | `latitude` |
-| `lalamove_stops` | `longitude` |
-| `tracking_events` | `latitude` |
-| `tracking_events` | `longitude` |
 
 ## Colunas de dinheiro (tipo importa: numeric ✅ / float ❌)
 
@@ -1489,12 +1478,18 @@ Middleware matcher (Next.js): nenhum
 | `faturamento_mensal` | `impostos_municipais` | `NUMERIC` |
 | `folha_pagamento` | `valor_total` | `NUMERIC` |
 | `folha_pagamento` | `total_folha` | `NUMERIC` |
+| `benchmarks_setoriais` | `valor` | `number` |
 | `verificacoes_conformidade` | `total_checks` | `INTEGER` |
 | `fechamentos_tributarios` | `total_apurado` | `NUMERIC(16,2)` |
 | `notas_fiscais_ocr` | `valor_total` | `NUMERIC(15,2)` |
+| `notas_fiscais_ocr` | `valor_cofins` | `number` |
+| `notas_fiscais_ocr` | `valor_icms` | `number` |
+| `notas_fiscais_ocr` | `valor_ipi` | `number` |
+| `notas_fiscais_ocr` | `valor_pis` | `number` |
 | `anomalias_detectadas` | `valor_envolvido` | `numeric` |
 | `slo_metrics_diarias` | `total_requisicoes` | `bigint` |
 | `slo_metrics_diarias` | `taxa_erro_pct` | `numeric` |
+| `slo_metrics_diarias` | `total_requests` | `number` |
 | `lancamentos_contabeis` | `valor_total` | `numeric` |
 | `partidas_contabeis` | `valor` | `NUMERIC(15,2)` |
 | `sped_contabil_arquivos` | `total_linhas` | `INTEGER` |
@@ -1506,6 +1501,7 @@ Middleware matcher (Next.js): nenhum
 | `elisao_analise_gap` | `valor_otimizado_projetado` | `DECIMAL(15,2)` |
 | `elisao_creditos_auditoria` | `valor_base` | `NUMERIC(15,2)` |
 | `elisao_creditos_auditoria` | `valor_credito_calculado` | `NUMERIC(15,2)` |
+| `elisao_creditos_auditoria` | `valor_credito` | `number` |
 | `elisao_tarefas_acionaveis` | `valor_envolvido` | `NUMERIC(15,2)` |
 | `elisao_alertas` | `valor_estimado` | `NUMERIC(15,2)` |
 | `asaas_transfers` | `valor` | `numeric(14,2)` |
@@ -1513,6 +1509,7 @@ Middleware matcher (Next.js): nenhum
 | `asaas_scheduled_transfers` | `valor` | `NUMERIC` |
 | `bloqueios_duplicidade` | `valor_bloqueado` | `NUMERIC(15,2)` |
 | `kpis_operacionais` | `valor_atual` | `numeric` |
+| `kpis_operacionais` | `valor` | `number` |
 | `pedidos_compra` | `valor_total` | `NUMERIC` |
 | `itens_pedido_compra` | `valor_unitario` | `NUMERIC` |
 | `itens_pedido_compra` | `valor_total` | `numeric` |
@@ -1538,14 +1535,8 @@ Middleware matcher (Next.js): nenhum
 | `simulacao_tributos_detalhados` | `valor_apurado` | `numeric(15,2)` |
 | `operacoes_icms` | `valor_operacao` | `numeric(15,2)` |
 | `operacoes_icms` | `valor_total_icms` | `numeric(15,2)` |
+| `operacoes_icms` | `valor_icms` | `number` |
 | `projecoes_reforma` | `imposto_seletivo` | `numeric(15,2)` |
 | `projecoes_reforma` | `total_tributos` | `numeric(15,2)` |
 | `oportunidades_elisao` | `custo_implementacao` | `NUMERIC(15,2)` |
-| `drivers` | `total_deliveries` | `number` |
 | `asaas_payment_links` | `valor` | `NUMERIC(14,2)` |
-| `driver_evaluations` | `total_deliveries` | `number` |
-| `lalamove_orders` | `cost_center` | `string` |
-| `lalamove_orders` | `custom_rating` | `number` |
-| `lalamove_orders` | `customer_name` | `string` |
-| `lalamove_orders` | `customer_phone` | `string` |
-| `lalamove_orders` | `total_cost` | `number` |

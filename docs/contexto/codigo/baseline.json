@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b93354437a1ec7d639cd5ab0c27461ac1e6420d0",
+  "commit": "fd8c431a782db5749d4202b321b2a9badc15ae1c",
   "branch": "main",
-  "data_commit": "2026-11-13T18:47:12Z",
+  "data_commit": "2026-11-13T19:55:06Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "fd8c431",
+    "data": "2026-11-13",
+    "assunto": "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)"
+   },
    {
     "sha": "b933544",
     "data": "2026-11-13",
@@ -126,14 +131,9 @@
     "sha": "251d639",
     "data": "2026-11-12",
     "assunto": "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)"
-   },
-   {
-    "sha": "b99e6a8",
-    "data": "2026-11-12",
-    "assunto": "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)"
    }
   ],
-  "arquivos_mudados_7d": 802,
+  "arquivos_mudados_7d": 808,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 101
+    "commits": 102
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3823,
-  "arquivos_codigo": 2414,
-  "linhas_codigo": 433268,
+  "arquivos_total": 3825,
+  "arquivos_codigo": 2416,
+  "linhas_codigo": 431274,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -329,10 +329,10 @@
   "componentes": 990,
   "hooks": 273,
   "edge_functions": 106,
-  "tabelas": 352,
+  "tabelas": 340,
   "migrations": 1014,
   "cron_jobs": 21,
-  "testes": 432,
+  "testes": 434,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 190
@@ -631,8 +631,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 974,
-   "linhas": 160160
+   "arquivos": 975,
+   "linhas": 160187
   },
   "src/config": {
    "arquivos": 1,
@@ -643,8 +643,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 308,
-   "linhas": 44492
+   "arquivos": 309,
+   "linhas": 44583
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -652,7 +652,7 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 21548
+   "linhas": 19436
   },
   "src/lib": {
    "arquivos": 410,
@@ -702,7 +702,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 21412
+   "linhas": 19300
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
@@ -1127,8 +1127,8 @@
    "relatorios_tributarios"
   ],
   "tabelas_com_drift_migration_vs_types": [
+   "acessos_suspeitos",
    "acoes_recomendadas",
-   "alertas",
    "alertas_preditivos",
    "alertas_tributarios",
    "allowed_countries",
@@ -1139,7 +1139,6 @@
    "api_keys",
    "aprovacao_comentarios",
    "apuracoes_irpj_csll",
-   "apuracoes_tributarias",
    "asaas_audit_trail",
    "asaas_config",
    "asaas_customers",
@@ -1153,15 +1152,20 @@
    "bitrix24_activities",
    "bitrix24_stage_mappings",
    "bitrix_field_mappings",
+   "bitrix_oauth_tokens",
    "bitrix_sync_logs",
    "bitrix_webhook_events",
+   "bling_sync_logs",
+   "bling_tokens",
    "bling_webhook_events",
    "blocked_ips",
    "bloqueios_duplicidade",
    "boletos",
+   "catalogos_tributarios_health_history",
    "categorias",
    "centros_custo",
    "clientes",
+   "cnpja_cache",
    "conciliacoes",
    "conciliacoes_parciais",
    "configuracoes_aprovacao",
@@ -1169,6 +1173,8 @@
    "contas_bancarias",
    "contas_pagar",
    "contas_receber",
+   "contratos",
+   "convites_contador",
    "creditos_tributarios",
    "cron_job_logs",
    "darfs",
@@ -1181,6 +1187,7 @@
    "elisao_tarefas_acionaveis",
    "email_verifications",
    "empresas",
+   "eventos_contabilizacao_log",
    "evidencias_pacotes",
    "execucoes_cobranca",
    "extrato_bancario",
@@ -1191,6 +1198,7 @@
    "folha_pagamento",
    "formas_pagamento",
    "fornecedores",
+   "frontend_error_alert_state",
    "frontend_error_logs_2026_05",
    "frontend_error_logs_2026_06",
    "frontend_error_logs_2026_07",
@@ -1198,15 +1206,16 @@
    "frontend_error_logs_2026_09",
    "frontend_error_logs_2026_10",
    "frontend_error_logs_default",
+   "frontend_error_silence_digest_log",
    "health_scores_operacionais",
    "historico_analises_preditivas",
    "historico_cobranca",
    "historico_cobranca_whatsapp",
    "historico_cobrancas_boletos",
    "historico_score_saude",
-   "integration_secrets",
-   "itens_pedido_compra",
-   "lancamentos_contabeis",
+   "index_usage_snapshots",
+   "indices_uso_excecoes",
+   "kpis_operacionais",
    "logs_baixa_automatica",
    "logs_conciliacao_retroativa",
    "metas_financeiras",
@@ -1216,20 +1225,25 @@
    "new_device_alerts",
    "notas_fiscais",
    "notas_fiscais_ocr",
-   "notification_history",
    "open_finance_consents",
+   "operacoes_icms",
    "operacoes_tributaveis",
+   "oportunidades_elisao",
+   "organizacoes",
+   "overlay_rejeicoes_auditoria",
+   "pagamentos_recorrentes",
    "parcelas_acordo",
    "partidas_contabeis",
    "password_reset_requests",
    "pedidos_compra",
    "permissions",
+   "planos_acao",
    "portal_cliente_acessos",
    "portal_cliente_tokens",
    "prejuizos_fiscais",
    "profiles",
+   "projecoes_reforma",
    "protestos",
-   "query_telemetry",
    "rate_limit_logs",
    "recomendacoes_metas_ia",
    "regime_decision_cache",
@@ -1243,21 +1257,27 @@
    "resumos_executivos_semanais",
    "retencoes_fonte",
    "saved_filter_subscriptions",
+   "scim_operations_log",
    "scim_setup_checklist",
-   "scim_tokens",
+   "security_alerts",
+   "simulacao_tributos_detalhados",
+   "simulacoes",
+   "slo_metrics_diarias",
    "solicitacoes_aprovacao",
    "solicitacoes_lgpd",
+   "sped_contabil_arquivos",
    "sso_login_attempts",
+   "sso_role_mappings",
+   "sso_sandbox_runs",
+   "sso_user_groups",
    "tax_audit_trail",
    "templates_cobranca",
    "transacoes_bancarias",
    "transferencias",
    "user_devices",
-   "user_filter_presets",
    "user_onboarding_progress",
    "user_passkeys",
    "user_roles",
-   "user_sessions",
    "vendedores",
    "verificacoes_conformidade",
    "webauthn_challenges",

@@ -8502,7 +8502,7 @@
     "PixTemplates"
    ],
    "export_default": null,
-   "linhas": 345,
+   "linhas": 356,
    "dominio": "components/pix-hub",
    "hooks_locais": [
     "useCreatePixTemplate",

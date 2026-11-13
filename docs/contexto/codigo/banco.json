@@ -3525,9 +3525,12 @@
    "colunas_types": {
     "baseline": "number | null",
     "created_at": "string",
+    "details": "Json | null",
     "detalhes": "Json",
     "empresa_id": "string | null",
+    "event_type": "string | null",
     "id": "string",
+    "ip_address": "unknown",
     "janela_fim": "string",
     "janela_inicio": "string",
     "ocorrencias": "number",
@@ -3536,12 +3539,18 @@
     "severidade": "string",
     "table_name": "string | null",
     "tipo": "string",
+    "user_agent": "string | null",
     "user_email": "string | null",
     "user_id": "string | null"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "details",
+     "event_type",
+     "ip_address",
+     "user_agent"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -3992,42 +4001,6 @@
    "sem_rls": false,
    "nao_usada": false
   },
-  "active_tracking": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "alerts_sent": "Json | null",
-    "current_latitude": "number",
-    "current_longitude": "number",
-    "destination_lat": "number | null",
-    "destination_lng": "number | null",
-    "driver_id": "string",
-    "eta_minutes": "number | null",
-    "expected_route": "Json | null",
-    "heading": "number | null",
-    "id": "string",
-    "is_on_route": "boolean | null",
-    "is_stopped": "boolean | null",
-    "last_updated": "string",
-    "order_id": "string",
-    "origin_lat": "number | null",
-    "origin_lng": "number | null",
-    "speed": "number | null",
-    "stopped_since": "string | null",
-    "tracking_ended_at": "string | null",
-    "tracking_started_at": "string | null",
-    "tracking_status": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
   "alert_configurations": {
    "colunas": {
     "alert_type": {
@@ -4448,16 +4421,15 @@
     "id": "string",
     "lido": "boolean | null",
     "mensagem": "string | null",
+    "metadata": "Json | null",
     "prioridade": "string | null",
+    "status": "string | null",
     "tipo": "string",
     "titulo": "string",
     "user_id": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "status",
-     "metadata"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 6,
@@ -4932,31 +4904,31 @@
    ],
    "criada_em": "20260106113401_fc3cbd5f-b566-478f-8c88-87b064f78f0c.sql",
    "colunas_types": {
+    "acao_label": "string | null",
+    "acao_url": "string | null",
+    "competencia": "string | null",
     "created_at": "string | null",
+    "data_lembrete": "string | null",
     "data_vencimento": "string | null",
     "descricao": "string | null",
     "empresa_id": "string | null",
+    "entidade_id": "string | null",
+    "entidade_tipo": "string | null",
     "id": "string",
     "lido": "boolean | null",
     "mensagem": "string | null",
     "prioridade": "string | null",
     "resolvido": "boolean | null",
+    "resolvido_em": "string | null",
+    "resolvido_por": "string | null",
     "status": "string | null",
     "tipo": "string | null",
     "titulo": "string",
+    "user_id": "string | null",
     "valor": "number | null"
    },
    "drift": {
     "so_na_migration": [
-     "user_id",
-     "data_lembrete",
-     "entidade_tipo",
-     "entidade_id",
-     "competencia",
-     "resolvido_em",
-     "resolvido_por",
-     "acao_url",
-     "acao_label",
      "updated_at"
     ],
     "so_no_types": []
@@ -6013,6 +5985,7 @@
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
     "created_at": "string",
+    "empresa_id": "string | null",
     "entidade_id": "string",
     "entidade_tipo": "string",
     "id": "string",
@@ -6030,8 +6003,7 @@
      "descricao",
      "uploaded_by",
      "updated_at",
-     "uploaded_por",
-     "empresa_id"
+     "uploaded_por"
     ],
     "so_no_types": []
    },
@@ -6385,6 +6357,7 @@
    "colunas_types": {
     "acoes_disponiveis": "string[] | null",
     "anomalia_id": "string | null",
+    "centro_custo_id": "string | null",
     "centro_custo_nome": "string | null",
     "descricao": "string | null",
     "dispatched_at": "string | null",
@@ -6397,7 +6370,6 @@
    },
    "drift": {
     "so_na_migration": [
-     "centro_custo_id",
      "created_at",
      "mensagem",
      "status"
@@ -6862,24 +6834,35 @@
    ],
    "criada_em": "20260509123106_73f4134e-67d5-4bba-9730-062de2e38011.sql",
    "colunas_types": {
-    "created_at": "string",
+    "ativo": "boolean",
+    "chave": "string",
+    "created_at": "string | null",
     "created_by": "string | null",
-    "empresa_id": "string",
+    "empresa_id": "string | null",
+    "expira_em": "string | null",
     "expires_at": "string | null",
     "id": "string",
-    "key_hash": "string",
-    "key_prefix": "string",
+    "key_hash": "string | null",
+    "key_prefix": "string | null",
     "last_used_at": "string | null",
     "name": "string",
+    "nome": "string",
     "revoked_at": "string | null",
-    "scopes": "string[]",
+    "scopes": "string[] | null",
+    "ultimo_uso": "string | null",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [
      "user_id"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "ativo",
+     "chave",
+     "expira_em",
+     "nome",
+     "ultimo_uso"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -7824,6 +7807,8 @@
     "cofins_residual": "number | null",
     "competencia": "string | null",
     "created_at": "string | null",
+    "created_by": "string | null",
+    "data_transmissao": "string | null",
     "empresa_id": "string | null",
     "ibs_a_compensar": "number | null",
     "ibs_a_pagar": "number | null",
@@ -7845,6 +7830,7 @@
     "iss_residual": "number | null",
     "mes": "number | null",
     "pis_residual": "number | null",
+    "protocolo_transmissao": "string | null",
     "status": "string | null",
     "tipo_tributo": "string | null",
     "total_geral": "number | null",
@@ -7854,11 +7840,7 @@
     "valor_total": "number | null"
    },
    "drift": {
-    "so_na_migration": [
-     "data_transmissao",
-     "protocolo_transmissao",
-     "created_by"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 4,
@@ -8500,7 +8482,7 @@
     "cpf_cnpj": "string | null",
     "created_at": "string",
     "email": "string | null",
-    "empresa_id": "string | null",
+    "empresa_id": "string",
     "endereco": "Json | null",
     "id": "string",
     "metadata": "Json | null",
@@ -8612,6 +8594,20 @@
     "empresa_id->empresas"
    ],
    "criada_em": "20260924220000_asaas_payment_links_empresa.sql",
+   "colunas_types": {
+    "asaas_link_id": "string",
+    "created_at": "string",
+    "created_by": "string | null",
+    "empresa_id": "string",
+    "id": "string",
+    "nome": "string",
+    "url": "string | null",
+    "valor": "number | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [
     "asaas-proxy"
@@ -8873,7 +8869,7 @@
     "data_pagamento": "string | null",
     "data_vencimento": "string | null",
     "descricao": "string | null",
-    "empresa_id": "string | null",
+    "empresa_id": "string",
     "id": "string",
     "invoice_url": "string | null",
     "linha_digitavel": "string | null",
@@ -9809,6 +9805,20 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
+   "colunas_types": {
+    "action": "string",
+    "created_at": "string",
+    "details": "string | null",
+    "id": "string",
+    "ip_address": "string | null",
+    "new_data": "Json | null",
+    "old_data": "Json | null",
+    "record_id": "string | null",
+    "table_name": "string | null",
+    "user_agent": "string | null",
+    "user_email": "string | null",
+    "user_id": "string | null"
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -10098,33 +10108,6 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_11": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -10559,13 +10542,20 @@
    "criada_em": "20260418140233_7d5861e9-57bc-4df3-827b-b9fda80cc806.sql",
    "colunas_types": {
     "acao": "string",
+    "created_at": "string",
+    "created_by": "string | null",
     "criado_em": "string",
-    "empresa_id": "string | null",
+    "empresa_id": "string",
     "entidade_id": "string | null",
     "entidade_tipo": "string",
     "id": "string",
+    "observacoes": "string | null",
     "payload_anterior": "Json | null",
     "payload_novo": "Json | null",
+    "periodo_referencia": "string | null",
+    "resultado": "Json | null",
+    "tipo_auditoria": "string | null",
+    "updated_at": "string",
     "user_email": "string | null",
     "user_id": "string | null"
    },
@@ -10574,7 +10564,15 @@
      "ip_address",
      "user_agent"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "created_at",
+     "created_by",
+     "observacoes",
+     "periodo_referencia",
+     "resultado",
+     "tipo_auditoria",
+     "updated_at"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -10842,16 +10840,25 @@
    "fks": [],
    "criada_em": "20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
    "colunas_types": {
+    "ano": "number | null",
     "carga_media_pct": "number",
     "carga_p25_pct": "number | null",
     "carga_p75_pct": "number | null",
+    "cnae": "string | null",
     "cnae_prefix": "string",
     "created_at": "string",
     "fonte": "string | null",
     "id": "string",
+    "indicador": "string",
+    "mediana": "number | null",
+    "percentil_25": "number | null",
+    "percentil_75": "number | null",
+    "porte_empresa": "string | null",
     "regime": "string",
+    "regime_tributario": "string | null",
     "setor": "string",
     "updated_at": "string",
+    "valor": "number | null",
     "vigencia_fim": "string | null",
     "vigencia_inicio": "string"
    },
@@ -10860,7 +10867,17 @@
      "margem_media_pct",
      "ano_referencia"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "ano",
+     "cnae",
+     "indicador",
+     "mediana",
+     "percentil_25",
+     "percentil_75",
+     "porte_empresa",
+     "regime_tributario",
+     "valor"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -11207,30 +11224,6 @@
    "sem_rls": false,
    "nao_usada": true
   },
-  "bitrix24_sync": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "created_at": "string",
-    "deal_id": "number",
-    "id": "string",
-    "last_error": "string | null",
-    "last_synced_at": "string",
-    "order_id": "string | null",
-    "sync_status": "string",
-    "synced_fields": "Json | null",
-    "updated_at": "string"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
   "bitrix24_tokens": {
    "colunas": {
     "access_token": {
@@ -11555,17 +11548,24 @@
    "fks": [],
    "criada_em": "20251214201733_c19cef4d-a574-4450-8f54-5e15063f7ac4.sql",
    "colunas_types": {
-    "access_token": "string",
+    "access_token": "string | null",
     "created_at": "string",
     "domain": "string | null",
-    "expires_at": "string",
+    "empresa_id": "string | null",
+    "expires_at": "string | null",
     "id": "string",
     "refresh_token": "string | null",
-    "updated_at": "string"
+    "scope": "string | null",
+    "updated_at": "string",
+    "user_id": "string | null"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "empresa_id",
+     "scope",
+     "user_id"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -11991,19 +11991,34 @@
     "created_at": "string",
     "created_by": "string | null",
     "detalhes": "Json | null",
+    "empresa_id": "string | null",
+    "entity_id": "string | null",
+    "entity_type": "string | null",
+    "error_message": "string | null",
     "finalizado_em": "string | null",
     "id": "string",
     "iniciado_em": "string",
     "mensagem_erro": "string | null",
     "modulo": "string",
+    "operation": "string | null",
+    "payload": "Json | null",
     "registros_com_erro": "number",
     "registros_processados": "number",
+    "response": "Json | null",
     "status": "string",
     "tipo": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "empresa_id",
+     "entity_id",
+     "entity_type",
+     "error_message",
+     "operation",
+     "payload",
+     "response"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -12085,14 +12100,19 @@
     "access_token": "string",
     "created_at": "string",
     "created_by": "string | null",
-    "expires_at": "string",
+    "empresa_id": "string",
+    "expires_at": "string | null",
     "id": "string",
     "refresh_token": "string | null",
+    "scope": "string | null",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "empresa_id",
+     "scope"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -12221,8 +12241,9 @@
    "criada_em": "20260315210216_8a2ae26e-a254-45a0-9695-852ece9410e5.sql",
    "colunas_types": {
     "created_at": "string",
+    "empresa_id": "string | null",
     "error_message": "string | null",
-    "event_type": "string",
+    "event_type": "string | null",
     "id": "string",
     "module": "string",
     "payload": "Json | null",
@@ -12235,7 +12256,9 @@
     "so_na_migration": [
      "received_at"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "empresa_id"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -12605,23 +12628,39 @@
    ],
    "criada_em": "20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
    "colunas_types": {
+    "agente": "string | null",
+    "campos_conflitantes": "Json | null",
+    "cnpj_fornecedor": "string | null",
     "created_at": "string | null",
-    "dados_tentativa": "Json",
+    "dados_tentativa": "Json | null",
     "empresa_id": "string | null",
+    "fornecedor_nome": "string | null",
     "id": "string",
+    "ip_origem": "string | null",
+    "match_type": "string | null",
+    "mes_vencimento": "string | null",
     "motivo": "string | null",
+    "motivo_bloqueio": "string | null",
+    "nivel_criticidade": "string | null",
+    "numero_documento": "string | null",
+    "status": "string | null",
+    "tabela": "string | null",
     "transacao_id": "string | null",
+    "usuario_id": "string | null",
     "valor_bloqueado": "number | null"
    },
    "drift": {
-    "so_na_migration": [
-     "tabela",
-     "motivo_bloqueio",
-     "campos_conflitantes",
-     "usuario_id",
-     "match_type"
-    ],
-    "so_no_types": []
+    "so_na_migration": [],
+    "so_no_types": [
+     "agente",
+     "cnpj_fornecedor",
+     "fornecedor_nome",
+     "ip_origem",
+     "mes_vencimento",
+     "nivel_criticidade",
+     "numero_documento",
+     "status"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [],
@@ -13390,7 +13429,7 @@
    "fks": [],
    "criada_em": "20260728134220_c0137355-7cb1-4426-be5a-417c649fd400.sql",
    "colunas_types": {
-    "checksum": "string",
+    "checksum": "string | null",
     "contagens": "Json",
     "created_at": "string",
     "criticos": "number",
@@ -13503,19 +13542,26 @@
    "criada_em": "20260728130413_eca91862-31c3-4218-a418-21c180a51f13.sql",
    "colunas_types": {
     "achados": "Json",
-    "avisos": "number",
+    "avisos": "number | null",
     "created_at": "string",
-    "criticos": "number",
+    "criticos": "number | null",
+    "detalhes": "Json | null",
     "dia": "string",
     "id": "string",
     "infos": "number",
     "saudavel": "boolean",
+    "score": "number | null",
+    "status": "string | null",
     "total_invariantes": "number",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "detalhes",
+     "score",
+     "status"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -14671,6 +14717,7 @@
    "fks": [],
    "criada_em": "20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql",
    "colunas_types": {
+    "cached_at": "string",
     "cnpj": "string",
     "created_at": "string",
     "data": "Json",
@@ -14681,7 +14728,9 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "cached_at"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -16479,6 +16528,7 @@
     "centro_resultado": "string | null",
     "conta_bancaria_id": "string | null",
     "created_at": "string | null",
+    "data_emissao": "string | null",
     "data_pagamento": "string | null",
     "data_vencimento": "string",
     "deleted_at": "string | null",
@@ -16497,6 +16547,7 @@
     "parcela_atual": "number | null",
     "recorrente": "boolean | null",
     "status": "string | null",
+    "tags": "string[] | null",
     "tipo_cobranca": "string | null",
     "total_parcelas": "number | null",
     "transacao_conciliada_id": "string | null",
@@ -16509,7 +16560,6 @@
     "so_na_migration": [
      "codigo_barras",
      "frequencia_recorrencia",
-     "data_emissao",
      "bitrix_deal_id",
      "aprovado_em",
      "created_by",
@@ -16527,7 +16577,6 @@
      "recorrencia_parent_id",
      "bitrix_activity_id",
      "origem",
-     "tags",
      "asaas_bill_id",
      "asaas_transfer_id",
      "asaas_status",
@@ -17215,6 +17264,7 @@
     "chave_pix": "string | null",
     "cliente_id": "string | null",
     "cliente_nome": "string | null",
+    "codigo_barras": "string | null",
     "conta_bancaria_id": "string | null",
     "created_at": "string | null",
     "data_emissao": "string | null",
@@ -17226,8 +17276,10 @@
     "empresa_id": "string | null",
     "etapa_cobranca": "string | null",
     "forma_recebimento": "string | null",
+    "frequencia_recorrencia": "string | null",
     "id": "string",
     "juros": "number | null",
+    "link_boleto": "string | null",
     "metadata": "Json | null",
     "multa": "number | null",
     "numero_documento": "string | null",
@@ -17244,15 +17296,13 @@
     "user_id": "string | null",
     "valor": "number",
     "valor_desconto": "number | null",
+    "valor_final": "number | null",
     "valor_recebido": "number | null",
     "vendedor_id": "string | null"
    },
    "drift": {
     "so_na_migration": [
      "categoria",
-     "frequencia_recorrencia",
-     "codigo_barras",
-     "link_boleto",
      "created_by",
      "valor_original",
      "valor_juros",
@@ -17262,7 +17312,6 @@
      "plano_conta_id",
      "vencimento",
      "valor_pago",
-     "valor_final",
      "data_competencia",
      "numero_nf",
      "bitrix_activity_id",
@@ -17667,13 +17716,18 @@
    ],
    "criada_em": "20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
    "colunas_types": {
+    "cliente_id": "string | null",
     "created_at": "string | null",
+    "created_by": "string | null",
     "data_fim": "string | null",
     "data_inicio": "string | null",
     "descricao": "string",
+    "dias_aviso_renovacao": "number | null",
     "empresa_id": "string | null",
+    "fornecedor_id": "string | null",
     "id": "string",
     "numero_contrato": "string | null",
+    "observacoes": "string | null",
     "renovacao_automatica": "boolean | null",
     "status": "string | null",
     "tipo": "string | null",
@@ -17683,7 +17737,13 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "cliente_id",
+     "created_by",
+     "dias_aviso_renovacao",
+     "fornecedor_id",
+     "observacoes"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -17932,12 +17992,17 @@
     "id": "string",
     "nome": "string | null",
     "revoked_at": "string | null",
+    "status": "string",
+    "token": "string",
     "token_hash": "string",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "status",
+     "token"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -18174,33 +18239,33 @@
    ],
    "criada_em": "20260106105751_7e782e21-b8e9-4819-9fbf-d7ea14d17482.sql",
    "colunas_types": {
+    "aliquota": "number | null",
+    "apuracao_id": "string | null",
     "competencia_origem": "string | null",
+    "competencia_utilizacao": "string | null",
     "created_at": "string | null",
     "data_origem": "string",
+    "documento_chave": "string | null",
+    "documento_numero": "string | null",
+    "documento_tipo": "string | null",
     "empresa_id": "string | null",
+    "fornecedor_cnpj": "string | null",
+    "fornecedor_id": "string | null",
+    "fornecedor_nome": "string | null",
     "id": "string",
     "nota_fiscal_id": "string | null",
+    "observacoes": "string | null",
     "saldo_disponivel": "number",
     "status": "string | null",
+    "tipo_credito": "string | null",
     "tipo_tributo": "string",
+    "valor_base": "number | null",
     "valor_credito": "number | null",
     "valor_utilizado": "number | null"
    },
    "drift": {
     "so_na_migration": [
-     "tipo_credito",
-     "documento_tipo",
-     "documento_numero",
      "documento_serie",
-     "documento_chave",
-     "fornecedor_id",
-     "fornecedor_cnpj",
-     "fornecedor_nome",
-     "valor_base",
-     "aliquota",
-     "competencia_utilizacao",
-     "apuracao_id",
-     "observacoes",
      "updated_at",
      "created_by"
     ],
@@ -19331,6 +19396,7 @@
     "resolvida": "boolean | null",
     "resolvida_em": "string | null",
     "resolvida_por": "string | null",
+    "resolvido": "boolean",
     "resolvido_em": "string | null",
     "resolvido_por": "string | null",
     "status": "string",
@@ -19342,128 +19408,15 @@
     "so_na_migration": [
      "extrato_id"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "resolvido"
+    ]
    },
    "usada_no_front": 5,
    "usada_em_edges": [],
    "triggers": [],
    "sem_rls": false,
    "nao_usada": false
-  },
-  "driver_approval_queue": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "approval_priority": "Database['public']['Enums']['approval_priority'] | null",
-    "decision_notes": "string | null",
-    "driver_id": "string",
-    "driver_name": "string | null",
-    "id": "string",
-    "notes": "string | null",
-    "order_id": "string",
-    "priority": "number | null",
-    "requested_at": "string",
-    "reviewed_at": "string | null",
-    "reviewed_by": "string | null",
-    "risk_factors": "string[] | null",
-    "risk_score": "number",
-    "status": "Database['public']['Enums']['approval_status']"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "driver_evaluations": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action_required": "string | null",
-    "approved": "boolean",
-    "auto_blocked": "boolean",
-    "completed_deliveries": "number | null",
-    "created_at": "string",
-    "driver_id": "string",
-    "evaluated_at": "string",
-    "failure_rate": "number | null",
-    "id": "string",
-    "incident_count": "number | null",
-    "order_id": "string | null",
-    "recommendation": "string | null",
-    "requires_manual": "boolean",
-    "risk_factors": "Json",
-    "risk_level": "string",
-    "risk_reasons": "string[] | null",
-    "risk_score": "number",
-    "total_deliveries": "number | null",
-    "triggered_by": "string"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "driver_incidents": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "created_at": "string",
-    "description": "string",
-    "driver_id": "string",
-    "evidence_urls": "string[] | null",
-    "id": "string",
-    "metadata": "Json | null",
-    "order_id": "string | null",
-    "reported_by": "string | null",
-    "resolution_notes": "string | null",
-    "resolved": "boolean | null",
-    "resolved_at": "string | null",
-    "severity": "Database['public']['Enums']['incident_severity']",
-    "type": "Database['public']['Enums']['incident_type']"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "driver_locations": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "accuracy_meters": "number | null",
-    "heading_degrees": "number | null",
-    "id": "number",
-    "is_moving": "boolean | null",
-    "latitude": "number",
-    "longitude": "number",
-    "recorded_at": "string",
-    "speed_kmh": "number | null",
-    "tracking_id": "string"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
   },
   "drivers": {
    "colunas": {},
@@ -19472,41 +19425,6 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
-   "colunas_types": {
-    "avg_delay_minutes": "number | null",
-    "blacklist_reason": "string | null",
-    "blacklisted": "boolean | null",
-    "cancelled_deliveries": "number | null",
-    "completed_deliveries": "number | null",
-    "created_at": "string",
-    "empresa_id": "string | null",
-    "external_rating": "number | null",
-    "external_success_rate": "number | null",
-    "external_total_deliveries": "number | null",
-    "failed_deliveries": "number | null",
-    "failure_rate": "number | null",
-    "first_seen_at": "string | null",
-    "id": "string",
-    "lalamove_id": "string | null",
-    "last_active_at": "string | null",
-    "last_delivery_at": "string | null",
-    "last_evaluated_at": "string | null",
-    "name": "string",
-    "notes": "string | null",
-    "phone": "string | null",
-    "photo_url": "string | null",
-    "rating": "number | null",
-    "risk_level": "string | null",
-    "risk_reasons": "Json | null",
-    "risk_score": "number | null",
-    "status": "Database['public']['Enums']['driver_status']",
-    "success_rate": "number | null",
-    "total_deliveries": "number | null",
-    "updated_at": "string",
-    "vehicle_plate": "string | null",
-    "vehicle_type": "Database['public']['Enums']['vehicle_type']",
-    "whitelisted": "boolean | null"
-   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -19801,16 +19719,19 @@
    ],
    "criada_em": "20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql",
    "colunas_types": {
+    "contexto": "Json | null",
     "created_at": "string",
-    "descricao": "string",
+    "descricao": "string | null",
     "empresa_id": "string",
     "id": "string",
     "lido": "boolean",
+    "mensagem": "string | null",
     "referencia_id": "string | null",
     "resolvido": "boolean",
     "resolvido_em": "string | null",
     "severidade": "string",
-    "tipo_divergencia": "string",
+    "tipo": "string",
+    "tipo_divergencia": "string | null",
     "titulo": "string",
     "updated_at": "string",
     "valor_estimado": "number | null"
@@ -19821,7 +19742,11 @@
      "status",
      "metadata"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "contexto",
+     "mensagem",
+     "tipo"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -20115,21 +20040,26 @@
     "metodologia_aplicada": "string | null",
     "motivo_rejeicao": "string | null",
     "ncm": "string | null",
+    "nota_fiscal_id": "string | null",
     "nota_id": "string | null",
+    "observacoes": "string | null",
     "regra_id": "string | null",
     "score_confianca": "number | null",
     "status_aprovacao": "string",
     "updated_at": "string",
     "valor_base": "number",
+    "valor_credito": "number",
     "valor_credito_calculado": "number"
    },
    "drift": {
     "so_na_migration": [
-     "nota_fiscal_id",
      "status_validacao",
      "evidencias"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "observacoes",
+     "valor_credito"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [],
@@ -20292,21 +20222,26 @@
     "codigo": "string",
     "created_at": "string",
     "cst_csosn": "string | null",
-    "descricao": "string",
+    "descricao": "string | null",
+    "fundamento_legal": "string | null",
     "id": "string",
     "metodologia": "string | null",
+    "ncm": "string | null",
     "ncm_prefixo": "string | null",
-    "tipo_credito": "string",
+    "nome": "string",
+    "tipo_credito": "string | null",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [
-     "ncm",
      "aliquota_pis_reducao",
      "aliquota_cofins_reducao",
      "fundamentacao_legal"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "fundamento_legal",
+     "nome"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -20501,16 +20436,18 @@
    ],
    "criada_em": "20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql",
    "colunas_types": {
+    "ano_referencia": "number | null",
     "carga_atual": "number",
     "carga_simulada": "number",
     "created_at": "string",
     "created_by": "string | null",
-    "economia_estimada": "number",
+    "detalhes": "Json | null",
+    "economia_estimada": "number | null",
     "empresa_id": "string",
     "id": "string",
     "premissas": "Json",
-    "regime_atual": "string",
-    "regime_simulado": "string",
+    "regime_atual": "string | null",
+    "regime_simulado": "string | null",
     "updated_at": "string"
    },
    "drift": {
@@ -20527,7 +20464,10 @@
      "premissas_reforma",
      "premissas_operacionais"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "ano_referencia",
+     "detalhes"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -20683,27 +20623,34 @@
    "criada_em": "20260508141018_3734da48-26e4-4973-8f1d-5838ebb235c4.sql",
    "colunas_types": {
     "bitrix_sync_erro": "string | null",
-    "bitrix_sync_status": "string",
+    "bitrix_sync_status": "string | null",
     "bitrix_task_id": "string | null",
     "created_at": "string",
+    "data_vencimento": "string | null",
     "descricao": "string | null",
+    "economia_associada": "number | null",
     "empresa_id": "string",
     "id": "string",
     "prazo": "string | null",
     "responsavel_id": "string | null",
     "sincronizado_em": "string | null",
     "status": "string",
+    "tipo": "string",
     "tipo_oportunidade": "string",
     "titulo": "string",
     "updated_at": "string",
-    "valor_envolvido": "number"
+    "valor_envolvido": "number | null"
    },
    "drift": {
     "so_na_migration": [
      "checklist",
      "bitrix_error_message"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "data_vencimento",
+     "economia_associada",
+     "tipo"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [
@@ -21679,6 +21626,16 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
+   "colunas_types": {
+    "ativo": "boolean",
+    "codigo": "string",
+    "created_at": "string",
+    "descricao": "string | null",
+    "economia_estimada_padrao": "number | null",
+    "id": "string",
+    "nome": "string",
+    "tipo": "string | null"
+   },
    "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [
@@ -21793,7 +21750,10 @@
    "colunas_types": {
     "created_at": "string",
     "detalhe": "string | null",
+    "detalhes": "Json | null",
     "empresa_id": "string",
+    "error_message": "string | null",
+    "evento": "string",
     "evento_id": "string | null",
     "id": "string",
     "lancamento_id": "string | null",
@@ -21803,7 +21763,11 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "detalhes",
+     "error_message",
+     "evento"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -23463,16 +23427,19 @@
     "justificativa_forcado": "string | null",
     "mes": "number",
     "observacoes": "string | null",
+    "score": "number | null",
     "score_conformidade": "number",
     "status": "string",
-    "total_apurado": "number",
+    "total_apurado": "number | null",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [
      "periodo"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "score"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -24982,19 +24949,34 @@
    "criada_em": "20260728174442_e44754a7-e1a1-43e6-bd2a-1c4663c03e45.sql",
    "colunas_types": {
     "alertas_enviados": "number",
+    "alerted": "boolean | null",
     "assinatura": "string",
+    "count": "number | null",
     "created_at": "string",
     "exemplo_mensagem": "string | null",
+    "first_seen": "string | null",
+    "id": "string",
+    "last_seen": "string | null",
     "ocorrencias_no_ultimo_alerta": "number",
     "primeiro_alerta_em": "string",
     "severity": "string",
+    "signature": "string",
+    "silenced_until": "string | null",
     "silenciado_ate": "string | null",
     "ultimo_alerta_em": "string",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "alerted",
+     "count",
+     "first_seen",
+     "id",
+     "last_seen",
+     "signature",
+     "silenced_until"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -25125,6 +25107,16 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
+   "colunas_types": {
+    "created_at": "string",
+    "error_message": "string | null",
+    "error_stack": "string | null",
+    "id": "string",
+    "metadata": "Json | null",
+    "url": "string | null",
+    "user_agent": "string | null",
+    "user_id": "string | null"
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -25145,6 +25137,16 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
+   "colunas_types": {
+    "created_at": "string",
+    "error_message": "string | null",
+    "error_stack": "string | null",
+    "id": "string",
+    "metadata": "Json | null",
+    "url": "string | null",
+    "user_agent": "string | null",
+    "user_id": "string | null"
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -25165,6 +25167,16 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
+   "colunas_types": {
+    "created_at": "string",
+    "error_message": "string | null",
+    "error_stack": "string | null",
+    "id": "string",
+    "metadata": "Json | null",
+    "url": "string | null",
+    "user_agent": "string | null",
+    "user_id": "string | null"
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -25185,6 +25197,16 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
+   "colunas_types": {
+    "created_at": "string",
+    "error_message": "string | null",
+    "error_stack": "string | null",
+    "id": "string",
+    "metadata": "Json | null",
+    "url": "string | null",
+    "user_agent": "string | null",
+    "user_id": "string | null"
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -25516,17 +25538,6 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
-   "colunas_types": {
-    "created_at": "string",
-    "error_message": "string | null",
-    "error_stack": "string | null",
-    "id": "string",
-    "metadata": "Json | null",
-    "severity": "string",
-    "url": "string | null",
-    "user_agent": "string | null",
-    "user_id": "string | null"
-   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -25651,14 +25662,21 @@
    "colunas_types": {
     "assinaturas": "string[]",
     "created_at": "string",
+    "detalhes": "Json | null",
     "executado_em": "string",
     "id": "string",
     "itens": "number",
-    "janela_horas": "number"
+    "janela_horas": "number",
+    "sent_at": "string",
+    "silenciamentos_incluidos": "number | null"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "detalhes",
+     "sent_at",
+     "silenciamentos_incluidos"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -26606,6 +26624,8 @@
     "destinatario": "string | null",
     "empresa_id": "string | null",
     "etapa": "string | null",
+    "etapa_anterior": "string | null",
+    "etapa_nova": "string | null",
     "evento": "string | null",
     "fila_id": "string | null",
     "id": "string",
@@ -26617,8 +26637,6 @@
    },
    "drift": {
     "so_na_migration": [
-     "etapa_anterior",
-     "etapa_nova",
      "observacoes",
      "created_by"
     ],
@@ -27494,7 +27512,7 @@
     "ano_inicio": "number",
     "ativo": "boolean",
     "ato_concessorio": "string | null",
-    "created_at": "string",
+    "created_at": "string | null",
     "created_by": "string | null",
     "empresa_id": "string",
     "id": "string",
@@ -27503,7 +27521,7 @@
     "nome": "string",
     "numero_processo": "string | null",
     "tipo_incentivo": "string",
-    "updated_at": "string",
+    "updated_at": "string | null",
     "valor_utilizado_ano": "number"
    },
    "drift": {
@@ -27611,10 +27629,14 @@
    "fks": [],
    "criada_em": "20260729153623_f4950fa7-9942-486b-a971-7d6bd864836c.sql",
    "colunas_types": {
+    "captured_at": "string",
     "created_at": "string",
     "id": "string",
-    "idx_scan": "number",
+    "idx_scan": "number | null",
+    "idx_tup_fetch": "number | null",
+    "idx_tup_read": "number | null",
     "index_name": "string",
+    "index_size_bytes": "number | null",
     "is_primary": "boolean",
     "is_unique": "boolean",
     "schema_name": "string",
@@ -27624,7 +27646,12 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "captured_at",
+     "idx_tup_fetch",
+     "idx_tup_read",
+     "index_size_bytes"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -27676,14 +27703,21 @@
    "fks": [],
    "criada_em": "20260729153623_f4950fa7-9942-486b-a971-7d6bd864836c.sql",
    "colunas_types": {
+    "aprovado_por": "string | null",
     "created_at": "string",
     "criado_por": "string | null",
+    "id": "string",
     "index_name": "string",
+    "justificativa": "string",
     "motivo": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "aprovado_por",
+     "id",
+     "justificativa"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -27772,15 +27806,14 @@
     "chave": "string",
     "created_at": "string",
     "descricao": "string | null",
+    "empresa_id": "string | null",
     "id": "string",
+    "nome": "string",
     "updated_at": "string",
     "valor": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "nome",
-     "empresa_id"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 0,
@@ -28281,12 +28314,11 @@
     "id": "string",
     "pedido_id": "string",
     "quantidade": "number",
+    "valor_total": "number | null",
     "valor_unitario": "number"
    },
    "drift": {
-    "so_na_migration": [
-     "valor_total"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 1,
@@ -28519,19 +28551,28 @@
    "criada_em": "20260509123749_68c58a49-f6b6-4e3b-bc43-b004358dfe23.sql",
    "colunas_types": {
     "categoria": "string | null",
-    "created_at": "string",
+    "created_at": "string | null",
+    "empresa_id": "string | null",
     "id": "string",
-    "meta": "number",
+    "meta": "number | null",
     "nome": "string",
+    "periodo": "string | null",
+    "referencia": "string | null",
     "tendencia": "string | null",
     "unidade": "string | null",
     "updated_at": "string",
     "user_id": "string",
+    "valor": "number",
     "valor_atual": "number"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "empresa_id",
+     "periodo",
+     "referencia",
+     "valor"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -28541,140 +28582,6 @@
    ],
    "sem_rls": false,
    "nao_usada": false
-  },
-  "lalamove_orders": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "actual_delivery": "string | null",
-    "bitrix24_deal_id": "number | null",
-    "cost_center": "string | null",
-    "created_at": "string",
-    "currency": "string",
-    "custom_rating": "number | null",
-    "customer_name": "string",
-    "customer_phone": "string | null",
-    "delay_minutes": "number | null",
-    "delivery_address": "string",
-    "delivery_latitude": "number | null",
-    "delivery_longitude": "number | null",
-    "department": "string | null",
-    "distance_meters": "number | null",
-    "driver_id": "string | null",
-    "duration_minutes": "number | null",
-    "empresa_id": "string | null",
-    "estimated_delivery": "string | null",
-    "id": "string",
-    "internal_notes": "string | null",
-    "internal_order_id": "string | null",
-    "internal_status": "string | null",
-    "is_urgent": "boolean | null",
-    "lalamove_id": "string",
-    "metadata": "Json | null",
-    "outcome": "Database['public']['Enums']['delivery_outcome'] | null",
-    "pickup_address": "string",
-    "pickup_latitude": "number | null",
-    "pickup_longitude": "number | null",
-    "quotation_id": "string | null",
-    "scheduled_at": "string",
-    "share_link": "string | null",
-    "status": "Database['public']['Enums']['order_status']",
-    "tags": "string[] | null",
-    "total_cost": "number",
-    "updated_at": "string",
-    "vehicle_type": "Database['public']['Enums']['vehicle_type']"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "lalamove_status_history": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "change_reason": "string | null",
-    "changed_by": "string | null",
-    "created_at": "string",
-    "id": "string",
-    "metadata": "Json | null",
-    "notes": "string | null",
-    "old_status": "string | null",
-    "order_id": "string",
-    "status": "Database['public']['Enums']['order_status']"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "lalamove_stops": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "address": "string",
-    "arrived_at": "string | null",
-    "completed_at": "string | null",
-    "contact_name": "string | null",
-    "contact_phone": "string | null",
-    "created_at": "string",
-    "id": "string",
-    "latitude": "number | null",
-    "longitude": "number | null",
-    "order_id": "string",
-    "pod_delivered_at": "string | null",
-    "pod_image_url": "string | null",
-    "pod_status": "string | null",
-    "remarks": "string | null",
-    "stop_index": "number"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "lalamove_uapi_sessions": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "access_token": "string",
-    "city_id": "number | null",
-    "created_at": "string | null",
-    "ep_role": "number | null",
-    "id": "string",
-    "is_active": "boolean | null",
-    "last_refreshed_at": "string | null",
-    "refresh_method": "string | null",
-    "refresh_token": "string",
-    "token_expires_at": "string",
-    "token_obtained_at": "string",
-    "updated_at": "string | null",
-    "user_fid": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
   },
   "lalur_lancamentos": {
    "colunas": {
@@ -28957,15 +28864,14 @@
     "id": "string",
     "numero_lancamento": "number | null",
     "origem": "string | null",
+    "origem_id": "string | null",
     "status": "string",
     "updated_at": "string",
-    "user_id": "string",
+    "user_id": "string | null",
     "valor_total": "number"
    },
    "drift": {
-    "so_na_migration": [
-     "origem_id"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 2,
@@ -30085,35 +29991,35 @@
    ],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
+    "categoria_id": "string | null",
+    "conta_bancaria_id": "string | null",
+    "conta_pagar_id": "string | null",
+    "conta_receber_id": "string | null",
     "created_at": "string | null",
+    "created_by": "string | null",
     "data_movimentacao": "string | null",
     "deleted_at": "string | null",
     "descricao": "string | null",
     "empresa_id": "string | null",
     "id": "string",
+    "observacoes": "string | null",
+    "origem": "string | null",
     "tipo": "string | null",
+    "transferencia_id": "string | null",
     "valor": "number"
    },
    "drift": {
     "so_na_migration": [
-     "conta_bancaria_id",
-     "conta_pagar_id",
-     "conta_receber_id",
-     "transferencia_id",
      "data_competencia",
-     "categoria_id",
      "centro_custo_id",
      "forma_pagamento_id",
      "numero_documento",
-     "observacoes",
      "conciliada",
      "conciliada_em",
      "conciliada_por",
      "estornada",
      "estornada_em",
      "movimentacao_estorno_id",
-     "origem",
-     "created_by",
      "updated_at",
      "conta_destino_id",
      "plano_conta_id",
@@ -30824,11 +30730,13 @@
     "cliente_id": "string | null",
     "conta_receber_id": "string | null",
     "created_at": "string | null",
+    "created_by": "string | null",
     "data_baixa": "string | null",
     "data_negativacao": "string | null",
     "empresa_id": "string | null",
     "id": "string",
     "motivo": "string | null",
+    "observacoes": "string | null",
     "protocolo": "string | null",
     "status": "string",
     "valor": "number"
@@ -30837,8 +30745,6 @@
     "so_na_migration": [
      "data_inclusao",
      "data_exclusao",
-     "observacoes",
-     "created_by",
      "updated_at",
      "motivo_exclusao",
      "erro_detalhe"
@@ -32068,6 +31974,8 @@
     "arquivo_nome": "string | null",
     "arquivo_url": "string | null",
     "chave_acesso": "string | null",
+    "cnpj_destinatario": "string | null",
+    "cnpj_emitente": "string | null",
     "created_at": "string",
     "dados_extraidos": "Json",
     "data_emissao": "string | null",
@@ -32076,11 +31984,19 @@
     "empresa_id": "string",
     "erro_mensagem": "string | null",
     "id": "string",
+    "itens": "Json | null",
+    "nome_destinatario": "string | null",
+    "nome_emitente": "string | null",
     "numero": "string | null",
     "serie": "string | null",
-    "status": "string",
+    "status": "string | null",
     "updated_at": "string",
-    "valor_total": "number | null"
+    "valor_cofins": "number | null",
+    "valor_icms": "number | null",
+    "valor_ipi": "number | null",
+    "valor_pis": "number | null",
+    "valor_total": "number | null",
+    "xml_raw": "string | null"
    },
    "drift": {
     "so_na_migration": [
@@ -32089,7 +32005,18 @@
      "conta_pagar_id",
      "criado_por"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "cnpj_destinatario",
+     "cnpj_emitente",
+     "itens",
+     "nome_destinatario",
+     "nome_emitente",
+     "valor_cofins",
+     "valor_icms",
+     "valor_ipi",
+     "valor_pis",
+     "xml_raw"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -32256,15 +32183,14 @@
     "id": "string",
     "metadata": "Json | null",
     "read_at": "string | null",
+    "source": "string",
     "source_ref": "string | null",
     "status": "string",
     "title": "string",
     "user_id": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "source"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 1,
@@ -32726,7 +32652,11 @@
    ],
    "criada_em": "20260728154320_3cdfd99b-2449-4a1c-a645-f84411caef36.sql",
    "colunas_types": {
+    "aliquota": "number | null",
+    "base_calculo": "number | null",
+    "cfop": "string | null",
     "created_at": "string",
+    "cst": "string | null",
     "data_operacao": "string",
     "difal": "number",
     "empresa_id": "string",
@@ -32735,20 +32665,31 @@
     "icms_operacao_propria": "number",
     "icms_st": "number",
     "id": "string",
-    "ncm": "string",
+    "ncm": "string | null",
+    "periodo_referencia": "string | null",
+    "reducao_bc": "number | null",
     "tipo_destinatario": "Database['public']['Enums']['tipo_destinatario']",
     "tipo_operacao": "string",
     "tributos_aplicaveis": "Json",
     "tributos_nao_aplicaveis": "Json",
-    "uf_destino": "Database['public']['Enums']['uf_brasil']",
-    "uf_origem": "Database['public']['Enums']['uf_brasil']",
+    "uf_destino": "string",
+    "uf_origem": "string",
     "updated_at": "string",
+    "valor_icms": "number | null",
     "valor_operacao": "number",
     "valor_total_icms": "number"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "aliquota",
+     "base_calculo",
+     "cfop",
+     "cst",
+     "periodo_referencia",
+     "reducao_bc",
+     "valor_icms"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -33201,14 +33142,14 @@
    "criada_em": "20260106105751_7e782e21-b8e9-4819-9fbf-d7ea14d17482.sql",
    "colunas_types": {
     "apuracao_id": "string | null",
-    "base_calculo": "number",
+    "base_calculo": "number | null",
     "cbs_aliquota": "number | null",
     "cbs_credito": "number | null",
     "cbs_valor": "number | null",
     "cfop": "string | null",
     "cliente_id": "string | null",
     "cnpj_cpf_contraparte": "string | null",
-    "cofins_aliquota": "number",
+    "cofins_aliquota": "number | null",
     "cofins_valor": "number | null",
     "competencia": "string | null",
     "created_at": "string | null",
@@ -33216,46 +33157,46 @@
     "documento_chave": "string | null",
     "documento_numero": "string | null",
     "documento_serie": "string | null",
-    "documento_tipo": "string",
+    "documento_tipo": "string | null",
     "empresa_id": "string | null",
     "erro_mensagem": "string | null",
     "fornecedor_id": "string | null",
     "ibs_aliquota": "number | null",
     "ibs_credito": "number | null",
     "ibs_valor": "number | null",
-    "icms_aliquota": "number",
+    "icms_aliquota": "number | null",
     "icms_valor": "number | null",
     "id": "string",
-    "is_aliquota": "number",
+    "is_aliquota": "number | null",
     "is_categoria": "string | null",
     "is_valor": "number | null",
-    "isento": "boolean",
-    "iss_aliquota": "number",
+    "isento": "boolean | null",
+    "iss_aliquota": "number | null",
     "iss_valor": "number | null",
     "motivo_isencao": "string | null",
+    "municipio_destino": "string | null",
+    "municipio_origem": "string | null",
     "ncm": "string | null",
     "nome_contraparte": "string | null",
     "nota_fiscal_id": "string | null",
-    "pis_aliquota": "number",
+    "pis_aliquota": "number | null",
     "pis_valor": "number | null",
-    "reducao_aliquota": "number",
+    "reducao_aliquota": "number | null",
     "regime_especial": "string | null",
-    "split_payment": "boolean",
-    "split_payment_valor": "number",
+    "split_payment": "boolean | null",
+    "split_payment_valor": "number | null",
     "status": "string | null",
     "tipo_operacao": "string | null",
     "uf_destino": "string | null",
     "uf_origem": "string | null",
-    "updated_at": "string",
-    "valor_desconto": "number",
-    "valor_frete": "number",
-    "valor_operacao": "number",
+    "updated_at": "string | null",
+    "valor_desconto": "number | null",
+    "valor_frete": "number | null",
+    "valor_operacao": "number | null",
     "valor_total": "number | null"
    },
    "drift": {
     "so_na_migration": [
-     "municipio_origem",
-     "municipio_destino",
      "cest",
      "valor_seguro",
      "valor_outros",
@@ -33492,26 +33433,39 @@
     "created_by": "string | null",
     "custo_implementacao": "number | null",
     "data_identificacao": "string",
+    "descricao": "string | null",
     "economia_10anos_estimada": "number | null",
     "economia_estimada": "number",
+    "economia_percentual": "number | null",
     "empresa_id": "string",
-    "estrategia": "string",
+    "estrategia": "string | null",
+    "estrategia_id": "string | null",
     "id": "string",
     "inputs_utilizados": "Json | null",
     "memoria_calculo": "string | null",
     "motivo_nao_aplicavel": "string | null",
     "observacoes": "string | null",
     "payback_meses": "number | null",
+    "prazo_estimado": "string | null",
+    "prioridade": "string | null",
     "risco": "string | null",
     "roi_pct": "number | null",
     "status": "string",
     "status_alterado_em": "string | null",
     "status_alterado_por": "string | null",
+    "titulo": "string",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "descricao",
+     "economia_percentual",
+     "estrategia_id",
+     "prazo_estimado",
+     "prioridade",
+     "titulo"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -33743,16 +33697,25 @@
    "colunas_types": {
     "ativo": "boolean",
     "cnpj": "string | null",
-    "created_at": "string",
+    "created_at": "string | null",
+    "email": "string | null",
     "id": "string",
+    "max_empresas": "number",
     "nome": "string",
+    "plano": "string",
     "responsavel_id": "string",
+    "telefone": "string | null",
     "tipo": "string",
-    "updated_at": "string"
+    "updated_at": "string | null"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "email",
+     "max_empresas",
+     "plano",
+     "telefone"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -33931,15 +33894,22 @@
    "colunas_types": {
     "campo": "string",
     "catalogo": "string",
+    "chave_acesso": "string | null",
+    "codigo_rejeicao": "string",
     "created_at": "string",
     "descricao": "string | null",
+    "descricao_rejeicao": "string | null",
+    "empresa_id": "string",
     "id": "string",
     "identificador": "string",
     "motivo": "string",
+    "nota_id": "string | null",
     "observacao": "string | null",
     "ocorrencias": "number",
     "primeira_deteccao": "string",
     "referencia": "string",
+    "resolved_at": "string | null",
+    "resolvido": "boolean | null",
     "resolvido_em": "string | null",
     "resolvido_por": "string | null",
     "severidade": "string",
@@ -33949,7 +33919,15 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "chave_acesso",
+     "codigo_rejeicao",
+     "descricao_rejeicao",
+     "empresa_id",
+     "nota_id",
+     "resolved_at",
+     "resolvido"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -34176,28 +34154,41 @@
     "ativo": "boolean",
     "centro_custo_id": "string | null",
     "conta_bancaria_id": "string | null",
-    "created_at": "string",
+    "created_at": "string | null",
     "created_by": "string",
     "data_fim": "string | null",
     "data_inicio": "string",
+    "data_proximo": "string | null",
+    "data_vencimento": "string | null",
     "descricao": "string",
     "dia_vencimento": "number",
-    "empresa_id": "string",
+    "empresa_id": "string | null",
     "fornecedor_id": "string | null",
     "fornecedor_nome": "string",
     "frequencia": "string",
+    "gateway": "string | null",
     "id": "string",
     "observacoes": "string | null",
+    "plano": "string | null",
     "proxima_geracao": "string | null",
+    "status": "string",
     "tipo_cobranca": "Database['public']['Enums']['tipo_cobranca']",
     "total_gerado": "number",
     "ultima_geracao": "string | null",
-    "updated_at": "string",
+    "ultima_transacao_id": "string | null",
+    "updated_at": "string | null",
     "valor": "number"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "data_proximo",
+     "data_vencimento",
+     "gateway",
+     "plano",
+     "status",
+     "ultima_transacao_id"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -34327,16 +34318,16 @@
    "colunas_types": {
     "acordo_id": "string | null",
     "created_at": "string | null",
+    "data_pagamento": "string | null",
     "data_vencimento": "string",
     "id": "string",
     "numero_parcela": "number",
     "status": "string | null",
-    "valor": "number"
+    "valor": "number",
+    "valor_pago": "number | null"
    },
    "drift": {
     "so_na_migration": [
-     "data_pagamento",
-     "valor_pago",
      "conta_receber_id"
     ],
     "so_no_types": []
@@ -34485,8 +34476,10 @@
    ],
    "criada_em": "20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
    "colunas_types": {
+    "conta_contabil_id": "string | null",
     "conta_id": "string | null",
     "created_at": "string | null",
+    "empresa_id": "string | null",
     "historico_complementar": "string | null",
     "id": "string",
     "lancamento_id": "string | null",
@@ -34495,10 +34488,10 @@
     "valor": "number"
    },
    "drift": {
-    "so_na_migration": [
-     "empresa_id"
-    ],
-    "so_no_types": []
+    "so_na_migration": [],
+    "so_no_types": [
+     "conta_contabil_id"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [
@@ -34933,6 +34926,7 @@
    ],
    "criada_em": "20260509124809_15e4585b-8aa7-4c90-bed7-97264b3f8b77.sql",
    "colunas_types": {
+    "centro_custo_id": "string | null",
     "created_at": "string | null",
     "data_emissao": "string | null",
     "empresa_id": "string | null",
@@ -34941,14 +34935,13 @@
     "observacoes": "string | null",
     "previsao_entrega": "string | null",
     "status": "string",
+    "user_id": "string | null",
     "valor_total": "number"
    },
    "drift": {
     "so_na_migration": [
-     "user_id",
      "data_pedido",
      "data_entrega_prevista",
-     "centro_custo_id",
      "updated_at"
     ],
     "so_no_types": []
@@ -35862,12 +35855,12 @@
    "criada_em": "20260317204739_9b9bd442-5bde-4395-8f30-805fe7e4754f.sql",
    "colunas_types": {
     "ativo": "boolean",
-    "beneficiario_nome": "string | null",
+    "beneficiario_nome": "string",
     "categoria": "string | null",
     "centro_custo_id": "string | null",
     "chave_pix": "string",
-    "cidade": "string | null",
-    "created_at": "string",
+    "cidade": "string",
+    "created_at": "string | null",
     "created_by": "string | null",
     "descricao": "string | null",
     "empresa_id": "string | null",
@@ -35877,7 +35870,7 @@
     "instrucoes": "string | null",
     "nome": "string",
     "tags": "string[]",
-    "tipo_chave": "string | null",
+    "tipo_chave": "string",
     "tipo_chave_pix": "string | null",
     "ultimo_uso": "string | null",
     "updated_at": "string",
@@ -36196,9 +36189,14 @@
    ],
    "criada_em": "20260509123749_68c58a49-f6b6-4e3b-bc43-b004358dfe23.sql",
    "colunas_types": {
+    "categoria": "string | null",
     "created_at": "string",
     "descricao": "string | null",
+    "esforco": "number | null",
     "id": "string",
+    "impacto": "number | null",
+    "metadata": "Json | null",
+    "origem": "string | null",
     "prazo": "string | null",
     "prioridade": "string",
     "progresso": "number",
@@ -36211,7 +36209,13 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "categoria",
+     "esforco",
+     "impacto",
+     "metadata",
+     "origem"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -37596,24 +37600,37 @@
    "criada_em": "20260728154320_3cdfd99b-2449-4a1c-a645-f84411caef36.sql",
    "colunas_types": {
     "ano": "number",
+    "ano_referencia": "number | null",
+    "carga_atual": "number | null",
     "carga_percentual": "number",
+    "carga_projetada_iva": "number | null",
     "cbs": "number",
     "created_at": "string",
+    "detalhes": "Json | null",
     "empresa_id": "string",
     "ibs": "number",
     "icms": "number",
     "id": "string",
+    "impacto_percentual": "number | null",
     "imposto_seletivo": "number",
     "ipi": "number",
     "iss": "number",
     "pis_cofins": "number",
+    "regime_atual": "string | null",
     "tem_split_payment": "boolean",
     "total_tributos": "number",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "ano_referencia",
+     "carga_atual",
+     "carga_projetada_iva",
+     "detalhes",
+     "impacto_percentual",
+     "regime_atual"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -37820,23 +37837,23 @@
     "cliente_id": "string | null",
     "conta_receber_id": "string | null",
     "created_at": "string | null",
+    "created_by": "string | null",
     "custas": "number | null",
     "data_cancelamento": "string | null",
+    "data_pagamento": "string | null",
     "data_protesto": "string | null",
     "empresa_id": "string | null",
     "estado_cartorio": "string | null",
     "id": "string",
     "numero_protesto": "string | null",
+    "observacoes": "string | null",
     "status": "string",
     "valor": "number"
    },
    "drift": {
     "so_na_migration": [
      "data_protocolo",
-     "data_pagamento",
      "protocolo",
-     "observacoes",
-     "created_by",
      "updated_at",
      "uf_cartorio",
      "erro_detalhe"
@@ -38530,6 +38547,7 @@
     "count_mode": "string | null",
     "created_at": "string",
     "duration_ms": "number",
+    "empresa_id": "string | null",
     "error_message": "string | null",
     "id": "string",
     "operation": "string",
@@ -38542,9 +38560,7 @@
     "user_id": "string | null"
    },
    "drift": {
-    "so_na_migration": [
-     "empresa_id"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 1,
@@ -39875,8 +39891,10 @@
    ],
    "criada_em": "20260508131907_d09aae44-f71f-488e-ad66-55eff60866c0.sql",
    "colunas_types": {
+    "acoes": "Json",
     "ativo": "boolean",
     "categoria_id": "string | null",
+    "condicoes": "Json",
     "conta_credito_id": "string",
     "conta_debito_id": "string",
     "created_at": "string",
@@ -39885,15 +39903,15 @@
     "historico_template": "string",
     "id": "string",
     "nome": "string",
-    "prioridade": "number",
+    "prioridade": "number | null",
     "tipo_evento": "string",
     "updated_at": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "condicoes"
-    ],
-    "so_no_types": []
+    "so_na_migration": [],
+    "so_no_types": [
+     "acoes"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [
@@ -40109,6 +40127,7 @@
    "criada_em": "20260509114452_e9e75f8c-10ff-4a6e-b9d6-667c0a677641.sql",
    "colunas_types": {
     "ativa": "boolean | null",
+    "ativo": "boolean | null",
     "condicoes": "Json | null",
     "conta_bancaria_id": "string | null",
     "created_at": "string | null",
@@ -40120,8 +40139,7 @@
    },
    "drift": {
     "so_na_migration": [
-     "descricao",
-     "ativo"
+     "descricao"
     ],
     "so_no_types": []
    },
@@ -40972,7 +40990,7 @@
     "empresa_id": "string",
     "frequencia": "string",
     "id": "string",
-    "proximo_envio_em": "string | null",
+    "proximo_envio_em": "string",
     "ultimo_envio_em": "string | null",
     "updated_at": "string"
    },
@@ -41488,14 +41506,14 @@
    ],
    "criada_em": "20260106112335_8dcb735f-f369-40a0-9de4-8a7b48e97e78.sql",
    "colunas_types": {
-    "aliquota": "number",
+    "aliquota": "number | null",
     "cnpj_participante": "string | null",
     "codigo_receita": "string | null",
     "competencia": "string | null",
     "conta_pagar_id": "string | null",
     "conta_receber_id": "string | null",
     "created_at": "string | null",
-    "darf_gerado": "boolean",
+    "darf_gerado": "boolean | null",
     "data_fato_gerador": "string | null",
     "data_recolhimento": "string | null",
     "data_retencao": "string | null",
@@ -41506,13 +41524,13 @@
     "nota_fiscal_id": "string | null",
     "numero_documento": "string | null",
     "observacoes": "string | null",
-    "status": "string",
+    "status": "string | null",
     "tipo_imposto": "string | null",
     "tipo_operacao": "string | null",
     "tipo_retencao": "string | null",
     "valor": "number | null",
-    "valor_base": "number",
-    "valor_retido": "number"
+    "valor_base": "number | null",
+    "valor_retido": "number | null"
    },
    "drift": {
     "so_na_migration": [
@@ -42278,6 +42296,7 @@
     "ativo": "boolean",
     "canal": "string",
     "created_at": "string",
+    "filter_id": "string",
     "frequencia": "string",
     "id": "string",
     "saved_filter_id": "string",
@@ -42298,7 +42317,9 @@
      "rate_limit_max",
      "rate_limit_window_min"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "filter_id"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [],
@@ -42644,19 +42665,26 @@
     "created_at": "string",
     "duration_ms": "number | null",
     "empresa_id": "string | null",
+    "error_message": "string | null",
     "external_id": "string | null",
     "id": "string",
     "operation": "string",
+    "payload": "Json | null",
     "request_body": "Json | null",
-    "resource_type": "string",
+    "resource_id": "string | null",
+    "resource_type": "string | null",
     "response_body": "Json | null",
-    "status_code": "number",
+    "status_code": "number | null",
     "token_id": "string | null",
     "user_id": "string | null"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "error_message",
+     "payload",
+     "resource_id"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -42770,11 +42798,16 @@
    ],
    "criada_em": "20260422210509_68637132-dea6-47eb-9143-4777fdf8ec37.sql",
    "colunas_types": {
+    "concluido_em": "string | null",
     "confirmed": "boolean",
     "confirmed_at": "string | null",
-    "created_at": "string",
+    "created_at": "string | null",
+    "etapa": "string",
     "id": "string",
     "item_key": "string",
+    "mensagem_erro": "string | null",
+    "organizacao_id": "string | null",
+    "status": "string",
     "updated_at": "string",
     "user_id": "string"
    },
@@ -42782,7 +42815,13 @@
     "so_na_migration": [
      "notes"
     ],
-    "so_no_types": []
+    "so_no_types": [
+     "concluido_em",
+     "etapa",
+     "mensagem_erro",
+     "organizacao_id",
+     "status"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -42911,6 +42950,7 @@
     "ativo": "boolean",
     "created_at": "string",
     "created_by": "string | null",
+    "default_role": "Database['public']['Enums']['app_role'] | null",
     "empresa_id": "string",
     "expires_at": "string | null",
     "id": "string",
@@ -42921,9 +42961,7 @@
     "token_prefix": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "default_role"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 1,
@@ -43076,14 +43114,20 @@
    "criada_em": "20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql",
    "colunas_types": {
     "created_at": "string",
+    "descricao": "string | null",
     "description": "string | null",
+    "detalhes": "Json | null",
+    "empresa_id": "string | null",
     "id": "string",
     "ip_address": "string | null",
     "metadata": "Json | null",
     "resolved": "boolean",
     "resolved_at": "string | null",
     "resolved_by": "string | null",
+    "resolvido": "boolean | null",
+    "severidade": "string",
     "severity": "string",
+    "tipo": "string",
     "title": "string",
     "type": "string",
     "user_email": "string | null",
@@ -43091,7 +43135,14 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "descricao",
+     "detalhes",
+     "empresa_id",
+     "resolvido",
+     "severidade",
+     "tipo"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -43726,18 +43777,35 @@
     "base_legal": "string",
     "created_at": "string",
     "creditos": "number",
+    "detalhes": "Json | null",
+    "empresa_id": "string",
     "fcp": "number",
     "id": "string",
+    "lucro_presumido": "number | null",
+    "lucro_real": "number | null",
+    "mei": "number | null",
     "memoria_calculo": "Json | null",
+    "periodo_referencia": "string | null",
     "regime": "Database['public']['Enums']['regime_tributario_enum']",
+    "regime_tributario": "string | null",
     "retencoes": "number",
+    "simples_nacional": "number | null",
     "simulacao_id": "string",
     "tributo": "string",
     "valor_apurado": "number"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "detalhes",
+     "empresa_id",
+     "lucro_presumido",
+     "lucro_real",
+     "mei",
+     "periodo_referencia",
+     "regime_tributario",
+     "simples_nacional"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -43911,6 +43979,7 @@
     "base_legal_decisao": "string | null",
     "carga_tributaria_recomendada": "number | null",
     "created_at": "string",
+    "created_by": "string | null",
     "economia_anual_estimada": "number | null",
     "empresa_id": "string",
     "executada_por": "string | null",
@@ -43918,19 +43987,29 @@
     "id": "string",
     "inputs": "Json",
     "motivo_recomendacao": "string | null",
+    "parametros": "Json",
     "periodo_fim": "string",
     "periodo_inicio": "string",
     "regime_recomendado": "Database['public']['Enums']['regime_tributario_enum'] | null",
+    "resultado": "Json | null",
     "resultado_presumido": "Json | null",
     "resultado_real": "Json | null",
     "resultado_simples": "Json | null",
+    "status": "string",
     "tempo_execucao_ms": "number | null",
+    "tipo": "string",
     "updated_at": "string",
     "versao_motor": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "created_by",
+     "parametros",
+     "resultado",
+     "status",
+     "tipo"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -44052,20 +44131,33 @@
    "criada_em": "20260418152242_38fb2911-b971-4134-abde-3f3e6fd3de51.sql",
    "colunas_types": {
     "calculado_em": "string",
+    "created_at": "string",
     "cron_jobs_falha": "number",
     "cron_jobs_sucesso": "number",
     "data": "string",
+    "disponibilidade": "number | null",
     "edges_health": "Json",
-    "latencia_p50_ms": "number",
-    "latencia_p95_ms": "number",
-    "latencia_p99_ms": "number",
+    "error_rate": "number | null",
+    "id": "string",
+    "latencia_p50_ms": "number | null",
+    "latencia_p95_ms": "number | null",
+    "latencia_p99_ms": "number | null",
+    "servico": "string",
     "taxa_erro_pct": "number",
+    "total_requests": "number | null",
     "total_requisicoes": "number",
     "uptime_pct": "number"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "created_at",
+     "disponibilidade",
+     "error_rate",
+     "id",
+     "servico",
+     "total_requests"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -44751,13 +44843,19 @@
    "criada_em": "20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
    "colunas_types": {
     "ano_calendario": "number",
+    "arquivo_hash": "string | null",
+    "arquivo_nome": "string | null",
+    "arquivo_path": "string | null",
+    "competencia": "string",
     "created_at": "string",
-    "empresa_id": "string",
+    "empresa_id": "string | null",
+    "gerado_em": "string | null",
     "gerado_por": "string | null",
     "hash_sha256": "string | null",
     "id": "string",
-    "periodo_fim": "string",
-    "periodo_inicio": "string",
+    "periodo_fim": "string | null",
+    "periodo_inicio": "string | null",
+    "protocolo": "string | null",
     "recibo_transmissao": "string | null",
     "status": "string",
     "storage_path": "string",
@@ -44770,7 +44868,14 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "arquivo_hash",
+     "arquivo_nome",
+     "arquivo_path",
+     "competencia",
+     "gerado_em",
+     "protocolo"
+    ]
    },
    "usada_no_front": 2,
    "usada_em_edges": [
@@ -45640,17 +45745,22 @@
    ],
    "criada_em": "20260421115901_ddfe6f1a-4ea1-40b8-9fb4-07d923b4a604.sql",
    "colunas_types": {
-    "app_role": "Database['public']['Enums']['app_role']",
+    "app_role": "string",
     "created_at": "string",
+    "empresa_id": "string | null",
     "id": "string",
     "idp_group": "string",
     "ordem": "number",
     "provider_id": "string",
+    "provider_role": "string",
     "updated_at": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "empresa_id",
+     "provider_role"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [
@@ -45838,6 +45948,7 @@
    "criada_em": "20260422105038_edfc59ad-0b91-4457-ae1a-97c40bea5748.sql",
    "colunas_types": {
     "batch_id": "string | null",
+    "config_snapshot": "Json | null",
     "created_at": "string",
     "created_by": "string | null",
     "created_by_email": "string | null",
@@ -45851,11 +45962,17 @@
     "provider_nome": "string | null",
     "resolved_role": "string | null",
     "result": "Json",
+    "status": "string",
+    "test_result": "Json | null",
     "use_provider_config": "boolean"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "config_snapshot",
+     "status",
+     "test_result"
+    ]
    },
    "usada_no_front": 1,
    "usada_em_edges": [],
@@ -45980,18 +46097,23 @@
    "criada_em": "20260423003207_66e3f401-9f82-466f-9188-204a2768ea06.sql",
    "colunas_types": {
     "created_at": "string",
+    "group_name": "string",
     "groups": "string[]",
     "id": "string",
     "last_synced_at": "string",
     "matched_group": "string | null",
     "matched_role": "Database['public']['Enums']['app_role'] | null",
     "provider_id": "string",
+    "synced_at": "string | null",
     "updated_at": "string",
     "user_id": "string"
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": []
+    "so_no_types": [
+     "group_name",
+     "synced_at"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -46429,31 +46551,6 @@
    "sem_rls": false,
    "nao_usada": false
   },
-  "tracking_events": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "created_at": "string",
-    "driver_id": "string",
-    "event_type": "string | null",
-    "heading": "number | null",
-    "id": "string",
-    "latitude": "number",
-    "longitude": "number",
-    "metadata": "Json | null",
-    "order_id": "string",
-    "speed": "number | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
   "transacoes_bancarias": {
    "colunas": {
     "categoria_id": {
@@ -46740,6 +46837,7 @@
     "compensacao_motivo": "string | null",
     "compensacao_regra": "string | null",
     "compensacao_valor": "number | null",
+    "conciliacao_parcial": "boolean | null",
     "conciliada": "boolean | null",
     "confirmado_por": "string | null",
     "conta_bancaria_id": "string | null",
@@ -46753,16 +46851,15 @@
     "saldo": "number | null",
     "status": "string",
     "tipo": "string",
-    "valor": "number"
+    "valor": "number",
+    "valor_conciliado": "number | null"
    },
    "drift": {
     "so_na_migration": [
      "conta_pagar_id",
      "conta_receber_id",
      "conciliada_por",
-     "conciliada_em",
-     "conciliacao_parcial",
-     "valor_conciliado"
+     "conciliada_em"
     ],
     "so_no_types": []
    },
@@ -47263,6 +47360,7 @@
    ],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
+    "cancelado_em": "string | null",
     "chave_pix": "string | null",
     "conta_destino_id": "string | null",
     "conta_origem_id": "string | null",
@@ -47272,6 +47370,8 @@
     "empresa_id": "string | null",
     "favorecido_nome": "string | null",
     "id": "string",
+    "movimentacao_id": "string | null",
+    "observacoes": "string | null",
     "pix_chave_destino": "string | null",
     "status": "string | null",
     "tipo": "string | null",
@@ -47298,13 +47398,10 @@
      "asaas_transfer_id",
      "asaas_status",
      "erro_mensagem",
-     "observacoes",
      "aprovado_por",
      "aprovado_em",
      "cancelado_por",
-     "cancelado_em",
      "motivo_cancelamento",
-     "movimentacao_id",
      "numero_documento",
      "origem",
      "created_by",
@@ -47717,11 +47814,11 @@
    ],
    "criada_em": "20260422190310_4ed4f573-8c7e-42c2-9e79-fbde6eb04ccb.sql",
    "colunas_types": {
-    "created_at": "string",
+    "created_at": "string | null",
     "entity_type": "string",
     "id": "string",
     "payload": "Json",
-    "updated_at": "string",
+    "updated_at": "string | null",
     "user_id": "string"
    },
    "drift": {
@@ -48591,6 +48688,7 @@
    "criada_em": "20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql",
    "colunas_types": {
     "created_at": "string | null",
+    "empresa_id": "string | null",
     "entity_type": "string | null",
     "filters": "Json",
     "id": "string",
@@ -48601,9 +48699,7 @@
     "user_id": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "empresa_id"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 1,
@@ -49324,15 +49420,14 @@
     "ip_address": "unknown",
     "is_current": "boolean",
     "last_active": "string | null",
+    "last_activity": "string | null",
     "revoked": "boolean | null",
     "revoked_at": "string | null",
     "user_agent": "string | null",
     "user_id": "string | null"
    },
    "drift": {
-    "so_na_migration": [
-     "last_activity"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 2,

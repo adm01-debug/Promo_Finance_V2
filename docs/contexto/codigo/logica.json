@@ -795,7 +795,7 @@
     "TablesUpdate"
    ],
    "export_default": null,
-   "linhas": 21412,
+   "linhas": 19300,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -804,12 +804,13 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 35,
+   "usado_por": 36,
    "usado_por_modulos": [
     "components/centros-custo",
     "components/cobranca",
     "components/conciliacao",
     "components/contas-receber",
+    "components/pagamentos-recorrentes",
     "hooks",
     "hooks/expert-actions",
     "hooks/financial",
@@ -820,7 +821,7 @@
     "pages/ContasPagar",
     "pages/tributario"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {

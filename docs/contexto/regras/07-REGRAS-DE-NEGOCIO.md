@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b93354437a` · branch `main` · 2026-11-13 20:26 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `fd8c431a78` · branch `main` · 2026-11-13 21:16 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `created_at` | default now() |
 | `feedback_conciliacao_ia` | `score_original` | default 0 |
 | `feedback_conciliacao_ia` | `created_by` | FK → users.id |
-| … +2423 linhas — lista completa em `context.json` | | |
+| … +2403 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1102,6 +1102,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `expert_conversations` | `status` | **livre (sem enum/CHECK)** |  |
 | `alertas_preditivos` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `open_finance_consents` | `status` | **livre (sem enum/CHECK)** | `pending` |
+| `pagamentos_recorrentes` | `status` | **livre (sem enum/CHECK)** |  |
 | `regua_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
 | `historico_cobranca_whatsapp` | `status` | **livre (sem enum/CHECK)** | `enviado` |
 | `acordos_parcelamento` | `status` | **livre (sem enum/CHECK)** | `ativo` |
@@ -1134,6 +1135,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `ponto_funcionarios` | `situacao` | **livre (sem enum/CHECK)** | `ATIVO` |
 | `ponto_sync_log` | `status` | **livre (sem enum/CHECK)** | `running` |
 | `cnpja_cache` | `situacao_cadastral` | **livre (sem enum/CHECK)** |  |
+| `convites_contador` | `status` | **livre (sem enum/CHECK)** |  |
 | `verificacoes_conformidade` | `status` | **livre (sem enum/CHECK)** |  |
 | `fechamentos_tributarios` | `status` | `aberto`, `em_revisao`, `fechado`, `reaberto` | `aberto` |
 | `notas_fiscais_ocr` | `status` | `erro`, `pendente`, `processada`, `processando` | `processada` |
@@ -1143,7 +1145,10 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `user_onboarding_progress` | `last_step` | **livre (sem enum/CHECK)** |  |
 | `lancamentos_contabeis` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `sped_contabil_arquivos` | `status` | `cancelado`, `gerado`, `rejeitado`, `transmitido` | `gerado` |
+| `sso_sandbox_runs` | `status` | **livre (sem enum/CHECK)** |  |
 | `anomalia_detection_runs` | `status` | **livre (sem enum/CHECK)** | `queued` |
+| `scim_setup_checklist` | `etapa` | **livre (sem enum/CHECK)** |  |
+| `scim_setup_checklist` | `status` | **livre (sem enum/CHECK)** |  |
 | `anomalia_toast_eventos` | `status` | **livre (sem enum/CHECK)** | `sent` |
 | `notification_history` | `status` | `failed`, `queued`, `sent` | `sent` |
 | `execucoes_regua_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
@@ -1164,6 +1169,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `asaas_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `asaas_reconciliation_suggestions` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `asaas_scheduled_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
+| `bloqueios_duplicidade` | `status` | **livre (sem enum/CHECK)** |  |
 | `planos_acao` | `status` | `cancelado`, `concluido`, `em_andamento`, `pendente` | `pendente` |
 | `pedidos_compra` | `status` | **livre (sem enum/CHECK)** | `rascunho` |
 | `whatsapp_conversas` | `status` | **livre (sem enum/CHECK)** | `enviado` |
@@ -1179,21 +1185,14 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `ci_security_gate_events` | `expected_state` | **livre (sem enum/CHECK)** |  |
 | `entregas_obrigacoes` | `status` | `dispensada`, `entregue`, `pendente`, `retificada` | `pendente` |
 | `digest_envios_log` | `situacao` | `enviado`, `falhou`, `ignorado`, `simulado` |  |
+| `catalogos_tributarios_health_history` | `status` | **livre (sem enum/CHECK)** |  |
 | `catalogos_fiscais_cargas` | `status` | `erro`, `ok`, `sem_alteracao` | `ok` |
+| `simulacoes` | `status` | **livre (sem enum/CHECK)** |  |
 | `oportunidades_elisao` | `status` | `aprovada`, `descartada`, `em_analise`, `em_execucao`, `identificada`, `implementada` | `identificada` |
 | `bitrix24_stage_mappings` | `lalamove_status` | **livre (sem enum/CHECK)** |  |
 | `bitrix24_stage_mappings` | `bitrix_stage_name` | **livre (sem enum/CHECK)** |  |
 | `alerts_sent` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `cron_job_logs` | `status` | **livre (sem enum/CHECK)** |  |
-| `drivers` | `status` | `APPROVED`, `PENDING_APPROVAL`, `BLOCKED`, `WHITELIST`, `BLACKLIST` |  |
-| `active_tracking` | `tracking_status` | **livre (sem enum/CHECK)** |  |
-| `bitrix24_sync` | `sync_status` | **livre (sem enum/CHECK)** |  |
-| `driver_approval_queue` | `status` | `PENDING`, `APPROVED`, `REJECTED` |  |
-| `lalamove_orders` | `internal_status` | **livre (sem enum/CHECK)** |  |
-| `lalamove_orders` | `status` | `PENDING`, `MATCHED`, `ON_GOING`, `PICKED_UP`, `COMPLETED`, `CANCELLED`, `REJECTED`, `EXPIRED` |  |
-| `lalamove_status_history` | `old_status` | **livre (sem enum/CHECK)** |  |
-| `lalamove_status_history` | `status` | `PENDING`, `MATCHED`, `ON_GOING`, `PICKED_UP`, `COMPLETED`, `CANCELLED`, `REJECTED`, `EXPIRED` |  |
-| `lalamove_stops` | `pod_status` | **livre (sem enum/CHECK)** |  |
 
 ### E.2 Mapas de transição declarados no código
 
@@ -1573,7 +1572,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | TransitionName | fade \| blur-rise \| slide-left \| slide-right \| slide-up \| slide-down \| zoom-in \| zoom-out \| flip-x \| flip-y \| parallax \| scale \| none | `src/components/layout/transitions/types.ts` |
 | EasingPreset | anticipate \| easeOut \| easeInOut \| spring | `src/components/layout/transitions/types.ts` |
 | Periodo | 24h \| 7d \| 30d \| 90d | `src/components/nfe/SefazAnalytics.types.ts` |
-| TipoCobranca | boleto \| pix \| transferencia \| cartao \| dinheiro | `src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts` |
 | StatusObrigacao | pendente \| em_andamento \| transmitida \| atrasada \| nao_aplicavel | `src/components/reforma-tributaria/ObrigacoesAcessorias.types.ts` |
 | TipoRelatorio | dre-tributario \| balancete \| comparativo \| creditos \| carga-efetiva | `src/components/reforma-tributaria/RelatoriosContabeisTributarios.types.ts` |
 | SeverityKey | critica \| alta \| media \| baixa | `src/components/shared/AdvancedSearchPopover.tsx` |
@@ -5097,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3325 testes em 274 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3329 testes em 276 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5360,8 +5358,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
 | `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
+| `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
 | `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
 | `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
+| `src/hooks/usePixTemplates.test.ts` | 2 | useCreatePixTemplate · preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade |
 | `src/hooks/useUserEmpresas.test.tsx` | 2 | useUserEmpresas · mantém erro de consulta distinto de usuário sem vínculo |
 | `src/hooks/useWebAuthn.safety.test.tsx` | 2 | WebAuthn sem verificação no servidor · não registra credencial e não aceita login local |
 | `src/hooks/__tests__/useQueuedMessage.test.tsx` | 2 | useQueuedMessage · entrega todas as mensagens na ordem quando a operação atual termina |
