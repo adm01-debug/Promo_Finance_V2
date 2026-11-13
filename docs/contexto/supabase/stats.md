@@ -6,7 +6,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 
 | métrica | valor |
 |---|---|
-| tamanho | 534.4 MB |
+| tamanho | 534.6 MB |
 | schema public | 109.3 MB |
 
 
@@ -17,10 +17,10 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.frontend_performance_logs | ~78.6k | 28.9 MB | 22.6 MB | 6.2 MB | ~5.5k | ~20 | ~700 | 2026-11-12 |
 | public.slow_query_alerts | ~18.7k | 21.0 MB | 18.0 MB | 3.0 MB | ~2.9k | ~80 | ~27.5k | 2026-11-09 |
 | public.index_usage_snapshots | ~49.6k | 14.5 MB | 8.1 MB | 6.4 MB | 0 | ~20 | ~52.7k | 2026-11-02 |
-| public.query_telemetry | ~14.6k | 13.6 MB | 10.0 MB | 3.6 MB | ~670 | ~2k | ~65.2k | 2026-11-12 |
+| public.query_telemetry | ~14.6k | 13.6 MB | 10.0 MB | 3.6 MB | ~670 | ~2k | ~65.3k | 2026-11-12 |
 | public.edge_function_logs | ~29.4k | 8.6 MB | 4.4 MB | 4.1 MB | 0 | ~90 | ~3.4k | 2026-11-12 |
 | public.bloat_snapshots | ~21.6k | 5.2 MB | 2.9 MB | 2.3 MB | 0 | 9 | ~24.2k | 2026-10-31 |
-| public.performance_alerts | ~4.1k | 3.3 MB | 2.2 MB | 1.1 MB | ~390 | ~30 | ~166.3k | 2026-11-11 |
+| public.performance_alerts | ~4.1k | 3.3 MB | 2.2 MB | 1.1 MB | ~410 | ~30 | ~166.3k | 2026-11-11 |
 | public.login_attempts | ~1.6k | 2.0 MB | 1.3 MB | 632.0 KB | 0 | ~5k | ~1.2k | 2026-11-13 |
 | public.integrity_alerts | ~1.7k | 1.7 MB | 1.1 MB | 496.0 KB | 0 | ~37.1k | ~20.6k | 2026-10-15 |
 | public.alertas | ~1.6k | 544.0 KB | 376.0 KB | 128.0 KB | 0 | ~1.8M | ~90 | 2026-10-23 |
@@ -82,7 +82,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.formas_pagamento | 0 | 48.0 KB | 8.0 KB | 16.0 KB | 0 | ~30 | ~70 | 2026-07-28 |
 | public.glossario_tributario | ~30 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~40 | ~60 |  |
 | public.incentivos_fiscais | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~40 | 6 |  |
-| public.integration_secrets | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 1 | ~70 | ~9.1k |  |
+| public.integration_secrets | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 1 | ~70 | ~9.2k |  |
 | public.metas_financeiras | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 6 | ~3.1k | ~20 |  |
 | public.movimentacoes | ~30 | 48.0 KB | 8.0 KB | 16.0 KB | 9 | ~100 | 0 | 2026-07-28 |
 | public.notas_fiscais | 0 | 48.0 KB | 8.0 KB | 32.0 KB | ~10 | ~70 | ~40 |  |
@@ -175,7 +175,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.custom_field_values | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~30 | 0 |  |
 | public.elisao_simulacoes_regime | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 2 |  |
 | public.email_verifications | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~30 | 0 |  |
-| public.empresas_certificados | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~170 | 0 |  |
+| public.empresas_certificados | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~180 | 0 |  |
 | public.expert_conversations | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~50 | 3 |  |
 | public.indices_uso_excecoes | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.kpis_operacionais | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~40 | 0 |  |
@@ -314,15 +314,15 @@ _nenhum_
 ## Consultas mais custosas (pg_stat_statements, desde o último reset)
 | role | chamadas (~) | total ms (~) | média ms | query |
 |---|---|---|---|---|
-| postgres | ~46.9k | ~8.1M | 171.70 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
-| postgres | ~1.9k | ~3.4M | 1785.99 | `SELECT public.watch_cron_failures($1,$2)` |
+| postgres | ~47.6k | ~8.2M | 171.62 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
+| postgres | ~1.9k | ~3.4M | 1785.80 | `SELECT public.watch_cron_failures($1,$2)` |
 | authenticated | ~349.2k | ~2.7M | 7.66 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
-| postgres | ~19.9k | ~2.5M | 123.70 | `SELECT public.detect_query_regressions()` |
-| postgres | ~420 | ~2.2M | 5259.25 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| postgres | ~19.9k | ~2.5M | 123.74 | `SELECT public.detect_query_regressions()` |
+| postgres | ~420 | ~2.2M | 5190.07 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
 | authenticated | ~372.7k | ~1.7M | 4.48 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
 | postgres | ~91.2k | ~1.4M | 15.00 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id` |
 | postgres | ~91.3k | ~1.3M | 14.14 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id` |
-| postgres | ~6.7k | ~1M | 155.49 | `SELECT public.capture_slow_queries()` |
+| postgres | ~6.7k | ~1M | 155.50 | `SELECT public.capture_slow_queries()` |
 | authenticator | ~2.7k | ~903.5k | 335.00 | `SELECT name FROM pg_timezone_names` |
 | authenticated | ~138.9k | ~854.8k | 6.15 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
 | authenticated | ~97.1k | ~596.4k | 6.14 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_receber_painel".* FROM "public"."vw_contas_receber_painel" ORDER BY "public"."vw_contas_receber_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS to` |
@@ -370,7 +370,7 @@ _nenhum_
       "connected_cluster": 0,
       "db_connected": false,
       "healthy": true,
-      "node": "realtime@2600:1f1c:c90:ad01:df03:4854:4067:cd7c",
+      "node": "realtime@2600:1f1c:c90:ad01:acc8:b2aa:a113:f42",
       "region": "us-west-1",
       "replication_connected": false
     },
