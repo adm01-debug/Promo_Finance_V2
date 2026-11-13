@@ -6892,10 +6892,12 @@
    "src/lib/toast-with-undo.tsx"
   ],
   "src/hooks/useContratos.ts": [
+   "src/hooks/useAuth.tsx",
    "src/integrations/supabase/client.ts"
   ],
   "src/hooks/useCreditosTributarios.ts": [
-   "src/integrations/supabase/client.ts"
+   "src/integrations/supabase/client.ts",
+   "src/lib/formatters.ts"
   ],
   "src/hooks/useCustomFields.ts": [
    "src/integrations/supabase/client.ts"

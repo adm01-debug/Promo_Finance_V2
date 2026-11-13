@@ -1137,7 +1137,7 @@
    "hooks_exportados": [
     "useAcordosParcelamento"
    ],
-   "linhas": 455,
+   "linhas": 460,
    "dominio": "hooks",
    "tabelas": [
     "acordos_parcelamento",
@@ -1240,7 +1240,7 @@
    "hooks_exportados": [
     "useAlertasTributarios"
    ],
-   "linhas": 327,
+   "linhas": 337,
    "dominio": "hooks",
    "tabelas": [
     "alertas_tributarios",
@@ -1270,7 +1270,7 @@
     "src/components/tributario/dashboard/ProximosVencimentosTimeline.tsx",
     "src/hooks/useDashboardTributario.ts"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useAlertasTributariosCount.ts",
@@ -1622,7 +1622,7 @@
    "hooks_exportados": [
     "useApuracoesTributarias"
    ],
-   "linhas": 341,
+   "linhas": 338,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_tributarias",
@@ -1877,7 +1877,7 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 100,
+   "usado_por": 101,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",
@@ -2680,7 +2680,7 @@
    "hooks_exportados": [
     "useConciliacaoPage"
    ],
-   "linhas": 462,
+   "linhas": 464,
    "dominio": "hooks",
    "tabelas": [
     "alertas",
@@ -3032,7 +3032,7 @@
     "useDeleteContrato",
     "useUpdateContrato"
    ],
-   "linhas": 114,
+   "linhas": 122,
    "dominio": "hooks",
    "tabelas": [
     "contratos"
@@ -3040,6 +3040,7 @@
    "rpcs": [],
    "edges": [],
    "hooks_internos": [
+    "useAuth",
     "useMutation",
     "useQuery",
     "useQueryClient"
@@ -3079,7 +3080,7 @@
    "hooks_exportados": [
     "useCreditosTributarios"
    ],
-   "linhas": 382,
+   "linhas": 390,
    "dominio": "hooks",
    "tabelas": [
     "creditos_tributarios",
@@ -3103,7 +3104,7 @@
     "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx",
     "src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useCustomFields.ts",
@@ -3699,7 +3700,7 @@
    "hooks_exportados": [
     "useFilterPresets"
    ],
-   "linhas": 100,
+   "linhas": 102,
    "dominio": "hooks",
    "tabelas": [
     "user_filter_presets"
@@ -3816,7 +3817,7 @@
     "usePlanoContas",
     "useTransferencias"
    ],
-   "linhas": 280,
+   "linhas": 284,
    "dominio": "hooks",
    "tabelas": [
     "formas_pagamento",
@@ -3837,7 +3838,7 @@
     "src/components/contas-bancarias/TransferenciaDialog.tsx",
     "src/pages/Movimentacoes.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useFluxoCaixa.ts",
@@ -4694,7 +4695,7 @@
     "useNegativacoes",
     "useUpdateNegativacao"
    ],
-   "linhas": 89,
+   "linhas": 91,
    "dominio": "hooks",
    "tabelas": [
     "negativacoes"
@@ -5373,7 +5374,7 @@
     "useProtestos",
     "useUpdateProtesto"
    ],
-   "linhas": 91,
+   "linhas": 93,
    "dominio": "hooks",
    "tabelas": [
     "protestos"
@@ -6007,7 +6008,7 @@
     "useRevokeScimToken",
     "useScimTokens"
    ],
-   "linhas": 102,
+   "linhas": 103,
    "dominio": "hooks",
    "tabelas": [
     "scim_tokens"

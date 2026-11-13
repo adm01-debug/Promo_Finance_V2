@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `fd8c431a782db5749d4202b321b2a9badc15ae1c` (2026-11-13T19:55:06Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0ce338f9d232cfed5083e131d2a6abd0ec614e87` (2026-11-13T20:53:47Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2305), SQL (1084), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2307), SQL (1084), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3825 |
-| arquivos_codigo | 2416 |
-| linhas_codigo | 431274 |
+| arquivos_total | 3827 |
+| arquivos_codigo | 2418 |
+| linhas_codigo | 431659 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1014 |
 | cron_jobs | 21 |
-| testes | 434 |
+| testes | 436 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 190 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (247), outro (106), co-localizado (*.test) (41)
+- testes: co-localizado (__tests__) (249), outro (106), co-localizado (*.test) (41)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `0ce338f` fix: religa campos de formulário às colunas criadas em produção (#343)
 - 2026-11-13 `fd8c431` fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)
 - 2026-11-13 `b933544` feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)
 - 2026-11-13 `a49b1c7` fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `6e462aa` fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)
 - 2026-11-12 `51d0405` fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)
 - 2026-11-12 `bd5e644` chore: impede categorias duplicadas por empresa e tipo (#320)
-- 2026-11-12 `8afbe7a` chore: remove categorias duplicadas e repassa referências (#319)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

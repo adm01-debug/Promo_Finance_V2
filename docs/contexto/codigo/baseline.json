@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "fd8c431a782db5749d4202b321b2a9badc15ae1c",
+  "commit": "0ce338f9d232cfed5083e131d2a6abd0ec614e87",
   "branch": "main",
-  "data_commit": "2026-11-13T19:55:06Z",
+  "data_commit": "2026-11-13T20:53:47Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0ce338f",
+    "data": "2026-11-13",
+    "assunto": "fix: religa campos de formulário às colunas criadas em produção (#343)"
+   },
    {
     "sha": "fd8c431",
     "data": "2026-11-13",
@@ -126,14 +131,9 @@
     "sha": "cc0b762",
     "data": "2026-11-12",
     "assunto": "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)"
-   },
-   {
-    "sha": "251d639",
-    "data": "2026-11-12",
-    "assunto": "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)"
    }
   ],
-  "arquivos_mudados_7d": 808,
+  "arquivos_mudados_7d": 828,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -156,6 +156,10 @@
     "mudancas": 19
    },
    {
+    "pasta": "src/components/contas-receber",
+    "mudancas": 17
+   },
+   {
     "pasta": "src/lib/tributario",
     "mudancas": 17
    },
@@ -165,10 +169,6 @@
    },
    {
     "pasta": "src/components/admin",
-    "mudancas": 14
-   },
-   {
-    "pasta": "src/components/contas-receber",
     "mudancas": 14
    },
    {
@@ -184,15 +184,15 @@
     "mudancas": 13
    },
    {
+    "pasta": "src/components/contas-pagar",
+    "mudancas": 12
+   },
+   {
     "pasta": "PENDENCIAS.md",
     "mudancas": 11
    },
    {
     "pasta": "RELATORIO_CI.md",
-    "mudancas": 11
-   },
-   {
-    "pasta": "src/components/contas-pagar",
     "mudancas": 11
    }
   ],
@@ -290,18 +290,18 @@
     "mudancas": 8
    },
    {
-    "arquivo": "src/pages/Auth.hooks.ts",
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
+    "arquivo": "src/pages/Auth.hooks.ts",
     "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 102
+    "commits": 103
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3825,
-  "arquivos_codigo": 2416,
-  "linhas_codigo": 431274,
+  "arquivos_total": 3827,
+  "arquivos_codigo": 2418,
+  "linhas_codigo": 431659,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1014,
   "cron_jobs": 21,
-  "testes": 434,
+  "testes": 436,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 190
@@ -632,7 +632,7 @@
   },
   "src/components": {
    "arquivos": 975,
-   "linhas": 160187
+   "linhas": 160210
   },
   "src/config": {
    "arquivos": 1,
@@ -643,8 +643,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 309,
-   "linhas": 44583
+   "arquivos": 311,
+   "linhas": 44945
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -806,7 +806,7 @@
   "console_log": 220,
   "ts_ignore": 1,
   "eslint_disable": 1,
-  "todos": 45,
+  "todos": 13,
   "arquivos_acima_500_linhas": 27
  },
  "todos": [
@@ -823,100 +823,16 @@
    "texto": "|FIXME|HACK|XXX)\\b[:\\s-]*([^\\n]{0,100})/.exec(l); return m ? { linha: i + 1, tipo: m[1], texto: m[2]"
   },
   {
-   "arquivo": "src/components/compras/PedidoCompraForm.tsx",
-   "linha": 95,
+   "arquivo": "src/hooks/__tests__/colunasReligadas.test.tsx",
+   "linha": 4,
    "tipo": "TODO",
-   "texto": "colunas 'user_id' e 'centro_custo_id' não existem em pedidos_compra no types.ts (removidas)"
-  },
-  {
-   "arquivo": "src/components/compras/PedidoCompraForm.tsx",
-   "linha": 112,
-   "tipo": "TODO",
-   "texto": "coluna 'valor_total' não existe em itens_pedido_compra no types.ts (removida)"
-  },
-  {
-   "arquivo": "src/components/conciliacao/ConciliacaoSplitDialog.tsx",
-   "linha": 128,
-   "tipo": "TODO",
-   "texto": "colunas 'conciliacao_parcial' e 'valor_conciliado' não existem em transacoes_bancarias no types.ts ("
-  },
-  {
-   "arquivo": "src/components/contas-pagar/ContasPagarTableRow.tsx",
-   "linha": 121,
-   "tipo": "TODO",
-   "texto": "coluna 'tags' não existe em contas_pagar no types.ts (removida)"
-  },
-  {
-   "arquivo": "src/components/contas-receber/AplicarDescontoDialog.tsx",
-   "linha": 51,
-   "tipo": "TODO",
-   "texto": "coluna 'valor_final' não existe em contas_receber no types.ts (removida)"
-  },
-  {
-   "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
-   "linha": 189,
-   "tipo": "TODO",
-   "texto": "colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)"
-  },
-  {
-   "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
-   "linha": 192,
-   "tipo": "TODO",
-   "texto": "coluna 'frequencia_recorrencia' não existe em contas_receber no types.ts (removida)"
-  },
-  {
-   "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
-   "linha": 238,
-   "tipo": "TODO",
-   "texto": "colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)"
-  },
-  {
-   "arquivo": "src/hooks/expert-actions/financial-actions.ts",
-   "linha": 139,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): data_emissao/created_by removidos — não existem em contas_pagar (types.ts canônico)"
-  },
-  {
-   "arquivo": "src/hooks/expert-actions/financial-actions.ts",
-   "linha": 179,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): created_by removido — coluna não existe em contas_receber (types.ts canônico)"
-  },
-  {
-   "arquivo": "src/hooks/expert-actions/financial-actions.ts",
-   "linha": 219,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);"
-  },
-  {
-   "arquivo": "src/hooks/useAcordosParcelamento.ts",
-   "linha": 145,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): data_pagamento/valor_pago removidos — não existem em parcelas_acordo (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useAlertasTributarios.ts",
-   "linha": 143,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): campos de AlertaTributario fora do schema canônico não são enviados:"
-  },
-  {
-   "arquivo": "src/hooks/useAlertasTributarios.ts",
-   "linha": 186,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): resolvido_em/resolvido_por removidos — não existem em alertas_tributarios (types.ts)"
+   "texto": "\"coluna não"
   },
   {
    "arquivo": "src/hooks/useAprovacoes.ts",
    "linha": 184,
    "tipo": "TODO",
    "texto": "(2026-08-14): usuario_id→user_id e texto→comentario (nomes canônicos em aprovacao_comentarios)"
-  },
-  {
-   "arquivo": "src/hooks/useApuracoesTributarias.ts",
-   "linha": 156,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): data_transmissao/protocolo_transmissao/created_by excluídos — não existem em apuracoes"
   },
   {
    "arquivo": "src/hooks/useBulkActions.ts",
@@ -926,75 +842,9 @@
   },
   {
    "arquivo": "src/hooks/useConciliacaoPage.ts",
-   "linha": 131,
+   "linha": 165,
    "tipo": "TODO",
-   "texto": "(2026-08-14): status/metadata removidos — não existem em alertas (types.ts canônico);"
-  },
-  {
-   "arquivo": "src/hooks/useConciliacaoPage.ts",
-   "linha": 161,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): insert em extratos_bancarios_importados removido — colunas usadas"
-  },
-  {
-   "arquivo": "src/hooks/useContratos.ts",
-   "linha": 40,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): campos de input fora do schema canônico não são enviados:"
-  },
-  {
-   "arquivo": "src/hooks/useContratos.ts",
-   "linha": 86,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): assinatura estreitada para as colunas canônicas de contratos (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useCreditosTributarios.ts",
-   "linha": 143,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): campos de CreateCreditoInput fora do schema canônico não são enviados:"
-  },
-  {
-   "arquivo": "src/hooks/useCreditosTributarios.ts",
-   "linha": 209,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): apuracao_id/competencia_utilizacao removidos — não existem em creditos_tributarios (ty"
-  },
-  {
-   "arquivo": "src/hooks/useCreditosTributarios.ts",
-   "linha": 234,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): observacoes removido — coluna não existe em creditos_tributarios (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useFilterPresets.ts",
-   "linha": 64,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): empresa_id removido — coluna não existe em user_filter_presets (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useFinancialOperations.ts",
-   "linha": 76,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): filtro por conta_bancaria_id removido — coluna não existe em movimentacoes (types.ts c"
-  },
-  {
-   "arquivo": "src/hooks/useFinancialOperations.ts",
-   "linha": 105,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): campos de MovimentacaoInput fora do schema canônico não são enviados:"
-  },
-  {
-   "arquivo": "src/hooks/useFinancialOperations.ts",
-   "linha": 190,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): conta_bancaria_id→conta_origem_id (renomeada no schema canônico); observacoes removido"
-  },
-  {
-   "arquivo": "src/hooks/useFinancialOperations.ts",
-   "linha": 226,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): cancelado_em removido — coluna não existe em transferencias (types.ts)"
+   "texto": "(2026-08-14): sem registro de cabeçalho do arquivo — extratos_importacoes não existe"
   },
   {
    "arquivo": "src/hooks/useMetasFinanceiras.ts",
@@ -1003,58 +853,16 @@
    "texto": "(2026-08-14): created_by→user_id (nome canônico em metas_financeiras)"
   },
   {
-   "arquivo": "src/hooks/useNegativacoes.ts",
-   "linha": 34,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): observacoes/created_by removidos — não existem em negativacoes (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useNegativacoes.ts",
-   "linha": 73,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): data_inclusao→data_negativacao e data_exclusao→data_baixa (renomeadas); observacoes re"
-  },
-  {
    "arquivo": "src/hooks/useOrganizacoes.ts",
    "linha": 259,
    "tipo": "TODO",
    "texto": "(2026-08-14): patch tipado com colunas canônicas de organizacao_membros (types.ts)"
   },
   {
-   "arquivo": "src/hooks/useProtestos.ts",
-   "linha": 32,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): observacoes/created_by removidos — não existem em protestos (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useProtestos.ts",
-   "linha": 74,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): data_protocolo→data_protesto (renomeada); data_pagamento/observacoes removidos (não ex"
-  },
-  {
-   "arquivo": "src/hooks/useProtestos.ts",
-   "linha": 75,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): protocolo→numero_protesto (nome canônico em protestos)"
-  },
-  {
-   "arquivo": "src/hooks/useRealtimeAnomalias.ts",
-   "linha": 181,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): centro_custo_id removido — não existe em anomalia_toast_eventos (types.ts)"
-  },
-  {
    "arquivo": "src/hooks/useRegimesEspeciais.ts",
    "linha": 35,
    "tipo": "TODO",
    "texto": "(2026-08-14): reducao_aliquota→reducao_cbs/reducao_ibs (renomeada no schema canônico)"
-  },
-  {
-   "arquivo": "src/hooks/useScimTokens.ts",
-   "linha": 73,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): default_role removido — coluna não existe em scim_tokens (types.ts canônico)"
   },
   {
    "arquivo": "supabase/functions/monitor-health/index.ts",

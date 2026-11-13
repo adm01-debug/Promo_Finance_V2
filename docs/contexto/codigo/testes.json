@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 434,
+ "total": 436,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 358
+  "unit": 360
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 247
+   "arquivos": 249
   },
   {
    "padrao": "outro",
@@ -871,11 +871,11 @@
   {
    "arquivo": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
    "tipo": "unit",
-   "linhas": 143,
+   "linhas": 157,
    "testa": [
     "src/components/contas-receber/AplicarDescontoDialog.tsx"
    ],
-   "casos": 12
+   "casos": 13
   },
   {
    "arquivo": "src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx",
@@ -1102,6 +1102,18 @@
    "casos": 21
   },
   {
+   "arquivo": "src/hooks/__tests__/colunasReligadas.test.tsx",
+   "tipo": "unit",
+   "linhas": 183,
+   "testa": [
+    "src/hooks/useAlertasTributarios.ts",
+    "src/hooks/useCreditosTributarios.ts",
+    "src/hooks/useFinancialOperations.ts",
+    "src/lib/formatters.ts"
+   ],
+   "casos": 5
+  },
+  {
    "arquivo": "src/hooks/__tests__/savedFilterDedup.test.ts",
    "tipo": "unit",
    "linhas": 181,
@@ -1166,11 +1178,11 @@
   {
    "arquivo": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
    "tipo": "unit",
-   "linhas": 277,
+   "linhas": 295,
    "testa": [
     "src/hooks/useAcordosParcelamento.ts"
    ],
-   "casos": 11
+   "casos": 12
   },
   {
    "arquivo": "src/hooks/__tests__/useAlertasPreditivos.test.ts",
@@ -1308,7 +1320,7 @@
   {
    "arquivo": "src/hooks/__tests__/useContratos.test.tsx",
    "tipo": "unit",
-   "linhas": 203,
+   "linhas": 211,
    "testa": [
     "src/hooks/useContratos.ts"
    ],
@@ -1469,6 +1481,16 @@
     "src/hooks/expert-actions/financial-actions.ts"
    ],
    "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+   "tipo": "unit",
+   "linhas": 112,
+   "testa": [
+    "src/hooks/expert-actions/financial-actions.ts",
+    "src/hooks/expert-actions/types.ts"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/hooks/expert-actions/financial-actions.test.ts",
@@ -3906,7 +3928,8 @@
   "src/contexts/useEmpresaScope.ts": 1,
   "src/hooks/anomaliaPreferencesValidation.ts": 1,
   "src/hooks/conciliacaoPage.types.ts": 1,
-  "src/hooks/expert-actions/financial-actions.ts": 2,
+  "src/hooks/expert-actions/financial-actions.ts": 3,
+  "src/hooks/expert-actions/types.ts": 1,
   "src/hooks/financial/useContasPagar.ts": 1,
   "src/hooks/financial/useContasReceber.ts": 1,
   "src/hooks/financial/views.schemas.ts": 1,
@@ -3916,6 +3939,7 @@
   "src/hooks/use-toast.ts": 1,
   "src/hooks/useAcordosParcelamento.ts": 2,
   "src/hooks/useAlertasPreditivos.ts": 1,
+  "src/hooks/useAlertasTributarios.ts": 1,
   "src/hooks/useAlertasTributariosCount.ts": 1,
   "src/hooks/useAnomaliaPreferences.ts": 1,
   "src/hooks/useApiKeys.ts": 1,
@@ -3932,8 +3956,10 @@
   "src/hooks/useConciliacaoPageState.ts": 1,
   "src/hooks/useConsultaTributaria.ts": 1,
   "src/hooks/useContratos.ts": 1,
+  "src/hooks/useCreditosTributarios.ts": 1,
   "src/hooks/useDashboardConfig.ts": 1,
   "src/hooks/useDashboardMetrics.ts": 1,
+  "src/hooks/useFinancialOperations.ts": 1,
   "src/hooks/useFluxoCaixa.ts": 1,
   "src/hooks/useGlobalFilterSync.ts": 1,
   "src/hooks/useImportacaoXMLNFe.ts": 1,
@@ -3984,7 +4010,7 @@
   "src/lib/error-tracking.ts": 1,
   "src/lib/filterHydrationTelemetry.ts": 1,
   "src/lib/format-filter-value.ts": 1,
-  "src/lib/formatters.ts": 1,
+  "src/lib/formatters.ts": 2,
   "src/lib/import-checkpoint.ts": 1,
   "src/lib/ip-mask.ts": 1,
   "src/lib/lancamentos-csv-importer.ts": 1,
@@ -4342,7 +4368,6 @@
    "src/hooks/useAcordosParcelamento.helpers.ts",
    "src/hooks/useAcordosParcelamento.types.ts",
    "src/hooks/useAlertas.ts",
-   "src/hooks/useAlertasTributarios.ts",
    "src/hooks/useAnomaliaAuditHistory.ts",
    "src/hooks/useAnomaliaDetalhe.ts",
    "src/hooks/useAnomaliaDetectionRun.ts",
@@ -4393,7 +4418,6 @@
    "src/hooks/useContasReceberLogic.calculos.ts",
    "src/hooks/useContasReceberLogic.ts",
    "src/hooks/useCountUp.ts",
-   "src/hooks/useCreditosTributarios.ts",
    "src/hooks/useCustomFields.ts",
    "src/hooks/useDashboardTributario.ts",
    "src/hooks/useDebounce.ts",
@@ -4416,7 +4440,6 @@
    "src/hooks/useFilterPresets.ts",
    "src/hooks/useFinancialAlerts.tsx",
    "src/hooks/useFinancialData.ts",
-   "src/hooks/useFinancialOperations.ts",
    "src/hooks/useFluxoCaixaPage.ts",
    "src/hooks/useFrontendErrorLogs.ts",
    "src/hooks/useGerarEvidenciasStream.ts",

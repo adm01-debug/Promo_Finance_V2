@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `fd8c431a78` · branch `main` · 2026-11-13 21:16 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `0ce338f9d2` · branch `main` · 2026-11-13 22:04 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5095,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3329 testes em 276 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3345 testes em 278 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5158,6 +5158,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sped-generator.test.ts` | 16 | SPED Generator · gerarEFD_IBS_CBS · gera arquivo com registro inicial 0000 · gera arquivo com registro final 9999 … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
+| `src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx` | 15 | AplicarDescontoDialog · Gap #12 - Aplicar desconto · renderiza dialog quando open=true · não renderiza quando conta é null … |
 | `src/components/contas-receber/__tests__/EnviarCobrancaDialog.test.tsx` | 15 | EnviarCobrancaDialog · Gap #2 - Enviar Cobrança funcional · renderiza dialog quando open=true · não renderiza quando conta é null … |
 | `src/components/ui/__tests__/button.test.tsx` | 15 | Button · renders with text · renders default variant with bg-acc (Vela) · renders destructive variant … |
 | `src/components/ui/__tests__/input.test.tsx` | 15 | Input · renders with placeholder · renders default variant with border · renders filled variant … |
@@ -5167,7 +5168,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/overlay-monofasico.test.ts` | 15 | aplicarOverlayMonofasico · não gera override quando o banco confirma o catálogo embarcado · registra inclusão de NCM não coberto pelo motor · registra exclusão de NCM classificado pelo motor … |
 | `src/lib/tributario/__tests__/robustness-consistency.test.ts` | 15 | Testes de Robustez e Casos de Borda Tributários · Valores Extremos e Arredondamentos · deve lidar com faturamento zero corretamente · deve lidar com margem de lucro de 100% corretamente … |
 | `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 15 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
-| `src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx` | 14 | AplicarDescontoDialog · Gap #12 - Aplicar desconto · renderiza dialog quando open=true · não renderiza quando conta é null … |
+| `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 14 | registrarPagamento · grava data_pagamento e valor_pago na parcela · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  … |
 | `src/hooks/financial/__tests__/useContasReceberPagar.test.tsx` | 14 | useContasReceber · consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e limit 1000 · filtra por empresa_id quando informado e ignora quando  · propaga erro do backend … |
 | `src/lib/__tests__/collection-engine.test.ts` | 14 | collection-engine :: calculateCollectionStage · retorna null para status pago ou cancelado · classifica como PREVENTIVA quando ainda não venceu · classifica como LEMBRETE entre 0 e 5 dias de atraso … |
 | `src/lib/__tests__/edge-function-error.test.ts` | 14 | EdgeFunctionError flags · classifica status em auth/forbidden/client/server · normalizeEdgeError · usa mensagem do body quando presente em FunctionsHttpError … |
@@ -5180,7 +5181,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sso-test-login/pipeline.test.ts` | 14 | pipeline: JIT + role por grupo (usuário não existe) · pipeline: usuário JÁ existe → não provisiona · pipeline: auto_provision_users=false bloqueia JIT com motivo · pipeline: múltiplos grupos — primeiro match vence, demais  … |
 | `src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx` | 13 | AnimatedCounter · Renderização inicial · renderiza com classe tabular-nums · renderiza prefix … |
 | `src/components/ui/__tests__/badge.test.tsx` | 13 | Badge · renders with children · renders default variant with bg-acc (Vela) · renders secondary variant … |
-| `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 13 | registrarPagamento · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  · quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo … |
 | `src/hooks/__tests__/useIndicesContabeis.test.ts` | 13 | normalizarAgregados · aceita retorno em array (RPC set-returning) · preenche zeros quando o campo está ausente · nunca produz NaN a partir de lixo … |
 | `src/lib/__tests__/audit-diff.test.ts` | 13 | audit-diff · computeDiff · objetos vazios ou nulos → diff vazio · classifica added/removed/changed/unchanged … |
 | `src/lib/__tests__/magic-bytes.test.ts` | 13 | detectarTipo · identifica PDF, PNG e ZIP/XLSX pelas assinaturas · identifica executáveis: PE, ELF e shebang · identifica texto UTF-8 e XML … |
@@ -5243,6 +5243,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `scripts/security/test-rpc-runtime.evaluate.test.ts` | 8 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx` | 8 | useReviewQueue — idempotência e concorrência · #1 [idempotência] dois handleAcao paralelos para o mesmo id disparam a mutation UMA vez · #2 [retry] erro transitório  · #3 [retry esgotado] 3 falhas transitórias → toast.error + fila e stats intactos … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
+| `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
 | `src/hooks/__tests__/useKeyboardShortcuts.test.ts` | 8 | useKeyboardShortcuts · registra o listener de keydown UMA única vez mesmo com re-renders · remove o listener de keydown no unmount · Alt+D navega para o dashboard … |
@@ -5285,6 +5286,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useConciliacaoPageState.test.tsx` | 6 | useContaBancariaSelecionada · limpa a seleção local quando o filtro global é removido explicitamente · useTransacoesBancariasSelecionadas · descarta uma resposta tardia e mantém a lista vazia até a conta ativa carregar … |
 | `src/hooks/__tests__/useFluxoCaixa.test.ts` | 6 | useFluxoCaixaKPIs · calcula saldoTotal, totalReceber, totalPagar e previsão · useFluxoCaixaProjetado · retorna dias+1 entradas iniciadas com saldo inicial … |
 | `src/hooks/__tests__/useLancamentosContabeis.rollback.test.tsx` | 6 | useImportLancamentosLote — rollback do cabeçalho órfão · importa sem remover nada quando as partidas gravam · remove o cabeçalho quando as partidas falham · denuncia no relatório quando o próprio rollback é recusado … |
+| `src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts` | 6 | criarContaPagar · grava user_id do autor e data_emissao · criarContaReceber · grava user_id do autor (e não created_by) … |
 | `src/lib/__tests__/concurrency-limiter.test.ts` | 6 | concurrency-limiter · nunca ultrapassa o limite configurado · setLimit aumenta libera tarefas pendentes imediatamente · setLimit trata valores inválidos (mínimo 1) … |
 | `src/lib/sso/__tests__/sandbox-bulk-aggregator.test.ts` | 6 | aggregateBulk · soma counts por outcome · agrupa motivos de bloqueio ordenados desc · distribui papéis resolvidos … |
 | `src/lib/tributario/__tests__/aliquotas-simples.test.ts` | 6 | aliquotas-simples · LIMITE_SIMPLES_NACIONAL = 4.800.000 · identificarFaixa retorna faixa correta · identificarFaixa retorna null acima do teto … |

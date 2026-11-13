@@ -3448,7 +3448,7 @@
     "PedidoCompraForm"
    ],
    "export_default": null,
-   "linhas": 303,
+   "linhas": 304,
    "dominio": "components/compras",
    "hooks_locais": [],
    "tabelas": [
@@ -3603,7 +3603,7 @@
     "ConciliacaoSplitDialog"
    ],
    "export_default": null,
-   "linhas": 304,
+   "linhas": 305,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -5434,7 +5434,7 @@
     "ContasPagarTableRow"
    ],
    "export_default": null,
-   "linhas": 351,
+   "linhas": 350,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [
@@ -5626,7 +5626,7 @@
     "ContaReceberForm"
    ],
    "export_default": null,
-   "linhas": 404,
+   "linhas": 412,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useAuth",

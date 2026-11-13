@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "fd8c431a782db5749d4202b321b2a9badc15ae1c",
+  "sha": "0ce338f9d232cfed5083e131d2a6abd0ec614e87",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 21:16 UTC",
-  "files_total": 3867,
-  "code_files": 3501,
-  "code_lines": 496888
+  "generated_at": "2026-11-13 22:04 UTC",
+  "files_total": 3869,
+  "code_files": 3503,
+  "code_lines": 497275
  },
  "version": "1.3.2",
- "facts_hash": "5f7ffd9800c0eb4a",
+ "facts_hash": "39ffd7974a4a4e40",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -331,8 +331,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1218,
-   ".tsx": 1087,
+   ".ts": 1219,
+   ".tsx": 1088,
    ".sql": 1084,
    ".mjs": 60,
    ".py": 45,
@@ -71398,7 +71398,7 @@
   {
    "module": "src/components",
    "files": 975,
-   "lines": 161162,
+   "lines": 161185,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71665,8 +71665,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 309,
-   "lines": 44892,
+   "files": 311,
+   "lines": 45256,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -73161,9 +73161,6 @@
     "insert": [
      "src/hooks/useApuracoesTributarias.ts"
     ],
-    "ref": [
-     "src/hooks/useApuracoesTributarias.ts"
-    ],
     "update": [
      "src/hooks/useApuracoesTributarias.ts"
     ]
@@ -73600,10 +73597,8 @@
      "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
      "supabase/functions/verificar-conformidade-fiscal/index.ts"
     ],
-    "ref": [
-     "src/components/contas-pagar/ContasPagarTableRow.tsx"
-    ],
     "update": [
+     "src/components/contas-pagar/ContasPagarTableRow.tsx",
      "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
      "src/lib/supabase-write.ts"
     ],
@@ -73681,7 +73676,7 @@
     "select": [
      "src/hooks/useContratos.ts"
     ],
-    "ref": [
+    "insert": [
      "src/hooks/useContratos.ts"
     ],
     "update": [
@@ -73723,13 +73718,10 @@
      "src/hooks/useConciliacaoTributaria.ts",
      "src/hooks/useCreditosTributarios.ts"
     ],
-    "ref": [
+    "insert": [
      "src/hooks/useCreditosTributarios.ts"
     ],
     "update": [
-     "src/hooks/useCreditosTributarios.ts"
-    ],
-    "insert": [
      "src/hooks/useCreditosTributarios.ts"
     ]
    },
@@ -74280,7 +74272,7 @@
      "supabase/functions/detectar-anomalias-financeiras/index.ts",
      "supabase/functions/gerar-alertas-tributarios/index.ts"
     ],
-    "ref": [
+    "insert": [
      "src/hooks/useFinancialOperations.ts"
     ],
     "update": [
@@ -75102,6 +75094,9 @@
      "src/hooks/useFinancialOperations.ts"
     ],
     "ref": [
+     "src/hooks/useFinancialOperations.ts"
+    ],
+    "update": [
      "src/hooks/useFinancialOperations.ts"
     ]
    },
@@ -76464,7 +76459,8 @@
     "valor"
    ],
    "transferencias": [
-    "data_transferencia"
+    "data_transferencia",
+    "id"
    ],
    "ufs": [
     "aliquota_fcp",
@@ -122883,6 +122879,10 @@
    },
    {
     "file": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
+    "name": "grava valor_final = valor − desconto, igual ao exibido"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
     "name": "fecha ao clicar cancelar"
    },
    {
@@ -124594,6 +124594,38 @@
     "name": "trata severidade ausente como "
    },
    {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "movimentações e transferências"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "insert de movimentação leva conta, vínculos, origem e observações"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "cancelar transferência grava cancelado_em"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "créditos tributários"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "criarCredito envia documento, fornecedor, base e alíquota"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "estornarCredito grava o motivo em observacoes"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "alertas tributários"
+   },
+   {
+    "file": "src/hooks/__tests__/colunasReligadas.test.tsx",
+    "name": "resolverAlerta grava resolvido_em e resolvido_por do usuário logado"
+   },
+   {
     "file": "src/hooks/__tests__/savedFilterDedup.test.ts",
     "name": "savedFilterDedup > checkShouldDispatch"
    },
@@ -124820,6 +124852,10 @@
    {
     "file": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
     "name": "registrarPagamento"
+   },
+   {
+    "file": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
+    "name": "grava data_pagamento e valor_pago na parcela"
    },
    {
     "file": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
@@ -125407,7 +125443,7 @@
    },
    {
     "file": "src/hooks/__tests__/useContratos.test.tsx",
-    "name": "insere payload alinhado ao schema canônico, sem campos fora dele"
+    "name": "insere payload com todos os campos do formulário e o autor"
    },
    {
     "file": "src/hooks/__tests__/useContratos.test.tsx",
@@ -125892,6 +125928,30 @@
    {
     "file": "src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts",
     "name": "não chama a função quando a solicitação não está mais pendente"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+    "name": "criarContaPagar"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+    "name": "grava user_id do autor e data_emissao"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+    "name": "criarContaReceber"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+    "name": "grava user_id do autor (e não created_by)"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+    "name": "agendarCobranca"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+    "name": "grava etapa_anterior e etapa_nova em colunas próprias"
    },
    {
     "file": "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
@@ -185124,7 +185184,7 @@
   },
   "src/components/compras/PedidoCompraForm.tsx": {
    "path": "src/components/compras/PedidoCompraForm.tsx",
-   "lines": 304,
+   "lines": 305,
    "exports": [
     "function PedidoCompraForm"
    ],
@@ -185648,7 +185708,7 @@
   },
   "src/components/conciliacao/ConciliacaoSplitDialog.tsx": {
    "path": "src/components/conciliacao/ConciliacaoSplitDialog.tsx",
-   "lines": 305,
+   "lines": 306,
    "exports": [
     "function ConciliacaoSplitDialog"
    ],
@@ -188557,16 +188617,21 @@
   },
   "src/components/contas-pagar/ContasPagarTableRow.tsx": {
    "path": "src/components/contas-pagar/ContasPagarTableRow.tsx",
-   "lines": 352,
+   "lines": 351,
    "exports": [
     "const ContasPagarTableRow"
    ],
    "tables": [
     {
      "table": "contas_pagar",
-     "op": "ref"
+     "op": "update"
     }
    ],
+   "table_cols": {
+    "contas_pagar": [
+     "id"
+    ]
+   },
    "errors": [
     "Erro ao aplicar categoria"
    ],
@@ -189076,7 +189141,7 @@
   },
   "src/components/contas-receber/ContaReceberForm.tsx": {
    "path": "src/components/contas-receber/ContaReceberForm.tsx",
-   "lines": 405,
+   "lines": 413,
    "exports": [
     "function ContaReceberForm"
    ],
@@ -189452,7 +189517,7 @@
   },
   "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx": {
    "path": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
-   "lines": 144,
+   "lines": 158,
    "is_test": true,
    "rule_comments": [
     "===== #12: Nota de crédito/desconto =====",
@@ -189473,6 +189538,7 @@
     "botão Aplicar desabilitado quando desconto é zero",
     "botão Aplicar habilitado quando desconto > 0",
     "botão Aplicar desabilitado quando desconto > valor",
+    "grava valor_final = valor − desconto, igual ao exibido",
     "fecha ao clicar cancelar"
    ]
   },
@@ -198179,7 +198245,7 @@
   },
   "src/hooks/useAcordosParcelamento.ts": {
    "path": "src/hooks/useAcordosParcelamento.ts",
-   "lines": 456,
+   "lines": 461,
    "exports": [
     "function useAcordosParcelamento"
    ],
@@ -198611,7 +198677,7 @@
   },
   "src/hooks/useAlertasTributarios.ts": {
    "path": "src/hooks/useAlertasTributarios.ts",
-   "lines": 328,
+   "lines": 338,
    "exports": [
     "type TipoAlerta",
     "type PrioridadeAlerta",
@@ -198634,7 +198700,7 @@
     },
     {
      "table": "alertas_tributarios",
-     "op": "ref"
+     "op": "update"
     },
     {
      "table": "darfs",
@@ -199410,7 +199476,7 @@
   },
   "src/hooks/useApuracoesTributarias.ts": {
    "path": "src/hooks/useApuracoesTributarias.ts",
-   "lines": 342,
+   "lines": 339,
    "exports": [
     "interface ApuracaoTributaria",
     "interface CreateApuracaoInput",
@@ -199435,7 +199501,7 @@
     },
     {
      "table": "apuracoes_tributarias",
-     "op": "ref"
+     "op": "select,update"
     },
     {
      "table": "operacoes_tributaveis",
@@ -201251,7 +201317,7 @@
   },
   "src/hooks/useConciliacaoPage.ts": {
    "path": "src/hooks/useConciliacaoPage.ts",
-   "lines": 463,
+   "lines": 465,
    "exports": [
     "function useConciliacaoPage"
    ],
@@ -201933,7 +201999,7 @@
   },
   "src/hooks/useContratos.ts": {
    "path": "src/hooks/useContratos.ts",
-   "lines": 115,
+   "lines": 123,
    "exports": [
     "function useContratos",
     "function useCreateContrato",
@@ -201947,7 +202013,7 @@
     },
     {
      "table": "contratos",
-     "op": "ref"
+     "op": "insert,select"
     },
     {
      "table": "contratos",
@@ -201997,7 +202063,7 @@
   },
   "src/hooks/useCreditosTributarios.ts": {
    "path": "src/hooks/useCreditosTributarios.ts",
-   "lines": 383,
+   "lines": 391,
    "exports": [
     "interface CreditoTributario",
     "interface CreateCreditoInput",
@@ -202014,7 +202080,7 @@
     },
     {
      "table": "creditos_tributarios",
-     "op": "ref"
+     "op": "insert,select"
     },
     {
      "table": "creditos_tributarios",
@@ -203221,7 +203287,7 @@
   },
   "src/hooks/useFilterPresets.ts": {
    "path": "src/hooks/useFilterPresets.ts",
-   "lines": 101,
+   "lines": 103,
    "exports": [
     "interface FilterPreset",
     "function useFilterPresets"
@@ -203295,7 +203361,7 @@
   },
   "src/hooks/useFinancialOperations.ts": {
    "path": "src/hooks/useFinancialOperations.ts",
-   "lines": 281,
+   "lines": 285,
    "exports": [
     "interface Movimentacao",
     "interface MovimentacaoInput",
@@ -203318,7 +203384,7 @@
     },
     {
      "table": "movimentacoes",
-     "op": "ref"
+     "op": "insert,select"
     },
     {
      "table": "movimentacoes",
@@ -203334,7 +203400,7 @@
     },
     {
      "table": "transferencias",
-     "op": "ref"
+     "op": "update"
     },
     {
      "table": "plano_contas",
@@ -203344,6 +203410,9 @@
    "table_cols": {
     "movimentacoes": [
      "deleted_at",
+     "id"
+    ],
+    "transferencias": [
      "id"
     ],
     "plano_contas": [
@@ -204866,7 +204935,7 @@
   },
   "src/hooks/useNegativacoes.ts": {
    "path": "src/hooks/useNegativacoes.ts",
-   "lines": 90,
+   "lines": 92,
    "exports": [
     "function useNegativacoes",
     "function useCreateNegativacao",
@@ -206074,7 +206143,7 @@
   },
   "src/hooks/useProtestos.ts": {
    "path": "src/hooks/useProtestos.ts",
-   "lines": 92,
+   "lines": 94,
    "exports": [
     "function useProtestos",
     "function useCreateProtesto",
@@ -207404,7 +207473,7 @@
   },
   "src/hooks/useScimTokens.ts": {
    "path": "src/hooks/useScimTokens.ts",
-   "lines": 103,
+   "lines": 104,
    "exports": [
     "type ScimDefaultRole",
     "interface ScimToken",
@@ -208932,6 +209001,22 @@
     "trata severidade ausente como "
    ]
   },
+  "src/hooks/__tests__/colunasReligadas.test.tsx": {
+   "path": "src/hooks/__tests__/colunasReligadas.test.tsx",
+   "lines": 184,
+   "is_test": true,
+   "doc": "Testes — valores religados após a migration 20261113163037. Os hooks abaixo descartavam campos do formulário com TODO \"coluna não existe\". Com as colunas criadas em produção, os payloads voltam a levá-los.",
+   "tests": [
+    "movimentações e transferências",
+    "insert de movimentação leva conta, vínculos, origem e observações",
+    "cancelar transferência grava cancelado_em",
+    "créditos tributários",
+    "criarCredito envia documento, fornecedor, base e alíquota",
+    "estornarCredito grava o motivo em observacoes",
+    "alertas tributários",
+    "resolverAlerta grava resolvido_em e resolvido_por do usuário logado"
+   ]
+  },
   "src/hooks/__tests__/savedFilterDedup.test.ts": {
    "path": "src/hooks/__tests__/savedFilterDedup.test.ts",
    "lines": 182,
@@ -209086,7 +209171,7 @@
   },
   "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx": {
    "path": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
-   "lines": 278,
+   "lines": 296,
    "is_test": true,
    "rule_comments": [
     "Acordo com desconto: total pago (640) < nominal das contas (800).",
@@ -209095,6 +209180,7 @@
    "doc": "Testes — useAcordosParcelamento (Etapa 20) Dois defeitos, ambos com toast de sucesso por cima: - `registrarPagamento` decidia a quitação com `parcelas?.every((p) => p.status === 'pago')`. Errava nos dois sentidos: select falhando ⇒ `undefined` ⇒ acordo nunca quitado; select devolvendo `[]` (o que a …",
    "tests": [
     "registrarPagamento",
+    "grava data_pagamento e valor_pago na parcela",
     "quita o acordo quando todas as parcelas estão pagas",
     "quita o acordo e reverte contas_receber vinculadas para ",
     "quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo",
@@ -209378,7 +209464,7 @@
   },
   "src/hooks/__tests__/useContratos.test.tsx": {
    "path": "src/hooks/__tests__/useContratos.test.tsx",
-   "lines": 204,
+   "lines": 212,
    "is_test": true,
    "doc": "Testes — useContratos Cobre listagem (com/sem filtro de empresa), erro de query e a mutation de criação com payload alinhado ao schema canônico de contratos.",
    "tests": [
@@ -209387,7 +209473,7 @@
     "aplica filtro eq(empresa_id) quando empresaId é informado",
     "propaga erro da listagem",
     "useCreateContrato (insert)",
-    "insere payload alinhado ao schema canônico, sem campos fora dele",
+    "insere payload com todos os campos do formulário e o autor",
     "propaga erro do insert e mostra toast de erro",
     "useUpdateContrato / useDeleteContrato",
     "update envia patch com eq(id) e invalida cache",
@@ -210239,6 +210325,20 @@
     "recusa a aprovação sem usuário autenticado, sem chamar a função",
     "recusa solicitação sem conta a pagar vinculada, sem chamar a função",
     "não chama a função quando a solicitação não está mais pendente"
+   ]
+  },
+  "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts": {
+   "path": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+   "lines": 113,
+   "is_test": true,
+   "doc": "Testes — payloads do EXPERT após a migration 20261113163037. Antes, criarContaPagar/criarContaReceber descartavam o autor e a data de emissão, e agendarCobranca guardava a etapa anterior só em `metadata`. Com as colunas criadas, os valores voltam a ser gravados — autoria em `user_id` (coluna já exis …",
+   "tests": [
+    "criarContaPagar",
+    "grava user_id do autor e data_emissao",
+    "criarContaReceber",
+    "grava user_id do autor (e não created_by)",
+    "agendarCobranca",
+    "grava etapa_anterior e etapa_nova em colunas próprias"
    ]
   },
   "src/hooks/financial/externalData.ts": {
@@ -245174,10 +245274,41 @@
   }
  },
  "git": {
-  "sha": "fd8c431a782db5749d4202b321b2a9badc15ae1c",
+  "sha": "0ce338f9d232cfed5083e131d2a6abd0ec614e87",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "0ce338f",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "fix: religa campos de formulário às colunas criadas em produção (#343)",
+    "files": [
+     "src/components/compras/PedidoCompraForm.tsx",
+     "src/components/conciliacao/ConciliacaoSplitDialog.tsx",
+     "src/components/contas-pagar/ContasPagarTableRow.tsx",
+     "src/components/contas-receber/AplicarDescontoDialog.tsx",
+     "src/components/contas-receber/ContaReceberForm.tsx",
+     "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
+     "src/hooks/__tests__/colunasReligadas.test.tsx",
+     "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
+     "src/hooks/__tests__/useContratos.test.tsx",
+     "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
+     "src/hooks/expert-actions/financial-actions.ts",
+     "src/hooks/useAcordosParcelamento.ts",
+     "src/hooks/useAlertasTributarios.ts",
+     "src/hooks/useApuracoesTributarias.ts",
+     "src/hooks/useConciliacaoPage.ts",
+     "src/hooks/useContratos.ts",
+     "src/hooks/useCreditosTributarios.ts",
+     "src/hooks/useFilterPresets.ts",
+     "src/hooks/useFinancialOperations.ts",
+     "src/hooks/useNegativacoes.ts",
+     "src/hooks/useProtestos.ts",
+     "src/hooks/useRealtimeAnomalias.ts",
+     "src/hooks/useScimTokens.ts"
+    ]
+   },
    {
     "sha": "fd8c431",
     "date": "2026-11-13",
@@ -245770,23 +245901,24 @@
     "files": [
      ".github/workflows/ci.yml"
     ]
-   },
-   {
-    "sha": "252bc66",
-    "date": "2026-11-11",
-    "author": "dependabot[bot]",
-    "subject": "fix: bump msw from 2.12.7 to 3.0.4 (#297)",
-    "files": [
-     "bun.lock",
-     "deno.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "src/components/dashboard/DashboardExecutivo.tsx",
     3
+   ],
+   [
+    "src/components/contas-pagar/ContasPagarTableRow.tsx",
+    2
+   ],
+   [
+    "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
+    2
+   ],
+   [
+    "src/hooks/useAcordosParcelamento.ts",
+    2
    ],
    [
     "docs/prod-readiness.md",
@@ -245801,67 +245933,55 @@
     2
    ],
    [
-    "bun.lock",
-    2
-   ],
-   [
-    "package.json",
-    2
-   ],
-   [
-    "src/components/asaas/WebhooksLogPanel.tsx",
+    "src/components/compras/PedidoCompraForm.tsx",
     1
    ],
    [
-    "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
+    "src/components/conciliacao/ConciliacaoSplitDialog.tsx",
     1
    ],
    [
-    "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts",
+    "src/components/contas-receber/AplicarDescontoDialog.tsx",
     1
    ],
    [
-    "src/components/pix-hub/PixTemplates.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
     1
    ],
    [
-    "src/hooks/useOportunidadesElisao.ts",
+    "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
     1
    ],
    [
-    "src/hooks/usePixTemplates.test.ts",
+    "src/hooks/__tests__/colunasReligadas.test.tsx",
     1
    ],
    [
-    "src/hooks/usePixTemplates.ts",
+    "src/hooks/__tests__/useContratos.test.tsx",
     1
    ],
    [
-    "src/hooks/useScimChecklist.ts",
+    "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
     1
    ],
    [
-    "src/hooks/useSecurityAlerts.ts",
+    "src/hooks/expert-actions/financial-actions.ts",
     1
    ],
    [
-    "src/integrations/supabase/types.ts",
+    "src/hooks/useAlertasTributarios.ts",
     1
    ],
    [
-    "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
+    "src/hooks/useApuracoesTributarias.ts",
     1
    ],
    [
-    "scripts/security/test-canonical-db-gates.mjs",
+    "src/hooks/useConciliacaoPage.ts",
     1
    ],
    [
-    "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
+    "src/hooks/useContratos.ts",
     1
    ]
   ]

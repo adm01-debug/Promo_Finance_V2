@@ -2362,7 +2362,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 299,
+   "usado_por": 300,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -2417,7 +2417,7 @@
     "pages/clientes",
     "pages/tributario"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
