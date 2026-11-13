@@ -70,7 +70,8 @@ export function useCreateScimToken() {
           nome: input.nome,
           provider_id: input.provider_id ?? null,
           expires_at: input.expires_at ?? null,
-          // TODO(2026-08-14): default_role removido — coluna não existe em scim_tokens (types.ts canônico)
+          // Sem papel escolhido, omite o campo e vale o DEFAULT 'visualizador' da coluna.
+          default_role: input.default_role ?? undefined,
           token_hash,
           token_prefix,
         })

@@ -120,7 +120,7 @@ export async function criarContaPagar(
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
   const {
-    data: { user: _user },
+    data: { user },
   } = await supabase.auth.getUser();
   const { data: empresa } = await supabase
     .from('empresas')
@@ -136,10 +136,11 @@ export async function criarContaPagar(
     descricao: action.descricao || 'Lançamento via EXPERT',
     valor: action.valor || 0,
     data_vencimento: action.data_vencimento || todayISOLocal(),
-    // TODO(2026-08-14): data_emissao/created_by removidos — não existem em contas_pagar (types.ts canônico)
+    data_emissao: todayISOLocal(),
     tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
+    user_id: user?.id ?? null,
   });
 
   if (error) throw error;
@@ -156,7 +157,7 @@ export async function criarContaReceber(
   queryClient: ReturnType<typeof useQueryClient>
 ): Promise<ActionResult> {
   const {
-    data: { user: _user },
+    data: { user },
   } = await supabase.auth.getUser();
   const { data: empresa } = await supabase
     .from('empresas')
@@ -176,7 +177,7 @@ export async function criarContaReceber(
     tipo_cobranca: (action.tipo_cobranca as TipoCobranca) || 'boleto',
     status: 'pendente',
     empresa_id: empresa.id,
-    // TODO(2026-08-14): created_by removido — coluna não existe em contas_receber (types.ts canônico)
+    user_id: user?.id ?? null,
   });
 
   if (error) throw error;
@@ -216,10 +217,9 @@ export async function agendarCobranca(contaId: string): Promise<ActionResult> {
   await bestEffort(
     supabase.from('historico_cobranca').insert({
       conta_receber_id: contaId,
-      // TODO(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);
-      // etapa_anterior preservada em metadata (Json)
       etapa: proximaEtapa,
-      metadata: { etapa_anterior: etapaAtual },
+      etapa_anterior: etapaAtual,
+      etapa_nova: proximaEtapa,
     }),
     'registrar o histórico de cobrança'
   );

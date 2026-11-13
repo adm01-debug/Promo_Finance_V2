@@ -69,6 +69,8 @@ interface ContaReceber {
   categoria_id: string | null;
   conta_bancaria_id: string | null;
   tipo_cobranca: string;
+  codigo_barras: string | null;
+  link_boleto: string | null;
   updated_at: string;
 }
 
@@ -148,6 +150,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         categoria_id: conta.categoria_id || undefined,
         conta_bancaria_id: conta.conta_bancaria_id || undefined,
         tipo_cobranca: conta.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
+        codigo_barras: conta.codigo_barras || undefined,
+        link_boleto: conta.link_boleto || undefined,
       });
       if (conta.cliente_id) setShowClienteSelect(true);
     } else if (!conta && open) {
@@ -186,10 +190,11 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
         vendedor_id: data.vendedor_id || null,
         tipo_cobranca: data.tipo_cobranca,
         numero_documento: data.numero_documento || null,
-        // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
+        codigo_barras: data.codigo_barras || null,
+        link_boleto: data.link_boleto || null,
         chave_pix: data.chave_pix || null,
         observacoes: data.observacoes || null,
-        // TODO: coluna 'frequencia_recorrencia' não existe em contas_receber no types.ts (removida)
+        frequencia_recorrencia: data.recorrente ? data.frequencia_recorrencia || 'mensal' : null,
         user_id: user.id,
         status: 'pendente',
         etapa_cobranca: 'preventiva',
@@ -235,7 +240,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           conta_bancaria_id: data.conta_bancaria_id || null,
           tipo_cobranca: data.tipo_cobranca,
           numero_documento: data.numero_documento || null,
-          // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
+          codigo_barras: data.codigo_barras || null,
+          link_boleto: data.link_boleto || null,
           chave_pix: data.chave_pix || null,
           observacoes: data.observacoes || null,
         }
@@ -290,6 +296,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
               conta_bancaria_id: row.conta_bancaria_id || undefined,
               tipo_cobranca: row.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
               numero_documento: row.numero_documento || undefined,
+              codigo_barras: row.codigo_barras || undefined,
+              link_boleto: row.link_boleto || undefined,
               chave_pix: row.chave_pix || undefined,
               observacoes: row.observacoes || undefined,
             });

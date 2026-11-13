@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { FrequenciaPagamento } from '@/hooks/usePagamentosRecorrentes';
+import type { Database } from '@/integrations/supabase/types';
 
 export const formSchema = z.object({
   descricao: z.string().min(3, 'Descrição deve ter pelo menos 3 caracteres'),
@@ -35,12 +36,16 @@ export const frequenciaOptions: { value: FrequenciaPagamento; label: string }[] 
   { value: 'anual', label: 'Anual' },
 ];
 
-export type TipoCobranca = 'boleto' | 'pix' | 'transferencia' | 'cartao' | 'dinheiro';
+// Valores do enum public.tipo_cobranca (coluna pagamentos_recorrentes.tipo_cobranca).
+export type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
 
 export const tipoCobrancaOptions: { value: TipoCobranca; label: string }[] = [
   { value: 'boleto', label: 'Boleto' },
   { value: 'pix', label: 'PIX' },
   { value: 'transferencia', label: 'Transferência' },
-  { value: 'cartao', label: 'Cartão' },
+  { value: 'debito_automatico', label: 'Débito automático' },
+  { value: 'cartao_credito', label: 'Cartão de crédito' },
+  { value: 'cartao_debito', label: 'Cartão de débito' },
+  { value: 'cheque', label: 'Cheque' },
   { value: 'dinheiro', label: 'Dinheiro' },
 ];

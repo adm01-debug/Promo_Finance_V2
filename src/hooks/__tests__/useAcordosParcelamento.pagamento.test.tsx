@@ -56,6 +56,24 @@ async function montaHook(respostas: Record<string, Resultado[]>) {
 }
 
 describe('registrarPagamento', () => {
+  it('grava data_pagamento e valor_pago na parcela', async () => {
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [{ data: [], error: null }],
+      parcelas_acordo: filaParcelas({ data: [{ status: 'pendente' }], error: null }),
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() =>
+      expect(escritas.some((e) => e.tabela === 'parcelas_acordo' && e.metodo === 'update')).toBe(
+        true
+      )
+    );
+    expect(
+      escritas.find((e) => e.tabela === 'parcelas_acordo' && e.metodo === 'update')?.payload
+    ).toEqual({ status: 'pago', data_pagamento: '2026-04-10', valor_pago: 500 });
+  });
+
   it('quita o acordo quando todas as parcelas estão pagas', async () => {
     const { result, escritas } = await montaHook({
       acordos_parcelamento: [
