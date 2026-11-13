@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a49b1c7eed` · branch `main` · 2026-11-13 19:00 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b93354437a` · branch `main` · 2026-11-13 20:26 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -350,6 +350,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `contas_pagar` | `recorrente` | default false |
 | `contas_pagar` | `metadata` | default '{}'::jsonb |
 | `contas_pagar` | `aprovado_por` | FK → users.id |
+| `contas_pagar` | `tags` | default '{}'::text[] |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id) |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL |
@@ -379,6 +380,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `contas_receber` | `(tabela)` | constraint contas_receber_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL |
 | `contas_receber` | `(tabela)` | constraint contas_receber_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID |
 | `contas_receber` | `(tabela)` | constraint contas_receber_status_check CHECK (status IN ( 'pendente', 'recebido', 'pago', 'vencido', 'cancelado', 'parcial', 'atrasado', 'em_acordo' )) |
+| `contas_receber` | `(tabela)` | constraint contas_receber_frequencia_recorrencia_check CHECK (frequencia_recorrencia IS NULL OR frequencia_recorrencia IN ('semanal','quinzenal','mensal','bimestral','trimestral','semestral','anual')) |
 | `categorias` | `id` | PK; default gen_random_uuid() |
 | `categorias` | `nome` | obrigatório |
 | `categorias` | `tipo` | obrigatório |
@@ -478,6 +480,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `transacoes_bancarias` | `saldo` | default 0 |
 | `transacoes_bancarias` | `regra_id` | FK → regras_conciliacao.id |
 | `transacoes_bancarias` | `confirmado_por` | FK → users.id |
+| `transacoes_bancarias` | `conciliacao_parcial` | default false |
 | `notas_fiscais` | `id` | PK; default gen_random_uuid() |
 | `notas_fiscais` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
 | `notas_fiscais` | `chave_acesso` | único |
@@ -497,6 +500,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `alertas` | `lido` | default false |
 | `alertas` | `created_at` | default now() |
 | `alertas` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
+| `alertas` | `status` | default 'pendente' |
+| `alertas` | `metadata` | default '{}'::jsonb |
 | `alertas` | `(tabela)` | constraint alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `configuracoes_aprovacao` | `id` | PK; default gen_random_uuid() |
 | `configuracoes_aprovacao` | `empresa_id` | FK → empresas.id |
@@ -612,12 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `created_at` | default now() |
 | `feedback_conciliacao_ia` | `score_original` | default 0 |
 | `feedback_conciliacao_ia` | `created_by` | FK → users.id |
-| `metas_financeiras` | `id` | PK; default gen_random_uuid() |
-| `metas_financeiras` | `empresa_id` | FK → empresas.id |
-| `metas_financeiras` | `titulo` | obrigatório |
-| `metas_financeiras` | `tipo` | obrigatório |
-| `metas_financeiras` | `valor_meta` | obrigatório |
-| … +2406 linhas — lista completa em `context.json` | | |
+| … +2423 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1089,6 +1089,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `empresas` | `estado` | **livre (sem enum/CHECK)** |  |
 | `transacoes_bancarias` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `notas_fiscais` | `status` | **livre (sem enum/CHECK)** | `emitida` |
+| `alertas` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `solicitacoes_aprovacao` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `historico_relatorios` | `status` | `erro`, `parcial`, `sucesso` | `sucesso` |
 | `bitrix_sync_logs` | `status` | **livre (sem enum/CHECK)** |  |
@@ -1096,6 +1097,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `boletos` | `bitrix_status` | **livre (sem enum/CHECK)** |  |
 | `historico_cobranca` | `status` | **livre (sem enum/CHECK)** |  |
 | `historico_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
+| `historico_cobranca` | `etapa_anterior` | **livre (sem enum/CHECK)** |  |
+| `historico_cobranca` | `etapa_nova` | **livre (sem enum/CHECK)** |  |
 | `expert_conversations` | `status` | **livre (sem enum/CHECK)** |  |
 | `alertas_preditivos` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `open_finance_consents` | `status` | **livre (sem enum/CHECK)** | `pending` |

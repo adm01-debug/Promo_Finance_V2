@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a49b1c7eed` · branch `main` · 2026-11-13 19:00 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b93354437a` · branch `main` · 2026-11-13 20:26 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -945,7 +945,7 @@ Middleware matcher (Next.js): nenhum
 
 ## Multi-tenancy
 
-- Chave de tenant: **`empresa_id`** presente em 129 tabela(s): `clientes`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `lalur_lancamentos`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `plano_contas`, `contatos_financeiros`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `configuracoes_receber`, `execucoes_regua_cobranca`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_analise_gap`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `auditoria_configuracoes`, `regua_cobranca_status`, `conciliacao_sugestoes`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `asaas_scheduled_transfers`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `obrigacoes_acessorias`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `simulacoes`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `drivers`, `asaas_payment_links`, `lalamove_orders`
+- Chave de tenant: **`empresa_id`** presente em 130 tabela(s): `clientes`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `lalur_lancamentos`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `plano_contas`, `contatos_financeiros`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `configuracoes_receber`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_analise_gap`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `auditoria_configuracoes`, `regua_cobranca_status`, `conciliacao_sugestoes`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `asaas_scheduled_transfers`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `obrigacoes_acessorias`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `simulacoes`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `drivers`, `asaas_payment_links`, `lalamove_orders`
 - Cobertura: 43% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
 
 ## Soft delete (registros 'apagados' continuam na tabela — filtre!)
@@ -1069,7 +1069,7 @@ Middleware matcher (Next.js): nenhum
 | `new_device_alerts` | `created_at` |
 | `webauthn_credentials` | `created_at` |
 | `allowed_countries` | `created_at` |
-| `apuracoes_tributarias` | `created_at`, `updated_at` |
+| `apuracoes_tributarias` | `created_at`, `created_by`, `updated_at` |
 | `creditos_tributarios` | `created_at` |
 | `operacoes_tributaveis` | `created_at`, `updated_at` |
 | `split_payment_transacoes` | `created_at`, `updated_at` |
@@ -1102,8 +1102,8 @@ Middleware matcher (Next.js): nenhum
 | `templates_cobranca` | `created_at`, `updated_at` |
 | `fila_cobrancas` | `created_at`, `updated_at` |
 | `execucoes_cobranca` | `created_at` |
-| `negativacoes` | `created_at` |
-| `protestos` | `created_at` |
+| `negativacoes` | `created_at`, `created_by` |
+| `protestos` | `created_at`, `created_by` |
 | `ponto_departamentos` | `created_at`, `updated_at` |
 | `ponto_funcionarios` | `created_at`, `updated_at` |
 | `ponto_registros` | `created_at`, `updated_at` |
@@ -1397,11 +1397,13 @@ Middleware matcher (Next.js): nenhum
 | `contas_receber` | `desconto` | `numeric` |
 | `contas_receber` | `total_parcelas` | `integer` |
 | `contas_receber` | `valor_desconto` | `NUMERIC(15,2)` |
+| `contas_receber` | `valor_final` | `numeric(15,2)` |
 | `contas_bancarias` | `saldo_inicial` | `NUMERIC` |
 | `contas_bancarias` | `saldo_atual` | `numeric` |
 | `contas_bancarias` | `saldo_disponivel` | `numeric` |
 | `transacoes_bancarias` | `valor` | `NUMERIC` |
 | `transacoes_bancarias` | `saldo` | `NUMERIC` |
+| `transacoes_bancarias` | `valor_conciliado` | `numeric` |
 | `notas_fiscais` | `valor_total` | `NUMERIC` |
 | `notas_fiscais` | `valor_icms` | `NUMERIC` |
 | `notas_fiscais` | `valor_produtos` | `NUMERIC` |
@@ -1426,6 +1428,7 @@ Middleware matcher (Next.js): nenhum
 | `acordos_parcelamento` | `juros_aplicado` | `NUMERIC(15,2)` |
 | `acordos_parcelamento` | `valor_parcela` | `NUMERIC(15,2)` |
 | `parcelas_acordo` | `valor` | `NUMERIC(15,2)` |
+| `parcelas_acordo` | `valor_pago` | `numeric(15,2)` |
 | `apuracoes_tributarias` | `valor_total` | `NUMERIC` |
 | `apuracoes_tributarias` | `total_tributos_novos` | `NUMERIC` |
 | `apuracoes_tributarias` | `total_tributos_residuais` | `NUMERIC` |
@@ -1433,6 +1436,7 @@ Middleware matcher (Next.js): nenhum
 | `creditos_tributarios` | `saldo_disponivel` | `NUMERIC` |
 | `creditos_tributarios` | `valor_credito` | `NUMERIC(15,2)` |
 | `creditos_tributarios` | `valor_utilizado` | `NUMERIC` |
+| `creditos_tributarios` | `valor_base` | `numeric(15,2)` |
 | `operacoes_tributaveis` | `valor_total` | `NUMERIC` |
 | `operacoes_tributaveis` | `valor_operacao` | `numeric` |
 | `operacoes_tributaveis` | `valor_desconto` | `numeric` |
@@ -1511,6 +1515,7 @@ Middleware matcher (Next.js): nenhum
 | `kpis_operacionais` | `valor_atual` | `numeric` |
 | `pedidos_compra` | `valor_total` | `NUMERIC` |
 | `itens_pedido_compra` | `valor_unitario` | `NUMERIC` |
+| `itens_pedido_compra` | `valor_total` | `numeric` |
 | `fluxos_aprovacao_niveis` | `valor_minimo` | `NUMERIC` |
 | `sessoes_conciliacao` | `total_conciliados` | `integer` |
 | `contratos` | `valor_mensal` | `NUMERIC(15,2)` |

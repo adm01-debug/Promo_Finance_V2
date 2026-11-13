@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)",
    "fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)",
    "fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)",
    "fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)",
-   "lint zero + type-check estrito zerado (72→0) (#328)",
-   "fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)"
+   "lint zero + type-check estrito zerado (72→0) (#328)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

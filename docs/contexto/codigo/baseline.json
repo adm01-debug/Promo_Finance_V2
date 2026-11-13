@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "a49b1c7eed8a0b69eb832ccc38e58aeaed8dde69",
+  "commit": "b93354437a1ec7d639cd5ab0c27461ac1e6420d0",
   "branch": "main",
-  "data_commit": "2026-11-13T17:52:46Z",
+  "data_commit": "2026-11-13T18:47:12Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b933544",
+    "data": "2026-11-13",
+    "assunto": "feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)"
+   },
    {
     "sha": "a49b1c7",
     "data": "2026-11-13",
@@ -126,14 +131,9 @@
     "sha": "b99e6a8",
     "data": "2026-11-12",
     "assunto": "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)"
-   },
-   {
-    "sha": "ea47e0c",
-    "data": "2026-11-12",
-    "assunto": "fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)"
    }
   ],
-  "arquivos_mudados_7d": 803,
+  "arquivos_mudados_7d": 802,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 100
+    "commits": 101
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3822,
+  "arquivos_total": 3823,
   "arquivos_codigo": 2414,
   "linhas_codigo": 433268,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1013,
+  "migrations": 1014,
   "cron_jobs": 21,
   "testes": 432,
   "workflows": 19,
@@ -1128,6 +1128,7 @@
   ],
   "tabelas_com_drift_migration_vs_types": [
    "acoes_recomendadas",
+   "alertas",
    "alertas_preditivos",
    "alertas_tributarios",
    "allowed_countries",

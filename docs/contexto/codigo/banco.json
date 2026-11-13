@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1013,
+ "migrations": 1014,
  "seeds": [],
  "avisos": [
   "181 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -4345,11 +4345,25 @@
      "default": null,
      "ref": null
     },
+    "metadata": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'::jsonb",
+     "ref": null
+    },
     "prioridade": {
      "tipo": "text",
      "nn": false,
      "pk": false,
      "default": "'media'",
+     "ref": null
+    },
+    "status": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": "'pendente'",
      "ref": null
     },
     "tipo": {
@@ -4440,7 +4454,10 @@
     "user_id": "string"
    },
    "drift": {
-    "so_na_migration": [],
+    "so_na_migration": [
+     "status",
+     "metadata"
+    ],
     "so_no_types": []
    },
    "usada_no_front": 6,
@@ -4806,7 +4823,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "auth"
     },
     "status": {
      "tipo": "text",
@@ -4840,7 +4857,7 @@
      "tipo": "uuid",
      "nn": false,
      "pk": false,
-     "default": null,
+     "default": "auth.uid()",
      "ref": "auth"
     },
     "valor": {
@@ -4896,10 +4913,21 @@
      "nome": "idx_alertas_trib_vencimento",
      "colunas": "data_vencimento",
      "unico": false
+    },
+    {
+     "nome": "idx_alertas_tributarios_resolvido_por",
+     "colunas": "resolvido_por",
+     "unico": false
+    },
+    {
+     "nome": "idx_alertas_tributarios_user_id",
+     "colunas": "user_id",
+     "unico": false
     }
    ],
    "fks": [
     "empresa_id->empresas",
+    "resolvido_por->auth",
     "user_id->auth"
    ],
    "criada_em": "20260106113401_fc3cbd5f-b566-478f-8c88-87b064f78f0c.sql",
@@ -6211,7 +6239,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "centros_custo"
     },
     "centro_custo_nome": {
      "tipo": "text",
@@ -6338,6 +6366,11 @@
      "unico": false
     },
     {
+     "nome": "idx_anomalia_toast_eventos_centro_custo_id",
+     "colunas": "centro_custo_id",
+     "unico": false
+    },
+    {
      "nome": "idx_anomalia_toast_eventos_user_dispatched",
      "colunas": "user_id, dispatched_at DESC",
      "unico": false
@@ -6345,6 +6378,7 @@
    ],
    "fks": [
     "anomalia_id->anomalias_detectadas",
+    "centro_custo_id->centros_custo",
     "user_id->auth"
    ],
    "criada_em": "20260423120452_1ba8026a-fdcf-4add-b73b-cea2d777117a.sql",
@@ -7524,11 +7558,11 @@
      "tipo": "uuid",
      "nn": false,
      "pk": false,
-     "default": null,
-     "ref": null
+     "default": "auth.uid()",
+     "ref": "auth"
     },
     "data_transmissao": {
-     "tipo": "timestamp with time zone",
+     "tipo": "timestamptz",
      "nn": false,
      "pk": false,
      "default": null,
@@ -7682,7 +7716,7 @@
      "ref": null
     },
     "protocolo_transmissao": {
-     "tipo": "varchar(100)",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
@@ -7760,6 +7794,11 @@
      "unico": false
     },
     {
+     "nome": "idx_apuracoes_tributarias_created_by",
+     "colunas": "created_by",
+     "unico": false
+    },
+    {
      "nome": "idx_apuracoes_tributarias_empresa",
      "colunas": "empresa_id",
      "unico": false
@@ -7771,6 +7810,7 @@
     }
    ],
    "fks": [
+    "created_by->auth",
     "empresa_id->empresas"
    ],
    "criada_em": "20260106105751_7e782e21-b8e9-4819-9fbf-d7ea14d17482.sql",
@@ -15968,9 +16008,9 @@
     },
     "data_emissao": {
      "tipo": "date",
-     "nn": true,
+     "nn": false,
      "pk": false,
-     "default": "CURRENT_DATE",
+     "default": null,
      "ref": null
     },
     "data_pagamento": {
@@ -16159,7 +16199,7 @@
      "tipo": "text[]",
      "nn": false,
      "pk": false,
-     "default": null,
+     "default": "'{}'::text[]",
      "ref": null
     },
     "tipo_cobranca": {
@@ -16937,7 +16977,7 @@
      "ref": null
     },
     "valor_final": {
-     "tipo": "numeric",
+     "tipo": "numeric(15,2)",
      "nn": false,
      "pk": false,
      "default": null,
@@ -17913,8 +17953,8 @@
   "creditos_tributarios": {
    "colunas": {
     "aliquota": {
-     "tipo": "numeric(6,4)",
-     "nn": true,
+     "tipo": "numeric(9,6)",
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -17934,7 +17974,7 @@
      "ref": null
     },
     "competencia_utilizacao": {
-     "tipo": "date",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
@@ -17962,14 +18002,14 @@
      "ref": null
     },
     "documento_chave": {
-     "tipo": "varchar(50)",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
      "ref": null
     },
     "documento_numero": {
-     "tipo": "varchar(50)",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
@@ -17983,7 +18023,7 @@
      "ref": null
     },
     "documento_tipo": {
-     "tipo": "varchar(20)",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
@@ -17997,7 +18037,7 @@
      "ref": "empresas"
     },
     "fornecedor_cnpj": {
-     "tipo": "varchar(20)",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
@@ -18011,7 +18051,7 @@
      "ref": "fornecedores"
     },
     "fornecedor_nome": {
-     "tipo": "varchar(200)",
+     "tipo": "text",
      "nn": false,
      "pk": false,
      "default": null,
@@ -18053,8 +18093,8 @@
      "ref": null
     },
     "tipo_credito": {
-     "tipo": "varchar(50)",
-     "nn": true,
+     "tipo": "text",
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -18075,7 +18115,7 @@
     },
     "valor_base": {
      "tipo": "numeric(15,2)",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -18113,6 +18153,16 @@
     {
      "nome": "idx_creditos_empresa_status",
      "colunas": "empresa_id, status",
+     "unico": false
+    },
+    {
+     "nome": "idx_creditos_tributarios_apuracao_id",
+     "colunas": "apuracao_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_creditos_tributarios_fornecedor_id",
+     "colunas": "fornecedor_id",
      "unico": false
     }
    ],
@@ -26441,7 +26491,7 @@
     },
     "etapa_nova": {
      "tipo": "text",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -28185,10 +28235,10 @@
      "ref": null
     },
     "valor_total": {
-     "tipo": "decimal(12,2)",
-     "nn": true,
+     "tipo": "numeric",
+     "nn": false,
      "pk": false,
-     "default": "0",
+     "default": null,
      "ref": null
     },
     "valor_unitario": {
@@ -29753,7 +29803,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "categorias"
     },
     "centro_custo_id": {
      "tipo": "uuid",
@@ -30005,6 +30055,11 @@
    ],
    "indices": [
     {
+     "nome": "idx_movimentacoes_categoria_id",
+     "colunas": "categoria_id",
+     "unico": false
+    },
+    {
      "nome": "idx_movimentacoes_conta_bancaria_id",
      "colunas": "conta_bancaria_id",
      "unico": false
@@ -30021,6 +30076,7 @@
     }
    ],
    "fks": [
+    "categoria_id->categorias",
     "centro_custo_id->centros_custo",
     "conta_bancaria_id->contas_bancarias",
     "conta_pagar_id->contas_pagar",
@@ -30627,8 +30683,8 @@
      "tipo": "uuid",
      "nn": false,
      "pk": false,
-     "default": null,
-     "ref": null
+     "default": "auth.uid()",
+     "ref": "auth"
     },
     "data_baixa": {
      "tipo": "date",
@@ -30746,6 +30802,11 @@
    ],
    "indices": [
     {
+     "nome": "idx_negativacoes_created_by",
+     "colunas": "created_by",
+     "unico": false
+    },
+    {
      "nome": "idx_negativacoes_empresa_id",
      "colunas": "empresa_id",
      "unico": false
@@ -30754,6 +30815,7 @@
    "fks": [
     "cliente_id->clientes",
     "conta_receber_id->contas_receber",
+    "created_by->auth",
     "empresa_id->empresas"
    ],
    "criada_em": "20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
@@ -34800,7 +34862,7 @@
     },
     "user_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": "auth"
@@ -34848,8 +34910,18 @@
    ],
    "indices": [
     {
+     "nome": "idx_pedidos_compra_centro_custo_id",
+     "colunas": "centro_custo_id",
+     "unico": false
+    },
+    {
      "nome": "idx_pedidos_compra_empresa_id",
      "colunas": "empresa_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_pedidos_compra_user_id",
+     "colunas": "user_id",
      "unico": false
     }
    ],
@@ -37592,8 +37664,8 @@
      "tipo": "uuid",
      "nn": false,
      "pk": false,
-     "default": null,
-     "ref": null
+     "default": "auth.uid()",
+     "ref": "auth"
     },
     "custas": {
      "tipo": "numeric",
@@ -37725,6 +37797,11 @@
    ],
    "indices": [
     {
+     "nome": "idx_protestos_created_by",
+     "colunas": "created_by",
+     "unico": false
+    },
+    {
      "nome": "idx_protestos_empresa_id",
      "colunas": "empresa_id",
      "unico": false
@@ -37733,6 +37810,7 @@
    "fks": [
     "cliente_id->clientes",
     "conta_receber_id->contas_receber",
+    "created_by->auth",
     "empresa_id->empresas"
    ],
    "criada_em": "20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
@@ -42742,7 +42820,7 @@
      "tipo": "public",
      "nn": false,
      "pk": false,
-     "default": null,
+     "default": "'visualizador'",
      "ref": null
     },
     "empresa_id": {
@@ -46571,7 +46649,7 @@
      "tipo": "numeric",
      "nn": false,
      "pk": false,
-     "default": "0",
+     "default": null,
      "ref": null
     }
    },
@@ -48415,11 +48493,11 @@
      "ref": null
     },
     "empresa_id": {
-     "tipo": "text",
+     "tipo": "uuid",
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "empresas"
     },
     "entity_type": {
      "tipo": "text",
@@ -48499,8 +48577,15 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [],
+   "indices": [
+    {
+     "nome": "idx_user_filter_presets_empresa_id",
+     "colunas": "empresa_id",
+     "unico": false
+    }
+   ],
    "fks": [
+    "empresa_id->empresas",
     "user_id->auth"
    ],
    "criada_em": "20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql",
