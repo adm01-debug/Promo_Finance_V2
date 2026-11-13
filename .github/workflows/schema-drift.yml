@@ -192,7 +192,26 @@ jobs:
             > /tmp/local_versions.txt
 
           comm -23 /tmp/remote_versions.txt /tmp/local_versions.txt > /tmp/remote_only.txt
-          comm -13 /tmp/remote_versions.txt /tmp/local_versions.txt > /tmp/local_only.txt
+
+          # Pendentes = arquivos cujo prefixo não consta do ledger, ignorando os
+          # artefatos fora do fluxo rastreável. Lista de exclusão replicada do
+          # gate "Gate — divergência histórica do ledger" de prod-migrate.yml —
+          # manter as duas em sincronia. Diferente daquele gate, aqui qualquer
+          # pendente (inclusive migration nova, > máximo remoto) falha o job.
+          : > /tmp/local_only.txt
+          for f in supabase/migrations/*.sql; do
+            bn=$(basename "$f")
+            case "$bn" in
+              001_*|002_*|003_*) continue ;;
+              20241231000000_*|20241231000001_*) continue ;;
+              20251231000001_*|20251231000002_*|20251231000003_*) continue ;;
+              20251231000100_*|20251231000200_*|20251231000300_*) continue ;;
+              *_ledger_reconciliado.sql) continue ;;
+              *_????????-????-????-????-????????????.sql) continue ;;
+            esac
+            V=$(echo "$bn" | cut -d_ -f1)
+            grep -qx "$V" /tmp/remote_versions.txt || echo "$bn" >> /tmp/local_only.txt
+          done
 
           REMOTE_ONLY=$(wc -l < /tmp/remote_only.txt)
           LOCAL_ONLY=$(wc -l < /tmp/local_only.txt)
