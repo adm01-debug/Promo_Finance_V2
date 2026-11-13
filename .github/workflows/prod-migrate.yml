@@ -293,6 +293,10 @@ jobs:
           perl -0777 -ne 'while (/CREATE (?:OR REPLACE )?VIEW public\.([a-z0-9_]+)[^;]*?WITH\s*\(\s*security_invoker/gi) { print "$1\n" }' \
             supabase/migrations/*.sql | sort -u >> /tmp/si-esperado.txt || true
           sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
+          # Views Lalamove excluídas por docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md
+          # (decisão de produto); ausência em PROD é estado esperado e
+          # não pode quebrar o guard.
+          sed -i '/^\(drivers_safe_view\|orders_safe_view\|orders_operator_view\)$/d' /tmp/si-esperado.txt
           # Só conta como protegida se o valor for verdadeiro — um
           # security_invoker=false gravado em PROD não satisfaz a matriz.
           psql "$PROD_DB_URL" -Atc \
