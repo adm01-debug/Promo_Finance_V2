@@ -53,6 +53,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_projecoes_reforma_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_projecoes_reforma_empresa_id ON public.projecoes_reforma USING btree (empresa_id)` |
 | projecoes_reforma_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX projecoes_reforma_pkey ON public.projecoes_reforma USING btree (id)` |
 
 

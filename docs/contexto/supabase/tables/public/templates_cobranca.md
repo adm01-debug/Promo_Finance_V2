@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -51,20 +51,11 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_templates_cobranca_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_templates_cobranca_empresa_id ON public.templates_cobranca USING btree (empresa_id)` |
 | templates_cobranca_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX templates_cobranca_pkey ON public.templates_cobranca USING btree (id)` |
 
 
 ## Policies (RLS)
-
-### `Admins can manage templates`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK |  |
 
 ### `templates_cobranca_empresa_select`
 

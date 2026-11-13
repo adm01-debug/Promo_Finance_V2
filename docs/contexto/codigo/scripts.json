@@ -962,7 +962,7 @@
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
    "descricao": null,
-   "linhas": 699,
+   "linhas": 697,
    "env": [],
    "npm_scripts": [],
    "workflows": [

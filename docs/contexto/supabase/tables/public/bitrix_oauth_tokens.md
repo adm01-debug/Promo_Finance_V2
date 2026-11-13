@@ -40,6 +40,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | bitrix_oauth_tokens_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bitrix_oauth_tokens_pkey ON public.bitrix_oauth_tokens USING btree (id)` |
+| idx_bitrix_oauth_tokens_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bitrix_oauth_tokens_empresa_id ON public.bitrix_oauth_tokens USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

@@ -7,7 +7,7 @@
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
 | policies | 1 |
-| realtime (publication) | não |
+| realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
 
@@ -38,6 +38,8 @@
 | 20 | `regra_id` | `uuid` | sim |  |  |  |
 | 21 | `data_confirmacao` | `timestamp with time zone` | sim |  |  |  |
 | 22 | `confirmado_por` | `uuid` | sim |  |  |  |
+| 23 | `conciliacao_parcial` | `boolean` | sim | `false` |  |  |
+| 24 | `valor_conciliado` | `numeric` | sim |  |  |  |
 
 
 ## Constraints

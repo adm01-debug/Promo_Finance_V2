@@ -45,6 +45,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_regua_cobranca_status_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_regua_cobranca_status_empresa_id ON public.regua_cobranca_status USING btree (empresa_id)` |
 | regua_cobranca_status_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regua_cobranca_status_pkey ON public.regua_cobranca_status USING btree (id)` |
 
 

@@ -46,6 +46,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_kpis_operacionais_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_kpis_operacionais_empresa_id ON public.kpis_operacionais USING btree (empresa_id)` |
 | kpis_operacionais_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX kpis_operacionais_pkey ON public.kpis_operacionais USING btree (id)` |
 | kpis_operacionais_unique | btree | user_id, nome | sim | sim |  | `CREATE UNIQUE INDEX kpis_operacionais_unique ON public.kpis_operacionais USING btree (user_id, nome)` |
 

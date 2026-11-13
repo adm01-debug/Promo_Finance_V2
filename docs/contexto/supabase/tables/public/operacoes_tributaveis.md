@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -83,10 +83,51 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_operacoes_tributaveis_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_operacoes_tributaveis_empresa_id ON public.operacoes_tributaveis USING btree (empresa_id)` |
 | operacoes_tributaveis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX operacoes_tributaveis_pkey ON public.operacoes_tributaveis USING btree (id)` |
 
 
 ## Policies (RLS)
+
+### `Admin pode deletar operacoes_tributaveis`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Financeiro+ podem atualizar operacoes_tributaveis`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem inserir operacoes_tributaveis`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem ver operacoes_tributaveis`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `operacoes_tributaveis_empresa_select`
 

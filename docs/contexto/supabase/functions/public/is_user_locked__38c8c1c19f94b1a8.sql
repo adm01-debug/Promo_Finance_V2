@@ -2,16 +2,17 @@ CREATE OR REPLACE FUNCTION public.is_user_locked(_email text)
  RETURNS boolean
  LANGUAGE plpgsql
  SECURITY DEFINER
- SET search_path TO 'public'
+ SET search_path TO 'public', 'pg_catalog'
 AS $function$
 DECLARE
-  v_locked boolean := false;
+  v_email text := lower(btrim(_email));
+  v_result RECORD;
 BEGIN
-  SELECT COALESCE(is_locked, false) INTO v_locked
-  FROM public.get_lockout_details(_email)
-  LIMIT 1;
-  RETURN COALESCE(v_locked, false);
-EXCEPTION WHEN OTHERS THEN
-  RETURN false;
+  IF v_email IS NULL OR v_email = '' THEN
+    RETURN false;
+  END IF;
+
+  SELECT * INTO v_result FROM public.get_lockout_details(v_email);
+  RETURN FOUND AND v_result.is_locked;
 END;
 $function$

@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 8 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -45,15 +45,65 @@
 
 ## Policies (RLS)
 
-### `asaas_config_admin_all`
+### `Users can insert their own company asaas config`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING |  |
+| WITH CHECK | `empresa_acessivel(empresa_id)` |
+
+### `Users can update their own company asaas config`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
+
+### `Users can view their own company asaas config`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
+
+### `asaas_config_delete_admin`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = asaas_config.empresa_id) AND (ue.ativo = true) AND (ue.role = 'admin'::app_role)))))` |
+| WITH CHECK |  |
+
+### `asaas_config_insert_admin`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = asaas_config.empresa_id) AND (ue.ativo = true) AND (ue.role = ANY (ARRAY['admin'::app_role, 'financeiro'::app_role]))))))` |
+
+### `asaas_config_select_financeiro`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = asaas_config.empresa_id) AND (ue.ativo = true) AND (ue.role = ANY (ARRAY['admin'::app_role, 'financeiro'::app_role, 'contador'::app_role]))))))` |
+| WITH CHECK |  |
 
 ### `asaas_config_tenant_rw`
 
@@ -64,6 +114,16 @@
 | roles | authenticated |
 | USING | `(has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
 | WITH CHECK | `(has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+
+### `asaas_config_update_admin`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = asaas_config.empresa_id) AND (ue.ativo = true) AND (ue.role = ANY (ARRAY['admin'::app_role, 'financeiro'::app_role]))))))` |
+| WITH CHECK | `(empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.empresa_id = asaas_config.empresa_id) AND (ue.ativo = true) AND (ue.role = ANY (ARRAY['admin'::app_role, 'financeiro'::app_role]))))))` |
 
 
 ## Triggers

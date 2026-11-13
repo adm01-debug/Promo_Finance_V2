@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | sim |
-| policies | 3 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -53,6 +53,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_profiles_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_profiles_empresa_id ON public.profiles USING btree (empresa_id)` |
 | profiles_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)` |
 | profiles_user_id_key | btree | user_id | sim | sim |  | `CREATE UNIQUE INDEX profiles_user_id_key ON public.profiles USING btree (user_id)` |
 
@@ -66,8 +67,28 @@
 | comando | ALL |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+
+### `Admins can update all profiles`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Admins can view all profiles`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `Users can update own profile`
 
@@ -86,7 +107,7 @@
 | comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role))` |
+| USING | `((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id) OR (has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)))` |
 | WITH CHECK |  |
 
 

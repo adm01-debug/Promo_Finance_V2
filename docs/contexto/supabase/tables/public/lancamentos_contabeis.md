@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 1 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -64,18 +64,8 @@
 | comando | ALL |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `((user_id = ( SELECT ( SELECT auth.uid() AS uid) AS uid)) OR has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT ( SELECT auth.uid() AS uid) AS uid)) AND (ue.ativo = true)))))` |
-| WITH CHECK | `((user_id = ( SELECT ( SELECT auth.uid() AS uid) AS uid)) OR has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id    FROM user_empresas ue   WHERE ((ue.user_id = ( SELECT ( SELECT auth.uid() AS uid) AS uid)) AND (ue.ativo = true)))))` |
-
-### `Owner manage lancamentos`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
-| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
+| USING | `(empresa_acessivel(empresa_id) AND ((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id    FROM user_empresas ue   WHERE ((ue.user_id = auth.uid()) AND (ue.ativo = true))))))` |
+| WITH CHECK | `(empresa_acessivel(empresa_id) AND ((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id    FROM user_empresas ue   WHERE ((ue.user_id = auth.uid()) AND (ue.ativo = true))))))` |
 
 
 ## Triggers

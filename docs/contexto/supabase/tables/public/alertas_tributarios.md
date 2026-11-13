@@ -7,7 +7,7 @@
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
 | policies | 1 |
-| realtime (publication) | não |
+| realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
 
@@ -29,6 +29,15 @@
 | 11 | `prioridade` | `text` | sim |  |  |  |
 | 12 | `lido` | `boolean` | sim | `false` |  |  |
 | 13 | `resolvido` | `boolean` | sim | `false` |  |  |
+| 14 | `user_id` | `uuid` | sim | `auth.uid()` |  |  |
+| 15 | `data_lembrete` | `date` | sim |  |  |  |
+| 16 | `entidade_tipo` | `text` | sim |  |  |  |
+| 17 | `entidade_id` | `uuid` | sim |  |  |  |
+| 18 | `competencia` | `text` | sim |  |  |  |
+| 19 | `acao_url` | `text` | sim |  |  |  |
+| 20 | `acao_label` | `text` | sim |  |  |  |
+| 21 | `resolvido_em` | `timestamp with time zone` | sim |  |  |  |
+| 22 | `resolvido_por` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
@@ -37,6 +46,8 @@
 |---|---|---|---|---|---|
 | alertas_tributarios_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` | NO ACTION | NO ACTION | sim |
 | alertas_tributarios_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
+| alertas_tributarios_resolvido_por_fkey | FOREIGN KEY | `FOREIGN KEY (resolvido_por) REFERENCES auth.users(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
+| alertas_tributarios_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 
 
 ## Referenciada por (FKs de outras tabelas)
@@ -51,6 +62,9 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | alertas_tributarios_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX alertas_tributarios_pkey ON public.alertas_tributarios USING btree (id)` |
+| idx_alertas_tributarios_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_alertas_tributarios_empresa_id ON public.alertas_tributarios USING btree (empresa_id)` |
+| idx_alertas_tributarios_resolvido_por | btree | resolvido_por | não | sim |  | `CREATE INDEX idx_alertas_tributarios_resolvido_por ON public.alertas_tributarios USING btree (resolvido_por)` |
+| idx_alertas_tributarios_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_alertas_tributarios_user_id ON public.alertas_tributarios USING btree (user_id)` |
 
 
 ## Policies (RLS)

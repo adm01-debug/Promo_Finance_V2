@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 5 |
+| policies | 0 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -50,59 +50,13 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | alerts_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX alerts_pkey ON public.alerts USING btree (id)` |
+| idx_alerts_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_alerts_empresa_id ON public.alerts USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
 
-### `Authorized roles can view alerts`
+> ⚠️ RLS habilitado **sem policies**: nenhum acesso via API (anon/authenticated).
 
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'operator'::app_role))` |
-| WITH CHECK |  |
-
-### `Managers can delete alerts`
-
-| campo | valor |
-|---|---|
-| comando | DELETE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))` |
-| WITH CHECK |  |
-
-### `Operators can insert alerts`
-
-| campo | valor |
-|---|---|
-| comando | INSERT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING |  |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'operator'::app_role))` |
-
-### `Operators can update alerts`
-
-| campo | valor |
-|---|---|
-| comando | UPDATE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'operator'::app_role))` |
-| WITH CHECK |  |
-
-### `Viewers can view alerts`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'viewer'::app_role)` |
-| WITH CHECK |  |
 
 
 ## Triggers

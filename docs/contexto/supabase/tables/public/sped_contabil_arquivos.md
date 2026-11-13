@@ -59,6 +59,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sped_contabil_arquivos_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_sped_contabil_arquivos_empresa_id ON public.sped_contabil_arquivos USING btree (empresa_id)` |
 | sped_contabil_arquivos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sped_contabil_arquivos_pkey ON public.sped_contabil_arquivos USING btree (id)` |
 
 
@@ -101,8 +102,8 @@
 | comando | UPDATE |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| USING | `(has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 
 ## Triggers

@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -63,6 +63,36 @@
 
 ## Policies (RLS)
 
+### `Users can delete own scheduled reports or elevated`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(((created_by = auth.uid()) OR has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Users can update own scheduled reports or elevated`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(((created_by = auth.uid()) OR has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(((created_by = auth.uid()) OR has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])) AND empresa_acessivel(empresa_id))` |
+
+### `Users can view own scheduled reports or elevated`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(((created_by = auth.uid()) OR has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
 ### `relatorios_agendados_proprios`
 
 | campo | valor |
@@ -70,8 +100,8 @@
 | comando | ALL |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `((created_by = ( SELECT auth.uid() AS uid)) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role))` |
-| WITH CHECK | `((created_by = ( SELECT auth.uid() AS uid)) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role))` |
+| USING | `(((created_by = ( SELECT auth.uid() AS uid)) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(((created_by = ( SELECT auth.uid() AS uid)) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)) AND empresa_acessivel(empresa_id))` |
 
 
 ## Triggers

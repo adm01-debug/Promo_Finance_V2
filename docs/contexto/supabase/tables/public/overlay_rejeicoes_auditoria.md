@@ -55,6 +55,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_overlay_rejeicoes_auditoria_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_overlay_rejeicoes_auditoria_empresa_id ON public.overlay_rejeicoes_auditoria USING btree (empresa_id)` |
 | overlay_rejeicoes_auditoria_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX overlay_rejeicoes_auditoria_pkey ON public.overlay_rejeicoes_auditoria USING btree (id)` |
 
 

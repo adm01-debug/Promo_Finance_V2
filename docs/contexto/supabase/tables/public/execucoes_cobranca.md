@@ -43,6 +43,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | execucoes_cobranca_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX execucoes_cobranca_pkey ON public.execucoes_cobranca USING btree (id)` |
+| idx_execucoes_cobranca_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_execucoes_cobranca_empresa_id ON public.execucoes_cobranca USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

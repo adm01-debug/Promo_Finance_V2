@@ -54,6 +54,7 @@
 |---|---|---|---|
 | public.contas_pagar | contas_pagar_fornecedor_id_fkey | fornecedor_id | SET NULL |
 | public.contratos | contratos_fornecedor_id_fkey | fornecedor_id | SET NULL |
+| public.creditos_tributarios | creditos_tributarios_fornecedor_id_fkey | fornecedor_id | SET NULL |
 | public.pedidos_compra | pedidos_compra_fornecedor_id_fkey | fornecedor_id | NO ACTION |
 
 

@@ -53,6 +53,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | bloqueios_duplicidade_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bloqueios_duplicidade_pkey ON public.bloqueios_duplicidade USING btree (id)` |
+| idx_bloqueios_duplicidade_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bloqueios_duplicidade_empresa_id ON public.bloqueios_duplicidade USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

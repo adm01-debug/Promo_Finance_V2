@@ -57,24 +57,24 @@
 
 ## Policies (RLS)
 
-### `historico_conciliacao_ia_role_select`
+### `Financeiro+ podem inserir historico_conciliacao_ia`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (((tipo_lancamento = 'pagar'::text) AND (conta_pagar_id IS NOT NULL) AND (EXISTS ( SELECT 1    FROM contas_pagar cp   WHERE ((cp.id = historico_conciliacao_ia.conta_pagar_id) AND empresa_acessivel(cp.empresa_id))))) OR ((tipo_lancamento = 'receber'::text) AND (conta_receber_id IS NOT NULL) AND (EXISTS ( SELECT 1    FROM contas_receber cr   WHERE ((cr.id = historico_conciliacao_ia.conta_receber_id) AND empresa_acessivel(cr.empresa_id)))))))` |
+
+### `Financeiro+ podem ver historico_conciliacao_ia`
 
 | campo | valor |
 |---|---|
 | comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
-| WITH CHECK |  |
-
-### `historico_conciliacao_ia_tenant_select`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `((has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) OR has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'financeiro'::app_role)) AND ((EXISTS ( SELECT 1    FROM contas_receber cr   WHERE ((cr.id = historico_conciliacao_ia.conta_receber_id) AND empresa_acessivel(cr.empresa_id)))) OR (EXISTS ( SELECT 1    FROM contas_pagar cp   WHERE ((cp.id = historico_conciliacao_ia.conta_pagar_id) AND empresa_acessivel(cp.empresa_id)))) OR (EXISTS ( SELECT 1    FROM sessoes_conciliacao s   WHERE ((s.id = historico_conciliacao_ia.sessao_id) AND ((s.user_id = ( SELECT ( SELECT auth.uid() AS uid) AS uid)) OR empresa_acessivel(s.empresa_id)))))))` |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (((tipo_lancamento = 'pagar'::text) AND (conta_pagar_id IS NOT NULL) AND (EXISTS ( SELECT 1    FROM contas_pagar cp   WHERE ((cp.id = historico_conciliacao_ia.conta_pagar_id) AND empresa_acessivel(cp.empresa_id))))) OR ((tipo_lancamento = 'receber'::text) AND (conta_receber_id IS NOT NULL) AND (EXISTS ( SELECT 1    FROM contas_receber cr   WHERE ((cr.id = historico_conciliacao_ia.conta_receber_id) AND empresa_acessivel(cr.empresa_id)))))))` |
 | WITH CHECK |  |
 
 

@@ -8,7 +8,13 @@ DECLARE
   v_csv text;
 BEGIN
   IF NOT public.has_role(auth.uid(), 'admin'::public.app_role) THEN
-    RAISE EXCEPTION 'Acesso negado: apenas administradores podem exportar auditoria.';
+    RAISE EXCEPTION 'Acesso negado: apenas administradores podem exportar auditoria.'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF NOT public.empresa_acessivel(p_empresa_id) THEN
+    RAISE EXCEPTION 'Acesso negado: empresa não acessível para este usuário.'
+      USING ERRCODE = '42501';
   END IF;
 
   WITH linhas AS (
@@ -20,7 +26,6 @@ BEGIN
       COALESCE(p.asaas_id, '')                   AS asaas_id,
       COALESCE(p.status, '')                     AS status,
       COALESCE(p.valor::text, '')                AS valor,
-      -- Escape CSV (RFC 4180): duplica aspas e envolve em aspas
       '"' || replace(replace(COALESCE(a.details::text, '{}'), '"', '""'), E'\n', ' ') || '"' AS details
     FROM public.asaas_audit_trail a
     LEFT JOIN public.asaas_payments p ON p.id = a.asaas_payment_id

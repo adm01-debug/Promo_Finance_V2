@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `095a3f63c97fadf77db7afd43ef7af0b17c7c9d4` (2026-11-13T11:43:24-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a49b1c7eed8a0b69eb832ccc38e58aeaed8dde69` (2026-11-13T17:52:46Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3822 |
 | arquivos_codigo | 2414 |
-| linhas_codigo | 433270 |
+| linhas_codigo | 433268 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `a49b1c7` fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)
 - 2026-11-13 `095a3f6` fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)
 - 2026-11-13 `309bc9b` fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)
 - 2026-11-13 `7cbba6f` lint zero + type-check estrito zerado (72→0) (#328)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `8afbe7a` chore: remove categorias duplicadas e repassa referências (#319)
 - 2026-11-12 `05920df` fix: contas a pagar aceita status parcial (#318)
 - 2026-11-12 `7c4bc25` feat: contabilização usa a conta contábil da categoria (#317)
-- 2026-11-12 `4589361` fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

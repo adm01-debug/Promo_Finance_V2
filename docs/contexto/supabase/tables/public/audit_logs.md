@@ -7,7 +7,7 @@
 | RLS habilitado | sim |
 | RLS forçado (owner) | sim |
 | policies | 3 |
-| realtime (publication) | não |
+| realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
 

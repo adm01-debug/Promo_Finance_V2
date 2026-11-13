@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 5 |
+| policies | 6 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -59,6 +59,16 @@
 
 
 ## Policies (RLS)
+
+### `Apenas admin pode deletar fechamentos`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `fechamentos_insert`
 

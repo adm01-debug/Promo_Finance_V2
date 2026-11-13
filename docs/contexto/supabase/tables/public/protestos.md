@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -30,6 +30,9 @@
 | 12 | `cidade_cartorio` | `text` | sim |  |  |  |
 | 13 | `estado_cartorio` | `text` | sim |  |  |  |
 | 14 | `custas` | `numeric` | sim | `0` |  |  |
+| 15 | `observacoes` | `text` | sim |  |  |  |
+| 16 | `data_pagamento` | `date` | sim |  |  |  |
+| 17 | `created_by` | `uuid` | sim | `auth.uid()` |  |  |
 
 
 ## Constraints
@@ -38,6 +41,7 @@
 |---|---|---|---|---|---|
 | protestos_cliente_id_fkey | FOREIGN KEY | `FOREIGN KEY (cliente_id) REFERENCES clientes(id)` | NO ACTION | NO ACTION | sim |
 | protestos_conta_receber_id_fkey | FOREIGN KEY | `FOREIGN KEY (conta_receber_id) REFERENCES contas_receber(id)` | NO ACTION | NO ACTION | sim |
+| protestos_created_by_fkey | FOREIGN KEY | `FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | protestos_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 
 
@@ -45,20 +49,12 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_protestos_created_by | btree | created_by | não | sim |  | `CREATE INDEX idx_protestos_created_by ON public.protestos USING btree (created_by)` |
+| idx_protestos_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_protestos_empresa_id ON public.protestos USING btree (empresa_id)` |
 | protestos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX protestos_pkey ON public.protestos USING btree (id)` |
 
 
 ## Policies (RLS)
-
-### `Admins can manage protestos`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK |  |
 
 ### `protestos_empresa_select`
 
@@ -77,8 +73,8 @@
 | comando | ALL |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `(has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
-| WITH CHECK | `(has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| USING | `(has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 
 ## Triggers

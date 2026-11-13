@@ -13,6 +13,10 @@ BEGIN
     RAISE EXCEPTION 'NFe % não encontrada', p_nfe_id USING ERRCODE = 'no_data_found';
   END IF;
 
+  IF NOT public.empresa_acessivel(v_nfe.empresa_id) THEN
+    RAISE EXCEPTION 'Sem permissão para esta NFe' USING ERRCODE = '42501';
+  END IF;
+
   v_cnpj := regexp_replace(coalesce(v_nfe.cnpj_emitente, ''), '\D', '', 'g');
 
   RETURN QUERY

@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -37,9 +37,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | historico_score_saude_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX historico_score_saude_pkey ON public.historico_score_saude USING btree (id)` |
+| idx_historico_score_saude_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_historico_score_saude_empresa_id ON public.historico_score_saude USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Financeiro e admin podem inserir histórico de score`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 ### `historico_score_saude_empresa_select`
 

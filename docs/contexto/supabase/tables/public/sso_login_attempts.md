@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | sim |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -50,7 +50,17 @@
 | comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(( SELECT sp.empresa_id    FROM sso_providers sp   WHERE ((sp.id)::text = sso_login_attempts.provider_id))))` |
+| WITH CHECK |  |
+
+### `Admins veem tentativas SSO`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(( SELECT sp.empresa_id    FROM sso_providers sp   WHERE ((sp.id)::text = sso_login_attempts.provider_id))))` |
 | WITH CHECK |  |
 
 

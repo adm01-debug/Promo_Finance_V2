@@ -31,12 +31,15 @@
 | 12 | `origem` | `text` | sim | `'manual'::text` |  |  |
 | 13 | `conta_pagar_id` | `uuid` | sim |  |  |  |
 | 14 | `conta_receber_id` | `uuid` | sim |  |  |  |
+| 15 | `categoria_id` | `uuid` | sim |  |  |  |
+| 16 | `observacoes` | `text` | sim |  |  |  |
 
 
 ## Constraints
 
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
+| movimentacoes_categoria_id_fkey | FOREIGN KEY | `FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | movimentacoes_conta_bancaria_id_fkey | FOREIGN KEY | `FOREIGN KEY (conta_bancaria_id) REFERENCES contas_bancarias(id)` | NO ACTION | NO ACTION | sim |
 | movimentacoes_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 | movimentacoes_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
@@ -47,6 +50,10 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_movimentacoes_categoria_id | btree | categoria_id | não | sim |  | `CREATE INDEX idx_movimentacoes_categoria_id ON public.movimentacoes USING btree (categoria_id)` |
+| idx_movimentacoes_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_movimentacoes_conta_bancaria_id ON public.movimentacoes USING btree (conta_bancaria_id)` |
+| idx_movimentacoes_empresa_data | btree | empresa_id, data_movimentacao | não | sim | `(deleted_at IS NULL)` | `CREATE INDEX idx_movimentacoes_empresa_data ON public.movimentacoes USING btree (empresa_id, data_movimentacao) WHERE (deleted_at IS NULL)` |
+| idx_movimentacoes_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_movimentacoes_empresa_id ON public.movimentacoes USING btree (empresa_id)` |
 | movimentacoes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX movimentacoes_pkey ON public.movimentacoes USING btree (id)` |
 
 

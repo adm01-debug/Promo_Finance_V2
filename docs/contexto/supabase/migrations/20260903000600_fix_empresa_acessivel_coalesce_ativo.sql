@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION public.empresa_acessivel(_empresa_id uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO 'public' — substitui COALESCE(ue.ativo, true) por ue.ativo = true para fail-closed quando ativo é NULL

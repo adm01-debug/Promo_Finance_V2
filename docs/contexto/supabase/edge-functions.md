@@ -67,6 +67,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | insights-relatorio | insights-relatorio | ACTIVE | 19 | não | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/insights-relatorio/index.ts |
 | log-sped-bitrix24 | log-sped-bitrix24 | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/log-sped-bitrix24/index.ts |
 | mcp-query | mcp-query | ACTIVE | 19 | não | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/mcp-query/index.ts |
+| monitor-health | monitor-health | ACTIVE | 1 | não | file:///mnt/c/Users/Joaquim%20Ataides/AppData/Local/Temp/pfv_work/pfv_main/supabase/functions/monitor-health/index.ts |
 | monitorar-erros-frontend | monitorar-erros-frontend | ACTIVE | 19 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/monitorar-erros-frontend/index.ts |
 | n8n-callback | n8n-callback | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/n8n-callback/index.ts |
 | n8n-dispatch | n8n-dispatch | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/n8n-dispatch/index.ts |

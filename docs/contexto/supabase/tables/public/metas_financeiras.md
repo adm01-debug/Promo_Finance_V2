@@ -41,6 +41,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_metas_financeiras_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_metas_financeiras_empresa_id ON public.metas_financeiras USING btree (empresa_id)` |
 | idx_metas_financeiras_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_metas_financeiras_user_id_fk ON public.metas_financeiras USING btree (user_id)` |
 | metas_financeiras_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX metas_financeiras_pkey ON public.metas_financeiras USING btree (id)` |
 

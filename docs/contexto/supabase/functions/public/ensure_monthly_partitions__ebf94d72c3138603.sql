@@ -9,8 +9,19 @@ DECLARE
   v_end date;
   v_partition_name text;
   v_created int := 0;
+  v_relkind "char";
   i int;
 BEGIN
+  SELECT c.relkind INTO v_relkind
+  FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public' AND c.relname = p_table;
+
+  IF v_relkind IS DISTINCT FROM 'p' THEN
+    RAISE NOTICE 'ensure_monthly_partitions: public.% não particionada (relkind %) — nada criado',
+      p_table, coalesce(v_relkind::text, 'inexistente');
+    RETURN 0;
+  END IF;
+
   FOR i IN -p_months_back..p_months_forward LOOP
     v_start := date_trunc('month', now() + make_interval(months => i))::date;
     v_end := (v_start + interval '1 month')::date;

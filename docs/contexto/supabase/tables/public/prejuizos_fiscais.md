@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 6 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -48,20 +48,51 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_prejuizos_fiscais_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_prejuizos_fiscais_created_by_fk ON public.prejuizos_fiscais USING btree (created_by)` |
+| idx_prejuizos_fiscais_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_prejuizos_fiscais_empresa_id ON public.prejuizos_fiscais USING btree (empresa_id)` |
 | prejuizos_fiscais_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX prejuizos_fiscais_pkey ON public.prejuizos_fiscais USING btree (id)` |
 
 
 ## Policies (RLS)
 
-### `prejuizos_fiscais_admin_write`
+### `Admin pode deletar prejuizos_fiscais`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | DELETE |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Financeiro+ podem atualizar prejuizos_fiscais`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem inserir prejuizos_fiscais`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem ver prejuizos_fiscais`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `prejuizos_fiscais_empresa_select`
 

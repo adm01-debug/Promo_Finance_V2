@@ -7,7 +7,7 @@
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
 | policies | 1 |
-| realtime (publication) | não |
+| realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
 
@@ -49,6 +49,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_security_alerts_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_security_alerts_empresa_id ON public.security_alerts USING btree (empresa_id)` |
 | security_alerts_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX security_alerts_pkey ON public.security_alerts USING btree (id)` |
 
 

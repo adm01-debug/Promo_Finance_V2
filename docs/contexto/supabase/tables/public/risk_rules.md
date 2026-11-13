@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 5 |
+| policies | 0 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -39,60 +39,14 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_risk_rules_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_risk_rules_empresa_id ON public.risk_rules USING btree (empresa_id)` |
 | risk_rules_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX risk_rules_pkey ON public.risk_rules USING btree (id)` |
 
 
 ## Policies (RLS)
 
-### `Admins can delete risk rules`
+> ⚠️ RLS habilitado **sem policies**: nenhum acesso via API (anon/authenticated).
 
-| campo | valor |
-|---|---|
-| comando | DELETE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK |  |
-
-### `Authorized roles can view risk rules`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'operator'::app_role))` |
-| WITH CHECK |  |
-
-### `Managers can insert risk rules`
-
-| campo | valor |
-|---|---|
-| comando | INSERT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING |  |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))` |
-
-### `Managers can update risk rules`
-
-| campo | valor |
-|---|---|
-| comando | UPDATE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))` |
-| WITH CHECK |  |
-
-### `Viewers can view risk rules`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'viewer'::app_role)` |
-| WITH CHECK |  |
 
 
 ## Triggers

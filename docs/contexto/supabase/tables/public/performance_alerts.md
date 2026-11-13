@@ -41,7 +41,7 @@
 | performance_alerts_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | performance_alerts_severity_check | CHECK | `CHECK (severity = ANY (ARRAY['info'::text, 'warning'::text, 'critical'::text]))` |  |  | sim |
 | performance_alerts_source_alert_key_alert_hour_key | UNIQUE | `UNIQUE (source, alert_key, alert_hour)` |  |  | sim |
-| performance_alerts_source_check | CHECK | `CHECK (source = ANY (ARRAY['query_telemetry'::text, 'pg_stat_statements'::text, 'cron'::text]))` |  |  | sim |
+| performance_alerts_source_check | CHECK | `CHECK (source = ANY (ARRAY['query_telemetry'::text, 'pg_stat_statements'::text, 'cron'::text, 'weekly_trend'::text]))` |  |  | sim |
 
 
 ## Índices

@@ -41,6 +41,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_regras_roteamento_financeiro_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_regras_roteamento_financeiro_empresa_id ON public.regras_roteamento_financeiro USING btree (empresa_id)` |
 | regras_roteamento_financeiro_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regras_roteamento_financeiro_pkey ON public.regras_roteamento_financeiro USING btree (id)` |
 
 

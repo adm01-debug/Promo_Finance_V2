@@ -44,6 +44,7 @@
 |---|---|---|---|---|---|---|
 | bling_webhook_events_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bling_webhook_events_pkey ON public.bling_webhook_events USING btree (id)` |
 | idx_bling_webhook_events_created | btree | created_at | não | sim |  | `CREATE INDEX idx_bling_webhook_events_created ON public.bling_webhook_events USING btree (created_at DESC)` |
+| idx_bling_webhook_events_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bling_webhook_events_empresa_id ON public.bling_webhook_events USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

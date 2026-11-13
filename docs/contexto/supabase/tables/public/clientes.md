@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 10 |
+| policies | 11 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -78,6 +78,16 @@
 
 
 ## Policies (RLS)
+
+### `Operacional+ can manage clientes`
+
+| campo | valor |
+|---|---|
+| comando | ALL |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_membro_ativo(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_membro_ativo(empresa_id))` |
 
 ### `clientes_grupo_select`
 

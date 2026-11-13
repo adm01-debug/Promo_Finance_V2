@@ -1,6 +1,6 @@
 # CONTEXTO PARA AGENTES DE IA — ÍNDICE ÚNICO
 
-> Gerado automaticamente por indice.py · 2026-11-13 16:07 UTC · HEAD `095a3f63c9` · Não edite à mão.
+> Gerado automaticamente por indice.py · 2026-11-13 19:29 UTC · HEAD `a49b1c7eed` · Não edite à mão.
 
 Um sistema, três fontes de verdade, três produtores independentes. **Leia este arquivo e vá direto à fonte certa.** Cada fato tem um dono: se duas fontes discordarem, vale o dono.
 
@@ -8,9 +8,9 @@ Um sistema, três fontes de verdade, três produtores independentes. **Leia este
 
 | Preciso de… | Fonte (dona do fato) | Onde ler | Estado |
 |---|---|---|---|
-| Regras que não podem ser quebradas: RLS por operação, estados e transições, validações, fórmulas, prazos, erros de negócio, testes como especificação, inconsistências código×schema (NÃO VERIFICADO) e regras humanas (`manual/`) | **regras de negócio** | `docs/contexto/regras/07-REGRAS-DE-NEGOCIO.md` | ok · 21 min atrás |
-| Tabelas, colunas, RLS/políticas, funções, triggers, cron, storage, lints — **como está em produção agora** | **banco real** | `docs/contexto/supabase/README.md` | desatualizado · 4h atrás · ⚠️ desatualizado há 4h01 |
-| Rotas, telas, módulos, hooks, edge functions, grafo de dependências, testes, scripts, convenções | **código** | `docs/contexto/codigo/INDEX.md` | ok · 23 min atrás |
+| Regras que não podem ser quebradas: RLS por operação, estados e transições, validações, fórmulas, prazos, erros de negócio, testes como especificação, inconsistências código×schema (NÃO VERIFICADO) e regras humanas (`manual/`) | **regras de negócio** | `docs/contexto/regras/07-REGRAS-DE-NEGOCIO.md` | ok · 28 min atrás |
+| Tabelas, colunas, RLS/políticas, funções, triggers, cron, storage, lints — **como está em produção agora** | **banco real** | `docs/contexto/supabase/README.md` | ok · 28 min atrás |
+| Rotas, telas, módulos, hooks, edge functions, grafo de dependências, testes, scripts, convenções | **código** | `docs/contexto/codigo/INDEX.md` | ok · 28 min atrás |
 
 ## Ordem de leitura antes de qualquer tarefa ou planejamento
 
@@ -97,6 +97,7 @@ Um sistema, três fontes de verdade, três produtores independentes. **Leia este
 - `docs/contexto/supabase/edge-functions/insights-relatorio/README.md`
 - `docs/contexto/supabase/edge-functions/log-sped-bitrix24/README.md`
 - `docs/contexto/supabase/edge-functions/mcp-query/README.md`
+- `docs/contexto/supabase/edge-functions/monitor-health/README.md`
 - `docs/contexto/supabase/edge-functions/monitorar-erros-frontend/README.md`
 - `docs/contexto/supabase/edge-functions/n8n-callback/README.md`
 - `docs/contexto/supabase/edge-functions/n8n-dispatch/README.md`
@@ -107,8 +108,7 @@ Um sistema, três fontes de verdade, três produtores independentes. **Leia este
 - `docs/contexto/supabase/edge-functions/open-finance/README.md`
 - `docs/contexto/supabase/edge-functions/overlay-rejeicoes-auditoria/README.md`
 - `docs/contexto/supabase/edge-functions/prever-carga-tributaria/README.md`
-- `docs/contexto/supabase/edge-functions/processar-fila-cobrancas/README.md`
-- … +331
+- … +332
 
 </details>
 

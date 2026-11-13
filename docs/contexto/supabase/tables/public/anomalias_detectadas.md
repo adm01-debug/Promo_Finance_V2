@@ -6,8 +6,8 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
-| realtime (publication) | não |
+| policies | 2 |
+| realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
 
@@ -66,20 +66,11 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | anomalias_detectadas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX anomalias_detectadas_pkey ON public.anomalias_detectadas USING btree (id)` |
+| idx_anomalias_detectadas_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_anomalias_detectadas_empresa_id ON public.anomalias_detectadas USING btree (empresa_id)` |
 | idx_anomalias_detectadas_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_anomalias_detectadas_user_id_fk ON public.anomalias_detectadas USING btree (user_id)` |
 
 
 ## Policies (RLS)
-
-### `Admins can manage anomalias`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
 
 ### `anomalias_detectadas_empresa_select`
 

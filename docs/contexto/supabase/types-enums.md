@@ -4,7 +4,7 @@
 |---|---|---|---|
 | public.alert_severity | enum | INFO, WARNING, CRITICAL | public.alerts.severity |
 | public.alert_type | enum | DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED | public.alert_configurations.alert_type, public.alerts.type |
-| public.app_role | enum | admin, manager, operator, viewer, financeiro, operacional, visualizador, contador | public.role_permissions.role, public.sso_providers.default_role, public.sso_user_groups.matched_role, public.user_empresas.role, public.user_roles.role |
+| public.app_role | enum | admin, manager, operator, viewer, financeiro, operacional, visualizador, contador | public.role_permissions.role, public.scim_tokens.default_role, public.sso_providers.default_role, public.sso_user_groups.matched_role, public.user_empresas.role, public.user_roles.role |
 | public.approval_priority | enum | LOW, MEDIUM, HIGH, URGENT, CRITICAL |  |
 | public.approval_status | enum | PENDING, APPROVED, REJECTED |  |
 | public.atividade_economica | enum | INDUSTRIA, COMERCIO, SERVICOS, MISTA | public.cnaes.atividade |

@@ -316,7 +316,10 @@ SELECT cr.id,
     cr.tipo_cobranca,
     cr.numero_parcela_atual,
     cr.valor_desconto,
-    cr.chave_pix,
+        CASE
+            WHEN pode_ver_dado_sensivel() THEN cr.chave_pix
+            ELSE mascarar_chave_pix(cr.chave_pix)
+        END AS chave_pix,
     cr.data_emissao,
     cr.categoria_nome,
     cl.razao_social AS cliente_razao_social,
@@ -511,6 +514,44 @@ SELECT empresa_id,
     avg(COALESCE(data_recebimento, CURRENT_DATE) - data_vencimento) FILTER (WHERE status::text = 'recebido'::text) AS prazo_medio_recebimento
    FROM contas_receber cr
   GROUP BY empresa_id, (date_trunc('month'::text, data_vencimento::timestamp with time zone));
+```
+
+## public.vw_notification_history_duplicates (view)
+
+| campo | valor |
+|---|---|
+| owner | postgres |
+| security_invoker | sim |
+| opções | security_invoker=true |
+| depende de | public.notification_history |
+| populada | n/a |
+| comentário | Auditoria: pares de notificaÃ§Ãµes entregues no mesmo (user, source_ref, channel) em janela < 60s. Indica falha de dedup (ex.: realtime re-entregue apÃ³s refresh sem honrar last_seen_at). RLS via security_invoker â€” usuÃ¡rio sÃ³ vÃª o que jÃ¡ enxerga em notification_history. |
+
+
+```sql
+WITH ranked AS (
+         SELECT nh.id,
+            nh.user_id,
+            nh.source,
+            nh.source_ref,
+            nh.channel,
+            nh.title,
+            nh.created_at,
+            lag(nh.created_at) OVER (PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at) AS prev_created_at
+           FROM notification_history nh
+          WHERE nh.source_ref IS NOT NULL
+        )
+ SELECT id,
+    user_id,
+    source,
+    source_ref,
+    channel,
+    title,
+    created_at,
+    prev_created_at,
+    EXTRACT(epoch FROM created_at - prev_created_at)::integer AS seconds_since_prev
+   FROM ranked
+  WHERE prev_created_at IS NOT NULL AND (created_at - prev_created_at) < '00:01:00'::interval;
 ```
 
 ## public.vw_rpc_hotspots (view)

@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -56,9 +56,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | elisao_creditos_auditoria_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX elisao_creditos_auditoria_pkey ON public.elisao_creditos_auditoria USING btree (id)` |
+| idx_elisao_creditos_auditoria_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_elisao_creditos_auditoria_empresa_id ON public.elisao_creditos_auditoria USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Users can manage company audit logs`
+
+| campo | valor |
+|---|---|
+| comando | ALL |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
 
 ### `creditos_auditoria_delete_admin`
 

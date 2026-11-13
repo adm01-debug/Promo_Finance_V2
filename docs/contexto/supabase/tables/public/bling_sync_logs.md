@@ -55,6 +55,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | bling_sync_logs_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bling_sync_logs_pkey ON public.bling_sync_logs USING btree (id)` |
+| idx_bling_sync_logs_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bling_sync_logs_empresa_id ON public.bling_sync_logs USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

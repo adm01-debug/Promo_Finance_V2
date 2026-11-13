@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -45,9 +45,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | bitrix_sync_logs_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bitrix_sync_logs_pkey ON public.bitrix_sync_logs USING btree (id)` |
+| idx_bitrix_sync_logs_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bitrix_sync_logs_empresa_id ON public.bitrix_sync_logs USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Financeiro+ can insert sync logs`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 ### `bitrix_sync_logs_empresa_select`
 

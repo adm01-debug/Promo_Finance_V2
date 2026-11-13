@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -47,19 +47,10 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | configuracoes_aprovacao_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX configuracoes_aprovacao_pkey ON public.configuracoes_aprovacao USING btree (id)` |
+| idx_configuracoes_aprovacao_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_configuracoes_aprovacao_empresa_id ON public.configuracoes_aprovacao USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
-
-### `configuracoes_aprovacao_admin_all`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
 
 ### `configuracoes_aprovacao_empresa_select`
 

@@ -10,17 +10,21 @@
 | public.alert_configurations | empresa_id | public.empresas | id | RESTRICT | NO ACTION |
 | public.alertas | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.alertas_tributarios | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
+| public.alertas_tributarios | resolvido_por | auth.users | id | SET NULL | NO ACTION |
+| public.alertas_tributarios | user_id | auth.users | id | SET NULL | NO ACTION |
 | public.alerts | empresa_id | public.empresas | id | RESTRICT | NO ACTION |
 | public.alerts_sent | alert_id | public.alerts | id | CASCADE | NO ACTION |
 | public.aliquotas_iss_municipal | item_lista_id | public.itens_lista_iss | id | NO ACTION | NO ACTION |
 | public.anomalia_detection_runs | triggered_by | auth.users | id | NO ACTION | NO ACTION |
 | public.anomalia_toast_eventos | anomalia_id | public.anomalias_detectadas | id | CASCADE | NO ACTION |
+| public.anomalia_toast_eventos | centro_custo_id | public.centros_custo | id | SET NULL | NO ACTION |
 | public.anomalia_toast_eventos | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.anomalias_detectadas | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.api_keys | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.aprovacao_comentarios | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.apuracoes_irpj_csll | created_by | auth.users | id | NO ACTION | NO ACTION |
 | public.apuracoes_irpj_csll | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
+| public.apuracoes_tributarias | created_by | auth.users | id | SET NULL | NO ACTION |
 | public.apuracoes_tributarias | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.asaas_audit_trail | asaas_payment_id | public.asaas_payments | id | CASCADE | NO ACTION |
 | public.asaas_credit_risk_analysis | cliente_id | public.clientes | id | CASCADE | NO ACTION |
@@ -70,7 +74,9 @@
 | public.contratos | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.convites | organizacao_id | public.organizacoes | id | CASCADE | NO ACTION |
 | public.convites_contador | empresa_id | public.empresas | id | CASCADE | NO ACTION |
+| public.creditos_tributarios | apuracao_id | public.apuracoes_tributarias | id | SET NULL | NO ACTION |
 | public.creditos_tributarios | empresa_id | public.empresas | id | CASCADE | NO ACTION |
+| public.creditos_tributarios | fornecedor_id | public.fornecedores | id | SET NULL | NO ACTION |
 | public.creditos_tributarios | nota_fiscal_id | public.notas_fiscais | id | NO ACTION | NO ACTION |
 | public.custom_field_definitions | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.custom_field_values | definition_id | public.custom_field_definitions | id | CASCADE | NO ACTION |
@@ -135,12 +141,14 @@
 | public.logs_conciliacao_retroativa | conta_bancaria_id | public.contas_bancarias | id | CASCADE | NO ACTION |
 | public.metas_financeiras | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.metas_financeiras | user_id | auth.users | id | NO ACTION | NO ACTION |
+| public.movimentacoes | categoria_id | public.categorias | id | SET NULL | NO ACTION |
 | public.movimentacoes | conta_bancaria_id | public.contas_bancarias | id | NO ACTION | NO ACTION |
 | public.movimentacoes | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.n8n_dispatch_logs | config_id | public.n8n_workflow_configs | id | SET NULL | NO ACTION |
 | public.n8n_workflow_configs | created_by | auth.users | id | SET NULL | NO ACTION |
 | public.negativacoes | cliente_id | public.clientes | id | NO ACTION | NO ACTION |
 | public.negativacoes | conta_receber_id | public.contas_receber | id | NO ACTION | NO ACTION |
+| public.negativacoes | created_by | auth.users | id | SET NULL | NO ACTION |
 | public.new_device_alerts | device_id | public.user_devices | id | CASCADE | NO ACTION |
 | public.nfe_eventos | created_by | auth.users | id | NO ACTION | NO ACTION |
 | public.nfe_recebidas | conta_pagar_id | public.contas_pagar | id | SET NULL | NO ACTION |
@@ -158,7 +166,9 @@
 | public.partidas_contabeis | conta_contabil_id | public.plano_contas | id | RESTRICT | NO ACTION |
 | public.partidas_contabeis | lancamento_id | public.lancamentos_contabeis | id | CASCADE | NO ACTION |
 | public.password_reset_requests | reviewed_by | auth.users | id | NO ACTION | NO ACTION |
+| public.pedidos_compra | centro_custo_id | public.centros_custo | id | SET NULL | NO ACTION |
 | public.pedidos_compra | fornecedor_id | public.fornecedores | id | NO ACTION | NO ACTION |
+| public.pedidos_compra | user_id | auth.users | id | SET NULL | NO ACTION |
 | public.per_dcomp | created_by | public.profiles | id | SET NULL | NO ACTION |
 | public.per_dcomp | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.plano_contas | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
@@ -170,6 +180,7 @@
 | public.projecoes_reforma | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.protestos | cliente_id | public.clientes | id | NO ACTION | NO ACTION |
 | public.protestos | conta_receber_id | public.contas_receber | id | NO ACTION | NO ACTION |
+| public.protestos | created_by | auth.users | id | SET NULL | NO ACTION |
 | public.protocolos_st_ncms | ncm_id | public.ncms | id | NO ACTION | NO ACTION |
 | public.protocolos_st_ncms | protocolo_id | public.protocolos_st | id | CASCADE | NO ACTION |
 | public.protocolos_st_ufs | protocolo_id | public.protocolos_st | id | CASCADE | NO ACTION |
@@ -231,6 +242,7 @@
 | public.user_digest_preferences | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.user_empresas | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.user_empresas | user_id | auth.users | id | CASCADE | NO ACTION |
+| public.user_filter_presets | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.user_filter_presets | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.user_onboarding_progress | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.user_passkeys | user_id | auth.users | id | CASCADE | NO ACTION |

@@ -74,6 +74,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sso_providers_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_sso_providers_empresa_id ON public.sso_providers USING btree (empresa_id)` |
 | sso_providers_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sso_providers_pkey ON public.sso_providers USING btree (id)` |
 
 
@@ -86,8 +87,8 @@
 | comando | ALL |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
 
 
 ## Triggers

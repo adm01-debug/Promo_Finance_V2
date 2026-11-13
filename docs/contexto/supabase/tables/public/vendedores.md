@@ -38,6 +38,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_vendedores_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_vendedores_empresa_id ON public.vendedores USING btree (empresa_id)` |
 | vendedores_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX vendedores_pkey ON public.vendedores USING btree (id)` |
 
 

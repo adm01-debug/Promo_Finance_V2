@@ -37,6 +37,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | formas_pagamento_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX formas_pagamento_pkey ON public.formas_pagamento USING btree (id)` |
+| idx_formas_pagamento_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_formas_pagamento_empresa_id ON public.formas_pagamento USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

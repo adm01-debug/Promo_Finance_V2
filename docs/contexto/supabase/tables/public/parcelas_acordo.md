@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -23,6 +23,8 @@
 | 5 | `data_vencimento` | `date` | não |  |  |  |
 | 6 | `status` | `text` | sim | `'pendente'::text` |  |  |
 | 7 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 8 | `data_pagamento` | `date` | sim |  |  |  |
+| 9 | `valor_pago` | `numeric(15,2)` | sim |  |  |  |
 
 
 ## Constraints
@@ -41,16 +43,6 @@
 
 
 ## Policies (RLS)
-
-### `parcelas_acordo_admin_write`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
 
 ### `parcelas_acordo_empresa_select`
 

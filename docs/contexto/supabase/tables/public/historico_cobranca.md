@@ -31,6 +31,8 @@
 | 13 | `etapa` | `text` | sim |  |  |  |
 | 14 | `provider` | `text` | sim |  |  |  |
 | 15 | `provider_message_id` | `text` | sim |  |  |  |
+| 16 | `etapa_anterior` | `text` | sim |  |  |  |
+| 17 | `etapa_nova` | `text` | sim |  |  |  |
 
 
 ## Constraints
@@ -48,6 +50,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | historico_cobranca_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX historico_cobranca_pkey ON public.historico_cobranca USING btree (id)` |
+| idx_historico_cobranca_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_historico_cobranca_empresa_id ON public.historico_cobranca USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

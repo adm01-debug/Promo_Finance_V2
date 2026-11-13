@@ -38,6 +38,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_regimes_tributarios_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_regimes_tributarios_empresa_id ON public.regimes_tributarios USING btree (empresa_id)` |
 | regimes_tributarios_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regimes_tributarios_pkey ON public.regimes_tributarios USING btree (id)` |
 
 

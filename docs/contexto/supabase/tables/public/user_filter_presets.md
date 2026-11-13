@@ -25,12 +25,14 @@
 | 7 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
 | 8 | `updated_at` | `timestamp with time zone` | sim | `now()` |  |  |
 | 9 | `entity_type` | `text` | sim |  |  |  |
+| 10 | `empresa_id` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
 
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
+| user_filter_presets_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 | user_filter_presets_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | user_filter_presets_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id)` | NO ACTION | NO ACTION | sim |
 
@@ -39,6 +41,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_user_filter_presets_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_user_filter_presets_empresa_id ON public.user_filter_presets USING btree (empresa_id)` |
 | idx_user_filter_presets_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_user_filter_presets_user_id_fk ON public.user_filter_presets USING btree (user_id)` |
 | user_filter_presets_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX user_filter_presets_pkey ON public.user_filter_presets USING btree (id)` |
 
@@ -62,8 +65,8 @@
 | comando | ALL |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `((user_id = ( SELECT auth.uid() AS uid)) OR true)` |
-| WITH CHECK |  |
+| USING | `(user_id = ( SELECT auth.uid() AS uid))` |
+| WITH CHECK | `(user_id = ( SELECT auth.uid() AS uid))` |
 
 
 ## Triggers

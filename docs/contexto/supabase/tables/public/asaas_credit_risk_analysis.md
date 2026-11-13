@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -43,6 +43,16 @@
 
 
 ## Policies (RLS)
+
+### `Users can view credit risk analysis of their customers`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `(cliente_id IN ( SELECT clientes.id    FROM clientes   WHERE empresa_acessivel(clientes.empresa_id)))` |
+| WITH CHECK |  |
 
 ### `credit_risk_select`
 

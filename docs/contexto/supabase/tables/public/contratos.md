@@ -52,6 +52,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | contratos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX contratos_pkey ON public.contratos USING btree (id)` |
+| idx_contratos_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_contratos_empresa_id ON public.contratos USING btree (empresa_id)` |
 | idx_contratos_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_contratos_user_id_fk ON public.contratos USING btree (user_id)` |
 
 

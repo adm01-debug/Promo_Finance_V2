@@ -47,6 +47,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | acoes_recomendadas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX acoes_recomendadas_pkey ON public.acoes_recomendadas USING btree (id)` |
+| idx_acoes_recomendadas_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_acoes_recomendadas_empresa_id ON public.acoes_recomendadas USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION public.certificado_get_password(p_cert_id uuid, p_master_key text) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'extensions' — adds empresa_acessivel() check before decrypting certificate password

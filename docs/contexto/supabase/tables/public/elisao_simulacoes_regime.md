@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -48,6 +48,16 @@
 
 
 ## Policies (RLS)
+
+### `Users can manage their company simulations`
+
+| campo | valor |
+|---|---|
+| comando | ALL |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
 
 ### `elisao_sim_regime_acesso`
 

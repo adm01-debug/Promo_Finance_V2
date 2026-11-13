@@ -38,6 +38,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_integration_secrets_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_integration_secrets_empresa_id ON public.integration_secrets USING btree (empresa_id)` |
 | integration_secrets_chave_key | btree | chave | sim | sim |  | `CREATE UNIQUE INDEX integration_secrets_chave_key ON public.integration_secrets USING btree (chave)` |
 | integration_secrets_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX integration_secrets_pkey ON public.integration_secrets USING btree (id)` |
 

@@ -46,6 +46,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_solicitacoes_lgpd_created | btree | created_at | não | sim |  | `CREATE INDEX idx_solicitacoes_lgpd_created ON public.solicitacoes_lgpd USING btree (created_at DESC)` |
+| idx_solicitacoes_lgpd_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_solicitacoes_lgpd_empresa_id ON public.solicitacoes_lgpd USING btree (empresa_id)` |
 | idx_solicitacoes_lgpd_user | btree | user_id | não | sim |  | `CREATE INDEX idx_solicitacoes_lgpd_user ON public.solicitacoes_lgpd USING btree (user_id)` |
 | solicitacoes_lgpd_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX solicitacoes_lgpd_pkey ON public.solicitacoes_lgpd USING btree (id)` |
 

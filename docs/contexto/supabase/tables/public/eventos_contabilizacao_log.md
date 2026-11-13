@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -45,10 +45,21 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | eventos_contabilizacao_log_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX eventos_contabilizacao_log_pkey ON public.eventos_contabilizacao_log USING btree (id)` |
+| idx_eventos_contabilizacao_log_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_eventos_contabilizacao_log_empresa_id ON public.eventos_contabilizacao_log USING btree (empresa_id)` |
 | uq_eventos_contab_sucesso | btree | tipo_evento, evento_id | sim | sim | `(status = 'sucesso'::text)` | `CREATE UNIQUE INDEX uq_eventos_contab_sucesso ON public.eventos_contabilizacao_log USING btree (tipo_evento, evento_id) WHERE (status = 'sucesso'::text)` |
 
 
 ## Policies (RLS)
+
+### `eventos_contab_insert`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 ### `eventos_contab_select`
 

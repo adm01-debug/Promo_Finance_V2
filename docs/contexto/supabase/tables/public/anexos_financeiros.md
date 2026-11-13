@@ -42,6 +42,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | anexos_financeiros_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX anexos_financeiros_pkey ON public.anexos_financeiros USING btree (id)` |
+| idx_anexos_financeiros_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_anexos_financeiros_empresa_id ON public.anexos_financeiros USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

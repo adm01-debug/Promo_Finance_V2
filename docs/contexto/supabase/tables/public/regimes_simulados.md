@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -51,10 +51,31 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_regimes_simulados_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_regimes_simulados_created_by_fk ON public.regimes_simulados USING btree (created_by)` |
+| idx_regimes_simulados_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_regimes_simulados_empresa_id ON public.regimes_simulados USING btree (empresa_id)` |
 | regimes_simulados_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regimes_simulados_pkey ON public.regimes_simulados USING btree (id)` |
 
 
 ## Policies (RLS)
+
+### `Admin/financeiro can delete regimes simulados`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Admin/financeiro can update regimes simulados`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 ### `regimes_simulados_empresa_insert`
 

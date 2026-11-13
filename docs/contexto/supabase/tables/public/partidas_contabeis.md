@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -44,6 +44,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_partidas_contabeis_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_empresa_id ON public.partidas_contabeis USING btree (empresa_id)` |
 | idx_partidas_contabeis_lancamento_id | btree | lancamento_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_lancamento_id ON public.partidas_contabeis USING btree (lancamento_id)` |
 | partidas_contabeis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX partidas_contabeis_pkey ON public.partidas_contabeis USING btree (id)` |
 
@@ -59,6 +60,46 @@
 | roles | authenticated |
 | USING | `(EXISTS ( SELECT 1    FROM lancamentos_contabeis lc   WHERE ((lc.id = partidas_contabeis.lancamento_id) AND ((lc.user_id = ( SELECT auth.uid() AS uid)) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR (lc.empresa_id IN ( SELECT ue.empresa_id            FROM user_empresas ue           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))))))` |
 | WITH CHECK | `(EXISTS ( SELECT 1    FROM lancamentos_contabeis lc   WHERE ((lc.id = partidas_contabeis.lancamento_id) AND ((lc.user_id = ( SELECT auth.uid() AS uid)) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR (lc.empresa_id IN ( SELECT ue.empresa_id            FROM user_empresas ue           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))))))` |
+
+### `partidas_delete`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `partidas_insert`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `partidas_select`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role, 'visualizador'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `partidas_update`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 
 ## Triggers

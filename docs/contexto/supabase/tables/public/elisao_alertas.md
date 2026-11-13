@@ -48,6 +48,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | elisao_alertas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX elisao_alertas_pkey ON public.elisao_alertas USING btree (id)` |
+| idx_elisao_alertas_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_elisao_alertas_empresa_id ON public.elisao_alertas USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

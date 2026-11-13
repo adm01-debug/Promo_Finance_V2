@@ -48,6 +48,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_verificacoes_conformidade_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_verificacoes_conformidade_empresa_id ON public.verificacoes_conformidade USING btree (empresa_id)` |
 | verificacoes_conformidade_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX verificacoes_conformidade_pkey ON public.verificacoes_conformidade USING btree (id)` |
 
 

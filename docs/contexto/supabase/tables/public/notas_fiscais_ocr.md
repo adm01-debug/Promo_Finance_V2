@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -64,10 +64,31 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_notas_fiscais_ocr_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_notas_fiscais_ocr_empresa_id ON public.notas_fiscais_ocr USING btree (empresa_id)` |
 | notas_fiscais_ocr_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX notas_fiscais_ocr_pkey ON public.notas_fiscais_ocr USING btree (id)` |
 
 
 ## Policies (RLS)
+
+### `Admins deletam NFs OCR`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Usuários atualizam suas próprias NFs OCR`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK | `empresa_acessivel(empresa_id)` |
 
 ### `notas_fiscais_ocr_acesso`
 

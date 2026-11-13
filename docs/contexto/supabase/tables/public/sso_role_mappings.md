@@ -42,6 +42,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sso_role_mappings_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_sso_role_mappings_empresa_id ON public.sso_role_mappings USING btree (empresa_id)` |
 | sso_role_mappings_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sso_role_mappings_pkey ON public.sso_role_mappings USING btree (id)` |
 | sso_role_mappings_provider_id_provider_role_app_role_key | btree | provider_id, provider_role, app_role | sim | sim |  | `CREATE UNIQUE INDEX sso_role_mappings_provider_id_provider_role_app_role_key ON public.sso_role_mappings USING btree (provider_id, provider_role, app_role)` |
 

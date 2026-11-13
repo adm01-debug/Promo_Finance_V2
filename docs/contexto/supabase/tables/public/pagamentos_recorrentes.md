@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -63,20 +63,51 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_pag_recorr_proxima | btree | proxima_geracao | não | sim | `ativo` | `CREATE INDEX idx_pag_recorr_proxima ON public.pagamentos_recorrentes USING btree (proxima_geracao) WHERE ativo` |
+| idx_pagamentos_recorrentes_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_pagamentos_recorrentes_empresa_id ON public.pagamentos_recorrentes USING btree (empresa_id)` |
 | pagamentos_recorrentes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX pagamentos_recorrentes_pkey ON public.pagamentos_recorrentes USING btree (id)` |
 
 
 ## Policies (RLS)
 
-### `pagamentos_recorrentes_acesso`
+### `Admins podem deletar pagamentos recorrentes`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | DELETE |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `empresa_acessivel(empresa_id)` |
-| WITH CHECK | `empresa_acessivel(empresa_id)` |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Financeiro+ podem atualizar pagamentos_recorrentes`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Operacional+ podem ver pagamentos_recorrentes`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Usuários podem criar pagamentos recorrentes`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `((auth.uid() = created_by) AND empresa_acessivel(empresa_id))` |
 
 
 ## Triggers

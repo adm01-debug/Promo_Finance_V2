@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -56,6 +56,10 @@
 | 37 | `deleted_at` | `timestamp with time zone` | sim |  |  |  |
 | 38 | `vendedor_id` | `uuid` | sim |  |  |  |
 | 39 | `bitrix_deal_id` | `text` | sim |  |  |  |
+| 40 | `valor_final` | `numeric(15,2)` | sim |  |  |  |
+| 41 | `codigo_barras` | `text` | sim |  |  |  |
+| 42 | `link_boleto` | `text` | sim |  |  |  |
+| 43 | `frequencia_recorrencia` | `text` | sim |  |  |  |
 
 
 ## Constraints
@@ -67,6 +71,7 @@
 | contas_receber_cliente_id_fkey | FOREIGN KEY | `FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | contas_receber_conta_bancaria_id_fkey | FOREIGN KEY | `FOREIGN KEY (conta_bancaria_id) REFERENCES contas_bancarias(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | contas_receber_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
+| contas_receber_frequencia_recorrencia_check | CHECK | `CHECK (frequencia_recorrencia IS NULL OR (frequencia_recorrencia = ANY (ARRAY['semanal'::text, 'quinzenal'::text, 'mensal'::text, 'bimestral'::text, 'trimestral'::text, 'semestral'::text, 'anual'::text])))` |  |  | sim |
 | contas_receber_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | contas_receber_status_check | CHECK | `CHECK (status::text = ANY (ARRAY['pendente'::character varying, 'recebido'::character varying, 'pago'::character varying, 'vencido'::character varying, 'cancelado'::character varying, 'parcial'::character varying, 'atrasado'::character varying, 'em_acordo'::character varying]::text[]))` |  |  | sim |
 | contas_receber_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
@@ -93,23 +98,18 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | contas_receber_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX contas_receber_pkey ON public.contas_receber USING btree (id)` |
+| idx_contas_receber_categoria_id | btree | categoria_id | não | sim |  | `CREATE INDEX idx_contas_receber_categoria_id ON public.contas_receber USING btree (categoria_id)` |
+| idx_contas_receber_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_contas_receber_centro_custo_id ON public.contas_receber USING btree (centro_custo_id)` |
+| idx_contas_receber_cliente_id | btree | cliente_id | não | sim |  | `CREATE INDEX idx_contas_receber_cliente_id ON public.contas_receber USING btree (cliente_id)` |
+| idx_contas_receber_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_contas_receber_conta_bancaria_id ON public.contas_receber USING btree (conta_bancaria_id)` |
 | idx_contas_receber_data_recebimento | btree | data_recebimento | não | sim | `(data_recebimento IS NOT NULL)` | `CREATE INDEX idx_contas_receber_data_recebimento ON public.contas_receber USING btree (data_recebimento) WHERE (data_recebimento IS NOT NULL)` |
+| idx_contas_receber_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_contas_receber_empresa_id ON public.contas_receber USING btree (empresa_id)` |
 | idx_contas_receber_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  | `CREATE INDEX idx_contas_receber_empresa_status_venc ON public.contas_receber USING btree (empresa_id, status, data_vencimento)` |
 | idx_contas_receber_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` | `CREATE INDEX idx_contas_receber_pendentes_venc ON public.contas_receber USING btree (empresa_id, data_vencimento) WHERE ((status)::text = 'pendente'::text)` |
 | idx_contas_receber_user_created | btree | user_id, created_at | não | sim |  | `CREATE INDEX idx_contas_receber_user_created ON public.contas_receber USING btree (user_id, created_at DESC)` |
 
 
 ## Policies (RLS)
-
-### `Admins can manage contas receber`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
 
 ### `contas_receber_empresa_select`
 

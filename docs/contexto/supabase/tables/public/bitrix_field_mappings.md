@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -43,9 +43,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | bitrix_field_mappings_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bitrix_field_mappings_pkey ON public.bitrix_field_mappings USING btree (id)` |
+| idx_bitrix_field_mappings_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bitrix_field_mappings_empresa_id ON public.bitrix_field_mappings USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Admin can manage field mappings`
+
+| campo | valor |
+|---|---|
+| comando | ALL |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
 
 ### `bitrix_field_mappings_empresa_select`
 

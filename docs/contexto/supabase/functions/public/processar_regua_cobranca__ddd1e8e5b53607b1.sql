@@ -7,10 +7,13 @@ AS $function$
 DECLARE
     result JSONB;
 BEGIN
-    -- Simulação de processamento (em produção aqui rodaria a lógica de gatilhos)
+    IF p_empresa_id IS NULL OR NOT public.empresa_acessivel(p_empresa_id) THEN
+        RAISE EXCEPTION 'Sem permissão para esta empresa' USING ERRCODE = '42501';
+    END IF;
+
     IF p_simulate THEN
         result := jsonb_build_object(
-            'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status = 'pendente' AND empresa_id = COALESCE(p_empresa_id, empresa_id)),
+            'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status = 'pendente' AND empresa_id = p_empresa_id),
             'message', 'Simulação concluída com base nos títulos pendentes.'
         );
     ELSE

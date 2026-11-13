@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -73,10 +73,43 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | boletos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX boletos_pkey ON public.boletos USING btree (id)` |
+| idx_boletos_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_boletos_conta_bancaria_id ON public.boletos USING btree (conta_bancaria_id)` |
+| idx_boletos_conta_pagar_id | btree | conta_pagar_id | não | sim |  | `CREATE INDEX idx_boletos_conta_pagar_id ON public.boletos USING btree (conta_pagar_id)` |
 | idx_boletos_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_boletos_created_by_fk ON public.boletos USING btree (created_by)` |
+| idx_boletos_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_boletos_empresa_id ON public.boletos USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Admin can delete boletos`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Financeiro+ can update boletos`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Operacional+ can insert boletos`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_acessivel(empresa_id))` |
 
 ### `Owner manage boletos`
 

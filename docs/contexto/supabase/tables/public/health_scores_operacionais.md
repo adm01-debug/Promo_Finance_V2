@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -47,9 +47,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | health_scores_operacionais_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX health_scores_operacionais_pkey ON public.health_scores_operacionais USING btree (id)` |
+| idx_health_scores_operacionais_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_health_scores_operacionais_empresa_id ON public.health_scores_operacionais USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Sistema insere health scores via service role`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
 
 ### `health_scores_empresa_select`
 

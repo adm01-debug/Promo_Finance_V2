@@ -10,6 +10,7 @@
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
+| usada por views | public.vw_notification_history_duplicates |
 
 
 ## Colunas
@@ -27,6 +28,7 @@
 | 9 | `source_ref` | `text` | sim |  |  |  |
 | 10 | `read_at` | `timestamp with time zone` | sim |  |  |  |
 | 11 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 12 | `source` | `text` | não | `'saved_filter_subscription'::text` |  |  |
 
 
 ## Constraints
@@ -42,6 +44,9 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_notification_history_source | btree | source, source_ref | não | sim |  | `CREATE INDEX idx_notification_history_source ON public.notification_history USING btree (source, source_ref)` |
+| idx_notification_history_user_created | btree | user_id, created_at | não | sim |  | `CREATE INDEX idx_notification_history_user_created ON public.notification_history USING btree (user_id, created_at DESC)` |
+| idx_notification_history_user_unread | btree | user_id, read_at | não | sim | `(read_at IS NULL)` | `CREATE INDEX idx_notification_history_user_unread ON public.notification_history USING btree (user_id, read_at) WHERE (read_at IS NULL)` |
 | notification_history_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX notification_history_pkey ON public.notification_history USING btree (id)` |
 
 

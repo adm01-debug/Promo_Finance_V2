@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -51,9 +51,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | elisao_tarefas_acionaveis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX elisao_tarefas_acionaveis_pkey ON public.elisao_tarefas_acionaveis USING btree (id)` |
+| idx_elisao_tarefas_acionaveis_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_elisao_tarefas_acionaveis_empresa_id ON public.elisao_tarefas_acionaveis USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Users can manage company action tasks`
+
+| campo | valor |
+|---|---|
+| comando | ALL |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
 
 ### `tarefas_elisao_acesso`
 

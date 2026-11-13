@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -48,10 +48,21 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_scim_operations_log_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_scim_operations_log_empresa_id ON public.scim_operations_log USING btree (empresa_id)` |
 | scim_operations_log_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX scim_operations_log_pkey ON public.scim_operations_log USING btree (id)` |
 
 
 ## Policies (RLS)
+
+### `Admins view scim logs`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `scim_operations_log_admin_select`
 
@@ -60,7 +71,7 @@
 | comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
 | WITH CHECK |  |
 
 

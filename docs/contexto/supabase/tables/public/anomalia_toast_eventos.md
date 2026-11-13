@@ -27,6 +27,7 @@
 | 9 | `centro_custo_nome` | `text` | sim |  |  |  |
 | 10 | `acoes_disponiveis` | `text[]` | sim | `'{}'::text[]` |  |  |
 | 11 | `duracao_segundos` | `integer` | sim | `8` |  |  |
+| 12 | `centro_custo_id` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
@@ -34,6 +35,7 @@
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
 | anomalia_toast_eventos_anomalia_id_fkey | FOREIGN KEY | `FOREIGN KEY (anomalia_id) REFERENCES anomalias_detectadas(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
+| anomalia_toast_eventos_centro_custo_id_fkey | FOREIGN KEY | `FOREIGN KEY (centro_custo_id) REFERENCES centros_custo(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | anomalia_toast_eventos_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | anomalia_toast_eventos_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 
@@ -43,6 +45,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | anomalia_toast_eventos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX anomalia_toast_eventos_pkey ON public.anomalia_toast_eventos USING btree (id)` |
+| idx_anomalia_toast_eventos_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_anomalia_toast_eventos_centro_custo_id ON public.anomalia_toast_eventos USING btree (centro_custo_id)` |
 | idx_anomalia_toast_eventos_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_anomalia_toast_eventos_user_id_fk ON public.anomalia_toast_eventos USING btree (user_id)` |
 
 

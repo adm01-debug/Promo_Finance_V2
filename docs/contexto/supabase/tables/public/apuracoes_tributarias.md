@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 6 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -54,14 +54,25 @@
 | 35 | `total_tributos_residuais` | `numeric` | sim | `0` |  |  |
 | 36 | `total_geral` | `numeric` | sim | `0` |  |  |
 | 37 | `updated_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 38 | `data_transmissao` | `timestamp with time zone` | sim |  |  |  |
+| 39 | `protocolo_transmissao` | `text` | sim |  |  |  |
+| 40 | `created_by` | `uuid` | sim | `auth.uid()` |  |  |
 
 
 ## Constraints
 
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
+| apuracoes_tributarias_created_by_fkey | FOREIGN KEY | `FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | apuracoes_tributarias_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` | NO ACTION | NO ACTION | sim |
 | apuracoes_tributarias_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
+
+
+## Referenciada por (FKs de outras tabelas)
+
+| tabela | constraint | colunas | on delete |
+|---|---|---|---|
+| public.creditos_tributarios | creditos_tributarios_apuracao_id_fkey | apuracao_id | SET NULL |
 
 
 ## Índices
@@ -69,20 +80,51 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | apuracoes_tributarias_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX apuracoes_tributarias_pkey ON public.apuracoes_tributarias USING btree (id)` |
+| idx_apuracoes_tributarias_created_by | btree | created_by | não | sim |  | `CREATE INDEX idx_apuracoes_tributarias_created_by ON public.apuracoes_tributarias USING btree (created_by)` |
 | idx_apuracoes_tributarias_empresa | btree | empresa_id | não | sim |  | `CREATE INDEX idx_apuracoes_tributarias_empresa ON public.apuracoes_tributarias USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
 
-### `apuracoes_tributarias_admin_all`
+### `Admin pode deletar apuracoes_tributarias`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | DELETE |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
+
+### `Financeiro+ podem atualizar apuracoes_tributarias`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem inserir apuracoes_tributarias`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem ver apuracoes_tributarias`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `apuracoes_tributarias_empresa_select`
 

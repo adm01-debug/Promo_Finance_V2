@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -87,9 +87,20 @@
 |---|---|---|---|---|---|---|
 | apuracoes_irpj_csll_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX apuracoes_irpj_csll_pkey ON public.apuracoes_irpj_csll USING btree (id)` |
 | idx_apuracoes_irpj_csll_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_apuracoes_irpj_csll_created_by_fk ON public.apuracoes_irpj_csll USING btree (created_by)` |
+| idx_apuracoes_irpj_csll_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_apuracoes_irpj_csll_empresa_id ON public.apuracoes_irpj_csll USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Admin pode deletar apuracoes_irpj_csll`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `Empresa-based access`
 
@@ -99,6 +110,36 @@
 | tipo | PERMISSIVE |
 | roles | authenticated |
 | USING | `((empresa_id IN ( SELECT user_empresas.empresa_id    FROM user_empresas   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1    FROM user_roles   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))` |
+| WITH CHECK |  |
+
+### `Financeiro+ podem atualizar apuracoes_irpj_csll`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem inserir apuracoes_irpj_csll`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
+### `Financeiro+ podem ver apuracoes_irpj_csll`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 | WITH CHECK |  |
 
 

@@ -60,6 +60,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_operacoes_icms_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_operacoes_icms_empresa_id ON public.operacoes_icms USING btree (empresa_id)` |
 | operacoes_icms_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX operacoes_icms_pkey ON public.operacoes_icms USING btree (id)` |
 
 

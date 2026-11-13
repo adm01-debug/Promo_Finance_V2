@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -45,19 +45,30 @@
 |---|---|---|---|---|---|---|
 | asaas_transfers_asaas_id_key | btree | asaas_id | sim | sim |  | `CREATE UNIQUE INDEX asaas_transfers_asaas_id_key ON public.asaas_transfers USING btree (asaas_id)` |
 | asaas_transfers_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_transfers_pkey ON public.asaas_transfers USING btree (id)` |
+| idx_asaas_transfers_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_asaas_transfers_empresa_id ON public.asaas_transfers USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
 
-### `asaas_transfers_admin_all`
+### `Admins can insert transfers`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | INSERT |
 | tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| roles | public |
+| USING |  |
+| WITH CHECK | `empresa_acessivel(empresa_id)` |
+
+### `Admins can update transfers`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | public |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
 
 ### `asaas_transfers_empresa_select`
 

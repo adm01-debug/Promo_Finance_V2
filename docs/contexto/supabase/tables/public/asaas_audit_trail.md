@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 3 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -41,15 +41,25 @@
 
 ## Policies (RLS)
 
+### `Users can view audit trail of their company`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `((asaas_payment_id IN ( SELECT p.id    FROM asaas_payments p   WHERE empresa_acessivel(p.empresa_id))) OR ((asaas_payment_id IS NULL) AND (actor = auth.uid())))` |
+| WITH CHECK |  |
+
 ### `asaas_audit_admin_all`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
+| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) AND ((asaas_payment_id IN ( SELECT p.id    FROM asaas_payments p   WHERE empresa_acessivel(p.empresa_id))) OR (asaas_payment_id IS NULL)))` |
+| WITH CHECK |  |
 
 ### `asaas_audit_tenant_select`
 
@@ -58,7 +68,7 @@
 | comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `(has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1    FROM asaas_payments p   WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND empresa_acessivel(p.empresa_id)))))` |
+| USING | `(has_role(auth.uid(), 'admin'::app_role) AND (EXISTS ( SELECT 1    FROM asaas_payments p   WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND empresa_acessivel(p.empresa_id)))))` |
 | WITH CHECK |  |
 
 

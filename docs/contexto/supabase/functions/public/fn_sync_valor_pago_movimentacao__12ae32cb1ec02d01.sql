@@ -13,6 +13,14 @@ DECLARE
   v_id UUID;
   v_emp UUID;
 BEGIN
+  -- Tenant: conta_pagar_id/conta_receber_id podem apontar para título de
+  -- outra empresa e o UPDATE SECURITY DEFINER ignoraria a RLS — valida a
+  -- empresa do vínculo antes de tocar no título (mesma regra da seção 3).
+  -- NEW é indefinido em DELETE e OLD em INSERT — qualquer referência
+  -- cruzada aborta o gatilho, então tudo é resolvido por TG_OP. Cada vínculo
+  -- carrega a empresa do seu lado: num UPDATE que transfere a movimentação
+  -- entre empresas junto com o título, o vínculo antigo valida contra
+  -- OLD.empresa_id e o novo contra NEW.empresa_id.
   IF TG_OP = 'DELETE' THEN
     v_cp_pairs := ARRAY[[OLD.conta_pagar_id, OLD.empresa_id]];
     v_cr_pairs := ARRAY[[OLD.conta_receber_id, OLD.empresa_id]];
@@ -24,6 +32,7 @@ BEGIN
     v_cr_pairs := ARRAY[[NEW.conta_receber_id, NEW.empresa_id]];
   END IF;
 
+  -- Atualizar valor_pago em contas_pagar
   FOREACH v_pair SLICE 1 IN ARRAY v_cp_pairs LOOP
     v_id := v_pair[1];
     v_emp := v_pair[2];
@@ -50,6 +59,7 @@ BEGIN
     WHERE id = v_id;
   END LOOP;
 
+  -- Atualizar valor_recebido em contas_receber
   FOREACH v_pair SLICE 1 IN ARRAY v_cr_pairs LOOP
     v_id := v_pair[1];
     v_emp := v_pair[2];

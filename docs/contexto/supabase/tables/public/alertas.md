@@ -6,8 +6,8 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
-| realtime (publication) | não |
+| policies | 4 |
+| realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
 
@@ -28,6 +28,8 @@
 | 10 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
 | 11 | `acao_url` | `text` | sim |  |  |  |
 | 12 | `empresa_id` | `uuid` | sim |  |  |  |
+| 13 | `status` | `text` | sim | `'pendente'::text` |  |  |
+| 14 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  |  |
 
 
 ## Constraints
@@ -57,6 +59,16 @@
 | roles | authenticated |
 | USING | `(( SELECT auth.uid() AS uid) = user_id)` |
 | WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
+
+### `Users can view own or privileged system alertas`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(((auth.uid() = user_id) OR ((user_id IS NULL) AND has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]))) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK |  |
 
 ### `alertas_owner_delete`
 

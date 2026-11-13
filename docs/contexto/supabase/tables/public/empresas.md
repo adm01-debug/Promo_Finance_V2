@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 3 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -142,6 +142,7 @@
 | public.tax_audit_trail | tax_audit_trail_empresa_id_fkey | empresa_id | CASCADE |
 | public.transferencias | transferencias_empresa_id_fkey | empresa_id | NO ACTION |
 | public.user_empresas | user_empresas_empresa_id_fkey | empresa_id | CASCADE |
+| public.user_filter_presets | user_filter_presets_empresa_id_fkey | empresa_id | CASCADE |
 | public.vendedores | vendedores_empresa_id_fkey | empresa_id | NO ACTION |
 | public.verificacoes_conformidade | verificacoes_conformidade_empresa_id_fkey | empresa_id | NO ACTION |
 | public.whatsapp_conversas | whatsapp_conversas_empresa_id_fkey | empresa_id | NO ACTION |
@@ -157,6 +158,16 @@
 
 ## Policies (RLS)
 
+### `Financeiro+ can manage empresas`
+
+| campo | valor |
+|---|---|
+| comando | ALL |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(id))` |
+
 ### `Operacional+ podem ver empresas`
 
 | campo | valor |
@@ -164,7 +175,7 @@
 | comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
-| USING | `has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role])` |
+| USING | `(has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_acessivel(id))` |
 | WITH CHECK |  |
 
 ### `Owner manage empresas`

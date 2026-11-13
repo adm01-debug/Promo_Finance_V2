@@ -52,6 +52,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_simulacao_tributos_detalhados_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_simulacao_tributos_detalhados_empresa_id ON public.simulacao_tributos_detalhados USING btree (empresa_id)` |
 | simulacao_tributos_detalhados_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX simulacao_tributos_detalhados_pkey ON public.simulacao_tributos_detalhados USING btree (id)` |
 
 

@@ -22,6 +22,7 @@
 | 4 | `quantidade` | `numeric` | não | `1` |  |  |
 | 5 | `valor_unitario` | `numeric` | não | `0` |  |  |
 | 6 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 7 | `valor_total` | `numeric` | sim |  |  |  |
 
 
 ## Constraints

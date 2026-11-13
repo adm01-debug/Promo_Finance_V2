@@ -30,7 +30,7 @@ BEGIN
       END AS prioridade
     FROM titulos t
     JOIN public.user_empresas ue
-      ON ue.empresa_id = t.empresa_id AND COALESCE(ue.ativo, true)
+      ON ue.empresa_id = t.empresa_id AND ue.ativo = true
   ), novos AS (
     INSERT INTO public.alertas (user_id, tipo, titulo, mensagem, prioridade, entidade_id, entidade_tipo, acao_url)
     SELECT d.user_id,

@@ -36,6 +36,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_regras_duplicidade_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_regras_duplicidade_empresa_id ON public.regras_duplicidade USING btree (empresa_id)` |
 | regras_duplicidade_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regras_duplicidade_pkey ON public.regras_duplicidade USING btree (id)` |
 
 

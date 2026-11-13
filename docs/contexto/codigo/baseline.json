@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "095a3f63c97fadf77db7afd43ef7af0b17c7c9d4",
+  "commit": "a49b1c7eed8a0b69eb832ccc38e58aeaed8dde69",
   "branch": "main",
-  "data_commit": "2026-11-13T11:43:24-03:00",
+  "data_commit": "2026-11-13T17:52:46Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a49b1c7",
+    "data": "2026-11-13",
+    "assunto": "fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)"
+   },
    {
     "sha": "095a3f6",
     "data": "2026-11-13",
@@ -126,11 +131,6 @@
     "sha": "ea47e0c",
     "data": "2026-11-12",
     "assunto": "fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)"
-   },
-   {
-    "sha": "8eec022",
-    "data": "2026-11-11",
-    "assunto": "fix: sanitiza parâmetro search no filtro .or() da external-data (#308)"
    }
   ],
   "arquivos_mudados_7d": 803,
@@ -258,6 +258,10 @@
     "mudancas": 9
    },
    {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 9
+   },
+   {
     "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 9
    },
@@ -282,10 +286,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 8
-   },
-   {
     "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
     "mudancas": 8
    },
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 99
+    "commits": 100
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3822,
   "arquivos_codigo": 2414,
-  "linhas_codigo": 433270,
+  "linhas_codigo": 433268,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -580,7 +580,7 @@
   },
   "scripts/security": {
    "arquivos": 13,
-   "linhas": 4425
+   "linhas": 4423
   },
   "scripts/simular-observabilidade-digest.ts": {
    "arquivos": 1,
@@ -778,7 +778,7 @@
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-   "linhas": 699
+   "linhas": 697
   },
   {
    "arquivo": "supabase/functions/open-finance/index.ts",

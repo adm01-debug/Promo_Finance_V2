@@ -46,6 +46,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sessoes_conciliacao_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_sessoes_conciliacao_empresa_id ON public.sessoes_conciliacao USING btree (empresa_id)` |
 | sessoes_conciliacao_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sessoes_conciliacao_pkey ON public.sessoes_conciliacao USING btree (id)` |
 
 

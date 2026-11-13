@@ -38,6 +38,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_resumos_executivos_semanais_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_resumos_executivos_semanais_empresa_id ON public.resumos_executivos_semanais USING btree (empresa_id)` |
 | resumos_executivos_semanais_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX resumos_executivos_semanais_pkey ON public.resumos_executivos_semanais USING btree (id)` |
 
 

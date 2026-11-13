@@ -14,9 +14,17 @@ BEGIN
     RAISE EXCEPTION 'NFe % não encontrada', p_nfe_id USING ERRCODE = 'no_data_found';
   END IF;
 
+  IF NOT public.empresa_acessivel(v_nfe.empresa_id) THEN
+    RAISE EXCEPTION 'Sem permissão para esta NFe' USING ERRCODE = '42501';
+  END IF;
+
   SELECT * INTO v_cp FROM public.contas_pagar WHERE id = p_conta_pagar_id AND deleted_at IS NULL FOR UPDATE;
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Conta a pagar % não encontrada ou removida', p_conta_pagar_id USING ERRCODE = 'no_data_found';
+  END IF;
+
+  IF v_cp.empresa_id IS DISTINCT FROM v_nfe.empresa_id THEN
+    RAISE EXCEPTION 'Conta a pagar % pertence a outra empresa', p_conta_pagar_id USING ERRCODE = '42501';
   END IF;
 
   -- Idempotente: já vinculada

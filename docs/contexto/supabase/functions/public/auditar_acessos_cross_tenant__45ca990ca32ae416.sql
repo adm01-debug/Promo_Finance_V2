@@ -44,7 +44,7 @@ BEGIN
     WHERE b.empresa_id IS NOT NULL
       AND NOT EXISTS (
         SELECT 1 FROM public.user_empresas ue
-        WHERE ue.user_id = b.user_id AND ue.empresa_id = b.empresa_id AND COALESCE(ue.ativo, true)
+        WHERE ue.user_id = b.user_id AND ue.empresa_id = b.empresa_id AND ue.ativo = true
       )
   ), ins AS (
     INSERT INTO public.acessos_suspeitos

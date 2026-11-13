@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -46,6 +46,26 @@
 
 ## Policies (RLS)
 
+### `Atualizar alertas preditivos restrito`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `empresa_acessivel(empresa_id)` |
+| WITH CHECK | `empresa_acessivel(empresa_id)` |
+
+### `Inserir alertas preditivos restrito`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `empresa_acessivel(empresa_id)` |
+
 ### `alertas_preditivos_empresa_select`
 
 | campo | valor |
@@ -54,6 +74,16 @@
 | tipo | PERMISSIVE |
 | roles | authenticated |
 | USING | `(empresa_id IN ( SELECT user_empresas.empresa_id    FROM user_empresas   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true))))` |
+| WITH CHECK |  |
+
+### `alertas_preditivos_select_empresa`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `empresa_acessivel(empresa_id)` |
 | WITH CHECK |  |
 
 

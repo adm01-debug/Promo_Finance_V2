@@ -50,6 +50,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | custom_field_definitions_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX custom_field_definitions_pkey ON public.custom_field_definitions USING btree (id)` |
+| idx_custom_field_definitions_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_custom_field_definitions_empresa_id ON public.custom_field_definitions USING btree (empresa_id)` |
 
 
 ## Policies (RLS)

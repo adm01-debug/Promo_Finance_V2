@@ -54,6 +54,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_regras_conciliacao_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_regras_conciliacao_created_by_fk ON public.regras_conciliacao USING btree (created_by)` |
+| idx_regras_conciliacao_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_regras_conciliacao_empresa_id ON public.regras_conciliacao USING btree (empresa_id)` |
 | idx_regras_conciliacao_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_regras_conciliacao_user_id_fk ON public.regras_conciliacao USING btree (user_id)` |
 | regras_conciliacao_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regras_conciliacao_pkey ON public.regras_conciliacao USING btree (id)` |
 

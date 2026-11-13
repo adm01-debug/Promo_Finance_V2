@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 5 |
+| policies | 0 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -59,59 +59,13 @@
 |---|---|---|---|---|---|---|
 | alert_configurations_alert_type_channel_key | btree | alert_type, channel | sim | sim |  | `CREATE UNIQUE INDEX alert_configurations_alert_type_channel_key ON public.alert_configurations USING btree (alert_type, channel)` |
 | alert_configurations_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX alert_configurations_pkey ON public.alert_configurations USING btree (id)` |
+| idx_alert_configurations_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_alert_configurations_empresa_id ON public.alert_configurations USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
 
-### `Admins can delete alert configs`
+> ⚠️ RLS habilitado **sem policies**: nenhum acesso via API (anon/authenticated).
 
-| campo | valor |
-|---|---|
-| comando | DELETE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
-| WITH CHECK |  |
-
-### `Admins managers can view alert configs`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))` |
-| WITH CHECK |  |
-
-### `Managers can insert alert configs`
-
-| campo | valor |
-|---|---|
-| comando | INSERT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING |  |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))` |
-
-### `Managers can update alert configs`
-
-| campo | valor |
-|---|---|
-| comando | UPDATE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'manager'::app_role))` |
-| WITH CHECK |  |
-
-### `Viewers can view alert configs`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `has_role(( SELECT auth.uid() AS uid), 'viewer'::app_role)` |
-| WITH CHECK |  |
 
 
 ## Triggers

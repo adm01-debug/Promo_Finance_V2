@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -46,9 +46,11 @@
 
 | tabela | constraint | colunas | on delete |
 |---|---|---|---|
+| public.anomalia_toast_eventos | anomalia_toast_eventos_centro_custo_id_fkey | centro_custo_id | SET NULL |
 | public.centros_custo | centros_custo_parent_id_fkey | parent_id | SET NULL |
 | public.contas_pagar | contas_pagar_centro_custo_id_fkey | centro_custo_id | SET NULL |
 | public.contas_receber | contas_receber_centro_custo_id_fkey | centro_custo_id | SET NULL |
+| public.pedidos_compra | pedidos_compra_centro_custo_id_fkey | centro_custo_id | SET NULL |
 
 
 ## Índices
@@ -60,16 +62,6 @@
 
 
 ## Policies (RLS)
-
-### `Admins can manage centros de custo`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
 
 ### `centros_custo_empresa_select`
 

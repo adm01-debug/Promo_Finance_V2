@@ -44,6 +44,7 @@
 |---|---|---|---|
 | public.contas_pagar | contas_pagar_categoria_id_fkey | categoria_id | SET NULL |
 | public.contas_receber | contas_receber_categoria_id_fkey | categoria_id | SET NULL |
+| public.movimentacoes | movimentacoes_categoria_id_fkey | categoria_id | SET NULL |
 
 
 ## Índices

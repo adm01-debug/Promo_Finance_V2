@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION public.set_empresa_id_default() RETURNS trigger — substitui COALESCE(ue.ativo, true) por ue.ativo = true; afeta lalamove_orders, drivers, alerts, alert_configurations, risk_rules

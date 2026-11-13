@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 3 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -42,9 +42,20 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | historico_analises_preditivas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX historico_analises_preditivas_pkey ON public.historico_analises_preditivas USING btree (id)` |
+| idx_historico_analises_preditivas_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_historico_analises_preditivas_empresa_id ON public.historico_analises_preditivas USING btree (empresa_id)` |
 
 
 ## Policies (RLS)
+
+### `Usuários podem inserir próprias análises ou papel elevado`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(((user_id = auth.uid()) OR has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])) AND empresa_acessivel(empresa_id))` |
 
 ### `hap_user_insert`
 

@@ -48,6 +48,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | expert_conversations_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX expert_conversations_pkey ON public.expert_conversations USING btree (id)` |
+| idx_expert_conversations_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_expert_conversations_empresa_id ON public.expert_conversations USING btree (empresa_id)` |
 | idx_expert_conversations_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_expert_conversations_user_id_fk ON public.expert_conversations USING btree (user_id)` |
 
 

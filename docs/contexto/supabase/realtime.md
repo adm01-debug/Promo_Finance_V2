@@ -11,7 +11,16 @@
 
 | publication | tabela | replica identity |
 |---|---|---|
+| supabase_realtime | public.alertas | default |
+| supabase_realtime | public.alertas_tributarios | default |
+| supabase_realtime | public.anomalia_detection_runs | default |
+| supabase_realtime | public.anomalias_detectadas | default |
+| supabase_realtime | public.audit_logs | default |
 | supabase_realtime | public.performance_alerts | default |
+| supabase_realtime | public.security_alerts | default |
+| supabase_realtime | public.solicitacoes_aprovacao | default |
+| supabase_realtime | public.transacoes_bancarias | default |
+| supabase_realtime | public.user_anomalia_preferences | default |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_10 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_11 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_12 |  |

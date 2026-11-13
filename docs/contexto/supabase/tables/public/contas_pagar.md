@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -51,6 +51,8 @@
 | 32 | `transacao_conciliada_id` | `uuid` | sim |  |  |  |
 | 33 | `tipo_cobranca` | `text` | sim |  |  |  |
 | 34 | `deleted_at` | `timestamp with time zone` | sim |  |  |  |
+| 35 | `tags` | `text[]` | sim | `'{}'::text[]` |  |  |
+| 36 | `data_emissao` | `date` | sim |  |  |  |
 
 
 ## Constraints
@@ -87,7 +89,10 @@
 | contas_pagar_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX contas_pagar_pkey ON public.contas_pagar USING btree (id)` |
 | idx_contas_pagar_aprovado_por_fk | btree | aprovado_por | não | sim |  | `CREATE INDEX idx_contas_pagar_aprovado_por_fk ON public.contas_pagar USING btree (aprovado_por)` |
 | idx_contas_pagar_categoria_id_fk | btree | categoria_id | não | sim |  | `CREATE INDEX idx_contas_pagar_categoria_id_fk ON public.contas_pagar USING btree (categoria_id)` |
+| idx_contas_pagar_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_contas_pagar_centro_custo_id ON public.contas_pagar USING btree (centro_custo_id)` |
+| idx_contas_pagar_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_contas_pagar_conta_bancaria_id ON public.contas_pagar USING btree (conta_bancaria_id)` |
 | idx_contas_pagar_data_pagamento | btree | data_pagamento | não | sim | `(data_pagamento IS NOT NULL)` | `CREATE INDEX idx_contas_pagar_data_pagamento ON public.contas_pagar USING btree (data_pagamento) WHERE (data_pagamento IS NOT NULL)` |
+| idx_contas_pagar_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_contas_pagar_empresa_id ON public.contas_pagar USING btree (empresa_id)` |
 | idx_contas_pagar_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  | `CREATE INDEX idx_contas_pagar_empresa_status_venc ON public.contas_pagar USING btree (empresa_id, status, data_vencimento)` |
 | idx_contas_pagar_fornecedor_id_fk | btree | fornecedor_id | não | sim |  | `CREATE INDEX idx_contas_pagar_fornecedor_id_fk ON public.contas_pagar USING btree (fornecedor_id)` |
 | idx_contas_pagar_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` | `CREATE INDEX idx_contas_pagar_pendentes_venc ON public.contas_pagar USING btree (empresa_id, data_vencimento) WHERE ((status)::text = 'pendente'::text)` |
@@ -95,16 +100,6 @@
 
 
 ## Policies (RLS)
-
-### `Admins can manage contas pagar`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
-| WITH CHECK | `(has_role(( SELECT auth.uid() AS uid), 'admin'::app_role) OR has_role(( SELECT auth.uid() AS uid), 'financeiro'::app_role))` |
 
 ### `contas_pagar_empresa_select`
 

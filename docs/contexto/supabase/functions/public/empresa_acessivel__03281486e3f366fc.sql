@@ -9,6 +9,6 @@ AS $function$
        SELECT 1 FROM public.user_empresas ue
        WHERE ue.empresa_id = _empresa_id
          AND ue.user_id = (SELECT auth.uid())
-         AND COALESCE(ue.ativo, true)
+         AND ue.ativo = true
      )
 $function$
