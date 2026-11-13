@@ -294,15 +294,27 @@ jobs:
             supabase/migrations/*.sql | sort -u >> /tmp/si-esperado.txt || true
           sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
           # Views Lalamove excluídas por docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md
-          # (decisão de produto); ausência em PROD é estado esperado e
-          # não pode quebrar o guard.
+          # (decisão de produto): o estado canônico é AUSENTE em PROD. Saem da
+          # lista esperada, mas o guard falha se alguma reaparecer.
           sed -i '/^\(drivers_safe_view\|orders_safe_view\|orders_operator_view\)$/d' /tmp/si-esperado.txt
+          LALAMOVE_EM_PROD=$(psql "$PROD_DB_URL" -Atc \
+            "SELECT string_agg(c.relname, ',') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('drivers_safe_view','orders_safe_view','orders_operator_view')")
+          if [ -n "$LALAMOVE_EM_PROD" ]; then
+            echo "::error::Objetos Lalamove presentes em PROD ($LALAMOVE_EM_PROD) — ADR-001 exige ausência."
+            exit 1
+          fi
           # estrategias_elisao_catalogo é TABELA em PROD (relkind 'r', RLS
           # ligado), não view: as migrations a declaram view
           # (20260728154640_2b62d1ef-…sql:62 e
           # 20260825100000_reconciliar_schema_completo.sql:10803), mas PROD
           # manteve a tabela. Sem view não há security_invoker a conferir.
-          sed -i '/^estrategias_elisao_catalogo$/d' /tmp/si-esperado.txt
+          # A exceção só vale enquanto o objeto for tabela: se virar view,
+          # volta a ser conferido.
+          RELKIND_CATALOGO=$(psql "$PROD_DB_URL" -Atc \
+            "SELECT c.relkind FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='estrategias_elisao_catalogo'")
+          if [ "$RELKIND_CATALOGO" = "r" ]; then
+            sed -i '/^estrategias_elisao_catalogo$/d' /tmp/si-esperado.txt
+          fi
           # Só conta como protegida se o valor for verdadeiro — um
           # security_invoker=false gravado em PROD não satisfaz a matriz.
           psql "$PROD_DB_URL" -Atc \
