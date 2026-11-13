@@ -8,6 +8,8 @@
 -- retenção >= 1. Nenhum cron ou função chama drop_old_partitions hoje
 -- (conferido em cron.job e pg_proc.prosrc). Nomes de parâmetro diferentes
 -- impedem CREATE OR REPLACE, por isso DROP + CREATE (mesmos tipos de entrada).
+-- Ajuste sobre a versão do repo: o DROP usa o schema real da partição (antes
+-- fixava public., o que podia apagar uma tabela homônima em public).
 DROP FUNCTION IF EXISTS public.drop_old_partitions(text, integer);
 
 CREATE OR REPLACE FUNCTION public.drop_old_partitions(p_table text, p_retention_months integer) RETURNS jsonb
@@ -25,11 +27,12 @@ BEGIN
   END IF;
 
   FOR v_rec IN
-    SELECT c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound
+    SELECT cn.nspname AS child_schema, c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound
     FROM pg_class parent
     JOIN pg_inherits i ON i.inhparent = parent.oid
     JOIN pg_class c ON c.oid = i.inhrelid
     JOIN pg_namespace n ON n.oid = parent.relnamespace
+    JOIN pg_namespace cn ON cn.oid = c.relnamespace
     WHERE n.nspname = 'public' AND parent.relname = p_table
   LOOP
     IF v_rec.bound IS NULL OR v_rec.bound ILIKE '%DEFAULT%' THEN
@@ -38,7 +41,7 @@ BEGIN
 
     v_upper := (regexp_match(v_rec.bound, $re$TO \('([0-9]{4}-[0-9]{2}-[0-9]{2})$re$))[1]::date;
     IF v_upper IS NOT NULL AND v_upper <= v_cutoff THEN
-      EXECUTE format('DROP TABLE IF EXISTS public.%I', v_rec.relname);
+      EXECUTE format('DROP TABLE IF EXISTS %I.%I', v_rec.child_schema, v_rec.relname);
       v_dropped := v_dropped || v_rec.relname;
     END IF;
   END LOOP;
