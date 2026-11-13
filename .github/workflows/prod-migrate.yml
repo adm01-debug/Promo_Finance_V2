@@ -297,6 +297,12 @@ jobs:
           # (decisão de produto); ausência em PROD é estado esperado e
           # não pode quebrar o guard.
           sed -i '/^\(drivers_safe_view\|orders_safe_view\|orders_operator_view\)$/d' /tmp/si-esperado.txt
+          # estrategias_elisao_catalogo é TABELA em PROD (relkind 'r', RLS
+          # ligado), não view: as migrations a declaram view
+          # (20260728154640_2b62d1ef-…sql:62 e
+          # 20260825100000_reconciliar_schema_completo.sql:10803), mas PROD
+          # manteve a tabela. Sem view não há security_invoker a conferir.
+          sed -i '/^estrategias_elisao_catalogo$/d' /tmp/si-esperado.txt
           # Só conta como protegida se o valor for verdadeiro — um
           # security_invoker=false gravado em PROD não satisfaz a matriz.
           psql "$PROD_DB_URL" -Atc \
