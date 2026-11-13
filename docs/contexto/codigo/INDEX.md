@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `309bc9bf5fea77512786808c26d585e5e19928dd` (2026-11-13T14:06:35Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `095a3f63c97fadf77db7afd43ef7af0b17c7c9d4` (2026-11-13T11:43:24-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2303), SQL (1082), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2303), SQL (1083), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3821 |
+| arquivos_total | 3822 |
 | arquivos_codigo | 2414 |
 | linhas_codigo | 433270 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 352 |
-| migrations | 1012 |
+| migrations | 1013 |
 | cron_jobs | 21 |
 | testes | 432 |
 | workflows | 19 |
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `095a3f6` fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)
 - 2026-11-13 `309bc9b` fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)
 - 2026-11-13 `7cbba6f` lint zero + type-check estrito zerado (72→0) (#328)
 - 2026-11-13 `2d3e3db` fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `05920df` fix: contas a pagar aceita status parcial (#318)
 - 2026-11-12 `7c4bc25` feat: contabilização usa a conta contábil da categoria (#317)
 - 2026-11-12 `4589361` fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)
-- 2026-11-12 `0821a38` chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "309bc9bf5fea77512786808c26d585e5e19928dd",
+  "sha": "095a3f63c97fadf77db7afd43ef7af0b17c7c9d4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 14:41 UTC",
-  "files_total": 3863,
-  "code_files": 3497,
-  "code_lines": 496581
+  "generated_at": "2026-11-13 15:45 UTC",
+  "files_total": 3864,
+  "code_files": 3498,
+  "code_lines": 496641
  },
  "version": "1.3.2",
- "facts_hash": "e1106caf786157a3",
+ "facts_hash": "046ec7a31bb61c41",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "languages": {
    ".ts": 1216,
    ".tsx": 1087,
-   ".sql": 1082,
+   ".sql": 1083,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -43767,23 +43767,6 @@
      "v_found"
     ]
    },
-   "drop_old_partitions": {
-    "args": "p_table text, p_retention_months integer",
-    "returns": "jsonb",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "DECLARE v_cutoff date := (date_trunc('month', now()) - make_interval(months => p_retention_months))::date; v_rec record; v_dropped text[] := ARRAY[]::text[]; v_upper date; BEGIN IF p_retention_months IS NULL OR p_retention_months < 1 THEN RAISE EXCEPTION 'retention_months deve ser >= 1'; END IF; FOR v_rec IN SELECT c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound FROM pg_class parent JOIN pg_inherits i ON i.inhparent = parent.oid JOIN pg_class c ON c.oid = i.inhrelid JOIN pg_namespace n ON n.oid = parent.relnamespace WHERE n.nspname = 'public' AND parent.relname = p_table LOOP IF v_rec.bound IS NULL OR v_rec.bound ILIKE '%DEFAULT%' THEN CONTINUE; END IF; v_upper := (regexp_match(v_rec. …",
-    "raises": [
-     "retention_months deve ser >= 1"
-    ],
-    "tables": [
-     "pg_class",
-     "pg_inherits",
-     "pg_namespace"
-    ]
-   },
    "purge_old_rows": {
     "args": "p_table regclass, p_column text, p_days integer, p_where text DEFAULT NULL::text, p_batch integer DEFAULT 10000, p_max_batches integer DEFAULT 50",
     "returns": "bigint",
@@ -45427,6 +45410,23 @@
      "v_conta_cat",
      "v_lanc",
      "v_regra"
+    ]
+   },
+   "drop_old_partitions": {
+    "args": "p_table text, p_retention_months integer",
+    "returns": "jsonb",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_cutoff date := (date_trunc('month', now()) - make_interval(months => p_retention_months))::date; v_rec record; v_dropped text[] := ARRAY[]::text[]; v_upper date; BEGIN IF p_retention_months IS NULL OR p_retention_months < 1 THEN RAISE EXCEPTION 'retention_months deve ser >= 1'; END IF; FOR v_rec IN SELECT cn.nspname AS child_schema, c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound FROM pg_class parent JOIN pg_inherits i ON i.inhparent = parent.oid JOIN pg_class c ON c.oid = i.inhrelid JOIN pg_namespace n ON n.oid = parent.relnamespace JOIN pg_namespace cn ON cn.oid = c.relnamespace WHERE n.nspname = 'public' AND parent.relname = p_table LOOP IF v_rec.bound IS NULL OR v_rec.bo …",
+    "raises": [
+     "retention_months deve ser >= 1"
+    ],
+    "tables": [
+     "pg_class",
+     "pg_inherits",
+     "pg_namespace"
     ]
    },
    "confirmar_conciliacao": {
@@ -51854,6 +51854,7 @@
    "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql",
    "supabase/migrations/20261113112425_performance_alerts_source_weekly_trend.sql",
    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
+   "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -59885,6 +59886,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "drop_old_partitions",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "drop_old_partitions",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
    }
   ],
   "raises": [
@@ -60056,11 +60073,6 @@
    {
     "function": "detectar_duplicidades_financeiras",
     "msg": "Acesso negado à empresa informada",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "function": "drop_old_partitions",
-    "msg": "retention_months deve ser >= 1",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
@@ -60612,6 +60624,11 @@
     "function": "validar_partidas_dobradas",
     "msg": "Partidas não balanceadas no lançamento %: Débitos=% Créditos=%",
     "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
+   },
+   {
+    "function": "drop_old_partitions",
+    "msg": "retention_months deve ser >= 1",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
    }
   ],
   "seed": [
@@ -72120,8 +72137,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1012,
-   "lines": 76357,
+   "files": 1013,
+   "lines": 76417,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -149521,23 +149538,6 @@
      "v_found"
     ]
    },
-   "drop_old_partitions": {
-    "args": "p_table text, p_retention_months integer",
-    "returns": "jsonb",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "DECLARE v_cutoff date := (date_trunc('month', now()) - make_interval(months => p_retention_months))::date; v_rec record; v_dropped text[] := ARRAY[]::text[]; v_upper date; BEGIN IF p_retention_months IS NULL OR p_retention_months < 1 THEN RAISE EXCEPTION 'retention_months deve ser >= 1'; END IF; FOR v_rec IN SELECT c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound FROM pg_class parent JOIN pg_inherits i ON i.inhparent = parent.oid JOIN pg_class c ON c.oid = i.inhrelid JOIN pg_namespace n ON n.oid = parent.relnamespace WHERE n.nspname = 'public' AND parent.relname = p_table LOOP IF v_rec.bound IS NULL OR v_rec.bound ILIKE '%DEFAULT%' THEN CONTINUE; END IF; v_upper := (regexp_match(v_rec. …",
-    "raises": [
-     "retention_months deve ser >= 1"
-    ],
-    "tables": [
-     "pg_class",
-     "pg_inherits",
-     "pg_namespace"
-    ]
-   },
    "purge_old_rows": {
     "args": "p_table regclass, p_column text, p_days integer, p_where text DEFAULT NULL::text, p_batch integer DEFAULT 10000, p_max_batches integer DEFAULT 50",
     "returns": "bigint",
@@ -151183,6 +151183,23 @@
      "v_regra"
     ]
    },
+   "drop_old_partitions": {
+    "args": "p_table text, p_retention_months integer",
+    "returns": "jsonb",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_cutoff date := (date_trunc('month', now()) - make_interval(months => p_retention_months))::date; v_rec record; v_dropped text[] := ARRAY[]::text[]; v_upper date; BEGIN IF p_retention_months IS NULL OR p_retention_months < 1 THEN RAISE EXCEPTION 'retention_months deve ser >= 1'; END IF; FOR v_rec IN SELECT cn.nspname AS child_schema, c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound FROM pg_class parent JOIN pg_inherits i ON i.inhparent = parent.oid JOIN pg_class c ON c.oid = i.inhrelid JOIN pg_namespace n ON n.oid = parent.relnamespace JOIN pg_namespace cn ON cn.oid = c.relnamespace WHERE n.nspname = 'public' AND parent.relname = p_table LOOP IF v_rec.bound IS NULL OR v_rec.bo …",
+    "raises": [
+     "retention_months deve ser >= 1"
+    ],
+    "tables": [
+     "pg_class",
+     "pg_inherits",
+     "pg_namespace"
+    ]
+   },
    "confirmar_conciliacao": {
     "args": "",
     "returns": "?",
@@ -151668,11 +151685,6 @@
    {
     "function": "detectar_duplicidades_financeiras",
     "msg": "Acesso negado à empresa informada",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "function": "drop_old_partitions",
-    "msg": "retention_months deve ser >= 1",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
@@ -152224,6 +152236,11 @@
     "function": "validar_partidas_dobradas",
     "msg": "Partidas não balanceadas no lançamento %: Débitos=% Créditos=%",
     "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
+   },
+   {
+    "function": "drop_old_partitions",
+    "msg": "retention_months deve ser >= 1",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
    }
   ],
   "db_generated": [
@@ -161771,6 +161788,7 @@
    "supabase/migrations/20261013120000_anexos_rls_metadados_e_orfaos.sql",
    "supabase/migrations/20261013160000_anexos_resolver_fecha_fechado_duplicado.sql",
    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
+   "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -169779,6 +169797,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "drop_old_partitions",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "drop_old_partitions",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
    }
   ],
   "guards": [
@@ -244334,6 +244368,11 @@
    ],
    "uses_service_role": true
   },
+  "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql": {
+   "path": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
+   "lines": 60,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -244442,10 +244481,19 @@
   }
  },
  "git": {
-  "sha": "309bc9bf5fea77512786808c26d585e5e19928dd",
+  "sha": "095a3f63c97fadf77db7afd43ef7af0b17c7c9d4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "095a3f6",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)",
+    "files": [
+     "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+    ]
+   },
    {
     "sha": "309bc9b",
     "date": "2026-11-13",
@@ -245065,154 +245113,6 @@
      "scripts/maintenance/run.sh",
      "scripts/maintenance/typecheck.mjs"
     ]
-   },
-   {
-    "sha": "f0bad74",
-    "date": "2026-11-11",
-    "author": "adm01-debug",
-    "subject": "fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)",
-    "files": [
-     ".gitleaks.toml",
-     "scripts/README.md",
-     "scripts/admin/supabase_admin_ops.py",
-     "scripts/admin/test_supabase_admin_ops_main_scenarios.py",
-     "scripts/admin/test_supabase_admin_ops_scenarios.py",
-     "scripts/ai-context/README.md",
-     "scripts/ai-context/cenarios.mjs",
-     "scripts/ai-context/gerar.mjs",
-     "scripts/ai-context/gerar.unit.mjs",
-     "scripts/automation.config.json",
-     "scripts/check-external-secret-isolation.sh",
-     "scripts/ci/actions-kpi.mjs",
-     "scripts/ci/actions-kpi.unit.mjs",
-     "scripts/ci/audit-env.ts",
-     "scripts/ci/audit-env.unit.mjs",
-     "scripts/ci/check-baseline-drift.sh",
-     "scripts/ci/check-claude-md-integrity.mjs",
-     "scripts/ci/check-claude-md-integrity.unit.mjs",
-     "scripts/ci/deno-check-functions.sh",
-     "scripts/ci/gerar-matriz-edge-tabela.mjs",
-     "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
-     "scripts/ci/listar-excecoes-npm-nativo.py",
-     "scripts/ci/listar-specs-quarentena.ts",
-     "scripts/ci/listar-specs-quarentena.unit.mjs",
-     "scripts/ci/render-workflow-docs.mjs",
-     "scripts/ci/render-workflow-docs.unit.mjs",
-     "scripts/ci/require-env.sh",
-     "scripts/ci/test_listar_excecoes_npm_nativo.py",
-     "scripts/ci/test_scripts_shell.py",
-     "scripts/ci/typecheck-strict-baseline.sh",
-     "scripts/data-migrate.sh",
-     "scripts/data/copy-table.sh",
-     "scripts/data/lib-alvo.sh",
-     "scripts/data/pg_efemero.py",
-     "scripts/data/rollback.sh",
-     "scripts/data/tables.yaml",
-     "scripts/data/test_data_migrate_pg_scenarios.py",
-     "scripts/data/test_verify_scenarios.py",
-     "scripts/data/verify.sh",
-     "scripts/edge-deploy/README.md",
-     "scripts/edge-deploy/deployment-record.mjs",
-     "scripts/edge-deploy/deployment-record.unit.mjs",
-     "scripts/edge-deploy/health-check.mjs",
-     "scripts/edge-deploy/health-check.unit.mjs",
-     "scripts/edge-deploy/redigir-log.mjs",
-     "scripts/edge-deploy/redigir-log.unit.mjs",
-     "scripts/edge-deploy/register-deployment.mjs",
-     "scripts/edge-deploy/register-deployment.unit.mjs",
-     "scripts/edge-deploy/secrets-scope.mjs",
-     "scripts/edge-deploy/secrets-scope.unit.mjs",
-     "scripts/edge-deploy/smoke-functions.mjs",
-     "scripts/edge-deploy/smoke-functions.unit.mjs",
-     "scripts/edge-deploy/unchanged-from-log.mjs",
-     "scripts/edge-deploy/unchanged-from-log.unit.mjs",
-     "scripts/edge-deploy/verify-remote.mjs",
-     "scripts/edge-deploy/verify-remote.unit.mjs",
-     "scripts/generate-design-audit.js",
-     "scripts/generate-design-audit.unit.mjs",
-     "scripts/generate-env-manifest.mjs",
-     "scripts/generate-env-manifest.unit.mjs",
-     "scripts/generate-simulation-report.ts",
-     "scripts/gerar-grafo-arquitetura.ts",
-     "scripts/graphify/benchmark.py",
-     "scripts/graphify/benchmark_cases.json",
-     "scripts/graphify/code_references.py",
-     "scripts/graphify/edge_inventory.py",
-     "scripts/graphify/graph_quality.py",
-     "scripts/graphify/run.py",
-     "scripts/graphify/sql_inventory.py",
-     "scripts/graphify/test_benchmark.py",
-     "scripts/graphify/test_code_references.py",
-     "scripts/graphify/test_edge_inventory.py",
-     "scripts/graphify/test_graph_quality.py",
-     "scripts/graphify/test_run.py",
-     "scripts/graphify/test_scenarios.py",
-     "scripts/graphify/test_sql_inventory.py",
-     "scripts/graphify/test_typescript_imports.py",
-     "scripts/graphify/typescript_imports.py",
-     "scripts/healthcheck/01_webhooks.sh",
-     "scripts/healthcheck/02_crons.sql",
-     "scripts/healthcheck/03_realtime.mjs",
-     "scripts/healthcheck/03_realtime.unit.mjs",
-     "scripts/healthcheck/04_events.sh",
-     "scripts/healthcheck/run.sh",
-     "scripts/healthcheck/test_healthcheck_scenarios.py",
-     "scripts/integrity/02_rls.sql",
-     "scripts/integrity/04_endpoints.sh",
-     "scripts/integrity/15_views_pii_rpcs.sql",
-     "scripts/integrity/README.md",
-     "scripts/integrity/dump-baseline.sh",
-     "scripts/integrity/run.sh",
-     "scripts/integrity/test_dump_baseline_scenarios.py",
-     "scripts/integrity/test_integrity_pg_scenarios.py",
-     "scripts/mcp-phd-suite.mjs",
-     "scripts/mcp-phd-suite.unit.mjs",
-     "scripts/migrate-cron-jobs.sh",
-     "scripts/migrate-cron-jobs.sql",
-     "scripts/migrate-functions.sh",
-     "scripts/regras_negocio/README.md",
-     "scripts/regras_negocio/generate.py",
-     "scripts/regras_negocio/indice.py",
-     "scripts/regras_negocio/test_generate.py",
-     "scripts/regras_negocio/test_indice.py",
-     "scripts/run-scenarios.ts",
-     "scripts/scripts-ts.unit.mjs",
-     "scripts/security/check-view-replay-order.mjs",
-     "scripts/security/check-view-replay-order.unit.mjs",
-     "scripts/security/export-function-privileges.sh",
-     "scripts/security/test-anon-surface.ts",
-     "scripts/security/test-canonical-db-gates.mjs",
-     "scripts/security/test-canonical-db-gates.test.mjs",
-     "scripts/security/test-functions-deploy.sh",
-     "scripts/security/test-lint-function-repairs.mjs",
-     "scripts/security/test-lint-function-repairs.unit.mjs",
-     "scripts/security/test-migration-replay-safety.sh",
-     "scripts/security/test-privilege-baseline.sql",
-     "scripts/security/test-rpc-runtime.evaluate.test.ts",
-     "scripts/security/test-rpc-runtime.ts",
-     "scripts/security/test-security-definer-invocation.sql",
-     "scripts/security/test-supabase-config.py",
-     "scripts/security/test-tenant-policy-scope.sql",
-     "scripts/security/test-write-isolation.sql",
-     "scripts/security/test_gates_http.py",
-     "scripts/security/test_gates_shell.py",
-     "scripts/security/test_gates_sql.py",
-     "scripts/security/zod-coverage.baseline",
-     "scripts/security/zod-coverage.sh",
-     "scripts/simular-observabilidade-digest.ts",
-     "scripts/staging-migrate.sh",
-     "scripts/stress-test.ts",
-     "scripts/supabase_snapshot/README.md",
-     "scripts/supabase_snapshot/snapshot.py",
-     "scripts/supabase_snapshot/test_snapshot.py",
-     "scripts/test-all.sh",
-     "scripts/test_check_external_secret_isolation.py",
-     "scripts/test_migrate_cron_jobs.py",
-     "scripts/test_migrate_functions.py",
-     "scripts/test_staging_migrate.py",
-     "scripts/test_validate_all.py",
-     "scripts/validate-all.sh"
-    ]
    }
   ],
   "hot_files": [
@@ -245233,10 +245133,6 @@
     2
    ],
    [
-    "scripts/generate-env-manifest.mjs",
-    2
-   ],
-   [
     ".github/workflows/codeql.yml",
     2
    ],
@@ -245249,8 +245145,8 @@
     2
    ],
    [
-    "scripts/automation.config.json",
-    2
+    "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
+    1
    ],
    [
     "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
@@ -245294,6 +245190,10 @@
    ],
    [
     "src/components/admin/sso/ScimSetupGuide.tsx",
+    1
+   ],
+   [
+    "src/components/admin/sso/ScimSetupGuide.types.ts",
     1
    ]
   ]

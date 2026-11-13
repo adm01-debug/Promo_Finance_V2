@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `309bc9bf5f` · branch `main` · 2026-11-13 14:41 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `095a3f63c9` · branch `main` · 2026-11-13 15:45 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -963,7 +963,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `detectar_duplicidades_financeiras` | empresa_id é obrigatório | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `detectar_duplicidades_financeiras` | Tabela inválida: %. Use contas_pagar ou contas_receber. | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `detectar_duplicidades_financeiras` | Acesso negado à empresa informada | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
-| `drop_old_partitions` | retention_months deve ser >= 1 | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `duplicate_saved_filter` | Não autenticado | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `duplicate_saved_filter` | Preset não encontrado ou sem acesso | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `empresas_unica_padrao` | Uma empresa inativa não pode ser a empresa padrão | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
@@ -1074,6 +1073,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `fn_sync_valor_pago_movimentacao` | movimentacao vinculada a conta_pagar de outra empresa (%) | `supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql` |
 | `fn_sync_valor_pago_movimentacao` | movimentacao vinculada a conta_receber de outra empresa (%) | `supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql` |
 | `validar_partidas_dobradas` | Partidas não balanceadas no lançamento %: Débitos=% Créditos=% | `supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql` |
+| `drop_old_partitions` | retention_months deve ser >= 1 | `supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql` |
 
 ## E. Estados, máquinas de estado e transições
 

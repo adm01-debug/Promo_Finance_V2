@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)",
    "fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)",
    "lint zero + type-check estrito zerado (72→0) (#328)",
    "fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)",
-   "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)",
-   "chore(docs): auditoria prod-readiness (#324)"
+   "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

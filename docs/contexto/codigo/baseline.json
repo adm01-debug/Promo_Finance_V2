@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "309bc9bf5fea77512786808c26d585e5e19928dd",
+  "commit": "095a3f63c97fadf77db7afd43ef7af0b17c7c9d4",
   "branch": "main",
-  "data_commit": "2026-11-13T14:06:35Z",
+  "data_commit": "2026-11-13T11:43:24-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "095a3f6",
+    "data": "2026-11-13",
+    "assunto": "fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)"
+   },
    {
     "sha": "309bc9b",
     "data": "2026-11-13",
@@ -126,14 +131,9 @@
     "sha": "8eec022",
     "data": "2026-11-11",
     "assunto": "fix: sanitiza parâmetro search no filtro .or() da external-data (#308)"
-   },
-   {
-    "sha": "a516e9a",
-    "data": "2026-11-11",
-    "assunto": "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)"
    }
   ],
-  "arquivos_mudados_7d": 804,
+  "arquivos_mudados_7d": 803,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 98
+    "commits": 99
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3821,
+  "arquivos_total": 3822,
   "arquivos_codigo": 2414,
   "linhas_codigo": 433270,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1012,
+  "migrations": 1013,
   "cron_jobs": 21,
   "testes": 432,
   "workflows": 19,

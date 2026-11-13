@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1012,
+ "migrations": 1013,
  "seeds": [],
  "avisos": [
-  "180 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "181 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
