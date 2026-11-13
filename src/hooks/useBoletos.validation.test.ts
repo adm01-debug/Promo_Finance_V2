@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validarEmissaoBoletoConfirmada } from './useBoletos';
+import { validarEmissaoBoletoConfirmada } from './useBoletos.helpers';
 
 describe('validarEmissaoBoletoConfirmada', () => {
   const confirmacao = {

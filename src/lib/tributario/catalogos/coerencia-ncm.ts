@@ -5,7 +5,7 @@
 // Módulo puro: recebe os registros já lidos do banco e devolve as divergências.
 // Nenhum I/O, nenhuma dependência de React ou Supabase — 100% testável.
 
-import { TIPI, buscarTipiCanonica } from '../ipi-iss/tabelas';
+import { TIPI, buscarTipiCanonica } from '../ipi-iss/tabelas.helpers';
 import { classificarNcmMonofasicoCanonico, normalizarNcm } from '../monofasico/classificar';
 
 /** Recorte do registro de `ncms` relevante para a comparação. */

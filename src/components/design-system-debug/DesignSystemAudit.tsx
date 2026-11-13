@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -12,49 +12,9 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-interface TypographySpec {
-  name: string;
-  size: string;
-  px: string;
-  weight: string;
-  family: string;
-  lh: string;
-  usage: string;
-}
-
-interface ColorTokenSpec {
-  name: string;
-  value: string;
-  status: string;
-  hex: string;
-}
-
-interface SpacingSpec {
-  name: string;
-  value: string;
-  px: string;
-  token: string;
-}
-
-interface AuditResultsState {
-  typography: TypographySpec[];
-  colors: ColorTokenSpec[];
-  spacing: SpacingSpec[];
-  violations: number;
-  score: number;
-  scanning: boolean;
-  fontFamilies?: string[];
-}
-
-interface StatCardProps {
-  label: string;
-  value: string | number;
-  icon: React.ComponentType<{ className?: string }>;
-  color: 'primary' | 'warning';
-}
+import type { AuditResultsState } from './DesignSystemAudit.types';
+import { StatCard } from './StatCard';
 
 export const DesignSystemAudit = () => {
   const [auditResults, setAuditResults] = useState<AuditResultsState>({
@@ -432,24 +392,3 @@ export const DesignSystemAudit = () => {
     </div>
   );
 };
-
-const StatCard = ({ label, value, icon: Icon, color }: StatCardProps) => (
-  <Card className="bg-card/5 border-border rounded-3xl premium-card">
-    <CardContent className="p-6 flex items-center justify-between">
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20 mb-1">
-          {label}
-        </p>
-        <p className="text-2xl font-black text-foreground">{value}</p>
-      </div>
-      <div
-        className={cn(
-          'p-3 rounded-2xl',
-          color === 'primary' ? 'bg-primary/10 text-primary' : 'bg-warning/10 text-warning'
-        )}
-      >
-        <Icon className="h-5 w-5" />
-      </div>
-    </CardContent>
-  </Card>
-);

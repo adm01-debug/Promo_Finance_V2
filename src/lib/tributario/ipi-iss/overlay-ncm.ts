@@ -20,7 +20,7 @@
  * Módulo puro: sem I/O, sem React, sem Supabase, sem mutação das entradas.
  */
 
-import { TIPI, normalizarNcm } from './tabelas';
+import { TIPI, normalizarNcm } from './tabelas.helpers';
 import type { ItemTipi, SituacaoIpi } from './types';
 
 /** Recorte do registro de `ncms` relevante para o overlay de IPI. */

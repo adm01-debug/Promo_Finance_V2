@@ -16,15 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  DollarSign,
-  TrendingUp,
-  Receipt,
-  CheckCircle2,
-  Download,
-  Plus,
-  AlertCircle,
-} from 'lucide-react';
+import { DollarSign, TrendingUp, Receipt, Download, Plus, AlertCircle } from 'lucide-react';
 import {
   PieChart,
   Pie,
@@ -43,6 +35,7 @@ import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { NaoCumulatividadeInfoCard } from './NaoCumulatividadeInfoCard';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
@@ -396,37 +389,7 @@ export function GestorCreditosTributarios() {
       </Card>
 
       {/* Informações sobre Não-Cumulatividade */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-success" />
-            Não-Cumulatividade Plena
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <h4 className="font-medium mb-2">Crédito Integral</h4>
-              <p className="text-sm text-muted-foreground">
-                Todo IBS e CBS pago nas aquisições gera crédito, sem restrições por tipo de bem ou
-                serviço.
-              </p>
-            </div>
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <h4 className="font-medium mb-2">Compensação Cruzada</h4>
-              <p className="text-sm text-muted-foreground">
-                Créditos de CBS compensam débitos de CBS. Créditos de IBS compensam débitos de IBS.
-              </p>
-            </div>
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <h4 className="font-medium mb-2">Ressarcimento</h4>
-              <p className="text-sm text-muted-foreground">
-                Saldo credor acumulado pode ser ressarcido em até 60 dias, conforme regulamentação.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <NaoCumulatividadeInfoCard />
     </div>
   );
 }

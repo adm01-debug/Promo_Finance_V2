@@ -4,9 +4,6 @@ import {
   Building2,
   Plus,
   Search,
-  MoreVertical,
-  Edit,
-  CheckCircle2,
   CreditCard,
   LayoutGrid,
   List,
@@ -16,61 +13,22 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useContasBancarias, useContasReceber, useContasPagar } from '@/hooks/useFinancialData';
-import {
-  useAllEmpresas,
-  useExcluirEmpresa,
-  useReativarEmpresa,
-  type Empresa,
-} from '@/hooks/useEmpresas';
+import { useAllEmpresas, useExcluirEmpresa, useReativarEmpresa } from '@/hooks/useEmpresas';
+import type { Empresa } from '@/hooks/useEmpresas';
 import { EmpresaForm } from '@/components/empresas/EmpresaForm';
-import { EmpresaHeroKPI, EmpresaCardView } from '@/components/empresas/EmpresaCardView';
-import { formatCurrency } from '@/lib/formatters';
+import { EmpresaCardView } from '@/components/empresas/EmpresaCardView';
+import { EmpresaHeroKPI } from '@/components/empresas/EmpresaHeroKPI';
 import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
-};
-const itemVariants = {
-  hidden: { opacity: 0, y: 16, scale: 0.98 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: 'spring' as const, stiffness: 350, damping: 26 },
-  },
-};
-const heroVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0.96 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: 'spring' as const, stiffness: 300, damping: 24, delay: 0.15 },
-  },
-};
+import { containerVariants, itemVariants, heroVariants } from './Empresas.helpers';
+import { EmpresasConteudo } from './EmpresasConteudo';
+import { EmpresasConteudo2 } from './EmpresasConteudo2';
 
 export default function Empresas() {
   const { data: empresas = [], isLoading } = useAllEmpresas({ includeInactive: true });
@@ -437,183 +395,26 @@ export default function Empresas() {
 
       {/* Table View */}
       {viewMode === 'table' && empresasFiltradas.length > 0 && (
-        <motion.div variants={itemVariants}>
-          <Card className="overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-b-2 border-border/60">
-                  <TableHead className="font-bold text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                    Empresa
-                  </TableHead>
-                  <TableHead className="font-bold text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                    CNPJ
-                  </TableHead>
-                  <TableHead className="font-bold text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                    Status
-                  </TableHead>
-                  <TableHead className="text-right font-bold text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                    Saldo
-                  </TableHead>
-                  <TableHead className="text-right font-bold text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                    A Receber
-                  </TableHead>
-                  <TableHead className="text-right font-bold text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                    A Pagar
-                  </TableHead>
-                  <TableHead className="w-12" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {empresasFiltradas.map((empresa) => {
-                  const stats = getEmpresaStats(empresa.id);
-                  return (
-                    <TableRow
-                      key={empresa.id}
-                      className={cn(
-                        'transition-colors hover:bg-muted/30',
-                        !empresa.ativo && 'opacity-50',
-                        selectedEmpresa === empresa.id && 'bg-primary/5'
-                      )}
-                    >
-                      <TableCell>
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className={cn(
-                              'h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold',
-                              empresa.ativo
-                                ? 'text-primary-foreground'
-                                : 'bg-muted text-muted-foreground'
-                            )}
-                            style={
-                              empresa.ativo ? { background: 'var(--gradient-primary)' } : undefined
-                            }
-                          >
-                            {(empresa.nome_fantasia || empresa.razao_social)
-                              .charAt(0)
-                              .toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-sm text-foreground">
-                              {empresa.nome_fantasia || empresa.razao_social}
-                            </p>
-                            {empresa.nome_fantasia && (
-                              <p className="text-[11px] text-muted-foreground">
-                                {empresa.razao_social}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className="font-mono text-[10px] cursor-pointer"
-                          onClick={() => copyToClipboard(empresa.cnpj ?? '')}
-                        >
-                          {formatCNPJ(empresa.cnpj ?? '')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={empresa.ativo ? 'default' : 'secondary'}
-                          className={cn(
-                            'text-[10px]',
-                            empresa.ativo && 'bg-success/15 text-success border-success/30'
-                          )}
-                        >
-                          {empresa.ativo ? 'Ativa' : 'Inativa'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          'text-right font-bold text-sm',
-                          stats.saldoTotal >= 0 ? 'text-foreground' : 'text-destructive'
-                        )}
-                      >
-                        {formatCurrency(stats.saldoTotal)}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold text-sm text-success">
-                        {formatCurrency(stats.aReceber)}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold text-sm text-destructive">
-                        {formatCurrency(stats.aPagar)}
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setSelectedEmpresa(empresa.id)}>
-                              <CheckCircle2 className="h-4 w-4 mr-2" /> Selecionar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleOpenDialog(empresa)}>
-                              <Edit className="h-4 w-4 mr-2" /> Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleToggleAtivo(empresa)}
-                              className={empresa.ativo ? 'text-destructive' : 'text-success'}
-                            >
-                              {empresa.ativo ? 'Desativar' : 'Ativar'}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </Card>
-        </motion.div>
+        <EmpresasConteudo
+          empresasFiltradas={empresasFiltradas}
+          getEmpresaStats={getEmpresaStats}
+          selectedEmpresa={selectedEmpresa}
+          copyToClipboard={copyToClipboard}
+          formatCNPJ={formatCNPJ}
+          setSelectedEmpresa={setSelectedEmpresa}
+          handleOpenDialog={handleOpenDialog}
+          handleToggleAtivo={handleToggleAtivo}
+        />
       )}
 
       {/* Active Context Bar */}
       <AnimatePresence>
         {selectedEmpresa && (
-          <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-          >
-            <Card
-              className="border-primary/30 relative overflow-hidden"
-              style={{ boxShadow: 'var(--shadow-glow-primary)' }}
-            >
-              <div className="absolute inset-0 bg-primary/5 backdrop-blur-sm" />
-              <CardContent className="relative p-3 sm:p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="h-9 w-9 rounded-lg flex items-center justify-center"
-                      style={{ background: 'var(--gradient-primary)' }}
-                    >
-                      <Building2 className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em]">
-                        Contexto Ativo
-                      </p>
-                      <p className="text-sm font-bold text-foreground">
-                        {empresas.find((e) => e.id === selectedEmpresa)?.nome_fantasia ||
-                          empresas.find((e) => e.id === selectedEmpresa)?.razao_social}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedEmpresa(null)}
-                    className="text-xs"
-                  >
-                    Limpar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <EmpresasConteudo2
+            empresas={empresas}
+            selectedEmpresa={selectedEmpresa}
+            setSelectedEmpresa={setSelectedEmpresa}
+          />
         )}
       </AnimatePresence>
     </motion.div>

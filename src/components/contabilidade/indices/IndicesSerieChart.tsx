@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import type { Indicador } from '@/lib/contabil/indices';
+import type { Indicador } from '@/lib/contabil/indices.types';
 import type { PontoSerie } from '@/hooks/useIndicesContabeis';
 
 interface Props {

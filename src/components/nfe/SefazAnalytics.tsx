@@ -34,42 +34,9 @@ import {
 } from 'lucide-react';
 import { getEventos } from '@/lib/sefaz-event-logger';
 import { SefazAnalyticsKPIs } from './sefaz-analytics/SefazAnalyticsKPIs';
-
-const PIE_COLORS = [
-  'hsl(160, 84%, 39%)',
-  'hsl(0, 84%, 60%)',
-  'hsl(38, 92%, 50%)',
-  'hsl(239, 84%, 67%)',
-  'hsl(258, 90%, 66%)',
-];
-type Periodo = '24h' | '7d' | '30d' | '90d';
-
-interface TooltipPayloadEntry {
-  name: string;
-  value: number;
-  color: string;
-}
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: TooltipPayloadEntry[];
-  label?: string;
-}
-
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
-        <p className="font-medium text-sm mb-1">{label}</p>
-        {payload.map((entry, index) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.name}: {entry.value}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+import type { Periodo } from './SefazAnalytics.types';
+import { CustomTooltip } from './CustomTooltip';
+import { PIE_COLORS } from './SefazAnalytics.helpers';
 
 export const SefazAnalytics = () => {
   const [periodo, setPeriodo] = useState<Periodo>('7d');

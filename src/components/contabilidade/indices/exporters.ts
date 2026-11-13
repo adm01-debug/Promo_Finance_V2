@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { CATEGORIA_LABEL, formatarIndice, variacao, type Indicador } from '@/lib/contabil/indices';
+import { CATEGORIA_LABEL, formatarIndice, variacao } from '@/lib/contabil/indices.helpers';
+import { type Indicador } from '@/lib/contabil/indices.types';
 import type { PeriodoCtx } from '@/lib/export-contabil';
 import { drawFooter, drawHeader } from '@/lib/export-contabil/pdf-common';
 import { buildFilename, csvEscape, downloadCSV, headerLines } from '@/lib/export-contabil/utils';

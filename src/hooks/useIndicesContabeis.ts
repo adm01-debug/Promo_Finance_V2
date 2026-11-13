@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
-import { calcularIndices, type AgregadosContabeis, type Indicador } from '@/lib/contabil/indices';
+import { calcularIndices } from '@/lib/contabil/indices';
+import { type AgregadosContabeis, type Indicador } from '@/lib/contabil/indices.types';
 
 const numero = z.coerce.number().finite().catch(0);
 

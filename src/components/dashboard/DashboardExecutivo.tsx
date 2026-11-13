@@ -1,16 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Wallet,
-  ArrowDownCircle,
-  ArrowUpCircle,
-  AlertTriangle,
-  BarChart3,
-  ShieldCheck,
-  ShieldAlert,
-  FileText,
-  Download,
-} from 'lucide-react';
+import { BarChart3, ShieldCheck, ShieldAlert, FileText, Download } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,7 +11,6 @@ import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
 import { MetasFinanceirasPanel } from './MetasFinanceirasPanel';
 import { DashboardConfigDialog } from './DashboardConfigDialog';
 import { DashboardSkeleton } from './DashboardSkeleton';
-import { HeroKPICard, HeroKPIGrid } from './HeroKPICards';
 import { DashboardFiltersHeader } from './DashboardFiltersHeader';
 import { SecondaryKPICards } from './SecondaryKPICards';
 import { FluxoCaixaChart } from './FluxoCaixaChart';
@@ -36,41 +25,19 @@ import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSeg
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { AlertasOrcamento } from './AlertasOrcamento';
 import { AlertasCatalogosFiscaisCard } from './AlertasCatalogosFiscaisCard';
-
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { containerVariants, itemVariants } from './DashboardExecutivo.helpers';
+import { SectionDivider } from './SectionDivider';
+import { DashboardExecutivoConteudo } from './DashboardExecutivoConteudo';
 
 const WIDGET_SIZE_CLASS: Record<DashboardWidget['size'], string> = {
   sm: '2xl:col-span-1',
   md: '2xl:col-span-1',
   lg: '2xl:col-span-2',
 };
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-} as const;
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
-} as const;
-
-function SectionDivider({ label, icon: Icon }: { label: string; icon: React.ElementType }) {
-  return (
-    <div className="flex items-center gap-4 py-4">
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="h-9 w-9 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
-          <Icon className="h-4 w-4 text-primary" />
-        </div>
-        <span className="text-caption text-muted-foreground/80">{label}</span>
-      </div>
-      <div className="flex-1 h-[2px] bg-gradient-to-r from-border/50 to-transparent rounded-full" />
-    </div>
-  );
-}
 
 export const DashboardExecutivo = () => {
   const { currentEmpresaId } = useAuth();
@@ -233,91 +200,11 @@ export const DashboardExecutivo = () => {
 
         {/* Hero KPIs Section */}
         <motion.div variants={itemVariants}>
-          <HeroKPIGrid layout="hero-first">
-            <HeroKPICard
-              title="Saldo Consolidado"
-              value={metrics.saldoTotal}
-              icon={Wallet}
-              iconColor="text-blue-600"
-              iconBg="bg-blue-50"
-              accentColor="hsl(221 100% 50%)"
-              href="/contas-bancarias"
-              size="hero"
-              badge={`${metrics.contasBancariasFiltradas.length} contas ativas`}
-              tooltip="Saldo total disponível em todas as contas conectadas"
-            />
-            <HeroKPICard
-              title="Previsão de Recebimento"
-              value={metrics.totalReceber}
-              previousValue={metrics.totalReceber - metrics.receitasMes}
-              icon={ArrowDownCircle}
-              iconColor="text-emerald-600"
-              iconBg="bg-emerald-50"
-              accentColor="hsl(150, 70%, 42%)"
-              href="/contas-receber"
-              size="primary"
-              badge={
-                metrics.receitasMes > 0
-                  ? formatCurrency(metrics.receitasMes) + ' recebido'
-                  : undefined
-              }
-            />
-            <HeroKPICard
-              title="Compromissos a Pagar"
-              value={metrics.totalPagar}
-              previousValue={metrics.totalPagar - metrics.despesasMes}
-              icon={ArrowUpCircle}
-              iconColor="text-rose-600"
-              iconBg="bg-rose-50"
-              accentColor="hsl(0, 78%, 55%)"
-              href="/contas-pagar"
-              size="primary"
-              badge={
-                metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + ' pago' : undefined
-              }
-            />
-            <HeroKPICard
-              title="Índice de Inadimplência"
-              value={metrics.inadimplencia}
-              icon={AlertTriangle}
-              iconColor={
-                metrics.inadimplencia > 10
-                  ? 'text-rose-600'
-                  : metrics.inadimplencia > 5
-                    ? 'text-amber-600'
-                    : 'text-emerald-600'
-              }
-              iconBg={
-                metrics.inadimplencia > 10
-                  ? 'bg-rose-50'
-                  : metrics.inadimplencia > 5
-                    ? 'bg-amber-50'
-                    : 'bg-emerald-50'
-              }
-              accentColor={
-                metrics.inadimplencia > 10
-                  ? 'hsl(0, 78%, 55%)'
-                  : metrics.inadimplencia > 5
-                    ? 'hsl(42, 95%, 48%)'
-                    : 'hsl(150, 70%, 42%)'
-              }
-              href="/cobrancas"
-              size="primary"
-              isPercentage
-              isCurrency={false}
-              badge={inadimplenciaBadge}
-              badgeVariant={inadimplenciaBadgeVariant}
-              riskLevel={
-                metrics.inadimplencia > 15
-                  ? 'critical'
-                  : metrics.inadimplencia > 10
-                    ? 'high'
-                    : metrics.inadimplencia > 5
-                      ? 'medium'
-                      : 'none'
-              }
-            />
-          </HeroKPIGrid>
+          <DashboardExecutivoConteudo
+            metrics={metrics}
+            inadimplenciaBadge={inadimplenciaBadge}
+            inadimplenciaBadgeVariant={inadimplenciaBadgeVariant}
+          />
         </motion.div>
 
         {/* Key Metrics Grid */}
