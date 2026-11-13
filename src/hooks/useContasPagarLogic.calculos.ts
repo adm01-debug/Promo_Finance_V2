@@ -132,7 +132,7 @@ export function filtrarContasPagar(
     let matchesAdvanced = true;
     if (advancedFilters.dataVencimentoInicio) {
       const vencimento = new Date(c.data_vencimento);
-      matchesAdvanced = matchesAdvanced && vencimento >= advancedFilters.dataVencimentoInicio;
+      matchesAdvanced = vencimento >= advancedFilters.dataVencimentoInicio;
     }
     if (advancedFilters.dataVencimentoFim) {
       const vencimento = new Date(c.data_vencimento);
