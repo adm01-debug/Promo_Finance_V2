@@ -92,7 +92,8 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
       const { data: pedido, error: pedidoError } = await supabase
         .from('pedidos_compra')
         .insert({
-          // TODO: colunas 'user_id' e 'centro_custo_id' não existem em pedidos_compra no types.ts (removidas)
+          user_id: user.id,
+          centro_custo_id: values.centro_custo_id || null,
           fornecedor_id: values.fornecedor_id,
           previsao_entrega: values.data_entrega_prevista,
           observacoes: values.observacoes,
@@ -109,7 +110,7 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
         descricao: item.descricao,
         quantidade: item.quantidade,
         valor_unitario: item.valor_unitario,
-        // TODO: coluna 'valor_total' não existe em itens_pedido_compra no types.ts (removida)
+        valor_total: item.quantidade * item.valor_unitario,
       }));
 
       const { error: itensError } = await supabase
