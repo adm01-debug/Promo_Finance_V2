@@ -118,8 +118,7 @@ export const ContasPagarTableRow = memo(
                 onAplicar={async (cat) => {
                   const { error } = await supabase
                     .from('contas_pagar')
-                    // TODO: coluna 'tags' não existe em contas_pagar no types.ts (removida)
-                    .update({ categoria: cat.categoria })
+                    .update({ categoria: cat.categoria, tags: cat.tags ?? [] })
                     .eq('id', conta.id);
                   if (error) {
                     toast.error('Erro ao aplicar categoria');

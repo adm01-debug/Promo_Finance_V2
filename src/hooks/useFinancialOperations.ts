@@ -73,7 +73,7 @@ export function useMovimentacoes(
           .is('deleted_at', null)
           .order('data_movimentacao', { ascending: false });
 
-        // TODO(2026-08-14): filtro por conta_bancaria_id removido — coluna não existe em movimentacoes (types.ts canônico)
+        if (contaBancariaId) query = query.eq('conta_bancaria_id', contaBancariaId);
         if (filters?.startDate) query = query.gte('data_movimentacao', filters.startDate);
         if (filters?.endDate) query = query.lte('data_movimentacao', filters.endDate);
 
@@ -102,14 +102,18 @@ export function useCreateMovimentacao() {
     mutationFn: async (input: MovimentacaoInput) => {
       const { data, error } = await supabase
         .from('movimentacoes')
-        // TODO(2026-08-14): campos de MovimentacaoInput fora do schema canônico não são enviados:
-        // conta_bancaria_id, categoria_id, conta_pagar_id, conta_receber_id, origem, observacoes
         .insert({
           empresa_id: input.empresa_id,
+          conta_bancaria_id: input.conta_bancaria_id,
           tipo: input.tipo,
           descricao: input.descricao,
           valor: input.valor,
           data_movimentacao: input.data_movimentacao,
+          categoria_id: input.categoria_id,
+          conta_pagar_id: input.conta_pagar_id,
+          conta_receber_id: input.conta_receber_id,
+          origem: input.origem,
+          observacoes: input.observacoes,
         })
         .select()
         .single();
@@ -187,7 +191,7 @@ export function useCreateTransferencia() {
     mutationFn: async (input: TransferenciaInput) => {
       const { data, error } = await supabase
         .from('transferencias')
-        // TODO(2026-08-14): conta_bancaria_id→conta_origem_id (renomeada no schema canônico); observacoes removido
+        // TransferenciaInput.conta_bancaria_id é a conta de origem (coluna conta_origem_id).
         .insert({
           empresa_id: input.empresa_id,
           conta_origem_id: input.conta_bancaria_id,
@@ -196,6 +200,7 @@ export function useCreateTransferencia() {
           descricao: input.descricao,
           data_transferencia: input.data_transferencia,
           tipo: input.tipo,
+          observacoes: input.observacoes,
           status: 'realizado',
         })
         .select()
@@ -223,8 +228,7 @@ export function useCancelTransferencia() {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('transferencias')
-        // TODO(2026-08-14): cancelado_em removido — coluna não existe em transferencias (types.ts)
-        .update({ status: 'cancelado' })
+        .update({ status: 'cancelado', cancelado_em: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
     },

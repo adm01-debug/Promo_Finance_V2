@@ -61,7 +61,9 @@ export function useFilterPresets(entityType: string, empresaId?: string) {
             entity_type: entityType,
             name,
             filters: filters as Json,
-            // TODO(2026-08-14): empresa_id removido — coluna não existe em user_filter_presets (types.ts)
+            // 'todas'/'all'/'default' = sem empresa selecionada → preset global (null).
+            empresa_id:
+              empresaId && !['todas', 'all', 'default'].includes(empresaId) ? empresaId : null,
             is_default: !!isDefault,
           },
         ])

@@ -27,6 +27,10 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ user: { id: 'user-1' } }),
+}));
+
 let queryClient: QueryClient;
 const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -95,7 +99,7 @@ describe('useContratos (listagem)', () => {
 });
 
 describe('useCreateContrato (insert)', () => {
-  it('insere payload alinhado ao schema canônico, sem campos fora dele', async () => {
+  it('insere payload com todos os campos do formulário e o autor', async () => {
     const criado = { id: 'c1', descricao: 'Contrato X' };
     const chain = criarChain({ data: criado, error: null });
     mockFrom.mockReturnValue(chain);
@@ -113,7 +117,6 @@ describe('useCreateContrato (insert)', () => {
       empresa_id: 'emp-1',
       renovacao_automatica: true,
       numero_contrato: 'CT-001',
-      // Campos fora do schema canônico não devem ir ao payload enviado:
       cliente_id: 'cli-1',
       fornecedor_id: 'forn-1',
       dias_aviso_renovacao: 30,
@@ -135,6 +138,11 @@ describe('useCreateContrato (insert)', () => {
       empresa_id: 'emp-1',
       renovacao_automatica: true,
       numero_contrato: 'CT-001',
+      cliente_id: 'cli-1',
+      fornecedor_id: 'forn-1',
+      dias_aviso_renovacao: 30,
+      observacoes: 'obs',
+      created_by: 'user-1',
       status: 'ativo',
     });
     expect(chain.select).toHaveBeenCalledTimes(1);

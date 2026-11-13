@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 export function useContratos(empresaId?: string) {
   return useQuery({
     queryKey: ['contratos', empresaId],
@@ -19,6 +20,7 @@ export function useContratos(empresaId?: string) {
 
 export function useCreateContrato() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   return useMutation({
     mutationFn: async (input: {
       descricao: string;
@@ -37,8 +39,6 @@ export function useCreateContrato() {
     }) => {
       const { data, error } = await supabase
         .from('contratos')
-        // TODO(2026-08-14): campos de input fora do schema canônico não são enviados:
-        // cliente_id, fornecedor_id, dias_aviso_renovacao, observacoes, created_by
         .insert({
           descricao: input.descricao,
           tipo: input.tipo,
@@ -49,6 +49,11 @@ export function useCreateContrato() {
           empresa_id: input.empresa_id,
           renovacao_automatica: input.renovacao_automatica,
           numero_contrato: input.numero_contrato,
+          cliente_id: input.cliente_id,
+          fornecedor_id: input.fornecedor_id,
+          dias_aviso_renovacao: input.dias_aviso_renovacao,
+          observacoes: input.observacoes,
+          created_by: user?.id ?? null,
           status: 'ativo',
         })
         .select()
@@ -82,8 +87,11 @@ export function useUpdateContrato() {
       renovacao_automatica?: boolean;
       numero_contrato?: string;
       status?: string;
+      cliente_id?: string | null;
+      fornecedor_id?: string | null;
+      dias_aviso_renovacao?: number | null;
+      observacoes?: string | null;
     }) => {
-      // TODO(2026-08-14): assinatura estreitada para as colunas canônicas de contratos (types.ts)
       const { error } = await supabase.from('contratos').update(data).eq('id', id);
       if (error) throw error;
     },
