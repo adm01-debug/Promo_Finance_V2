@@ -12,7 +12,8 @@ import {
 import { useConsultaUF } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
 import { OfflineBadge } from './OfflineBadge';
-import { ResultBlock, UFS } from './shared';
+import { ResultBlock } from './shared';
+import { UFS } from './ufs';
 import { pct } from './format';
 
 /**

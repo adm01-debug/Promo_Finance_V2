@@ -25,63 +25,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Info, Plus, Receipt, Trash2 } from 'lucide-react';
-import {
-  LABEL_RECEITA,
-  REGRAS_CREDITO,
-  apurarPisCofins,
-  type ItemCredito,
-  type ItemReceita,
-  type LinhaMemoria,
-  type NaturezaCredito,
-  type NaturezaReceita,
+import { LABEL_RECEITA, REGRAS_CREDITO, apurarPisCofins } from '@/lib/tributario/pis-cofins';
+import type {
+  ItemCredito,
+  ItemReceita,
+  NaturezaCredito,
+  NaturezaReceita,
 } from '@/lib/tributario/pis-cofins';
 import { formatCurrency } from '@/lib/formatters';
-
-const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 4 })}%`;
-
-const NATUREZAS_RECEITA = Object.keys(LABEL_RECEITA) as NaturezaReceita[];
-const NATUREZAS_CREDITO = Object.keys(REGRAS_CREDITO) as NaturezaCredito[];
-
-const num = (v: string) => {
-  const parsed = Number(v.replace(/\./g, '').replace(',', '.'));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-function MemoriaTable({ linhas }: { linhas: LinhaMemoria[] }) {
-  if (linhas.length === 0) {
-    return <p className="text-sm text-muted-foreground">Nenhum lançamento no período.</p>;
-  }
-  return (
-    <div className="overflow-x-auto rounded-md border border-border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Rubrica</TableHead>
-            <TableHead className="text-right">Base</TableHead>
-            <TableHead className="text-right">Alíquota</TableHead>
-            <TableHead className="text-right">Valor</TableHead>
-            <TableHead>Fundamento</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {linhas.map((l, i) => (
-            <TableRow key={`${l.rubrica}-${i}`}>
-              <TableCell>{l.rubrica}</TableCell>
-              <TableCell className="text-right tabular-nums">{formatCurrency(l.base)}</TableCell>
-              <TableCell className="text-right tabular-nums">
-                {l.aliquota ? pct(l.aliquota) : '—'}
-              </TableCell>
-              <TableCell className="text-right font-medium tabular-nums">
-                {formatCurrency(l.valor)}
-              </TableCell>
-              <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
+import { pct, NATUREZAS_RECEITA, num, NATUREZAS_CREDITO } from './PisCofinsCreditos.helpers';
+import { MemoriaTable } from './PisCofinsCreditos.MemoriaTable';
+import { PisCofinsCreditosSaldoCredorPIS } from './PisCofinsCreditosSaldoCredorPIS';
 
 export default function PisCofinsCreditos() {
   const [receitas, setReceitas] = useState<ItemReceita[]>([
@@ -357,40 +311,16 @@ export default function PisCofinsCreditos() {
                     Saldo credor de períodos anteriores e CSRF retida na fonte.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-4">
-                  <div className="space-y-2">
-                    <Label>Saldo credor PIS</Label>
-                    <Input
-                      inputMode="decimal"
-                      value={String(saldoPis)}
-                      onChange={(e) => setSaldoPis(num(e.target.value))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Saldo credor COFINS</Label>
-                    <Input
-                      inputMode="decimal"
-                      value={String(saldoCofins)}
-                      onChange={(e) => setSaldoCofins(num(e.target.value))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Retenções PIS</Label>
-                    <Input
-                      inputMode="decimal"
-                      value={String(retPis)}
-                      onChange={(e) => setRetPis(num(e.target.value))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Retenções COFINS</Label>
-                    <Input
-                      inputMode="decimal"
-                      value={String(retCofins)}
-                      onChange={(e) => setRetCofins(num(e.target.value))}
-                    />
-                  </div>
-                </CardContent>
+                <PisCofinsCreditosSaldoCredorPIS
+                  saldoPis={saldoPis}
+                  setSaldoPis={setSaldoPis}
+                  saldoCofins={saldoCofins}
+                  setSaldoCofins={setSaldoCofins}
+                  retPis={retPis}
+                  setRetPis={setRetPis}
+                  retCofins={retCofins}
+                  setRetCofins={setRetCofins}
+                />
               </Card>
 
               {resultado.alertas.length > 0 && (

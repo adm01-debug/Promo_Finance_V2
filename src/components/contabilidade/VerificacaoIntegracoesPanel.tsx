@@ -1,20 +1,15 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import {
-  CheckCircle2,
   AlertTriangle,
   RefreshCw,
   Plug,
   Search,
   Filter,
   Activity,
-  Zap,
   ShieldCheck,
   ExternalLink,
-  History,
-  ShieldAlert,
   Cpu,
-  type LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,119 +32,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  useVerificacaoIntegracoes,
-  type StatusConsistencia,
-} from '@/hooks/useVerificacaoIntegracoes';
+import { useVerificacaoIntegracoes } from '@/hooks/useVerificacaoIntegracoes';
+import type { StatusConsistencia } from '@/hooks/useVerificacaoIntegracoes';
 import { formatCurrency } from '@/lib/formatters';
 import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
-
-interface Props {
-  empresaId?: string;
-  ano: number;
-}
-
-const statusBadge = (s: StatusConsistencia) => {
-  switch (s) {
-    case 'ok':
-      return (
-        <Badge
-          variant="outline"
-          className="border-none bg-success/20 text-success font-black text-[10px] gap-1 px-3 py-1 rounded-full"
-        >
-          <CheckCircle2 className="h-3 w-3" />
-          CONCILIADO
-        </Badge>
-      );
-    case 'desbalanceado':
-      return (
-        <Badge
-          variant="outline"
-          className="border-none bg-destructive/20 text-destructive font-black text-[10px] gap-1 px-3 py-1 rounded-full"
-        >
-          <AlertTriangle className="h-3 w-3" />
-          DIVERGENTE
-        </Badge>
-      );
-    case 'sem_partidas':
-      return (
-        <Badge
-          variant="outline"
-          className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-3 py-1 rounded-full"
-        >
-          <ShieldAlert className="h-3 w-3" />
-          SEM PARTIDAS
-        </Badge>
-      );
-    case 'orfao':
-      return (
-        <Badge
-          variant="outline"
-          className="border-none bg-warning/20 text-warning font-black text-[10px] gap-1 px-3 py-1 rounded-full"
-        >
-          <History className="h-3 w-3" />
-          ÓRFÃO
-        </Badge>
-      );
-  }
-};
-
-function StatCard({
-  label,
-  value,
-  description,
-  tone = 'default',
-  icon: Icon,
-  trend,
-}: {
-  label: string;
-  value: number | string;
-  description: string;
-  tone?: 'default' | 'success' | 'destructive' | 'warning';
-  icon?: LucideIcon;
-  trend?: string;
-}) {
-  const toneClass =
-    tone === 'success'
-      ? 'text-success bg-success/5 border-success/20 shadow-lg shadow-success/10'
-      : tone === 'destructive'
-        ? 'text-destructive bg-destructive/5 border-destructive/20 shadow-lg shadow-destructive/10'
-        : tone === 'warning'
-          ? 'text-warning bg-warning/5 border-warning/20 shadow-lg shadow-warning/10'
-          : 'text-foreground bg-card/5 border-white/10 shadow-2xl';
-
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -5 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        'rounded-[2.5rem] border p-8 backdrop-blur-3xl transition-all relative overflow-hidden group',
-        toneClass
-      )}
-    >
-      <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-        {Icon && <Icon className="h-24 w-24" />}
-      </div>
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] opacity-40">{label}</p>
-          <div className="p-2 bg-card/5 rounded-xl">
-            {Icon && <Icon className="h-4 w-4 opacity-60" />}
-          </div>
-        </div>
-        <div className="flex items-baseline gap-2">
-          <p className="text-4xl font-black tracking-tighter tabular-nums">{value}</p>
-          {trend && <span className="text-[10px] font-bold opacity-40">{trend}</span>}
-        </div>
-        <p className="text-[10px] font-bold opacity-30 uppercase tracking-widest mt-2">
-          {description}
-        </p>
-      </div>
-    </motion.div>
-  );
-}
+import type { Props } from './VerificacaoIntegracoesPanel.types';
+import { StatCard } from './StatCard';
+import { statusBadge } from './VerificacaoIntegracoesPanel.helpers';
+import { VerificacaoIntegracoesPanelConteudo } from './VerificacaoIntegracoesPanelConteudo';
 
 export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
   const qc = useQueryClient();
@@ -282,117 +173,7 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
               </p>
             </div>
           ) : (
-            <div className="rounded-[2rem] border border-white/5 overflow-hidden bg-card/[0.01] shadow-inner">
-              <Table>
-                <TableHeader className="bg-card/5">
-                  <TableRow className="border-white/5 hover:bg-transparent">
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest p-6">
-                      Origem de Dados
-                    </TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">
-                      Registros
-                    </TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">
-                      Conformes
-                    </TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">
-                      Divergências
-                    </TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">
-                      Sem Partidas
-                    </TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">
-                      Montante
-                    </TableHead>
-                    <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">
-                      Data Última
-                    </TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest pr-8">
-                      Saúde Fiscal
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <AnimatePresence>
-                    {resumos.map((r, idx) => {
-                      const taxa = r.total > 0 ? Math.round((r.ok / r.total) * 100) : 100;
-                      const saudavel = taxa >= 95 && r.desbalanceados === 0;
-                      return (
-                        <motion.tr
-                          key={r.origem}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.05 }}
-                          className="border-white/5 hover:bg-card/5 transition-colors group/row"
-                        >
-                          <TableCell className="p-6">
-                            <Badge
-                              variant="outline"
-                              className="capitalize border-none bg-primary/10 text-primary font-black text-[10px] px-3 py-1 rounded-xl flex items-center gap-2 w-fit"
-                            >
-                              <Zap className="h-3 w-3" />
-                              {r.origem}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-xs font-bold tabular-nums">
-                            {r.total.toLocaleString('pt-BR')}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-xs text-success font-black tabular-nums">
-                            {r.ok.toLocaleString('pt-BR')}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              'text-right font-mono text-xs tabular-nums',
-                              r.desbalanceados > 0 ? 'text-destructive font-black' : 'opacity-20'
-                            )}
-                          >
-                            {r.desbalanceados || '0'}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              'text-right font-mono text-xs tabular-nums',
-                              r.sem_partidas > 0 ? 'text-warning font-black' : 'opacity-20'
-                            )}
-                          >
-                            {r.sem_partidas || '0'}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-xs font-black text-foreground/80 tabular-nums">
-                            {formatCurrency(r.valor_total)}
-                          </TableCell>
-                          <TableCell className="text-right text-[10px] font-black uppercase tracking-widest opacity-40">
-                            {r.ultima_importacao
-                              ? format(new Date(r.ultima_importacao + 'T00:00:00'), 'dd/MM/yyyy')
-                              : '—'}
-                          </TableCell>
-                          <TableCell className="pr-8">
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 h-1.5 bg-card/5 rounded-full overflow-hidden w-16">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${taxa}%` }}
-                                  className={cn(
-                                    'h-full',
-                                    saudavel ? 'bg-success' : 'bg-destructive'
-                                  )}
-                                />
-                              </div>
-                              <span
-                                className={cn(
-                                  'text-[10px] font-black tabular-nums',
-                                  saudavel ? 'text-success' : 'text-destructive'
-                                )}
-                              >
-                                {taxa}%
-                              </span>
-                            </div>
-                          </TableCell>
-                        </motion.tr>
-                      );
-                    })}
-                  </AnimatePresence>
-                </TableBody>
-              </Table>
-            </div>
+            <VerificacaoIntegracoesPanelConteudo resumos={resumos} />
           )}
         </CardContent>
       </Card>

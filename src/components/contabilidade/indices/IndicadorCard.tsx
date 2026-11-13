@@ -3,7 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { formatarIndice, variacao, type FaixaIndice, type Indicador } from '@/lib/contabil/indices';
+import { formatarIndice, variacao } from '@/lib/contabil/indices.helpers';
+import { type FaixaIndice, type Indicador } from '@/lib/contabil/indices.types';
 
 interface Props {
   indicador: Indicador;

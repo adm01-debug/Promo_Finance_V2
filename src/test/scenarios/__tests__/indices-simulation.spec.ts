@@ -7,7 +7,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import { createRng } from '../rng';
-import { calcularIndices, classificar, type AgregadosContabeis } from '@/lib/contabil/indices';
+import { calcularIndices } from '@/lib/contabil/indices';
+import { classificar } from '@/lib/contabil/indices.helpers';
+import { type AgregadosContabeis } from '@/lib/contabil/indices.types';
 
 type Perfil =
   | 'saudavel'

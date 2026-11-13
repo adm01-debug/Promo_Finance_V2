@@ -1,25 +1,10 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Filter,
-  Calendar,
-  Users,
-  Building2,
-  Clock,
-  Eye,
-  PieChart as PieChartIcon,
-} from 'lucide-react';
+import { Filter, Eye } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useContasReceber, useEmpresas, useClientes } from '@/hooks/useFinancialData';
 import { useVendedores } from '@/hooks/useInadimplenciaSegmentada';
 import {
@@ -42,33 +27,9 @@ import { ReceberChartsSection } from '@/components/dashboard-receber/ReceberChar
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { useAuth } from '@/hooks/useAuth';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-};
-
-interface ReceberFilters extends Record<string, unknown> {
-  empresaId: string;
-  vendedorId: string;
-  ramoAtividade: string;
-  statusFilter: string;
-  clienteId: string;
-  periodo: string;
-  dataInicioIso: string;
-  dataFimIso: string;
-}
-
-const RECEBER_DEFAULTS: ReceberFilters = {
-  empresaId: 'todas',
-  vendedorId: 'todos',
-  ramoAtividade: 'todos',
-  statusFilter: 'todos',
-  clienteId: 'todos',
-  periodo: '30',
-  dataInicioIso: subDays(new Date(), 30).toISOString(),
-  dataFimIso: new Date().toISOString(),
-};
+import type { ReceberFilters } from './DashboardReceber.types';
+import { RECEBER_DEFAULTS, containerVariants } from './DashboardReceber.helpers';
+import { DashboardReceberConteudo } from './DashboardReceberConteudo';
 
 export default function DashboardReceber() {
   const filtersController = useManagedFilters<ReceberFilters>({
@@ -357,91 +318,24 @@ export default function DashboardReceber() {
               />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              <Select value={periodo} onValueChange={handlePeriodoChange}>
-                <SelectTrigger>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Período" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7">Últimos 7 dias</SelectItem>
-                  <SelectItem value="30">Últimos 30 dias</SelectItem>
-                  <SelectItem value="90">Últimos 90 dias</SelectItem>
-                  <SelectItem value="365">Último ano</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={empresaId} onValueChange={setEmpresaId}>
-                <SelectTrigger>
-                  <Building2 className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Empresa" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todas">Todas empresas</SelectItem>
-                  {empresas.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.nome_fantasia || e.razao_social}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={vendedorId} onValueChange={setVendedorId}>
-                <SelectTrigger>
-                  <Users className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Vendedor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos vendedores</SelectItem>
-                  {vendedores.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>
-                      {v.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={ramoAtividade} onValueChange={setRamoAtividade}>
-                <SelectTrigger>
-                  <PieChartIcon className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Ramo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos ramos</SelectItem>
-                  {ramosAtividade.map((r) => (
-                    <SelectItem key={r} value={r}>
-                      {r}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <Clock className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos status</SelectItem>
-                  <SelectItem value="pendente">Pendente</SelectItem>
-                  <SelectItem value="vencido">Vencido</SelectItem>
-                  <SelectItem value="parcial">Parcial</SelectItem>
-                  <SelectItem value="pago">Pago</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={clienteId} onValueChange={setClienteId}>
-                <SelectTrigger>
-                  <Users className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Cliente" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos clientes</SelectItem>
-                  {clientes.slice(0, 50).map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.nome_fantasia || c.razao_social}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
+          <DashboardReceberConteudo
+            periodo={periodo}
+            handlePeriodoChange={handlePeriodoChange}
+            empresaId={empresaId}
+            setEmpresaId={setEmpresaId}
+            empresas={empresas}
+            vendedorId={vendedorId}
+            setVendedorId={setVendedorId}
+            vendedores={vendedores}
+            ramoAtividade={ramoAtividade}
+            setRamoAtividade={setRamoAtividade}
+            ramosAtividade={ramosAtividade}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            clienteId={clienteId}
+            setClienteId={setClienteId}
+            clientes={clientes}
+          />
         </Card>
 
         <ReceberKpisCards kpis={kpis} evolucao={evolucaoMensal} />

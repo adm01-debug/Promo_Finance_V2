@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { NovoBoletoData } from '@/hooks/useBoletos';
+import { NovoBoletoData } from '@/hooks/useBoletos.types';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { parseCurrencyInput } from '@/lib/formatters';

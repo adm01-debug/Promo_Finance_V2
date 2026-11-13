@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -41,34 +40,13 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { useAcordosParcelamento, simularParcelamento } from '@/hooks/useAcordosParcelamento';
+import { useAcordosParcelamento } from '@/hooks/useAcordosParcelamento';
+import { simularParcelamento } from '@/hooks/useAcordosParcelamento.helpers';
 import { formatCurrency } from '@/lib/formatters';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
-
-const formSchema = z.object({
-  cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório'),
-  cliente_email: z.string().email().optional().or(z.literal('')),
-  cliente_telefone: z.string().optional(),
-  valor_original: z.number().positive('Valor deve ser maior que zero'),
-  desconto_percentual: z.number().min(0).max(100).default(0),
-  juros_percentual: z.number().min(0).max(100).default(0),
-  numero_parcelas: z.number().min(1).max(60),
-  data_primeiro_vencimento: z.date(),
-  dia_vencimento: z.number().min(1).max(31),
-  observacoes: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-interface AcordoParcelamentoDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  contasReceberId?: string[];
-  valorTotal?: number;
-  clienteNome?: string;
-  empresaId: string;
-}
+import type { AcordoParcelamentoDialogProps, FormValues } from './AcordoParcelamentoDialog.types';
+import { formSchema } from './AcordoParcelamentoDialog.helpers';
 
 export function AcordoParcelamentoDialog({
   open,

@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   MoreVertical,
@@ -6,17 +6,12 @@ import {
   Trash2,
   CheckCircle2,
   Clock,
-  AlertTriangle,
   ShieldCheck,
   Building2,
   Calendar,
   Repeat,
   Tag,
   Banknote,
-  QrCode,
-  CreditCard,
-  DollarSign,
-  TrendingUp,
   History,
 } from 'lucide-react';
 import { TableCell } from '@/components/ui/table';
@@ -45,99 +40,8 @@ import { VersionHistory } from '@/components/common/VersionHistory';
 import { supabase } from '@/integrations/supabase/client';
 import { DuplicateButton } from '@/components/common/DuplicateButton';
 import { toast } from 'sonner';
-
-interface ContaPagarView {
-  id: string;
-  status: string | null;
-  tipo_cobranca: string | null;
-  data_vencimento: string;
-  descricao: string;
-  fornecedor_nome: string | null;
-  categoria: string | null;
-  numero_documento: string | null;
-  valor: number;
-  recorrente: boolean | null;
-  centro_custo_nome?: string | null;
-  centros_custo?: { nome?: string | null } | null;
-  aprovado_por: string | null;
-  aprovado_em?: string | null;
-}
-
-interface SolicitacaoAprovacaoHistorico {
-  id: string;
-  status: string;
-  solicitado_em: string | null;
-  solicitado_por: string | null;
-  aprovado_em?: string | null;
-  aprovado_por?: string | null;
-  motivo_rejeicao?: string | null;
-  observacoes?: string | null;
-}
-
-interface ProfileMapItem {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-}
-
-const statusConfig: Record<
-  StatusPagamento,
-  { label: string; color: string; icon: typeof CheckCircle2 }
-> = {
-  pago: {
-    label: 'Pago',
-    color: 'bg-success/10 text-success border-success/20',
-    icon: CheckCircle2,
-  },
-  pendente: {
-    label: 'Pendente',
-    color: 'bg-warning/10 text-warning border-warning/20',
-    icon: Clock,
-  },
-  vencido: {
-    label: 'Vencido',
-    color: 'bg-destructive/10 text-destructive border-destructive/20',
-    icon: AlertTriangle,
-  },
-  parcial: {
-    label: 'Parcial',
-    color: 'bg-secondary/10 text-secondary border-secondary/20',
-    icon: TrendingUp,
-  },
-  cancelado: {
-    label: 'Cancelado',
-    color: 'bg-muted text-muted-foreground border-muted',
-    icon: Trash2,
-  },
-};
-
-const tipoCobrancaIcons: Record<TipoCobranca, typeof CreditCard> = {
-  boleto: Banknote,
-  pix: QrCode,
-  cartao: CreditCard,
-  transferencia: Building2,
-  dinheiro: DollarSign,
-};
-
-interface ContasPagarTableRowProps {
-  conta: ContaPagarView;
-  index: number;
-  isSelected: boolean;
-  onToggleSelect: () => void;
-  onEdit: (data?: ContaPagarView) => void;
-  onDelete: () => void;
-  onRegistrarPagamento: () => void;
-  onSolicitarAprovacao: () => void;
-  estaAprovado: boolean;
-  temSolicitacaoPendente: boolean;
-  foiRejeitado: boolean;
-  aguardandoSolicitacao: boolean;
-  historico: SolicitacaoAprovacaoHistorico[];
-  profilesMap: Map<string, ProfileMapItem>;
-  valorMinimoAprovacao: number;
-  getRowAnimation: (index: number) => Record<string, unknown>;
-  isVirtual?: boolean;
-}
+import type { ContasPagarTableRowProps } from './ContasPagarTableRow.types';
+import { statusConfig, tipoCobrancaIcons } from './ContasPagarTableRow.helpers';
 
 export const ContasPagarTableRow = memo(
   ({

@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
+import { calcularIndices } from '@/lib/contabil/indices';
 import {
-  calcularIndices,
   classificar,
   safeDiv,
   round2,
   variacao,
   formatarIndice,
   AGREGADOS_ZERO,
-  type AgregadosContabeis,
-} from '@/lib/contabil/indices';
+} from '@/lib/contabil/indices.helpers';
+import { type AgregadosContabeis } from '@/lib/contabil/indices.types';
 
 const base: AgregadosContabeis = {
   ...AGREGADOS_ZERO,

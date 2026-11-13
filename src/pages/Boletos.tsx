@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -21,69 +20,18 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
-import {
-  FileText,
-  Eye,
-  Plus,
-  Search,
-  Copy,
-  Mail,
-  Barcode,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  Ban,
-  History as HistoryIcon,
-} from 'lucide-react';
-
+import { FileText, Eye, Plus, Search, Copy, Clock, CheckCircle2, XCircle, Ban } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { useBoletos, Boleto } from '@/hooks/useBoletos';
+import { useBoletos } from '@/hooks/useBoletos';
+import { Boleto } from '@/hooks/useBoletos.types';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/micro-interactions';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const statusConfig = {
-  gerado: {
-    label: 'Gerado',
-    color: 'bg-secondary/10 text-secondary border-secondary/20',
-    icon: FileText,
-  },
-  enviado: { label: 'Enviado', color: 'bg-warning/10 text-warning border-warning/20', icon: Mail },
-  pago: {
-    label: 'Pago',
-    color: 'bg-success/10 text-success border-success/20',
-    icon: CheckCircle2,
-  },
-  vencido: {
-    label: 'Vencido',
-    color: 'bg-destructive/10 text-destructive border-destructive/20',
-    icon: XCircle,
-  },
-  cancelado: {
-    label: 'Cancelado',
-    color: 'bg-muted text-muted-foreground border-muted',
-    icon: AlertCircle,
-  },
-};
-
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
-import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
 import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';
+import { containerVariants, itemVariants, statusConfig } from './Boletos.helpers';
+import { BoletosHeader } from './BoletosHeader';
 
 export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -166,65 +114,16 @@ export default function Boletos() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-        >
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <Barcode className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-display-md text-foreground">Gestão de Boletos</h1>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Emissão, controle de registros e histórico de remessas
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="bg-muted/50 p-1 rounded-xl"
-            >
-              <TabsList className="bg-transparent border-none">
-                <TabsTrigger value="lista" className="rounded-lg gap-2">
-                  <FileText className="h-4 w-4" /> Lista
-                </TabsTrigger>
-                <TabsTrigger value="historico" className="rounded-lg gap-2">
-                  <HistoryIcon className="h-4 w-4" /> Histórico
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
-              <DialogTrigger asChild>
-                <Button
-                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 h-10"
-                  size="sm"
-                >
-                  <Plus className="h-4 w-4" />
-                  Novo Boleto
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <Barcode className="h-5 w-5" />
-                    Gerar Novo Boleto
-                  </DialogTitle>
-                </DialogHeader>
-                <NovoBoletoForm
-                  onClose={() => setShowNovoBoleto(false)}
-                  empresas={empresas}
-                  contasBancarias={contasBancarias}
-                  onSubmit={createBoleto}
-                  isCreating={isCreating}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
-        </motion.div>
+        <BoletosHeader
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          showNovoBoleto={showNovoBoleto}
+          setShowNovoBoleto={setShowNovoBoleto}
+          empresas={empresas}
+          contasBancarias={contasBancarias}
+          createBoleto={createBoleto}
+          isCreating={isCreating}
+        />
 
         {/* KPIs */}
         <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">

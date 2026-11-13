@@ -12,7 +12,6 @@ import {
   useContasBancarias,
   useDeleteContaPagar,
   useUpdateContaPagar,
-  ContaPagar,
 } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,16 +21,14 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters.hooks';
 import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
-
+import type { ContaPagarType } from './useContasPagarLogic.types';
 import {
-  subMonths,
-  isSameDay,
-  startOfMonth,
-  endOfMonth,
-  parseISO,
-  isWithinInterval,
-} from 'date-fns';
-type ContaPagarType = ContaPagar;
+  calcularKpisContasPagar,
+  agruparHistoricoAprovacao,
+  montarAprovacaoStatusMap,
+  filtrarContasPagar,
+  ordenarContasPagar,
+} from './useContasPagarLogic.calculos';
 
 export function useContasPagarLogic() {
   const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();
@@ -143,197 +140,46 @@ export function useContasPagarLogic() {
 
   // Maps
   const profilesMap = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
-  const aprovacaoStatusMap = useMemo(() => {
-    // ordenação vem DESC por solicitado_em — a primeira ocorrência de cada
-    // conta é a solicitação MAIS RECENTE. Filtrar por status antes do
-    // reduce devolveria uma rejeição velha mesmo quando o reenvio foi
-    // aprovado (a conta apareceria rejeitada E aprovada ao mesmo tempo).
-    // Escolhe a mais recente primeiro; só pendente/rejeitado representam
-    // a conta no mapa.
-    const maisRecente = new Map<string | null, string | null>();
-    for (const s of solicitacoesAprovacao) {
-      if (!maisRecente.has(s.conta_pagar_id)) maisRecente.set(s.conta_pagar_id, s.status);
-    }
-    // 'aprovado' também fica no mapa: cobre legados cuja solicitação foi
-    // aprovada mas aprovado_por na conta nunca foi preenchido — sem isso a
-    // tela voltaria a pedir aprovação de uma conta já decidida.
-    for (const [contaId, status] of maisRecente) {
-      if (status !== 'pendente' && status !== 'rejeitado' && status !== 'aprovado') {
-        maisRecente.delete(contaId);
-      }
-    }
-    return maisRecente;
-  }, [solicitacoesAprovacao]);
+  const aprovacaoStatusMap = useMemo(
+    () => montarAprovacaoStatusMap(solicitacoesAprovacao),
+    [solicitacoesAprovacao]
+  );
   const historicoAprovacaoPorConta = useMemo(
-    () =>
-      solicitacoesAprovacao.reduce((acc, s) => {
-        if (!s.conta_pagar_id) return acc;
-        if (!acc.has(s.conta_pagar_id)) {
-          acc.set(s.conta_pagar_id, []);
-        }
-        acc.get(s.conta_pagar_id)!.push(s);
-        return acc;
-      }, new Map<string, typeof solicitacoesAprovacao>()),
+    () => agruparHistoricoAprovacao(solicitacoesAprovacao),
     [solicitacoesAprovacao]
   );
 
-  // KPIs
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const startOfPrevMonth = startOfMonth(subMonths(today, 1));
-  const endOfPrevMonth = endOfMonth(subMonths(today, 1));
-
-  const totalPagar = allContas.reduce(
-    (sum, c) =>
-      c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_pago || 0) : sum,
-    0
-  );
-  const totalVencido = allContas
-    .filter((c) => c.status === 'vencido')
-    .reduce((sum, c) => sum + c.valor - (c.valor_pago || 0), 0);
-  const totalPagoMes = allContas
-    .filter((c) => {
-      if (c.status !== 'pago' || !c.data_pagamento) return false;
-      const dataPag = parseISO(c.data_pagamento);
-      return (
-        dataPag.getMonth() === today.getMonth() && dataPag.getFullYear() === today.getFullYear()
-      );
-    })
-    .reduce((sum, c) => sum + (c.valor_pago || 0), 0);
-
-  const totalPagoMesAnterior =
-    allContas
-      .filter((c) => {
-        if (c.status !== 'pago' || !c.data_pagamento) return false;
-        const dataPag = parseISO(c.data_pagamento);
-        return isWithinInterval(dataPag, { start: startOfPrevMonth, end: endOfPrevMonth });
-      })
-      .reduce((sum, c) => sum + (c.valor_pago || 0), 0) || totalPagoMes * 0.95;
-
-  const venceHoje = allContas.filter((c) => {
-    return isSameDay(parseISO(c.data_vencimento), today) && c.status === 'pendente';
-  }).length;
-
+  // KPIs, filtragem e ordenação: funções puras em useContasPagarLogic.calculos.ts
   const requerAprovacao = (valor: number) => {
     if (!configuracao?.ativo) return false;
     return valor >= configuracao.valor_minimo_aprovacao;
   };
 
-  const contasPendentesAprovacao = allContas.filter((c) => {
-    const precisaAprovacao = requerAprovacao(c.valor);
-    const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
-    const naoAprovado = !c.aprovado_por && precisaAprovacao;
-    return (
-      (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) &&
-      c.status !== 'pago' &&
-      c.status !== 'cancelado'
-    );
-  });
+  const {
+    totalPagar,
+    totalVencido,
+    totalPagoMes,
+    totalPagoMesAnterior,
+    venceHoje,
+    countPendentesAprovacao,
+    countAprovacoesUrgentes,
+    valorAprovacoesUrgentes,
+  } = calcularKpisContasPagar(allContas, aprovacaoStatusMap, requerAprovacao);
 
-  const countPendentesAprovacao = contasPendentesAprovacao.length;
+  const filteredContas = filtrarContasPagar(
+    filterByDate(contas),
+    aprovacaoFilter,
+    advancedFilters,
+    aprovacaoStatusMap,
+    requerAprovacao
+  );
 
-  const aprovacoesUrgentes = contasPendentesAprovacao.filter((c) => {
-    const dataVenc = new Date(c.data_vencimento);
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    dataVenc.setHours(0, 0, 0, 0);
-    const diffDias = Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDias <= 3;
-  });
-
-  const countAprovacoesUrgentes = aprovacoesUrgentes.length;
-  const valorAprovacoesUrgentes = aprovacoesUrgentes.reduce((sum, c) => sum + c.valor, 0);
-
-  // Filtering
-  const filteredContas = filterByDate(contas).filter((c) => {
-    let matchesAprovacao = true;
-    if (aprovacaoFilter === 'pendente_aprovacao') {
-      const precisaAprovacao = requerAprovacao(c.valor);
-      const temSolicitacaoPendente = aprovacaoStatusMap.get(c.id) === 'pendente';
-      const naoAprovado = !c.aprovado_por && precisaAprovacao;
-      matchesAprovacao =
-        (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(c.id))) &&
-        c.status !== 'pago' &&
-        c.status !== 'cancelado';
-    } else if (aprovacaoFilter === 'aprovado') {
-      // mesma precedência de getApprovalStatus: a solicitação mais recente
-      // decide; sem ela, vale o aprovado_por legado na conta
-      const status = aprovacaoStatusMap.get(c.id);
-      matchesAprovacao = status ? status === 'aprovado' : !!c.aprovado_por;
-    } else if (aprovacaoFilter === 'rejeitado') {
-      matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitado';
-    }
-
-    let matchesAdvanced = true;
-    if (advancedFilters.dataVencimentoInicio) {
-      const vencimento = new Date(c.data_vencimento);
-      matchesAdvanced = matchesAdvanced && vencimento >= advancedFilters.dataVencimentoInicio;
-    }
-    if (advancedFilters.dataVencimentoFim) {
-      const vencimento = new Date(c.data_vencimento);
-      matchesAdvanced = matchesAdvanced && vencimento <= advancedFilters.dataVencimentoFim;
-    }
-    if (advancedFilters.valorMinimo !== undefined) {
-      matchesAdvanced = matchesAdvanced && c.valor >= advancedFilters.valorMinimo;
-    }
-    if (advancedFilters.valorMaximo !== undefined) {
-      matchesAdvanced = matchesAdvanced && c.valor <= advancedFilters.valorMaximo;
-    }
-    if (advancedFilters.tipoCobranca) {
-      matchesAdvanced = matchesAdvanced && c.tipo_cobranca === advancedFilters.tipoCobranca;
-    }
-    if (advancedFilters.empresaId && advancedFilters.empresaId !== 'all') {
-      matchesAdvanced = matchesAdvanced && c.empresa_id === advancedFilters.empresaId;
-    }
-    if (advancedFilters.contaBancariaId && advancedFilters.contaBancariaId !== 'all') {
-      matchesAdvanced = matchesAdvanced && c.conta_bancaria_id === advancedFilters.contaBancariaId;
-    }
-
-    return matchesAprovacao && matchesAdvanced;
-  });
-
-  // Sorting
-  const calcularPrioridadeAprovacao = (conta: ContaPagarType) => {
-    const precisaAprovacao = requerAprovacao(conta.valor);
-    const temSolicitacaoPendente = aprovacaoStatusMap.get(conta.id) === 'pendente';
-    const naoAprovado = !conta.aprovado_por && precisaAprovacao;
-    const pendente =
-      (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(conta.id))) &&
-      conta.status !== 'pago' &&
-      conta.status !== 'cancelado';
-
-    if (!pendente) return 999;
-
-    const dataVenc = new Date(conta.data_vencimento);
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    dataVenc.setHours(0, 0, 0, 0);
-    return Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-  };
-
-  const sortedContas = [...filteredContas].sort((a, b) => {
-    switch (ordenacao) {
-      case 'prioridade_aprovacao': {
-        const prioA = calcularPrioridadeAprovacao(a);
-        const prioB = calcularPrioridadeAprovacao(b);
-        if (prioA !== prioB) return prioA - prioB;
-        return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
-      }
-      case 'vencimento':
-        return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
-      case 'vencimento_desc':
-        return new Date(b.data_vencimento).getTime() - new Date(a.data_vencimento).getTime();
-      case 'valor':
-        return b.valor - a.valor;
-      case 'valor_asc':
-        return a.valor - b.valor;
-      case 'fornecedor':
-        return (a.fornecedor_nome ?? '').localeCompare(b.fornecedor_nome ?? '');
-      default:
-        return new Date(a.data_vencimento).getTime() - new Date(b.data_vencimento).getTime();
-    }
-  });
-
+  const sortedContas = ordenarContasPagar(
+    filteredContas,
+    ordenacao,
+    aprovacaoStatusMap,
+    requerAprovacao
+  );
   // Table optimization
   const { getRowAnimation } = useTableOptimization(sortedContas.length);
 

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { CATEGORIA_LABEL, type CategoriaIndice, type Indicador } from '@/lib/contabil/indices';
+import { CATEGORIA_LABEL } from '@/lib/contabil/indices.helpers';
+import { type CategoriaIndice, type Indicador } from '@/lib/contabil/indices.types';
 import { IndicadorCard } from './IndicadorCard';
 
 interface Props {

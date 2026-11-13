@@ -1,72 +1,18 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Plus,
-  AlertTriangle,
-  CheckCircle2,
-  DollarSign,
-  Target,
-  PieChart,
-  BarChart3,
-  Loader2,
-  Search,
-  FolderTree,
-  LayoutGrid,
-  List,
-  History,
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader2, History } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   useAllCentrosCusto,
   useExcluirCentroCusto,
   useReativarCentroCusto,
-  type CentroCusto,
 } from '@/hooks/useCentrosCusto';
-import { CentroCustoTree } from '@/components/centros-custo/CentroCustoTree';
+import type { CentroCusto } from '@/hooks/useCentrosCusto';
 import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
-import { CentroCustoExport } from '@/components/centros-custo/CentroCustoExport';
 import { CentroCustoHistorico } from '@/components/centros-custo/CentroCustoHistorico';
-import { CentroCustoCards } from './centro-custos/CentroCustoCards';
-import { formatCurrency } from '@/lib/formatters';
 import { toastWithUndo } from '@/lib/toast-with-undo';
-import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { EmptyState } from '@/components/ui/micro-interactions';
 import { toast } from 'sonner';
-import {
-  ResponsiveContainer,
-  PieChart as RePieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-} from 'recharts';
-
-const COLORS = [
-  'hsl(24, 95%, 46%)',
-  'hsl(215, 90%, 42%)',
-  'hsl(150, 70%, 32%)',
-  'hsl(275, 75%, 48%)',
-  'hsl(42, 95%, 48%)',
-];
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-} as const;
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-} as const;
+import { CentroCustosArvore } from './CentroCustosArvore';
 
 export default function CentroCustos() {
   const { data: centros = [], isLoading } = useAllCentrosCusto();
@@ -198,285 +144,28 @@ export default function CentroCustos() {
 
   return (
     <MainLayout>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-6"
-      >
-        {/* Header */}
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-        >
-          <div>
-            <h1 className="text-display-md text-foreground">Centro de Custos</h1>
-            <p className="text-muted-foreground mt-1">
-              Controle orçamentário e análise de custos por departamento
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'cards' | 'tree')}>
-              <TabsList className="h-9">
-                <TabsTrigger value="tree" className="gap-1.5 px-3">
-                  <List className="h-4 w-4" />
-                  Árvore
-                </TabsTrigger>
-                <TabsTrigger value="cards" className="gap-1.5 px-3">
-                  <LayoutGrid className="h-4 w-4" />
-                  Cards
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <CentroCustoExport centros={centros} />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowInactive(!showInactive)}
-              className={cn(showInactive && 'bg-muted')}
-            >
-              {showInactive ? 'Ocultar Inativos' : 'Mostrar Inativos'}
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => handleOpenCreate()}
-              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-            >
-              <Plus className="h-4 w-4" />
-              Novo Centro
-            </Button>
-          </div>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por código, nome ou descrição..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </motion.div>
-
-        {/* KPIs */}
-        <motion.div
-          variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-        >
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Orçamento Total</p>
-                  <p className="text-2xl font-bold font-display mt-1">
-                    {formatCurrency(totalOrcado)}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">Período atual</p>
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
-                  <Target className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Realizado</p>
-                  <p className="text-2xl font-bold font-display mt-1">
-                    {formatCurrency(totalRealizado)}
-                  </p>
-                  <div className="flex items-center gap-1 text-sm font-medium mt-1">
-                    <span
-                      className={cn(percentualGasto > 100 ? 'text-destructive' : 'text-success')}
-                    >
-                      {percentualGasto.toFixed(1)}% do orçamento
-                    </span>
-                  </div>
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center transition-transform group-hover:scale-110">
-                  <DollarSign className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Saldo Disponível</p>
-                  <p
-                    className={cn(
-                      'text-2xl font-bold font-display mt-1',
-                      saldoDisponivel < 0 ? 'text-destructive' : 'text-success'
-                    )}
-                  >
-                    {formatCurrency(saldoDisponivel)}
-                  </p>
-                  <div className="mt-2 w-full">
-                    <Progress
-                      value={percentualGasto > 100 ? 100 : percentualGasto}
-                      className="h-2"
-                    />
-                  </div>
-                </div>
-                <div
-                  className={cn(
-                    'h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110',
-                    saldoDisponivel < 0
-                      ? 'bg-destructive/10 text-destructive'
-                      : 'bg-success/10 text-success'
-                  )}
-                >
-                  {saldoDisponivel < 0 ? (
-                    <AlertTriangle className="h-6 w-6" />
-                  ) : (
-                    <CheckCircle2 className="h-6 w-6" />
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="stat-card group">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Centros Ativos</p>
-                  <p className="text-2xl font-bold font-display mt-1">{activeCentros.length}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {
-                      activeCentros.filter((c) => c.orcamento_realizado > c.orcamento_previsto)
-                        .length
-                    }{' '}
-                    acima do orçamento
-                  </p>
-                </div>
-                <div className="h-12 w-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center transition-transform group-hover:scale-110">
-                  <PieChart className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Charts */}
-        {activeCentros.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <motion.div variants={itemVariants} className="lg:col-span-2">
-              <Card className="card-elevated h-[400px]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-display flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-primary" />
-                    Orçado vs Realizado
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="h-[320px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData} layout="vertical">
-                      <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
-                      <YAxis type="category" dataKey="nome" width={50} />
-                      <Tooltip
-                        formatter={(v: number) => formatCurrency(v)}
-                        labelFormatter={(l) => `Centro: ${l}`}
-                      />
-                      <Legend />
-                      <Bar dataKey="Orçado" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} />
-                      <Bar dataKey="Realizado" fill="hsl(24, 95%, 46%)" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <Card className="card-elevated h-[400px]">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-display flex items-center gap-2">
-                    <PieChart className="h-5 w-5 text-primary" />
-                    Distribuição
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="h-[320px]">
-                  <ResponsiveContainer width="100%" height="75%">
-                    <RePieChart>
-                      <Pie
-                        data={distribuicao}
-                        dataKey="valor"
-                        nameKey="nome"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        paddingAngle={2}
-                      >
-                        {distribuicao.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                    </RePieChart>
-                  </ResponsiveContainer>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {distribuicao.slice(0, 3).map((item, i) => (
-                      <Badge key={`${item.nome}-${i}`} variant="outline" className="text-xs">
-                        <span
-                          className="h-2 w-2 rounded-full mr-1"
-                          style={{ background: COLORS[i] }}
-                        />
-                        {item.nome} ({item.percentual.toFixed(1)}%)
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        )}
-
-        {/* List */}
-        <motion.div variants={itemVariants}>
-          <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2">
-            <FolderTree className="h-5 w-5 text-primary" />
-            Detalhamento por Centro
-          </h2>
-          {viewMode === 'tree' ? (
-            <Card className="p-4">
-              <CentroCustoTree
-                centros={filteredCentros}
-                onEdit={handleOpenEdit}
-                onDelete={handleDelete}
-                onReactivate={handleReactivate}
-                onAddChild={(parentId) => handleOpenCreate(parentId)}
-                onHistory={(centro) => setHistoryCentro(centro)}
-              />
-            </Card>
-          ) : filteredCentros.length === 0 ? (
-            <EmptyState
-              icon={<FolderTree className="h-8 w-8 text-muted-foreground" />}
-              title={
-                searchTerm
-                  ? 'Nenhum centro de custo encontrado'
-                  : 'Nenhum centro de custo cadastrado'
-              }
-              description="Crie seu primeiro centro de custo para organizar despesas e receitas."
-              action={
-                <Button onClick={() => handleOpenCreate()} className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Novo Centro de Custo
-                </Button>
-              }
-            />
-          ) : (
-            <CentroCustoCards
-              filteredCentros={filteredCentros}
-              allCentros={centros}
-              onEdit={handleOpenEdit}
-              onDelete={handleDelete}
-              onReactivate={handleReactivate}
-            />
-          )}
-        </motion.div>
-      </motion.div>
+      <CentroCustosArvore
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        centros={centros}
+        setShowInactive={setShowInactive}
+        showInactive={showInactive}
+        handleOpenCreate={handleOpenCreate}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        totalOrcado={totalOrcado}
+        totalRealizado={totalRealizado}
+        percentualGasto={percentualGasto}
+        saldoDisponivel={saldoDisponivel}
+        activeCentros={activeCentros}
+        barData={barData}
+        distribuicao={distribuicao}
+        filteredCentros={filteredCentros}
+        handleOpenEdit={handleOpenEdit}
+        handleDelete={handleDelete}
+        handleReactivate={handleReactivate}
+        setHistoryCentro={setHistoryCentro}
+      />
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">

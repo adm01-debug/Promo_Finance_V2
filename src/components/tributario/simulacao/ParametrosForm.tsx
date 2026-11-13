@@ -16,23 +16,8 @@ import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
 import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
 import { LucroTrimestralFields } from './LucroTrimestralFields';
-import type { ParametrosSimulacao, RegimeTributario } from '@/lib/tributario';
-
-interface EmpresaOption {
-  id: string;
-  razao_social: string;
-}
-
-interface Props {
-  empresas: EmpresaOption[];
-  empresaId?: string;
-  setEmpresaId: (id: string) => void;
-  regimeAtual?: RegimeTributario;
-  setRegimeAtual: (r: RegimeTributario) => void;
-  parametros: ParametrosSimulacao;
-  setParametros: (p: ParametrosSimulacao) => void;
-  temHistoricoSuficiente: boolean;
-}
+import type { RegimeTributario } from '@/lib/tributario';
+import type { Props } from './ParametrosForm.types';
 
 export function ParametrosForm({
   empresas,

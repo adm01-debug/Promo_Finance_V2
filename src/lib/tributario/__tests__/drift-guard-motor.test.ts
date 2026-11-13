@@ -16,7 +16,11 @@ import { normalizeSource } from '@/test/utils/source-drift';
  * mas falha diante de qualquer divergência de fórmula, condicional ou constante.
  */
 
-const FRONT = resolve(__dirname, '../shared-logic.ts');
+// O motor do front foi dividido em módulos (max-lines); shared-logic.ts é só o barril.
+// A guarda lê os três módulos juntos — cada item vigiado continua comparado com a Edge.
+const FRONT_FILES = ['../motor/base.ts', '../motor/simples.ts', '../motor/lucro.ts'].map((f) =>
+  resolve(__dirname, f)
+);
 const EDGE = resolve(__dirname, '../../../../supabase/functions/_shared/tributario-logic.ts');
 
 /** Extrai o corpo de uma função exportada por balanceamento de chaves. */
@@ -35,7 +39,7 @@ function extractFunction(src: string, name: string): string {
   throw new Error(`Corpo da função ${name} não pôde ser delimitado.`);
 }
 
-const frontSrc = readFileSync(FRONT, 'utf8');
+const frontSrc = FRONT_FILES.map((f) => readFileSync(f, 'utf8')).join('\n');
 const edgeSrc = readFileSync(EDGE, 'utf8');
 
 const FUNCOES = [

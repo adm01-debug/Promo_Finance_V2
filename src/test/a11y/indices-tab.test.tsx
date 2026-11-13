@@ -4,7 +4,8 @@ import { axe } from 'vitest-axe';
 import * as axeMatchers from 'vitest-axe/matchers';
 import { IndicesGrid } from '@/components/contabilidade/indices/IndicesGrid';
 import { IndicesToolbar } from '@/components/contabilidade/indices/IndicesToolbar';
-import { calcularIndices, AGREGADOS_ZERO } from '@/lib/contabil/indices';
+import { calcularIndices } from '@/lib/contabil/indices';
+import { AGREGADOS_ZERO } from '@/lib/contabil/indices.helpers';
 
 expect.extend(axeMatchers as never);
 
