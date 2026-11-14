@@ -4446,6 +4446,29 @@ BEGIN
 END;
 $$;
 
+-- Sobrecarga legada sem argumentos (existia em prod por alter manual; a
+-- 20260831153000 a redefine e seu preflight exige que ela já exista).
+CREATE OR REPLACE FUNCTION public.watch_cron_failures()
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY INVOKER
+AS $function$
+DECLARE
+  v_falhas integer;
+BEGIN
+  SELECT count(*)
+    INTO v_falhas
+  FROM public.cron_job_logs
+  WHERE success IS FALSE
+    AND created_at > now() - interval '24 hours';
+
+  RETURN jsonb_build_object(
+    'failures_24h', v_falhas,
+    'checked_at', now()
+  );
+END
+$function$;
+
 CREATE OR REPLACE FUNCTION public.webhook_claim(p_source text, p_external_id text, p_event_type text, p_payload jsonb, p_max_attempts integer DEFAULT 5) RETURNS TABLE(id uuid, status text, attempts integer, already_processed boolean)
     LANGUAGE plpgsql SECURITY DEFINER
     SET search_path TO 'public'
@@ -5597,11 +5620,14 @@ CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios TO authentic
 
 CREATE TABLE IF NOT EXISTS public.cron_job_logs (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
-    job_name text,
-    status text,
-    started_at timestamp with time zone NOT NULL DEFAULT now(),
-    finished_at timestamp with time zone,
+    job_name text NOT NULL,
+    executed_at timestamp with time zone NOT NULL DEFAULT now(),
+    completed_at timestamp with time zone,
+    duration_ms integer,
+    result jsonb,
+    success boolean DEFAULT false,
     error_message text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
     CONSTRAINT cron_job_logs_pkey PRIMARY KEY (id)
 );
 ALTER TABLE public.cron_job_logs ENABLE ROW LEVEL SECURITY;

@@ -122,7 +122,9 @@ REVOKE EXECUTE ON FUNCTION public.update_updated_at_column() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.use_reset_token(p_token_hash text, p_ip_address inet) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.validar_catalogos_tributarios() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.validar_partidas_dobradas() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.watch_cron_failures() FROM authenticated;
+DO $$BEGIN
+  REVOKE EXECUTE ON FUNCTION public.watch_cron_failures() FROM authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
 REVOKE EXECUTE ON FUNCTION public.watch_cron_failures(p_lookback_minutes integer, p_stale_hours integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.webhook_claim(p_source text, p_external_id text, p_event_type text, p_payload jsonb, p_max_attempts integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.webhook_dequeue_retries(p_limit integer) FROM authenticated;
