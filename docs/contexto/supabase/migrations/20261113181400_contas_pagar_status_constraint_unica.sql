@@ -1,0 +1,7 @@
+DROP CONSTRAINT contas_pagar_status_check
+
+DROP CONSTRAINT chk_contas_pagar_status
+
+ADD chk_contas_pagar_status NOT VALID
+
+VALIDATE chk_contas_pagar_status

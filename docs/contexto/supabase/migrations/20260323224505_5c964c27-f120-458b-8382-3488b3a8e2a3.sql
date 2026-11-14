@@ -1,0 +1,61 @@
+-- 1. Revoke anon access from all financial views (security_invoker already set)
+-- 5 destas views podem não existir aqui: guards de 20260317125441 pulam a
+-- criação quando as colunas de que dependem ainda não existem (só
+-- adicionadas entre 20260518164611 e 20260518190420). REVOKE sobre relação
+-- inexistente quebraria o replay do zero (achado do cubic na PR #63).
+DO $$
+BEGIN
+  IF to_regclass('public.vw_contas_receber_painel') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_contas_receber_painel FROM anon';
+  END IF;
+  IF to_regclass('public.vw_contas_pagar_painel') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_contas_pagar_painel FROM anon';
+  END IF;
+  IF to_regclass('public.vw_dre_mensal') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_dre_mensal FROM anon';
+  END IF;
+  IF to_regclass('public.vw_dso_aging') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_dso_aging FROM anon';
+  END IF;
+  IF to_regclass('public.vw_gastos_centro_custo') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_gastos_centro_custo FROM anon';
+  END IF;
+  IF to_regclass('public.vw_transferencias_painel') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_transferencias_painel FROM anon';
+  END IF;
+  IF to_regclass('public.vw_saldos_contas') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_saldos_contas FROM anon';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_fluxo_caixa FROM anon';
+  END IF;
+  IF to_regclass('public.vw_fluxo_caixa_diario') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_fluxo_caixa_diario FROM anon';
+  END IF;
+  IF to_regclass('public.vw_metricas_cobranca') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_metricas_cobranca FROM anon';
+  END IF;
+  IF to_regclass('public.vw_webhooks_recentes') IS NOT NULL THEN
+    EXECUTE 'REVOKE SELECT ON public.vw_webhooks_recentes FROM anon';
+  END IF;
+END
+$$
+
+-- 2. Restrict ponto_funcionarios to admin only
+DROP POLICY IF EXISTS "Admin/financeiro can view ponto_funcionarios" ON public.ponto_funcionarios
+
+DROP POLICY IF EXISTS "Admins manage ponto_funcionarios" ON public.ponto_funcionarios
+
+CREATE POLICY "Admin can view ponto_funcionarios"
+  ON public.ponto_funcionarios FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'::app_role))
+
+CREATE POLICY "Admin can manage ponto_funcionarios"
+  ON public.ponto_funcionarios FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'::app_role))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'::app_role))
+
+-- 3. Add INSERT policy for rate_limit_logs
+CREATE POLICY "System can insert rate limit logs"
+  ON public.rate_limit_logs FOR INSERT TO authenticated
+  WITH CHECK (true)
