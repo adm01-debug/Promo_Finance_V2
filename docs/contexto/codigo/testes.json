@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 436,
+ "total": 437,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 360
+  "unit": 361
  },
  "onde_ficam": [
   {
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 41
+   "arquivos": 42
   },
   {
    "padrao": "e2e/",
@@ -867,6 +867,16 @@
     "src/components/contabilidade/ValidacoesPreSpedDialog.tsx"
    ],
    "casos": 4
+  },
+  {
+   "arquivo": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+   "tipo": "unit",
+   "linhas": 92,
+   "testa": [
+    "src/components/contabilidade/contabilizacao-automatica/types.ts",
+    "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts"
+   ],
+   "casos": 5
   },
   {
    "arquivo": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
@@ -3892,6 +3902,8 @@
   "src/components/common/StartupDiagnostic.tsx": 1,
   "src/components/conciliacao/ConciliacaoManualDialog.tsx": 1,
   "src/components/contabilidade/ValidacoesPreSpedDialog.tsx": 1,
+  "src/components/contabilidade/contabilizacao-automatica/types.ts": 1,
+  "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts": 1,
   "src/components/contabilidade/indices/IndicesGrid.tsx": 1,
   "src/components/contabilidade/indices/IndicesToolbar.tsx": 1,
   "src/components/contas-receber/AplicarDescontoDialog.tsx": 1,
@@ -4330,7 +4342,6 @@
    "src/components/admin/telemetry/weekly-trend/useWeeklyTrendData.ts",
    "src/components/admin/useAnomaliasPanelDerivations.ts",
    "src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts",
-   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
    "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoQueries.ts",
    "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
    "src/components/contabilidade/sped-contabil/useSpedContabilState.ts",

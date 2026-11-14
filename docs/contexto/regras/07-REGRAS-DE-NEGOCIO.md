@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4870aaca69` · branch `main` · 2026-11-13 22:41 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `76173e7d48` · branch `main` · 2026-11-14 00:02 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5095,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3345 testes em 278 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3351 testes em 279 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5280,6 +5280,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/pages/auth/__tests__/CorporateOnboardingUi.test.tsx` | 7 | /auth/corporate · CTAs aparecem nos momentos corretos · estado inicial: não exibe nenhum dos CTAs contextuais · domínio sem providers: exibe  · domínio com provider sem force: NÃO mostra cancelar/tentar novamente, só lista o provider … |
 | `src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts` | 7 | extrairOffline · devolve null para payloads sem metadado · rejeita metadado malformado · extrai metadado válido … |
 | `src/pages/tributario/consulta-rapida/__tests__/shared.test.ts` | 7 | pct · trata nulos e NaN como travessão · converte frações em percentual · mantém valores já expressos em pontos percentuais … |
+| `src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts` | 6 | buildDryRunPayload · passa no schema strict (sem lote_quantidade, evento_id uuid) · com ignoreRules envia ignore_rules e continua válido · categoria  … |
 | `src/hooks/__tests__/useAlertasPreditivos.test.ts` | 6 | useAlertasPreditivos · gera alerta de ruptura quando saldo projetado fica negativo · detecta concentração de risco quando cliente >30% do total · não gera alertas se cenário saudável … |
 | `src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx` | 6 | useUploadCertificado — erro da Edge Function · leva o motivo devolvido pela função até o toast · aceita  · cai para a mensagem PT-BR do status quando o corpo não traz motivo … |
 | `src/hooks/__tests__/useConciliacao.confirmar.test.tsx` | 6 | confirmarConciliacao · confirma pelo proxy sem reescrever nada fora da transação · manda os metadados de compensação junto com a confirmação · não manda bloco de compensação quando não houve ajuste … |
@@ -5685,6 +5686,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | não pode ser apresentada como falha caso esse enriquecimento falhe. | `src/components/conciliacao/ConciliacaoManualDialog.tsx` |
 | Permission Status */} | `src/components/configuracoes/NotificacoesConfig.tsx` |
 | Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF. | `src/components/contabilidade/PreValidacaoSpedPanel.tsx` |
+| O schema `ContabilizarEventoSchema` (supabase/functions/_shared/validation.ts) | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | localStorage. Também expõe os handlers de negócio (gerar, copiar hash, baixar | `src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts` |
 | mexer no form — resposta tardia da conta A não pode pisar na conta B. | `src/components/contas-pagar/ContaPagarForm.tsx` |
 | As listas sao normalizadas para o shape minimo nao-nulo que ele consome. | `src/components/contas-pagar/ContaPagarForm.tsx` |
@@ -5943,5 +5945,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | - MINOR: nova regra fiscal (ex.: CPP Anexo IV, FPAS/Terceiros). | `src/lib/tributario/versao.ts` |
 | - PATCH: correção de cálculo sem nova regra. | `src/lib/tributario/versao.ts` |
 | Compensação de prejuízo fiscal — limite 30% | `src/lib/tributario/calculadora/lucro-real.ts` |
-| * Valor conhecido pelo motor/pela regra legal (null quando inaplicável). */ | `src/lib/tributario/catalogos/alertas.ts` |
-| … +360 linhas — lista completa em `context.json` | |
+| … +362 linhas — lista completa em `context.json` | |

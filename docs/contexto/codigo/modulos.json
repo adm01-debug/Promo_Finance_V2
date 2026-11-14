@@ -1974,8 +1974,8 @@
   {
    "modulo": "components/contabilidade",
    "arquivos": 106,
-   "testes": 1,
-   "linhas": 17128,
+   "testes": 2,
+   "linhas": 17140,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "4870aaca691cc9d571d950cf7f8b68286638c507",
+  "commit": "76173e7d488055510cc934a0064db2f64cfcb740",
   "branch": "main",
-  "data_commit": "2026-11-13T21:41:43Z",
+  "data_commit": "2026-11-13T20:37:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "76173e7",
+    "data": "2026-11-13",
+    "assunto": "fix: simulação da Contabilização Automática deixa de receber 400 (#337)"
+   },
    {
     "sha": "4870aac",
     "data": "2026-11-13",
@@ -126,14 +131,9 @@
     "sha": "f2bda64",
     "data": "2026-11-12",
     "assunto": "fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)"
-   },
-   {
-    "sha": "3efb5c7",
-    "data": "2026-11-12",
-    "assunto": "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)"
    }
   ],
-  "arquivos_mudados_7d": 828,
+  "arquivos_mudados_7d": 830,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -141,7 +141,7 @@
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 27
+    "mudancas": 29
    },
    {
     "pasta": "src/components/reforma-tributaria",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 104
+    "commits": 105
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3827,
-  "arquivos_codigo": 2418,
-  "linhas_codigo": 431659,
+  "arquivos_total": 3828,
+  "arquivos_codigo": 2419,
+  "linhas_codigo": 431766,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1014,
   "cron_jobs": 21,
-  "testes": 436,
+  "testes": 437,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 190
@@ -631,8 +631,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 975,
-   "linhas": 160210
+   "arquivos": 976,
+   "linhas": 160314
   },
   "src/config": {
    "arquivos": 1,
@@ -680,7 +680,7 @@
   },
   "supabase/functions": {
    "arquivos": 222,
-   "linhas": 49574
+   "linhas": 49577
   },
   "supabase/tests": {
    "arquivos": 2,

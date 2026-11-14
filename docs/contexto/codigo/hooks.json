@@ -186,7 +186,7 @@
    "hooks_exportados": [
     "useContabilizacaoMutations"
    ],
-   "linhas": 170,
+   "linhas": 182,
    "dominio": "components/contabilidade",
    "tabelas": [
     "regras_contabilizacao_automatica"
@@ -204,7 +204,7 @@
     "src/components/contabilidade/ContabilizacaoAutomaticaTab.tsx",
     "src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoQueries.ts",

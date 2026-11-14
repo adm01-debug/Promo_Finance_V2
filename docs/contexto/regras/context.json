@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "4870aaca691cc9d571d950cf7f8b68286638c507",
+  "sha": "76173e7d488055510cc934a0064db2f64cfcb740",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 22:41 UTC",
-  "files_total": 3869,
-  "code_files": 3503,
-  "code_lines": 497275
+  "generated_at": "2026-11-14 00:02 UTC",
+  "files_total": 3870,
+  "code_files": 3504,
+  "code_lines": 497383
  },
  "version": "1.3.2",
- "facts_hash": "39ffd7974a4a4e40",
+ "facts_hash": "b6f1d4d2583f7707",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -331,7 +331,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1219,
+   ".ts": 1220,
    ".tsx": 1088,
    ".sql": 1084,
    ".mjs": 60,
@@ -68382,7 +68382,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 977,
+  "components_count": 978,
   "hooks": [
    {
     "name": "useContacts",
@@ -71397,8 +71397,8 @@
   },
   {
    "module": "src/components",
-   "files": 975,
-   "lines": 161185,
+   "files": 976,
+   "lines": 161290,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72551,7 +72551,7 @@
   {
    "module": "supabase/functions",
    "files": 222,
-   "lines": 49796,
+   "lines": 49799,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -85293,6 +85293,10 @@
     "text": "Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF."
    },
    {
+    "file": "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
+    "text": "O schema `ContabilizarEventoSchema` (supabase/functions/_shared/validation.ts)"
+   },
+   {
     "file": "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts",
     "text": "localStorage. Também expõe os handlers de negócio (gerar, copiar hash, baixar"
    },
@@ -87383,6 +87387,10 @@
    {
     "file": "supabase/functions/contabilizar-evento/index.ts",
     "text": "Selecionar regra: prioriza categoria match"
+   },
+   {
+    "file": "supabase/functions/contabilizar-evento/index.ts",
+    "text": "e o contador \"Sem regra\" desta tabela."
    },
    {
     "file": "supabase/functions/convidar-contador/index.ts",
@@ -122824,6 +122832,30 @@
    {
     "file": "src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx",
     "name": "não renderiza nada quando arquivo é null"
+   },
+   {
+    "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    "name": "buildDryRunPayload"
+   },
+   {
+    "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    "name": "passa no schema strict (sem lote_quantidade, evento_id uuid)"
+   },
+   {
+    "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    "name": "com ignoreRules envia ignore_rules e continua válido"
+   },
+   {
+    "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    "name": "categoria "
+   },
+   {
+    "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    "name": "gera evento_id novo a cada chamada"
+   },
+   {
+    "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    "name": "réplica tem as mesmas chaves do ContabilizarEventoSchema da Edge"
    },
    {
     "file": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
@@ -187407,6 +187439,31 @@
     }
    ]
   },
+  "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts": {
+   "path": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+   "lines": 93,
+   "is_test": true,
+   "zod": [
+    {
+     "name": "ContabilizarEventoSchemaReplica",
+     "kind": "object",
+     "body": "{ empresa_id: z.string().uuid(), tipo_evento: z.enum(['conta_pagar', 'conta_receber', 'movimentacao']), evento_id: z.string().uuid(), valor: z.number().positive(), data: z.string().regex(/^\\d{4}-\\d{2}-\\d{2}$/), descricao: z.string().optional(), categoria_id: z.string().uuid().optional().nullable(), dry_run: z.boolean().optional(), ignore_rules: z.boolean().optional(), }",
+     "refines": [],
+     "chain": []
+    }
+   ],
+   "rule_comments": [
+    "(supabase/functions/_shared/validation.ts). O original não é importável no"
+   ],
+   "tests": [
+    "buildDryRunPayload",
+    "passa no schema strict (sem lote_quantidade, evento_id uuid)",
+    "com ignoreRules envia ignore_rules e continua válido",
+    "categoria ",
+    "gera evento_id novo a cada chamada",
+    "réplica tem as mesmas chaves do ContabilizarEventoSchema da Edge"
+   ]
+  },
   "src/components/contabilidade/contabilizacao-automatica/types.ts": {
    "path": "src/components/contabilidade/contabilizacao-automatica/types.ts",
    "lines": 95,
@@ -187449,8 +187506,9 @@
   },
   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts": {
    "path": "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
-   "lines": 171,
+   "lines": 183,
    "exports": [
+    "function buildDryRunPayload",
     "function useContabilizacaoMutations",
     "type ContabilizacaoMutations"
    ],
@@ -187501,6 +187559,9 @@
      "value": "single",
      "kind": "escreve"
     }
+   ],
+   "rule_comments": [
+    "O schema `ContabilizarEventoSchema` (supabase/functions/_shared/validation.ts)"
    ],
    "hooks": [
     "useContabilizacaoMutations"
@@ -232880,7 +232941,7 @@
   },
   "supabase/functions/contabilizar-evento/index.ts": {
    "path": "supabase/functions/contabilizar-evento/index.ts",
-   "lines": 266,
+   "lines": 269,
    "tables": [
     {
      "table": "user_roles",
@@ -233031,7 +233092,8 @@
     }
    ],
    "rule_comments": [
-    "Selecionar regra: prioriza categoria match"
+    "Selecionar regra: prioriza categoria match",
+    "e o contador \"Sem regra\" desta tabela."
    ],
    "doc": "Edge function: contabilizar-evento Aplica regras de contabilização automática a um evento financeiro (conta_pagar / conta_receber / movimentacao) gerando um lançamento contábil em partidas dobradas.",
    "uses_service_role": true
@@ -245274,10 +245336,21 @@
   }
  },
  "git": {
-  "sha": "4870aaca691cc9d571d950cf7f8b68286638c507",
+  "sha": "76173e7d488055510cc934a0064db2f64cfcb740",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "76173e7",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "fix: simulação da Contabilização Automática deixa de receber 400 (#337)",
+    "files": [
+     "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+     "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
+     "supabase/functions/contabilizar-evento/index.ts"
+    ]
+   },
    {
     "sha": "4870aac",
     "date": "2026-11-13",
@@ -245892,15 +245965,6 @@
     "files": [
      "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql"
     ]
-   },
-   {
-    "sha": "8eec022",
-    "date": "2026-11-11",
-    "author": "adm01-debug",
-    "subject": "fix: sanitiza parâmetro search no filtro .or() da external-data (#308)",
-    "files": [
-     "supabase/functions/external-data/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -245911,6 +245975,10 @@
    [
     "src/components/dashboard/DashboardExecutivo.tsx",
     3
+   ],
+   [
+    "supabase/functions/contabilizar-evento/index.ts",
+    2
    ],
    [
     "src/components/contas-pagar/ContasPagarTableRow.tsx",
@@ -245927,6 +245995,14 @@
    [
     "src/App.tsx",
     2
+   ],
+   [
+    "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
+    1
+   ],
+   [
+    "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
+    1
    ],
    [
     "src/components/compras/PedidoCompraForm.tsx",
@@ -245970,18 +246046,6 @@
    ],
    [
     "src/hooks/useApuracoesTributarias.ts",
-    1
-   ],
-   [
-    "src/hooks/useConciliacaoPage.ts",
-    1
-   ],
-   [
-    "src/hooks/useContratos.ts",
-    1
-   ],
-   [
-    "src/hooks/useCreditosTributarios.ts",
     1
    ]
   ]
