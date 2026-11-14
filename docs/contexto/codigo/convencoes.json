@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)",
    "infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)",
    "fix: simulação da Contabilização Automática deixa de receber 400 (#337)",
    "chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)",
-   "fix: religa campos de formulário às colunas criadas em produção (#343)",
-   "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)"
+   "fix: religa campos de formulário às colunas criadas em produção (#343)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

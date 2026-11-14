@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `53a33b6467` · branch `main` · 2026-11-14 01:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b7559c3f75` · branch `main` · 2026-11-14 02:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -452,7 +452,7 @@
 - Nenhuma regra manual em `manual/`: prazos, limites, exceções comerciais, quem aprova o quê — só o negócio sabe.
 - `clientes.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `fornecedores.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `contas_pagar.status` tem valores ['atrasado', 'cancelado', 'pago', 'parcial', 'pendente', 'vencido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
+- `contas_pagar.status` tem valores ['cancelado', 'pago', 'parcial', 'pendente', 'vencido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `contas_receber.status` tem valores ['atrasado', 'cancelado', 'em_acordo', 'pago', 'parcial', 'pendente', 'recebido', 'vencido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `contas_receber.etapa_cobranca` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `empresas.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.

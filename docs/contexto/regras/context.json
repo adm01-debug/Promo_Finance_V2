@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "53a33b6467d74a1f92cd5eca9b447096ecfb225a",
+  "sha": "b7559c3f757ceb4baa381351fea105ae18cb3478",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-14 01:25 UTC",
-  "files_total": 3870,
-  "code_files": 3504,
-  "code_lines": 497383
+  "generated_at": "2026-11-14 02:01 UTC",
+  "files_total": 3871,
+  "code_files": 3505,
+  "code_lines": 497400
  },
  "version": "1.3.2",
- "facts_hash": "b6f1d4d2583f7707",
+ "facts_hash": "5a890b80d6b3f13f",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "languages": {
    ".ts": 1220,
    ".tsx": 1088,
-   ".sql": 1084,
+   ".sql": 1085,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -976,9 +976,8 @@
      "constraint contas_pagar_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id)",
      "constraint contas_pagar_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE",
      "constraint contas_pagar_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL",
-     "constraint chk_contas_pagar_status CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'vencido'::character varying, 'cancelado'::character varying, 'parcial'::character varying])::text[]))) NOT VALID",
      "constraint contas_pagar_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID",
-     "constraint contas_pagar_status_check CHECK ((status)::text = ANY (ARRAY['pendente','pago','atrasado','cancelado','parcial']::text[]))"
+     "constraint chk_contas_pagar_status CHECK ((status)::text = ANY (ARRAY['pendente','pago','vencido','cancelado','parcial']::text[])) NOT VALID"
     ],
     "src": "supabase/migrations/20260518153054_4ca5dab9-c6b0-451e-994c-78cde2596fb2.sql",
     "comment": "",
@@ -52530,6 +52529,7 @@
    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
    "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
    "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
+   "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -72812,8 +72812,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1014,
-   "lines": 76546,
+   "files": 1015,
+   "lines": 76563,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -87966,17 +87966,12 @@
    {
     "table": "contas_pagar",
     "column": "(tabela)",
-    "rule": "constraint chk_contas_pagar_status CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'vencido'::character varying, 'cancelado'::character varying, 'parcial'::character varying])::text[]))) NOT VALID"
-   },
-   {
-    "table": "contas_pagar",
-    "column": "(tabela)",
     "rule": "constraint contas_pagar_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID"
    },
    {
     "table": "contas_pagar",
     "column": "(tabela)",
-    "rule": "constraint contas_pagar_status_check CHECK ((status)::text = ANY (ARRAY['pendente','pago','atrasado','cancelado','parcial']::text[]))"
+    "rule": "constraint chk_contas_pagar_status CHECK ((status)::text = ANY (ARRAY['pendente','pago','vencido','cancelado','parcial']::text[])) NOT VALID"
    },
    {
     "table": "contas_receber",
@@ -153626,7 +153621,6 @@
      "column": "status",
      "enum": "",
      "allowed": [
-      "atrasado",
       "cancelado",
       "pago",
       "parcial",
@@ -175443,7 +175437,7 @@
    "Nenhuma regra manual em `manual/`: prazos, limites, exceções comerciais, quem aprova o quê — só o negócio sabe.",
    "`clientes.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`fornecedores.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`contas_pagar.status` tem valores ['atrasado', 'cancelado', 'pago', 'parcial', 'pendente', 'vencido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
+   "`contas_pagar.status` tem valores ['cancelado', 'pago', 'parcial', 'pendente', 'vencido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`contas_receber.status` tem valores ['atrasado', 'cancelado', 'em_acordo', 'pago', 'parcial', 'pendente', 'recebido', 'vencido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`contas_receber.etapa_cobranca` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`empresas.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
@@ -245228,6 +245222,10 @@
    "path": "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
    "lines": 129
   },
+  "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql": {
+   "path": "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
+   "lines": 17
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245336,10 +245334,19 @@
   }
  },
  "git": {
-  "sha": "53a33b6467d74a1f92cd5eca9b447096ecfb225a",
+  "sha": "b7559c3f757ceb4baa381351fea105ae18cb3478",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b7559c3",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)",
+    "files": [
+     "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql"
+    ]
+   },
    {
     "sha": "53a33b6",
     "date": "2026-11-13",
@@ -245955,16 +245962,6 @@
     "files": [
      "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
     ]
-   },
-   {
-    "sha": "b99e6a8",
-    "date": "2026-11-12",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
@@ -245995,6 +245992,10 @@
    [
     "src/App.tsx",
     2
+   ],
+   [
+    "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
+    1
    ],
    [
     ".github/workflows/schema-drift.yml",
@@ -246042,10 +246043,6 @@
    ],
    [
     "src/hooks/expert-actions/financial-actions.ts",
-    1
-   ],
-   [
-    "src/hooks/useAlertasTributarios.ts",
     1
    ]
   ]

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `53a33b6467` · branch `main` · 2026-11-14 01:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b7559c3f75` · branch `main` · 2026-11-14 02:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -354,9 +354,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id) |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL |
-| `contas_pagar` | `(tabela)` | constraint chk_contas_pagar_status CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'vencido'::character varying, 'cancelado'::character varying, 'parcial'::character varying])::text[]))) NOT VALID |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID |
-| `contas_pagar` | `(tabela)` | constraint contas_pagar_status_check CHECK ((status)::text = ANY (ARRAY['pendente','pago','atrasado','cancelado','parcial']::text[])) |
+| `contas_pagar` | `(tabela)` | constraint chk_contas_pagar_status CHECK ((status)::text = ANY (ARRAY['pendente','pago','vencido','cancelado','parcial']::text[])) NOT VALID |
 | `contas_receber` | `id` | PK; default uuid_generate_v4() |
 | `contas_receber` | `descricao` | obrigatório |
 | `contas_receber` | `valor` | obrigatório |
@@ -617,7 +616,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `created_at` | default now() |
 | `feedback_conciliacao_ia` | `score_original` | default 0 |
 | `feedback_conciliacao_ia` | `created_by` | FK → users.id |
-| … +2403 linhas — lista completa em `context.json` | | |
+| `metas_financeiras` | `id` | PK; default gen_random_uuid() |
+| … +2402 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1083,7 +1083,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 |---|---|---|---|
 | `clientes` | `estado` | **livre (sem enum/CHECK)** |  |
 | `fornecedores` | `estado` | **livre (sem enum/CHECK)** |  |
-| `contas_pagar` | `status` | `atrasado`, `cancelado`, `pago`, `parcial`, `pendente`, `vencido` | `pendente` |
+| `contas_pagar` | `status` | `cancelado`, `pago`, `parcial`, `pendente`, `vencido` | `pendente` |
 | `contas_receber` | `status` | `atrasado`, `cancelado`, `em_acordo`, `pago`, `parcial`, `pendente`, `recebido`, `vencido` | `pendente` |
 | `contas_receber` | `etapa_cobranca` | **livre (sem enum/CHECK)** |  |
 | `empresas` | `estado` | **livre (sem enum/CHECK)** |  |
