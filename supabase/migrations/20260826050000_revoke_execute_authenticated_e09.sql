@@ -96,7 +96,9 @@ REVOKE EXECUTE ON FUNCTION public.pix_template_sync_legacy() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.prevent_profile_privilege_escalation() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.profile_sensitive_fields_unchanged(_profile_id uuid, _user_id uuid, _role text, _empresa_id uuid) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.provisionar_usuario(_user_id uuid) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.purge_old_rows(p_table text, p_column text, p_days integer) FROM authenticated;
+DO $$BEGIN
+  REVOKE EXECUTE ON FUNCTION public.purge_old_rows(p_table text, p_column text, p_days integer) FROM authenticated;
+EXCEPTION WHEN undefined_function THEN NULL; END $$;
 REVOKE EXECUTE ON FUNCTION public.purge_old_rows(p_table regclass, p_column text, p_days integer, p_where text, p_batch integer, p_max_batches integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.recarregar_seeds_fiscais(p_motivo text) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.record_failed_login(p_email text, p_ip_address inet) FROM authenticated;

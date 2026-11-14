@@ -4,16 +4,21 @@
 -- ── C1: cnaes_codigo_formato_chk ────────────────────────────────────
 -- Bug: regex '^\d{2}\.\d{2}-\d/\d{2}$' esperava ponto (NN.NN-N/NN)
 -- Real: 100% dos dados usam formato NNNN-N/NN sem ponto
-DO $$BEGIN
-  ALTER TABLE public.cnaes ADD CONSTRAINT cnaes_codigo_formato_chk CHECK (codigo ~ '^[0-9]{4}-[0-9]/[0-9]{2}$');
-EXCEPTION WHEN duplicate_object THEN
-  ALTER TABLE public.cnaes DROP CONSTRAINT cnaes_codigo_formato_chk;
-  ALTER TABLE public.cnaes ADD CONSTRAINT cnaes_codigo_formato_chk CHECK (codigo ~ '^[0-9]{4}-[0-9]/[0-9]{2}$');
-END $$;
+-- Drop da constraint antiga (regex com ponto) antes de normalizar: o UPDATE de códigos
+-- NN.NN-N/NN → NNNN-N/NN violaria a definição antiga se ainda ativa.
+ALTER TABLE public.cnaes DROP CONSTRAINT IF EXISTS cnaes_codigo_formato_chk;
+-- Normalizar códigos do seed (formato NN.NN-N/NN → NNNN-N/NN, como em prod).
+UPDATE public.cnaes SET codigo = REPLACE(codigo, '.', '')
+WHERE codigo ~ '^[0-9]{2}\.[0-9]{2}-[0-9]/[0-9]{2}$';
+ALTER TABLE public.cnaes
+  ADD CONSTRAINT cnaes_codigo_formato_chk
+  CHECK (codigo ~ '^[0-9]{4}-[0-9]/[0-9]{2}$');
 
 -- ── C2: faixas_simples — corrigir função + add NOT VALID ─────────────
 -- Bug fn: chaves UPPERCASE + soma esperada 1.00; dados têm lowercase+100.00
 -- Dois formatos históricos coexistem; 14 linhas UPPERCASE genuinamente inválidas
+ALTER TABLE public.faixas_simples_nacional DROP CONSTRAINT IF EXISTS faixas_simples_reparticao_soma_chk;
+DROP FUNCTION IF EXISTS public.faixa_simples_reparticao_valida(jsonb);
 CREATE OR REPLACE FUNCTION public.faixa_simples_reparticao_valida(p_reparticao jsonb)
 RETURNS boolean LANGUAGE sql IMMUTABLE
 SECURITY INVOKER SET search_path = public, pg_catalog
@@ -53,6 +58,8 @@ END $$;
 
 -- ── C5: elisao_regras_creditos_aliquota_check ───────────────────────
 -- Bug: <= 1 (esperava decimal). numeric(5,2) guarda percentuais (5.00..18.00)
+-- Prod tem a coluna aliquota (criada fora do ledger); garante no shadow.
+ALTER TABLE public.elisao_regras_creditos ADD COLUMN IF NOT EXISTS aliquota numeric(9,6);
 DO $$BEGIN
   ALTER TABLE public.elisao_regras_creditos ADD CONSTRAINT elisao_regras_creditos_aliquota_check
     CHECK (aliquota IS NULL OR (aliquota >= 0 AND aliquota <= 100));
