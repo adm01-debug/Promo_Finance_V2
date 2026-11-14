@@ -895,7 +895,11 @@ END $$;
 --
 
 
-GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated;
+DO $$ BEGIN
+  IF current_setting('server_version_num')::int >= 170000 THEN
+    EXECUTE 'GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated';
+  END IF;
+END $$;
 GRANT ALL ON TABLE public.cnpja_cache TO service_role;
 DO $$ BEGIN
   GRANT SELECT,INSERT ON TABLE public.cnpja_cache TO sandbox_exec;
@@ -1456,7 +1460,11 @@ ALTER TABLE public.frontend_error_silence_digest_log ENABLE ROW LEVEL SECURITY;
 --
 
 
-GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated;
+DO $$ BEGIN
+  IF current_setting('server_version_num')::int >= 170000 THEN
+    EXECUTE 'GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated';
+  END IF;
+END $$;
 GRANT ALL ON TABLE public.frontend_error_silence_digest_log TO service_role;
 DO $$ BEGIN
   GRANT SELECT,INSERT ON TABLE public.frontend_error_silence_digest_log TO sandbox_exec;
