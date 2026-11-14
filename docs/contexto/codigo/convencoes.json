@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)",
    "fix: simulação da Contabilização Automática deixa de receber 400 (#337)",
    "chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)",
    "fix: religa campos de formulário às colunas criadas em produção (#343)",
-   "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)",
-   "feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)"
+   "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

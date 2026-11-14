@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "76173e7d488055510cc934a0064db2f64cfcb740",
+  "sha": "53a33b6467d74a1f92cd5eca9b447096ecfb225a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-14 00:02 UTC",
+  "generated_at": "2026-11-14 01:25 UTC",
   "files_total": 3870,
   "code_files": 3504,
   "code_lines": 497383
@@ -245336,10 +245336,19 @@
   }
  },
  "git": {
-  "sha": "76173e7d488055510cc934a0064db2f64cfcb740",
+  "sha": "53a33b6467d74a1f92cd5eca9b447096ecfb225a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "53a33b6",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)",
+    "files": [
+     ".github/workflows/schema-drift.yml"
+    ]
+   },
    {
     "sha": "76173e7",
     "date": "2026-11-13",
@@ -245956,15 +245965,6 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "ea47e0c",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)",
-    "files": [
-     "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -245995,6 +245995,10 @@
    [
     "src/App.tsx",
     2
+   ],
+   [
+    ".github/workflows/schema-drift.yml",
+    1
    ],
    [
     "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
@@ -246042,10 +246046,6 @@
    ],
    [
     "src/hooks/useAlertasTributarios.ts",
-    1
-   ],
-   [
-    "src/hooks/useApuracoesTributarias.ts",
     1
    ]
   ]

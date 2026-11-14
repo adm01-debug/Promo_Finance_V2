@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `76173e7d488055510cc934a0064db2f64cfcb740` (2026-11-13T20:37:36-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `53a33b6467d74a1f92cd5eca9b447096ecfb225a` (2026-11-14T00:47:51Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-14 `53a33b6` infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)
 - 2026-11-13 `76173e7` fix: simulação da Contabilização Automática deixa de receber 400 (#337)
 - 2026-11-13 `4870aac` chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)
 - 2026-11-13 `0ce338f` fix: religa campos de formulário às colunas criadas em produção (#343)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `841109a` chore(docs): auditoria prod-readiness (#324)
 - 2026-11-12 `68bac76` fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)
 - 2026-11-12 `821385c` fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)
-- 2026-11-12 `6e462aa` fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
