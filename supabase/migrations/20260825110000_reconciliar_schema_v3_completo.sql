@@ -7035,8 +7035,12 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='ap
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='api_keys_nome_unico_por_empresa' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.api_keys
     ADD CONSTRAINT api_keys_nome_unico_por_empresa UNIQUE (empresa_id, name);'; END IF; END $do_block$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='audit_logs_pkey1' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.audit_logs
-    ADD CONSTRAINT audit_logs_pkey1 PRIMARY KEY (id, created_at);'; END IF; END $do_block$;
+DO $$ BEGIN
+ALTER TABLE ONLY public.audit_logs
+    ADD CONSTRAINT audit_logs_pkey1 PRIMARY KEY (id, created_at);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='auditoria_tributaria_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.auditoria_tributaria
     ADD CONSTRAINT auditoria_tributaria_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL;'; END IF; END $do_block$;
@@ -7092,8 +7096,12 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fa
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='fechamento_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.fechamentos_tributarios
     ADD CONSTRAINT fechamento_unico UNIQUE (empresa_id, ano, mes);'; END IF; END $do_block$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='frontend_error_logs_pkey1' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.frontend_error_logs
-    ADD CONSTRAINT frontend_error_logs_pkey1 PRIMARY KEY (id, created_at);'; END IF; END $do_block$;
+DO $$ BEGIN
+ALTER TABLE ONLY public.frontend_error_logs
+    ADD CONSTRAINT frontend_error_logs_pkey1 PRIMARY KEY (id, created_at);
+EXCEPTION WHEN invalid_table_definition THEN NULL;
+         WHEN duplicate_object THEN NULL;
+END $$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='index_usage_snapshots_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.index_usage_snapshots
     ADD CONSTRAINT index_usage_snapshots_unico UNIQUE (snapshot_date, schema_name, index_name);'; END IF; END $do_block$;
