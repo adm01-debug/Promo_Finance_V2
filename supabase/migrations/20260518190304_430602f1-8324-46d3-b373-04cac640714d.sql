@@ -39,14 +39,28 @@ CREATE TABLE IF NOT EXISTS public.partidas_contabeis (
 );
 
 -- 4. Create bloqueios_duplicidade table
-CREATE TABLE IF NOT EXISTS public.bloqueios_duplicidade (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    empresa_id UUID REFERENCES public.empresas(id),
-    transacao_id UUID,
-    valor_bloqueado NUMERIC(15,2),
-    motivo TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
+CREATE TABLE IF NOT EXISTS public.bloqueios_duplicidade (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    empresa_id UUID REFERENCES public.empresas(id),
+    transacao_id UUID,
+    valor_bloqueado NUMERIC(15,2),
+    motivo TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+-- A tabela pode ja existir (criada em 20260508200043 sem transacao_id);
+-- replicar coluna + FK existentes em producao.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'bloqueios_duplicidade'
+          AND column_name = 'transacao_id'
+    ) THEN
+        ALTER TABLE public.bloqueios_duplicidade
+            ADD COLUMN transacao_id UUID REFERENCES public.transacoes_bancarias(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
 
 -- 5. Update regras_conciliacao
 ALTER TABLE public.regras_conciliacao ADD COLUMN IF NOT EXISTS entidade_nome TEXT;

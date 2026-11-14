@@ -84,6 +84,20 @@ CREATE TABLE IF NOT EXISTS public.asaas_audit_trail (
   action text, actor uuid, details jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+-- asaas_audit_trail pode ja existir (criada em 20260508174109 com payment_id);
+-- replicar coluna asaas_payment_id + FK existentes em producao.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'asaas_audit_trail'
+          AND column_name = 'asaas_payment_id'
+    ) THEN
+        ALTER TABLE public.asaas_audit_trail
+            ADD COLUMN asaas_payment_id uuid REFERENCES public.asaas_payments(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
 
 CREATE TABLE IF NOT EXISTS public.asaas_config (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -115,6 +129,20 @@ CREATE TABLE IF NOT EXISTS public.asaas_sync_queue (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+-- asaas_sync_queue pode ja existir (criada em 20260508174109 com payment_id);
+-- replicar coluna asaas_payment_id + FK existentes em producao.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'asaas_sync_queue'
+          AND column_name = 'asaas_payment_id'
+    ) THEN
+        ALTER TABLE public.asaas_sync_queue
+            ADD COLUMN asaas_payment_id uuid REFERENCES public.asaas_payments(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
 
 -- ============ HISTÓRICO COBRANÇAS BOLETOS ============
 CREATE TABLE IF NOT EXISTS public.historico_cobrancas_boletos (
