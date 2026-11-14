@@ -233,6 +233,20 @@ CREATE TABLE IF NOT EXISTS public.benchmarks_setoriais (
 
 DO $$ BEGIN
 ALTER TABLE ONLY public.benchmarks_setoriais
+    ADD COLUMN IF NOT EXISTS vigencia_inicio date DEFAULT CURRENT_DATE NOT NULL;
+EXCEPTION WHEN duplicate_column THEN NULL;
+         WHEN undefined_table THEN NULL;
+END $$;
+
+DO $$ BEGIN
+ALTER TABLE ONLY public.benchmarks_setoriais
+    ADD COLUMN IF NOT EXISTS vigencia_fim date;
+EXCEPTION WHEN duplicate_column THEN NULL;
+         WHEN undefined_table THEN NULL;
+END $$;
+
+DO $$ BEGIN
+ALTER TABLE ONLY public.benchmarks_setoriais
     ADD CONSTRAINT benchmark_unico UNIQUE (cnae_prefix, regime, vigencia_inicio);
 EXCEPTION WHEN undefined_column THEN NULL;
          WHEN duplicate_object THEN NULL;

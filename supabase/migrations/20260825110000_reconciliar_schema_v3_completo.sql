@@ -7196,7 +7196,7 @@ WITH ranked AS (
   SELECT p.id,
     row_number() OVER (
       PARTITION BY p.empresa_id, p.codigo
-      ORDER BY (SELECT count(*) FROM public.partidas_contabeis pc WHERE pc.conta_contabil_id=p.id) DESC, p.ctid ASC
+      ORDER BY (SELECT count(*) FROM public.partidas_contabeis pc WHERE pc.conta_id=p.id) DESC, p.ctid ASC
     ) AS rn
   FROM public.plano_contas p WHERE p.empresa_id IS NOT NULL
 )
