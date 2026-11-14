@@ -2,6 +2,11 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-14 01:10 UTC
+
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_17`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_10`
+
 ## 2026-11-13 19:01 UTC
 
 - **colunas** adicionado (63): `public.alertas.metadata`, `public.alertas.status`, `public.alertas_tributarios.acao_label`, `public.alertas_tributarios.acao_url`, `public.alertas_tributarios.competencia`, `public.alertas_tributarios.data_lembrete`, `public.alertas_tributarios.entidade_id`, `public.alertas_tributarios.entidade_tipo`, `public.alertas_tributarios.resolvido_em`, `public.alertas_tributarios.resolvido_por`, `public.alertas_tributarios.user_id`, `public.anomalia_toast_eventos.centro_custo_id`, `public.apuracoes_tributarias.created_by`, `public.apuracoes_tributarias.data_transmissao`, `public.apuracoes_tributarias.protocolo_transmissao`, `public.contas_pagar.data_emissao`, `public.contas_pagar.tags`, `public.contas_receber.codigo_barras`, `public.contas_receber.frequencia_recorrencia`, `public.contas_receber.link_boleto`, `public.contas_receber.valor_final`, `public.creditos_tributarios.aliquota`, `public.creditos_tributarios.apuracao_id`, `public.creditos_tributarios.competencia_utilizacao`, `public.creditos_tributarios.documento_chave`, `public.creditos_tributarios.documento_numero`, `public.creditos_tributarios.documento_tipo`, `public.creditos_tributarios.fornecedor_cnpj`, `public.creditos_tributarios.fornecedor_id`, `public.creditos_tributarios.fornecedor_nome`, `public.creditos_tributarios.observacoes`, `public.creditos_tributarios.tipo_credito`, `public.creditos_tributarios.valor_base`, `public.historico_cobranca.etapa_anterior`, `public.historico_cobranca.etapa_nova`, `public.itens_pedido_compra.valor_total`, `public.movimentacoes.categoria_id`, `public.movimentacoes.observacoes`, `public.negativacoes.created_by`, `public.negativacoes.observacoes` … (+23)

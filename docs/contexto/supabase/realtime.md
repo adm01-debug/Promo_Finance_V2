@@ -21,13 +21,13 @@
 | supabase_realtime | public.solicitacoes_aprovacao | default |
 | supabase_realtime | public.transacoes_bancarias | default |
 | supabase_realtime | public.user_anomalia_preferences | default |
-| supabase_realtime_messages_publication | realtime.messages_2026_11_10 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_11 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_12 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_13 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_14 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_15 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_16 |  |
+| supabase_realtime_messages_publication | realtime.messages_2026_11_17 |  |
 
 ## Broadcast / Presence (policies em realtime.messages)
 
