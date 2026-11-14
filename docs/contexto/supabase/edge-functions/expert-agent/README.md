@@ -4,9 +4,9 @@
 |---|---|
 | nome | expert-agent |
 | status | ACTIVE |
-| versão | 17 |
+| versão | 18 |
 | verify_jwt | não |
-| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/expert-agent/index.ts |
+| entrypoint | file:///app/supabase/functions/expert-agent/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/expert-agent |
 | fonte no repo | `supabase/functions/expert-agent/` |

@@ -2,6 +2,12 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-14 14:41 UTC
+
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** alterado (2): `public.fn_balancete(p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_nivel_max integer)`, `public.fn_livro_razao(p_empresa_id uuid, p_conta_id uuid, p_data_inicio date, p_data_fim date)`
+- **migrations** adicionado (1): `20261113181100_balancete_tipo_partida_debito_credito`
+
 ## 2026-11-14 13:10 UTC
 
 - **functions** alterado (2): `public.empresa_membro_ativo(_empresa_id uuid)`, `public.has_role(_user_id uuid, _role app_role)`

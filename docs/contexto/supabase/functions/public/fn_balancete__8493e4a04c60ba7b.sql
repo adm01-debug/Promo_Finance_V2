@@ -8,15 +8,15 @@ AS $function$
     SELECT
       p.conta_id AS c_id,
       SUM(CASE WHEN l.data_lancamento < p_data_inicio
-               THEN CASE WHEN p.tipo = 'D' THEN p.valor ELSE -p.valor END
+               THEN CASE WHEN p.tipo = 'debito' THEN p.valor ELSE -p.valor END
                ELSE 0 END) AS saldo_anterior,
       SUM(CASE WHEN l.data_lancamento >= p_data_inicio
                AND  l.data_lancamento <= p_data_fim
-               AND  p.tipo = 'D'
+               AND  p.tipo = 'debito'
                THEN p.valor ELSE 0 END) AS debitos,
       SUM(CASE WHEN l.data_lancamento >= p_data_inicio
                AND  l.data_lancamento <= p_data_fim
-               AND  p.tipo = 'C'
+               AND  p.tipo = 'credito'
                THEN p.valor ELSE 0 END) AS creditos
     FROM public.partidas_contabeis p
     JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id

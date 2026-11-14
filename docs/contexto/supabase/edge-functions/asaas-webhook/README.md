@@ -4,9 +4,9 @@
 |---|---|
 | nome | asaas-webhook |
 | status | ACTIVE |
-| versão | 19 |
+| versão | 20 |
 | verify_jwt | não |
-| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/asaas-webhook/index.ts |
+| entrypoint | file:///app/supabase/functions/asaas-webhook/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/asaas-webhook |
 | fonte no repo | `supabase/functions/asaas-webhook/` |

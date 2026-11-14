@@ -4,9 +4,9 @@
 |---|---|
 | nome | comparar-benchmark-setorial |
 | status | ACTIVE |
-| versão | 22 |
-| verify_jwt | não |
-| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/comparar-benchmark-setorial/index.ts |
+| versão | 23 |
+| verify_jwt | sim |
+| entrypoint | file:///app/supabase/functions/comparar-benchmark-setorial/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/comparar-benchmark-setorial |
 | fonte no repo | `supabase/functions/comparar-benchmark-setorial/` |

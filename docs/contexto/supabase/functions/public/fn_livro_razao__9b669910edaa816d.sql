@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION public.fn_livro_razao(p_empresa_id uuid, p_conta_id u
  SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
   SELECT l.data_lancamento, l.historico, p.tipo, p.valor,
-    SUM(CASE WHEN p.tipo='DEBITO' THEN p.valor ELSE -p.valor END)
+    SUM(CASE WHEN p.tipo='debito' THEN p.valor ELSE -p.valor END)
       OVER (ORDER BY l.data_lancamento, l.created_at)
   FROM public.partidas_contabeis p
   JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id

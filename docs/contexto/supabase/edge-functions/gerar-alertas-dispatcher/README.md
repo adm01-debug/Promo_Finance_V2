@@ -4,9 +4,9 @@
 |---|---|
 | nome | gerar-alertas-dispatcher |
 | status | ACTIVE |
-| versão | 18 |
+| versão | 19 |
 | verify_jwt | não |
-| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-alertas-dispatcher/index.ts |
+| entrypoint | file:///app/supabase/functions/gerar-alertas-dispatcher/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/gerar-alertas-dispatcher |
 | fonte no repo | `supabase/functions/gerar-alertas-dispatcher/` |

@@ -4,9 +4,9 @@
 |---|---|
 | nome | webhook-retry-worker |
 | status | ACTIVE |
-| versão | 18 |
+| versão | 19 |
 | verify_jwt | não |
-| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/webhook-retry-worker/index.ts |
+| entrypoint | file:///app/supabase/functions/webhook-retry-worker/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/webhook-retry-worker |
 | fonte no repo | `supabase/functions/webhook-retry-worker/` |

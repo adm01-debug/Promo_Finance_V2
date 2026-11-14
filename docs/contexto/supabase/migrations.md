@@ -1018,5 +1018,6 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261113114335 | [ensure_monthly_partitions_ignora_pai_nao_particionado](migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql) | 0 |
 | 20261113114643 | [drop_old_partitions_alinha_repo](migrations/20261113114643_drop_old_partitions_alinha_repo.sql) | 0 |
 | 20261113163037 | [colunas_campos_formulario](migrations/20261113163037_colunas_campos_formulario.sql) | 0 |
+| 20261113181100 | [balancete_tipo_partida_debito_credito](migrations/20261113181100_balancete_tipo_partida_debito_credito.sql) | 2 |
 | 20261113181400 | [contas_pagar_status_constraint_unica](migrations/20261113181400_contas_pagar_status_constraint_unica.sql) | 4 |
 | 20261114083000 | [rls_policies_alerts_risk_rules](migrations/20261114083000_rls_policies_alerts_risk_rules.sql) | 26 |
