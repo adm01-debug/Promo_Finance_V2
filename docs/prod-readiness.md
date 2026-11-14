@@ -842,3 +842,15 @@ Cinco especialistas (banco, jobs/cron, segurança, front, CI/relatório), cada u
 | Por que o `DROP` de `gerar_lancamento_contabil_automatico` não ficou em produção       | não há histórico de DDL; só a divergência (versão no ledger × função existente) está provada                                                                                                       | BLOQUEADO — sem fonte de histórico                                                        |
 | `protestos.created_by` sem JWT; data de lançamento de movimentação noturna (UTC × BRT) | a saída da simulação foi truncada; depende do formato que o front envia em `data_movimentacao`                                                                                                     | BLOQUEADO — próximo passo de teste                                                        |
 | Revisão de comportamento dos 302 arquivos da #328                                      | coberta por métodos automáticos (rotas, lazy imports, hooks, diff de lógica líquida) e leitura completa dos hooks financeiros; JSX dividido sem leitura integral                                   | BLOQUEADO — leitura integral não feita; testes 3028/3028 e smoke cobrem o fluxo principal |
+
+### 9.5 Log anexado do browser (14/11, promo-finance-v2.vercel.app)
+
+Análise do log de console anexado (509 linhas):
+
+| evento no log | diagnose | veredito |
+| --- | --- | --- |
+| violações CSP (report-only) | connect-src/frame-src report-only; não bloqueiam recurso | **benigno** — consultar dashboard CSP |
+| `GET /boletos` → 503 (via sw.js networkFirst, 1x) | `curl` de prod responde 200; 503 foi transitório do fetch no SW | **não reproduzível** — não é bug |
+| `GET /rest/v1/audit_logs?...` → **403 repetido 4x** | **causa raiz**: `GRANT SELECT, INSERT ON audit_logs TO authenticated` (repo: `20260711164339:85`,`20260728172037:46`) **não aplicado em prod** → `permission denied` via PostgREST; RLS/`user_roles` de prod estavam corretos | **CORRIGIDO na #348** (migration reaplica GRANTs) |
+
+Evidências do 403: `information_schema.role_table_grants` retorna 0 linhas para `authenticated` em `audit_logs`/`frontend_error_logs`/`planos_acao`; reprodução com `SET ROLE authenticated` → `ERROR: permission denied for table audit_logs`; usuario-403 (`ti@promobrindes.com.br`, admin) tem linha em `user_roles` e policy `Admins can view audit logs` apontaria para ela.
