@@ -2,7 +2,7 @@
 -- 1) Novas colunas
 ALTER TABLE public.saved_filters
   ADD COLUMN IF NOT EXISTS empresa_id uuid NULL,
-  ADD COLUMN IF NOT EXISTS shared_with_roles public.app_role[] NOT NULL DEFAULT ARRAY[]::public.app_role[],
+  ADD COLUMN IF NOT EXISTS shared_with_roles public.text[] NOT NULL DEFAULT ARRAY[]::public.text[],
   ADD COLUMN IF NOT EXISTS is_shared boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS created_by uuid NULL;
 

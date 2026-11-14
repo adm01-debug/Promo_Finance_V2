@@ -2707,6 +2707,8 @@ BEGIN
 END;
 $$;
 
+DO $OUTER$ BEGIN
+SET check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.is_country_blocked(_country_code text) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -2719,6 +2721,7 @@ CREATE OR REPLACE FUNCTION public.is_country_blocked(_country_code text) RETURNS
           AND (expires_at IS NULL OR expires_at > now())
     )
 $$;
+END $OUTER$;
 
 CREATE OR REPLACE FUNCTION public.is_ip_allowed_for_login(_ip inet) RETURNS boolean
     LANGUAGE plpgsql SECURITY DEFINER
