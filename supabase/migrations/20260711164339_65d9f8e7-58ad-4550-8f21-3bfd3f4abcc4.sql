@@ -93,6 +93,28 @@ CREATE INDEX idx_audit_logs_created_at ON public.audit_logs (created_at DESC);
 CREATE INDEX idx_audit_logs_user_id ON public.audit_logs (user_id, created_at DESC);
 CREATE INDEX idx_audit_logs_table ON public.audit_logs (table_name, created_at DESC);
 
+-- Partições históricas presentes em produção: as policies da 20260825230000 referenciam
+-- audit_logs_2026_01..10. Em prod nasceram quando o particionamento rodou em jul/2026;
+-- um shadow criado em data posterior não as geraria via ensure_monthly_partitions(now()).
+-- Criadas deterministicamente aqui.
+DO $$
+DECLARE
+  m int;
+  v_start date;
+  v_end date;
+  v_name text;
+BEGIN
+  FOR m IN 1..12 LOOP
+    v_start := make_date(2026, m, 1);
+    v_end := (v_start + interval '1 month')::date;
+    v_name := 'audit_logs_' || to_char(v_start, 'YYYY_MM');
+    IF NOT EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+                  WHERE n.nspname='public' AND c.relname=v_name) THEN
+      EXECUTE format('CREATE TABLE public.%I PARTITION OF public.%I FOR VALUES FROM (%L) TO (%L)',
+                     v_name, 'audit_logs', v_start, v_end);
+    END IF;
+  END LOOP;
+END $$;
 -- Criar partições
 SELECT public.ensure_monthly_partitions('audit_logs', 6, 3);
 
@@ -148,6 +170,25 @@ CREATE POLICY "Admins can view frontend errors"
 CREATE INDEX idx_fe_errors_created_at ON public.frontend_error_logs (created_at DESC);
 CREATE INDEX idx_fe_errors_user ON public.frontend_error_logs (user_id, created_at DESC);
 
+-- Partições históricas frontend_error_logs_2026_01..12 (mesma lógica do audit_logs).
+DO $$
+DECLARE
+  m int;
+  v_start date;
+  v_end date;
+  v_name text;
+BEGIN
+  FOR m IN 1..12 LOOP
+    v_start := make_date(2026, m, 1);
+    v_end := (v_start + interval '1 month')::date;
+    v_name := 'frontend_error_logs_' || to_char(v_start, 'YYYY_MM');
+    IF NOT EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+                  WHERE n.nspname='public' AND c.relname=v_name) THEN
+      EXECUTE format('CREATE TABLE public.%I PARTITION OF public.%I FOR VALUES FROM (%L) TO (%L)',
+                     v_name, 'frontend_error_logs', v_start, v_end);
+    END IF;
+  END LOOP;
+END $$;
 SELECT public.ensure_monthly_partitions('frontend_error_logs', 6, 3);
 
 -- Migrar dados legados (tabela estava vazia, mas garantimos idempotência)
