@@ -83,13 +83,17 @@ DO $$ BEGIN
 END $$;
 
 -- 6. Mover extensões de 'public' para 'extensions' -------------------------
+-- Condicional: so move se a extension ainda estiver em 'public' (em prod ja
+-- foi movida na criacao; em shadow/novas replicas o ownership impede ALTER).
 DO $$ BEGIN
-  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
+  IF EXISTS (SELECT 1 FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
+             WHERE e.extname = 'pg_stat_statements' AND n.nspname = 'public') THEN
     EXECUTE 'ALTER EXTENSION pg_stat_statements SET SCHEMA extensions';
   END IF;
 END $$;
 DO $$ BEGIN
-  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+  IF EXISTS (SELECT 1 FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
+             WHERE e.extname = 'pg_trgm' AND n.nspname = 'public') THEN
     EXECUTE 'ALTER EXTENSION pg_trgm SET SCHEMA extensions';
   END IF;
 END $$;

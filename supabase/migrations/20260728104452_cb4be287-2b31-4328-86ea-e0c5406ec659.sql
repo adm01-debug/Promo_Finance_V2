@@ -17,7 +17,6 @@ CREATE INDEX IF NOT EXISTS idx_empresas_certificados_criado_por
 CREATE INDEX IF NOT EXISTS idx_nfe_eventos_created_by
   ON public.nfe_eventos (created_by) WHERE created_by IS NOT NULL;
 
-
 -- FKs de alerts/alert_configurations criadas pelo stub 20260712223141 sem indice;
 -- a assertion abaixo exige cobertura total, entao os indices sao criados aqui
 -- (mesmos nomes usados por 20260728215040, que roda depois).
