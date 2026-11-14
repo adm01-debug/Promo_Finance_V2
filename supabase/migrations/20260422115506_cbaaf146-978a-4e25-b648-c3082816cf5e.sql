@@ -2,7 +2,7 @@
 -- 1) Novas colunas
 ALTER TABLE public.saved_filters
   ADD COLUMN IF NOT EXISTS empresa_id uuid NULL,
-  ADD COLUMN IF NOT EXISTS shared_with_roles public.text[] NOT NULL DEFAULT ARRAY[]::public.text[],
+  ADD COLUMN IF NOT EXISTS shared_with_roles text[] NOT NULL DEFAULT ARRAY[]::text[],
   ADD COLUMN IF NOT EXISTS is_shared boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS created_by uuid NULL;
 
@@ -44,7 +44,7 @@ CREATE POLICY "saved_filters_select"
           AND ue.ativo = true
           AND (
             cardinality(saved_filters.shared_with_roles) = 0
-            OR ue.role = ANY(saved_filters.shared_with_roles)
+            OR ue.role::text = ANY(saved_filters.shared_with_roles)
           )
       )
     )

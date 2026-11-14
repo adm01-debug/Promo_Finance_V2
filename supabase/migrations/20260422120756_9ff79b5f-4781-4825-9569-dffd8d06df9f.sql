@@ -38,7 +38,7 @@ AS $$
               AND ue.ativo = true
               AND (
                 cardinality(sf.shared_with_roles) = 0
-                OR ue.role = ANY(sf.shared_with_roles)
+                OR ue.role::text = ANY(sf.shared_with_roles)
               )
           )
         )
