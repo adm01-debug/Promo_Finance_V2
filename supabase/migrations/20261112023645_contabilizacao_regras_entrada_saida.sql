@@ -2,6 +2,12 @@
 -- (condicoes->>'tipo') e a lógica vira uma função reutilizável, usada pelo
 -- trigger e pela contabilização retroativa.
 
+-- Garantia de coluna: em prod, regras_contabilizacao_automatica tem acoes
+-- (jsonb NOT NULL DEFAULT '{}') além de condicoes, mas nenhuma migration as
+-- diferenciava até aqui. Reproduz o estado real de produção no shadow.
+ALTER TABLE public.regras_contabilizacao_automatica
+  ADD COLUMN IF NOT EXISTS acoes jsonb NOT NULL DEFAULT '{}'::jsonb;
+
 CREATE OR REPLACE FUNCTION public.contabilizar_movimentacao_registro(m public.movimentacoes)
  RETURNS text LANGUAGE plpgsql SECURITY DEFINER
  SET search_path TO 'public', 'extensions', 'pg_temp'

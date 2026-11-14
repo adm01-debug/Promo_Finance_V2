@@ -17,6 +17,26 @@
 -- Garantias: idempotente por movimentação; transferências ignoradas; falha na
 -- contabilização NUNCA bloqueia a gravação da movimentação (vai para o log).
 
+-- 0) Garantia de coluna: em prod, partidas_contabeis tem conta_contabil_id uuid
+-- com FK para plano_contas (ON DELETE RESTRICT), alem de conta_id. Esta garantia
+-- reproduz o estado real de producao no shadow (a coluna nao era criada por
+-- nenhuma migration ate aqui). Idempotente.
+ALTER TABLE public.partidas_contabeis
+  ADD COLUMN IF NOT EXISTS conta_contabil_id uuid;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'public.partidas_contabeis'::regclass
+      AND conname = 'partidas_contabeis_conta_contabil_id_fkey'
+  ) THEN
+    ALTER TABLE public.partidas_contabeis
+      ADD CONSTRAINT partidas_contabeis_conta_contabil_id_fkey
+      FOREIGN KEY (conta_contabil_id) REFERENCES public.plano_contas(id) ON DELETE RESTRICT;
+  END IF;
+END;
+$$;
+
 -- 1) Conta da partida: sincroniza conta_id <-> conta_contabil_id
 CREATE OR REPLACE FUNCTION public.sincronizar_conta_partida()
  RETURNS trigger LANGUAGE plpgsql
@@ -142,4 +162,5 @@ CREATE TRIGGER trg_contabilizar_movimentacao
   FOR EACH ROW EXECUTE FUNCTION public.contabilizar_movimentacao();
 
 -- Trigger antigo: desligado, gravava em colunas inexistentes.
+DROP TRIGGER IF EXISTS trigger_gerar_contabilidade ON public.movimentacoes;
 DROP FUNCTION IF EXISTS public.gerar_lancamento_contabil_automatico();
