@@ -153,6 +153,4 @@ CREATE POLICY "Financeiro+ podem atualizar pagamentos_recorrentes"
 
 COMMIT;
 
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902240000','fix_rls_gaps_pos_pr54')
-ON CONFLICT (version) DO NOTHING;
+

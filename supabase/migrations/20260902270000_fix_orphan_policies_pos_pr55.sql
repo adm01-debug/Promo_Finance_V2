@@ -104,6 +104,4 @@ CREATE POLICY "Usuários deletam suas NFs"
 
 COMMIT;
 
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902270000','fix_orphan_policies_pos_pr55')
-ON CONFLICT (version) DO NOTHING;
+

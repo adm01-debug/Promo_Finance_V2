@@ -34,6 +34,3 @@ SELECT cron.schedule('processar-regua-cobranca-diario','0 9 * * *',
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC, anon;
 
 -- Registro
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825120000','fixes_pos_validacao',ARRAY['fixes_pos_validacao'])
-ON CONFLICT DO NOTHING;

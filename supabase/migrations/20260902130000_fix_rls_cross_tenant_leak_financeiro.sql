@@ -34,6 +34,4 @@ ALTER TABLE public.registro_duplicidade ENABLE ROW LEVEL SECURITY;
 
 COMMIT;
 
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902130000','fix_rls_cross_tenant_leak_financeiro')
-ON CONFLICT (version) DO NOTHING;
+

@@ -7243,6 +7243,3 @@ DO $do_block$ BEGIN
 END $do_block$;
 
 -- Registrar
-INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
-VALUES('20260825110000','reconciliar_schema_v3_completo',ARRAY['reconciliar_schema_v3_completo'])
-ON CONFLICT DO NOTHING;

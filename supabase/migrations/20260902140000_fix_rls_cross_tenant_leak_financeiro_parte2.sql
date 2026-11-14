@@ -36,6 +36,4 @@ DROP POLICY IF EXISTS "Financeiro+ can manage centros_custo" ON public.centros_c
 
 COMMIT;
 
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902140000','fix_rls_cross_tenant_leak_financeiro_parte2')
-ON CONFLICT (version) DO NOTHING;
+

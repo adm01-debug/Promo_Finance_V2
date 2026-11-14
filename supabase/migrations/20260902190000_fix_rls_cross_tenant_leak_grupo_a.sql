@@ -266,6 +266,4 @@ DROP POLICY IF EXISTS "Admin/financeiro/contador podem ler verificacoes" ON publ
 
 COMMIT;
 
-INSERT INTO supabase_migrations.schema_migrations(version,name)
-VALUES('20260902190000','fix_rls_cross_tenant_leak_grupo_a')
-ON CONFLICT (version) DO NOTHING;
+
