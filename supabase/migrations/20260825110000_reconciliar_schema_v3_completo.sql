@@ -6973,8 +6973,14 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='al
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alertas_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alertas
     ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_driver_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+DO $$ BEGIN
+ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
