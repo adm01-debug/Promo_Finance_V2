@@ -46,6 +46,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_negativacoes_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_negativacoes_cliente_id_fk ON public.negativacoes USING btree (cliente_id)` |
+| idx_negativacoes_conta_receber_id_fk | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_negativacoes_conta_receber_id_fk ON public.negativacoes USING btree (conta_receber_id)` |
 | idx_negativacoes_created_by | btree | created_by | não | sim |  | `CREATE INDEX idx_negativacoes_created_by ON public.negativacoes USING btree (created_by)` |
 | idx_negativacoes_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_negativacoes_empresa_id ON public.negativacoes USING btree (empresa_id)` |
 | negativacoes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX negativacoes_pkey ON public.negativacoes USING btree (id)` |

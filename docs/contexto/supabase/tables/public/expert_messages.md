@@ -40,6 +40,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | expert_messages_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX expert_messages_pkey ON public.expert_messages USING btree (id)` |
+| idx_expert_messages_conversation_id_fk | btree | conversation_id | não | sim |  | `CREATE INDEX idx_expert_messages_conversation_id_fk ON public.expert_messages USING btree (conversation_id)` |
 
 
 ## Policies (RLS)

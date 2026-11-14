@@ -37,6 +37,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_itens_pedido_compra_pedido_id_fk | btree | pedido_id | não | sim |  | `CREATE INDEX idx_itens_pedido_compra_pedido_id_fk ON public.itens_pedido_compra USING btree (pedido_id)` |
 | itens_pedido_compra_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX itens_pedido_compra_pkey ON public.itens_pedido_compra USING btree (id)` |
 
 

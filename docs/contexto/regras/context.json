@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f3b6700d14fe6587aecb02bd6d9135de0cdec6ff",
+  "sha": "edeed281a28c42297daaecab4340c5512045e0cc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-14 11:52 UTC",
-  "files_total": 3871,
-  "code_files": 3505,
-  "code_lines": 497400
+  "generated_at": "2026-11-14 13:07 UTC",
+  "files_total": 3872,
+  "code_files": 3506,
+  "code_lines": 497456
  },
  "version": "1.3.2",
- "facts_hash": "5a890b80d6b3f13f",
+ "facts_hash": "16411c3a6657cdf6",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "languages": {
    ".ts": 1220,
    ".tsx": 1088,
-   ".sql": 1085,
+   ".sql": 1086,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -33562,46 +33562,6 @@
     "src": "supabase/migrations/20260722193917_15c30316-cef5-42b6-bcf7-a30813c6fee9.sql"
    },
    {
-    "name": "alert_configurations_tenant_delete",
-    "table": "alert_configurations",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alert_configurations_tenant_insert",
-    "table": "alert_configurations",
-    "cmd": "INSERT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "",
-    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alert_configurations_tenant_select",
-    "table": "alert_configurations",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_membro_ativo(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alert_configurations_tenant_update",
-    "table": "alert_configurations",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "check": "public.empresa_membro_ativo(empresa_id)",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "name": "alertas_owner_insert",
     "table": "alertas",
     "cmd": "INSERT",
@@ -33619,46 +33579,6 @@
     "mode": "permissive",
     "using": "(( SELECT auth.uid() AS uid) = user_id)",
     "check": "((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_delete",
-    "table": "alerts",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_insert",
-    "table": "alerts",
-    "cmd": "INSERT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "",
-    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_select",
-    "table": "alerts",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_membro_ativo(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_update",
-    "table": "alerts",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "check": "public.empresa_membro_ativo(empresa_id)",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
@@ -34169,46 +34089,6 @@
     "mode": "permissive",
     "using": "public.empresa_acessivel(empresa_id)",
     "check": "public.empresa_acessivel(empresa_id)",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_delete",
-    "table": "risk_rules",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_insert",
-    "table": "risk_rules",
-    "cmd": "INSERT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "",
-    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_select",
-    "table": "risk_rules",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_membro_ativo(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_update",
-    "table": "risk_rules",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "check": "public.empresa_membro_ativo(empresa_id)",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
@@ -39440,6 +39320,126 @@
     "using": "EXISTS ( SELECT 1 FROM public.user_empresas ue WHERE ue.user_id = auth.uid() AND ue.ativo AND ue.role IN ('admin', 'financeiro', 'operacional') AND ue.empresa_id = anexos_financeiros.empresa_id )",
     "check": "",
     "src": "supabase/migrations/20261013120000_anexos_rls_metadados_e_orfaos.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_delete",
+    "table": "alert_configurations",
+    "cmd": "DELETE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_insert",
+    "table": "alert_configurations",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_select",
+    "table": "alert_configurations",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.empresa_membro_ativo(empresa_id)",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_update",
+    "table": "alert_configurations",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "check": "public.empresa_membro_ativo(empresa_id)",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_delete",
+    "table": "alerts",
+    "cmd": "DELETE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_insert",
+    "table": "alerts",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_select",
+    "table": "alerts",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.empresa_membro_ativo(empresa_id)",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_update",
+    "table": "alerts",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "check": "public.empresa_membro_ativo(empresa_id)",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_delete",
+    "table": "risk_rules",
+    "cmd": "DELETE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_insert",
+    "table": "risk_rules",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_select",
+    "table": "risk_rules",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.empresa_membro_ativo(empresa_id)",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_update",
+    "table": "risk_rules",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "check": "public.empresa_membro_ativo(empresa_id)",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
    }
   ],
   "triggers": [
@@ -52530,6 +52530,7 @@
    "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
    "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
    "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
+   "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -72812,8 +72813,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1015,
-   "lines": 76563,
+   "files": 1016,
+   "lines": 76619,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -139515,46 +139516,6 @@
     "src": "supabase/migrations/20260722193917_15c30316-cef5-42b6-bcf7-a30813c6fee9.sql"
    },
    {
-    "name": "alert_configurations_tenant_delete",
-    "table": "alert_configurations",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alert_configurations_tenant_insert",
-    "table": "alert_configurations",
-    "cmd": "INSERT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "",
-    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alert_configurations_tenant_select",
-    "table": "alert_configurations",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_membro_ativo(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alert_configurations_tenant_update",
-    "table": "alert_configurations",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "check": "public.empresa_membro_ativo(empresa_id)",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "name": "alertas_owner_insert",
     "table": "alertas",
     "cmd": "INSERT",
@@ -139572,46 +139533,6 @@
     "mode": "permissive",
     "using": "(( SELECT auth.uid() AS uid) = user_id)",
     "check": "((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_delete",
-    "table": "alerts",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_insert",
-    "table": "alerts",
-    "cmd": "INSERT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "",
-    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_select",
-    "table": "alerts",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_membro_ativo(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "alerts_tenant_update",
-    "table": "alerts",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "check": "public.empresa_membro_ativo(empresa_id)",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
@@ -140122,46 +140043,6 @@
     "mode": "permissive",
     "using": "public.empresa_acessivel(empresa_id)",
     "check": "public.empresa_acessivel(empresa_id)",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_delete",
-    "table": "risk_rules",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_insert",
-    "table": "risk_rules",
-    "cmd": "INSERT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "",
-    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_select",
-    "table": "risk_rules",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_membro_ativo(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "risk_rules_tenant_update",
-    "table": "risk_rules",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
-    "check": "public.empresa_membro_ativo(empresa_id)",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
@@ -145393,6 +145274,126 @@
     "using": "EXISTS ( SELECT 1 FROM public.user_empresas ue WHERE ue.user_id = auth.uid() AND ue.ativo AND ue.role IN ('admin', 'financeiro', 'operacional') AND ue.empresa_id = anexos_financeiros.empresa_id )",
     "check": "",
     "src": "supabase/migrations/20261013120000_anexos_rls_metadados_e_orfaos.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_delete",
+    "table": "alert_configurations",
+    "cmd": "DELETE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_insert",
+    "table": "alert_configurations",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_select",
+    "table": "alert_configurations",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.empresa_membro_ativo(empresa_id)",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alert_configurations_tenant_update",
+    "table": "alert_configurations",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "check": "public.empresa_membro_ativo(empresa_id)",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_delete",
+    "table": "alerts",
+    "cmd": "DELETE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_insert",
+    "table": "alerts",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_select",
+    "table": "alerts",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.empresa_membro_ativo(empresa_id)",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "alerts_tenant_update",
+    "table": "alerts",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "check": "public.empresa_membro_ativo(empresa_id)",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_delete",
+    "table": "risk_rules",
+    "cmd": "DELETE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_insert",
+    "table": "risk_rules",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_select",
+    "table": "risk_rules",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.empresa_membro_ativo(empresa_id)",
+    "check": "",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "risk_rules_tenant_update",
+    "table": "risk_rules",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
+    "check": "public.empresa_membro_ativo(empresa_id)",
+    "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
    }
   ],
   "db_triggers": [
@@ -245226,6 +245227,10 @@
    "path": "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
    "lines": 17
   },
+  "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql": {
+   "path": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
+   "lines": 56
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245334,10 +245339,19 @@
   }
  },
  "git": {
-  "sha": "f3b6700d14fe6587aecb02bd6d9135de0cdec6ff",
+  "sha": "edeed281a28c42297daaecab4340c5512045e0cc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "edeed28",
+    "date": "2026-11-14",
+    "author": "adm01-debug",
+    "subject": "fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#346)",
+    "files": [
+     "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+    ]
+   },
    {
     "sha": "f3b6700",
     "date": "2026-11-14",
@@ -245952,16 +245966,6 @@
     "files": [
      ".github/workflows/codeql.yml"
     ]
-   },
-   {
-    "sha": "cc0b762",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)",
-    "files": [
-     "supabase/functions/sefaz-dfe-dispatcher/index.ts",
-     "supabase/functions/sefaz-dfe-puxar/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -245992,6 +245996,10 @@
    [
     "src/App.tsx",
     2
+   ],
+   [
+    "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
+    1
    ],
    [
     "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
@@ -246039,10 +246047,6 @@
    ],
    [
     "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
-    1
-   ],
-   [
-    "src/hooks/expert-actions/financial-actions.ts",
     1
    ]
   ]

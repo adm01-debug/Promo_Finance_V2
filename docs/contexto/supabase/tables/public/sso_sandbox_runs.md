@@ -49,6 +49,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sso_sandbox_runs_provider_id_fk | btree | provider_id | não | sim |  | `CREATE INDEX idx_sso_sandbox_runs_provider_id_fk ON public.sso_sandbox_runs USING btree (provider_id)` |
 | sso_sandbox_runs_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sso_sandbox_runs_pkey ON public.sso_sandbox_runs USING btree (id)` |
 
 

@@ -38,6 +38,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_portal_cliente_acessos_token_id_fk | btree | token_id | não | sim |  | `CREATE INDEX idx_portal_cliente_acessos_token_id_fk ON public.portal_cliente_acessos USING btree (token_id)` |
 | portal_cliente_acessos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX portal_cliente_acessos_pkey ON public.portal_cliente_acessos USING btree (id)` |
 
 

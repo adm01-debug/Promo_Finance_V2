@@ -65,6 +65,7 @@
 |---|---|---|---|---|---|---|
 | asaas_payments_asaas_id_key | btree | asaas_id | sim | sim |  | `CREATE UNIQUE INDEX asaas_payments_asaas_id_key ON public.asaas_payments USING btree (asaas_id)` |
 | asaas_payments_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_payments_pkey ON public.asaas_payments USING btree (id)` |
+| idx_asaas_payments_asaas_customer_id_fk | btree | asaas_customer_id | não | sim |  | `CREATE INDEX idx_asaas_payments_asaas_customer_id_fk ON public.asaas_payments USING btree (asaas_customer_id)` |
 
 
 ## Policies (RLS)

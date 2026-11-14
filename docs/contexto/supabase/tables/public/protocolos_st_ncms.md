@@ -44,6 +44,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_protocolos_st_ncms_ncm_id_fk | btree | ncm_id | não | sim |  | `CREATE INDEX idx_protocolos_st_ncms_ncm_id_fk ON public.protocolos_st_ncms USING btree (ncm_id)` |
+| idx_protocolos_st_ncms_protocolo_id_fk | btree | protocolo_id | não | sim |  | `CREATE INDEX idx_protocolos_st_ncms_protocolo_id_fk ON public.protocolos_st_ncms USING btree (protocolo_id)` |
 | idx_pst_ncms_codigo | btree | ncm_codigo | não | sim |  | `CREATE INDEX idx_pst_ncms_codigo ON public.protocolos_st_ncms USING btree (ncm_codigo)` |
 | protocolos_st_ncms_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX protocolos_st_ncms_pkey ON public.protocolos_st_ncms USING btree (id)` |
 

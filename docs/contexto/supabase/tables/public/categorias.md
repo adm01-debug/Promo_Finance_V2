@@ -54,6 +54,7 @@
 | categorias_empresa_tipo_nome_uq | btree | empresa_id, tipo | sim | sim |  | `CREATE UNIQUE INDEX categorias_empresa_tipo_nome_uq ON public.categorias USING btree (empresa_id, tipo, lower(btrim(nome)))` |
 | categorias_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX categorias_pkey ON public.categorias USING btree (id)` |
 | idx_categorias_empresa | btree | empresa_id | não | sim |  | `CREATE INDEX idx_categorias_empresa ON public.categorias USING btree (empresa_id)` |
+| idx_categorias_plano_conta_id_fk | btree | plano_conta_id | não | sim |  | `CREATE INDEX idx_categorias_plano_conta_id_fk ON public.categorias USING btree (plano_conta_id)` |
 
 
 ## Policies (RLS)

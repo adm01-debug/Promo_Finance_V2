@@ -52,6 +52,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | darfs_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX darfs_pkey ON public.darfs USING btree (id)` |
+| idx_darfs_alerta_id_fk | btree | alerta_id | não | sim |  | `CREATE INDEX idx_darfs_alerta_id_fk ON public.darfs USING btree (alerta_id)` |
 | idx_darfs_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_darfs_empresa_id ON public.darfs USING btree (empresa_id)` |
 
 

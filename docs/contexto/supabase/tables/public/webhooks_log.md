@@ -48,6 +48,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_webhooks_log_dlq_id | btree | dlq_id | não | sim | `(dlq_id IS NOT NULL)` | `CREATE INDEX idx_webhooks_log_dlq_id ON public.webhooks_log USING btree (dlq_id) WHERE (dlq_id IS NOT NULL)` |
+| idx_webhooks_log_dlq_id_fk | btree | dlq_id | não | sim |  | `CREATE INDEX idx_webhooks_log_dlq_id_fk ON public.webhooks_log USING btree (dlq_id)` |
 | ux_webhooks_log_source_external | btree | source, external_id | sim | sim | `(external_id IS NOT NULL)` | `CREATE UNIQUE INDEX ux_webhooks_log_source_external ON public.webhooks_log USING btree (source, external_id) WHERE (external_id IS NOT NULL)` |
 | webhooks_log_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX webhooks_log_pkey ON public.webhooks_log USING btree (id)` |
 

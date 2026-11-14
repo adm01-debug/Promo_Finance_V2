@@ -49,6 +49,7 @@
 | aliq_iss_mun_unq | btree | codigo_ibge, item_lista_id, vigente_de | sim | sim |  | `CREATE UNIQUE INDEX aliq_iss_mun_unq ON public.aliquotas_iss_municipal USING btree (codigo_ibge, item_lista_id, vigente_de)` |
 | aliquotas_iss_municipal_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX aliquotas_iss_municipal_pkey ON public.aliquotas_iss_municipal USING btree (id)` |
 | idx_aliq_iss_ibge | btree | codigo_ibge | não | sim |  | `CREATE INDEX idx_aliq_iss_ibge ON public.aliquotas_iss_municipal USING btree (codigo_ibge)` |
+| idx_aliquotas_iss_municipal_item_lista_id_fk | btree | item_lista_id | não | sim |  | `CREATE INDEX idx_aliquotas_iss_municipal_item_lista_id_fk ON public.aliquotas_iss_municipal USING btree (item_lista_id)` |
 
 
 ## Policies (RLS)

@@ -46,6 +46,8 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | asaas_reconciliation_suggestions_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_reconciliation_suggestions_pkey ON public.asaas_reconciliation_suggestions USING btree (id)` |
+| idx_asaas_reconciliation_suggestions_contas_pagar_id_fk | btree | contas_pagar_id | não | sim |  | `CREATE INDEX idx_asaas_reconciliation_suggestions_contas_pagar_id_fk ON public.asaas_reconciliation_suggestions USING btree (contas_pagar_id)` |
+| idx_asaas_reconciliation_suggestions_contas_receber_id_fk | btree | contas_receber_id | não | sim |  | `CREATE INDEX idx_asaas_reconciliation_suggestions_contas_receber_id_fk ON public.asaas_reconciliation_suggestions USING btree (contas_receber_id)` |
 
 
 ## Policies (RLS)

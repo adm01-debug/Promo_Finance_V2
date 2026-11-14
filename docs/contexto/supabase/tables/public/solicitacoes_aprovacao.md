@@ -46,6 +46,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_solicitacoes_aprovacao_aprovado_por_fk | btree | aprovado_por | não | sim |  | `CREATE INDEX idx_solicitacoes_aprovacao_aprovado_por_fk ON public.solicitacoes_aprovacao USING btree (aprovado_por)` |
+| idx_solicitacoes_aprovacao_conta_pagar_id_fk | btree | conta_pagar_id | não | sim |  | `CREATE INDEX idx_solicitacoes_aprovacao_conta_pagar_id_fk ON public.solicitacoes_aprovacao USING btree (conta_pagar_id)` |
 | idx_solicitacoes_aprovacao_solicitado_por_fk | btree | solicitado_por | não | sim |  | `CREATE INDEX idx_solicitacoes_aprovacao_solicitado_por_fk ON public.solicitacoes_aprovacao USING btree (solicitado_por)` |
 | solicitacoes_aprovacao_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX solicitacoes_aprovacao_pkey ON public.solicitacoes_aprovacao USING btree (id)` |
 

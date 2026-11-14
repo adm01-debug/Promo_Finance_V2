@@ -40,6 +40,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_webhook_simulation_results_run_id_fk | btree | run_id | não | sim |  | `CREATE INDEX idx_webhook_simulation_results_run_id_fk ON public.webhook_simulation_results USING btree (run_id)` |
 | webhook_simulation_results_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX webhook_simulation_results_pkey ON public.webhook_simulation_results USING btree (id)` |
 
 

@@ -46,6 +46,7 @@
 |---|---|---|---|---|---|---|
 | eventos_contabilizacao_log_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX eventos_contabilizacao_log_pkey ON public.eventos_contabilizacao_log USING btree (id)` |
 | idx_eventos_contabilizacao_log_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_eventos_contabilizacao_log_empresa_id ON public.eventos_contabilizacao_log USING btree (empresa_id)` |
+| idx_eventos_contabilizacao_log_regra_id_fk | btree | regra_id | não | sim |  | `CREATE INDEX idx_eventos_contabilizacao_log_regra_id_fk ON public.eventos_contabilizacao_log USING btree (regra_id)` |
 | uq_eventos_contab_sucesso | btree | tipo_evento, evento_id | sim | sim | `(status = 'sucesso'::text)` | `CREATE UNIQUE INDEX uq_eventos_contab_sucesso ON public.eventos_contabilizacao_log USING btree (tipo_evento, evento_id) WHERE (status = 'sucesso'::text)` |
 
 

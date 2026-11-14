@@ -57,6 +57,8 @@
 |---|---|---|---|---|---|---|
 | elisao_creditos_auditoria_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX elisao_creditos_auditoria_pkey ON public.elisao_creditos_auditoria USING btree (id)` |
 | idx_elisao_creditos_auditoria_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_elisao_creditos_auditoria_empresa_id ON public.elisao_creditos_auditoria USING btree (empresa_id)` |
+| idx_elisao_creditos_auditoria_nota_fiscal_id_fk | btree | nota_fiscal_id | não | sim |  | `CREATE INDEX idx_elisao_creditos_auditoria_nota_fiscal_id_fk ON public.elisao_creditos_auditoria USING btree (nota_fiscal_id)` |
+| idx_elisao_creditos_auditoria_regra_id_fk | btree | regra_id | não | sim |  | `CREATE INDEX idx_elisao_creditos_auditoria_regra_id_fk ON public.elisao_creditos_auditoria USING btree (regra_id)` |
 
 
 ## Policies (RLS)

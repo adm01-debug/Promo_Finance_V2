@@ -44,6 +44,7 @@
 |---|---|---|---|---|---|---|
 | asaas_payment_links_asaas_link_id_key | btree | asaas_link_id | sim | sim |  | `CREATE UNIQUE INDEX asaas_payment_links_asaas_link_id_key ON public.asaas_payment_links USING btree (asaas_link_id)` |
 | asaas_payment_links_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_payment_links_pkey ON public.asaas_payment_links USING btree (id)` |
+| idx_asaas_payment_links_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_asaas_payment_links_created_by_fk ON public.asaas_payment_links USING btree (created_by)` |
 | idx_asaas_payment_links_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_asaas_payment_links_empresa_id ON public.asaas_payment_links USING btree (empresa_id)` |
 
 

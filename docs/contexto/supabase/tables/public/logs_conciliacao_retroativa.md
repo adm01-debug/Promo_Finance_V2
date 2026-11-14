@@ -44,6 +44,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_logs_conciliacao_retroativa_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_logs_conciliacao_retroativa_conta_bancaria_id_fk ON public.logs_conciliacao_retroativa USING btree (conta_bancaria_id)` |
 | idx_logs_conciliacao_retroativa_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_logs_conciliacao_retroativa_empresa_id ON public.logs_conciliacao_retroativa USING btree (empresa_id)` |
 | logs_conciliacao_retroativa_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX logs_conciliacao_retroativa_pkey ON public.logs_conciliacao_retroativa USING btree (id)` |
 

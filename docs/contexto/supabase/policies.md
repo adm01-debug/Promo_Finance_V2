@@ -628,4 +628,8 @@ Visão consolidada (inclui `storage.objects` e `realtime.messages`); detalhes po
 | storage.objects | comprovantes_insert_auth | INSERT | PERMISSIVE | authenticated |  | `(bucket_id = 'comprovantes-financeiro'::text)` |
 | storage.objects | comprovantes_select_auth | SELECT | PERMISSIVE | authenticated | `(bucket_id = 'comprovantes-financeiro'::text)` |  |
 | storage.objects | comprovantes_update_auth | UPDATE | PERMISSIVE | authenticated | `(bucket_id = 'comprovantes-financeiro'::text)` | `(bucket_id = 'comprovantes-financeiro'::text)` |
+| storage.objects | nfe_cert_service_all | ALL | PERMISSIVE | service_role | `(bucket_id = 'nfe-certificados'::text)` | `(bucket_id = 'nfe-certificados'::text)` |
 | storage.objects | nfe_xml_empresa_read | SELECT | PERMISSIVE | authenticated | `((bucket_id = 'nfe-xml'::text) AND (EXISTS ( SELECT 1    FROM user_empresas ue   WHERE ((ue.user_id = auth.uid()) AND (ue.ativo = true) AND ((ue.empresa_id)::text = split_part(objects.name, '/'::text, 1))))))` |  |
+| storage.objects | nfe_xml_service_delete | DELETE | PERMISSIVE | service_role | `(bucket_id = 'nfe-xml'::text)` |  |
+| storage.objects | nfe_xml_service_update | UPDATE | PERMISSIVE | service_role | `(bucket_id = 'nfe-xml'::text)` |  |
+| storage.objects | nfe_xml_service_write | INSERT | PERMISSIVE | service_role |  | `(bucket_id = 'nfe-xml'::text)` |

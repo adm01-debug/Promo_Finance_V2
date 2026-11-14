@@ -46,6 +46,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_saved_filters_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_saved_filters_created_by_fk ON public.saved_filters USING btree (created_by)` |
 | idx_saved_filters_empresa | btree | empresa_id | não | sim |  | `CREATE INDEX idx_saved_filters_empresa ON public.saved_filters USING btree (empresa_id)` |
 | idx_saved_filters_user_entity | btree | user_id, entity_type | não | sim |  | `CREATE INDEX idx_saved_filters_user_entity ON public.saved_filters USING btree (user_id, entity_type)` |
 | saved_filters_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX saved_filters_pkey ON public.saved_filters USING btree (id)` |

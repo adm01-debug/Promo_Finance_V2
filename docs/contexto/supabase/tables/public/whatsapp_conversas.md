@@ -42,6 +42,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_whatsapp_conversas_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_whatsapp_conversas_cliente_id_fk ON public.whatsapp_conversas USING btree (cliente_id)` |
 | idx_whatsapp_conversas_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_whatsapp_conversas_empresa_id ON public.whatsapp_conversas USING btree (empresa_id)` |
 | whatsapp_conversas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX whatsapp_conversas_pkey ON public.whatsapp_conversas USING btree (id)` |
 

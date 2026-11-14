@@ -42,6 +42,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | alerts_sent_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX alerts_sent_pkey ON public.alerts_sent USING btree (id)` |
+| idx_alerts_sent_alert_id_fk | btree | alert_id | não | sim |  | `CREATE INDEX idx_alerts_sent_alert_id_fk ON public.alerts_sent USING btree (alert_id)` |
 
 
 ## Policies (RLS)

@@ -65,6 +65,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | acordos_parcelamento_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX acordos_parcelamento_pkey ON public.acordos_parcelamento USING btree (id)` |
+| idx_acordos_parcelamento_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_acordos_parcelamento_cliente_id_fk ON public.acordos_parcelamento USING btree (cliente_id)` |
 | idx_acordos_parcelamento_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_acordos_parcelamento_created_by_fk ON public.acordos_parcelamento USING btree (created_by)` |
 | idx_acordos_parcelamento_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_acordos_parcelamento_empresa_id ON public.acordos_parcelamento USING btree (empresa_id)` |
 

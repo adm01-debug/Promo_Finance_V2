@@ -56,6 +56,7 @@
 |---|---|---|---|---|---|---|
 | fechamentos_tributarios_empresa_id_ano_mes_key | btree | empresa_id, ano, mes | sim | sim |  | `CREATE UNIQUE INDEX fechamentos_tributarios_empresa_id_ano_mes_key ON public.fechamentos_tributarios USING btree (empresa_id, ano, mes)` |
 | fechamentos_tributarios_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX fechamentos_tributarios_pkey ON public.fechamentos_tributarios USING btree (id)` |
+| idx_fechamentos_tributarios_fechado_por_fk | btree | fechado_por | não | sim |  | `CREATE INDEX idx_fechamentos_tributarios_fechado_por_fk ON public.fechamentos_tributarios USING btree (fechado_por)` |
 
 
 ## Policies (RLS)

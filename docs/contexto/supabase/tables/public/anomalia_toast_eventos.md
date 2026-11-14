@@ -45,6 +45,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | anomalia_toast_eventos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX anomalia_toast_eventos_pkey ON public.anomalia_toast_eventos USING btree (id)` |
+| idx_anomalia_toast_eventos_anomalia_id_fk | btree | anomalia_id | não | sim |  | `CREATE INDEX idx_anomalia_toast_eventos_anomalia_id_fk ON public.anomalia_toast_eventos USING btree (anomalia_id)` |
 | idx_anomalia_toast_eventos_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_anomalia_toast_eventos_centro_custo_id ON public.anomalia_toast_eventos USING btree (centro_custo_id)` |
 | idx_anomalia_toast_eventos_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_anomalia_toast_eventos_user_id_fk ON public.anomalia_toast_eventos USING btree (user_id)` |
 

@@ -48,6 +48,8 @@
 |---|---|---|---|---|---|---|
 | empresas_certificados_empresa_id_cnpj_ambiente_key | btree | empresa_id, cnpj, ambiente | sim | sim |  | `CREATE UNIQUE INDEX empresas_certificados_empresa_id_cnpj_ambiente_key ON public.empresas_certificados USING btree (empresa_id, cnpj, ambiente)` |
 | empresas_certificados_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX empresas_certificados_pkey ON public.empresas_certificados USING btree (id)` |
+| idx_empresas_certificados_criado_por | btree | criado_por | não | sim | `(criado_por IS NOT NULL)` | `CREATE INDEX idx_empresas_certificados_criado_por ON public.empresas_certificados USING btree (criado_por) WHERE (criado_por IS NOT NULL)` |
+| idx_empresas_certificados_criado_por_fk | btree | criado_por | não | sim |  | `CREATE INDEX idx_empresas_certificados_criado_por_fk ON public.empresas_certificados USING btree (criado_por)` |
 
 
 ## Policies (RLS)

@@ -40,6 +40,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | asaas_credit_risk_analysis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_credit_risk_analysis_pkey ON public.asaas_credit_risk_analysis USING btree (id)` |
+| idx_asaas_credit_risk_analysis_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_asaas_credit_risk_analysis_cliente_id_fk ON public.asaas_credit_risk_analysis USING btree (cliente_id)` |
 
 
 ## Policies (RLS)

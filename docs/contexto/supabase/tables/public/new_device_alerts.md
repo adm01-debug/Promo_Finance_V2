@@ -38,6 +38,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_new_device_alerts_device_id_fk | btree | device_id | não | sim |  | `CREATE INDEX idx_new_device_alerts_device_id_fk ON public.new_device_alerts USING btree (device_id)` |
 | new_device_alerts_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX new_device_alerts_pkey ON public.new_device_alerts USING btree (id)` |
 
 

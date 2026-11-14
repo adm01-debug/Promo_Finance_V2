@@ -50,6 +50,7 @@
 | entregas_obrigacoes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX entregas_obrigacoes_pkey ON public.entregas_obrigacoes USING btree (id)` |
 | entregas_obrigacoes_unica | btree | empresa_id, obrigacao_id, competencia | sim | sim |  | `CREATE UNIQUE INDEX entregas_obrigacoes_unica ON public.entregas_obrigacoes USING btree (empresa_id, obrigacao_id, competencia)` |
 | idx_entregas_obrigacoes_competencia | btree | competencia | não | sim |  | `CREATE INDEX idx_entregas_obrigacoes_competencia ON public.entregas_obrigacoes USING btree (competencia)` |
+| idx_entregas_obrigacoes_registrado_por_fk | btree | registrado_por | não | sim |  | `CREATE INDEX idx_entregas_obrigacoes_registrado_por_fk ON public.entregas_obrigacoes USING btree (registrado_por)` |
 
 
 ## Policies (RLS)

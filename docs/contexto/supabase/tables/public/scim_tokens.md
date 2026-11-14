@@ -47,6 +47,7 @@
 |---|---|---|---|---|---|---|
 | idx_scim_tokens_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_scim_tokens_created_by_fk ON public.scim_tokens USING btree (created_by)` |
 | idx_scim_tokens_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_scim_tokens_empresa_id ON public.scim_tokens USING btree (empresa_id)` |
+| idx_scim_tokens_provider_id_fk | btree | provider_id | não | sim |  | `CREATE INDEX idx_scim_tokens_provider_id_fk ON public.scim_tokens USING btree (provider_id)` |
 | scim_tokens_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX scim_tokens_pkey ON public.scim_tokens USING btree (id)` |
 | scim_tokens_token_hash_key | btree | token_hash | sim | sim |  | `CREATE UNIQUE INDEX scim_tokens_token_hash_key ON public.scim_tokens USING btree (token_hash)` |
 

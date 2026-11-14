@@ -42,6 +42,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_n8n_dispatch_logs_config_id | btree | config_id | não | sim | `(config_id IS NOT NULL)` | `CREATE INDEX idx_n8n_dispatch_logs_config_id ON public.n8n_dispatch_logs USING btree (config_id) WHERE (config_id IS NOT NULL)` |
+| idx_n8n_dispatch_logs_config_id_fk | btree | config_id | não | sim |  | `CREATE INDEX idx_n8n_dispatch_logs_config_id_fk ON public.n8n_dispatch_logs USING btree (config_id)` |
 | n8n_dispatch_logs_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX n8n_dispatch_logs_pkey ON public.n8n_dispatch_logs USING btree (id)` |
 
 

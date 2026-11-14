@@ -60,6 +60,7 @@
 | idx_creditos_tributarios_apuracao_id | btree | apuracao_id | não | sim |  | `CREATE INDEX idx_creditos_tributarios_apuracao_id ON public.creditos_tributarios USING btree (apuracao_id)` |
 | idx_creditos_tributarios_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_creditos_tributarios_empresa_id ON public.creditos_tributarios USING btree (empresa_id)` |
 | idx_creditos_tributarios_fornecedor_id | btree | fornecedor_id | não | sim |  | `CREATE INDEX idx_creditos_tributarios_fornecedor_id ON public.creditos_tributarios USING btree (fornecedor_id)` |
+| idx_creditos_tributarios_nota_fiscal_id_fk | btree | nota_fiscal_id | não | sim |  | `CREATE INDEX idx_creditos_tributarios_nota_fiscal_id_fk ON public.creditos_tributarios USING btree (nota_fiscal_id)` |
 
 
 ## Policies (RLS)

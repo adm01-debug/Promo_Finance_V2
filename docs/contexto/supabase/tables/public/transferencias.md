@@ -51,6 +51,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_transferencias_conta_destino_id_fk | btree | conta_destino_id | não | sim |  | `CREATE INDEX idx_transferencias_conta_destino_id_fk ON public.transferencias USING btree (conta_destino_id)` |
+| idx_transferencias_conta_origem_id_fk | btree | conta_origem_id | não | sim |  | `CREATE INDEX idx_transferencias_conta_origem_id_fk ON public.transferencias USING btree (conta_origem_id)` |
 | idx_transferencias_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_transferencias_empresa_id ON public.transferencias USING btree (empresa_id)` |
 | idx_transferencias_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_transferencias_user_id_fk ON public.transferencias USING btree (user_id)` |
 | transferencias_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX transferencias_pkey ON public.transferencias USING btree (id)` |

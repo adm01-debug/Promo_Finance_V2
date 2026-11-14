@@ -62,6 +62,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_oportunidades_elisao_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_oportunidades_elisao_empresa_id ON public.oportunidades_elisao USING btree (empresa_id)` |
+| idx_oportunidades_elisao_estrategia_id_fk | btree | estrategia_id | não | sim |  | `CREATE INDEX idx_oportunidades_elisao_estrategia_id_fk ON public.oportunidades_elisao USING btree (estrategia_id)` |
 | oportunidades_elisao_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX oportunidades_elisao_pkey ON public.oportunidades_elisao USING btree (id)` |
 
 

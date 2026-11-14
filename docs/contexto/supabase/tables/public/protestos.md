@@ -49,6 +49,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_protestos_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_protestos_cliente_id_fk ON public.protestos USING btree (cliente_id)` |
+| idx_protestos_conta_receber_id_fk | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_protestos_conta_receber_id_fk ON public.protestos USING btree (conta_receber_id)` |
 | idx_protestos_created_by | btree | created_by | não | sim |  | `CREATE INDEX idx_protestos_created_by ON public.protestos USING btree (created_by)` |
 | idx_protestos_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_protestos_empresa_id ON public.protestos USING btree (empresa_id)` |
 | protestos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX protestos_pkey ON public.protestos USING btree (id)` |

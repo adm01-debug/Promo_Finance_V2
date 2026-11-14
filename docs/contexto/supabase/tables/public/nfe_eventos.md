@@ -44,6 +44,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_nfe_eventos_created_by | btree | created_by | não | sim | `(created_by IS NOT NULL)` | `CREATE INDEX idx_nfe_eventos_created_by ON public.nfe_eventos USING btree (created_by) WHERE (created_by IS NOT NULL)` |
+| idx_nfe_eventos_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_nfe_eventos_created_by_fk ON public.nfe_eventos USING btree (created_by)` |
 | nfe_eventos_chave_tipo_seq_uk | btree | chave_acesso, tipo_evento, sequencial | sim | sim |  | `CREATE UNIQUE INDEX nfe_eventos_chave_tipo_seq_uk ON public.nfe_eventos USING btree (chave_acesso, tipo_evento, sequencial)` |
 | nfe_eventos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX nfe_eventos_pkey ON public.nfe_eventos USING btree (id)` |
 

@@ -58,6 +58,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | centros_custo_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX centros_custo_pkey ON public.centros_custo USING btree (id)` |
+| idx_centros_custo_parent_id_fk | btree | parent_id | não | sim |  | `CREATE INDEX idx_centros_custo_parent_id_fk ON public.centros_custo USING btree (parent_id)` |
 | idx_centros_custo_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_centros_custo_user_id_fk ON public.centros_custo USING btree (user_id)` |
 
 

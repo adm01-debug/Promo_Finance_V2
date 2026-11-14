@@ -39,6 +39,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_parcelas_acordo_acordo_id_fk | btree | acordo_id | não | sim |  | `CREATE INDEX idx_parcelas_acordo_acordo_id_fk ON public.parcelas_acordo USING btree (acordo_id)` |
 | parcelas_acordo_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX parcelas_acordo_pkey ON public.parcelas_acordo USING btree (id)` |
 
 

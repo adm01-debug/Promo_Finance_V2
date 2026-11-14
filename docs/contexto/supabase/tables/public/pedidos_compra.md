@@ -52,6 +52,7 @@
 |---|---|---|---|---|---|---|
 | idx_pedidos_compra_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_pedidos_compra_centro_custo_id ON public.pedidos_compra USING btree (centro_custo_id)` |
 | idx_pedidos_compra_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_pedidos_compra_empresa_id ON public.pedidos_compra USING btree (empresa_id)` |
+| idx_pedidos_compra_fornecedor_id_fk | btree | fornecedor_id | não | sim |  | `CREATE INDEX idx_pedidos_compra_fornecedor_id_fk ON public.pedidos_compra USING btree (fornecedor_id)` |
 | idx_pedidos_compra_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_pedidos_compra_user_id ON public.pedidos_compra USING btree (user_id)` |
 | pedidos_compra_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX pedidos_compra_pkey ON public.pedidos_compra USING btree (id)` |
 

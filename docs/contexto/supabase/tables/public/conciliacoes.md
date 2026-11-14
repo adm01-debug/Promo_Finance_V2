@@ -40,6 +40,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | conciliacoes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX conciliacoes_pkey ON public.conciliacoes USING btree (id)` |
+| idx_conciliacoes_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_conciliacoes_conta_bancaria_id_fk ON public.conciliacoes USING btree (conta_bancaria_id)` |
 
 
 ## Policies (RLS)

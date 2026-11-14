@@ -44,6 +44,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_partidas_contabeis_conta_contabil_id_fk | btree | conta_contabil_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_conta_contabil_id_fk ON public.partidas_contabeis USING btree (conta_contabil_id)` |
 | idx_partidas_contabeis_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_empresa_id ON public.partidas_contabeis USING btree (empresa_id)` |
 | idx_partidas_contabeis_lancamento_id | btree | lancamento_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_lancamento_id ON public.partidas_contabeis USING btree (lancamento_id)` |
 | partidas_contabeis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX partidas_contabeis_pkey ON public.partidas_contabeis USING btree (id)` |

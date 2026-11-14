@@ -43,6 +43,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | fluxos_aprovacao_niveis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX fluxos_aprovacao_niveis_pkey ON public.fluxos_aprovacao_niveis USING btree (id)` |
+| idx_fluxos_aprovacao_niveis_configuracao_id_fk | btree | configuracao_id | não | sim |  | `CREATE INDEX idx_fluxos_aprovacao_niveis_configuracao_id_fk ON public.fluxos_aprovacao_niveis USING btree (configuracao_id)` |
 | idx_fluxos_aprovacao_niveis_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_fluxos_aprovacao_niveis_empresa_id ON public.fluxos_aprovacao_niveis USING btree (empresa_id)` |
 
 

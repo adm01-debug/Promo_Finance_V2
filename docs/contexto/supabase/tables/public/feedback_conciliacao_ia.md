@@ -48,6 +48,7 @@
 |---|---|---|---|---|---|---|
 | feedback_conciliacao_ia_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX feedback_conciliacao_ia_pkey ON public.feedback_conciliacao_ia USING btree (id)` |
 | idx_feedback_conciliacao_ia_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_feedback_conciliacao_ia_created_by_fk ON public.feedback_conciliacao_ia USING btree (created_by)` |
+| idx_feedback_conciliacao_ia_transacao_id_fk | btree | transacao_id | não | sim |  | `CREATE INDEX idx_feedback_conciliacao_ia_transacao_id_fk ON public.feedback_conciliacao_ia USING btree (transacao_id)` |
 | idx_feedback_conciliacao_ia_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_feedback_conciliacao_ia_user_id_fk ON public.feedback_conciliacao_ia USING btree (user_id)` |
 
 

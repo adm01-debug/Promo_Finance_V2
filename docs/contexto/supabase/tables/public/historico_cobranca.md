@@ -50,6 +50,8 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | historico_cobranca_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX historico_cobranca_pkey ON public.historico_cobranca USING btree (id)` |
+| idx_historico_cobranca_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_historico_cobranca_cliente_id_fk ON public.historico_cobranca USING btree (cliente_id)` |
+| idx_historico_cobranca_conta_receber_id_fk | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_historico_cobranca_conta_receber_id_fk ON public.historico_cobranca USING btree (conta_receber_id)` |
 | idx_historico_cobranca_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_historico_cobranca_empresa_id ON public.historico_cobranca USING btree (empresa_id)` |
 
 

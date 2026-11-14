@@ -62,6 +62,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_per_dcomp_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_per_dcomp_created_by_fk ON public.per_dcomp USING btree (created_by)` |
 | idx_per_dcomp_empresa | btree | empresa_id | não | sim |  | `CREATE INDEX idx_per_dcomp_empresa ON public.per_dcomp USING btree (empresa_id)` |
 | per_dcomp_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX per_dcomp_pkey ON public.per_dcomp USING btree (id)` |
 

@@ -42,6 +42,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | evidencias_pacotes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX evidencias_pacotes_pkey ON public.evidencias_pacotes USING btree (id)` |
+| idx_evidencias_pacotes_verificacao_id_fk | btree | verificacao_id | não | sim |  | `CREATE INDEX idx_evidencias_pacotes_verificacao_id_fk ON public.evidencias_pacotes USING btree (verificacao_id)` |
 
 
 ## Policies (RLS)

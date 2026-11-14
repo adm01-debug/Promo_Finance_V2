@@ -40,6 +40,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | historico_relatorios_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX historico_relatorios_pkey ON public.historico_relatorios USING btree (id)` |
+| idx_historico_relatorios_relatorio_agendado_id_fk | btree | relatorio_agendado_id | não | sim |  | `CREATE INDEX idx_historico_relatorios_relatorio_agendado_id_fk ON public.historico_relatorios USING btree (relatorio_agendado_id)` |
 
 
 ## Policies (RLS)

@@ -52,7 +52,10 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | fila_cobrancas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX fila_cobrancas_pkey ON public.fila_cobrancas USING btree (id)` |
+| idx_fila_cobrancas_cliente_id_fk | btree | cliente_id | não | sim |  | `CREATE INDEX idx_fila_cobrancas_cliente_id_fk ON public.fila_cobrancas USING btree (cliente_id)` |
+| idx_fila_cobrancas_conta_receber_id_fk | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_fila_cobrancas_conta_receber_id_fk ON public.fila_cobrancas USING btree (conta_receber_id)` |
 | idx_fila_cobrancas_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_fila_cobrancas_empresa_id ON public.fila_cobrancas USING btree (empresa_id)` |
+| idx_fila_cobrancas_etapa_id_fk | btree | etapa_id | não | sim |  | `CREATE INDEX idx_fila_cobrancas_etapa_id_fk ON public.fila_cobrancas USING btree (etapa_id)` |
 
 
 ## Policies (RLS)

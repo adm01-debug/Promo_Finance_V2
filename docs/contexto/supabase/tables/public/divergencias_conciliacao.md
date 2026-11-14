@@ -49,7 +49,9 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | divergencias_conciliacao_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX divergencias_conciliacao_pkey ON public.divergencias_conciliacao USING btree (id)` |
+| idx_divergencias_conciliacao_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_divergencias_conciliacao_conta_bancaria_id_fk ON public.divergencias_conciliacao USING btree (conta_bancaria_id)` |
 | idx_divergencias_conciliacao_resolvido_por_fk | btree | resolvido_por | não | sim |  | `CREATE INDEX idx_divergencias_conciliacao_resolvido_por_fk ON public.divergencias_conciliacao USING btree (resolvido_por)` |
+| idx_divergencias_conciliacao_transacao_id_fk | btree | transacao_id | não | sim |  | `CREATE INDEX idx_divergencias_conciliacao_transacao_id_fk ON public.divergencias_conciliacao USING btree (transacao_id)` |
 
 
 ## Policies (RLS)

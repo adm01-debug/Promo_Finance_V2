@@ -45,6 +45,8 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_regua_cobranca_etapas_regua_id_fk | btree | regua_id | não | sim |  | `CREATE INDEX idx_regua_cobranca_etapas_regua_id_fk ON public.regua_cobranca_etapas USING btree (regua_id)` |
+| idx_regua_cobranca_etapas_template_id_fk | btree | template_id | não | sim |  | `CREATE INDEX idx_regua_cobranca_etapas_template_id_fk ON public.regua_cobranca_etapas USING btree (template_id)` |
 | regua_cobranca_etapas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX regua_cobranca_etapas_pkey ON public.regua_cobranca_etapas USING btree (id)` |
 
 

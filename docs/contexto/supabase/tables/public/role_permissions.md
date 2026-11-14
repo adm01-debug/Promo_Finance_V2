@@ -35,6 +35,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_role_permissions_permission_id_fk | btree | permission_id | não | sim |  | `CREATE INDEX idx_role_permissions_permission_id_fk ON public.role_permissions USING btree (permission_id)` |
 | role_permissions_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX role_permissions_pkey ON public.role_permissions USING btree (id)` |
 | role_permissions_role_permission_id_key | btree | role, permission_id | sim | sim |  | `CREATE UNIQUE INDEX role_permissions_role_permission_id_key ON public.role_permissions USING btree (role, permission_id)` |
 

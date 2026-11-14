@@ -54,6 +54,8 @@
 |---|---|---|---|---|---|---|
 | bloqueios_duplicidade_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX bloqueios_duplicidade_pkey ON public.bloqueios_duplicidade USING btree (id)` |
 | idx_bloqueios_duplicidade_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_bloqueios_duplicidade_empresa_id ON public.bloqueios_duplicidade USING btree (empresa_id)` |
+| idx_bloqueios_duplicidade_transacao_id_fk | btree | transacao_id | não | sim |  | `CREATE INDEX idx_bloqueios_duplicidade_transacao_id_fk ON public.bloqueios_duplicidade USING btree (transacao_id)` |
+| idx_bloqueios_duplicidade_usuario_id_fk | btree | usuario_id | não | sim |  | `CREATE INDEX idx_bloqueios_duplicidade_usuario_id_fk ON public.bloqueios_duplicidade USING btree (usuario_id)` |
 
 
 ## Policies (RLS)

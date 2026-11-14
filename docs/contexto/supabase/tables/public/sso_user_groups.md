@@ -43,6 +43,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sso_user_groups_provider_id_fk | btree | provider_id | não | sim |  | `CREATE INDEX idx_sso_user_groups_provider_id_fk ON public.sso_user_groups USING btree (provider_id)` |
 | sso_user_group_unico | btree | user_id, provider_id | sim | sim |  | `CREATE UNIQUE INDEX sso_user_group_unico ON public.sso_user_groups USING btree (user_id, provider_id)` |
 | sso_user_groups_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sso_user_groups_pkey ON public.sso_user_groups USING btree (id)` |
 | sso_user_groups_user_id_provider_id_group_name_key | btree | user_id, provider_id, group_name | sim | sim |  | `CREATE UNIQUE INDEX sso_user_groups_user_id_provider_id_group_name_key ON public.sso_user_groups USING btree (user_id, provider_id, group_name)` |

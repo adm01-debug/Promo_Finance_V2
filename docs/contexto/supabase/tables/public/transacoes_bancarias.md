@@ -65,6 +65,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_transacoes_bancarias_confirmado_por_fk | btree | confirmado_por | não | sim |  | `CREATE INDEX idx_transacoes_bancarias_confirmado_por_fk ON public.transacoes_bancarias USING btree (confirmado_por)` |
+| idx_transacoes_bancarias_regra_id_fk | btree | regra_id | não | sim |  | `CREATE INDEX idx_transacoes_bancarias_regra_id_fk ON public.transacoes_bancarias USING btree (regra_id)` |
 | transacoes_bancarias_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX transacoes_bancarias_pkey ON public.transacoes_bancarias USING btree (id)` |
 
 

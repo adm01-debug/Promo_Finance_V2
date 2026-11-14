@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f3b6700d14` · branch `main` · 2026-11-14 11:52 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `edeed281a2` · branch `main` · 2026-11-14 13:07 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -287,16 +287,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `storage.objects` | nfe_xml_service_update | UPDATE | service_role | permissive | `bucket_id = 'nfe-xml'` |  |
 | `storage.objects` | nfe_xml_service_delete | DELETE | service_role | permissive | `bucket_id = 'nfe-xml'` |  |
 | `storage.objects` | nfe_cert_service_all | ALL | service_role | permissive | `bucket_id = 'nfe-certificados'` | `bucket_id = 'nfe-certificados'` |
-| `alert_configurations` | alert_configurations_tenant_delete | DELETE | authenticated | permissive | `(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
-| `alert_configurations` | alert_configurations_tenant_insert | INSERT | authenticated | permissive |  | `(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))` |
-| `alert_configurations` | alert_configurations_tenant_select | SELECT | authenticated | permissive | `public.empresa_membro_ativo(empresa_id)` |  |
-| `alert_configurations` | alert_configurations_tenant_update | UPDATE | authenticated | permissive | `(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))` | `public.empresa_membro_ativo(empresa_id)` |
 | `alertas` | alertas_owner_insert | INSERT | authenticated | permissive |  | `((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `alertas` | alertas_owner_update | UPDATE | authenticated | permissive | `(( SELECT auth.uid() AS uid) = user_id)` | `((( SELECT auth.uid() AS uid) = user_id) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
-| `alerts` | alerts_tenant_delete | DELETE | authenticated | permissive | `(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
-| `alerts` | alerts_tenant_insert | INSERT | authenticated | permissive |  | `(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))` |
-| `alerts` | alerts_tenant_select | SELECT | authenticated | permissive | `public.empresa_membro_ativo(empresa_id)` |  |
-| `alerts` | alerts_tenant_update | UPDATE | authenticated | permissive | `(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))` | `public.empresa_membro_ativo(empresa_id)` |
 | `alerts_sent` | alerts_sent_tenant_delete | DELETE | authenticated | permissive | `((EXISTS ( SELECT 1 FROM public.alerts a WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
 | `alerts_sent` | alerts_sent_tenant_insert | INSERT | authenticated | permissive |  | `(EXISTS ( SELECT 1 FROM public.alerts a WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id))))` |
 | `alerts_sent` | alerts_sent_tenant_select | SELECT | authenticated | permissive | `(EXISTS ( SELECT 1 FROM public.alerts a WHERE ((a.id = alerts_sent.alert_id) AND public.empresa_membro_ativo(a.empresa_id))))` |  |
@@ -311,6 +303,14 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `bitrix24_activities` | bitrix24_activities_tenant_delete | DELETE | authenticated | permissive | `((EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
 | `bitrix24_activities` | bitrix24_activities_tenant_insert | INSERT | authenticated | permissive |  | `(EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))` |
 | `bitrix24_activities` | bitrix24_activities_tenant_select | SELECT | authenticated | permissive | `(EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))` |  |
+| `bitrix24_activities` | bitrix24_activities_tenant_update | UPDATE | authenticated | permissive | `(EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))` | `(EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))` |
+| `bitrix_oauth_tokens` | bitrix_oauth_tokens_service_role_only | ALL | service_role | permissive | `true` | `true` |
+| `bling_tokens` | bling_tokens_service_role_only | ALL | service_role | permissive | `true` | `true` |
+| `ci_security_gate_events` | Service role manages CI security gate events | ALL | service_role | permissive | `true` | `true` |
+| `clientes` | clientes_grupo_update | UPDATE | authenticated | permissive | `public.empresa_membro_ativo(empresa_id)` | `public.empresa_membro_ativo(empresa_id)` |
+| `cnaes` | cnaes_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `cnpja_cache` | cnpja_cache_service_role_only | ALL | service_role | permissive | `true` | `true` |
+| `elisao_alertas` | elisao_alertas_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | … +564 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)

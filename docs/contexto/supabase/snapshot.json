@@ -70707,9 +70707,13 @@
             {
               "file": "supabase/migrations/20260903000600_fix_empresa_acessivel_coalesce_ativo.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
+              "hits": 15
             }
           ],
-          "code_total_files": 14,
+          "code_total_files": 15,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -73832,7 +73836,7 @@
               "hits": 6
             }
           ],
-          "code_total_files": 189,
+          "code_total_files": 190,
           "cron": [],
           "db": [
             "public.auditar_acessos_cross_tenant",
@@ -82338,6 +82342,20 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_acordos_parcelamento_cliente_id_fk ON public.acordos_parcelamento USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_acordos_parcelamento_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "acordos_parcelamento"
+      },
+      {
+        "columns": [
           "created_by"
         ],
         "definition": "CREATE INDEX idx_acordos_parcelamento_created_by_fk ON public.acordos_parcelamento USING btree (created_by)",
@@ -82550,6 +82568,20 @@
       },
       {
         "columns": [
+          "alert_id"
+        ],
+        "definition": "CREATE INDEX idx_alerts_sent_alert_id_fk ON public.alerts_sent USING btree (alert_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_alerts_sent_alert_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "alerts_sent"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX aliquotas_interestaduais_pkey ON public.aliquotas_interestaduais USING btree (id)",
@@ -82669,6 +82701,20 @@
       },
       {
         "columns": [
+          "item_lista_id"
+        ],
+        "definition": "CREATE INDEX idx_aliquotas_iss_municipal_item_lista_id_fk ON public.aliquotas_iss_municipal USING btree (item_lista_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_aliquotas_iss_municipal_item_lista_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "aliquotas_iss_municipal"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX allowed_countries_pkey ON public.allowed_countries USING btree (id)",
@@ -82761,6 +82807,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "anomalia_toast_eventos_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "anomalia_toast_eventos"
+      },
+      {
+        "columns": [
+          "anomalia_id"
+        ],
+        "definition": "CREATE INDEX idx_anomalia_toast_eventos_anomalia_id_fk ON public.anomalia_toast_eventos USING btree (anomalia_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_anomalia_toast_eventos_anomalia_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "anomalia_toast_eventos"
@@ -83035,6 +83095,20 @@
       },
       {
         "columns": [
+          "asaas_payment_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_audit_trail_asaas_payment_id_fk ON public.asaas_audit_trail USING btree (asaas_payment_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_audit_trail_asaas_payment_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_audit_trail"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE UNIQUE INDEX asaas_config_empresa_id_key ON public.asaas_config USING btree (empresa_id)",
@@ -83071,6 +83145,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "asaas_credit_risk_analysis_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_credit_risk_analysis"
+      },
+      {
+        "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_credit_risk_analysis_cliente_id_fk ON public.asaas_credit_risk_analysis USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_credit_risk_analysis_cliente_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "asaas_credit_risk_analysis"
@@ -83133,6 +83221,20 @@
       },
       {
         "columns": [
+          "created_by"
+        ],
+        "definition": "CREATE INDEX idx_asaas_payment_links_created_by_fk ON public.asaas_payment_links USING btree (created_by)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_payment_links_created_by_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_payment_links"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_asaas_payment_links_empresa_id ON public.asaas_payment_links USING btree (empresa_id)",
@@ -83175,6 +83277,20 @@
       },
       {
         "columns": [
+          "asaas_customer_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_payments_asaas_customer_id_fk ON public.asaas_payments USING btree (asaas_customer_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_payments_asaas_customer_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_payments"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX asaas_reconciliation_suggestions_pkey ON public.asaas_reconciliation_suggestions USING btree (id)",
@@ -83189,6 +83305,34 @@
       },
       {
         "columns": [
+          "contas_pagar_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_reconciliation_suggestions_contas_pagar_id_fk ON public.asaas_reconciliation_suggestions USING btree (contas_pagar_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_reconciliation_suggestions_contas_pagar_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_reconciliation_suggestions"
+      },
+      {
+        "columns": [
+          "contas_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_reconciliation_suggestions_contas_receber_id_fk ON public.asaas_reconciliation_suggestions USING btree (contas_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_reconciliation_suggestions_contas_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_reconciliation_suggestions"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX asaas_sync_queue_pkey ON public.asaas_sync_queue USING btree (id)",
@@ -83197,6 +83341,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "asaas_sync_queue_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_sync_queue"
+      },
+      {
+        "columns": [
+          "asaas_payment_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_sync_queue_asaas_payment_id_fk ON public.asaas_sync_queue USING btree (asaas_payment_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_sync_queue_asaas_payment_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "asaas_sync_queue"
@@ -83920,6 +84078,34 @@
       },
       {
         "columns": [
+          "transacao_id"
+        ],
+        "definition": "CREATE INDEX idx_bloqueios_duplicidade_transacao_id_fk ON public.bloqueios_duplicidade USING btree (transacao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_bloqueios_duplicidade_transacao_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "bloqueios_duplicidade"
+      },
+      {
+        "columns": [
+          "usuario_id"
+        ],
+        "definition": "CREATE INDEX idx_bloqueios_duplicidade_usuario_id_fk ON public.bloqueios_duplicidade USING btree (usuario_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_bloqueios_duplicidade_usuario_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "bloqueios_duplicidade"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX boletos_pkey ON public.boletos USING btree (id)",
@@ -84132,6 +84318,20 @@
       },
       {
         "columns": [
+          "plano_conta_id"
+        ],
+        "definition": "CREATE INDEX idx_categorias_plano_conta_id_fk ON public.categorias USING btree (plano_conta_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_categorias_plano_conta_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "categorias"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX centros_custo_pkey ON public.centros_custo USING btree (id)",
@@ -84140,6 +84340,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "centros_custo_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "centros_custo"
+      },
+      {
+        "columns": [
+          "parent_id"
+        ],
+        "definition": "CREATE INDEX idx_centros_custo_parent_id_fk ON public.centros_custo USING btree (parent_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_centros_custo_parent_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "centros_custo"
@@ -84266,6 +84480,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "conciliacoes_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "conciliacoes"
+      },
+      {
+        "columns": [
+          "conta_bancaria_id"
+        ],
+        "definition": "CREATE INDEX idx_conciliacoes_conta_bancaria_id_fk ON public.conciliacoes USING btree (conta_bancaria_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_conciliacoes_conta_bancaria_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "conciliacoes"
@@ -84701,6 +84929,20 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_contratos_cliente_id_fk ON public.contratos USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_contratos_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "contratos"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_contratos_empresa_id ON public.contratos USING btree (empresa_id)",
@@ -84709,6 +84951,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_contratos_empresa_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "contratos"
+      },
+      {
+        "columns": [
+          "fornecedor_id"
+        ],
+        "definition": "CREATE INDEX idx_contratos_fornecedor_id_fk ON public.contratos USING btree (fornecedor_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_contratos_fornecedor_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "contratos"
@@ -84751,6 +85007,34 @@
         "is_valid": true,
         "method": "btree",
         "name": "convites_token_key",
+        "predicate": null,
+        "schema": "public",
+        "table": "convites"
+      },
+      {
+        "columns": [
+          "organizacao_id"
+        ],
+        "definition": "CREATE INDEX idx_convites_organizacao_id ON public.convites USING btree (organizacao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_convites_organizacao_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "convites"
+      },
+      {
+        "columns": [
+          "organizacao_id"
+        ],
+        "definition": "CREATE INDEX idx_convites_organizacao_id_fk ON public.convites USING btree (organizacao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_convites_organizacao_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "convites"
@@ -84884,6 +85168,20 @@
       },
       {
         "columns": [
+          "nota_fiscal_id"
+        ],
+        "definition": "CREATE INDEX idx_creditos_tributarios_nota_fiscal_id_fk ON public.creditos_tributarios USING btree (nota_fiscal_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_creditos_tributarios_nota_fiscal_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "creditos_tributarios"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX cron_job_logs_pkey ON public.cron_job_logs USING btree (id)",
@@ -84998,6 +85296,20 @@
       },
       {
         "columns": [
+          "alerta_id"
+        ],
+        "definition": "CREATE INDEX idx_darfs_alerta_id_fk ON public.darfs USING btree (alerta_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_darfs_alerta_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "darfs"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_darfs_empresa_id ON public.darfs USING btree (empresa_id)",
@@ -85082,6 +85394,20 @@
       },
       {
         "columns": [
+          "conta_bancaria_id"
+        ],
+        "definition": "CREATE INDEX idx_divergencias_conciliacao_conta_bancaria_id_fk ON public.divergencias_conciliacao USING btree (conta_bancaria_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_divergencias_conciliacao_conta_bancaria_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "divergencias_conciliacao"
+      },
+      {
+        "columns": [
           "resolvido_por"
         ],
         "definition": "CREATE INDEX idx_divergencias_conciliacao_resolvido_por_fk ON public.divergencias_conciliacao USING btree (resolvido_por)",
@@ -85090,6 +85416,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_divergencias_conciliacao_resolvido_por_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "divergencias_conciliacao"
+      },
+      {
+        "columns": [
+          "transacao_id"
+        ],
+        "definition": "CREATE INDEX idx_divergencias_conciliacao_transacao_id_fk ON public.divergencias_conciliacao USING btree (transacao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_divergencias_conciliacao_transacao_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "divergencias_conciliacao"
@@ -85189,6 +85529,34 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_elisao_creditos_auditoria_empresa_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "elisao_creditos_auditoria"
+      },
+      {
+        "columns": [
+          "nota_fiscal_id"
+        ],
+        "definition": "CREATE INDEX idx_elisao_creditos_auditoria_nota_fiscal_id_fk ON public.elisao_creditos_auditoria USING btree (nota_fiscal_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_elisao_creditos_auditoria_nota_fiscal_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "elisao_creditos_auditoria"
+      },
+      {
+        "columns": [
+          "regra_id"
+        ],
+        "definition": "CREATE INDEX idx_elisao_creditos_auditoria_regra_id_fk ON public.elisao_creditos_auditoria USING btree (regra_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_elisao_creditos_auditoria_regra_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "elisao_creditos_auditoria"
@@ -85364,6 +85732,34 @@
       },
       {
         "columns": [
+          "criado_por"
+        ],
+        "definition": "CREATE INDEX idx_empresas_certificados_criado_por ON public.empresas_certificados USING btree (criado_por) WHERE (criado_por IS NOT NULL)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_empresas_certificados_criado_por",
+        "predicate": "(criado_por IS NOT NULL)",
+        "schema": "public",
+        "table": "empresas_certificados"
+      },
+      {
+        "columns": [
+          "criado_por"
+        ],
+        "definition": "CREATE INDEX idx_empresas_certificados_criado_por_fk ON public.empresas_certificados USING btree (criado_por)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_empresas_certificados_criado_por_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "empresas_certificados"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX entregas_obrigacoes_pkey ON public.entregas_obrigacoes USING btree (id)",
@@ -85402,6 +85798,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_entregas_obrigacoes_competencia",
+        "predicate": null,
+        "schema": "public",
+        "table": "entregas_obrigacoes"
+      },
+      {
+        "columns": [
+          "registrado_por"
+        ],
+        "definition": "CREATE INDEX idx_entregas_obrigacoes_registrado_por_fk ON public.entregas_obrigacoes USING btree (registrado_por)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_entregas_obrigacoes_registrado_por_fk",
         "predicate": null,
         "schema": "public",
         "table": "entregas_obrigacoes"
@@ -85492,6 +85902,20 @@
       },
       {
         "columns": [
+          "regra_id"
+        ],
+        "definition": "CREATE INDEX idx_eventos_contabilizacao_log_regra_id_fk ON public.eventos_contabilizacao_log USING btree (regra_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_eventos_contabilizacao_log_regra_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "eventos_contabilizacao_log"
+      },
+      {
+        "columns": [
           "tipo_evento",
           "evento_id"
         ],
@@ -85515,6 +85939,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "evidencias_pacotes_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "evidencias_pacotes"
+      },
+      {
+        "columns": [
+          "verificacao_id"
+        ],
+        "definition": "CREATE INDEX idx_evidencias_pacotes_verificacao_id_fk ON public.evidencias_pacotes USING btree (verificacao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_evidencias_pacotes_verificacao_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "evidencias_pacotes"
@@ -85649,6 +86087,20 @@
       },
       {
         "columns": [
+          "conversation_id"
+        ],
+        "definition": "CREATE INDEX idx_expert_messages_conversation_id_fk ON public.expert_messages USING btree (conversation_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_expert_messages_conversation_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "expert_messages"
+      },
+      {
+        "columns": [
           "hash_transacao"
         ],
         "definition": "CREATE UNIQUE INDEX extrato_bancario_hash_transacao_key ON public.extrato_bancario USING btree (hash_transacao)",
@@ -85671,6 +86123,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "extrato_bancario_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "extrato_bancario"
+      },
+      {
+        "columns": [
+          "conta_bancaria_id"
+        ],
+        "definition": "CREATE INDEX idx_extrato_bancario_conta_bancaria_id_fk ON public.extrato_bancario USING btree (conta_bancaria_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_extrato_bancario_conta_bancaria_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "extrato_bancario"
@@ -85781,6 +86247,20 @@
       },
       {
         "columns": [
+          "fechado_por"
+        ],
+        "definition": "CREATE INDEX idx_fechamentos_tributarios_fechado_por_fk ON public.fechamentos_tributarios USING btree (fechado_por)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_fechamentos_tributarios_fechado_por_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "fechamentos_tributarios"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX feedback_conciliacao_ia_pkey ON public.feedback_conciliacao_ia USING btree (id)",
@@ -85803,6 +86283,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_feedback_conciliacao_ia_created_by_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "feedback_conciliacao_ia"
+      },
+      {
+        "columns": [
+          "transacao_id"
+        ],
+        "definition": "CREATE INDEX idx_feedback_conciliacao_ia_transacao_id_fk ON public.feedback_conciliacao_ia USING btree (transacao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_feedback_conciliacao_ia_transacao_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "feedback_conciliacao_ia"
@@ -85837,6 +86331,34 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_fila_cobrancas_cliente_id_fk ON public.fila_cobrancas USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_fila_cobrancas_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "fila_cobrancas"
+      },
+      {
+        "columns": [
+          "conta_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_fila_cobrancas_conta_receber_id_fk ON public.fila_cobrancas USING btree (conta_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_fila_cobrancas_conta_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "fila_cobrancas"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_fila_cobrancas_empresa_id ON public.fila_cobrancas USING btree (empresa_id)",
@@ -85851,6 +86373,20 @@
       },
       {
         "columns": [
+          "etapa_id"
+        ],
+        "definition": "CREATE INDEX idx_fila_cobrancas_etapa_id_fk ON public.fila_cobrancas USING btree (etapa_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_fila_cobrancas_etapa_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "fila_cobrancas"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX fluxos_aprovacao_niveis_pkey ON public.fluxos_aprovacao_niveis USING btree (id)",
@@ -85859,6 +86395,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "fluxos_aprovacao_niveis_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "fluxos_aprovacao_niveis"
+      },
+      {
+        "columns": [
+          "configuracao_id"
+        ],
+        "definition": "CREATE INDEX idx_fluxos_aprovacao_niveis_configuracao_id_fk ON public.fluxos_aprovacao_niveis USING btree (configuracao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_fluxos_aprovacao_niveis_configuracao_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "fluxos_aprovacao_niveis"
@@ -86411,6 +86961,34 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_historico_cobranca_cliente_id_fk ON public.historico_cobranca USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_historico_cobranca_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "historico_cobranca"
+      },
+      {
+        "columns": [
+          "conta_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_historico_cobranca_conta_receber_id_fk ON public.historico_cobranca USING btree (conta_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_historico_cobranca_conta_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "historico_cobranca"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_historico_cobranca_empresa_id ON public.historico_cobranca USING btree (empresa_id)",
@@ -86433,6 +87011,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "historico_cobranca_whatsapp_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "historico_cobranca_whatsapp"
+      },
+      {
+        "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_historico_cobranca_whatsapp_cliente_id_fk ON public.historico_cobranca_whatsapp USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_historico_cobranca_whatsapp_cliente_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "historico_cobranca_whatsapp"
@@ -86495,6 +87087,20 @@
       },
       {
         "columns": [
+          "conta_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_historico_conciliacao_ia_conta_receber_id_fk ON public.historico_conciliacao_ia USING btree (conta_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_historico_conciliacao_ia_conta_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "historico_conciliacao_ia"
+      },
+      {
+        "columns": [
           "created_by"
         ],
         "definition": "CREATE INDEX idx_historico_conciliacao_ia_created_by_fk ON public.historico_conciliacao_ia USING btree (created_by)",
@@ -86509,6 +87115,20 @@
       },
       {
         "columns": [
+          "sessao_id"
+        ],
+        "definition": "CREATE INDEX idx_historico_conciliacao_ia_sessao_id_fk ON public.historico_conciliacao_ia USING btree (sessao_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_historico_conciliacao_ia_sessao_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "historico_conciliacao_ia"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX historico_relatorios_pkey ON public.historico_relatorios USING btree (id)",
@@ -86517,6 +87137,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "historico_relatorios_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "historico_relatorios"
+      },
+      {
+        "columns": [
+          "relatorio_agendado_id"
+        ],
+        "definition": "CREATE INDEX idx_historico_relatorios_relatorio_agendado_id_fk ON public.historico_relatorios USING btree (relatorio_agendado_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_historico_relatorios_relatorio_agendado_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "historico_relatorios"
@@ -86797,6 +87431,20 @@
       },
       {
         "columns": [
+          "pedido_id"
+        ],
+        "definition": "CREATE INDEX idx_itens_pedido_compra_pedido_id_fk ON public.itens_pedido_compra USING btree (pedido_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_itens_pedido_compra_pedido_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "itens_pedido_compra"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX itens_pedido_compra_pkey ON public.itens_pedido_compra USING btree (id)",
@@ -86965,6 +87613,20 @@
         "predicate": null,
         "schema": "public",
         "table": "logs_baixa_automatica"
+      },
+      {
+        "columns": [
+          "conta_bancaria_id"
+        ],
+        "definition": "CREATE INDEX idx_logs_conciliacao_retroativa_conta_bancaria_id_fk ON public.logs_conciliacao_retroativa USING btree (conta_bancaria_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_logs_conciliacao_retroativa_conta_bancaria_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "logs_conciliacao_retroativa"
       },
       {
         "columns": [
@@ -87153,6 +87815,34 @@
       },
       {
         "columns": [
+          "config_id"
+        ],
+        "definition": "CREATE INDEX idx_n8n_dispatch_logs_config_id ON public.n8n_dispatch_logs USING btree (config_id) WHERE (config_id IS NOT NULL)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_n8n_dispatch_logs_config_id",
+        "predicate": "(config_id IS NOT NULL)",
+        "schema": "public",
+        "table": "n8n_dispatch_logs"
+      },
+      {
+        "columns": [
+          "config_id"
+        ],
+        "definition": "CREATE INDEX idx_n8n_dispatch_logs_config_id_fk ON public.n8n_dispatch_logs USING btree (config_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_n8n_dispatch_logs_config_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "n8n_dispatch_logs"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX n8n_dispatch_logs_pkey ON public.n8n_dispatch_logs USING btree (id)",
@@ -87238,6 +87928,34 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_negativacoes_cliente_id_fk ON public.negativacoes USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_negativacoes_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "negativacoes"
+      },
+      {
+        "columns": [
+          "conta_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_negativacoes_conta_receber_id_fk ON public.negativacoes USING btree (conta_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_negativacoes_conta_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "negativacoes"
+      },
+      {
+        "columns": [
           "created_by"
         ],
         "definition": "CREATE INDEX idx_negativacoes_created_by ON public.negativacoes USING btree (created_by)",
@@ -87280,6 +87998,20 @@
       },
       {
         "columns": [
+          "device_id"
+        ],
+        "definition": "CREATE INDEX idx_new_device_alerts_device_id_fk ON public.new_device_alerts USING btree (device_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_new_device_alerts_device_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "new_device_alerts"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX new_device_alerts_pkey ON public.new_device_alerts USING btree (id)",
@@ -87291,6 +88023,34 @@
         "predicate": null,
         "schema": "public",
         "table": "new_device_alerts"
+      },
+      {
+        "columns": [
+          "created_by"
+        ],
+        "definition": "CREATE INDEX idx_nfe_eventos_created_by ON public.nfe_eventos USING btree (created_by) WHERE (created_by IS NOT NULL)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_nfe_eventos_created_by",
+        "predicate": "(created_by IS NOT NULL)",
+        "schema": "public",
+        "table": "nfe_eventos"
+      },
+      {
+        "columns": [
+          "created_by"
+        ],
+        "definition": "CREATE INDEX idx_nfe_eventos_created_by_fk ON public.nfe_eventos USING btree (created_by)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_nfe_eventos_created_by_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "nfe_eventos"
       },
       {
         "columns": [
@@ -87347,6 +88107,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_nfe_rec_empresa",
+        "predicate": null,
+        "schema": "public",
+        "table": "nfe_recebidas"
+      },
+      {
+        "columns": [
+          "conta_pagar_id"
+        ],
+        "definition": "CREATE INDEX idx_nfe_recebidas_conta_pagar_id_fk ON public.nfe_recebidas USING btree (conta_pagar_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_nfe_recebidas_conta_pagar_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "nfe_recebidas"
@@ -87608,6 +88382,20 @@
       },
       {
         "columns": [
+          "estrategia_id"
+        ],
+        "definition": "CREATE INDEX idx_oportunidades_elisao_estrategia_id_fk ON public.oportunidades_elisao USING btree (estrategia_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_oportunidades_elisao_estrategia_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "oportunidades_elisao"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX oportunidades_elisao_pkey ON public.oportunidades_elisao USING btree (id)",
@@ -87749,6 +88537,20 @@
       },
       {
         "columns": [
+          "acordo_id"
+        ],
+        "definition": "CREATE INDEX idx_parcelas_acordo_acordo_id_fk ON public.parcelas_acordo USING btree (acordo_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_parcelas_acordo_acordo_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "parcelas_acordo"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX parcelas_acordo_pkey ON public.parcelas_acordo USING btree (id)",
@@ -87760,6 +88562,20 @@
         "predicate": null,
         "schema": "public",
         "table": "parcelas_acordo"
+      },
+      {
+        "columns": [
+          "conta_contabil_id"
+        ],
+        "definition": "CREATE INDEX idx_partidas_contabeis_conta_contabil_id_fk ON public.partidas_contabeis USING btree (conta_contabil_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_partidas_contabeis_conta_contabil_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "partidas_contabeis"
       },
       {
         "columns": [
@@ -87889,6 +88705,20 @@
       },
       {
         "columns": [
+          "fornecedor_id"
+        ],
+        "definition": "CREATE INDEX idx_pedidos_compra_fornecedor_id_fk ON public.pedidos_compra USING btree (fornecedor_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_pedidos_compra_fornecedor_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "pedidos_compra"
+      },
+      {
+        "columns": [
           "user_id"
         ],
         "definition": "CREATE INDEX idx_pedidos_compra_user_id ON public.pedidos_compra USING btree (user_id)",
@@ -87914,6 +88744,20 @@
         "predicate": null,
         "schema": "public",
         "table": "pedidos_compra"
+      },
+      {
+        "columns": [
+          "created_by"
+        ],
+        "definition": "CREATE INDEX idx_per_dcomp_created_by_fk ON public.per_dcomp USING btree (created_by)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_per_dcomp_created_by_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "per_dcomp"
       },
       {
         "columns": [
@@ -88202,6 +89046,20 @@
       },
       {
         "columns": [
+          "token_id"
+        ],
+        "definition": "CREATE INDEX idx_portal_cliente_acessos_token_id_fk ON public.portal_cliente_acessos USING btree (token_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_portal_cliente_acessos_token_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "portal_cliente_acessos"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX portal_cliente_acessos_pkey ON public.portal_cliente_acessos USING btree (id)",
@@ -88356,6 +89214,34 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_protestos_cliente_id_fk ON public.protestos USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_protestos_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "protestos"
+      },
+      {
+        "columns": [
+          "conta_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_protestos_conta_receber_id_fk ON public.protestos USING btree (conta_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_protestos_conta_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "protestos"
+      },
+      {
+        "columns": [
           "created_by"
         ],
         "definition": "CREATE INDEX idx_protestos_created_by ON public.protestos USING btree (created_by)",
@@ -88423,6 +89309,34 @@
         "predicate": null,
         "schema": "public",
         "table": "protocolos_st"
+      },
+      {
+        "columns": [
+          "ncm_id"
+        ],
+        "definition": "CREATE INDEX idx_protocolos_st_ncms_ncm_id_fk ON public.protocolos_st_ncms USING btree (ncm_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_protocolos_st_ncms_ncm_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "protocolos_st_ncms"
+      },
+      {
+        "columns": [
+          "protocolo_id"
+        ],
+        "definition": "CREATE INDEX idx_protocolos_st_ncms_protocolo_id_fk ON public.protocolos_st_ncms USING btree (protocolo_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_protocolos_st_ncms_protocolo_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "protocolos_st_ncms"
       },
       {
         "columns": [
@@ -88894,6 +89808,20 @@
       },
       {
         "columns": [
+          "conta_bancaria_id"
+        ],
+        "definition": "CREATE INDEX idx_regras_roteamento_financeiro_conta_bancaria_id_fk ON public.regras_roteamento_financeiro USING btree (conta_bancaria_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_regras_roteamento_financeiro_conta_bancaria_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "regras_roteamento_financeiro"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_regras_roteamento_financeiro_empresa_id ON public.regras_roteamento_financeiro USING btree (empresa_id)",
@@ -88950,6 +89878,34 @@
       },
       {
         "columns": [
+          "regua_id"
+        ],
+        "definition": "CREATE INDEX idx_regua_cobranca_etapas_regua_id_fk ON public.regua_cobranca_etapas USING btree (regua_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_regua_cobranca_etapas_regua_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "regua_cobranca_etapas"
+      },
+      {
+        "columns": [
+          "template_id"
+        ],
+        "definition": "CREATE INDEX idx_regua_cobranca_etapas_template_id_fk ON public.regua_cobranca_etapas USING btree (template_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_regua_cobranca_etapas_template_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "regua_cobranca_etapas"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX regua_cobranca_etapas_pkey ON public.regua_cobranca_etapas USING btree (id)",
@@ -88964,6 +89920,34 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_regua_cobranca_status_cliente_id_fk ON public.regua_cobranca_status USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_regua_cobranca_status_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "regua_cobranca_status"
+      },
+      {
+        "columns": [
+          "conta_receber_id"
+        ],
+        "definition": "CREATE INDEX idx_regua_cobranca_status_conta_receber_id_fk ON public.regua_cobranca_status USING btree (conta_receber_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_regua_cobranca_status_conta_receber_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "regua_cobranca_status"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_regua_cobranca_status_empresa_id ON public.regua_cobranca_status USING btree (empresa_id)",
@@ -88972,6 +89956,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_regua_cobranca_status_empresa_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "regua_cobranca_status"
+      },
+      {
+        "columns": [
+          "titulo_id"
+        ],
+        "definition": "CREATE INDEX idx_regua_cobranca_status_titulo_id_fk ON public.regua_cobranca_status USING btree (titulo_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_regua_cobranca_status_titulo_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "regua_cobranca_status"
@@ -89160,6 +90158,20 @@
       },
       {
         "columns": [
+          "permission_id"
+        ],
+        "definition": "CREATE INDEX idx_role_permissions_permission_id_fk ON public.role_permissions USING btree (permission_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_role_permissions_permission_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "role_permissions"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX role_permissions_pkey ON public.role_permissions USING btree (id)",
@@ -89244,6 +90256,20 @@
         "predicate": null,
         "schema": "public",
         "table": "saved_filter_subscriptions"
+      },
+      {
+        "columns": [
+          "created_by"
+        ],
+        "definition": "CREATE INDEX idx_saved_filters_created_by_fk ON public.saved_filters USING btree (created_by)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_saved_filters_created_by_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "saved_filters"
       },
       {
         "columns": [
@@ -89376,6 +90402,20 @@
       },
       {
         "columns": [
+          "provider_id"
+        ],
+        "definition": "CREATE INDEX idx_scim_tokens_provider_id_fk ON public.scim_tokens USING btree (provider_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_scim_tokens_provider_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "scim_tokens"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX scim_tokens_pkey ON public.scim_tokens USING btree (id)",
@@ -89500,6 +90540,20 @@
         "predicate": null,
         "schema": "public",
         "table": "sefaz_dfe_cursor"
+      },
+      {
+        "columns": [
+          "conta_bancaria_id"
+        ],
+        "definition": "CREATE INDEX idx_sessoes_conciliacao_conta_bancaria_id_fk ON public.sessoes_conciliacao USING btree (conta_bancaria_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_sessoes_conciliacao_conta_bancaria_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "sessoes_conciliacao"
       },
       {
         "columns": [
@@ -89668,6 +90722,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_solicitacoes_aprovacao_aprovado_por_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "solicitacoes_aprovacao"
+      },
+      {
+        "columns": [
+          "conta_pagar_id"
+        ],
+        "definition": "CREATE INDEX idx_solicitacoes_aprovacao_conta_pagar_id_fk ON public.solicitacoes_aprovacao USING btree (conta_pagar_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_solicitacoes_aprovacao_conta_pagar_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "solicitacoes_aprovacao"
@@ -89900,6 +90968,20 @@
       },
       {
         "columns": [
+          "provider_id"
+        ],
+        "definition": "CREATE INDEX idx_sso_sandbox_runs_provider_id_fk ON public.sso_sandbox_runs USING btree (provider_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_sso_sandbox_runs_provider_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "sso_sandbox_runs"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX sso_sandbox_runs_pkey ON public.sso_sandbox_runs USING btree (id)",
@@ -89911,6 +90993,20 @@
         "predicate": null,
         "schema": "public",
         "table": "sso_sandbox_runs"
+      },
+      {
+        "columns": [
+          "provider_id"
+        ],
+        "definition": "CREATE INDEX idx_sso_user_groups_provider_id_fk ON public.sso_user_groups USING btree (provider_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_sso_user_groups_provider_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "sso_user_groups"
       },
       {
         "columns": [
@@ -90030,6 +91126,20 @@
       },
       {
         "columns": [
+          "regra_id"
+        ],
+        "definition": "CREATE INDEX idx_transacoes_bancarias_regra_id_fk ON public.transacoes_bancarias USING btree (regra_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_transacoes_bancarias_regra_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "transacoes_bancarias"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX transacoes_bancarias_pkey ON public.transacoes_bancarias USING btree (id)",
@@ -90052,6 +91162,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_transferencias_conta_destino_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "transferencias"
+      },
+      {
+        "columns": [
+          "conta_origem_id"
+        ],
+        "definition": "CREATE INDEX idx_transferencias_conta_origem_id_fk ON public.transferencias USING btree (conta_origem_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_transferencias_conta_origem_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "transferencias"
@@ -90681,6 +91805,20 @@
       },
       {
         "columns": [
+          "run_id"
+        ],
+        "definition": "CREATE INDEX idx_webhook_simulation_results_run_id_fk ON public.webhook_simulation_results USING btree (run_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_webhook_simulation_results_run_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "webhook_simulation_results"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX webhook_simulation_results_pkey ON public.webhook_simulation_results USING btree (id)",
@@ -90723,6 +91861,34 @@
       },
       {
         "columns": [
+          "dlq_id"
+        ],
+        "definition": "CREATE INDEX idx_webhooks_log_dlq_id ON public.webhooks_log USING btree (dlq_id) WHERE (dlq_id IS NOT NULL)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_webhooks_log_dlq_id",
+        "predicate": "(dlq_id IS NOT NULL)",
+        "schema": "public",
+        "table": "webhooks_log"
+      },
+      {
+        "columns": [
+          "dlq_id"
+        ],
+        "definition": "CREATE INDEX idx_webhooks_log_dlq_id_fk ON public.webhooks_log USING btree (dlq_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_webhooks_log_dlq_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "webhooks_log"
+      },
+      {
+        "columns": [
           "source",
           "external_id"
         ],
@@ -90749,6 +91915,20 @@
         "predicate": null,
         "schema": "public",
         "table": "webhooks_log"
+      },
+      {
+        "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_whatsapp_conversas_cliente_id_fk ON public.whatsapp_conversas USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_whatsapp_conversas_cliente_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "whatsapp_conversas"
       },
       {
         "columns": [
@@ -90788,488 +91968,14 @@
       },
       {
         "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.acordos_parcelamento.acordos_parcelamento_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['alert_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.alerts_sent.alerts_sent_alert_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['item_lista_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.aliquotas_iss_municipal.aliquotas_iss_municipal_item_lista_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['anomalia_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.anomalia_toast_eventos.anomalia_toast_eventos_anomalia_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['asaas_payment_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_audit_trail.asaas_audit_trail_asaas_payment_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_credit_risk_analysis.asaas_credit_risk_analysis_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_payment_links.asaas_payment_links_created_by_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['asaas_customer_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_payments.asaas_payments_asaas_customer_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['contas_pagar_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_reconciliation_suggestions.asaas_reconciliation_suggestions_contas_pagar_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['contas_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_reconciliation_suggestions.asaas_reconciliation_suggestions_contas_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['asaas_payment_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_sync_queue.asaas_sync_queue_asaas_payment_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['transacao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.bloqueios_duplicidade.bloqueios_duplicidade_transacao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['usuario_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.bloqueios_duplicidade.bloqueios_duplicidade_usuario_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['plano_conta_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.categorias.categorias_plano_conta_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['parent_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.centros_custo.centros_custo_parent_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.conciliacoes.conciliacoes_conta_bancaria_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.contratos.contratos_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['fornecedor_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.contratos.contratos_fornecedor_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['organizacao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.convites.convites_organizacao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['nota_fiscal_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.creditos_tributarios.creditos_tributarios_nota_fiscal_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['alerta_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.darfs.darfs_alerta_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.divergencias_conciliacao.divergencias_conciliacao_conta_bancaria_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['transacao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.divergencias_conciliacao.divergencias_conciliacao_transacao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['nota_fiscal_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.elisao_creditos_auditoria.elisao_creditos_auditoria_nota_fiscal_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['regra_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.elisao_creditos_auditoria.elisao_creditos_auditoria_regra_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['criado_por']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.empresas_certificados.empresas_certificados_criado_por_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['registrado_por']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.entregas_obrigacoes.entregas_obrigacoes_registrado_por_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['regra_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.eventos_contabilizacao_log.eventos_contabilizacao_log_regra_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['verificacao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.evidencias_pacotes.evidencias_pacotes_verificacao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.execucoes_regua_cobranca.execucoes_regua_cobranca_conta_receber_id_fkey",
         "severity": "BAIXA"
       },
       {
         "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conversation_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.expert_messages.expert_messages_conversation_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.extrato_bancario.extrato_bancario_conta_bancaria_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['fechado_por']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.fechamentos_tributarios.fechamentos_tributarios_fechado_por_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['transacao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.feedback_conciliacao_ia.feedback_conciliacao_ia_transacao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.fila_cobrancas.fila_cobrancas_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.fila_cobrancas.fila_cobrancas_conta_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['etapa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.fila_cobrancas.fila_cobrancas_etapa_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['configuracao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.fluxos_aprovacao_niveis.fluxos_aprovacao_niveis_configuracao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.historico_cobranca.historico_cobranca_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.historico_cobranca.historico_cobranca_conta_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.historico_cobranca_whatsapp.historico_cobranca_whatsapp_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.historico_conciliacao_ia.historico_conciliacao_ia_conta_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['sessao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.historico_conciliacao_ia.historico_conciliacao_ia_sessao_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['relatorio_agendado_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.historico_relatorios.historico_relatorios_relatorio_agendado_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['pedido_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.itens_pedido_compra.itens_pedido_compra_pedido_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.logs_conciliacao_retroativa.logs_conciliacao_retroativa_conta_bancaria_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['config_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.n8n_dispatch_logs.n8n_dispatch_logs_config_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.n8n_workflow_configs.n8n_workflow_configs_created_by_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.negativacoes.negativacoes_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.negativacoes.negativacoes_conta_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['device_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.new_device_alerts.new_device_alerts_device_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.nfe_eventos.nfe_eventos_created_by_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_pagar_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.nfe_recebidas.nfe_recebidas_conta_pagar_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['estrategia_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.oportunidades_elisao.oportunidades_elisao_estrategia_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['acordo_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.parcelas_acordo.parcelas_acordo_acordo_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_contabil_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.partidas_contabeis.partidas_contabeis_conta_contabil_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['fornecedor_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.pedidos_compra.pedidos_compra_fornecedor_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.per_dcomp.per_dcomp_created_by_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['token_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.portal_cliente_acessos.portal_cliente_acessos_token_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.protestos.protestos_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.protestos.protestos_conta_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['ncm_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.protocolos_st_ncms.protocolos_st_ncms_ncm_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['protocolo_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.protocolos_st_ncms.protocolos_st_ncms_protocolo_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.regras_roteamento_financeiro.regras_roteamento_financeiro_conta_bancaria_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['regua_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.regua_cobranca_etapas.regua_cobranca_etapas_regua_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['template_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.regua_cobranca_etapas.regua_cobranca_etapas_template_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.regua_cobranca_status.regua_cobranca_status_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.regua_cobranca_status.regua_cobranca_status_conta_receber_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['titulo_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.regua_cobranca_status.regua_cobranca_status_titulo_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['permission_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.role_permissions.role_permissions_permission_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.saved_filters.saved_filters_created_by_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['provider_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.scim_tokens.scim_tokens_provider_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.sessoes_conciliacao.sessoes_conciliacao_conta_bancaria_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_pagar_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.solicitacoes_aprovacao.solicitacoes_aprovacao_conta_pagar_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['provider_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.sso_sandbox_runs.sso_sandbox_runs_provider_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['provider_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.sso_user_groups.sso_user_groups_provider_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['regra_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.transacoes_bancarias.transacoes_bancarias_regra_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['conta_origem_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.transferencias.transferencias_conta_origem_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['run_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.webhook_simulation_results.webhook_simulation_results_run_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['dlq_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.webhooks_log.webhooks_log_dlq_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.whatsapp_conversas.whatsapp_conversas_cliente_id_fkey",
         "severity": "BAIXA"
       },
       {
@@ -105178,6 +105884,18 @@
         "with_check": "(bucket_id = 'comprovantes-financeiro'::text)"
       },
       {
+        "cmd": "ALL",
+        "name": "nfe_cert_service_all",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "service_role"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": "(bucket_id = 'nfe-certificados'::text)",
+        "with_check": "(bucket_id = 'nfe-certificados'::text)"
+      },
+      {
         "cmd": "SELECT",
         "name": "nfe_xml_empresa_read",
         "permissive": "PERMISSIVE",
@@ -105188,6 +105906,42 @@
         "table": "objects",
         "using": "((bucket_id = 'nfe-xml'::text) AND (EXISTS ( SELECT 1\n   FROM user_empresas ue\n  WHERE ((ue.user_id = auth.uid()) AND (ue.ativo = true) AND ((ue.empresa_id)::text = split_part(objects.name, '/'::text, 1))))))",
         "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "name": "nfe_xml_service_delete",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "service_role"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": "(bucket_id = 'nfe-xml'::text)",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "nfe_xml_service_update",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "service_role"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": "(bucket_id = 'nfe-xml'::text)",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "name": "nfe_xml_service_write",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "service_role"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": null,
+        "with_check": "(bucket_id = 'nfe-xml'::text)"
       }
     ],
     "queues": {
