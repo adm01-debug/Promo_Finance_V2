@@ -138,14 +138,17 @@ Deno.serve(
         regras?.find((r) => !r.categoria_id));
 
     if (!regra) {
-      await admin.from('eventos_contabilizacao_log').insert({
-        evento: `${body.tipo_evento}.manual`,
-        empresa_id: body.empresa_id,
-        tipo_evento: body.tipo_evento,
-        evento_id: body.evento_id,
-        status: 'sem_regra',
-        detalhe: 'Nenhuma regra ativa encontrada',
-      });
+      // Simulação (dry_run) não grava no histórico: o painel lê os últimos eventos
+      // e o contador "Sem regra" desta tabela.
+      if (!body.dry_run)
+        await admin.from('eventos_contabilizacao_log').insert({
+          evento: `${body.tipo_evento}.manual`,
+          empresa_id: body.empresa_id,
+          tipo_evento: body.tipo_evento,
+          evento_id: body.evento_id,
+          status: 'sem_regra',
+          detalhe: 'Nenhuma regra ativa encontrada',
+        });
       return new Response(JSON.stringify({ status: 'sem_regra' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
