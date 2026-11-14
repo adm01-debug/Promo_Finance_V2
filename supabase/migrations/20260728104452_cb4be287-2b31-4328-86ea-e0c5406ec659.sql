@@ -17,6 +17,16 @@ CREATE INDEX IF NOT EXISTS idx_empresas_certificados_criado_por
 CREATE INDEX IF NOT EXISTS idx_nfe_eventos_created_by
   ON public.nfe_eventos (created_by) WHERE created_by IS NOT NULL;
 
+
+-- FKs de alerts/alert_configurations criadas pelo stub 20260712223141 sem indice;
+-- a assertion abaixo exige cobertura total, entao os indices sao criados aqui
+-- (mesmos nomes usados por 20260728215040, que roda depois).
+CREATE INDEX IF NOT EXISTS idx_alerts_empresa
+  ON public.alerts (empresa_id) WHERE empresa_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa
+  ON public.alert_configurations (empresa_id) WHERE empresa_id IS NOT NULL;
+
 -- Assertion: no single-column FK in public schema may remain without a supporting index
 DO $$
 DECLARE v_missing int;
