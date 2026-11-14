@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:00:00 | succeeded | 0.37 | 1 row |
 | 2026-11-14 04:00:00 | succeeded | 0.14 | 1 row |
 | 2026-11-14 03:00:00 | succeeded | 0.48 | 1 row |
-| 2026-11-14 02:00:00 | succeeded | 0.33 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -50,9 +50,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:00:00 | succeeded | 0.03 | 1 row |
 | 2026-11-13 05:00:00 | succeeded | 0.12 | 1 row |
 | 2026-11-12 05:00:00 | succeeded | 0.01 | 1 row |
-| 2026-11-11 05:00:00 | succeeded | 0.04 | 1 row |
 
 
 ## 9 · daily-log-cleanup
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:00:00 | succeeded | 0.65 | 1 row |
+| 2026-11-14 04:30:00 | succeeded | 0.39 | 1 row |
 | 2026-11-14 04:00:00 | succeeded | 0.53 | 1 row |
-| 2026-11-14 03:30:00 | succeeded | 0.67 | 1 row |
-| 2026-11-14 03:00:00 | succeeded | 2.12 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 04:45:00 | succeeded | 0.00 | 1 row |
 | 2026-11-14 03:45:00 | succeeded | 0.00 | 1 row |
 | 2026-11-14 02:45:00 | succeeded | 0.03 | 1 row |
-| 2026-11-14 01:45:00 | succeeded | 0.04 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:15:00 | succeeded | 0.08 | 1 row |
 | 2026-11-14 04:15:00 | succeeded | 0.10 | 1 row |
 | 2026-11-14 03:15:00 | succeeded | 0.08 | 1 row |
-| 2026-11-14 02:15:00 | succeeded | 0.12 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:10:00 | succeeded | 0.72 | 1 row |
 | 2026-11-14 04:10:00 | succeeded | 0.59 | 1 row |
 | 2026-11-14 03:10:00 | succeeded | 3.26 | 1 row |
-| 2026-11-14 02:10:00 | succeeded | 13.17 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-14 04:15:00 | succeeded | 0.03 | 1 row |
-| 2026-11-14 04:00:00 | succeeded | 0.06 | 1 row |
-| 2026-11-14 03:45:00 | succeeded | 0.03 | 1 row |
+| 2026-11-14 05:15:00 | succeeded | 0.04 | 1 row |
+| 2026-11-14 05:00:00 | succeeded | 0.16 | 1 row |
+| 2026-11-14 04:45:00 | succeeded | 0.03 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-14 04:27:00 | succeeded | 0.01 | 1 row |
-| 2026-11-14 04:26:00 | succeeded | 0.02 | 1 row |
-| 2026-11-14 04:25:00 | succeeded | 0.01 | 1 row |
+| 2026-11-14 05:26:00 | succeeded | 0.02 | 1 row |
+| 2026-11-14 05:25:00 | succeeded | 0.02 | 1 row |
+| 2026-11-14 05:24:00 | succeeded | 0.02 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:10:00 | succeeded | 0.11 | 1 row |
 | 2026-11-14 04:10:00 | succeeded | 0.09 | 1 row |
 | 2026-11-14 03:10:00 | succeeded | 0.10 | 1 row |
-| 2026-11-14 02:10:00 | succeeded | 0.05 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:00:00 | succeeded | 0.08 | 1 row |
+| 2026-11-14 04:30:00 | succeeded | 0.01 | 1 row |
 | 2026-11-14 04:00:00 | succeeded | 0.02 | 1 row |
-| 2026-11-14 03:30:00 | succeeded | 0.02 | 1 row |
-| 2026-11-14 03:00:00 | succeeded | 0.04 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,9 +250,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 04:30:00 | succeeded | 0.07 | 1 row |
 | 2026-11-14 03:30:00 | succeeded | 0.02 | 1 row |
 | 2026-11-14 02:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-14 01:30:00 | succeeded | 0.01 | 1 row |
 
 
 ## 43 · enviar-digest-conformidade-diario
@@ -264,6 +264,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-14 05:00:00 | succeeded | 0.18 | 1 row |
+| 2026-11-14 04:30:00 | succeeded | 0.03 | 1 row |
 | 2026-11-14 04:00:00 | succeeded | 0.02 | 1 row |
-| 2026-11-14 03:30:00 | succeeded | 0.04 | 1 row |
-| 2026-11-14 03:00:00 | succeeded | 0.07 | 1 row |
