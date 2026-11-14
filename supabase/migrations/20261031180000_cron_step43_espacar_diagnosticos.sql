@@ -2,20 +2,33 @@
 -- Aplicado diretamente no banco em 2026-10-31.
 -- Esta migration registra as alterações para rastreabilidade.
 
--- detect-query-regressions: */5 → */30 min (~8.650 chamadas/semana → ~1.440)
-SELECT cron.alter_job(
-  (SELECT jobid FROM cron.job WHERE jobname = 'detect-query-regressions-5min'),
-  schedule := '*/30 * * * *'
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'detect-query-regressions-5min') THEN
+    PERFORM cron.alter_job(
+      (SELECT jobid FROM cron.job WHERE jobname = 'detect-query-regressions-5min'),
+      schedule := '*/30 * * * *'
+    );
+  END IF;
+END $$;
 
--- capture-slow-queries: */15 → horário (~2.884 → ~168 chamadas/semana)
-SELECT cron.alter_job(
-  (SELECT jobid FROM cron.job WHERE jobname = 'capture-slow-queries'),
-  schedule := '0 * * * *'
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'capture-slow-queries') THEN
+    PERFORM cron.alter_job(
+      (SELECT jobid FROM cron.job WHERE jobname = 'capture-slow-queries'),
+      schedule := '0 * * * *'
+    );
+  END IF;
+END $$;
 
--- monitorar-erros-frontend: */15 → */30 min (~2.920 → ~1.440 chamadas/semana)
-SELECT cron.alter_job(
-  (SELECT jobid FROM cron.job WHERE jobname = 'monitorar-erros-frontend'),
-  schedule := '*/30 * * * *'
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'monitorar-erros-frontend') THEN
+    PERFORM cron.alter_job(
+      (SELECT jobid FROM cron.job WHERE jobname = 'monitorar-erros-frontend'),
+      schedule := '*/30 * * * *'
+    );
+  END IF;
+END $$;
+
