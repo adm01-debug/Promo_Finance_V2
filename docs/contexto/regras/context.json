@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "edeed281a28c42297daaecab4340c5512045e0cc",
+  "sha": "0274005f67ffa268af31e0c88478e915fc3374b6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-14 13:07 UTC",
-  "files_total": 3872,
-  "code_files": 3506,
-  "code_lines": 497456
+  "generated_at": "2026-11-14 14:22 UTC",
+  "files_total": 3873,
+  "code_files": 3507,
+  "code_lines": 497554
  },
  "version": "1.3.2",
- "facts_hash": "16411c3a6657cdf6",
+ "facts_hash": "bc079f9ac8095169",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "languages": {
    ".ts": 1220,
    ".tsx": 1088,
-   ".sql": 1086,
+   ".sql": 1087,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -44204,10 +44204,10 @@
     "args": "p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_nivel_max integer DEFAULT NULL::integer",
     "returns": "TABLE(conta_id uuid, codigo text, nome text, tipo text, natureza text, nivel integer, aceita_lancamento boolean, saldo_anterior numeric, debitos numeric, creditos numeric, saldo_final numeric)",
     "lang": "sql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "WITH RECURSIVE mov AS ( SELECT p.conta_id AS c_id, SUM(CASE WHEN l.data_lancamento < p_data_inicio THEN CASE WHEN p.tipo = 'D' THEN p.valor ELSE -p.valor END ELSE 0 END) AS saldo_anterior, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'D' THEN p.valor ELSE 0 END) AS debitos, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'C' THEN p.valor ELSE 0 END) AS creditos FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id WHERE l.empresa_id = p_empresa_id AND l.data_lancamento <= p_data_fim AND COALESCE(l.status, 'ativo') <> 'cancelado' GROUP BY p.conta_id ) …",
+    "body": "WITH RECURSIVE mov AS ( SELECT p.conta_id AS c_id, SUM(CASE WHEN l.data_lancamento < p_data_inicio THEN CASE WHEN p.tipo = 'debito' THEN p.valor ELSE -p.valor END ELSE 0 END) AS saldo_anterior, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'debito' THEN p.valor ELSE 0 END) AS debitos, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'credito' THEN p.valor ELSE 0 END) AS creditos FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id WHERE l.empresa_id = p_empresa_id AND l.data_lancamento <= p_data_fim AND COALESCE(l.status, 'ativo') <> 'cancelado' GROUP …",
     "raises": [],
     "tables": [
      "closure",
@@ -52529,6 +52529,7 @@
    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
    "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
    "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
+   "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
    "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
    "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
@@ -72813,8 +72814,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1016,
-   "lines": 76619,
+   "files": 1017,
+   "lines": 76717,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -150158,10 +150159,10 @@
     "args": "p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_nivel_max integer DEFAULT NULL::integer",
     "returns": "TABLE(conta_id uuid, codigo text, nome text, tipo text, natureza text, nivel integer, aceita_lancamento boolean, saldo_anterior numeric, debitos numeric, creditos numeric, saldo_final numeric)",
     "lang": "sql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "WITH RECURSIVE mov AS ( SELECT p.conta_id AS c_id, SUM(CASE WHEN l.data_lancamento < p_data_inicio THEN CASE WHEN p.tipo = 'D' THEN p.valor ELSE -p.valor END ELSE 0 END) AS saldo_anterior, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'D' THEN p.valor ELSE 0 END) AS debitos, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'C' THEN p.valor ELSE 0 END) AS creditos FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id WHERE l.empresa_id = p_empresa_id AND l.data_lancamento <= p_data_fim AND COALESCE(l.status, 'ativo') <> 'cancelado' GROUP BY p.conta_id ) …",
+    "body": "WITH RECURSIVE mov AS ( SELECT p.conta_id AS c_id, SUM(CASE WHEN l.data_lancamento < p_data_inicio THEN CASE WHEN p.tipo = 'debito' THEN p.valor ELSE -p.valor END ELSE 0 END) AS saldo_anterior, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'debito' THEN p.valor ELSE 0 END) AS debitos, SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'credito' THEN p.valor ELSE 0 END) AS creditos FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id WHERE l.empresa_id = p_empresa_id AND l.data_lancamento <= p_data_fim AND COALESCE(l.status, 'ativo') <> 'cancelado' GROUP …",
     "raises": [],
     "tables": [
      "closure",
@@ -245223,6 +245224,10 @@
    "path": "supabase/migrations/20261113163037_colunas_campos_formulario.sql",
    "lines": 129
   },
+  "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql": {
+   "path": "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
+   "lines": 98
+  },
   "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql": {
    "path": "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
    "lines": 17
@@ -245339,10 +245344,19 @@
   }
  },
  "git": {
-  "sha": "edeed281a28c42297daaecab4340c5512045e0cc",
+  "sha": "0274005f67ffa268af31e0c88478e915fc3374b6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "0274005",
+    "date": "2026-11-14",
+    "author": "adm01-debug",
+    "subject": "fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)",
+    "files": [
+     "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql"
+    ]
+   },
    {
     "sha": "edeed28",
     "date": "2026-11-14",
@@ -245957,15 +245971,6 @@
      "supabase/functions/relatorio-diario-anomalias/index.ts",
      "supabase/functions/send-device-alert/index.ts"
     ]
-   },
-   {
-    "sha": "3efb5c7",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)",
-    "files": [
-     ".github/workflows/codeql.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -245996,6 +246001,10 @@
    [
     "src/App.tsx",
     2
+   ],
+   [
+    "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
+    1
    ],
    [
     "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
@@ -246043,10 +246052,6 @@
    ],
    [
     "src/hooks/__tests__/useContratos.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
     1
    ]
   ]

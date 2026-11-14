@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "edeed281a28c42297daaecab4340c5512045e0cc",
+  "commit": "0274005f67ffa268af31e0c88478e915fc3374b6",
   "branch": "main",
-  "data_commit": "2026-11-14T09:28:47-03:00",
+  "data_commit": "2026-11-14T11:07:03-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0274005",
+    "data": "2026-11-14",
+    "assunto": "fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)"
+   },
    {
     "sha": "edeed28",
     "data": "2026-11-14",
@@ -126,14 +131,9 @@
     "sha": "7c4bc25",
     "data": "2026-11-12",
     "assunto": "feat: contabilização usa a conta contábil da categoria (#317)"
-   },
-   {
-    "sha": "4589361",
-    "data": "2026-11-12",
-    "assunto": "fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)"
    }
   ],
-  "arquivos_mudados_7d": 832,
+  "arquivos_mudados_7d": 833,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -238,11 +238,11 @@
     "mudancas": 11
    },
    {
-    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
-    "mudancas": 11
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/supabase-linter.yml",
+    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
     "mudancas": 10
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 109
+    "commits": 110
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3830,
+  "arquivos_total": 3831,
   "arquivos_codigo": 2419,
   "linhas_codigo": 431766,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1016,
+  "migrations": 1017,
   "cron_jobs": 21,
   "testes": 437,
   "workflows": 19,

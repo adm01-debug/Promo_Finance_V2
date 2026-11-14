@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `edeed281a28c42297daaecab4340c5512045e0cc` (2026-11-14T09:28:47-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0274005f67ffa268af31e0c88478e915fc3374b6` (2026-11-14T11:07:03-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2308), SQL (1086), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2308), SQL (1087), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3830 |
+| arquivos_total | 3831 |
 | arquivos_codigo | 2419 |
 | linhas_codigo | 431766 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
-| migrations | 1016 |
+| migrations | 1017 |
 | cron_jobs | 21 |
 | testes | 437 |
 | workflows | 19 |
@@ -470,8 +470,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - env.manifest.json (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- e2e/auth/admin-rbac.e2e.ts (11)
 - .github/workflows/supabase-linter.yml (10)
+- e2e/auth/admin-rbac.e2e.ts (10)
 - scripts/generate-env-manifest.mjs (10)
 - src/App.tsx (10)
 - .github/workflows/functions-deploy.yml (9)
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-14 `0274005` fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)
 - 2026-11-14 `edeed28` fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#3
 - 2026-11-14 `f3b6700` chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica
 - 2026-11-14 `b7559c3` fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-13 `309bc9b` fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)
 - 2026-11-13 `7cbba6f` lint zero + type-check estrito zerado (72→0) (#328)
 - 2026-11-13 `2d3e3db` fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)
-- 2026-11-13 `04e82b5` infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
