@@ -90787,24 +90787,6 @@
         "severity": "ALTA"
       },
       {
-        "code": "rls_no_policies",
-        "detail": "RLS ligado sem policies: inacessível via API (só service_role).",
-        "object": "public.alert_configurations",
-        "severity": "MÉDIA"
-      },
-      {
-        "code": "rls_no_policies",
-        "detail": "RLS ligado sem policies: inacessível via API (só service_role).",
-        "object": "public.alerts",
-        "severity": "MÉDIA"
-      },
-      {
-        "code": "rls_no_policies",
-        "detail": "RLS ligado sem policies: inacessível via API (só service_role).",
-        "object": "public.risk_rules",
-        "severity": "MÉDIA"
-      },
-      {
         "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.acordos_parcelamento.acordos_parcelamento_cliente_id_fkey",
@@ -91293,7 +91275,43 @@
       {
         "code": "policy_auth_fn_not_wrapped",
         "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.alert_configurations.alert_configurations_tenant_delete",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.alert_configurations.alert_configurations_tenant_insert",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.alert_configurations.alert_configurations_tenant_update",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
         "object": "public.alertas.Users can view own or privileged system alertas",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.alerts.alerts_tenant_delete",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.alerts.alerts_tenant_insert",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.alerts.alerts_tenant_update",
         "severity": "BAIXA"
       },
       {
@@ -91840,6 +91858,24 @@
         "code": "policy_auth_fn_not_wrapped",
         "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
         "object": "public.retencoes_fonte.Financeiro+ podem ver retencoes_fonte",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.risk_rules.risk_rules_tenant_delete",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.risk_rules.risk_rules_tenant_insert",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.risk_rules.risk_rules_tenant_update",
         "severity": "BAIXA"
       },
       {
@@ -94199,6 +94235,12 @@
         "version": "20260519165136"
       },
       {
+        "name": "fe91e67d-c636-4436-9243-b2137c1ae189",
+        "statements": 6,
+        "statements_sha": "fe8c7ae5b7687fa8",
+        "version": "20260519165139"
+      },
+      {
         "name": "reconciliado_schema_existente",
         "statements": null,
         "version": "20260521000001"
@@ -94209,9 +94251,21 @@
         "version": "20260522142602"
       },
       {
+        "name": "6665fe77-12f7-40ef-8e4f-17d9525d3b69",
+        "statements": 2,
+        "statements_sha": "99790a33f2efdf41",
+        "version": "20260522142604"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260522142709"
+      },
+      {
+        "name": "a38cc086-ae93-4fd5-a53b-dcfe1e359450",
+        "statements": 1,
+        "statements_sha": "de8ac777560ede65",
+        "version": "20260522142711"
       },
       {
         "name": null,
@@ -94219,14 +94273,32 @@
         "version": "20260522142741"
       },
       {
+        "name": "696c5a2d-1442-4d21-a399-1c6f69dce603",
+        "statements": 1,
+        "statements_sha": "463d71c75eda9de6",
+        "version": "20260522142743"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260522200727"
       },
       {
+        "name": "965bdc6e-9284-4795-b499-3e7b26884337",
+        "statements": 6,
+        "statements_sha": "30177431e8ffadb8",
+        "version": "20260522200729"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260527125837"
+      },
+      {
+        "name": "4c2450b3-29f0-46f6-8f8e-e19c9f0061c3",
+        "statements": 2,
+        "statements_sha": "8481bde464eda185",
+        "version": "20260527125840"
       },
       {
         "name": null,
@@ -94239,14 +94311,32 @@
         "version": "20260531123733"
       },
       {
+        "name": "e923a347-4d43-4af5-b68f-db154ca7f62b",
+        "statements": 22,
+        "statements_sha": "b68287c0ae67b581",
+        "version": "20260531123734"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260531123933"
       },
       {
+        "name": "090ff7cb-3843-4573-a977-3eae18581dd7",
+        "statements": 1,
+        "statements_sha": "8af3ef7ea4a991d1",
+        "version": "20260531123935"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260531123949"
+      },
+      {
+        "name": "688f5867-bf5d-4ab8-8cf2-216e4592ca54",
+        "statements": 1,
+        "statements_sha": "3f5254fc456be664",
+        "version": "20260531123952"
       },
       {
         "name": null,
@@ -94259,14 +94349,32 @@
         "version": "20260531163028"
       },
       {
+        "name": "9e4fd52a-5975-4da4-80b6-87cf5007d2f0",
+        "statements": 12,
+        "statements_sha": "f452518bb325f302",
+        "version": "20260531163029"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260531163133"
       },
       {
+        "name": "e31beebd-e03d-4c1b-8bad-a187d56fcaf3",
+        "statements": 1,
+        "statements_sha": "c546cbbe196828ab",
+        "version": "20260531163136"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260531163340"
+      },
+      {
+        "name": "6193602e-99d2-4914-923b-40912d00fdaa",
+        "statements": 21,
+        "statements_sha": "4f17ca978550810b",
+        "version": "20260531163343"
       },
       {
         "name": "reconciliado_schema_existente",
@@ -94297,6 +94405,12 @@
         "name": "reconciliado_schema_existente",
         "statements": null,
         "version": "20260619145929"
+      },
+      {
+        "name": "fd0213c6-5928-4562-8e3e-c0db3d6f24a1",
+        "statements": 54,
+        "statements_sha": "975f5eda16898de4",
+        "version": "20260619145930"
       },
       {
         "name": "reconciliado_schema_existente",
@@ -94344,9 +94458,21 @@
         "version": "20260619150338"
       },
       {
+        "name": "a70425ec-13b2-448f-b150-aab151532d6a",
+        "statements": 48,
+        "statements_sha": "ce0bb0125e64ebf2",
+        "version": "20260619150341"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260619150509"
+      },
+      {
+        "name": "69dafc73-1cee-483f-b321-0cbfd26b38aa",
+        "statements": 6,
+        "statements_sha": "2cbe8884514b8789",
+        "version": "20260619150512"
       },
       {
         "name": null,
@@ -94354,9 +94480,21 @@
         "version": "20260619150636"
       },
       {
+        "name": "bff73829-2637-4f3c-bc07-0ada99caa87b",
+        "statements": 6,
+        "statements_sha": "15d7e2e8a18fe2bd",
+        "version": "20260619150639"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260619150719"
+      },
+      {
+        "name": "da455bb0-1208-4cec-99e2-101abf4942b7",
+        "statements": 1,
+        "statements_sha": "3415f47159faf2cc",
+        "version": "20260619150721"
       },
       {
         "name": null,
@@ -94364,9 +94502,21 @@
         "version": "20260619150813"
       },
       {
+        "name": "3e6dedb1-0fa3-4310-9740-ef81d665ac1e",
+        "statements": 8,
+        "statements_sha": "2ba29f55f3ebdb63",
+        "version": "20260619150815"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260619151725"
+      },
+      {
+        "name": "a8fb23a6-8759-4527-af3b-7ec0df302562",
+        "statements": 34,
+        "statements_sha": "f110ddf25b11af3f",
+        "version": "20260619151727"
       },
       {
         "name": null,
@@ -94374,9 +94524,21 @@
         "version": "20260619152355"
       },
       {
+        "name": "da6bc423-0418-45e8-ae3e-9a1b78a7c5f6",
+        "statements": 18,
+        "statements_sha": "f4275208eaea5b03",
+        "version": "20260619152357"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260619152719"
+      },
+      {
+        "name": "b6a00c86-4d32-4ec8-8d11-fecc433d9cee",
+        "statements": 30,
+        "statements_sha": "f1b8b34b2f3d3dd8",
+        "version": "20260619152721"
       },
       {
         "name": null,
@@ -94384,9 +94546,21 @@
         "version": "20260619153025"
       },
       {
+        "name": "c4bb8d69-3af7-433c-8171-f25a27b71baa",
+        "statements": 5,
+        "statements_sha": "a75b1fc0fe578cd4",
+        "version": "20260619153027"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260619153343"
+      },
+      {
+        "name": "500f18f8-12f5-489b-955e-33891a03e8c8",
+        "statements": 2,
+        "statements_sha": "96feec20107b8e6d",
+        "version": "20260619153345"
       },
       {
         "name": null,
@@ -94394,14 +94568,32 @@
         "version": "20260619204706"
       },
       {
+        "name": "10cb8b11-10d2-46ed-913f-abc78f3d44b0",
+        "statements": 5,
+        "statements_sha": "44a7a1f95710ae1e",
+        "version": "20260619204708"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260619205640"
       },
       {
+        "name": "e37ad132-8f5e-4265-85d4-365766f3f12a",
+        "statements": 6,
+        "statements_sha": "bdcc5e65bacd0a5f",
+        "version": "20260619205643"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711145321"
+      },
+      {
+        "name": "9f7a8e03-10de-41bd-829d-c7b474a6fc2e",
+        "statements": 21,
+        "statements_sha": "9512b6fb13e4df55",
+        "version": "20260711145322"
       },
       {
         "name": null,
@@ -94412,6 +94604,12 @@
         "name": null,
         "statements": null,
         "version": "20260711145610"
+      },
+      {
+        "name": "f42041eb-5773-49f6-9229-738a2ba3507a",
+        "statements": 1,
+        "statements_sha": "27acb457d4737058",
+        "version": "20260711145611"
       },
       {
         "name": null,
@@ -94429,14 +94627,32 @@
         "version": "20260711152457"
       },
       {
+        "name": "61087e18-f8f2-41e0-875b-4d6b37fb3664",
+        "statements": 13,
+        "statements_sha": "a90e0e0c86427483",
+        "version": "20260711152458"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711152507"
       },
       {
+        "name": "eb4c313a-5fb5-4633-9035-33ef106b4211",
+        "statements": 7,
+        "statements_sha": "dd856970eee69e70",
+        "version": "20260711152625"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711152629"
+      },
+      {
+        "name": "67e3959b-15ec-494d-869f-285ec3a9e765",
+        "statements": 13,
+        "statements_sha": "4e000fb06075d452",
+        "version": "20260711153310"
       },
       {
         "name": null,
@@ -94449,9 +94665,21 @@
         "version": "20260711153446"
       },
       {
+        "name": "bd0a85a4-4b99-4fd0-88de-0b3609dcba28",
+        "statements": 22,
+        "statements_sha": "3ce7cc15f3f39212",
+        "version": "20260711153447"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711153451"
+      },
+      {
+        "name": "d57ae415-8676-4cfd-98f1-a9e3855f711b",
+        "statements": 4,
+        "statements_sha": "48b0568527fc393d",
+        "version": "20260711153629"
       },
       {
         "name": null,
@@ -94459,9 +94687,21 @@
         "version": "20260711153631"
       },
       {
+        "name": "65d9f8e7-58ad-4550-8f21-3bfd3f4abcc4",
+        "statements": 34,
+        "statements_sha": "4e425e77731588bd",
+        "version": "20260711164339"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711164344"
+      },
+      {
+        "name": "923d4d0b-293a-4591-b260-b080678d4f4d",
+        "statements": 2,
+        "statements_sha": "0375b3ec616e8c15",
+        "version": "20260711164516"
       },
       {
         "name": null,
@@ -94474,9 +94714,21 @@
         "version": "20260711164723"
       },
       {
+        "name": "aaf9dcf3-3607-4fd8-97cf-d8d4ba2ee540",
+        "statements": 1,
+        "statements_sha": "dc53e3043227f242",
+        "version": "20260711164724"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711164730"
+      },
+      {
+        "name": "235d2c5d-ac26-468a-88df-339dbccf4c61",
+        "statements": 4,
+        "statements_sha": "8be6e76b1c69ff76",
+        "version": "20260711182305"
       },
       {
         "name": null,
@@ -94489,9 +94741,21 @@
         "version": "20260711182521"
       },
       {
+        "name": "70a54a27-3f2e-42ea-8ff2-71bd1b76dc2b",
+        "statements": 3,
+        "statements_sha": "332bc924d1fc2c24",
+        "version": "20260711182522"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711182534"
+      },
+      {
+        "name": "5cd96ae1-0804-4d73-b367-904722df8877",
+        "statements": 1,
+        "statements_sha": "60ff86150882f7b3",
+        "version": "20260711183150"
       },
       {
         "name": null,
@@ -94499,9 +94763,21 @@
         "version": "20260711183153"
       },
       {
+        "name": "ca80e6c9-fa13-4bce-beca-8d5f2178ae1d",
+        "statements": 6,
+        "statements_sha": "7dd41fc23f59f042",
+        "version": "20260711183407"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711183409"
+      },
+      {
+        "name": "1f997863-80ca-4589-bb4b-b3d64e48a77f",
+        "statements": 8,
+        "statements_sha": "599824b0574c3b8c",
+        "version": "20260711184034"
       },
       {
         "name": null,
@@ -94514,6 +94790,12 @@
         "version": "20260711184935"
       },
       {
+        "name": "a50a6f52-4857-4172-870e-1068ce87a9a5",
+        "statements": 6,
+        "statements_sha": "d69f1a8cc98b1a75",
+        "version": "20260711184936"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711184939"
@@ -94524,9 +94806,21 @@
         "version": "20260711192250"
       },
       {
+        "name": "c1dc2634-dbaa-4bff-8194-994acdf8672f",
+        "statements": 4,
+        "statements_sha": "aef0b98d43e3debd",
+        "version": "20260711192251"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711192253"
+      },
+      {
+        "name": "389f57f8-c821-4df1-83af-b35b2a0df495",
+        "statements": 7,
+        "statements_sha": "dc7f62c3e2a06852",
+        "version": "20260711192548"
       },
       {
         "name": null,
@@ -94534,9 +94828,21 @@
         "version": "20260711192550"
       },
       {
+        "name": "c8310697-32b5-48a3-bad2-faf0bafb33a0",
+        "statements": 13,
+        "statements_sha": "1a41c790cd0db595",
+        "version": "20260711192821"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711192826"
+      },
+      {
+        "name": "3d1b0201-2b3f-479f-8e44-856811057a1a",
+        "statements": 7,
+        "statements_sha": "778be1903e8f7c7a",
+        "version": "20260711194404"
       },
       {
         "name": null,
@@ -94544,9 +94850,21 @@
         "version": "20260711194407"
       },
       {
+        "name": "d043c34d-046f-41fd-babc-1665d28008c8",
+        "statements": 2,
+        "statements_sha": "c9cd0d83c844ebdf",
+        "version": "20260711194627"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260711194630"
+      },
+      {
+        "name": "b22e8333-1f60-481c-b5db-77aa9190c06b",
+        "statements": 4,
+        "statements_sha": "37d1f4da694f13c3",
+        "version": "20260712110158"
       },
       {
         "name": null,
@@ -94554,9 +94872,21 @@
         "version": "20260712110201"
       },
       {
+        "name": "15fb6e2c-b114-4e91-b8b3-67cd829f87d2",
+        "statements": 2,
+        "statements_sha": "742cc0f8211e2ead",
+        "version": "20260712110858"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712110900"
+      },
+      {
+        "name": "22bf8774-410e-48ba-969f-0c0eb029a6a6",
+        "statements": 2,
+        "statements_sha": "0cad7031b059cdc2",
+        "version": "20260712112543"
       },
       {
         "name": null,
@@ -94564,9 +94894,21 @@
         "version": "20260712112546"
       },
       {
+        "name": "c90b3ce5-d620-445e-bbd0-b36feab7b528",
+        "statements": 2,
+        "statements_sha": "18ee5858fa5ddc86",
+        "version": "20260712112910"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712112912"
+      },
+      {
+        "name": "e2920970-eb3f-4cdd-a95f-2a2e3e2dd180",
+        "statements": 39,
+        "statements_sha": "f0b136f02773719b",
+        "version": "20260712113057"
       },
       {
         "name": null,
@@ -94574,9 +94916,21 @@
         "version": "20260712113059"
       },
       {
+        "name": "8b3287f0-60cd-4532-b198-c3087c7f46b5",
+        "statements": 6,
+        "statements_sha": "5bbe77058de4c2d8",
+        "version": "20260712113738"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712113740"
+      },
+      {
+        "name": "1d2b0bc8-f617-4c58-9fcd-0885f93211ae",
+        "statements": 4,
+        "statements_sha": "3a056524ff8d6b27",
+        "version": "20260712115506"
       },
       {
         "name": null,
@@ -94584,9 +94938,21 @@
         "version": "20260712115509"
       },
       {
+        "name": "4742ce87-a8be-49b7-a23b-087c71827650",
+        "statements": 1,
+        "statements_sha": "50809d5f6899f89b",
+        "version": "20260712160952"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712160959"
+      },
+      {
+        "name": "a1de1561-be77-4608-86b5-d719b37a29cd",
+        "statements": 1,
+        "statements_sha": "9078c59ea9f7c86b",
+        "version": "20260712161138"
       },
       {
         "name": null,
@@ -94594,9 +94960,21 @@
         "version": "20260712161142"
       },
       {
+        "name": "dde749e3-5151-4111-b561-651935452051",
+        "statements": 2,
+        "statements_sha": "860590066333cd39",
+        "version": "20260712161305"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712161322"
+      },
+      {
+        "name": "668a148c-f3c1-4a32-a54b-4cf682666699",
+        "statements": 8,
+        "statements_sha": "22f806f0ecb339b7",
+        "version": "20260712161351"
       },
       {
         "name": null,
@@ -94604,9 +94982,21 @@
         "version": "20260712161355"
       },
       {
+        "name": "472856ac-a9cb-4701-ac4c-a0e6ad43f73f",
+        "statements": 6,
+        "statements_sha": "b3bf798368bf19fc",
+        "version": "20260712184014"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712184018"
+      },
+      {
+        "name": "ea5c5547-28a0-4e0b-820e-d9e8022b8f8d",
+        "statements": 2,
+        "statements_sha": "59399dbe24c496e6",
+        "version": "20260712184340"
       },
       {
         "name": null,
@@ -94614,9 +95004,21 @@
         "version": "20260712184345"
       },
       {
+        "name": "86499a5b-e277-4fe2-a955-d67ed759500a",
+        "statements": 14,
+        "statements_sha": "4d81d4ed8906c3f2",
+        "version": "20260712184508"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712184511"
+      },
+      {
+        "name": "6ab8025d-5b75-4c98-a13d-0a62322795d2",
+        "statements": 14,
+        "statements_sha": "4e9133b5b2d3305e",
+        "version": "20260712184854"
       },
       {
         "name": null,
@@ -94624,9 +95026,21 @@
         "version": "20260712184856"
       },
       {
+        "name": "20f89e52-aae5-49ec-98e1-8da9da162328",
+        "statements": 17,
+        "statements_sha": "bdb18a1d9395dfda",
+        "version": "20260712185129"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712185133"
+      },
+      {
+        "name": "8eb1fee3-5ff3-490b-a80d-dfe8a12f8789",
+        "statements": 2,
+        "statements_sha": "5ccf642bde22b3c9",
+        "version": "20260712194216"
       },
       {
         "name": null,
@@ -94634,9 +95048,21 @@
         "version": "20260712194219"
       },
       {
+        "name": "c4e0a8ab-3005-4479-9858-77678c1e8a88",
+        "statements": 4,
+        "statements_sha": "3af7179ce0006964",
+        "version": "20260712194415"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712194423"
+      },
+      {
+        "name": "59fca68e-c1d7-46ba-98c1-b84f68d4c48f",
+        "statements": 2,
+        "statements_sha": "655090cbaefe124a",
+        "version": "20260712194438"
       },
       {
         "name": null,
@@ -94644,9 +95070,21 @@
         "version": "20260712194442"
       },
       {
+        "name": "6779ec03-860d-4d19-89b2-044aa6594ba8",
+        "statements": 14,
+        "statements_sha": "3817692d4320ea73",
+        "version": "20260712194623"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712194629"
+      },
+      {
+        "name": "ff1a7077-1e21-4ea3-8ff5-542d57933c35",
+        "statements": 2,
+        "statements_sha": "53f7dc4d962ad275",
+        "version": "20260712195029"
       },
       {
         "name": null,
@@ -94654,9 +95092,21 @@
         "version": "20260712195032"
       },
       {
+        "name": "be938045-06aa-4fdd-98fd-4f8a622b2235",
+        "statements": 25,
+        "statements_sha": "9f12f5964a441298",
+        "version": "20260712215648"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712215652"
+      },
+      {
+        "name": "9b315482-89ce-40b1-8d45-d8307a89edd9",
+        "statements": 7,
+        "statements_sha": "d231d78e3dbbd376",
+        "version": "20260712215738"
       },
       {
         "name": null,
@@ -94664,9 +95114,21 @@
         "version": "20260712215742"
       },
       {
+        "name": "1828e43a-53fd-47e7-88ce-4891e4a3e145",
+        "statements": 9,
+        "statements_sha": "4d0e7c29b0b120a8",
+        "version": "20260712215826"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712215830"
+      },
+      {
+        "name": "27a72a4d-c9a6-4e5e-84eb-bf6e9e5eb693",
+        "statements": 6,
+        "statements_sha": "fe34e85666290d06",
+        "version": "20260712220003"
       },
       {
         "name": null,
@@ -94674,9 +95136,21 @@
         "version": "20260712220006"
       },
       {
+        "name": "307d75db-6942-4dc3-9416-60e40dce8334",
+        "statements": 7,
+        "statements_sha": "0d9bef9251852d9d",
+        "version": "20260712220428"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712220431"
+      },
+      {
+        "name": "0575d17c-3472-4544-80b7-63e87a328e04",
+        "statements": 1,
+        "statements_sha": "b516b542b8defc01",
+        "version": "20260712220716"
       },
       {
         "name": null,
@@ -94689,6 +95163,12 @@
         "version": "20260712223141"
       },
       {
+        "name": "cb251826-2aad-42e0-aa92-fbf0410f4a5a",
+        "statements": 2,
+        "statements_sha": "6703be89acdc4ca6",
+        "version": "20260712223142"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712223143"
@@ -94699,9 +95179,21 @@
         "version": "20260712223145"
       },
       {
+        "name": "74304c5b-7b68-4ec5-ad92-67bb0b7b46de",
+        "statements": 14,
+        "statements_sha": "710961e2e048de00",
+        "version": "20260712223907"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712223910"
+      },
+      {
+        "name": "1210ec86-7c23-4cf9-96c7-ef7e5d721e5b",
+        "statements": 4,
+        "statements_sha": "f05e2b7b34743934",
+        "version": "20260712231357"
       },
       {
         "name": null,
@@ -94709,9 +95201,21 @@
         "version": "20260712231400"
       },
       {
+        "name": "e075199c-5e1d-4757-bf8f-9f16c46553ae",
+        "statements": 2,
+        "statements_sha": "1e5cc31787e4aed7",
+        "version": "20260712232138"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260712232140"
+      },
+      {
+        "name": "dfd3e27c-f2dd-4e53-8f33-760e7200d586",
+        "statements": 2,
+        "statements_sha": "482d8e021bbf2b69",
+        "version": "20260712232543"
       },
       {
         "name": null,
@@ -94719,9 +95223,21 @@
         "version": "20260712232546"
       },
       {
+        "name": "4aed62d5-bb9d-4fb5-8c6d-48a5506630db",
+        "statements": 2,
+        "statements_sha": "0a10b55c8ecccf87",
+        "version": "20260715155051"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260715155056"
+      },
+      {
+        "name": "61771bd5-dea7-4b37-8923-9a509c6bcd6f",
+        "statements": 1,
+        "statements_sha": "a643e3d216b09900",
+        "version": "20260715164438"
       },
       {
         "name": null,
@@ -94729,9 +95245,21 @@
         "version": "20260715164440"
       },
       {
+        "name": "d33e896f-e982-48c7-a510-84c5b2801b2f",
+        "statements": 1,
+        "statements_sha": "c5595f7db99e6d60",
+        "version": "20260722150922"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260722150926"
+      },
+      {
+        "name": "3d8a2d6a-06b3-4eeb-bde3-93eeed3c6c06",
+        "statements": 19,
+        "statements_sha": "e5dd0085b4f5b600",
+        "version": "20260722173817"
       },
       {
         "name": null,
@@ -94739,9 +95267,21 @@
         "version": "20260722173828"
       },
       {
+        "name": "033f461a-fac8-4db7-8a60-4371347bd7c5",
+        "statements": 45,
+        "statements_sha": "3e55c685bf178b99",
+        "version": "20260722193652"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260722193655"
+      },
+      {
+        "name": "a69c873b-03b2-450d-8b7b-3c135ceb6c9f",
+        "statements": 4,
+        "statements_sha": "26a4fbd0757cff64",
+        "version": "20260722193843"
       },
       {
         "name": null,
@@ -94749,9 +95289,21 @@
         "version": "20260722193847"
       },
       {
+        "name": "15c30316-cef5-42b6-bcf7-a30813c6fee9",
+        "statements": 4,
+        "statements_sha": "d6ed960ab912b000",
+        "version": "20260722193917"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260722193922"
+      },
+      {
+        "name": "8ac2bdbe-01fc-42cd-b7dd-c866c387a88a",
+        "statements": 6,
+        "statements_sha": "7d1805b1f900bd81",
+        "version": "20260722194100"
       },
       {
         "name": null,
@@ -94759,9 +95311,21 @@
         "version": "20260722194102"
       },
       {
+        "name": "11c84439-d6da-4460-9e46-0fca38a8da44",
+        "statements": 5,
+        "statements_sha": "b6c697d55ccbd1e1",
+        "version": "20260723103748"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723103753"
+      },
+      {
+        "name": "9c2e0558-25c1-4d79-94bd-1343ed4ffa43",
+        "statements": 4,
+        "statements_sha": "d3c80af6b0c58611",
+        "version": "20260723112052"
       },
       {
         "name": null,
@@ -94769,9 +95333,21 @@
         "version": "20260723112056"
       },
       {
+        "name": "f5ad9fbe-21db-4a98-bf23-ee46c076ca08",
+        "statements": 5,
+        "statements_sha": "072e7171a2c17eb8",
+        "version": "20260723112430"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723112433"
+      },
+      {
+        "name": "c61e6661-2b3b-4dda-a471-03f8b587d14d",
+        "statements": 4,
+        "statements_sha": "2d449739c4641479",
+        "version": "20260723113410"
       },
       {
         "name": null,
@@ -94779,9 +95355,21 @@
         "version": "20260723113412"
       },
       {
+        "name": "54a8a600-3cb1-43ae-b60f-3c37c1ba87d1",
+        "statements": 4,
+        "statements_sha": "ecf5c6013668e053",
+        "version": "20260723115343"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723115346"
+      },
+      {
+        "name": "20cca17b-987b-414b-a7c5-b3a13bdc1c26",
+        "statements": 13,
+        "statements_sha": "e078a275ecdcc34e",
+        "version": "20260723120045"
       },
       {
         "name": null,
@@ -94789,9 +95377,21 @@
         "version": "20260723120048"
       },
       {
+        "name": "26546526-ca79-48e8-b067-571d2d02a16d",
+        "statements": 12,
+        "statements_sha": "381e25d284ee618b",
+        "version": "20260723120954"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723120957"
+      },
+      {
+        "name": "bf57fba3-aef2-4933-852d-eb71c08cfc64",
+        "statements": 1,
+        "statements_sha": "c5428033e83a2d59",
+        "version": "20260723122549"
       },
       {
         "name": null,
@@ -94799,9 +95399,21 @@
         "version": "20260723122552"
       },
       {
+        "name": "d6b8d22c-f32c-4adb-b70d-34c526113dc6",
+        "statements": 12,
+        "statements_sha": "d5045ed85c49f30b",
+        "version": "20260723123522"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723123531"
+      },
+      {
+        "name": "a8400102-ff92-427c-acd8-458bf4149ff6",
+        "statements": 26,
+        "statements_sha": "5e94c463c6c1604c",
+        "version": "20260723123927"
       },
       {
         "name": null,
@@ -94814,9 +95426,21 @@
         "version": "20260723124730"
       },
       {
+        "name": "b99db7f7-c364-4450-bde5-036bd5fdb520",
+        "statements": 17,
+        "statements_sha": "b3cd2c9e0fb32248",
+        "version": "20260723124731"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723124733"
+      },
+      {
+        "name": "dc77db31-80a6-4802-9e54-89e0db579c8a",
+        "statements": 1,
+        "statements_sha": "f061fc376db38920",
+        "version": "20260723125038"
       },
       {
         "name": null,
@@ -94824,9 +95448,21 @@
         "version": "20260723125047"
       },
       {
+        "name": "8b1caf7f-d4ff-4756-80be-e3d69099d1a0",
+        "statements": 9,
+        "statements_sha": "865e61030ea66be7",
+        "version": "20260723131956"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260723131959"
+      },
+      {
+        "name": "3d5da1b4-f6f1-4fa9-8eb1-6630e583476f",
+        "statements": 14,
+        "statements_sha": "8aca015b4c53b3f4",
+        "version": "20260723132836"
       },
       {
         "name": null,
@@ -94834,9 +95470,21 @@
         "version": "20260723132845"
       },
       {
+        "name": "f20d43c4-d2ab-4d31-bdf3-a0f412ef0948",
+        "statements": 31,
+        "statements_sha": "da44a7833c6c8dca",
+        "version": "20260726144646"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726144648"
+      },
+      {
+        "name": "b6484747-948d-48a0-aaf9-931d38ecff36",
+        "statements": 3,
+        "statements_sha": "6458a0773a4e1887",
+        "version": "20260726144808"
       },
       {
         "name": null,
@@ -94844,9 +95492,21 @@
         "version": "20260726144810"
       },
       {
+        "name": "795aaff5-72d2-47dc-a391-fe63c63335f1",
+        "statements": 9,
+        "statements_sha": "923f0776b8973c50",
+        "version": "20260726144900"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726144910"
+      },
+      {
+        "name": "e8f0eb34-bd12-4664-ab16-db29d64f9fdd",
+        "statements": 10,
+        "statements_sha": "3123dd8801eecd35",
+        "version": "20260726150630"
       },
       {
         "name": null,
@@ -94854,9 +95514,21 @@
         "version": "20260726150633"
       },
       {
+        "name": "ddb625cc-f9b2-42ae-9f75-cf29b60816f5",
+        "statements": 7,
+        "statements_sha": "5ca21cc2adc654e3",
+        "version": "20260726154430"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726154433"
+      },
+      {
+        "name": "402b6044-fec6-41b8-b27f-61db1f34bdad",
+        "statements": 11,
+        "statements_sha": "33f95894844f47ca",
+        "version": "20260726170813"
       },
       {
         "name": null,
@@ -94864,14 +95536,32 @@
         "version": "20260726170816"
       },
       {
+        "name": "ce5cc15c-dff9-4a49-9658-f195e41fc64b",
+        "statements": 10,
+        "statements_sha": "cf45a6842617827b",
+        "version": "20260726171752"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726171754"
       },
       {
+        "name": "c1fd3346-8ee7-4294-9cbb-1ac0af599885",
+        "statements": 5,
+        "statements_sha": "1c02f4f549386bd8",
+        "version": "20260726172735"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726172741"
+      },
+      {
+        "name": "7ef14ad7-6913-4e93-a418-705bb0cb2da8",
+        "statements": 8,
+        "statements_sha": "68e830ac8a5b1de5",
+        "version": "20260726175923"
       },
       {
         "name": null,
@@ -94884,9 +95574,21 @@
         "version": "20260726180528"
       },
       {
+        "name": "06dcfab8-b837-491e-b01c-84859005e05b",
+        "statements": 2,
+        "statements_sha": "15236e3ba315234f",
+        "version": "20260726180529"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726180533"
+      },
+      {
+        "name": "b939fe2f-8ccb-4c04-b749-04a43d43f46f",
+        "statements": 9,
+        "statements_sha": "d5f9fc68f373565b",
+        "version": "20260726181139"
       },
       {
         "name": null,
@@ -94894,9 +95596,21 @@
         "version": "20260726181149"
       },
       {
+        "name": "55c2966b-c490-4046-9d4b-c3ef4a84c305",
+        "statements": 11,
+        "statements_sha": "89603c4e889bbbcf",
+        "version": "20260726200113"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726200115"
+      },
+      {
+        "name": "0382e757-f41d-4e78-935a-b794bbedb49b",
+        "statements": 2,
+        "statements_sha": "fd761302a5330c8d",
+        "version": "20260726202037"
       },
       {
         "name": null,
@@ -94904,9 +95618,21 @@
         "version": "20260726202040"
       },
       {
+        "name": "7a1962ba-378e-4caa-aefe-0eb1ce2da89c",
+        "statements": 3,
+        "statements_sha": "5ccbf336d6eb6a3d",
+        "version": "20260726204116"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260726204118"
+      },
+      {
+        "name": "fedbaacf-c91d-49cb-a146-7f8e45b9f72f",
+        "statements": 12,
+        "statements_sha": "a0485d4ed874bb8d",
+        "version": "20260727185522"
       },
       {
         "name": null,
@@ -94914,9 +95640,21 @@
         "version": "20260727185524"
       },
       {
+        "name": "7ca97f08-4e76-4ac2-a51f-648e01db9c7a",
+        "statements": 34,
+        "statements_sha": "6df2083a134634d4",
+        "version": "20260727185701"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260727185703"
+      },
+      {
+        "name": "e55927cd-4203-4660-8ed3-653c76377123",
+        "statements": 47,
+        "statements_sha": "320f71f896735c91",
+        "version": "20260727185837"
       },
       {
         "name": null,
@@ -94924,9 +95662,21 @@
         "version": "20260727185839"
       },
       {
+        "name": "432a4b76-ee70-4633-abba-c5e5bc6a250a",
+        "statements": 67,
+        "statements_sha": "af0eb4e53c162a2d",
+        "version": "20260727190031"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260727190034"
+      },
+      {
+        "name": "18ac4ce0-f570-4d24-ac51-4b2b26e1dae1",
+        "statements": 12,
+        "statements_sha": "0f81445a4cb6f0fc",
+        "version": "20260727200855"
       },
       {
         "name": null,
@@ -94934,9 +95684,21 @@
         "version": "20260727200911"
       },
       {
+        "name": "571c9be3-8c3b-4db4-aa44-053a5c994616",
+        "statements": 8,
+        "statements_sha": "1885b349f02ed29b",
+        "version": "20260727202159"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260727202204"
+      },
+      {
+        "name": "9113c8db-358d-4adf-a9b5-2242137c28c3",
+        "statements": 11,
+        "statements_sha": "8baa6323899e24c9",
+        "version": "20260727202842"
       },
       {
         "name": null,
@@ -94944,9 +95706,21 @@
         "version": "20260727202845"
       },
       {
+        "name": "3eafa339-5d40-49a1-9822-d2ed26dae715",
+        "statements": 2,
+        "statements_sha": "b0232df5dc183b06",
+        "version": "20260727204143"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260727204145"
+      },
+      {
+        "name": "cc43bd20-4e38-47ab-9d2b-f6170b93dbeb",
+        "statements": 2,
+        "statements_sha": "8d638bf79b1a722b",
+        "version": "20260727212149"
       },
       {
         "name": null,
@@ -94954,9 +95728,21 @@
         "version": "20260727212152"
       },
       {
+        "name": "8c644c2b-4c27-4b2c-a1b6-362554735b7f",
+        "statements": 33,
+        "statements_sha": "104c68ebf4d8db3e",
+        "version": "20260727213905"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260727213908"
+      },
+      {
+        "name": "519fc6e0-ce25-48fc-870f-064bbcff22cb",
+        "statements": 1,
+        "statements_sha": "96906f466d941abc",
+        "version": "20260728104255"
       },
       {
         "name": null,
@@ -94964,9 +95750,21 @@
         "version": "20260728104257"
       },
       {
+        "name": "cb4be287-2b31-4328-86ea-e0c5406ec659",
+        "statements": 7,
+        "statements_sha": "97fd0b653246ee6e",
+        "version": "20260728104452"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728104456"
+      },
+      {
+        "name": "acc064f8-deaf-4a94-bb4c-07c81667dde8",
+        "statements": 6,
+        "statements_sha": "536dc25c52bcf025",
+        "version": "20260728104548"
       },
       {
         "name": null,
@@ -94974,9 +95772,21 @@
         "version": "20260728104550"
       },
       {
+        "name": "e5d83282-d0db-41ce-93b4-25437e1ab614",
+        "statements": 1,
+        "statements_sha": "12b5f5ffa741f604",
+        "version": "20260728104652"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728104657"
+      },
+      {
+        "name": "890396f3-4c29-4b4a-9446-691e12666528",
+        "statements": 4,
+        "statements_sha": "a8a03f9ad8e9dc31",
+        "version": "20260728104838"
       },
       {
         "name": null,
@@ -94984,9 +95794,21 @@
         "version": "20260728104840"
       },
       {
+        "name": "70a6991c-88f6-4519-9b81-60d55e14d5a7",
+        "statements": 3,
+        "statements_sha": "4e8f4de03539ca75",
+        "version": "20260728104949"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728104952"
+      },
+      {
+        "name": "27035b9c-6049-4961-873f-698be8c72517",
+        "statements": 2,
+        "statements_sha": "c44d37b8a7505927",
+        "version": "20260728105131"
       },
       {
         "name": null,
@@ -94994,9 +95816,21 @@
         "version": "20260728105133"
       },
       {
+        "name": "eeecc487-76f2-49cf-a176-74fc28720687",
+        "statements": 6,
+        "statements_sha": "cf1fba794ed3a7dc",
+        "version": "20260728105223"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728105225"
+      },
+      {
+        "name": "4d034b83-e9d2-4a53-bb88-3ac38703a673",
+        "statements": 3,
+        "statements_sha": "23ea746675f36c54",
+        "version": "20260728105350"
       },
       {
         "name": null,
@@ -95004,9 +95838,21 @@
         "version": "20260728105352"
       },
       {
+        "name": "c0bae82f-ac3c-451e-a42d-52c66a4ffd69",
+        "statements": 3,
+        "statements_sha": "6bcccb182febe222",
+        "version": "20260728105442"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728105444"
+      },
+      {
+        "name": "3239bd8f-24ff-4511-8e42-e028edd7cd87",
+        "statements": 3,
+        "statements_sha": "47b3706c57e859ec",
+        "version": "20260728110011"
       },
       {
         "name": null,
@@ -95014,9 +95860,21 @@
         "version": "20260728110014"
       },
       {
+        "name": "b8a2d224-0794-43a0-a42c-8bcbc86d4d55",
+        "statements": 6,
+        "statements_sha": "e97fccf0d5772e95",
+        "version": "20260728110130"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728110132"
+      },
+      {
+        "name": "5ca8ada1-187c-4968-9f17-fdc276492f06",
+        "statements": 9,
+        "statements_sha": "cb0f4d1c0cef5506",
+        "version": "20260728110334"
       },
       {
         "name": null,
@@ -95024,9 +95882,21 @@
         "version": "20260728110338"
       },
       {
+        "name": "2fe1a5fc-044f-447d-b3d5-ac4ccd9eaa37",
+        "statements": 1,
+        "statements_sha": "97429ec1184830ef",
+        "version": "20260728110408"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728110410"
+      },
+      {
+        "name": "a6a811fb-9fae-4425-a5a1-5969d109076f",
+        "statements": 3,
+        "statements_sha": "c951088d89d74781",
+        "version": "20260728110600"
       },
       {
         "name": null,
@@ -95039,9 +95909,21 @@
         "version": "20260728110752"
       },
       {
+        "name": "90823653-f205-4c49-97d5-ca8a3fc6b60c",
+        "statements": 8,
+        "statements_sha": "4be6bf741e902b75",
+        "version": "20260728110753"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728110757"
+      },
+      {
+        "name": "0b21a98f-63a6-40fb-a81d-1732a6391756",
+        "statements": 7,
+        "statements_sha": "e39c92dec6ad3c62",
+        "version": "20260728111146"
       },
       {
         "name": null,
@@ -95049,9 +95931,21 @@
         "version": "20260728111148"
       },
       {
+        "name": "effbadc4-5914-474b-b0b6-93e8b224200a",
+        "statements": 4,
+        "statements_sha": "c107ed0595747b54",
+        "version": "20260728111407"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728111412"
+      },
+      {
+        "name": "b546a7d5-dcd7-418a-84ed-37b63bcbe941",
+        "statements": 8,
+        "statements_sha": "842aea0492bff0ae",
+        "version": "20260728111542"
       },
       {
         "name": null,
@@ -95059,9 +95953,21 @@
         "version": "20260728111547"
       },
       {
+        "name": "4382584a-1841-4c46-a0cf-db475ae6739e",
+        "statements": 1,
+        "statements_sha": "1b60800507a109ea",
+        "version": "20260728112004"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728112007"
+      },
+      {
+        "name": "84b58e78-3b93-4d78-b095-f0365d75e2d5",
+        "statements": 3,
+        "statements_sha": "ce57c110090d571e",
+        "version": "20260728112139"
       },
       {
         "name": null,
@@ -95069,9 +95975,21 @@
         "version": "20260728112142"
       },
       {
+        "name": "ead7cbb1-5b18-476a-b670-f03682e1ec8d",
+        "statements": 4,
+        "statements_sha": "655d597748a72625",
+        "version": "20260728112317"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728112321"
+      },
+      {
+        "name": "af1c3635-9077-4396-96d1-475c7505d17a",
+        "statements": 3,
+        "statements_sha": "dbc7ef8c2fb14ab2",
+        "version": "20260728112734"
       },
       {
         "name": null,
@@ -95079,9 +95997,21 @@
         "version": "20260728112736"
       },
       {
+        "name": "6c25315e-5812-4d54-916d-5e5f0c07aadc",
+        "statements": 4,
+        "statements_sha": "73c27c9c20db7fb6",
+        "version": "20260728112858"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728112901"
+      },
+      {
+        "name": "d7d7e474-85ed-45be-aa7d-3b92f83345d0",
+        "statements": 6,
+        "statements_sha": "ded50e9d1b58aae3",
+        "version": "20260728113132"
       },
       {
         "name": null,
@@ -95089,9 +96019,21 @@
         "version": "20260728113137"
       },
       {
+        "name": "bc544e1e-db22-4084-896c-c00772e968b7",
+        "statements": 3,
+        "statements_sha": "67da4700e4a38599",
+        "version": "20260728113435"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728113439"
+      },
+      {
+        "name": "4199afd5-60e2-4b8d-a222-47f6d7afa4f5",
+        "statements": 10,
+        "statements_sha": "3f7a7a60dd0ebdb6",
+        "version": "20260728114032"
       },
       {
         "name": null,
@@ -95099,9 +96041,21 @@
         "version": "20260728114034"
       },
       {
+        "name": "103a0b51-563a-43b1-8c5e-9d4c393d77cf",
+        "statements": 3,
+        "statements_sha": "19c4753fef150e09",
+        "version": "20260728114412"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728114414"
+      },
+      {
+        "name": "c9267f2b-5f4f-4687-b08c-91eac7429125",
+        "statements": 10,
+        "statements_sha": "f8b66842482bd1fd",
+        "version": "20260728114511"
       },
       {
         "name": null,
@@ -95109,9 +96063,21 @@
         "version": "20260728114515"
       },
       {
+        "name": "99ef6cf7-e4b9-4b64-a0a8-3f1293380e97",
+        "statements": 3,
+        "statements_sha": "c9ddda49415a3c22",
+        "version": "20260728114852"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728114855"
+      },
+      {
+        "name": "14c7ac2c-04a6-4849-b885-3c3ce64a2351",
+        "statements": 3,
+        "statements_sha": "0ac9ea804d84fb9a",
+        "version": "20260728114948"
       },
       {
         "name": null,
@@ -95119,9 +96085,21 @@
         "version": "20260728114951"
       },
       {
+        "name": "a1a00c30-6afd-45d9-98ad-cea7c6c4a428",
+        "statements": 3,
+        "statements_sha": "c1c7896db3c919c6",
+        "version": "20260728115347"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728115356"
+      },
+      {
+        "name": "a3aac80d-ac13-4493-a7c4-aea317a6b58d",
+        "statements": 12,
+        "statements_sha": "d9db7e44b0de4af5",
+        "version": "20260728120831"
       },
       {
         "name": null,
@@ -95129,9 +96107,21 @@
         "version": "20260728120836"
       },
       {
+        "name": "3830e7ef-be38-411c-ad3c-c952ea97ab89",
+        "statements": 13,
+        "statements_sha": "a9c79094eb68dfe2",
+        "version": "20260728122339"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728122342"
+      },
+      {
+        "name": "e9a0ac96-f6d0-407e-8f97-1530258138b9",
+        "statements": 1,
+        "statements_sha": "dfcb74cc85cab3fc",
+        "version": "20260728122534"
       },
       {
         "name": null,
@@ -95139,9 +96129,21 @@
         "version": "20260728122539"
       },
       {
+        "name": "e42b18c4-1920-4aad-90d0-d2175de71717",
+        "statements": 6,
+        "statements_sha": "4fb9abe8ce16c707",
+        "version": "20260728124719"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728124721"
+      },
+      {
+        "name": "cb0098be-1361-4ade-bb52-729181fd57ca",
+        "statements": 5,
+        "statements_sha": "0aeab1ed5dbc55bb",
+        "version": "20260728124927"
       },
       {
         "name": null,
@@ -95149,9 +96151,21 @@
         "version": "20260728124930"
       },
       {
+        "name": "9f7f844b-cbaf-41db-b941-72e41f2fc362",
+        "statements": 8,
+        "statements_sha": "b08ced838213ed1b",
+        "version": "20260728125035"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728125038"
+      },
+      {
+        "name": "93b8f12b-cac9-489e-96f4-3dae3ce09dac",
+        "statements": 7,
+        "statements_sha": "aac904926ae2363c",
+        "version": "20260728125601"
       },
       {
         "name": null,
@@ -95159,9 +96173,21 @@
         "version": "20260728125603"
       },
       {
+        "name": "eca91862-31c3-4218-a418-21c180a51f13",
+        "statements": 14,
+        "statements_sha": "fe1ba8557af51881",
+        "version": "20260728130413"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728130416"
+      },
+      {
+        "name": "c525ef8a-673f-4f31-a5cb-b2f7eea6fa35",
+        "statements": 1,
+        "statements_sha": "1265b1c55da24e03",
+        "version": "20260728130820"
       },
       {
         "name": null,
@@ -95169,9 +96195,21 @@
         "version": "20260728130824"
       },
       {
+        "name": "abb89ea3-c9e9-4310-a944-6e8973b0b326",
+        "statements": 3,
+        "statements_sha": "f9db768a3437e50d",
+        "version": "20260728131049"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728131052"
+      },
+      {
+        "name": "3fa720e2-d60d-4ff2-bb1f-ff9280561c7d",
+        "statements": 3,
+        "statements_sha": "591490d546fb7676",
+        "version": "20260728131239"
       },
       {
         "name": null,
@@ -95179,9 +96217,21 @@
         "version": "20260728131242"
       },
       {
+        "name": "9193257a-d6a1-464f-bd82-cb22804fd5b3",
+        "statements": 3,
+        "statements_sha": "59e8808b6f3ddb4f",
+        "version": "20260728131439"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728131443"
+      },
+      {
+        "name": "54d26aed-1c8e-418c-b13d-a380264ae29c",
+        "statements": 3,
+        "statements_sha": "769eb8a0398d420f",
+        "version": "20260728131802"
       },
       {
         "name": null,
@@ -95189,9 +96239,21 @@
         "version": "20260728131806"
       },
       {
+        "name": "4e92115a-1d3a-4d94-9717-816b54938b1b",
+        "statements": 3,
+        "statements_sha": "27b2e7fc2151b1bb",
+        "version": "20260728133802"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728133804"
+      },
+      {
+        "name": "c0137355-7cb1-4426-be5a-417c649fd400",
+        "statements": 16,
+        "statements_sha": "96a6ec644638b996",
+        "version": "20260728134220"
       },
       {
         "name": null,
@@ -95204,9 +96266,21 @@
         "version": "20260728140000"
       },
       {
+        "name": "3cdfd99b-2449-4a1c-a645-f84411caef36",
+        "statements": 38,
+        "statements_sha": "e817564b59a40c0a",
+        "version": "20260728154320"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728154325"
+      },
+      {
+        "name": "2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf",
+        "statements": 74,
+        "statements_sha": "89859b4dfc14f362",
+        "version": "20260728154640"
       },
       {
         "name": null,
@@ -95214,9 +96288,21 @@
         "version": "20260728154643"
       },
       {
+        "name": "f22e3449-d8b5-405f-877d-5a38820147b5",
+        "statements": 36,
+        "statements_sha": "e3be3c1e86435a69",
+        "version": "20260728160259"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728160301"
+      },
+      {
+        "name": "a0e7fc9f-0c43-4400-b662-ff577cc36b88",
+        "statements": 31,
+        "statements_sha": "809929ff73a4660e",
+        "version": "20260728160530"
       },
       {
         "name": null,
@@ -95224,9 +96310,21 @@
         "version": "20260728160534"
       },
       {
+        "name": "c2620892-ba61-4e63-8808-56f785c86ec2",
+        "statements": 4,
+        "statements_sha": "547740c10308bcda",
+        "version": "20260728160705"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728160708"
+      },
+      {
+        "name": "3e7aa332-88d4-4374-a1ff-eb299833929d",
+        "statements": 23,
+        "statements_sha": "997bdebc04cbc3ec",
+        "version": "20260728161003"
       },
       {
         "name": null,
@@ -95234,9 +96332,21 @@
         "version": "20260728161005"
       },
       {
+        "name": "af990465-73e6-46a7-ba8e-016cb87e3705",
+        "statements": 28,
+        "statements_sha": "c0b5160624182c85",
+        "version": "20260728161110"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728161114"
+      },
+      {
+        "name": "9b84ccdf-04dc-47c3-8687-e539e6bbeaa3",
+        "statements": 48,
+        "statements_sha": "0e15730d54ad79a9",
+        "version": "20260728161227"
       },
       {
         "name": null,
@@ -95244,9 +96354,21 @@
         "version": "20260728161231"
       },
       {
+        "name": "94713320-4a93-4b2a-9e35-56a9659a4e50",
+        "statements": 3,
+        "statements_sha": "835db760054e059b",
+        "version": "20260728161348"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728161351"
+      },
+      {
+        "name": "1784f277-dc8d-44fb-9e55-0ad65071aafe",
+        "statements": 3,
+        "statements_sha": "1f923c30cd7206c9",
+        "version": "20260728161432"
       },
       {
         "name": null,
@@ -95254,9 +96376,21 @@
         "version": "20260728161436"
       },
       {
+        "name": "d0cd3b7b-ad1c-420d-b4e1-369c0d83fb53",
+        "statements": 26,
+        "statements_sha": "942c53e9a837f064",
+        "version": "20260728162214"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728162216"
+      },
+      {
+        "name": "b9e88578-46ee-4d4c-845f-751733c42746",
+        "statements": 11,
+        "statements_sha": "9f30e52211bafbfa",
+        "version": "20260728162329"
       },
       {
         "name": null,
@@ -95264,9 +96398,21 @@
         "version": "20260728162332"
       },
       {
+        "name": "71e17e9c-fb61-4c88-a7d5-3fd2a8d4aa7d",
+        "statements": 53,
+        "statements_sha": "dbd3dad2311df81d",
+        "version": "20260728163046"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728163049"
+      },
+      {
+        "name": "c8689bcb-6f68-4251-8c09-355c0a3b0c76",
+        "statements": 10,
+        "statements_sha": "d67fe99f55f86b7e",
+        "version": "20260728163134"
       },
       {
         "name": null,
@@ -95274,9 +96420,21 @@
         "version": "20260728163136"
       },
       {
+        "name": "9a64165d-1cca-4b75-b81e-27c3b8c93d28",
+        "statements": 7,
+        "statements_sha": "7dfffa53c7e1c1b2",
+        "version": "20260728163224"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728163230"
+      },
+      {
+        "name": "11a3229f-13ec-4018-a113-c9de9e077f9e",
+        "statements": 4,
+        "statements_sha": "1bd5f0bde33a6043",
+        "version": "20260728163257"
       },
       {
         "name": null,
@@ -95284,9 +96442,21 @@
         "version": "20260728163300"
       },
       {
+        "name": "5174c249-5001-4445-ad0f-ec0136a10984",
+        "statements": 34,
+        "statements_sha": "ce591baa98cbd0eb",
+        "version": "20260728164001"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728164003"
+      },
+      {
+        "name": "441c6019-8d63-40d7-a994-6bae5fd3e4d2",
+        "statements": 34,
+        "statements_sha": "0922c13ef830ebbe",
+        "version": "20260728164124"
       },
       {
         "name": null,
@@ -95294,9 +96464,21 @@
         "version": "20260728164127"
       },
       {
+        "name": "ab71d84e-770a-4dcb-ad3d-2a7063b3396e",
+        "statements": 19,
+        "statements_sha": "621b87b9f04397fb",
+        "version": "20260728164222"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728164234"
+      },
+      {
+        "name": "0d1a1fc8-b3cf-4a88-a13f-c86a7782048a",
+        "statements": 8,
+        "statements_sha": "d87d8bb51aa2546a",
+        "version": "20260728164313"
       },
       {
         "name": null,
@@ -95304,9 +96486,21 @@
         "version": "20260728164318"
       },
       {
+        "name": "afddf160-b74b-4f3d-8aa5-d7f5595b55ee",
+        "statements": 28,
+        "statements_sha": "691188ad1a440993",
+        "version": "20260728165000"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728165005"
+      },
+      {
+        "name": "a4f0f57d-5eea-4460-b758-ed38ab8f6331",
+        "statements": 16,
+        "statements_sha": "324cf04ced5dc30c",
+        "version": "20260728165121"
       },
       {
         "name": null,
@@ -95314,9 +96508,21 @@
         "version": "20260728165123"
       },
       {
+        "name": "5f70d392-005d-458f-80ba-f0e573ef414e",
+        "statements": 29,
+        "statements_sha": "47c4aecb2d4fd02e",
+        "version": "20260728170640"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728170642"
+      },
+      {
+        "name": "a5fb8adf-ad65-42f0-8f47-b3f8f3e94bae",
+        "statements": 14,
+        "statements_sha": "be063e15969c95e8",
+        "version": "20260728171421"
       },
       {
         "name": null,
@@ -95324,9 +96530,21 @@
         "version": "20260728171424"
       },
       {
+        "name": "760d8c46-2f21-4d74-9fdd-0c3e06088453",
+        "statements": 3,
+        "statements_sha": "24b6a00738d2e72a",
+        "version": "20260728171739"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728171741"
+      },
+      {
+        "name": "567a8100-2a77-43c8-87cc-b144b47dc255",
+        "statements": 6,
+        "statements_sha": "745620de12bf2efc",
+        "version": "20260728172037"
       },
       {
         "name": null,
@@ -95334,9 +96552,21 @@
         "version": "20260728172040"
       },
       {
+        "name": "1f2a9119-144a-4094-9dff-6d474efb8937",
+        "statements": 9,
+        "statements_sha": "a9ec4023398b5802",
+        "version": "20260728172526"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728172530"
+      },
+      {
+        "name": "2af8c664-9ffa-4b2d-80f1-f7ce468ed6af",
+        "statements": 6,
+        "statements_sha": "3a951517b3254632",
+        "version": "20260728172710"
       },
       {
         "name": null,
@@ -95344,9 +96574,21 @@
         "version": "20260728172713"
       },
       {
+        "name": "c9548968-94e3-4c53-939e-2d7cf890be29",
+        "statements": 7,
+        "statements_sha": "32105b63e4c6ba2c",
+        "version": "20260728173440"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728173443"
+      },
+      {
+        "name": "e44754a7-e1a1-43e6-bd2a-1c4663c03e45",
+        "statements": 16,
+        "statements_sha": "051ef62ac5fb1eeb",
+        "version": "20260728174442"
       },
       {
         "name": null,
@@ -95354,9 +96596,21 @@
         "version": "20260728174444"
       },
       {
+        "name": "c3baaa06-62ca-4715-acfd-06aab3ff7589",
+        "statements": 3,
+        "statements_sha": "709022a2e1df3c16",
+        "version": "20260728174703"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728174706"
+      },
+      {
+        "name": "a4dbf124-2908-4a7d-92ad-5056e8b4c34c",
+        "statements": 1,
+        "statements_sha": "5fc9e421e1306fd6",
+        "version": "20260728174744"
       },
       {
         "name": null,
@@ -95364,9 +96618,21 @@
         "version": "20260728174746"
       },
       {
+        "name": "7fb048da-1211-403e-835c-3c90a76cf15b",
+        "statements": 1,
+        "statements_sha": "6b049a5133628562",
+        "version": "20260728175413"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728175415"
+      },
+      {
+        "name": "ee25422a-df89-4a4c-a713-eb5ad35c486b",
+        "statements": 2,
+        "statements_sha": "3d44bce1d9321f2f",
+        "version": "20260728175533"
       },
       {
         "name": null,
@@ -95374,9 +96640,21 @@
         "version": "20260728175541"
       },
       {
+        "name": "c26feff5-1235-4ef4-9b18-b43cdefaadd2",
+        "statements": 3,
+        "statements_sha": "a6574d3c1ba99b50",
+        "version": "20260728180105"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728180107"
+      },
+      {
+        "name": "114f6fa6-e22e-413c-8ba3-cc42b965b418",
+        "statements": 1,
+        "statements_sha": "7ef4ccd5e63f1675",
+        "version": "20260728180247"
       },
       {
         "name": null,
@@ -95384,9 +96662,21 @@
         "version": "20260728180311"
       },
       {
+        "name": "7574018d-4c92-4702-b6fb-3bf8cf6d8d55",
+        "statements": 45,
+        "statements_sha": "da96a5ff90de4012",
+        "version": "20260728182444"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728182446"
+      },
+      {
+        "name": "bc9ffa5a-2f61-4b24-9331-806af1ef1af2",
+        "statements": 16,
+        "statements_sha": "0ed5bbd631a1b7a8",
+        "version": "20260728183002"
       },
       {
         "name": null,
@@ -95394,9 +96684,21 @@
         "version": "20260728183006"
       },
       {
+        "name": "5fa30fdd-f9ad-40b1-b372-c22b511306f4",
+        "statements": 1,
+        "statements_sha": "5fc4e35a58c28396",
+        "version": "20260728183119"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728183121"
+      },
+      {
+        "name": "8c96d470-a5f4-4653-8a05-dcfcb53e081a",
+        "statements": 3,
+        "statements_sha": "233b62c7f4416541",
+        "version": "20260728183407"
       },
       {
         "name": null,
@@ -95404,9 +96706,21 @@
         "version": "20260728183411"
       },
       {
+        "name": "47c52a13-bf3b-415b-b81a-83bf6d4f234e",
+        "statements": 3,
+        "statements_sha": "3bffcb02bbf3a240",
+        "version": "20260728183516"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728183518"
+      },
+      {
+        "name": "34b30794-9e27-4c8d-a6c8-d53309156a17",
+        "statements": 9,
+        "statements_sha": "7bef72fe772e1611",
+        "version": "20260728184002"
       },
       {
         "name": null,
@@ -95414,9 +96728,21 @@
         "version": "20260728184004"
       },
       {
+        "name": "1ec2abc5-0fd9-4fb9-a790-da0c7cd90d5a",
+        "statements": 9,
+        "statements_sha": "6c4e8b2753c52af5",
+        "version": "20260728201554"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728201557"
+      },
+      {
+        "name": "e87e7da5-067a-4af8-8eb1-1d6f038979a6",
+        "statements": 6,
+        "statements_sha": "a912a53fa74381ea",
+        "version": "20260728201920"
       },
       {
         "name": null,
@@ -95424,9 +96750,21 @@
         "version": "20260728201922"
       },
       {
+        "name": "930e811e-2497-425c-a7ed-6f31494ad8a6",
+        "statements": 4,
+        "statements_sha": "0afa946a1ca3a17e",
+        "version": "20260728202050"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728202053"
+      },
+      {
+        "name": "05004a4d-3df2-4adc-bbee-fee6f0aa8197",
+        "statements": 5,
+        "statements_sha": "e90452f1efe0792b",
+        "version": "20260728204937"
       },
       {
         "name": null,
@@ -95434,9 +96772,21 @@
         "version": "20260728204939"
       },
       {
+        "name": "d06755af-3b9d-4c58-bd42-1aee0ad305e4",
+        "statements": 3,
+        "statements_sha": "eef0acb9539cec0f",
+        "version": "20260728205050"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728205053"
+      },
+      {
+        "name": "c26faef5-d65f-47ec-a5fb-207266fe8ef7",
+        "statements": 16,
+        "statements_sha": "7a613440be71915a",
+        "version": "20260728205758"
       },
       {
         "name": null,
@@ -95444,9 +96794,21 @@
         "version": "20260728205800"
       },
       {
+        "name": "714b52da-cd26-4bbd-a858-21aab10b0756",
+        "statements": 5,
+        "statements_sha": "f3a3ea7db6246104",
+        "version": "20260728205900"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728205902"
+      },
+      {
+        "name": "aa8871bf-bdb9-412b-b5c1-dea538b3ee8d",
+        "statements": 7,
+        "statements_sha": "2b5b3a4d8dc43958",
+        "version": "20260728210937"
       },
       {
         "name": null,
@@ -95454,9 +96816,21 @@
         "version": "20260728210944"
       },
       {
+        "name": "aa0405a8-7a82-418c-a59e-c8b00d7db1ae",
+        "statements": 20,
+        "statements_sha": "1328864fdb66d6e4",
+        "version": "20260728213152"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728213154"
+      },
+      {
+        "name": "18e89190-27ac-4f1a-9ec9-0fa78dd00208",
+        "statements": 3,
+        "statements_sha": "47870a692dfbff9a",
+        "version": "20260728213519"
       },
       {
         "name": null,
@@ -95464,9 +96838,21 @@
         "version": "20260728213522"
       },
       {
+        "name": "8646b9c3-b981-4da0-a241-cf8d58d4acdb",
+        "statements": 7,
+        "statements_sha": "37a61fb9fda41e75",
+        "version": "20260728213633"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728213639"
+      },
+      {
+        "name": "0cb29975-9b45-43c5-9853-d4ed66f527ad",
+        "statements": 14,
+        "statements_sha": "1d61d963a49c7132",
+        "version": "20260728214221"
       },
       {
         "name": null,
@@ -95474,9 +96860,21 @@
         "version": "20260728214224"
       },
       {
+        "name": "79963e7f-05f8-4b56-abc2-8309ded30e94",
+        "statements": 4,
+        "statements_sha": "2ffdbd47e0812799",
+        "version": "20260728214405"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728214411"
+      },
+      {
+        "name": "9ced93f8-4a12-458a-9a86-fc4359b6c16c",
+        "statements": 4,
+        "statements_sha": "e6a524a0ef4bd334",
+        "version": "20260728214657"
       },
       {
         "name": null,
@@ -95484,9 +96882,21 @@
         "version": "20260728214701"
       },
       {
+        "name": "22fdf05d-a28b-40eb-bd2f-ea165020d0ed",
+        "statements": 1,
+        "statements_sha": "fc3959e399acd44c",
+        "version": "20260728214750"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728214752"
+      },
+      {
+        "name": "cc625266-ea37-4fa7-9fc3-02b304292281",
+        "statements": 8,
+        "statements_sha": "a353ecf5c1e51766",
+        "version": "20260728215040"
       },
       {
         "name": null,
@@ -95494,9 +96904,21 @@
         "version": "20260728215043"
       },
       {
+        "name": "68943d1e-0b53-4955-980b-d5c220bdfc46",
+        "statements": 1,
+        "statements_sha": "9fa5c2f970da272d",
+        "version": "20260728215129"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728215132"
+      },
+      {
+        "name": "6826151d-0a53-40bf-bcaa-0d19c896e505",
+        "statements": 13,
+        "statements_sha": "05a93ac1672bed13",
+        "version": "20260728215339"
       },
       {
         "name": null,
@@ -95504,9 +96926,21 @@
         "version": "20260728215343"
       },
       {
+        "name": "761a88ca-53cb-4d43-add4-9b1d3a6d516c",
+        "statements": 2,
+        "statements_sha": "85e1844d064c2461",
+        "version": "20260728215820"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260728215823"
+      },
+      {
+        "name": "cb26220c-28b7-473b-82ca-1cfafaf08919",
+        "statements": 7,
+        "statements_sha": "b1ba7044709fccb8",
+        "version": "20260728220030"
       },
       {
         "name": null,
@@ -95514,9 +96948,21 @@
         "version": "20260728220034"
       },
       {
+        "name": "7b436acf-1789-4031-979d-14e510877713",
+        "statements": 11,
+        "statements_sha": "7211f7a0fa684ec2",
+        "version": "20260729144753"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260729144755"
+      },
+      {
+        "name": "1b20ae2d-831f-42fe-9a2d-bf13c973d8fc",
+        "statements": 1,
+        "statements_sha": "1e8c6e10b6e0e5e2",
+        "version": "20260729144917"
       },
       {
         "name": null,
@@ -95524,9 +96970,21 @@
         "version": "20260729144919"
       },
       {
+        "name": "f1f793d0-2bf6-4192-8a08-6ebc8723d7f5",
+        "statements": 3,
+        "statements_sha": "5809b12df7279b88",
+        "version": "20260729151702"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260729151705"
+      },
+      {
+        "name": "bb6c9b65-6c80-48ea-a66d-de17e67adaf7",
+        "statements": 8,
+        "statements_sha": "2d8c4ddec1d10ba2",
+        "version": "20260729152009"
       },
       {
         "name": null,
@@ -95534,9 +96992,21 @@
         "version": "20260729152011"
       },
       {
+        "name": "ecbfa286-3430-498d-9848-6b63c3f36021",
+        "statements": 5,
+        "statements_sha": "68e1486c345da9a2",
+        "version": "20260729152318"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260729152322"
+      },
+      {
+        "name": "64fa238f-e2a7-4a22-830d-07696e2a6c68",
+        "statements": 2,
+        "statements_sha": "bd9d660efa9b152b",
+        "version": "20260729152534"
       },
       {
         "name": null,
@@ -95544,9 +97014,21 @@
         "version": "20260729152538"
       },
       {
+        "name": "746bd3a3-c4bc-467b-8b79-b7d247226294",
+        "statements": 3,
+        "statements_sha": "c58117b122adad3c",
+        "version": "20260729152830"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260729152834"
+      },
+      {
+        "name": "7c97554e-e2e4-4c6e-9904-cb755883452a",
+        "statements": 10,
+        "statements_sha": "3f30b2719228fc4a",
+        "version": "20260729153021"
       },
       {
         "name": null,
@@ -95554,9 +97036,21 @@
         "version": "20260729153024"
       },
       {
+        "name": "87dfd988-42ae-47ba-9884-8b72acb37b6f",
+        "statements": 5,
+        "statements_sha": "d5953ca96a5403f7",
+        "version": "20260729153404"
+      },
+      {
         "name": null,
         "statements": null,
         "version": "20260729153406"
+      },
+      {
+        "name": "f4950fa7-9942-486b-a971-7d6bd864836c",
+        "statements": 15,
+        "statements_sha": "60c61355b8de84d5",
+        "version": "20260729153623"
       },
       {
         "name": null,
@@ -96197,6 +97691,12 @@
         "statements": 4,
         "statements_sha": "2751020b8a24300c",
         "version": "20261113181400"
+      },
+      {
+        "name": "rls_policies_alerts_risk_rules",
+        "statements": 26,
+        "statements_sha": "224b20f4da616cfe",
+        "version": "20261114083000"
       }
     ],
     "policies": [
@@ -96247,6 +97747,54 @@
         "table": "acordos_parcelamento",
         "using": "(( SELECT auth.uid() AS uid) = user_id)",
         "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
+      },
+      {
+        "cmd": "DELETE",
+        "name": "alert_configurations_tenant_delete",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alert_configurations",
+        "using": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role)))",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "name": "alert_configurations_tenant_insert",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alert_configurations",
+        "using": null,
+        "with_check": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "alert_configurations_tenant_select",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alert_configurations",
+        "using": "empresa_membro_ativo(empresa_id)",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "alert_configurations_tenant_update",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alert_configurations",
+        "using": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))",
+        "with_check": "empresa_membro_ativo(empresa_id)"
       },
       {
         "cmd": "ALL",
@@ -96355,6 +97903,54 @@
         "table": "alertas_tributarios",
         "using": "((empresa_id IN ( SELECT user_empresas.empresa_id\n   FROM user_empresas\n  WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1\n   FROM user_roles\n  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))",
         "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "name": "alerts_tenant_delete",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alerts",
+        "using": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role)))",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "name": "alerts_tenant_insert",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alerts",
+        "using": null,
+        "with_check": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "alerts_tenant_select",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alerts",
+        "using": "empresa_membro_ativo(empresa_id)",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "alerts_tenant_update",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "alerts",
+        "using": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))",
+        "with_check": "empresa_membro_ativo(empresa_id)"
       },
       {
         "cmd": "DELETE",
@@ -101984,6 +103580,54 @@
         "table": "retencoes_fonte",
         "using": "(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))",
         "with_check": null
+      },
+      {
+        "cmd": "DELETE",
+        "name": "risk_rules_tenant_delete",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "risk_rules",
+        "using": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role)))",
+        "with_check": null
+      },
+      {
+        "cmd": "INSERT",
+        "name": "risk_rules_tenant_insert",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "risk_rules",
+        "using": null,
+        "with_check": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "risk_rules_tenant_select",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "risk_rules",
+        "using": "empresa_membro_ativo(empresa_id)",
+        "with_check": null
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "risk_rules_tenant_update",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "risk_rules",
+        "using": "(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))",
+        "with_check": "empresa_membro_ativo(empresa_id)"
       },
       {
         "cmd": "DELETE",

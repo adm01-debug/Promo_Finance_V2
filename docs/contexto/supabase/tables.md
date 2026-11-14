@@ -7,11 +7,11 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.acessos_suspeitos](tables/public/acessos_suspeitos.md) | table | sim | 1 | 19 | não |  |
 | [public.acoes_recomendadas](tables/public/acoes_recomendadas.md) | table | sim | 1 | 16 | não |  |
 | [public.acordos_parcelamento](tables/public/acordos_parcelamento.md) | table | sim | 2 | 25 | não |  |
-| [public.alert_configurations](tables/public/alert_configurations.md) | table | sim | 0 | 26 | não |  |
+| [public.alert_configurations](tables/public/alert_configurations.md) | table | sim | 4 | 26 | não |  |
 | [public.alertas](tables/public/alertas.md) | table | sim | 4 | 14 | sim |  |
 | [public.alertas_preditivos](tables/public/alertas_preditivos.md) | table | sim | 4 | 12 | não |  |
 | [public.alertas_tributarios](tables/public/alertas_tributarios.md) | table | sim | 1 | 22 | sim |  |
-| [public.alerts](tables/public/alerts.md) | table | sim | 0 | 12 | não |  |
+| [public.alerts](tables/public/alerts.md) | table | sim | 4 | 12 | não |  |
 | [public.alerts_sent](tables/public/alerts_sent.md) | table | sim | 4 | 11 | não |  |
 | [public.aliquotas_interestaduais](tables/public/aliquotas_interestaduais.md) | table | sim | 2 | 9 | não |  |
 | [public.aliquotas_internas_uf](tables/public/aliquotas_internas_uf.md) | table | sim | 2 | 10 | não |  |
@@ -222,7 +222,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.resumos_executivos_semanais](tables/public/resumos_executivos_semanais.md) | table | sim | 1 | 8 | não |  |
 | [public.retencao_politicas](tables/public/retencao_politicas.md) | table | sim | 1 | 9 | não |  |
 | [public.retencoes_fonte](tables/public/retencoes_fonte.md) | table | sim | 5 | 25 | não |  |
-| [public.risk_rules](tables/public/risk_rules.md) | table | sim | 0 | 9 | não |  |
+| [public.risk_rules](tables/public/risk_rules.md) | table | sim | 4 | 9 | não |  |
 | [public.role_permissions](tables/public/role_permissions.md) | table | sim | 5 | 4 | não |  |
 | [public.rpc_observability_metrics](tables/public/rpc_observability_metrics.md) | table | sim | 1 | 10 | não |  |
 | [public.runtime_error_logs](tables/public/runtime_error_logs.md) | table | sim | 4 | 21 | não |  |

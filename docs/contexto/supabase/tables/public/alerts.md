@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 0 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -55,8 +55,45 @@
 
 ## Policies (RLS)
 
-> ⚠️ RLS habilitado **sem policies**: nenhum acesso via API (anon/authenticated).
+### `alerts_tenant_delete`
 
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role)))` |
+| WITH CHECK |  |
+
+### `alerts_tenant_insert`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))` |
+
+### `alerts_tenant_select`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `empresa_membro_ativo(empresa_id)` |
+| WITH CHECK |  |
+
+### `alerts_tenant_update`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(empresa_membro_ativo(empresa_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'manager'::app_role) OR has_role(auth.uid(), 'operator'::app_role)))` |
+| WITH CHECK | `empresa_membro_ativo(empresa_id)` |
 
 
 ## Triggers

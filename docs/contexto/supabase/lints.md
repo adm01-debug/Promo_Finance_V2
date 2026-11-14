@@ -5,9 +5,6 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | severidade | código | objeto | detalhe |
 |---|---|---|---|
 | ALTA | secdef_mutable_search_path | public.gerar_lancamento_contabil_automatico() | SECURITY DEFINER sem `SET search_path`: vulnerável a sequestro de search_path. |
-| MÉDIA | rls_no_policies | public.alert_configurations | RLS ligado sem policies: inacessível via API (só service_role). |
-| MÉDIA | rls_no_policies | public.alerts | RLS ligado sem policies: inacessível via API (só service_role). |
-| MÉDIA | rls_no_policies | public.risk_rules | RLS ligado sem policies: inacessível via API (só service_role). |
 | BAIXA | fk_without_index | public.acordos_parcelamento.acordos_parcelamento_cliente_id_fkey | FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.alerts_sent.alerts_sent_alert_id_fkey | FK sem índice nas colunas ['alert_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.aliquotas_iss_municipal.aliquotas_iss_municipal_item_lista_id_fkey | FK sem índice nas colunas ['item_lista_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
@@ -89,7 +86,13 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | BAIXA | fk_without_index | public.webhook_simulation_results.webhook_simulation_results_run_id_fkey | FK sem índice nas colunas ['run_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.webhooks_log.webhooks_log_dlq_id_fkey | FK sem índice nas colunas ['dlq_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.whatsapp_conversas.whatsapp_conversas_cliente_id_fkey | FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
+| BAIXA | policy_auth_fn_not_wrapped | public.alert_configurations.alert_configurations_tenant_delete | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.alert_configurations.alert_configurations_tenant_insert | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.alert_configurations.alert_configurations_tenant_update | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.alertas.Users can view own or privileged system alertas | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.alerts.alerts_tenant_delete | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.alerts.alerts_tenant_insert | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.alerts.alerts_tenant_update | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.anexos_financeiros.anexos_financeiros_atualizacao_empresa | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.anexos_financeiros.anexos_financeiros_insercao_empresa | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.anexos_financeiros.anexos_financeiros_leitura_empresa | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
@@ -181,6 +184,9 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | BAIXA | policy_auth_fn_not_wrapped | public.retencoes_fonte.Financeiro+ podem atualizar retencoes_fonte | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.retencoes_fonte.Financeiro+ podem inserir retencoes_fonte | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.retencoes_fonte.Financeiro+ podem ver retencoes_fonte | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.risk_rules.risk_rules_tenant_delete | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.risk_rules.risk_rules_tenant_insert | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.risk_rules.risk_rules_tenant_update | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.scim_operations_log.Admins view scim logs | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.scim_setup_checklist.scim_checklist_own | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.split_payment_transacoes.Admin pode deletar split_payment_transacoes | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
