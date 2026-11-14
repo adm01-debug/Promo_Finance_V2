@@ -56,9 +56,15 @@ REVOKE ALL ON FUNCTION public.ensure_monthly_partitions(text, int, int) FROM PUB
 GRANT EXECUTE ON FUNCTION public.ensure_monthly_partitions(text, int, int) TO service_role;
 
 -- ============================================================
--- 2) audit_logs → particionada
+-- 2) audit_logs → tabela comum (estado real de produção)
 -- ============================================================
+-- O particionamento nunca entrou no ledger de prod: o schema reconstruído
+-- por 20260825110000 tem audit_logs/frontend_error_logs como tabelas comuns
+-- (relkind 'r') com as tabelas órfãs *_2026_01..10 e *_default comuns.
+-- Esta migration apenas recria esse estado de forma determinística; o
+-- particionamento de verdade continua no futuro, via ensure_monthly_partitions.
 ALTER TABLE public.audit_logs RENAME TO audit_logs_legacy;
+ALTER TABLE public.audit_logs_legacy DROP CONSTRAINT IF EXISTS audit_logs_pkey;
 
 CREATE TABLE public.audit_logs (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -73,8 +79,8 @@ CREATE TABLE public.audit_logs (
   user_agent TEXT,
   user_email TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  PRIMARY KEY (id, created_at)
-) PARTITION BY RANGE (created_at);
+  CONSTRAINT audit_logs_pkey PRIMARY KEY (id, created_at)
+);
 
 GRANT SELECT, INSERT ON public.audit_logs TO authenticated;
 GRANT ALL ON public.audit_logs TO service_role;
@@ -93,30 +99,45 @@ CREATE INDEX idx_audit_logs_created_at ON public.audit_logs (created_at DESC);
 CREATE INDEX idx_audit_logs_user_id ON public.audit_logs (user_id, created_at DESC);
 CREATE INDEX idx_audit_logs_table ON public.audit_logs (table_name, created_at DESC);
 
--- Partições históricas presentes em produção: as policies da 20260825230000 referenciam
--- audit_logs_2026_01..10. Em prod nasceram quando o particionamento rodou em jul/2026;
--- um shadow criado em data posterior não as geraria via ensure_monthly_partitions(now()).
--- Criadas deterministicamente aqui.
-DO $$
-DECLARE
-  m int;
-  v_start date;
-  v_end date;
-  v_name text;
-BEGIN
-  FOR m IN 1..12 LOOP
-    v_start := make_date(2026, m, 1);
-    v_end := (v_start + interval '1 month')::date;
-    v_name := 'audit_logs_' || to_char(v_start, 'YYYY_MM');
-    IF NOT EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-                  WHERE n.nspname='public' AND c.relname=v_name) THEN
-      EXECUTE format('CREATE TABLE public.%I PARTITION OF public.%I FOR VALUES FROM (%L) TO (%L)',
-                     v_name, 'audit_logs', v_start, v_end);
-    END IF;
-  END LOOP;
-END $$;
--- Criar partições
-SELECT public.ensure_monthly_partitions('audit_logs', 6, 3);
+-- Tabelas órfãs históricas presentes em produção (taxa de erro do cliente + o
+-- que as policies da 20260825230000 referenciam). Em prod o particionamento rodou fora do
+-- ledger por um tempo e depois foi descartado (schema reconstruído por 20260825110000),
+-- deixando-as como tabelas comuns com PK própria e RLS. Criadas deterministicamente aqui.
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_01 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_01 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_01_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_02 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_02 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_02_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_03 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_03 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_03_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_04 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_04 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_04_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_05 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_05 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_05_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_06 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_06 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_06_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_07 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_07 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_07_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_08 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_08 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_08_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_09 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_09 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_09_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_2026_10 (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_2026_10 DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_2026_10_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.audit_logs_default (LIKE public.audit_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.audit_logs_default DROP CONSTRAINT IF EXISTS audit_logs_pkey, ADD CONSTRAINT audit_logs_default_pkey PRIMARY KEY (id, created_at);
+ALTER TABLE public.audit_logs_2026_01 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_02 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_03 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_04 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_05 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_06 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_07 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_08 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_09 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_2026_10 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs_default ENABLE ROW LEVEL SECURITY;
+-- GRANTs não necessários: o default ACL do projeto (postgres + anon/authenticated/service_role)
+-- já concede os privilégios que as órfãs têm em prod.
 
 -- Migrar dados legados
 INSERT INTO public.audit_logs
@@ -140,6 +161,7 @@ BEGIN
 END $$;
 
 ALTER TABLE public.frontend_error_logs RENAME TO frontend_error_logs_legacy;
+ALTER TABLE public.frontend_error_logs_legacy DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey;
 
 CREATE TABLE public.frontend_error_logs (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -150,8 +172,8 @@ CREATE TABLE public.frontend_error_logs (
   user_agent TEXT,
   metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  PRIMARY KEY (id, created_at)
-) PARTITION BY RANGE (created_at);
+  CONSTRAINT frontend_error_logs_pkey PRIMARY KEY (id, created_at)
+);
 
 GRANT INSERT ON public.frontend_error_logs TO authenticated, anon;
 GRANT SELECT ON public.frontend_error_logs TO authenticated;
@@ -170,26 +192,40 @@ CREATE POLICY "Admins can view frontend errors"
 CREATE INDEX idx_fe_errors_created_at ON public.frontend_error_logs (created_at DESC);
 CREATE INDEX idx_fe_errors_user ON public.frontend_error_logs (user_id, created_at DESC);
 
--- Partições históricas frontend_error_logs_2026_01..12 (mesma lógica do audit_logs).
-DO $$
-DECLARE
-  m int;
-  v_start date;
-  v_end date;
-  v_name text;
-BEGIN
-  FOR m IN 1..12 LOOP
-    v_start := make_date(2026, m, 1);
-    v_end := (v_start + interval '1 month')::date;
-    v_name := 'frontend_error_logs_' || to_char(v_start, 'YYYY_MM');
-    IF NOT EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-                  WHERE n.nspname='public' AND c.relname=v_name) THEN
-      EXECUTE format('CREATE TABLE public.%I PARTITION OF public.%I FOR VALUES FROM (%L) TO (%L)',
-                     v_name, 'frontend_error_logs', v_start, v_end);
-    END IF;
-  END LOOP;
-END $$;
-SELECT public.ensure_monthly_partitions('frontend_error_logs', 6, 3);
+-- Órfãs históricas de frontend_error_logs (mesma lógica do audit_logs).
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_01 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_01 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_01_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_02 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_02 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_02_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_03 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_03 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_03_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_04 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_04 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_04_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_05 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_05 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_05_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_06 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_06 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_06_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_07 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_07 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_07_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_08 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_08 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_08_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_09 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_09 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_09_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_2026_10 (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_2026_10 DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_2026_10_pkey PRIMARY KEY (id, created_at);
+CREATE TABLE IF NOT EXISTS public.frontend_error_logs_default (LIKE public.frontend_error_logs INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE public.frontend_error_logs_default DROP CONSTRAINT IF EXISTS frontend_error_logs_pkey, ADD CONSTRAINT frontend_error_logs_default_pkey PRIMARY KEY (id, created_at);
+ALTER TABLE public.frontend_error_logs_2026_01 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_02 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_03 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_04 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_05 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_06 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_07 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_08 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_09 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_2026_10 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.frontend_error_logs_default ENABLE ROW LEVEL SECURITY;
 
 -- Migrar dados legados (tabela estava vazia, mas garantimos idempotência)
 INSERT INTO public.frontend_error_logs (id, user_id, error_message, error_stack, url, user_agent, metadata, created_at)
