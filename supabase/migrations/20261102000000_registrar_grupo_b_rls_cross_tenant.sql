@@ -37,7 +37,9 @@ BEGIN
               AND (
                 has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
                 OR has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
-                OR has_table_privilege('PUBLIC', c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
+                OR EXISTS (SELECT 1 FROM aclexplode(COALESCE(c.relacl, acldefault(c.relkind, c.relowner))) xl
+                WHERE xl.grantee = 0
+                  AND xl.privilege_type = ANY ('{SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER}'::text[]))
               )
         ) THEN
         RAISE EXCEPTION '20260902160000: relacao ''%s'' ainda concedida a anon/authenticated', r.relname;
@@ -55,7 +57,8 @@ BEGIN
               WHERE n.nspname = 'public' AND p.proname = 'fn_verificar_vencidos'
                 AND (has_function_privilege('anon', p.oid, 'EXECUTE')
                   OR has_function_privilege('authenticated', p.oid, 'EXECUTE')
-                  OR has_function_privilege('PUBLIC', p.oid, 'EXECUTE'))) THEN
+                  OR EXISTS (SELECT 1 FROM aclexplode(COALESCE(p.proacl, acldefault('f'::"char", p.proowner))) xl
+                  WHERE xl.grantee = 0 AND xl.privilege_type = 'EXECUTE'))) THEN
         RAISE EXCEPTION '20260902170000: fn_verificar_vencidos ainda executavel por anon/authenticated/PUBLIC';
     END IF;
     IF NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace

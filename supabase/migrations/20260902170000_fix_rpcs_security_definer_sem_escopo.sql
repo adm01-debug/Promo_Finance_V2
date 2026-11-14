@@ -39,6 +39,7 @@
 BEGIN;
 
 DROP FUNCTION IF EXISTS public.confirmar_conciliacao(uuid, uuid, uuid, uuid, uuid, numeric);
+DROP FUNCTION IF EXISTS public.confirmar_conciliacao(uuid, uuid, uuid, numeric);
 
 REVOKE ALL ON FUNCTION public.fn_verificar_vencidos() FROM PUBLIC, anon, authenticated;
 
