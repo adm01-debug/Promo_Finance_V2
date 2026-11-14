@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "b7559c3f757ceb4baa381351fea105ae18cb3478",
+  "sha": "f3b6700d14fe6587aecb02bd6d9135de0cdec6ff",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-14 02:01 UTC",
+  "generated_at": "2026-11-14 11:52 UTC",
   "files_total": 3871,
   "code_files": 3505,
   "code_lines": 497400
@@ -245334,10 +245334,19 @@
   }
  },
  "git": {
-  "sha": "b7559c3f757ceb4baa381351fea105ae18cb3478",
+  "sha": "f3b6700d14fe6587aecb02bd6d9135de0cdec6ff",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f3b6700",
+    "date": "2026-11-14",
+    "author": "adm01-debug",
+    "subject": "chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplicada pendente), contexto revalidado success (#347)",
+    "files": [
+     "docs/prod-readiness.md"
+    ]
+   },
    {
     "sha": "b7559c3",
     "date": "2026-11-13",
@@ -245953,21 +245962,12 @@
      "supabase/functions/sefaz-dfe-dispatcher/index.ts",
      "supabase/functions/sefaz-dfe-puxar/index.ts"
     ]
-   },
-   {
-    "sha": "251d639",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)",
-    "files": [
-     "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/prod-readiness.md",
-    3
+    4
    ],
    [
     "src/components/dashboard/DashboardExecutivo.tsx",

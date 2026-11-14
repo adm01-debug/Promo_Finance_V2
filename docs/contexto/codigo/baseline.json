@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b7559c3f757ceb4baa381351fea105ae18cb3478",
+  "commit": "f3b6700d14fe6587aecb02bd6d9135de0cdec6ff",
   "branch": "main",
-  "data_commit": "2026-11-14T01:57:37Z",
+  "data_commit": "2026-11-14T08:47:23-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f3b6700",
+    "data": "2026-11-14",
+    "assunto": "chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica"
+   },
    {
     "sha": "b7559c3",
     "data": "2026-11-14",
@@ -126,11 +131,6 @@
     "sha": "0821a38",
     "data": "2026-11-12",
     "assunto": "chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)"
-   },
-   {
-    "sha": "9308705",
-    "data": "2026-11-12",
-    "assunto": "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)"
    }
   ],
   "arquivos_mudados_7d": 831,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 107
+    "commits": 108
    },
    {
     "autor": "devin-ai-integration[bot]",

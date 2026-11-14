@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b7559c3f757ceb4baa381351fea105ae18cb3478` (2026-11-14T01:57:37Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f3b6700d14fe6587aecb02bd6d9135de0cdec6ff` (2026-11-14T08:47:23-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -619,12 +619,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/TESTING.md` — Guia de Testes (60 linhas)
 - `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (182 linhas)
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
-- `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (834 linhas)
+- `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (844 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
 - subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (8), docs/execucao-cline (5), docs/runbooks (5), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-14 `f3b6700` chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica
 - 2026-11-14 `b7559c3` fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)
 - 2026-11-14 `53a33b6` infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)
 - 2026-11-13 `76173e7` fix: simulação da Contabilização Automática deixa de receber 400 (#337)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-13 `2d3e3db` fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)
 - 2026-11-13 `04e82b5` infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)
 - 2026-11-12 `841109a` chore(docs): auditoria prod-readiness (#324)
-- 2026-11-12 `68bac76` fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
