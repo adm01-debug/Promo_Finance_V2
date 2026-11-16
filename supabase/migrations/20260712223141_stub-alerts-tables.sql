@@ -62,3 +62,27 @@ CREATE TABLE IF NOT EXISTS public.alert_configurations (
 
 ALTER TABLE public.alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.alert_configurations ENABLE ROW LEVEL SECURITY;
+
+-- Indice da FK empresa_id, no MESMO arquivo que cria a FK.
+--
+-- Sem isto o replay da cadeia ABORTA 16 dias de timestamp depois, no gate de
+-- 20260728104452_cb4be287-2b31-4328-86ea-e0c5406ec659.sql:21-38, que conta
+-- chave estrangeira de coluna unica sem indice de suporte e levanta
+-- "Ainda existem % chaves estrangeiras sem indice de suporte". As duas FKs sao
+-- as declaradas inline acima (:30 e :59), e o indice da cadeia para elas so
+-- aparece em 20260728215040_cc625266-...sql:38,42 — timestamp POSTERIOR ao
+-- gate.
+--
+-- Em producao nada muda: este arquivo ja foi aplicado, e lá os indices existem
+-- com OUTRO nome (idx_alerts_empresa_id, idx_alert_configurations_empresa_id,
+-- com sufixo _id), razao pela qual o gate sempre passou em producao e nunca
+-- passou num ambiente reconstruido. Os nomes abaixo sao os que a cadeia usa em
+-- 20260728215040, para nao criar um terceiro nome para a mesma coluna.
+--
+-- Corrigido aqui, e nao com um arquivo de timestamp novo, porque o indice
+-- pertence a FK: um arquivo posterior nao conserta o replay, ja que o gate roda
+-- antes dele. E nao com um arquivo de timestamp ANTERIOR, porque isso quebraria
+-- a regra de versao estritamente crescente do AGENTS.md secao 4 e apareceria
+-- como versao local ausente do ledger remoto.
+CREATE INDEX IF NOT EXISTS idx_alerts_empresa ON public.alerts(empresa_id);
+CREATE INDEX IF NOT EXISTS idx_alert_configurations_empresa ON public.alert_configurations(empresa_id);

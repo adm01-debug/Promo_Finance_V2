@@ -33,7 +33,13 @@ interface ContaPagarFormFormularioProps {
       valor: number;
       data_vencimento: string;
       empresa_id: string;
-      tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+      tipo_cobranca:
+        | 'boleto'
+        | 'pix'
+        | 'cartao_credito'
+        | 'cartao_debito'
+        | 'transferencia'
+        | 'dinheiro';
       recorrente: boolean;
       fornecedor_id?: string;
       data_emissao?: string;
@@ -51,7 +57,13 @@ interface ContaPagarFormFormularioProps {
       valor: number;
       data_vencimento: string;
       empresa_id: string;
-      tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+      tipo_cobranca:
+        | 'boleto'
+        | 'pix'
+        | 'cartao_credito'
+        | 'cartao_debito'
+        | 'transferencia'
+        | 'dinheiro';
       recorrente: boolean;
       fornecedor_id?: string;
       data_emissao?: string;
