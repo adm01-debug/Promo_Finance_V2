@@ -53,7 +53,7 @@ on:
       - 'scripts/supabase_snapshot/**'
       - '.github/workflows/contexto.yml'
   schedule:
-    - cron: '7-59/10 * * * *' # minuto 7: fora do minuto 0 (fila do GitHub) e dos outros crons do repo
+    - cron: '7 * * * *' # minuto 7: fora do minuto 0 (fila do GitHub) e dos outros crons do repo
   workflow_dispatch:
     inputs:
       force:
