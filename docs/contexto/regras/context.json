@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "823636510fe884b68278ebf533f6d63f21b4d8e0",
+  "sha": "e3140027ee2537470e62769d68675c2a0a1973fd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 17:55 UTC",
-  "files_total": 3888,
-  "code_files": 3519,
-  "code_lines": 499245
+  "generated_at": "2026-11-16 18:16 UTC",
+  "files_total": 3889,
+  "code_files": 3520,
+  "code_lines": 499629
  },
  "version": "1.3.2",
- "facts_hash": "eea40ddadad54f61",
+ "facts_hash": "e2d1a03fd6af209e",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1222,
-   ".sql": 1094,
+   ".sql": 1095,
    ".tsx": 1091,
    ".mjs": 60,
    ".py": 45,
@@ -39488,6 +39488,16 @@
     "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
     "check": "public.empresa_membro_ativo(empresa_id)",
     "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "estrategias_elisao_catalogo_select",
+    "table": "estrategias_elisao_catalogo",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql"
    }
   ],
   "triggers": [
@@ -49098,14 +49108,6 @@
     "src": "supabase/migrations/20260726204116_7a1962ba-378e-4caa-aefe-0eb1ce2da89c.sql"
    },
    {
-    "name": "idx_ncms_st",
-    "table": "ncms",
-    "columns": "sujeito_st",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20260727185837_e55927cd-4203-4660-8ed3-653c76377123.sql"
-   },
-   {
     "name": "idx_ncms_mono",
     "table": "ncms",
     "columns": "monofasico_pis_cofins",
@@ -50338,14 +50340,6 @@
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
    {
-    "name": "idx_ncms_st",
-    "table": "ncms",
-    "columns": "sujeito_st",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   {
     "name": "idx_ncms_vigencia",
     "table": "ncms",
     "columns": "vigente_de, vigente_ate",
@@ -50548,14 +50542,6 @@
    {
     "name": "idx_relatorios_agendados_empresa_id",
     "table": "relatorios_agendados",
-    "columns": "empresa_id",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   {
-    "name": "idx_relatorios_tributarios_agendados_empresa_id",
-    "table": "relatorios_tributarios_agendados",
     "columns": "empresa_id",
     "unique": false,
     "where": "",
@@ -51066,14 +51052,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "name": "ux_integration_secrets_chave",
-    "table": "integration_secrets",
-    "columns": "chave",
-    "unique": true,
-    "where": "",
-    "src": "supabase/migrations/20260827090000_reconciliar_integration_secrets_sem_drop.sql"
-   },
-   {
     "name": "idx_mv_benchmark_regime",
     "table": "mv_benchmark_setorial",
     "columns": "regime",
@@ -51312,6 +51290,14 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261113163037_colunas_campos_formulario.sql"
+   },
+   {
+    "name": "idx_relatorios_tributarios_agendados_empresa",
+    "table": "relatorios_tributarios_agendados",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql"
    },
    {
     "name": "idx_fornecedores_empresa_id",
@@ -52599,6 +52585,7 @@
    "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
    "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
+   "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
    "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
    "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
@@ -72970,8 +72957,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1024,
-   "lines": 77508,
+   "files": 1025,
+   "lines": 77892,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -136999,6 +136986,10 @@
    {
     "file": "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
     "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
+    "call": "asaas"
    }
   ],
   "db_policies": [
@@ -145681,6 +145672,16 @@
     "using": "(public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))",
     "check": "public.empresa_membro_ativo(empresa_id)",
     "src": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql"
+   },
+   {
+    "name": "estrategias_elisao_catalogo_select",
+    "table": "estrategias_elisao_catalogo",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql"
    }
   ],
   "db_triggers": [
@@ -159547,7 +159548,9 @@
    },
    "estrategias_elisao_catalogo": {
     "rls": "não verificado",
-    "SELECT": [],
+    "SELECT": [
+     "authenticated: true"
+    ],
     "INSERT": [],
     "UPDATE": [],
     "DELETE": []
@@ -245711,6 +245714,13 @@
    "lines": 58,
    "uses_service_role": true
   },
+  "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql": {
+   "path": "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
+   "lines": 384,
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql": {
    "path": "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
    "lines": 36
@@ -245827,10 +245837,19 @@
   }
  },
  "git": {
-  "sha": "823636510fe884b68278ebf533f6d63f21b4d8e0",
+  "sha": "e3140027ee2537470e62769d68675c2a0a1973fd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e314002",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)",
+    "files": [
+     "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql"
+    ]
+   },
    {
     "sha": "8236365",
     "date": "2026-11-16",
@@ -246131,15 +246150,6 @@
     "files": [
      "docs/prod-readiness.md"
     ]
-   },
-   {
-    "sha": "b7559c3",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)",
-    "files": [
-     "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246162,6 +246172,10 @@
    [
     "docs/prod-readiness.md",
     2
+   ],
+   [
+    "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
+    1
    ],
    [
     "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
@@ -246217,10 +246231,6 @@
    ],
    [
     "supabase/functions/enviar-alerta-email/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/log-sped-bitrix24/index.ts",
     1
    ]
   ]

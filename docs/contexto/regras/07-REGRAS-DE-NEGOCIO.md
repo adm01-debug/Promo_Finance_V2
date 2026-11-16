@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `823636510f` · branch `main` · 2026-11-16 17:55 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e3140027ee` · branch `main` · 2026-11-16 18:16 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `cnaes` | cnaes_select_authenticated | SELECT | authenticated | permissive | `true` |  |
 | `cnpja_cache` | cnpja_cache_service_role_only | ALL | service_role | permissive | `true` | `true` |
 | `elisao_alertas` | elisao_alertas_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
-| … +568 linhas — lista completa em `context.json` | | | | | | |
+| … +569 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -5643,6 +5643,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20260924220000_asaas_payment_links_empresa.sql` |
 | `asaas` | `supabase/migrations/20261101120600_boletos_asaas_defaults.sql` |
 | `asaas` | `supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql` |
+| `asaas` | `supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql` |
 
 ## N. Regras citadas em comentários do código
 

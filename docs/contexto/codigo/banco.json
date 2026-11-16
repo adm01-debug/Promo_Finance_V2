@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1024,
+ "migrations": 1025,
  "seeds": [],
  "avisos": [
-  "183 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "184 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -3940,6 +3940,11 @@
    "indices": [
     {
      "nome": "idx_acordos_parcelamento_cliente",
+     "colunas": "cliente_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_acordos_parcelamento_cliente_id_fk",
      "colunas": "cliente_id",
      "unico": false
     },
@@ -21622,7 +21627,14 @@
   "estrategias_elisao_catalogo": {
    "colunas": {},
    "rls": false,
-   "policies": [],
+   "policies": [
+    {
+     "nome": "estrategias_elisao_catalogo_select",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    }
+   ],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -27798,13 +27810,7 @@
      "tipo": "restrictive"
     }
    ],
-   "indices": [
-    {
-     "nome": "ux_integration_secrets_chave",
-     "colunas": "chave",
-     "unico": true
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260726172735_c1fd3346-8ee7-4294-9cbb-1ac0af599885.sql",
    "colunas_types": {
@@ -30522,11 +30528,6 @@
     {
      "nome": "idx_ncms_mono",
      "colunas": "monofasico_pis_cofins",
-     "unico": false
-    },
-    {
-     "nome": "idx_ncms_st",
-     "colunas": "sujeito_st",
      "unico": false
     },
     {
@@ -40987,7 +40988,7 @@
      "unico": false
     },
     {
-     "nome": "idx_relatorios_tributarios_agendados_empresa_id",
+     "nome": "idx_relatorios_tributarios_agendados_empresa",
      "colunas": "empresa_id",
      "unico": false
     }
