@@ -651,7 +651,10 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
-    if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
+    # Não bloqueia merge algum (não está nos required checks) e consome 26 dos
+    # ~48 min de CI — mais que todos os gates somados. Em PR, isso só atrasa o
+    # merge; a cobertura segue intacta no push para main e no dispatch manual.
+    if: ${{ !cancelled() && github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-24.04  # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
     timeout-minutes: 30
