@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1d6ef946018032c57c0337064c8fb4c32a66332a` (2026-11-16T17:03:31-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `298cc49b279e1e4a5d499a3082e08a2941e8db66` (2026-11-16T17:13:09-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -460,7 +460,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (36)
+- package.json (35)
 - bun.lock (29)
 - .github/workflows/ci.yml (26)
 - supabase/config.toml (15)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `298cc49` fix(db): destrava o replay da cadeia de migrations — índice da FK no mesmo arquivo que cria a FK (#388)
 - 2026-11-16 `1d6ef94` chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)
 - 2026-11-16 `d9ff7e0` fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)
 - 2026-11-16 `38f4896` fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `cf94b6b` fix(db): refresh_mv_benchmark_setorial sai de PUBLIC e para de engolir erro em WHEN OTHERS (#370)
 - 2026-11-16 `5272662` fix: estorno contábil de movimentação excluída/alterada, com as 6 correções da revisão da #340 (#366)
 - 2026-11-16 `bc42f17` chore(docs): registra a análise do log de produção de 14/11 (#367)
-- 2026-11-16 `c4b811d` fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

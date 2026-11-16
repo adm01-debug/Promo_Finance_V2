@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "1d6ef946018032c57c0337064c8fb4c32a66332a",
+  "commit": "298cc49b279e1e4a5d499a3082e08a2941e8db66",
   "branch": "main",
-  "data_commit": "2026-11-16T17:03:31-03:00",
+  "data_commit": "2026-11-16T17:13:09-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "298cc49",
+    "data": "2026-11-16",
+    "assunto": "fix(db): destrava o replay da cadeia de migrations — índice da FK no mesmo arquivo que cria a FK (#388)"
+   },
    {
     "sha": "1d6ef94",
     "data": "2026-11-16",
@@ -126,11 +131,6 @@
     "sha": "c5a3c4a",
     "data": "2026-11-16",
     "assunto": "fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)"
-   },
-   {
-    "sha": "3f3da8c",
-    "data": "2026-11-16",
-    "assunto": "feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)"
    }
   ],
   "arquivos_mudados_7d": 738,
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 35
    },
    {
     "arquivo": "bun.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 142
+    "commits": 143
    },
    {
     "autor": "devin-ai-integration[bot]",
