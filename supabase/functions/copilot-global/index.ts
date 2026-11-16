@@ -7,6 +7,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('copilot-global');
 
 const CopilotGlobalBodySchema = z.object({
@@ -190,6 +191,20 @@ Deno.serve(
             headers: corsHeaders,
           });
         }
+
+        // Chamada ao Lovable AI Gateway tem custo por requisicao: sem teto, um
+        // cliente em laco consome credito sem limite. 60/min por IP acomoda o
+        // uso interativo de um escritorio atras de um mesmo NAT.
+        const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+        const rl = await checkRateLimit(sbAdmin, {
+          endpoint: 'copilot-global',
+          ip,
+          limit: 60,
+          windowSeconds: 60,
+          userAgent: req.headers.get('user-agent'),
+          failureMode: 'closed',
+        });
+        if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
         const rawBody = await req.json().catch(() => ({}));
         const validation = await validateContract(CopilotGlobalBodySchema, rawBody);
