@@ -1,49 +1,30 @@
--- Versiona DDL que JA ESTA em producao e nao existia em nenhum arquivo do
--- repositorio. Resgate das branches:
---   claude/chore-ddl-steps12-23-311026-1942   (steps 12, 13, 14, 19, 21)
---   claude/fix-realtime-performance-alerts-261113-1159
---   claude/fix-totais-movimentacoes-rpc-311031-1548
---   claude/resolve-conflicting-prs-rborrh     (sessao_id)
+-- Fecha a divergencia REAL entre a cadeia de migrations e o banco de producao.
 --
--- Nenhum destes arquivos chegou ao main, mas o efeito deles esta no banco
--- canonico bwwbeyolnnzppeuhgkcd. Consequencia: a cadeia de migrations do
--- repositorio NAO reconstroi producao — qualquer ambiente recriado a partir
--- dela (staging, recuperacao de desastre, preview do Supabase) nasce
--- diferente, e o gate de paridade do schema-drift acusa divergencia sem ter
--- o que aplicar. Esta migration fecha isso.
+-- Origem: claude/chore-ddl-steps12-23-311026-1942 (steps 13, 14 e 19), branch
+-- que nunca foi mergeada. A primeira versao desta migration carregava 8 DDL;
+-- a revisao mostrou que 5 ja estavam versionados por OUTROS arquivos e que 1
+-- quebrava o replay. Sobrou o que de fato falta, conferido arquivo por arquivo
+-- em supabase/migrations/ e objeto por objeto no canonico bwwbeyolnnzppeuhgkcd:
 --
--- Todo comando aqui e idempotente E ja corresponde ao estado de producao,
--- logo aplicar e no-op lá. O valor e a reprodutibilidade, nao a mudanca.
+--   ja versionado em outro arquivo, REMOVIDO daqui:
+--     DROP POLICY admin_only_integration_secrets .. 20261101120000_drop_dead_rls_policy.sql:5
+--     ALTER PUBLICATION .. performance_alerts ..... 20260712194216_8eb1fee3-...sql:2
+--     obter_totais_movimentacoes .................. 20261027120000_transferencias_movimentacao_bilateral.sql
+--     asaas_payments/customers.empresa_id NOT NULL  20260315192305_dda7f758-...sql:10,25 (no CREATE TABLE)
+--     historico_conciliacao_ia.sessao_id + FK ..... 20260519121217_fe028d08-...sql:14
 --
--- Estado conferido por consulta antes de escrever (nao por leitura de arquivo):
---   pg_policies admin_only_integration_secrets ................ 0 (ja removida)
---   os 12 indices duplicados do step13 ........................ nenhum existe
---   reloptions das 6 tabelas do step14 ........ autovacuum_vacuum_scale_factor=0.05
---   pg_policies estrategias_elisao_catalogo_select ............ 1
---   asaas_payments.empresa_id / asaas_customers.empresa_id .... is_nullable=NO
---   pg_publication_tables performance_alerts em supabase_realtime .... 1
---   obter_totais_movimentacoes ................................ existe
---   historico_conciliacao_ia.sessao_id ........................ existe
+--   dos 12 indices do step13, 11 nao sao divergencia: 3 ja tem CREATE e DROP
+--   na cadeia e 8 nunca sao criados por ela (o DROP seria no-op). So sobra um.
 
--- step12 — a policy admin-only de integration_secrets foi substituida pelo
--- modelo de secrets por empresa; o DROP e o estado real.
-DROP POLICY IF EXISTS admin_only_integration_secrets ON public.integration_secrets;
-
--- step13 — indices duplicados (mesma coluna de um UNIQUE ou de outro indice).
-DROP INDEX IF EXISTS public.uq_index_usage_snapshots_snapshot_schema_index;
-DROP INDEX IF EXISTS public.idx_bloat_snapshots_date_table;
-DROP INDEX IF EXISTS public.idx_perf_alerts_source_key;
-DROP INDEX IF EXISTS public.ux_integration_secrets_chave;
+-- 1. idx_ncms_st: a cadeia CRIA e nunca remove; producao nao tem.
+--    Sem isto, todo ambiente reconstruido nasce com um indice que producao
+--    nao tem, e o gate de paridade acusa para sempre.
 DROP INDEX IF EXISTS public.idx_ncms_st;
-DROP INDEX IF EXISTS public.idx_alert_configurations_enabled;
-DROP INDEX IF EXISTS public.idx_ncms_codigo;
-DROP INDEX IF EXISTS public.idx_ufs_sigla;
-DROP INDEX IF EXISTS public.idx_regras_rot_empresa;
-DROP INDEX IF EXISTS public.idx_pst_ncms_protocolo;
-DROP INDEX IF EXISTS public.idx_cnaes_codigo;
-DROP INDEX IF EXISTS public.idx_pst_ufs_protocolo;
 
--- step14 — autovacuum mais agressivo nas tabelas financeiras de maior churn.
+-- 2. autovacuum nas 6 tabelas que 20261101120200_autovacuum_scale_factor.sql
+--    NAO cobre (lá estão movimentacoes, contas_receber, contas_pagar, boletos,
+--    clientes, empresas — conjuntos disjuntos). Producao tem 0.05 nas seis;
+--    o replay deixa no padrao 0.2 e a tabela incha entre vacuums.
 ALTER TABLE public.fornecedores           SET (autovacuum_vacuum_scale_factor = 0.05);
 ALTER TABLE public.centros_custo          SET (autovacuum_vacuum_scale_factor = 0.05);
 ALTER TABLE public.contas_bancarias       SET (autovacuum_vacuum_scale_factor = 0.05);
@@ -51,70 +32,38 @@ ALTER TABLE public.conciliacoes           SET (autovacuum_vacuum_scale_factor = 
 ALTER TABLE public.lancamentos_contabeis  SET (autovacuum_vacuum_scale_factor = 0.05);
 ALTER TABLE public.solicitacoes_aprovacao SET (autovacuum_vacuum_scale_factor = 0.05);
 
--- step19 — catalogo publico de estrategias de elisao: leitura liberada para
--- authenticated. O USING (true) e intencional (catalogo, nao dado de empresa)
--- e esta na allowlist de scripts/security/test-canonical-db-gates.mjs:119.
-DROP POLICY IF EXISTS estrategias_elisao_catalogo_select ON public.estrategias_elisao_catalogo;
-CREATE POLICY estrategias_elisao_catalogo_select
-  ON public.estrategias_elisao_catalogo
-  FOR SELECT
-  TO authenticated
-  USING (true);
-
--- step21 — empresa_id obrigatorio nas tabelas do Asaas: sem isso uma linha sem
--- empresa escapa de toda policy de isolamento por empresa.
-ALTER TABLE public.asaas_payments  ALTER COLUMN empresa_id SET NOT NULL;
-ALTER TABLE public.asaas_customers ALTER COLUMN empresa_id SET NOT NULL;
-
--- performance_alerts no realtime: ALTER PUBLICATION ... ADD TABLE nao e
--- idempotente (erro 42710 se a tabela ja e membro), por isso o guard.
-DO $pub$
+-- 3. Policy de leitura do catalogo de estrategias de elisao.
+--    GUARD OBRIGATORIO: em PRODUCAO estrategias_elisao_catalogo e TABELA
+--    (pg_class.relkind='r', conferido), mas a cadeia de migrations a cria como
+--    VIEW com security_invoker=true (20260728154640_2b62d1ef-...sql:62, recriada
+--    em 20260825100000_reconciliar_schema_completo.sql:10803) e nunca converte
+--    para tabela. CREATE POLICY em view e rejeitado pelo PostgreSQL, o que
+--    abortaria a migration exatamente no replay que ela existe para consertar.
+--    Com o guard: em producao a policy e garantida; no replay o objeto segue
+--    view e a leitura herda as permissoes e policies de estrategias_elisao
+--    (que tem 2 policies), que e o comportamento de security_invoker.
+--    A divergencia view-vs-tabela entre repositorio e producao NAO e resolvida
+--    aqui — e decisao do dono qual das duas formas e a correta.
+--    USING (true) e intencional (catalogo, nao dado de empresa) e esta na
+--    allowlist exigida pelo AGENTS.md secao 4:
+--    scripts/security/test-canonical-db-gates.mjs:119.
+DO $pol$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_publication_tables
-     WHERE pubname = 'supabase_realtime'
-       AND schemaname = 'public'
-       AND tablename = 'performance_alerts'
+  IF EXISTS (
+    SELECT 1 FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+     WHERE n.nspname = 'public'
+       AND c.relname = 'estrategias_elisao_catalogo'
+       AND c.relkind = 'r'
   ) THEN
-    ALTER PUBLICATION supabase_realtime ADD TABLE public.performance_alerts;
+    DROP POLICY IF EXISTS estrategias_elisao_catalogo_select ON public.estrategias_elisao_catalogo;
+    CREATE POLICY estrategias_elisao_catalogo_select
+      ON public.estrategias_elisao_catalogo
+      FOR SELECT
+      TO authenticated
+      USING (true);
+  ELSE
+    RAISE NOTICE 'estrategias_elisao_catalogo nao e tabela (relkind<>r): policy ignorada, leitura segue security_invoker sobre estrategias_elisao';
   END IF;
 END
-$pub$;
-
--- sessao_id em historico_conciliacao_ia (+ indice da FK).
-ALTER TABLE public.historico_conciliacao_ia
-  ADD COLUMN IF NOT EXISTS sessao_id UUID REFERENCES public.sessoes_conciliacao(id);
-CREATE INDEX IF NOT EXISTS idx_historico_conciliacao_ia_sessao
-  ON public.historico_conciliacao_ia(sessao_id);
-
--- obter_totais_movimentacoes — consumida por src/pages/Movimentacoes.tsx:181.
--- Corpo copiado de pg_get_functiondef em PRODUCAO, nao da branch: a versao da
--- branch devolvia uma terceira coluna `saldo` (o front calcula o saldo em
--- :193), filtrava empresa por uma tabela `empresa_usuarios` em vez da
--- `user_empresas` real, e NAO excluia transferencias — que inflariam entrada e
--- saida com movimento entre contas da propria empresa. A de producao e a
--- correta. SECURITY INVOKER de proposito: o escopo por empresa vem da RLS de
--- movimentacoes (policy "Access by empresa_id", FOR ALL), nao de filtro no
--- corpo da funcao.
-CREATE OR REPLACE FUNCTION public.obter_totais_movimentacoes(
-  p_start date,
-  p_end date,
-  p_tipo text DEFAULT NULL::text,
-  p_search text DEFAULT NULL::text
-)
- RETURNS TABLE(total_entradas numeric, total_saidas numeric)
- LANGUAGE sql
- STABLE
- SET search_path TO 'public'
-AS $function$
-  SELECT
-    COALESCE(SUM(valor) FILTER (WHERE tipo = 'entrada'), 0) AS total_entradas,
-    COALESCE(SUM(valor) FILTER (WHERE tipo = 'saida'), 0) AS total_saidas
-  FROM movimentacoes
-  WHERE deleted_at IS NULL
-    AND origem IS DISTINCT FROM 'transferencia'
-    AND data_movimentacao >= p_start
-    AND data_movimentacao <= p_end
-    AND (p_tipo IS NULL OR p_tipo = 'all' OR tipo = p_tipo)
-    AND (p_search IS NULL OR p_search = '' OR descricao ILIKE '%' || p_search || '%');
-$function$;
+$pol$;
