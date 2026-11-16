@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (252)",
+   "co-localizado (__tests__) (253)",
    "outro (107)",
    "co-localizado (*.test) (42)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)",
    "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)",
    "fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)",
    "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)",
-   "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)",
-   "chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)"
+   "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

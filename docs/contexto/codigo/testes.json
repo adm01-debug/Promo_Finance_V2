@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 441,
+ "total": 442,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 365
+  "unit": 366
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 252
+   "arquivos": 253
   },
   {
    "padrao": "outro",
@@ -1150,6 +1150,16 @@
     "src/lib/formatters.ts"
    ],
    "casos": 5
+  },
+  {
+   "arquivo": "src/hooks/__tests__/kpis-comparativo-anterior.test.ts",
+   "tipo": "unit",
+   "linhas": 82,
+   "testa": [
+    "src/hooks/useContasPagarLogic.calculos.ts",
+    "src/hooks/useContasReceberLogic.calculos.ts"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/hooks/__tests__/savedFilterDedup.test.ts",
@@ -4007,6 +4017,8 @@
   "src/hooks/useConciliacaoPage.ts": 3,
   "src/hooks/useConciliacaoPageState.ts": 1,
   "src/hooks/useConsultaTributaria.ts": 1,
+  "src/hooks/useContasPagarLogic.calculos.ts": 1,
+  "src/hooks/useContasReceberLogic.calculos.ts": 1,
   "src/hooks/useContratos.ts": 1,
   "src/hooks/useCreditosTributarios.ts": 1,
   "src/hooks/useDashboardConfig.ts": 1,
@@ -4463,10 +4475,8 @@
    "src/hooks/useConfetti.ts",
    "src/hooks/useConformidadeFiscal.ts",
    "src/hooks/useConformidadeSnapshots.ts",
-   "src/hooks/useContasPagarLogic.calculos.ts",
    "src/hooks/useContasPagarLogic.ts",
    "src/hooks/useContasPagarLogic.types.ts",
-   "src/hooks/useContasReceberLogic.calculos.ts",
    "src/hooks/useContasReceberLogic.ts",
    "src/hooks/useCountUp.ts",
    "src/hooks/useCustomFields.ts",

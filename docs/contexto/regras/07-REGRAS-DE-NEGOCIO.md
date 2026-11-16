@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e3140027ee` · branch `main` · 2026-11-16 18:16 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `40876f40d9` · branch `main` · 2026-11-16 19:15 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3923,9 +3923,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `diferenca: totalCreditosCBS - totalCBSEsperado * 0.5,` | `src/hooks/useConciliacaoTributaria.ts` |
 | `if (totalCreditosCBS > 0 && Math.abs(totalCreditosCBS - totalCBSEsperado * 0.5) > 100) {` | `src/hooks/useConciliacaoTributaria.ts` |
 | `valorEsperado: totalCBSEsperado * 0.5,` | `src/hooks/useConciliacaoTributaria.ts` |
-| `.reduce((sum, c) => sum + (c.valor_pago \|\| 0), 0) \|\| totalPagoMes * 0.95;` | `src/hooks/useContasPagarLogic.calculos.ts` |
-| `.reduce((sum, c) => sum + (c.valor ?? 0), 0) * 0.9; // Simulação de dados anteriores` | `src/hooks/useContasReceberLogic.calculos.ts` |
-| `.reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0) \|\| totalRecebidoMes * 0.95;` | `src/hooks/useContasReceberLogic.calculos.ts` |
+| `// zero real por 95% do mês atual. ContasPagarKPIs.tsx:30 já exige` | `src/hooks/useContasPagarLogic.calculos.ts` |
+| `// Sem `\|\| totalRecebidoMes * 0.95`: o fallback disparava exatamente quando` | `src/hooks/useContasReceberLogic.calculos.ts` |
+| `// falsy), trocando o zero real por 95% do mês atual.` | `src/hooks/useContasReceberLogic.calculos.ts` |
+| `// totalVencido * 1.1 fazia o cartão de vencidos mostrar sempre ≈ -9%,` | `src/hooks/useContasReceberLogic.calculos.ts` |
 | `const deducoes = receitaBruta * 0.0925;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const irCs = lucroAntesIR > 0 ? lucroAntesIR * 0.15 : 0;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const obrTrib = cpPend * 0.1;` | `src/hooks/useDemonstrativosContabeis.ts` |
@@ -4070,8 +4071,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const valorVinculado = Math.min(importacao, exportacao * 0.4);` | `src/lib/tributario/elisao/detectar-drawback.ts` |
 | `economia_min: economiaEstimada * 0.7,` | `src/lib/tributario/elisao/detectar-drawback.ts` |
 | `const economiaEstimada = irpfmEstimado * 0.7; // assume 70% de eficiência` | `src/lib/tributario/elisao/detectar-holding.ts` |
-| `const irpfmEstimado = aplicavel ? Math.max(0, dividendos - TETO_DIVIDENDOS_IRPFM) * 0.1 : 0;` | `src/lib/tributario/elisao/detectar-holding.ts` |
-| … +173 linhas — lista completa em `context.json` | |
+| … +174 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -5095,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3362 testes em 282 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3366 testes em 283 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5322,6 +5322,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/hooks/useBoletos.validation.test.ts` | 4 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento |
+| `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |

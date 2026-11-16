@@ -2895,7 +2895,7 @@
   {
    "arquivo": "src/hooks/useContasPagarLogic.calculos.ts",
    "hooks_exportados": [],
-   "linhas": 249,
+   "linhas": 253,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2906,7 +2906,7 @@
    "usado_por_arquivos": [
     "src/hooks/useContasPagarLogic.ts"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useContasPagarLogic.ts",
@@ -2972,7 +2972,7 @@
   {
    "arquivo": "src/hooks/useContasReceberLogic.calculos.ts",
    "hooks_exportados": [],
-   "linhas": 97,
+   "linhas": 100,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2983,7 +2983,7 @@
    "usado_por_arquivos": [
     "src/hooks/useContasReceberLogic.ts"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useContasReceberLogic.ts",

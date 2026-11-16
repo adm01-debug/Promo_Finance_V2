@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e3140027ee2537470e62769d68675c2a0a1973fd",
+  "commit": "40876f40d9073c735bda3a731bca165042a69b5f",
   "branch": "main",
-  "data_commit": "2026-11-16T15:15:39-03:00",
+  "data_commit": "2026-11-16T16:14:54-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "40876f4",
+    "data": "2026-11-16",
+    "assunto": "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)"
+   },
    {
     "sha": "e314002",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "a0543f9",
     "data": "2026-11-16",
     "assunto": "fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)"
-   },
-   {
-    "sha": "e61e8b8",
-    "data": "2026-11-16",
-    "assunto": "fix(edge): rate limit em copilot-global e analise-preditiva (#353)"
    }
   ],
-  "arquivos_mudados_7d": 719,
+  "arquivos_mudados_7d": 720,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,27 +199,27 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 37
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 27
+    "mudancas": 26
    },
    {
     "arquivo": "supabase/config.toml",
-    "mudancas": 16
+    "mudancas": 15
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 16
+    "mudancas": 15
    },
    {
     "arquivo": ".github/workflows/deno-tests.yml",
-    "mudancas": 15
+    "mudancas": 14
    },
    {
     "arquivo": "supabase/functions/mcp-query/index.ts",
@@ -231,19 +231,7 @@
    },
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
-    "mudancas": 12
-   },
-   {
-    "arquivo": "src/App.tsx",
-    "mudancas": 12
-   },
-   {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 12
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
-    "mudancas": 12
+    "mudancas": 11
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -258,50 +246,62 @@
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "arquivo": "src/App.tsx",
     "mudancas": 11
+   },
+   {
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "mudancas": 11
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 11
+   },
+   {
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "mudancas": 10
    },
    {
     "arquivo": "supabase/functions/n8n-dispatch/index.ts",
-    "mudancas": 11
+    "mudancas": 10
+   },
+   {
+    "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 9
    },
    {
     "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/bling-webhook/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/convidar-contador/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/enviar-alerta-email/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 137
+    "commits": 138
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3847,
-  "arquivos_codigo": 2424,
-  "linhas_codigo": 432661,
+  "arquivos_total": 3848,
+  "arquivos_codigo": 2425,
+  "linhas_codigo": 432753,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1025,
   "cron_jobs": 21,
-  "testes": 441,
+  "testes": 442,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 192
@@ -643,8 +643,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 311,
-   "linhas": 44953
+   "arquivos": 312,
+   "linhas": 45042
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -664,7 +664,7 @@
   },
   "src/pages": {
    "arquivos": 271,
-   "linhas": 46549
+   "linhas": 46552
   },
   "src/routes": {
    "arquivos": 16,
