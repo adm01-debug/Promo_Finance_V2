@@ -55,8 +55,13 @@ export const tipoCobrancaConfig: Record<
     icon: Banknote,
   },
   pix: { label: 'PIX', color: 'bg-success/10 text-success border-success/20', icon: QrCode },
-  cartao: {
-    label: 'Cartão',
+  cartao_credito: {
+    label: 'Cartão de crédito',
+    color: 'bg-secondary/10 text-secondary border-secondary/20',
+    icon: CreditCard,
+  },
+  cartao_debito: {
+    label: 'Cartão de débito',
     color: 'bg-secondary/10 text-secondary border-secondary/20',
     icon: CreditCard,
   },

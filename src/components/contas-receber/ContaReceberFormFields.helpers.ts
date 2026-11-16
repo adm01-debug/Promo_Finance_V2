@@ -3,7 +3,8 @@ import { Building2, CreditCard, Banknote, QrCode, Wallet } from 'lucide-react';
 export const tipoCobrancaOptions = [
   { value: 'boleto', label: 'Boleto', icon: Banknote },
   { value: 'pix', label: 'PIX', icon: QrCode },
-  { value: 'cartao', label: 'Cartão', icon: CreditCard },
+  { value: 'cartao_credito', label: 'Cartão de crédito', icon: CreditCard },
+  { value: 'cartao_debito', label: 'Cartão de débito', icon: CreditCard },
   { value: 'transferencia', label: 'Transferência', icon: Building2 },
   { value: 'dinheiro', label: 'Dinheiro', icon: Wallet },
 ];

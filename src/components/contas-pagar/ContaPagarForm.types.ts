@@ -15,7 +15,13 @@ export interface ContaPagar {
   centro_custo_id: string | null;
   categoria_id: string | null;
   conta_bancaria_id: string | null;
-  tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+  tipo_cobranca:
+    | 'boleto'
+    | 'pix'
+    | 'cartao_credito'
+    | 'cartao_debito'
+    | 'transferencia'
+    | 'dinheiro';
   numero_documento: string | null;
   codigo_barras: string | null;
   observacoes: string | null;
