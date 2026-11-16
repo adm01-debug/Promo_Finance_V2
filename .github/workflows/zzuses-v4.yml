@@ -1,0 +1,13 @@
+name: zzuses-v4
+on:
+  push:
+    branches:
+      - 'claude/chore-diagnostico-actions-**'
+permissions:
+  contents: read
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo ok
