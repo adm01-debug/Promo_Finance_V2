@@ -1877,7 +1877,7 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 102,
+   "usado_por": 104,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",
@@ -3847,7 +3847,7 @@
     "useFluxoCaixaKPIs",
     "useFluxoCaixaProjetado"
    ],
-   "linhas": 209,
+   "linhas": 246,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias",
@@ -3858,6 +3858,7 @@
    "rpcs": [],
    "edges": [],
    "hooks_internos": [
+    "useAuth",
     "useQuery"
    ],
    "canais_realtime": [],
@@ -3865,19 +3866,20 @@
    "usado_por_arquivos": [
     "src/hooks/useFluxoCaixaPage.ts"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useFluxoCaixaPage.ts",
    "hooks_exportados": [
     "useFluxoCaixaPage"
    ],
-   "linhas": 142,
+   "linhas": 158,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
    "edges": [],
    "hooks_internos": [
+    "useAuth",
     "useCallback",
     "useFluxoCaixaKPIs",
     "useFluxoCaixaProjetado",
@@ -3890,7 +3892,7 @@
    "usado_por_arquivos": [
     "src/pages/FluxoCaixa.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useFrontendErrorLogs.ts",

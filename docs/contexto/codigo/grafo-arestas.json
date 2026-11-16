@@ -7012,11 +7012,13 @@
    "src/integrations/supabase/client.ts"
   ],
   "src/hooks/useFluxoCaixa.ts": [
+   "src/hooks/useAuth.tsx",
    "src/integrations/supabase/client.ts",
    "src/lib/cashflow-scenarios.ts"
   ],
   "src/hooks/useFluxoCaixaPage.ts": [
    "src/components/ui/quick-date-filters.hooks.ts",
+   "src/hooks/useAuth.tsx",
    "src/hooks/useFluxoCaixa.ts",
    "src/lib/cashflow-scenarios.ts"
   ],

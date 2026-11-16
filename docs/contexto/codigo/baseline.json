@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "40876f40d9073c735bda3a731bca165042a69b5f",
+  "commit": "311bf3509c47eb6d7984fa09046f17c535e2c211",
   "branch": "main",
-  "data_commit": "2026-11-16T16:14:54-03:00",
+  "data_commit": "2026-11-16T16:25:13-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "311bf35",
+    "data": "2026-11-16",
+    "assunto": "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)"
+   },
    {
     "sha": "40876f4",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "d06f11e",
     "data": "2026-11-16",
     "assunto": "fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)"
-   },
-   {
-    "sha": "a0543f9",
-    "data": "2026-11-16",
-    "assunto": "fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)"
    }
   ],
-  "arquivos_mudados_7d": 720,
+  "arquivos_mudados_7d": 725,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -184,15 +184,15 @@
     "mudancas": 13
    },
    {
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 13
+   },
+   {
     "pasta": "src/components/contas-pagar",
     "mudancas": 12
    },
    {
     "pasta": "PENDENCIAS.md",
-    "mudancas": 11
-   },
-   {
-    "pasta": "RELATORIO_CI.md",
     "mudancas": 11
    }
   ],
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 138
+    "commits": 139
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3848,
-  "arquivos_codigo": 2425,
-  "linhas_codigo": 432753,
+  "arquivos_total": 3850,
+  "arquivos_codigo": 2427,
+  "linhas_codigo": 433038,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1025,
   "cron_jobs": 21,
-  "testes": 442,
+  "testes": 444,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 192
@@ -643,8 +643,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 312,
-   "linhas": 45042
+   "arquivos": 314,
+   "linhas": 45327
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -806,7 +806,7 @@
   "console_log": 220,
   "ts_ignore": 1,
   "eslint_disable": 1,
-  "todos": 13,
+  "todos": 14,
   "arquivos_acima_500_linhas": 27
  },
  "todos": [
@@ -845,6 +845,12 @@
    "linha": 165,
    "tipo": "TODO",
    "texto": "(2026-08-14): sem registro de cabeçalho do arquivo — extratos_importacoes não existe"
+  },
+  {
+   "arquivo": "src/hooks/useFluxoCaixa.ts",
+   "linha": 30,
+   "tipo": "TODO",
+   "texto": "o"
   },
   {
    "arquivo": "src/hooks/useMetasFinanceiras.ts",

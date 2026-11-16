@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 442,
+ "total": 444,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 366
+  "unit": 368
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 253
+   "arquivos": 255
   },
   {
    "padrao": "outro",
@@ -1394,11 +1394,29 @@
    "casos": 8
   },
   {
-   "arquivo": "src/hooks/__tests__/useFluxoCaixa.test.ts",
+   "arquivo": "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx",
    "tipo": "unit",
-   "linhas": 113,
+   "linhas": 127,
    "testa": [
     "src/hooks/useFluxoCaixa.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useFluxoCaixa.test.ts",
+   "tipo": "unit",
+   "linhas": 136,
+   "testa": [
+    "src/hooks/useFluxoCaixa.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx",
+   "tipo": "unit",
+   "linhas": 82,
+   "testa": [
+    "src/hooks/useFluxoCaixaPage.ts"
    ],
    "casos": 3
   },
@@ -4024,7 +4042,8 @@
   "src/hooks/useDashboardConfig.ts": 1,
   "src/hooks/useDashboardMetrics.ts": 2,
   "src/hooks/useFinancialOperations.ts": 1,
-  "src/hooks/useFluxoCaixa.ts": 1,
+  "src/hooks/useFluxoCaixa.ts": 2,
+  "src/hooks/useFluxoCaixaPage.ts": 1,
   "src/hooks/useGlobalFilterSync.ts": 1,
   "src/hooks/useImportacaoXMLNFe.ts": 1,
   "src/hooks/useIndicesContabeis.ts": 1,
@@ -4501,7 +4520,6 @@
    "src/hooks/useFilterPresets.ts",
    "src/hooks/useFinancialAlerts.tsx",
    "src/hooks/useFinancialData.ts",
-   "src/hooks/useFluxoCaixaPage.ts",
    "src/hooks/useFrontendErrorLogs.ts",
    "src/hooks/useGerarEvidenciasStream.ts",
    "src/hooks/useGlobalFinancialFilter.ts",

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `40876f40d9` · branch `main` · 2026-11-16 19:15 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `311bf3509c` · branch `main` · 2026-11-16 19:25 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2778,6 +2778,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   
   ```
+- **saldoReceber(c: { valor: number; valor_recebido?: number | null })** — `src/hooks/useFluxoCaixa.ts`
+  ```
+  
+  ```
+- **saldoPagar(c: { valor: number; valor_pago?: number | null })** — `src/hooks/useFluxoCaixa.ts`
+  ```
+  
+  ```
 - **calcularProjecoesReais(fluxoBase: ProjecaoDiaria[], saldoInicial: number)** — `src/hooks/useFluxoCaixa.ts`
   ```
   return gerarTodasProjecoesLib(fluxoBase, saldoInicial);
@@ -4450,6 +4458,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const em7Dias = addDays(hoje, 7);` | `src/hooks/useExpertContext.ts` |
 | `staleTime: 10 * 60 * 1000,` | `src/hooks/useFinancialOperations.ts` |
 | `staleTime: 2 * 60 * 1000,` | `src/hooks/useFinancialOperations.ts` |
+| `const limite30d = format(addDays(new Date(), 30), 'yyyy-MM-dd');` | `src/hooks/useFluxoCaixa.ts` |
 | `staleTime: 10 * 60 * 1000,` | `src/hooks/useHeatmapTributario.ts` |
 | `(1000 * 60 * 60 * 24)` | `src/hooks/useInadimplenciaSegmentada.ts` |
 | `const desde24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();` | `src/hooks/useInsightsIA.ts` |
@@ -5095,7 +5104,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3366 testes em 283 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3375 testes em 285 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5309,6 +5318,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useAlertasTributariosCount.test.ts` | 5 | useAlertasTributariosCount · retorna count quando query bem-sucedida · retorna 0 quando count é null · filtra por tipos tributários e lido=false … |
 | `src/hooks/__tests__/useConciliacaoIA.test.ts` | 5 | useConciliacaoIA · deve retornar erro se não houver dados para análise · deve processar matches retornados pela Edge Function com sucesso · deve lidar com erros de rate limit (429) graciosamente … |
 | `src/hooks/__tests__/useDashboardConfig.test.tsx` | 5 | useDashboardConfig · ocultar/exibir e redimensionar persistem e sobrevivem ao recarregar · valores inválidos salvos voltam ao padrão · DashboardConfigDialog … |
+| `src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx` | 5 | useFluxoCaixaKPIs · filtra as três consultas pela empresa selecionada · a previsão de 30 dias ignora vencimento fora da janela · título vencido fora da janela não entra na previsão de 30 dias … |
 | `src/hooks/__tests__/useGlobalFilterSync.test.ts` | 5 | useGlobalFilterSync · deve registrar o listener de evento ao montar · deve disparar toast quando o evento current-empresa-changed ocorre · não deve disparar se o detalhe do evento estiver vazio … |
 | `src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx` | 5 | useSugestoesContaPagar — formato do payload · devolve a lista quando o proxy responde o formato esperado · devolve lista vazia — não um objeto — quando o proxy responde fora do formato · trata null como ausência de candidatas, sem alarde … |
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |
@@ -5323,6 +5333,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/hooks/useBoletos.validation.test.ts` | 4 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
+| `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
@@ -5790,6 +5801,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`; | `src/hooks/useExpertContext.ts` |
 | Real-time subscription for billing rule failures | `src/hooks/useFinancialAlerts.tsx` |
 | Antes: `.limit(500)` fixo — além de truncar silenciosamente resultados | `src/hooks/useFinancialOperations.ts` |
+| declara essa regra para o próprio projeto. | `src/hooks/useFluxoCaixa.ts` |
+| pendente, inclusive vencimento de anos à frente. As linhas de | `src/hooks/useFluxoCaixa.ts` |
+| hoje): só o limite superior deixaria passar título vencido com | `src/hooks/useFluxoCaixa.ts` |
+| vencimento no passado, e os dois números da mesma tela divergiriam. | `src/hooks/useFluxoCaixa.ts` |
 | `horas_restantes` é negativo quando o prazo já venceu. | `src/hooks/useFrontendErrorLogs.ts` |
 | permissão, ou registro removido). Avisa e limpa o param. | `src/hooks/useHighlightFromUrl.ts` |
 | Limite de isenção do adicional de IRPJ por mês | `src/hooks/useIRPJCSLL.ts` |
@@ -5946,8 +5961,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
 | - Limite de faturamento (RBT12 < R$ 4.8M no Simples) | `src/lib/tributario/recomendar-empresa.ts` |
 | Regra de Substituição Tributária (ST) | `src/lib/tributario/validador-ncm-cst.ts` |
-| Validação básica de tamanho de NCM | `src/lib/tributario/validador-ncm-cst.ts` |
-| * Regra de bump: | `src/lib/tributario/versao.ts` |
-| - MINOR: nova regra fiscal (ex.: CPP Anexo IV, FPAS/Terceiros). | `src/lib/tributario/versao.ts` |
-| - PATCH: correção de cálculo sem nova regra. | `src/lib/tributario/versao.ts` |
-| … +367 linhas — lista completa em `context.json` | |
+| … +371 linhas — lista completa em `context.json` | |

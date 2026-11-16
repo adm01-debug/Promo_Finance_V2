@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (253)",
+   "co-localizado (__tests__) (255)",
    "outro (107)",
    "co-localizado (*.test) (42)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)",
    "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)",
    "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)",
    "fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)",
-   "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)",
-   "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)"
+   "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
