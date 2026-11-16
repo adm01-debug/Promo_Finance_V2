@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 447,
+ "total": 448,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 371
+  "unit": 372
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 258
+   "arquivos": 259
   },
   {
    "padrao": "outro",
@@ -1402,6 +1402,15 @@
     "src/hooks/useDashboardMetrics.ts"
    ],
    "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+   "tipo": "unit",
+   "linhas": 137,
+   "testa": [
+    "src/hooks/useExpertContext.ts"
+   ],
+   "casos": 5
   },
   {
    "arquivo": "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx",
@@ -4074,6 +4083,7 @@
   "src/hooks/useCreditosTributarios.ts": 1,
   "src/hooks/useDashboardConfig.ts": 1,
   "src/hooks/useDashboardMetrics.ts": 2,
+  "src/hooks/useExpertContext.ts": 1,
   "src/hooks/useFinancialOperations.ts": 1,
   "src/hooks/useFluxoCaixa.ts": 2,
   "src/hooks/useFluxoCaixaPage.ts": 1,
@@ -4546,7 +4556,6 @@
    "src/hooks/useEntregasObrigacoes.ts",
    "src/hooks/useEvidenciasPack.ts",
    "src/hooks/useExpertActions.ts",
-   "src/hooks/useExpertContext.ts",
    "src/hooks/useExpertConversations.ts",
    "src/hooks/useExportarSped.ts",
    "src/hooks/useExtratoWebhooks.ts",

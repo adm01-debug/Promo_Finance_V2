@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "c7bd81bf5652832dcd07674b1df04f6dbbcea758",
+  "sha": "f48e9c1c34710c9110344f27b6983b9003aa4d1c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 22:24 UTC",
-  "files_total": 3899,
-  "code_files": 3530,
-  "code_lines": 501559
+  "generated_at": "2026-11-16 23:05 UTC",
+  "files_total": 3900,
+  "code_files": 3531,
+  "code_lines": 501720
  },
  "version": "1.3.2",
- "facts_hash": "04c3a1471e8c4369",
+ "facts_hash": "923581e161d2f46c",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1226,
    ".sql": 1098,
-   ".tsx": 1094,
+   ".tsx": 1095,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -71546,7 +71546,7 @@
   {
    "module": "src/components",
    "files": 980,
-   "lines": 161934,
+   "lines": 161939,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71813,8 +71813,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 315,
-   "lines": 45733,
+   "files": 316,
+   "lines": 45889,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -85852,6 +85852,10 @@
    {
     "file": "src/hooks/useExpertContext.ts",
     "text": "${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`;"
+   },
+   {
+    "file": "src/hooks/useExpertContext.ts",
+    "text": "'pendente' apenas."
    },
    {
     "file": "src/hooks/useFinancialAlerts.tsx",
@@ -121004,6 +121008,18 @@
    },
    {
     "file": "src/components/expert/ProactiveSuggestions.tsx",
+    "line": "// 'vencido', uma carteira 100% vencida deixa totalReceber em 0 e o guard"
+   },
+   {
+    "file": "src/components/expert/ProactiveSuggestions.tsx",
+    "line": "// antigo devolvia taxa 0% — suprimindo o alerta exatamente no pior caso,"
+   },
+   {
+    "file": "src/components/expert/ProactiveSuggestions.tsx",
+    "line": "// ja que ele so dispara acima de 10%."
+   },
+   {
+    "file": "src/components/expert/ProactiveSuggestions.tsx",
     "line": "if (vencimentosProximos.length >= 5 && totalVencimentosProximos > saldoAtual * 0.5) {"
    },
    {
@@ -121361,6 +121377,10 @@
    {
     "file": "src/hooks/useDemonstrativosContabeis.ts",
     "line": "const obrTrib = cpPend * 0.1;"
+   },
+   {
+    "file": "src/hooks/useExpertContext.ts",
+    "line": "// Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e"
    },
    {
     "file": "src/hooks/useIRPJCSLL.ts",
@@ -125895,6 +125915,30 @@
    {
     "file": "src/hooks/__tests__/useDashboardMetrics.test.ts",
     "name": "topClientesReceita ordena por receita desc e limita a 10"
+   },
+   {
+    "file": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+    "name": "indicadores do EXPERT com a carteira vencida"
+   },
+   {
+    "file": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+    "name": "carteira 100% vencida reporta 100%, não 0%"
+   },
+   {
+    "file": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+    "name": "carteira mista continua proporcional"
+   },
+   {
+    "file": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+    "name": "liquidez e cobertura contam a dívida a pagar vencida"
+   },
+   {
+    "file": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+    "name": "recebível vencido NÃO entra como entrada prevista nem na liquidez"
+   },
+   {
+    "file": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+    "name": "carteira vazia continua em zero"
    },
    {
     "file": "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx",
@@ -191936,7 +191980,7 @@
   },
   "src/components/expert/ProactiveSuggestions.tsx": {
    "path": "src/components/expert/ProactiveSuggestions.tsx",
-   "lines": 340,
+   "lines": 345,
    "exports": [
     "function ProactiveSuggestions"
    ],
@@ -192094,6 +192138,9 @@
     }
    ],
    "percents": [
+    "// 'vencido', uma carteira 100% vencida deixa totalReceber em 0 e o guard",
+    "// antigo devolvia taxa 0% — suprimindo o alerta exatamente no pior caso,",
+    "// ja que ele so dispara acima de 10%.",
     "if (vencimentosProximos.length >= 5 && totalVencimentosProximos > saldoAtual * 0.5) {",
     "} else if (saldoProjetado < saldoAtual * 0.3) {"
    ]
@@ -203730,7 +203777,7 @@
   },
   "src/hooks/useExpertContext.ts": {
    "path": "src/hooks/useExpertContext.ts",
-   "lines": 255,
+   "lines": 273,
    "exports": [
     "function useExpertContext"
    ],
@@ -203811,7 +203858,8 @@
     }
    ],
    "rule_comments": [
-    "${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`;"
+    "${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`;",
+    "'pendente' apenas."
    ],
    "hooks": [
     "useExpertContext"
@@ -203826,6 +203874,9 @@
    "temporal": [
     "const em30Dias = addDays(hoje, 30);",
     "const em7Dias = addDays(hoje, 7);"
+   ],
+   "percents": [
+    "// Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e"
    ]
   },
   "src/hooks/useExpertConversations.ts": {
@@ -210265,6 +210316,19 @@
     "normaliza sentinelas sem expandir a autorização da empresa corrente",
     "conta divergências pela conta bancária vinculada à empresa filtrada",
     "topClientesReceita ordena por receita desc e limita a 10"
+   ]
+  },
+  "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx": {
+   "path": "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+   "lines": 138,
+   "is_test": true,
+   "tests": [
+    "indicadores do EXPERT com a carteira vencida",
+    "carteira 100% vencida reporta 100%, não 0%",
+    "carteira mista continua proporcional",
+    "liquidez e cobertura contam a dívida a pagar vencida",
+    "recebível vencido NÃO entra como entrada prevista nem na liquidez",
+    "carteira vazia continua em zero"
    ]
   },
   "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx": {
@@ -246247,10 +246311,21 @@
   }
  },
  "git": {
-  "sha": "c7bd81bf5652832dcd07674b1df04f6dbbcea758",
+  "sha": "f48e9c1c34710c9110344f27b6983b9003aa4d1c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f48e9c1",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)",
+    "files": [
+     "src/components/expert/ProactiveSuggestions.tsx",
+     "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
+     "src/hooks/useExpertContext.ts"
+    ]
+   },
    {
     "sha": "c7bd81b",
     "date": "2026-11-16",
@@ -246595,18 +246670,13 @@
     "files": [
      "supabase/migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql"
     ]
-   },
-   {
-    "sha": "a023fa6",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)",
-    "files": [
-     "src/components/compras/PedidoCompraForm.tsx"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "src/components/expert/ProactiveSuggestions.tsx",
+    2
+   ],
    [
     "supabase/functions/bitrix24-sync/index.ts",
     2
@@ -246640,11 +246710,15 @@
     2
    ],
    [
-    "src/components/asaas/NovaCobrancaDialog.tsx",
+    "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
     1
    ],
    [
-    "src/components/expert/ProactiveSuggestions.tsx",
+    "src/hooks/useExpertContext.ts",
+    1
+   ],
+   [
+    "src/components/asaas/NovaCobrancaDialog.tsx",
     1
    ],
    [
@@ -246677,14 +246751,6 @@
    ],
    [
     "supabase/migrations/20260825230000_initplan_rls_e67.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
     1
    ]
   ]

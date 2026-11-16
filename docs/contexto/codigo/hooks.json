@@ -3559,7 +3559,7 @@
    "hooks_exportados": [
     "useExpertContext"
    ],
-   "linhas": 254,
+   "linhas": 272,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias",
@@ -3579,7 +3579,7 @@
    "usado_por_arquivos": [
     "src/pages/Expert.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useExpertConversations.ts",

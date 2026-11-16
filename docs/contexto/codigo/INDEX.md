@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c7bd81bf5652832dcd07674b1df04f6dbbcea758` (2026-11-16T19:23:25-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f48e9c1c34710c9110344f27b6983b9003aa4d1c` (2026-11-16T20:04:23-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2320), SQL (1098), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2321), SQL (1098), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3857 |
-| arquivos_codigo | 2431 |
-| linhas_codigo | 433392 |
+| arquivos_total | 3858 |
+| arquivos_codigo | 2432 |
+| linhas_codigo | 433552 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1028 |
 | cron_jobs | 21 |
-| testes | 447 |
+| testes | 448 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 192 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (258), outro (107), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (259), outro (107), co-localizado (*.test) (42)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `f48e9c1` fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)
 - 2026-11-16 `c7bd81b` fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)
 - 2026-11-16 `02a26f0` fix(db): catálogo de elisão volta a ser tabela na cadeia, como já é em produção (#393)
 - 2026-11-16 `c4a6304` fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `40876f4` fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)
 - 2026-11-16 `e314002` chore(db): versiona a DDL que está em produção e não existe no repositório (#380)
 - 2026-11-16 `8236365` fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)
-- 2026-11-16 `15dc272` fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

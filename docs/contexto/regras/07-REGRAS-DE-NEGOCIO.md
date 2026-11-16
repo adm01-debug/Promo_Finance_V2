@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c7bd81bf56` · branch `main` · 2026-11-16 22:24 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f48e9c1c34` · branch `main` · 2026-11-16 23:05 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3847,6 +3847,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `Utilizados no cálculo de encargos patronais (CPP 20% + RAT/FAP + Terceiros) nas` | `src/components/empresas/EmpresaForm.tsx` |
 | `transition={{ delay: 0.2 + index * 0.1 }}` | `src/components/expert/ExpertWelcomeScreen.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/expert/ExpertWelcomeScreen.tsx` |
+| `// 'vencido', uma carteira 100% vencida deixa totalReceber em 0 e o guard` | `src/components/expert/ProactiveSuggestions.tsx` |
+| `// antigo devolvia taxa 0% — suprimindo o alerta exatamente no pior caso,` | `src/components/expert/ProactiveSuggestions.tsx` |
+| `// ja que ele so dispara acima de 10%.` | `src/components/expert/ProactiveSuggestions.tsx` |
 | `if (vencimentosProximos.length >= 5 && totalVencimentosProximos > saldoAtual * 0.5) {` | `src/components/expert/ProactiveSuggestions.tsx` |
 | `} else if (saldoProjetado < saldoAtual * 0.3) {` | `src/components/expert/ProactiveSuggestions.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/fluxo-caixa/AlertasRuptura.tsx` |
@@ -3937,6 +3940,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const deducoes = receitaBruta * 0.0925;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const irCs = lucroAntesIR > 0 ? lucroAntesIR * 0.15 : 0;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const obrTrib = cpPend * 0.1;` | `src/hooks/useDemonstrativosContabeis.ts` |
+| `// Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e` | `src/hooks/useExpertContext.ts` |
 | `// IRPJ Adicional (10% sobre excedente)` | `src/hooks/useIRPJCSLL.ts` |
 | `const limiteCompensacao = Math.max(0, lucroRealAntesComp * 0.3);` | `src/hooks/useIRPJCSLL.ts` |
 | `// Aproximação da SELIC mensal (0.9% ao mês)` | `src/hooks/usePerDcomp.ts` |
@@ -4074,11 +4078,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const baseAntecipada = investimento * 0.9;` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
 | `economia_min: economiaEstimada * 0.7,` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
 | `// Economia estimada: ~18% sobre o valor importado vinculado à exportação` | `src/lib/tributario/elisao/detectar-drawback.ts` |
-| `const economiaEstimada = aplicavel ? valorVinculado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-drawback.ts` |
-| `const valorVinculado = Math.min(importacao, exportacao * 0.4);` | `src/lib/tributario/elisao/detectar-drawback.ts` |
-| `economia_min: economiaEstimada * 0.7,` | `src/lib/tributario/elisao/detectar-drawback.ts` |
-| `const economiaEstimada = irpfmEstimado * 0.7; // assume 70% de eficiência` | `src/lib/tributario/elisao/detectar-holding.ts` |
-| … +174 linhas — lista completa em `context.json` | |
+| … +178 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3386 testes em 288 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3392 testes em 289 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5294,6 +5294,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx` | 6 | useUploadCertificado — erro da Edge Function · leva o motivo devolvido pela função até o toast · aceita  · cai para a mensagem PT-BR do status quando o corpo não traz motivo … |
 | `src/hooks/__tests__/useConciliacao.confirmar.test.tsx` | 6 | confirmarConciliacao · confirma pelo proxy sem reescrever nada fora da transação · manda os metadados de compensação junto com a confirmação · não manda bloco de compensação quando não houve ajuste … |
 | `src/hooks/__tests__/useConciliacaoPageState.test.tsx` | 6 | useContaBancariaSelecionada · limpa a seleção local quando o filtro global é removido explicitamente · useTransacoesBancariasSelecionadas · descarta uma resposta tardia e mantém a lista vazia até a conta ativa carregar … |
+| `src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx` | 6 | indicadores do EXPERT com a carteira vencida · carteira 100% vencida reporta 100%, não 0% · carteira mista continua proporcional · liquidez e cobertura contam a dívida a pagar vencida … |
 | `src/hooks/__tests__/useFluxoCaixa.test.ts` | 6 | useFluxoCaixaKPIs · calcula saldoTotal, totalReceber, totalPagar e previsão · useFluxoCaixaProjetado · retorna dias+1 entradas iniciadas com saldo inicial … |
 | `src/hooks/__tests__/useLancamentosContabeis.rollback.test.tsx` | 6 | useImportLancamentosLote — rollback do cabeçalho órfão · importa sem remover nada quando as partidas gravam · remove o cabeçalho quando as partidas falham · denuncia no relatório quando o próprio rollback é recusado … |
 | `src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts` | 6 | criarContaPagar · grava user_id do autor e data_emissao · criarContaReceber · grava user_id do autor (e não created_by) … |
@@ -5816,6 +5817,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | e grava apenas a própria. O hook faz upsert por `user_id`, o que torna a | `src/hooks/useDigestPreferences.ts` |
 | Soft delete - apenas desativa | `src/hooks/useEmpresas.ts` |
 | ${projectId}.supabase.co/functions/v1/external-data?tabela=clientes&limit=20`; | `src/hooks/useExpertContext.ts` |
+| 'pendente' apenas. | `src/hooks/useExpertContext.ts` |
 | Real-time subscription for billing rule failures | `src/hooks/useFinancialAlerts.tsx` |
 | Antes: `.limit(500)` fixo — além de truncar silenciosamente resultados | `src/hooks/useFinancialOperations.ts` |
 | declara essa regra para o próprio projeto. | `src/hooks/useFluxoCaixa.ts` |
@@ -5976,5 +5978,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Limite superior do desconto redutor da isenção ampliada. */ | `src/lib/tributario/pf-vinculada.ts` |
 | IRRF 10% incide sobre o valor integral quando o pagamento mensal supera o limite. | `src/lib/tributario/pf-vinculada.ts` |
 | Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
-| - Limite de faturamento (RBT12 < R$ 4.8M no Simples) | `src/lib/tributario/recomendar-empresa.ts` |
-| … +374 linhas — lista completa em `context.json` | |
+| … +375 linhas — lista completa em `context.json` | |
