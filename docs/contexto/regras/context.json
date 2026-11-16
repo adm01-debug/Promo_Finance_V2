@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "442c34ae6a797ba1db9752119d8e4a0d657cf840",
+  "sha": "c4a6304aae1fd2b42210a806526f7a353213fae2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 21:35 UTC",
+  "generated_at": "2026-11-16 22:12 UTC",
   "files_total": 3897,
   "code_files": 3528,
-  "code_lines": 501203
+  "code_lines": 501318
  },
  "version": "1.3.2",
- "facts_hash": "2e2c4397ad65160a",
+ "facts_hash": "94c6817adc724ec8",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -37390,7 +37390,7 @@
     "cmd": "SELECT",
     "roles": "authenticated",
     "mode": "permissive",
-    "using": "((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1 FROM user_roles ur WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles)))))))",
+    "using": "((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1 FROM user_roles ur WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY ((saved_filters.shared_with_roles)::text[])))))))",
     "check": "",
     "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
    },
@@ -72955,7 +72955,7 @@
   {
    "module": "supabase/migrations",
    "files": 1027,
-   "lines": 78834,
+   "lines": 78949,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -143780,7 +143780,7 @@
     "cmd": "SELECT",
     "roles": "authenticated",
     "mode": "permissive",
-    "using": "((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1 FROM user_roles ur WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles)))))))",
+    "using": "((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1 FROM user_roles ur WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY ((saved_filters.shared_with_roles)::text[])))))))",
     "check": "",
     "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
    },
@@ -241648,7 +241648,7 @@
   },
   "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql": {
    "path": "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
-   "lines": 90
+   "lines": 107
   },
   "supabase/migrations/20260417194455_0e8846ae-e2ac-4758-9070-bc587ce37ed7.sql": {
    "path": "supabase/migrations/20260417194455_0e8846ae-e2ac-4758-9070-bc587ce37ed7.sql",
@@ -245418,7 +245418,7 @@
   },
   "supabase/migrations/20260825100000_reconciliar_schema_completo.sql": {
    "path": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
-   "lines": 11539,
+   "lines": 11573,
    "errors": [
     " ELSE ",
     " END,\n    "
@@ -245440,7 +245440,7 @@
   },
   "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql": {
    "path": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-   "lines": 7259,
+   "lines": 7307,
    "errors": [
     " ELSE ",
     " END,\n    "
@@ -245512,7 +245512,7 @@
   },
   "supabase/migrations/20260825230000_initplan_rls_e67.sql": {
    "path": "supabase/migrations/20260825230000_initplan_rls_e67.sql",
-   "lines": 853,
+   "lines": 869,
    "side_effects": [
     "asaas"
    ],
@@ -246173,10 +246173,22 @@
   }
  },
  "git": {
-  "sha": "442c34ae6a797ba1db9752119d8e4a0d657cf840",
+  "sha": "c4a6304aae1fd2b42210a806526f7a353213fae2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "c4a6304",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)",
+    "files": [
+     "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
+     "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
+     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+     "supabase/migrations/20260825230000_initplan_rls_e67.sql"
+    ]
+   },
    {
     "sha": "442c34a",
     "date": "2026-11-16",
@@ -246515,18 +246527,17 @@
      "scripts/migrate-functions.sh",
      "scripts/security/test-functions-deploy.sh"
     ]
-   },
-   {
-    "sha": "6b83746",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)",
-    "files": [
-     "scripts/security/test-migration-replay-safety.sh"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
+    2
+   ],
+   [
+    "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    2
+   ],
    [
     "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
     2
@@ -246548,11 +246559,11 @@
     2
    ],
    [
-    "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
+    "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
     1
    ],
    [
-    "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "supabase/migrations/20260825230000_initplan_rls_e67.sql",
     1
    ],
    [
@@ -246597,14 +246608,6 @@
    ],
    [
     "supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
     1
    ]
   ]

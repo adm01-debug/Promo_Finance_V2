@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "442c34ae6a797ba1db9752119d8e4a0d657cf840",
+  "commit": "c4a6304aae1fd2b42210a806526f7a353213fae2",
   "branch": "main",
-  "data_commit": "2026-11-16T18:35:04-03:00",
+  "data_commit": "2026-11-16T19:11:22-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "c4a6304",
+    "data": "2026-11-16",
+    "assunto": "fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)"
+   },
    {
     "sha": "442c34a",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "91133e2",
     "data": "2026-11-16",
     "assunto": "fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)"
-   },
-   {
-    "sha": "af20e7e",
-    "data": "2026-11-16",
-    "assunto": "fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)"
    }
   ],
-  "arquivos_mudados_7d": 752,
+  "arquivos_mudados_7d": 754,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 146
+    "commits": 147
    },
    {
     "autor": "devin-ai-integration[bot]",

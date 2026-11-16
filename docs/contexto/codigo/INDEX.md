@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `442c34ae6a797ba1db9752119d8e4a0d657cf840` (2026-11-16T18:35:04-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c4a6304aae1fd2b42210a806526f7a353213fae2` (2026-11-16T19:11:22-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -460,7 +460,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (34)
+- package.json (33)
 - bun.lock (29)
 - .github/workflows/ci.yml (26)
 - supabase/config.toml (15)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `c4a6304` fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)
 - 2026-11-16 `442c34a` fix(db): destrava as 2 raízes do replay e o bloqueio que a #390 introduziu (#391)
 - 2026-11-16 `91ff2d8` fix(db): preenche empresa_id nas 42 partidas contábeis antigas (#390)
 - 2026-11-16 `0cdf2a7` fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `15dc272` fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)
 - 2026-11-16 `9003088` chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)
 - 2026-11-16 `0bb1b7a` chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)
-- 2026-11-16 `9782d38` fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
