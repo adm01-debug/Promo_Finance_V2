@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9782d3800aae7932ec74907e5abb6b06f0e5ccf6",
+  "commit": "90030888828506efe50f5f188edccef23c8f42f7",
   "branch": "main",
-  "data_commit": "2026-11-16T13:03:21-03:00",
+  "data_commit": "2026-11-16T13:03:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9003088",
+    "data": "2026-11-16",
+    "assunto": "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)"
+   },
+   {
+    "sha": "0bb1b7a",
+    "data": "2026-11-16",
+    "assunto": "chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)"
+   },
    {
     "sha": "9782d38",
     "data": "2026-11-16",
@@ -121,19 +131,9 @@
     "sha": "0274005",
     "data": "2026-11-14",
     "assunto": "fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)"
-   },
-   {
-    "sha": "edeed28",
-    "data": "2026-11-14",
-    "assunto": "fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#3"
-   },
-   {
-    "sha": "f3b6700",
-    "data": "2026-11-14",
-    "assunto": "chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica"
    }
   ],
-  "arquivos_mudados_7d": 714,
+  "arquivos_mudados_7d": 716,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,22 +199,22 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 40
+    "mudancas": 39
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 33
+    "mudancas": 32
    },
    {
     "arquivo": ".github/workflows/ci.yml",
     "mudancas": 30
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 19
+    "arquivo": "supabase/config.toml",
+    "mudancas": 18
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 18
    },
    {
@@ -246,20 +246,12 @@
     "mudancas": 13
    },
    {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 13
-   },
-   {
     "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 13
    },
    {
     "arquivo": "supabase/functions/n8n-dispatch/index.ts",
     "mudancas": 13
-   },
-   {
-    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
-    "mudancas": 12
    },
    {
     "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
@@ -290,18 +282,26 @@
     "mudancas": 12
    },
    {
+    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
+    "mudancas": 12
+   },
+   {
     "arquivo": "supabase/functions/gerar-sped-ecd/index.ts",
     "mudancas": 12
    },
    {
     "arquivo": "supabase/functions/gerar-sped-ecf/index.ts",
     "mudancas": 12
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "mudancas": 12
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 132
+    "commits": 134
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3843,
-  "arquivos_codigo": 2423,
-  "linhas_codigo": 432247,
+  "arquivos_total": 3844,
+  "arquivos_codigo": 2424,
+  "linhas_codigo": 432632,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1022,
   "cron_jobs": 21,
-  "testes": 440,
+  "testes": 441,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 192
@@ -631,8 +631,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 978,
-   "linhas": 160494
+   "arquivos": 979,
+   "linhas": 160753
   },
   "src/config": {
    "arquivos": 1,
@@ -656,7 +656,7 @@
   },
   "src/lib": {
    "arquivos": 410,
-   "linhas": 54013
+   "linhas": 54139
   },
   "src/main.tsx": {
    "arquivos": 1,

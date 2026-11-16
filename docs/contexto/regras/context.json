@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9782d3800aae7932ec74907e5abb6b06f0e5ccf6",
+  "sha": "90030888828506efe50f5f188edccef23c8f42f7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 16:05 UTC",
-  "files_total": 3885,
-  "code_files": 3516,
-  "code_lines": 498767
+  "generated_at": "2026-11-16 16:10 UTC",
+  "files_total": 3886,
+  "code_files": 3517,
+  "code_lines": 499153
  },
  "version": "1.3.2",
- "facts_hash": "8f2f3aa0e6f4533b",
+ "facts_hash": "629dbac17205da96",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1222,
    ".sql": 1092,
-   ".tsx": 1090,
+   ".tsx": 1091,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -68515,7 +68515,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 980,
+  "components_count": 981,
   "hooks": [
    {
     "name": "useContacts",
@@ -71530,8 +71530,8 @@
   },
   {
    "module": "src/components",
-   "files": 978,
-   "lines": 161472,
+   "files": 979,
+   "lines": 161732,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72136,7 +72136,7 @@
   {
    "module": "src/lib",
    "files": 410,
-   "lines": 54423,
+   "lines": 54549,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -123607,6 +123607,22 @@
     "name": "alterna canal ao clicar"
    },
    {
+    "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+    "name": "DashboardExecutivo — escopo por empresa do card de duplicidades"
+   },
+   {
+    "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+    "name": "usa a empresa atual no queryKey e filtra a consulta por ela"
+   },
+   {
+    "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+    "name": "a seleção explícita do filtro tem precedência sobre a empresa atual"
+   },
+   {
+    "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+    "name": "sem empresa atual não aplica filtro (sentinela "
+   },
+   {
     "file": "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx",
     "name": "DashboardFiltersHeader"
    },
@@ -127397,6 +127413,14 @@
    {
     "file": "src/lib/__tests__/edge-functions.security.test.ts",
     "name": "webhooks públicos autenticam a origem e falham fechados"
+   },
+   {
+    "file": "src/lib/__tests__/edge-functions.security.test.ts",
+    "name": "não aceita header citado só no CORS como prova de origem"
+   },
+   {
+    "file": "src/lib/__tests__/edge-functions.security.test.ts",
+    "name": "toda função com verify_jwt=false e service_role prova a origem no código"
    },
    {
     "file": "src/lib/__tests__/edge-functions.security.test.ts",
@@ -190633,6 +190657,17 @@
     "transition={{ delay: index * 0.04 }}"
    ]
   },
+  "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx": {
+   "path": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+   "lines": 260,
+   "is_test": true,
+   "tests": [
+    "DashboardExecutivo — escopo por empresa do card de duplicidades",
+    "usa a empresa atual no queryKey e filtra a consulta por ela",
+    "a seleção explícita do filtro tem precedência sobre a empresa atual",
+    "sem empresa atual não aplica filtro (sentinela "
+   ]
+  },
   "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx": {
    "path": "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx",
    "lines": 51,
@@ -213544,20 +213579,27 @@
   },
   "src/lib/__tests__/edge-functions.security.test.ts": {
    "path": "src/lib/__tests__/edge-functions.security.test.ts",
-   "lines": 96,
+   "lines": 222,
    "is_test": true,
    "errors": [
     ": /exigirUsuario\\s*\\(/,\n  "
    ],
    "rule_comments": [
-    "- validação de JWT do usuário (`getClaims` / `getUser` / header Authorization);"
+    "- validação de JWT do usuário (`getClaims` / `getUser` / header Authorization);",
+    "`[^\\[]` em vez de `[\\s\\S]`: a busca não pode atravessar o cabeçalho da",
+    "avaliado e remover a validação de SEFAZ_CRON_SECRET passaria verde."
    ],
    "tests": [
     "Edge Functions — superfície com service_role",
     "encontra as edge functions do projeto",
     "as funções privilegiadas auditadas provam a origem antes da ação",
     "webhooks públicos autenticam a origem e falham fechados",
+    "não aceita header citado só no CORS como prova de origem",
+    "toda função com verify_jwt=false e service_role prova a origem no código",
     "o helper de webhook nunca aceita requisição sem segredo configurado"
+   ],
+   "side_effects": [
+    "asaas"
    ],
    "uses_service_role": true
   },
@@ -245736,10 +245778,28 @@
   }
  },
  "git": {
-  "sha": "9782d3800aae7932ec74907e5abb6b06f0e5ccf6",
+  "sha": "90030888828506efe50f5f188edccef23c8f42f7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9003088",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)",
+    "files": [
+     "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx"
+    ]
+   },
+   {
+    "sha": "0bb1b7a",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)",
+    "files": [
+     "src/lib/__tests__/edge-functions.security.test.ts"
+    ]
+   },
    {
     "sha": "9782d38",
     "date": "2026-11-16",
@@ -246031,53 +246091,9 @@
      "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
      "supabase/functions/contabilizar-evento/index.ts"
     ]
-   },
-   {
-    "sha": "4870aac",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)",
-    "files": [
-     "docs/prod-readiness.md"
-    ]
-   },
-   {
-    "sha": "0ce338f",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: religa campos de formulário às colunas criadas em produção (#343)",
-    "files": [
-     "src/components/compras/PedidoCompraForm.tsx",
-     "src/components/conciliacao/ConciliacaoSplitDialog.tsx",
-     "src/components/contas-pagar/ContasPagarTableRow.tsx",
-     "src/components/contas-receber/AplicarDescontoDialog.tsx",
-     "src/components/contas-receber/ContaReceberForm.tsx",
-     "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
-     "src/hooks/__tests__/colunasReligadas.test.tsx",
-     "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
-     "src/hooks/__tests__/useContratos.test.tsx",
-     "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
-     "src/hooks/expert-actions/financial-actions.ts",
-     "src/hooks/useAcordosParcelamento.ts",
-     "src/hooks/useAlertasTributarios.ts",
-     "src/hooks/useApuracoesTributarias.ts",
-     "src/hooks/useConciliacaoPage.ts",
-     "src/hooks/useContratos.ts",
-     "src/hooks/useCreditosTributarios.ts",
-     "src/hooks/useFilterPresets.ts",
-     "src/hooks/useFinancialOperations.ts",
-     "src/hooks/useNegativacoes.ts",
-     "src/hooks/useProtestos.ts",
-     "src/hooks/useRealtimeAnomalias.ts",
-     "src/hooks/useScimTokens.ts"
-    ]
    }
   ],
   "hot_files": [
-   [
-    "docs/prod-readiness.md",
-    3
-   ],
    [
     "supabase/functions/gerar-sped-ecd/index.ts",
     2
@@ -246087,8 +246103,16 @@
     2
    ],
    [
-    "src/components/compras/PedidoCompraForm.tsx",
+    "docs/prod-readiness.md",
     2
+   ],
+   [
+    "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+    1
+   ],
+   [
+    "src/lib/__tests__/edge-functions.security.test.ts",
+    1
    ],
    [
     "scripts/security/test_gates_shell.py",
@@ -246148,10 +246172,6 @@
    ],
    [
     "supabase/functions/processar-solicitacao-lgpd/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/projecao-reforma/index.ts",
     1
    ]
   ]

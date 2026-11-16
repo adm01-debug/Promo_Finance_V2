@@ -3188,7 +3188,7 @@
     "src/components/dashboard/DashboardExecutivo.tsx",
     "src/components/dashboard/DashboardExecutivoConteudo.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useDashboardTributario.ts",

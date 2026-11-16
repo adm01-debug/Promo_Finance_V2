@@ -2666,7 +2666,7 @@
   {
    "modulo": "components/dashboard",
    "arquivos": 26,
-   "testes": 1,
+   "testes": 2,
    "linhas": 4541,
    "itens_menu": [],
    "telas": [],

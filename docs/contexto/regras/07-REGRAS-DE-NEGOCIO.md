@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9782d3800a` · branch `main` · 2026-11-16 16:05 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9003088882` · branch `main` · 2026-11-16 16:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5095,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3355 testes em 281 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3361 testes em 282 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5264,6 +5264,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx` | 7 | importarNFes — créditos CBS/IBS · grava nota e créditos numa chamada só, e contabiliza depois de confirmado · manda natureza_operacao e created_by para a função decidir, não os descarta · usa a data local da emissão, não a conversão para UTC … |
 | `src/hooks/financial/__tests__/views.schemas.test.ts` | 7 | views.schemas — parseRows · aceita linhas válidas mínimas de contas a receber · aceita linhas válidas mínimas de contas a pagar · preserva colunas adicionais via passthrough … |
 | `src/lib/__tests__/adaptive-chunk.test.ts` | 7 | adaptive-chunk (AIMD) · respeita clamp inicial entre min e max · cresce aditivamente quando latência ≤ alvo · reduz multiplicativamente quando latência acima da tolerância … |
+| `src/lib/__tests__/edge-functions.security.test.ts` | 7 | Edge Functions — superfície com service_role · encontra as edge functions do projeto · as funções privilegiadas auditadas provam a origem antes da ação · webhooks públicos autenticam a origem e falham fechados … |
 | `src/lib/__tests__/optimistic-lock.test.ts` | 7 | updateComLockOtimista · atualiza quando a versão vista ainda é a atual e devolve a nova versão · rejeita com ConflitoVersaoError quando a linha mudou desde a leitura · rejeita quando a linha não existe mais (erro genérico, não conflito) … |
 | `src/lib/__tests__/transaction-matcher.test.ts` | 7 | Intelligent Transaction Matcher · deve encontrar match exato por valor e nome · deve encontrar match por valor próximo (tolerância) · deve encontrar match por data próxima e nome parcial … |
 | `src/lib/__tests__/utils.test.ts` | 7 | cn (classname merge) · mescla classes · resolve conflitos tailwind · ignora undefined … |
@@ -5312,7 +5313,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx` | 5 | useSugestoesContaPagar — formato do payload · devolve a lista quando o proxy responde o formato esperado · devolve lista vazia — não um objeto — quando o proxy responde fora do formato · trata null como ausência de candidatas, sem alarde … |
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |
 | `src/lib/__tests__/conciliacao-e2e.test.ts` | 5 | E2E: Conciliação Bancária - Matching e Divergências · deve encontrar match de alta confiança com valor exato e data próxima · deve permitir match com pequena divergência de centavos · deve separar corretamente transações de crédito e débito para diferentes tipos de lançamento … |
-| `src/lib/__tests__/edge-functions.security.test.ts` | 5 | Edge Functions — superfície com service_role · encontra as edge functions do projeto · as funções privilegiadas auditadas provam a origem antes da ação · webhooks públicos autenticam a origem e falham fechados … |
 | `src/lib/__tests__/secure-random.test.ts` | 5 | secureRandomInt · returns integers inside [min, max) · handles a single-element range and rejects inverted bounds · rejects ranges wider than the 32-bit source instead of looping … |
 | `src/lib/tributario/__tests__/catalogos-saude.test.ts` | 5 | calcularSaudeCatalogos · retorna saudável e score 100 sem divergências nem rejeições · classifica como crítico quando há divergência crítica · conta rejeições de overlay como atenção mesmo sem divergências … |
 | `src/lib/tributario/__tests__/restauracao-snapshot.test.ts` | 5 | restauração reprodutível de snapshots · remove campos opcionais ausentes no snapshot · preserva os campos presentes no snapshot · não muta o objeto de parâmetros correntes … |
@@ -5320,6 +5320,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/n8n-callback/index.test.ts` | 5 | n8n-callback: OPTIONS responde 200 sem tocar body ou DB · n8n-callback: 405 para método inválido · n8n-callback: 503 quando o segredo não está configurado · n8n-callback: 401 com segredo incorreto … |
 | `supabase/functions/notify-performance-alert/index.test.ts` | 5 | notify-performance-alert: OPTIONS responde 200 sem guard nem I/O · notify-performance-alert: 405 em método inválido · notify-performance-alert: preserva falha de misconfig do guard e não toca body/fetch/DB · notify-performance-alert: 401 do guard bloqueia efeitos antes do body … |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
+| `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/hooks/useBoletos.validation.test.ts` | 4 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
