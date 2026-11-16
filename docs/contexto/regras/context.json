@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "311bf3509c47eb6d7984fa09046f17c535e2c211",
+  "sha": "38f4896d858301f082d322ea017c288d03a9d4fb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 19:25 UTC",
-  "files_total": 3892,
-  "code_files": 3523,
-  "code_lines": 500009
+  "generated_at": "2026-11-16 19:27 UTC",
+  "files_total": 3893,
+  "code_files": 3524,
+  "code_lines": 500115
  },
  "version": "1.3.2",
- "facts_hash": "8db39db745575b91",
+ "facts_hash": "6dc07f7f4276382a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1223,
    ".sql": 1095,
-   ".tsx": 1093,
+   ".tsx": 1094,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -68527,7 +68527,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 981,
+  "components_count": 982,
   "hooks": [
    {
     "name": "useContacts",
@@ -71542,8 +71542,8 @@
   },
   {
    "module": "src/components",
-   "files": 979,
-   "lines": 161761,
+   "files": 980,
+   "lines": 161867,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -85545,6 +85545,10 @@
    {
     "file": "src/components/shared/ViewExportButton.tsx",
     "text": "* Apenas colunas visíveis (já filtradas pelo chamador) */"
+   },
+   {
+    "file": "src/components/tesouraria/ProjectedCashFlowChart.tsx",
+    "text": "o nominal: a convenção líquida é a regra do projeto e este arquivo era"
    },
    {
     "file": "src/components/tributario/CsvImportDialog.tsx",
@@ -124332,6 +124336,14 @@
    {
     "file": "src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx",
     "name": "aba ativa tem fundo primário"
+   },
+   {
+    "file": "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
+    "name": "ProjectedCashFlowChart"
+   },
+   {
+    "file": "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
+    "name": "usa o valor residual e inclui título parcial"
    },
    {
     "file": "src/components/ui/__tests__/alert.test.tsx",
@@ -196134,14 +196146,17 @@
   },
   "src/components/tesouraria/ProjectedCashFlowChart.tsx": {
    "path": "src/components/tesouraria/ProjectedCashFlowChart.tsx",
-   "lines": 140,
+   "lines": 154,
    "exports": [
     "function ProjectedCashFlowChart"
+   ],
+   "rule_comments": [
+    "o nominal: a convenção líquida é a regra do projeto e este arquivo era"
    ]
   },
   "src/components/tesouraria/TesourariaCentralizada.tsx": {
    "path": "src/components/tesouraria/TesourariaCentralizada.tsx",
-   "lines": 214,
+   "lines": 234,
    "exports": [
     "function TesourariaCentralizada"
    ],
@@ -196150,6 +196165,18 @@
      "name": "SALDO_MINIMO_ALERTA",
      "value": "1000"
     }
+   ]
+  },
+  "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx": {
+   "path": "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
+   "lines": 72,
+   "is_test": true,
+   "rule_comments": [
+    "* A convenção líquida (valor - valor_pago) é a regra do projeto; este arquivo"
+   ],
+   "tests": [
+    "ProjectedCashFlowChart",
+    "usa o valor residual e inclui título parcial"
    ]
   },
   "src/components/theme/ThemeContext.ts": {
@@ -245977,10 +246004,21 @@
   }
  },
  "git": {
-  "sha": "311bf3509c47eb6d7984fa09046f17c535e2c211",
+  "sha": "38f4896d858301f082d322ea017c288d03a9d4fb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "38f4896",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)",
+    "files": [
+     "src/components/tesouraria/ProjectedCashFlowChart.tsx",
+     "src/components/tesouraria/TesourariaCentralizada.tsx",
+     "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx"
+    ]
+   },
    {
     "sha": "311bf35",
     "date": "2026-11-16",
@@ -246288,15 +246326,6 @@
     "files": [
      ".github/workflows/contexto.yml"
     ]
-   },
-   {
-    "sha": "0274005",
-    "date": "2026-11-14",
-    "author": "adm01-debug",
-    "subject": "fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)",
-    "files": [
-     "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246315,6 +246344,18 @@
    [
     "supabase/functions/gerar-sped-ecf/index.ts",
     2
+   ],
+   [
+    "src/components/tesouraria/ProjectedCashFlowChart.tsx",
+    1
+   ],
+   [
+    "src/components/tesouraria/TesourariaCentralizada.tsx",
+    1
+   ],
+   [
+    "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
+    1
    ],
    [
     "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx",
@@ -246366,18 +246407,6 @@
    ],
    [
     "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
-    1
-   ],
-   [
-    "src/lib/__tests__/edge-functions.security.test.ts",
-    1
-   ],
-   [
-    "scripts/security/test_gates_shell.py",
-    1
-   ],
-   [
-    "scripts/security/zod-coverage.sh",
     1
    ]
   ]

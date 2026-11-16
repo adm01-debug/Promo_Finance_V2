@@ -10120,7 +10120,7 @@
     "ProjectedCashFlowChart"
    ],
    "export_default": null,
-   "linhas": 139,
+   "linhas": 153,
    "dominio": "components/tesouraria",
    "hooks_locais": [],
    "tabelas": [],
@@ -10134,7 +10134,7 @@
     "TesourariaCentralizada"
    ],
    "export_default": null,
-   "linhas": 213,
+   "linhas": 233,
    "dominio": "components/tesouraria",
    "hooks_locais": [
     "useContasBancarias",

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `311bf3509c` · branch `main` · 2026-11-16 19:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `38f4896d85` · branch `main` · 2026-11-16 19:27 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5104,7 +5104,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3375 testes em 285 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3377 testes em 286 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5377,6 +5377,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
 | `src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx` | 2 | DashboardFiltersHeader · expõe nomes acessíveis para os filtros do dashboard |
 | `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
+| `src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx` | 2 | ProjectedCashFlowChart · usa o valor residual e inclui título parcial |
 | `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
 | `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
 | `src/hooks/usePixTemplates.test.ts` | 2 | useCreatePixTemplate · preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade |
@@ -5727,6 +5728,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | (mínimo 15 caracteres)</Label> | `src/components/nfe/InutilizacaoNFe.tsx` |
 | Must be rendered inside QueryClientProvider and AuthProvider. | `src/components/providers/DataPrefetcher.tsx` |
 | * Apenas colunas visíveis (já filtradas pelo chamador) */ | `src/components/shared/ViewExportButton.tsx` |
+| o nominal: a convenção líquida é a regra do projeto e este arquivo era | `src/components/tesouraria/ProjectedCashFlowChart.tsx` |
 | Preview, validação e UPSERT em lote | `src/components/tributario/CsvImportDialog.tsx` |
 | curta. Nenhuma regra de conformidade é reimplementada aqui — o componente é | `src/components/tributario/dashboard/ConformidadeTendenciaWidget.tsx` |
 | Falha de leitura não deve alarmar como se fosse divergência fiscal: | `src/components/tributario/dashboard/SaudeCatalogosBadge.tsx` |
@@ -5960,5 +5962,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | IRRF 10% incide sobre o valor integral quando o pagamento mensal supera o limite. | `src/lib/tributario/pf-vinculada.ts` |
 | Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
 | - Limite de faturamento (RBT12 < R$ 4.8M no Simples) | `src/lib/tributario/recomendar-empresa.ts` |
-| Regra de Substituição Tributária (ST) | `src/lib/tributario/validador-ncm-cst.ts` |
-| … +371 linhas — lista completa em `context.json` | |
+| … +372 linhas — lista completa em `context.json` | |

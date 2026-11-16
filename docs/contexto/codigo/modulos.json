@@ -5600,8 +5600,8 @@
   {
    "modulo": "components/tesouraria",
    "arquivos": 5,
-   "testes": 0,
-   "linhas": 1047,
+   "testes": 1,
+   "linhas": 1081,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

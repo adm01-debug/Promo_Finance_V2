@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `311bf3509c47eb6d7984fa09046f17c535e2c211` (2026-11-16T16:25:13-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `38f4896d858301f082d322ea017c288d03a9d4fb` (2026-11-16T16:25:26-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2316), SQL (1095), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2317), SQL (1095), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3850 |
-| arquivos_codigo | 2427 |
-| linhas_codigo | 433038 |
+| arquivos_total | 3851 |
+| arquivos_codigo | 2428 |
+| linhas_codigo | 433143 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1025 |
 | cron_jobs | 21 |
-| testes | 444 |
+| testes | 445 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 192 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (255), outro (107), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (256), outro (107), co-localizado (*.test) (42)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -472,9 +472,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
-- src/App.tsx (11)
 - supabase/functions/bling-proxy/index.ts (11)
 - supabase/functions/n8n-callback/index.ts (11)
+- src/App.tsx (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `38f4896` fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)
 - 2026-11-16 `311bf35` fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)
 - 2026-11-16 `40876f4` fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)
 - 2026-11-16 `e314002` chore(db): versiona a DDL que está em produção e não existe no repositório (#380)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `c4b811d` fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)
 - 2026-11-16 `a6393dc` chore(ci): resgata docs/ci/kpi.json — custo e taxa de falha por workflow (#363)
 - 2026-11-16 `18bc738` infra(ci): quarentena E2E sai do gatilho de pull_request (#361)
-- 2026-11-16 `c1cd329` chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
