@@ -142,6 +142,9 @@ Deno.serve(
           'id, numero_lancamento, data_lancamento, historico, valor_total, partidas:partidas_contabeis(conta_id, tipo, valor, historico_complementar)'
         )
         .eq('empresa_id', empresa_id)
+        // Versão substituída não entra no arquivo fiscal: o estorno/ajuste de
+        // movimentação cancela o lançamento antigo e cria o novo.
+        .neq('status', 'cancelado')
         .gte('data_lancamento', periodo_inicio)
         .lte('data_lancamento', periodo_fim)
         .order('data_lancamento');
@@ -218,7 +221,9 @@ Deno.serve(
         id: 'balancete',
         label: 'Balancete consolidado (∑ débitos = ∑ créditos)',
         status: balanceteOk ? 'ok' : 'error',
-        detail: `D: ${totalDeb.toFixed(2)} · C: ${totalCre.toFixed(2)} · Δ: ${Math.abs(totalDeb - totalCre).toFixed(2)}`,
+        detail: `D: ${totalDeb.toFixed(2)} · C: ${totalCre.toFixed(2)} · Δ: ${Math.abs(
+          totalDeb - totalCre
+        ).toFixed(2)}`,
       });
 
       const nums = lancamentos.map((l) => l.numero_lancamento).sort((a, b) => a - b);
