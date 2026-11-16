@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)",
    "chore: contexto agendado de 10 min para 1x/hora (#350)",
    "fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)",
    "fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#346)",
-   "chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplicada pendente), contexto revalidado success (#347)",
-   "fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)"
+   "chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplicada pendente), contexto revalidado success (#347)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

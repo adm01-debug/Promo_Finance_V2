@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e0f7e5f0e1110088e92be9987e3e4dbc6a00e928",
+  "commit": "fc82460f208e4cc38df6189dc25bc4cd73130ed7",
   "branch": "main",
-  "data_commit": "2026-11-16T12:17:06Z",
+  "data_commit": "2026-11-16T09:47:58-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "fc82460",
+    "data": "2026-11-16",
+    "assunto": "fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)"
+   },
    {
     "sha": "e0f7e5f",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "8afbe7a",
     "data": "2026-11-12",
     "assunto": "chore: remove categorias duplicadas e repassa referências (#319)"
-   },
-   {
-    "sha": "05920df",
-    "data": "2026-11-12",
-    "assunto": "fix: contas a pagar aceita status parcial (#318)"
    }
   ],
-  "arquivos_mudados_7d": 678,
+  "arquivos_mudados_7d": 679,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 111
+    "commits": 112
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3831,
+  "arquivos_total": 3832,
   "arquivos_codigo": 2419,
   "linhas_codigo": 431766,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1017,
+  "migrations": 1018,
   "cron_jobs": 21,
   "testes": 437,
   "workflows": 19,
