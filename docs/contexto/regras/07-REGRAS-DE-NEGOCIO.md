@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a023fa6418` · branch `main` · 2026-11-16 13:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `eb790072cc` · branch `main` · 2026-11-16 13:31 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `cnaes` | cnaes_select_authenticated | SELECT | authenticated | permissive | `true` |  |
 | `cnpja_cache` | cnpja_cache_service_role_only | ALL | service_role | permissive | `true` | `true` |
 | `elisao_alertas` | elisao_alertas_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
-| … +564 linhas — lista completa em `context.json` | | | | | | |
+| … +568 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 

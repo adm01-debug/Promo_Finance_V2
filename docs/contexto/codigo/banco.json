@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1018,
+ "migrations": 1019,
  "seeds": [],
  "avisos": [
   "182 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -28291,6 +28291,12 @@
      "tipo": "permissive"
     },
     {
+     "nome": "itens_pedido_compra_financeiro_insert",
+     "comando": "insert",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
      "nome": "Users can insert items to their purchase orders",
      "comando": "insert",
      "para": "public",
@@ -34873,6 +34879,12 @@
     {
      "nome": "pedidos_compra_empresa_select",
      "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "pedidos_compra_financeiro_insert",
+     "comando": "insert",
      "para": "authenticated",
      "tipo": "permissive"
     },
@@ -46767,6 +46779,18 @@
     {
      "nome": "transacoes_bancarias_empresa_select",
      "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "transacoes_bancarias_financeiro_insert",
+     "comando": "insert",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "transacoes_bancarias_financeiro_update",
+     "comando": "update",
      "para": "authenticated",
      "tipo": "permissive"
     }
