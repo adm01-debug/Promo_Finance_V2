@@ -57,6 +57,27 @@ describe('FornecedorForm — cadastro', () => {
     mockFrom.mockImplementation(() => ({ insert: mockInsert }));
   });
 
+  it('envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa', async () => {
+    // Resgatado de claude/resolve-conflicting-prs-rborrh. A coluna não existia
+    // em produção (só na cadeia de migrations), o que fazia
+    // nfe_create_conta_pagar_from_nfe falhar com 42703 para emitente novo.
+    renderForm();
+
+    fireEvent.change(screen.getByPlaceholderText('Razão social'), {
+      target: { value: 'Fornecedor Com Empresa Ltda' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Cadastrar Fornecedor/i }));
+
+    await waitFor(() => expect(mockInsert).toHaveBeenCalledTimes(1));
+
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        empresa_id: 'empresa-1',
+        user_id: 'user-abc-123',
+      })
+    );
+  });
+
   it('envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita', async () => {
     renderForm();
 
