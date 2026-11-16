@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)",
    "fix(db): destrava o replay da cadeia de migrations — índice da FK no mesmo arquivo que cria a FK (#388)",
    "chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)",
    "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)",
-   "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)",
-   "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)"
+   "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

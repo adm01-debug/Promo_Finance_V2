@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "298cc49b279e1e4a5d499a3082e08a2941e8db66",
+  "commit": "0cdf2a77c4e743cccc893799fbff504f70905ab0",
   "branch": "main",
-  "data_commit": "2026-11-16T17:13:09-03:00",
+  "data_commit": "2026-11-16T18:19:03-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0cdf2a7",
+    "data": "2026-11-16",
+    "assunto": "fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)"
+   },
    {
     "sha": "298cc49",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "a023fa6",
     "data": "2026-11-16",
     "assunto": "fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)"
-   },
-   {
-    "sha": "c5a3c4a",
-    "data": "2026-11-16",
-    "assunto": "fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)"
    }
   ],
-  "arquivos_mudados_7d": 738,
+  "arquivos_mudados_7d": 751,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 143
+    "commits": 144
    },
    {
     "autor": "devin-ai-integration[bot]",

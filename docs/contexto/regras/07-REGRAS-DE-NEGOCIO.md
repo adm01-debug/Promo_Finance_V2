@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `298cc49b27` · branch `main` · 2026-11-16 20:13 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `0cdf2a77c4` · branch `main` · 2026-11-16 21:19 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `created_at` | default now() |
 | `feedback_conciliacao_ia` | `score_original` | default 0 |
 | `feedback_conciliacao_ia` | `created_by` | FK → users.id |
-| … +2403 linhas — lista completa em `context.json` | | |
+| … +2411 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -5581,13 +5581,22 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/functions/webhook-retry-worker/index.ts` |
 | `asaas` | `supabase/functions/webhook-simulator/index.ts` |
 | `asaas` | `supabase/functions/whatsapp-webhook/index.ts` |
+| `asaas` | `supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql` |
+| `asaas` | `supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql` |
+| `asaas` | `supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql` |
+| `asaas` | `supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql` |
+| `asaas` | `supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql` |
 | `asaas` | `supabase/migrations/20260315192305_dda7f758-e9e6-4e3a-b719-df70afd40ca4.sql` |
 | `asaas` | `supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql` |
+| `asaas` | `supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql` |
 | `asaas` | `supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql` |
 | `asaas` | `supabase/migrations/20260317125441_706a518a-22f2-405a-8490-9d9a45468eab.sql` |
+| `asaas` | `supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql` |
+| `asaas` | `supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql` |
 | `notify_inapp` | `supabase/migrations/20260422120756_9ff79b5f-4781-4825-9569-dffd8d06df9f.sql` |
 | `notify_push` | `supabase/migrations/20260422120756_9ff79b5f-4781-4825-9569-dffd8d06df9f.sql` |
 | `notify_email` | `supabase/migrations/20260423124916_3466a19d-5926-4247-9aae-5e06edfbc1de.sql` |
+| `asaas` | `supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql` |
 | `asaas` | `supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql` |
 | `asaas` | `supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql` |
 | `asaas` | `supabase/migrations/20260508175709_38aae5b2-0c32-4395-93d2-bd0f85873ebb.sql` |
@@ -5601,12 +5610,15 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20260508183450_c4ca14b2-f842-41df-947d-52937e50e713.sql` |
 | `asaas` | `supabase/migrations/20260508184054_dbb638c7-dded-4511-80ed-35ec7846cf29.sql` |
 | `asaas` | `supabase/migrations/20260508184223_493814c4-d44d-4ef5-954f-da399cf47c21.sql` |
+| `asaas` | `supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql` |
 | `asaas` | `supabase/migrations/20260509132829_55841dda-6108-4acd-88b5-07d9eced49ae.sql` |
+| `asaas` | `supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql` |
 | `asaas` | `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql` |
 | `asaas` | `supabase/migrations/20260518171036_b4a383dd-c765-4933-b464-7ff660b98069.sql` |
 | `asaas` | `supabase/migrations/20260518171340_6777b0e0-6572-4932-a1ea-97291a1d31b9.sql` |
 | `asaas` | `supabase/migrations/20260518171613_cd715539-b99e-4b37-883d-315ae970ecc7.sql` |
 | `asaas` | `supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql` |
+| `asaas` | `supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql` |
 | `asaas` | `supabase/migrations/20260519160203_92103c43-7306-4099-91a3-faaa35d63b52.sql` |
 | `asaas` | `supabase/migrations/20260619145930_fd0213c6-5928-4562-8e3e-c0db3d6f24a1.sql` |
 | `asaas` | `supabase/migrations/20260712161138_a1de1561-be77-4608-86b5-d719b37a29cd.sql` |
@@ -5623,6 +5635,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20260728110130_b8a2d224-0794-43a0-a42c-8bcbc86d4d55.sql` |
 | `asaas` | `supabase/migrations/20260728114852_99ef6cf7-e4b9-4b64-a0a8-3f1293380e97.sql` |
 | `asaas` | `supabase/migrations/20260728130820_c525ef8a-673f-4f31-a5cb-b2f7eea6fa35.sql` |
+| `asaas` | `supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql` |
 | `asaas` | `supabase/migrations/20260728164313_0d1a1fc8-b3cf-4a88-a13f-c86a7782048a.sql` |
 | `asaas` | `supabase/migrations/20260728165000_afddf160-b74b-4f3d-8aa5-d7f5595b55ee.sql` |
 | `asaas` | `supabase/migrations/20260728205900_714b52da-cd26-4bbd-a858-21aab10b0756.sql` |

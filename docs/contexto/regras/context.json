@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "298cc49b279e1e4a5d499a3082e08a2941e8db66",
+  "sha": "0cdf2a77c4e743cccc893799fbff504f70905ab0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 20:13 UTC",
+  "generated_at": "2026-11-16 21:19 UTC",
   "files_total": 3896,
   "code_files": 3527,
-  "code_lines": 500462
+  "code_lines": 501086
  },
  "version": "1.3.2",
- "facts_hash": "9a16996285ee8272",
+ "facts_hash": "e49be2234fee7ee8",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -5531,6 +5531,13 @@
       "src": "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql"
      },
      {
+      "name": "reviewed_by",
+      "type": "uuid",
+      "fk": "users.id ON DELETE NO ACTION",
+      "generated": "",
+      "src": "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql"
+     },
+     {
       "name": "expires_at",
       "type": "string | null",
       "fk": "",
@@ -5566,13 +5573,6 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "reviewed_by",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
       "name": "user_agent",
       "type": "string | null",
       "fk": "",
@@ -5581,6 +5581,7 @@
      }
     ],
     "constraints": [
+     "constraint password_reset_requests_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES auth.users(id) ON DELETE NO ACTION",
      "constraint password_reset_requests_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text]))) NOT VALID"
     ],
     "src": "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
@@ -20806,10 +20807,17 @@
      },
      {
       "name": "cliente_id",
-      "type": "string | null",
-      "fk": "",
+      "type": "uuid",
+      "fk": "clientes.id ON DELETE SET NULL",
       "generated": "",
-      "src": "src/integrations/supabase/types.ts"
+      "src": "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql"
+     },
+     {
+      "name": "fornecedor_id",
+      "type": "uuid",
+      "fk": "fornecedores.id ON DELETE SET NULL",
+      "generated": "",
+      "src": "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql"
      },
      {
       "name": "created_by",
@@ -20826,13 +20834,6 @@
       "src": "src/integrations/supabase/types.ts"
      },
      {
-      "name": "fornecedor_id",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
       "name": "observacoes",
       "type": "string | null",
       "fk": "",
@@ -20840,7 +20841,10 @@
       "src": "src/integrations/supabase/types.ts"
      }
     ],
-    "constraints": [],
+    "constraints": [
+     "constraint contratos_cliente_id_fkey FOREIGN KEY (cliente_id) REFERENCES public.clientes(id) ON DELETE SET NULL",
+     "constraint contratos_fornecedor_id_fkey FOREIGN KEY (fornecedor_id) REFERENCES public.fornecedores(id) ON DELETE SET NULL"
+    ],
     "src": "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
     "comment": "",
     "origin": "migration"
@@ -27323,6 +27327,13 @@
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
      },
      {
+      "name": "estrategia_id",
+      "type": "uuid",
+      "fk": "estrategias_elisao_catalogo.id ON DELETE NO ACTION",
+      "generated": "",
+      "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+     },
+     {
       "name": "descricao",
       "type": "string | null",
       "fk": "",
@@ -27332,13 +27343,6 @@
      {
       "name": "economia_percentual",
       "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "estrategia_id",
-      "type": "string | null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -27366,6 +27370,7 @@
      }
     ],
     "constraints": [
+     "constraint oportunidades_elisao_estrategia_id_fkey FOREIGN KEY (estrategia_id) REFERENCES public.estrategias_elisao_catalogo(id) ON DELETE NO ACTION",
      "constraint oportunidades_elisao_status_check CHECK ((status = ANY (ARRAY['identificada'::text, 'em_analise'::text, 'aprovada'::text, 'em_execucao'::text, 'implementada'::text, 'descartada'::text]))) NOT VALID"
     ],
     "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
@@ -72967,7 +72972,7 @@
   {
    "module": "supabase/migrations",
    "files": 1026,
-   "lines": 78093,
+   "lines": 78717,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -90068,8 +90073,18 @@
    },
    {
     "table": "password_reset_requests",
+    "column": "reviewed_by",
+    "rule": "FK → users.id ON DELETE NO ACTION"
+   },
+   {
+    "table": "password_reset_requests",
     "column": "ip_address",
     "rule": "obrigatório"
+   },
+   {
+    "table": "password_reset_requests",
+    "column": "(tabela)",
+    "rule": "constraint password_reset_requests_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES auth.users(id) ON DELETE NO ACTION"
    },
    {
     "table": "password_reset_requests",
@@ -96842,6 +96857,26 @@
     "rule": "default now()"
    },
    {
+    "table": "contratos",
+    "column": "cliente_id",
+    "rule": "FK → clientes.id ON DELETE SET NULL"
+   },
+   {
+    "table": "contratos",
+    "column": "fornecedor_id",
+    "rule": "FK → fornecedores.id ON DELETE SET NULL"
+   },
+   {
+    "table": "contratos",
+    "column": "(tabela)",
+    "rule": "constraint contratos_cliente_id_fkey FOREIGN KEY (cliente_id) REFERENCES public.clientes(id) ON DELETE SET NULL"
+   },
+   {
+    "table": "contratos",
+    "column": "(tabela)",
+    "rule": "constraint contratos_fornecedor_id_fkey FOREIGN KEY (fornecedor_id) REFERENCES public.fornecedores(id) ON DELETE SET NULL"
+   },
+   {
     "table": "regimes_tributarios",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -100298,8 +100333,18 @@
    },
    {
     "table": "oportunidades_elisao",
+    "column": "estrategia_id",
+    "rule": "FK → estrategias_elisao_catalogo.id ON DELETE NO ACTION"
+   },
+   {
+    "table": "oportunidades_elisao",
     "column": "titulo",
     "rule": "obrigatório"
+   },
+   {
+    "table": "oportunidades_elisao",
+    "column": "(tabela)",
+    "rule": "constraint oportunidades_elisao_estrategia_id_fkey FOREIGN KEY (estrategia_id) REFERENCES public.estrategias_elisao_catalogo(id) ON DELETE NO ACTION"
    },
    {
     "table": "oportunidades_elisao",
@@ -136811,6 +136856,26 @@
     "call": "asaas"
    },
    {
+    "file": "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
+    "call": "asaas"
+   },
+   {
     "file": "supabase/migrations/20260315192305_dda7f758-e9e6-4e3a-b719-df70afd40ca4.sql",
     "call": "asaas"
    },
@@ -136819,11 +136884,23 @@
     "call": "asaas"
    },
    {
+    "file": "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
+    "call": "asaas"
+   },
+   {
     "file": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql",
     "call": "asaas"
    },
    {
     "file": "supabase/migrations/20260317125441_706a518a-22f2-405a-8490-9d9a45468eab.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
     "call": "asaas"
    },
    {
@@ -136837,6 +136914,10 @@
    {
     "file": "supabase/migrations/20260423124916_3466a19d-5926-4247-9aae-5e06edfbc1de.sql",
     "call": "notify_email"
+   },
+   {
+    "file": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
+    "call": "asaas"
    },
    {
     "file": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql",
@@ -136891,7 +136972,15 @@
     "call": "asaas"
    },
    {
+    "file": "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
+    "call": "asaas"
+   },
+   {
     "file": "supabase/migrations/20260509132829_55841dda-6108-4acd-88b5-07d9eced49ae.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
     "call": "asaas"
    },
    {
@@ -136912,6 +137001,10 @@
    },
    {
     "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
     "call": "asaas"
    },
    {
@@ -136976,6 +137069,10 @@
    },
    {
     "file": "supabase/migrations/20260728130820_c525ef8a-673f-4f31-a5cb-b2f7eea6fa35.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
     "call": "asaas"
    },
    {
@@ -241229,7 +241326,10 @@
   },
   "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql": {
    "path": "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
-   "lines": 624
+   "lines": 664,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20251214170808_1ce0aec1-e2dc-41d2-8ea3-52249aa0cc7c.sql": {
    "path": "supabase/migrations/20251214170808_1ce0aec1-e2dc-41d2-8ea3-52249aa0cc7c.sql",
@@ -241265,9 +241365,12 @@
   },
   "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql": {
    "path": "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
-   "lines": 208,
+   "lines": 248,
    "rule_comments": [
     "14: Função para gerar alertas automáticos de vencimento"
+   ],
+   "side_effects": [
+    "asaas"
    ]
   },
   "supabase/migrations/20251214204951_2b21b998-09eb-4fd1-985c-108094d522e0.sql": {
@@ -241284,11 +241387,17 @@
   },
   "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql": {
    "path": "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql",
-   "lines": 60
+   "lines": 100,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql": {
    "path": "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql",
-   "lines": 41
+   "lines": 81,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20251220133428_5218f686-1054-45d1-871b-121ebbe6fa4c.sql": {
    "path": "supabase/migrations/20251220133428_5218f686-1054-45d1-871b-121ebbe6fa4c.sql",
@@ -241360,7 +241469,10 @@
   },
   "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql": {
    "path": "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
-   "lines": 36
+   "lines": 76,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20251231024758_0442c401-330e-4cbd-923a-b156708f9815.sql": {
    "path": "supabase/migrations/20251231024758_0442c401-330e-4cbd-923a-b156708f9815.sql",
@@ -241472,14 +241584,17 @@
   },
   "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql": {
    "path": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
-   "lines": 270,
+   "lines": 309,
    "side_effects": [
     "asaas"
    ]
   },
   "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql": {
    "path": "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
-   "lines": 137
+   "lines": 176,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20260317000844_6d9ca04a-21f2-481d-a362-2bba54383b46.sql": {
    "path": "supabase/migrations/20260317000844_6d9ca04a-21f2-481d-a362-2bba54383b46.sql",
@@ -241634,7 +241749,10 @@
   },
   "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql": {
    "path": "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
-   "lines": 123
+   "lines": 163,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20260418151247_d0085f49-21ab-4234-ba69-de4205afa739.sql": {
    "path": "supabase/migrations/20260418151247_d0085f49-21ab-4234-ba69-de4205afa739.sql",
@@ -241668,7 +241786,10 @@
   },
   "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql": {
    "path": "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
-   "lines": 112
+   "lines": 151,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20260421125350_0f4955ac-8b77-4791-9cee-335c9d5093fd.sql": {
    "path": "supabase/migrations/20260421125350_0f4955ac-8b77-4791-9cee-335c9d5093fd.sql",
@@ -241882,7 +242003,10 @@
   },
   "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql": {
    "path": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
-   "lines": 53
+   "lines": 92,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql": {
    "path": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql",
@@ -241900,7 +242024,7 @@
   },
   "supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql": {
    "path": "supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql",
-   "lines": 52,
+   "lines": 108,
    "side_effects": [
     "asaas"
    ]
@@ -242035,13 +242159,16 @@
   },
   "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql": {
    "path": "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
-   "lines": 82,
+   "lines": 121,
    "status_values": [
     {
      "field": "status",
      "value": "cancelado",
      "kind": "compara"
     }
+   ],
+   "side_effects": [
+    "asaas"
    ]
   },
   "supabase/migrations/20260508200327_cb379296-ba4d-4201-9f04-d175b2535749.sql": {
@@ -242130,7 +242257,10 @@
   },
   "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql": {
    "path": "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
-   "lines": 58
+   "lines": 97,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql": {
    "path": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql",
@@ -242386,7 +242516,10 @@
   },
   "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql": {
    "path": "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
-   "lines": 107
+   "lines": 162,
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/migrations/20260518190417_ledger_reconciliado.sql": {
    "path": "supabase/migrations/20260518190417_ledger_reconciliado.sql",
@@ -244568,7 +244701,10 @@
   },
   "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql": {
    "path": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
-   "lines": 281,
+   "lines": 320,
+   "side_effects": [
+    "asaas"
+   ],
    "uses_service_role": true
   },
   "supabase/migrations/20260728154643_ledger_reconciliado.sql": {
@@ -246068,10 +246204,33 @@
   }
  },
  "git": {
-  "sha": "298cc49b279e1e4a5d499a3082e08a2941e8db66",
+  "sha": "0cdf2a77c4e743cccc893799fbff504f70905ab0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "0cdf2a7",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)",
+    "files": [
+     "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
+     "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
+     "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql",
+     "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql",
+     "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
+     "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
+     "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
+     "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
+     "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
+     "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
+     "supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql",
+     "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
+     "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
+     "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
+     "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
+    ]
+   },
    {
     "sha": "298cc49",
     "date": "2026-11-16",
@@ -246396,16 +246555,6 @@
      "scripts/generate-env-manifest.mjs",
      "supabase/functions/_shared/sentry.ts"
     ]
-   },
-   {
-    "sha": "a0543f9",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)",
-    "files": [
-     "src/components/dashboard/DashboardExecutivo.tsx",
-     "src/hooks/useDashboardMetrics.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -246426,67 +246575,67 @@
     2
    ],
    [
+    "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
+    1
+   ],
+   [
     "supabase/migrations/20260712223141_stub-alerts-tables.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
-    1
-   ],
-   [
-    "src/components/contas-pagar/ContaPagarForm.helpers.ts",
-    1
-   ],
-   [
-    "src/components/contas-pagar/ContaPagarForm.types.ts",
-    1
-   ],
-   [
-    "src/components/contas-pagar/ContaPagarFormFields.tsx",
-    1
-   ],
-   [
-    "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
-    1
-   ],
-   [
-    "src/components/contas-pagar/ContasPagarTableRow.helpers.ts",
-    1
-   ],
-   [
-    "src/components/contas-pagar/ContasPagarTableRow.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/ContaReceberForm.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
-    1
-   ],
-   [
-    "src/components/contas-receber/ContaReceberFormFields.types.ts",
-    1
-   ],
-   [
-    "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/ContasReceberFilters.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/row/rowConfig.ts",
     1
    ]
   ]

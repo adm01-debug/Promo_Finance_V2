@@ -12629,6 +12629,7 @@
    "indices": [],
    "fks": [
     "empresa_id->empresas",
+    "transacao_id->transacoes_bancarias",
     "usuario_id->auth"
    ],
    "criada_em": "20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
@@ -17607,6 +17608,13 @@
   },
   "contratos": {
    "colunas": {
+    "cliente_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "created_at": {
      "tipo": "timestamp with time zone",
      "nn": false,
@@ -17641,6 +17649,13 @@
      "pk": false,
      "default": null,
      "ref": "empresas"
+    },
+    "fornecedor_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -17716,7 +17731,9 @@
    ],
    "indices": [],
    "fks": [
+    "cliente_id->clientes",
     "empresa_id->empresas",
+    "fornecedor_id->fornecedores",
     "user_id->auth"
    ],
    "criada_em": "20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
@@ -17743,10 +17760,8 @@
    "drift": {
     "so_na_migration": [],
     "so_no_types": [
-     "cliente_id",
      "created_by",
      "dias_aviso_renovacao",
-     "fornecedor_id",
      "observacoes"
     ]
    },
@@ -33303,6 +33318,13 @@
      "default": null,
      "ref": null
     },
+    "estrategia_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "id": {
      "tipo": "uuid",
      "nn": false,
@@ -33434,7 +33456,8 @@
     }
    ],
    "fks": [
-    "empresa_id->empresas"
+    "empresa_id->empresas",
+    "estrategia_id->estrategias_elisao_catalogo"
    ],
    "criada_em": "20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
    "colunas_types": {
@@ -33473,7 +33496,6 @@
     "so_no_types": [
      "descricao",
      "economia_percentual",
-     "estrategia_id",
      "prazo_estimado",
      "prioridade",
      "titulo"
@@ -34483,6 +34505,7 @@
     }
    ],
    "fks": [
+    "conta_contabil_id->plano_contas",
     "conta_id->plano_contas",
     "lancamento_id->lancamentos_contabeis"
    ],
@@ -34548,6 +34571,13 @@
     },
     "motivo_rejeicao": {
      "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "reviewed_by": {
+     "tipo": "uuid",
      "nn": false,
      "pk": false,
      "default": null,
@@ -34629,6 +34659,7 @@
    ],
    "indices": [],
    "fks": [
+    "reviewed_by->auth",
     "user_id->auth"
    ],
    "criada_em": "20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
@@ -34659,7 +34690,6 @@
      "rejection_reason",
      "requested_at",
      "reviewed_at",
-     "reviewed_by",
      "user_agent"
     ]
    },
