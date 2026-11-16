@@ -1,7 +1,7 @@
 // Helper de captura de erro para edge functions → Sentry.
 // NÃO envia body de request/response — dado financeiro sensível.
-// Para ativar: adicione SENTRY_DSN nas Supabase Edge Function secrets
-// (painel Supabase → Edge Functions → Secrets).
+// Para ativar: adicione SENTRY_DSN (ou EDGE_SENTRY_DSN) nas Supabase Edge
+// Function secrets (painel Supabase → Edge Functions → Secrets).
 
 import { redigirTexto } from './observability.ts';
 import { framesDo, segundoPlano } from './edge-observability.ts';
@@ -31,8 +31,17 @@ function parseDsn(dsn: string): SentryTarget | null {
   }
 }
 
+// O contexto pode carregar identificadores de pedido/usuário — redige antes de enviar.
+function redigirContexto(context?: Record<string, string>): Record<string, string> {
+  if (!context) return {};
+  return Object.fromEntries(
+    Object.entries(context).map(([chave, valor]) => [chave, redigirTexto(String(valor))])
+  );
+}
+
 export function captureException(error: unknown, context?: Record<string, string>): void {
-  const dsn = Deno.env.get('SENTRY_DSN');
+  // EDGE_SENTRY_DSN é o nome primário em edge-observability.ts; SENTRY_DSN é o legado.
+  const dsn = Deno.env.get('EDGE_SENTRY_DSN') ?? Deno.env.get('SENTRY_DSN');
   if (!dsn) return;
 
   const target = parseDsn(dsn);
@@ -59,7 +68,7 @@ export function captureException(error: unknown, context?: Record<string, string
         },
       ],
     },
-    extra: context ?? {},
+    extra: redigirContexto(context),
   };
 
   const envio = fetch(target.endpointUrl, {
@@ -70,7 +79,10 @@ export function captureException(error: unknown, context?: Record<string, string
     },
     body: JSON.stringify(payload),
   })
-    .then(() => undefined)
+    .then((res) => {
+      // Sem esta checagem um 4xx/5xx do Sentry passava como sucesso silencioso.
+      if (!res.ok) console.error(`[sentry] envio rejeitado: HTTP ${res.status}`);
+    })
     .catch(() => {
       // Observabilidade nunca derruba a função — falha de envio é silenciosa.
     });

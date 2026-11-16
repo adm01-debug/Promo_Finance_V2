@@ -5,7 +5,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useDashboardConfig, DashboardWidget } from '@/hooks/useDashboardConfig';
-import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
+import { useDashboardMetrics, normalizeFilterSentinel } from '@/hooks/useDashboardMetrics';
 import { PrevisaoIA } from './PrevisaoIA';
 import { AlertasPreditivosPanel } from './AlertasPreditivosPanel';
 import { MetasFinanceirasPanel } from './MetasFinanceirasPanel';
@@ -54,13 +54,24 @@ export const DashboardExecutivo = () => {
     periodoFluxo,
   });
 
+  // Mesmo criterio de empresa dos demais KPIs (useDashboardMetrics:88-90):
+  // sem este escopo o card somava os bloqueios de todas as empresas acessiveis
+  // mesmo com uma empresa selecionada no filtro.
+  const empresaDuplicidades = normalizeFilterSentinel(empresaFilter) ?? currentEmpresaId ?? null;
+
   const { data: duplicateStats } = useQuery({
-    queryKey: ['bloqueios-duplicidade-stats'],
+    queryKey: ['bloqueios-duplicidade-stats', empresaDuplicidades],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('bloqueios_duplicidade')
         .select('valor_bloqueado')
         .order('created_at', { ascending: false });
+
+      if (empresaDuplicidades) {
+        query = query.eq('empresa_id', empresaDuplicidades);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return {

@@ -16,25 +16,36 @@
 #   FUNCTIONS_DIR=supabase/functions                        # default
 #   STOP_ON_FAIL=1                                          # aborta no 1º deploy que falhar
 #   DEPLOY_LOG_DIR=/tmp                                     # default; pasta do log JSONL
+#   POST_DEPLOY_CHECK=0                                     # desliga a verificação pós-deploy (default ligada)
+#   EDGE_SMOKE=0                                            # desliga só o edge smoke (default ligado)
+#   EDGE_SMOKE_BASE_URL=https://<ref>.supabase.co/functions/v1  # base do smoke; sem ela o smoke é pulado
+#   HEALTH_CHECK_WAIT=1                                     # aguarda a janela do health check em vez de --no-wait
 #
 # Saída: /tmp/deploy-log-YYYYMMDD-HHMM-<pid>.jsonl
+#        /tmp/edge-smoke-<pid>.json (atestação do smoke, quando executado)
 
 set -euo pipefail
 
 DRY_RUN=0
 ONLY=""
 ONLY_SET=0
+POST_DEPLOY_CHECK="${POST_DEPLOY_CHECK:-1}"
+EDGE_SMOKE="${EDGE_SMOKE:-1}"
+HEALTH_CHECK_WAIT="${HEALTH_CHECK_WAIT:-0}"
 FUNCTIONS_DIR="${FUNCTIONS_DIR:-supabase/functions}"
 CONFIG_TOML="supabase/config.toml"
+EDGE_DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)/edge-deploy"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run) DRY_RUN=1; shift ;;
+    --no-post-deploy-check) POST_DEPLOY_CHECK=0; shift ;;
+    --no-smoke) EDGE_SMOKE=0; shift ;;
     --only)
       [[ $# -ge 2 ]] || { echo "--only exige uma lista de functions (fn1,fn2)" >&2; exit 2; }
       ONLY="$2"; ONLY_SET=1; shift 2 ;;
     -h|--help)
-      sed -n '2,21p' "$0"; exit 0 ;;
+      sed -n '2,26p' "$0"; exit 0 ;;
     *) echo "Argumento desconhecido: $1" >&2; exit 2 ;;
   esac
 done
@@ -321,6 +332,98 @@ if [[ $STOPPED -eq 1 ]]; then
     PEND_CSV="$(IFS=','; echo "${PENDENTES[*]}")"
     echo "   Não tentadas (${#PENDENTES[@]}): retome com --only $PEND_CSV" >&2
     log_event "stopped" "-" "pending" "$(jq -cn --arg p "$PEND_CSV" '{pending:($p | split(","))}')"
+  fi
+fi
+
+# --- Verificação pós-deploy -------------------------------------------------
+# Aditiva: nenhuma etapa derruba o deploy. Cada falha vira aviso e fica
+# registrada no log JSONL; o código de saída continua sendo só `[[ $FAIL -eq 0 ]]`.
+# Sem este bloco os scripts de scripts/edge-deploy/ ficam órfãos e nenhum deploy
+# de edge function é conferido depois de subir.
+if [[ $DRY_RUN -eq 0 && $POST_DEPLOY_CHECK -eq 1 && $FAIL -eq 0 ]]; then
+  echo ""
+  echo "==================== PÓS-DEPLOY ===================="
+  smokecheck=0; hcheck=0; vcheck=0
+
+  # 1. Edge smoke: OPTIONS/POST anônimo contra o gateway — disponibilidade e
+  #    CORS reais, sem credencial extra. Sem EDGE_SMOKE_BASE_URL, é pulado.
+  if [[ $EDGE_SMOKE -eq 1 && -n "${EDGE_SMOKE_BASE_URL:-}" ]] && command -v node >/dev/null 2>&1; then
+    SMOKE_LIST="/tmp/functions-list-$$.json"
+    jq -n --argjson fns "$(for fn in "${FNS[@]}"; do
+      vj="$(verify_jwt_for "$fn")"
+      if [[ "$vj" != "true" && "$vj" != "false" ]]; then
+        echo "{\"name\":\"$fn\",\"verify_jwt\":true}"   # conservador, igual ao loop de deploy
+      else
+        echo "{\"name\":\"$fn\",\"verify_jwt\":$vj}"
+      fi
+    done | jq -s .)" '{functions: ($fns)}' > "$SMOKE_LIST"
+    if node "$EDGE_DEPLOY_DIR/smoke-functions.mjs" \
+        --base-url "$EDGE_SMOKE_BASE_URL" \
+        --config-toml "$CONFIG_TOML" \
+        --functions-list "$SMOKE_LIST" \
+        --git-sha "${GITHUB_SHA:-local}" \
+        --run-id "${GITHUB_RUN_ID:-0}" \
+        --output "/tmp/edge-smoke-$$.json" \
+        --retries 2 2>&1 | sed 's/^/   [smoke] /'; then
+      smokecheck=1
+    else
+      echo "   ⚠️  edge smoke com falhas — ver /tmp/edge-smoke-$$.json" >&2
+    fi
+    rm -f "$SMOKE_LIST"
+  fi
+
+  # 2. Health check (Management API): degrada sozinho se a observabilidade
+  #    estiver indisponível.
+  if command -v node >/dev/null 2>&1; then
+    HEALTH_ARGS=(--project-ref "$SUPABASE_PROJECT_REF" --no-wait)
+    [[ $HEALTH_CHECK_WAIT -eq 1 ]] && HEALTH_ARGS=(--project-ref "$SUPABASE_PROJECT_REF")
+    if node "$EDGE_DEPLOY_DIR/health-check.mjs" "${HEALTH_ARGS[@]}" 2>&1 | sed 's/^/   [health] /'; then
+      hcheck=1
+    else
+      echo "   ⚠️  health-check com falhas — ver resumo" >&2
+    fi
+  fi
+
+  # 3. Verify-remote: `supabase functions list` (READ-ONLY) contra a lista alvo —
+  #    pega a function que o deploy reportou OK mas não existe no destino.
+  if command -v node >/dev/null 2>&1; then
+    REMOTE_LIST="/tmp/remote-functions-$$.json"
+    if supabase functions list --project-ref "$SUPABASE_PROJECT_REF" --output json > "$REMOTE_LIST" 2>/dev/null; then
+      EXPECTED="/tmp/expected-functions-$$.json"
+      printf '%s\n' "${FNS[@]}" | jq -R . | jq -s '{functions: map({name: .})}' > "$EXPECTED"
+      OUTPUT="/tmp/verify-remote-$$.json"
+      if node "$EDGE_DEPLOY_DIR/verify-remote.mjs" \
+          --expected "$EXPECTED" \
+          --remote "$REMOTE_LIST" \
+          --git-sha "${GITHUB_SHA:-local}" \
+          --run-id "${GITHUB_RUN_ID:-0}" \
+          --output "$OUTPUT" 2>&1 | sed 's/^/   [remote] /'; then
+        vcheck=1
+      else
+        echo "   ⚠️  verify-remote reportou funções ausentes do remoto — ver $OUTPUT" >&2
+      fi
+      rm -f "$EXPECTED" "$OUTPUT"
+    else
+      echo "   ⚠️  'supabase functions list' falhou — verify-remote ignorado" >&2
+    fi
+    rm -f "$REMOTE_LIST"
+  fi
+
+  echo "   Pós-deploy: smoke=$smokecheck health=$hcheck remote=$vcheck"
+  log_event "post_deploy_check" "-" "done" \
+    "$(jq -cn --argjson s "$smokecheck" --argjson h "$hcheck" --argjson r "$vcheck" \
+      '{smoke:$s, health:$h, remote:$r}')"
+fi
+
+# --- Redação final do log ---------------------------------------------------
+# O JSONL é o que vai para o artifact do workflow, e log_event grava o tail do
+# stdout da CLI em caso de falha. Redigir fecha a porta para o token no artifact.
+if [[ -f "$LOG" ]] && command -v node >/dev/null 2>&1; then
+  if REDIGIR_LOG_BASE="$(dirname "$LOG")" node "$EDGE_DEPLOY_DIR/redigir-log.mjs" "$LOG" \
+      --segredo-env=SUPABASE_ACCESS_TOKEN >/dev/null 2>&1; then
+    echo "🔒 Log de deploy redigido (sem credenciais no artifact)."
+  else
+    echo "   ⚠️  Redação do log não aplicada — confira o artifact." >&2
   fi
 fi
 
