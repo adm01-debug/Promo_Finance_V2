@@ -11,6 +11,7 @@ import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { captureException } from '../_shared/sentry.ts';
+import { timingSafeEqual } from '../_shared/string-utils.ts';
 const log = createLogger('n8n-callback');
 
 const schema = z
@@ -235,13 +236,6 @@ function json(
     status,
     headers: { ...headers, 'Content-Type': 'application/json' },
   });
-}
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
