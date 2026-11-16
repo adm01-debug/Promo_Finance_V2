@@ -4,7 +4,7 @@
 |---|---|
 | nome | insights-relatorio |
 | status | ACTIVE |
-| versão | 49 |
+| versão | 53 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/insights-relatorio/index.ts |
 | import_map |  |

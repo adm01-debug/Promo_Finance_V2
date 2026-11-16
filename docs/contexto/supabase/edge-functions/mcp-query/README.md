@@ -4,7 +4,7 @@
 |---|---|
 | nome | mcp-query |
 | status | ACTIVE |
-| versão | 48 |
+| versão | 52 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/mcp-query/index.ts |
 | import_map |  |
