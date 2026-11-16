@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "15dc272083c8c0452aba577c95990a60f5db044d",
+  "sha": "823636510fe884b68278ebf533f6d63f21b4d8e0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 16:48 UTC",
-  "files_total": 3887,
-  "code_files": 3518,
-  "code_lines": 499218
+  "generated_at": "2026-11-16 17:55 UTC",
+  "files_total": 3888,
+  "code_files": 3519,
+  "code_lines": 499245
  },
  "version": "1.3.2",
- "facts_hash": "671b65ea5105b131",
+ "facts_hash": "eea40ddadad54f61",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1222,
-   ".sql": 1093,
+   ".sql": 1094,
    ".tsx": 1091,
    ".mjs": 60,
    ".py": 45,
@@ -51320,6 +51320,14 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql"
+   },
+   {
+    "name": "uq_nfe_rec_conta_pagar",
+    "table": "nfe_recebidas",
+    "columns": "conta_pagar_id",
+    "unique": true,
+    "where": "WHERE conta_pagar_id IS NOT NULL",
+    "src": "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql"
    }
   ],
   "cron_jobs": [
@@ -52592,6 +52600,7 @@
    "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
    "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
+   "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -72961,8 +72970,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1023,
-   "lines": 77481,
+   "files": 1024,
+   "lines": 77508,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -245706,6 +245715,10 @@
    "path": "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
    "lines": 36
   },
+  "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql": {
+   "path": "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
+   "lines": 27
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245814,10 +245827,19 @@
   }
  },
  "git": {
-  "sha": "15dc272083c8c0452aba577c95990a60f5db044d",
+  "sha": "823636510fe884b68278ebf533f6d63f21b4d8e0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8236365",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)",
+    "files": [
+     "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql"
+    ]
+   },
    {
     "sha": "15dc272",
     "date": "2026-11-16",
@@ -246118,15 +246140,6 @@
     "files": [
      "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql"
     ]
-   },
-   {
-    "sha": "53a33b6",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)",
-    "files": [
-     ".github/workflows/schema-drift.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -246149,6 +246162,10 @@
    [
     "docs/prod-readiness.md",
     2
+   ],
+   [
+    "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
+    1
    ],
    [
     "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
@@ -246204,10 +246221,6 @@
    ],
    [
     "supabase/functions/log-sped-bitrix24/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/n8n-dispatch/index.ts",
     1
    ]
   ]

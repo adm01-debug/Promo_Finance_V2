@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "15dc272083c8c0452aba577c95990a60f5db044d",
+  "commit": "823636510fe884b68278ebf533f6d63f21b4d8e0",
   "branch": "main",
-  "data_commit": "2026-11-16T13:48:14-03:00",
+  "data_commit": "2026-11-16T14:54:52-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8236365",
+    "data": "2026-11-16",
+    "assunto": "fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)"
+   },
    {
     "sha": "15dc272",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "fc82460",
     "data": "2026-11-16",
     "assunto": "fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)"
-   },
-   {
-    "sha": "e0f7e5f",
-    "data": "2026-11-16",
-    "assunto": "chore: contexto agendado de 10 min para 1x/hora (#350)"
    }
   ],
-  "arquivos_mudados_7d": 717,
+  "arquivos_mudados_7d": 718,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 29
+    "mudancas": 28
    },
    {
     "arquivo": "supabase/config.toml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 135
+    "commits": 136
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3845,
+  "arquivos_total": 3846,
   "arquivos_codigo": 2424,
   "linhas_codigo": 432661,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1023,
+  "migrations": 1024,
   "cron_jobs": 21,
   "testes": 441,
   "workflows": 19,
