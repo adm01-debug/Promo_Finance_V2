@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d06f11e2963d11cd97b1f67ebb7262ed1f174a23",
+  "sha": "c5a3c4a6fb99ce992176742b5fe64dd82e430a9b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 12:52 UTC",
-  "files_total": 3874,
-  "code_files": 3508,
-  "code_lines": 497688
+  "generated_at": "2026-11-16 12:54 UTC",
+  "files_total": 3876,
+  "code_files": 3509,
+  "code_lines": 497693
  },
  "version": "1.3.2",
- "facts_hash": "2dd7ecd6d2072292",
+ "facts_hash": "cfea56fd6be57b7d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -331,7 +331,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1220,
+   ".ts": 1221,
    ".sql": 1088,
    ".tsx": 1088,
    ".mjs": 60,
@@ -72555,8 +72555,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 222,
-   "lines": 49840,
+   "files": 223,
+   "lines": 49845,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72689,6 +72689,7 @@
     "resilience.ts: RetryOptions, withRetry, createCircuitBreaker, integracaoDesativada, respostaIntegracaoDesativada, withTimeout",
     "sentry.ts: captureException",
     "sql-write-guard.ts: ComandoSqlMcp, AnaliseSqlMcp, removerComentariosELiterais, analisarSqlMcp, validarEscritaEscopada",
+    "string-utils.ts: timingSafeEqual",
     "tributario-logic.ts: RegimeTributario, AnexoSimples, PeriodicidadeApuracao, FaturamentoMes, FolhaMes, ParametrosSimulacao",
     "validation.ts: buildCorsHeaders, validatePayload, createErrorResponse, isWebhookProcessed, WebhookIdempotencySchema, AsaasWebhookSchema",
     "versioned-contract.ts: CONTRACT_VERSION_HEADER, SUPPORTED_CONTRACT_VERSIONS, ContractVersion, VersionedContractResult, validateVersionedContract, contractVersionHeaders",
@@ -72708,8 +72709,7 @@
     "manifestacao.ts: ManifTipo, MANIF_DESCRICAO, EventoInput, recepcaoEventoEndpoint, RECEPCAO_EVENTO_SOAP_ACTION, buildInfEvento",
     "parser.ts: SchemaTipo, ParsedNFe, ParsedEvento, ParsedDoc, detectSchema, parseDoc",
     "pfx.ts: CertificadoRow, CertificadoPem, makeAdminClient, pfxToPem, loadCertificado",
-    "soap.ts: SOAP_ACTION, DistDFeRequest, buildDistDFeEnvelope, DistDFeDoc, DistDFeResponse, parseDistDFeResponse",
-    "soap-mock.ts: SefazResponseKind, SefazDoc, SefazResponseSpec, SefazScenario, SefazMockCall, SefazMockHandle"
+    "soap.ts: SOAP_ACTION, DistDFeRequest, buildDistDFeEnvelope, DistDFeDoc, DistDFeResponse, parseDistDFeResponse"
    ],
    "docs": [
     "concurrency-limiter.ts: Concurrency Limiter Utility Limits the number of concurrent asynchronous operations.",
@@ -72763,6 +72763,7 @@
     "supabase/functions/_shared/sentry.ts",
     "supabase/functions/_shared/sql-write-guard.ts",
     "supabase/functions/_shared/sql-write-guard_test.ts",
+    "supabase/functions/_shared/string-utils.ts",
     "supabase/functions/_shared/tributario-logic.ts",
     "supabase/functions/_shared/tributario-logic_test.ts",
     "supabase/functions/_shared/validation.ts",
@@ -72811,8 +72812,7 @@
     "supabase/functions/benchmarking-setorial/index.ts",
     "supabase/functions/bitrix24-sync/index.ts",
     "supabase/functions/bitrix24-webhook/index.test.ts",
-    "supabase/functions/bitrix24-webhook/index.ts",
-    "supabase/functions/bling-proxy/index.ts"
+    "supabase/functions/bitrix24-webhook/index.ts"
    ]
   },
   {
@@ -229604,6 +229604,14 @@
     "\"DELETE FROM public.alertas WHERE user_id = 42 AND created_at < now() - interval '90 days'\","
    ]
   },
+  "supabase/functions/_shared/string-utils.ts": {
+   "path": "supabase/functions/_shared/string-utils.ts",
+   "lines": 28,
+   "exports": [
+    "function timingSafeEqual"
+   ],
+   "doc": "Utilitários genéricos de string compartilhados entre edge functions. Mantidos aqui para evitar duplicação: o mesmo helper existia inline em ci-security-gate-log, mcp-query e n8n-callback."
+  },
   "supabase/functions/_shared/tributario-logic.ts": {
    "path": "supabase/functions/_shared/tributario-logic.ts",
    "lines": 961,
@@ -232550,7 +232558,7 @@
   },
   "supabase/functions/ci-security-gate-log/index.ts": {
    "path": "supabase/functions/ci-security-gate-log/index.ts",
-   "lines": 193,
+   "lines": 187,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -236802,7 +236810,7 @@
   },
   "supabase/functions/mcp-query/index.ts": {
    "path": "supabase/functions/mcp-query/index.ts",
-   "lines": 564,
+   "lines": 553,
    "exports": [
     "type SqlClient",
     "interface RuntimeDeps",
@@ -237101,7 +237109,7 @@
   },
   "supabase/functions/n8n-callback/index.ts": {
    "path": "supabase/functions/n8n-callback/index.ts",
-   "lines": 261,
+   "lines": 255,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -245361,10 +245369,50 @@
   }
  },
  "git": {
-  "sha": "d06f11e2963d11cd97b1f67ebb7262ed1f174a23",
+  "sha": "c5a3c4a6fb99ce992176742b5fe64dd82e430a9b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "c5a3c4a",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)",
+    "files": [
+     "supabase/functions/_shared/string-utils.ts",
+     "supabase/functions/ci-security-gate-log/index.ts",
+     "supabase/functions/mcp-query/index.ts",
+     "supabase/functions/n8n-callback/index.ts"
+    ]
+   },
+   {
+    "sha": "3f3da8c",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)",
+    "files": [
+     "scripts/migrate-functions.sh",
+     "scripts/security/test-functions-deploy.sh"
+    ]
+   },
+   {
+    "sha": "6b83746",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)",
+    "files": [
+     "scripts/security/test-migration-replay-safety.sh"
+    ]
+   },
+   {
+    "sha": "08f9783",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)",
+    "files": [
+     "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md"
+    ]
+   },
    {
     "sha": "d06f11e",
     "date": "2026-11-16",
@@ -245943,43 +245991,6 @@
     "files": [
      "src/components/dashboard/DashboardExecutivo.tsx"
     ]
-   },
-   {
-    "sha": "bd5e644",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "chore: impede categorias duplicadas por empresa e tipo (#320)",
-    "files": [
-     "src/hooks/useCategorias.ts",
-     "supabase/migrations/20261112024404_categorias_nome_unico.sql"
-    ]
-   },
-   {
-    "sha": "8afbe7a",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "chore: remove categorias duplicadas e repassa referências (#319)",
-    "files": [
-     "supabase/migrations/20261112024218_remove_categorias_duplicadas.sql"
-    ]
-   },
-   {
-    "sha": "05920df",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: contas a pagar aceita status parcial (#318)",
-    "files": [
-     "supabase/migrations/20261112024215_contas_pagar_status_parcial.sql"
-    ]
-   },
-   {
-    "sha": "7c4bc25",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "feat: contabilização usa a conta contábil da categoria (#317)",
-    "files": [
-     "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246008,6 +246019,38 @@
     2
    ],
    [
+    "supabase/functions/_shared/string-utils.ts",
+    1
+   ],
+   [
+    "supabase/functions/ci-security-gate-log/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/mcp-query/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/n8n-callback/index.ts",
+    1
+   ],
+   [
+    "scripts/migrate-functions.sh",
+    1
+   ],
+   [
+    "scripts/security/test-functions-deploy.sh",
+    1
+   ],
+   [
+    "scripts/security/test-migration-replay-safety.sh",
+    1
+   ],
+   [
+    "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md",
+    1
+   ],
+   [
     "env.manifest.json",
     1
    ],
@@ -246029,38 +246072,6 @@
    ],
    [
     "supabase/functions/copilot-global/index.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql",
-    1
-   ],
-   [
-    ".github/workflows/contexto.yml",
-    1
-   ],
-   [
-    "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
-    1
-   ],
-   [
-    ".github/workflows/schema-drift.yml",
-    1
-   ],
-   [
-    "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
-    1
-   ],
-   [
-    "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
     1
    ]
   ]

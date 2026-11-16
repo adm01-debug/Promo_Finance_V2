@@ -11071,7 +11071,8 @@
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
-   "supabase/functions/_shared/observability.ts"
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/string-utils.ts"
   ],
   "supabase/functions/cnpja-lookup/index.ts": [
    "supabase/functions/_shared/correlation.ts",
@@ -11424,6 +11425,7 @@
   "supabase/functions/mcp-query/index.ts": [
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/string-utils.ts",
    "supabase/functions/_shared/zod.ts",
    "supabase/functions/mcp-query/sql-policy.ts"
   ],
@@ -11452,6 +11454,7 @@
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts",
    "supabase/functions/_shared/sentry.ts",
+   "supabase/functions/_shared/string-utils.ts",
    "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/n8n-dispatch/index.ts": [

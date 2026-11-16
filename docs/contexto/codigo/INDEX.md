@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d06f11e2963d11cd97b1f67ebb7262ed1f174a23` (2026-11-16T09:48:44-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c5a3c4a6fb99ce992176742b5fe64dd82e430a9b` (2026-11-16T09:49:34-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2308), SQL (1088), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2309), SQL (1088), Markdown (191), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3832 |
-| arquivos_codigo | 2419 |
-| linhas_codigo | 431820 |
+| arquivos_total | 3834 |
+| arquivos_codigo | 2420 |
+| linhas_codigo | 431824 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 437 |
 | workflows | 19 |
 | scripts | 107 |
-| docs_md | 190 |
+| docs_md | 191 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -62,7 +62,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
-- docs: docs (49), (raiz) (19), .github (2)
+- docs: docs (50), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (80%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
@@ -465,16 +465,16 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - .github/workflows/ci.yml (25)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
+- supabase/functions/mcp-query/index.ts (14)
 - .github/workflows/deno-tests.yml (13)
 - env.manifest.json (13)
-- supabase/functions/mcp-query/index.ts (13)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - .github/workflows/supabase-linter.yml (10)
 - e2e/auth/admin-rbac.e2e.ts (10)
 - src/App.tsx (10)
-- .github/workflows/functions-deploy.yml (9)
+- supabase/functions/n8n-callback/index.ts (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -606,6 +606,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/PERFORMANCE.md` — ⚡ Guia de Performance - Promo Finance (315 linhas)
 - `docs/PLANO_EXCELENCIA_10_10.md` — Plano de Excelência 10/10 — Promo Finance (72 linhas)
 - `docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md` — Plano de Melhorias e Correções — 50 Etapas (741 linhas)
+- `docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md` — Plano de correções e melhorias — GitHub Workflows (100 etapas) (192 linhas)
 - `docs/QA_EXHAUSTIVE_REPORT.md` — Relatório QA Exaustivo — 2026-07-22 (68 linhas)
 - `docs/QA_VALIDATION_REPORT.md` — QA Validation Report — Auditoria Exaustiva (123 linhas)
 - `docs/REAUDITORIA_FINAL.md` — Re-Auditoria Final — Plano 50 Etapas (141 linhas)
@@ -625,6 +626,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `c5a3c4a` fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)
+- 2026-11-16 `3f3da8c` feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)
+- 2026-11-16 `6b83746` test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)
+- 2026-11-16 `08f9783` docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)
 - 2026-11-16 `d06f11e` fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)
 - 2026-11-16 `a0543f9` fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)
 - 2026-11-16 `e61e8b8` fix(edge): rate limit em copilot-global e analise-preditiva (#353)
@@ -636,10 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-14 `b7559c3` fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)
 - 2026-11-14 `53a33b6` infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)
 - 2026-11-13 `76173e7` fix: simulação da Contabilização Automática deixa de receber 400 (#337)
-- 2026-11-13 `4870aac` chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)
-- 2026-11-13 `0ce338f` fix: religa campos de formulário às colunas criadas em produção (#343)
-- 2026-11-13 `fd8c431` fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)
-- 2026-11-13 `b933544` feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

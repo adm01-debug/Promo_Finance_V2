@@ -117,6 +117,7 @@
   "supabase/functions/_shared/sped/push-helper.ts",
   "supabase/functions/_shared/sql-write-guard.ts",
   "supabase/functions/_shared/sql-write-guard_test.ts",
+  "supabase/functions/_shared/string-utils.ts",
   "supabase/functions/_shared/tributario-logic.ts",
   "supabase/functions/_shared/tributario-logic_test.ts",
   "supabase/functions/_shared/validation.ts",
@@ -784,7 +785,7 @@
    "nome": "ci-security-gate-log",
    "entrada": "supabase/functions/ci-security-gate-log/index.ts",
    "arquivos": 1,
-   "linhas": 192,
+   "linhas": 186,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -807,7 +808,8 @@
     "cors.ts",
     "edge-observability.ts",
     "erros.ts",
-    "observability.ts"
+    "observability.ts",
+    "string-utils.ts"
    ],
    "chamada_pelo_front": [],
    "chamada_por_edges": [],
@@ -2668,7 +2670,7 @@
    "nome": "mcp-query",
    "entrada": "supabase/functions/mcp-query/index.ts",
    "arquivos": 2,
-   "linhas": 614,
+   "linhas": 603,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2684,6 +2686,7 @@
     "cors.ts",
     "edge-observability.ts",
     "sql-write-guard.ts",
+    "string-utils.ts",
     "zod.ts"
    ],
    "chamada_pelo_front": [],
@@ -2774,7 +2777,7 @@
    "nome": "n8n-callback",
    "entrada": "supabase/functions/n8n-callback/index.ts",
    "arquivos": 1,
-   "linhas": 260,
+   "linhas": 254,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2796,6 +2799,7 @@
     "erros.ts",
     "observability.ts",
     "sentry.ts",
+    "string-utils.ts",
     "validation.ts"
    ],
    "chamada_pelo_front": [],

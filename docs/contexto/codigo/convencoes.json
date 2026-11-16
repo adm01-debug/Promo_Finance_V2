@@ -33,7 +33,7 @@
    "scripts/ci (13)"
   ],
   "docs": [
-   "docs (49)",
+   "docs (50)",
    "(raiz) (19)",
    ".github (2)"
   ]
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
-   "fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)",
-   "fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)",
-   "fix(edge): rate limit em copilot-global e analise-preditiva (#353)",
-   "fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)",
-   "chore: contexto agendado de 10 min para 1x/hora (#350)"
+   "fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)",
+   "feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)",
+   "test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)",
+   "docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)",
+   "fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

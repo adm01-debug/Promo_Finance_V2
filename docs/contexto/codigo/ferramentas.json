@@ -3,9 +3,9 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2308)",
+   "TypeScript (2309)",
    "SQL (1088)",
-   "Markdown (190)",
+   "Markdown (191)",
    "JavaScript (68)",
    "Python (45)",
    "JSON (37)",
@@ -1098,6 +1098,11 @@
    "arquivo": "docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md",
    "titulo": "Plano de Melhorias e Correções — 50 Etapas",
    "linhas": 741
+  },
+  {
+   "arquivo": "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md",
+   "titulo": "Plano de correções e melhorias — GitHub Workflows (100 etapas)",
+   "linhas": 192
   },
   {
    "arquivo": "docs/QA_EXHAUSTIVE_REPORT.md",

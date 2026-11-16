@@ -881,7 +881,7 @@
   {
    "arquivo": "scripts/migrate-functions.sh",
    "descricao": "scripts/migrate-functions.sh Deploy em lote das Edge Functions para um projeto Supabase destino.",
-   "linhas": 339,
+   "linhas": 442,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -973,7 +973,7 @@
   {
    "arquivo": "scripts/security/test-functions-deploy.sh",
    "descricao": null,
-   "linhas": 54,
+   "linhas": 74,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -997,7 +997,7 @@
   {
    "arquivo": "scripts/security/test-migration-replay-safety.sh",
    "descricao": null,
-   "linhas": 96,
+   "linhas": 136,
    "env": [],
    "npm_scripts": [],
    "workflows": [
