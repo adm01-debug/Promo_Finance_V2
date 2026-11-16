@@ -6,6 +6,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [ main ]
+  # Permite rodar o pipeline sob demanda — em especial a quarentena E2E, que
+  # saiu do gatilho de PR e passou a depender de push em main ou deste dispatch.
+  workflow_dispatch: {}
 
 # Cancela runs anteriores do mesmo branch/PR para economizar minutos de runner.
 # Em pushes para main usamos o SHA para nunca cancelar duas merges distintas.
