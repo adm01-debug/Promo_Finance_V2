@@ -411,7 +411,7 @@
   {
    "arquivo": "scripts/generate-env-manifest.mjs",
    "descricao": "* scripts/generate-env-manifest.mjs",
-   "linhas": 227,
+   "linhas": 229,
    "env": [],
    "npm_scripts": [],
    "workflows": [

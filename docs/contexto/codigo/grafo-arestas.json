@@ -10947,6 +10947,7 @@
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/rate-limit.ts",
    "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/analyze-document/index.ts": [
@@ -11141,7 +11142,8 @@
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
-   "supabase/functions/_shared/observability.ts"
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/rate-limit.ts"
   ],
   "supabase/functions/copilot-tributario/index.ts": [
    "supabase/functions/_shared/contract-validator.ts",

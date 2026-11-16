@@ -207,7 +207,7 @@
    "nome": "analise-preditiva",
    "entrada": "supabase/functions/analise-preditiva/index.ts",
    "arquivos": 1,
-   "linhas": 345,
+   "linhas": 359,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -235,6 +235,7 @@
     "edge-observability.ts",
     "erros.ts",
     "observability.ts",
+    "rate-limit.ts",
     "validation.ts"
    ],
    "chamada_pelo_front": [
@@ -1170,7 +1171,7 @@
    "nome": "copilot-global",
    "entrada": "supabase/functions/copilot-global/index.ts",
    "arquivos": 1,
-   "linhas": 304,
+   "linhas": 319,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1201,7 +1202,8 @@
     "cors.ts",
     "edge-observability.ts",
     "erros.ts",
-    "observability.ts"
+    "observability.ts",
+    "rate-limit.ts"
    ],
    "chamada_pelo_front": [
     "src/components/copilot/CopilotGlobalFloat.tsx"

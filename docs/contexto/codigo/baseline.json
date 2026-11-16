@@ -2,11 +2,26 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "fc82460f208e4cc38df6189dc25bc4cd73130ed7",
+  "commit": "d06f11e2963d11cd97b1f67ebb7262ed1f174a23",
   "branch": "main",
-  "data_commit": "2026-11-16T09:47:58-03:00",
+  "data_commit": "2026-11-16T09:48:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d06f11e",
+    "data": "2026-11-16",
+    "assunto": "fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)"
+   },
+   {
+    "sha": "a0543f9",
+    "data": "2026-11-16",
+    "assunto": "fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)"
+   },
+   {
+    "sha": "e61e8b8",
+    "data": "2026-11-16",
+    "assunto": "fix(edge): rate limit em copilot-global e analise-preditiva (#353)"
+   },
    {
     "sha": "fc82460",
     "data": "2026-11-16",
@@ -116,24 +131,9 @@
     "sha": "6e462aa",
     "data": "2026-11-12",
     "assunto": "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)"
-   },
-   {
-    "sha": "51d0405",
-    "data": "2026-11-12",
-    "assunto": "fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)"
-   },
-   {
-    "sha": "bd5e644",
-    "data": "2026-11-12",
-    "assunto": "chore: impede categorias duplicadas por empresa e tipo (#320)"
-   },
-   {
-    "sha": "8afbe7a",
-    "data": "2026-11-12",
-    "assunto": "chore: remove categorias duplicadas e repassa referências (#319)"
    }
   ],
-  "arquivos_mudados_7d": 679,
+  "arquivos_mudados_7d": 683,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -165,7 +165,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 15
+    "mudancas": 16
    },
    {
     "pasta": "src/components/admin",
@@ -222,12 +222,12 @@
     "mudancas": 13
    },
    {
-    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "arquivo": "env.manifest.json",
     "mudancas": 13
    },
    {
-    "arquivo": "env.manifest.json",
-    "mudancas": 12
+    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "mudancas": 13
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -238,15 +238,15 @@
     "mudancas": 11
    },
    {
+    "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 11
+   },
+   {
     "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 10
    },
    {
     "arquivo": "e2e/auth/admin-rbac.e2e.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 10
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 112
+    "commits": 115
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3832,
   "arquivos_codigo": 2419,
-  "linhas_codigo": 431766,
+  "linhas_codigo": 431820,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -516,7 +516,7 @@
   },
   "scripts/generate-env-manifest.mjs": {
    "arquivos": 1,
-   "linhas": 227
+   "linhas": 229
   },
   "scripts/generate-env-manifest.unit.mjs": {
    "arquivos": 1,
@@ -632,7 +632,7 @@
   },
   "src/components": {
    "arquivos": 976,
-   "linhas": 160314
+   "linhas": 160325
   },
   "src/config": {
    "arquivos": 1,
@@ -680,7 +680,7 @@
   },
   "supabase/functions": {
    "arquivos": 222,
-   "linhas": 49577
+   "linhas": 49618
   },
   "supabase/tests": {
    "arquivos": 2,

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `fc82460f20` · branch `main` · 2026-11-16 12:48 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d06f11e296` · branch `main` · 2026-11-16 12:52 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5945,4 +5945,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | - MINOR: nova regra fiscal (ex.: CPP Anexo IV, FPAS/Terceiros). | `src/lib/tributario/versao.ts` |
 | - PATCH: correção de cálculo sem nova regra. | `src/lib/tributario/versao.ts` |
 | Compensação de prejuízo fiscal — limite 30% | `src/lib/tributario/calculadora/lucro-real.ts` |
-| … +362 linhas — lista completa em `context.json` | |
+| … +363 linhas — lista completa em `context.json` | |

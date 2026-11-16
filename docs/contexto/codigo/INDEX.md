@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `fc82460f208e4cc38df6189dc25bc4cd73130ed7` (2026-11-16T09:47:58-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d06f11e2963d11cd97b1f67ebb7262ed1f174a23` (2026-11-16T09:48:44-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3832 |
 | arquivos_codigo | 2419 |
-| linhas_codigo | 431766 |
+| linhas_codigo | 431820 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -466,13 +466,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
 - .github/workflows/deno-tests.yml (13)
+- env.manifest.json (13)
 - supabase/functions/mcp-query/index.ts (13)
-- env.manifest.json (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
+- scripts/generate-env-manifest.mjs (11)
 - .github/workflows/supabase-linter.yml (10)
 - e2e/auth/admin-rbac.e2e.ts (10)
-- scripts/generate-env-manifest.mjs (10)
 - src/App.tsx (10)
 - .github/workflows/functions-deploy.yml (9)
 
@@ -625,6 +625,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `d06f11e` fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)
+- 2026-11-16 `a0543f9` fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)
+- 2026-11-16 `e61e8b8` fix(edge): rate limit em copilot-global e analise-preditiva (#353)
 - 2026-11-16 `fc82460` fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)
 - 2026-11-16 `e0f7e5f` chore: contexto agendado de 10 min para 1x/hora (#350)
 - 2026-11-14 `0274005` fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)
@@ -637,9 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-13 `0ce338f` fix: religa campos de formulário às colunas criadas em produção (#343)
 - 2026-11-13 `fd8c431` fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)
 - 2026-11-13 `b933544` feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)
-- 2026-11-13 `a49b1c7` fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)
-- 2026-11-13 `095a3f6` fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)
-- 2026-11-13 `309bc9b` fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

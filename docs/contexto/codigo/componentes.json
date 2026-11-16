@@ -6172,7 +6172,7 @@
     "DashboardExecutivo"
    ],
    "export_default": null,
-   "linhas": 366,
+   "linhas": 377,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth",
