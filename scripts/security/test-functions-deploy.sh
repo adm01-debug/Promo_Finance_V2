@@ -16,6 +16,10 @@ MOCK
 chmod +x "$TMP_DIR/bin/supabase"
 
 cd "$ROOT"
+# POST_DEPLOY_CHECK=0: este teste afere o CONTRATO DE ARGUMENTOS do deploy.
+# A verificação pós-deploy acrescenta chamadas read-only (`functions list`) e
+# faz I/O de rede — mantê-la ligada aqui tornaria o teste não determinístico.
+# Que o bloco pós-deploy não escreve nada é aferido estaticamente no fim.
 # REQUIRED_SECRETS/FUNCTIONS_DIR/STOP_ON_FAIL vazios: o job de deploy exporta
 # REQUIRED_SECRETS (vars.REQUIRED_SECRETS) e, herdado aqui, fazia o script
 # consultar `supabase secrets list` no mock e abortar com exit 5.
@@ -26,6 +30,7 @@ SUPABASE_PROJECT_REF="projeto_teste" \
 REQUIRED_SECRETS="" \
 FUNCTIONS_DIR="" \
 STOP_ON_FAIL="" \
+POST_DEPLOY_CHECK=0 \
 bash scripts/migrate-functions.sh \
   --only "detectar-anomalias-financeiras,compare-schemas" >/dev/null
 
@@ -51,4 +56,19 @@ mapfile -t calls < "$CAPTURE"
   exit 1
 }
 
+# O bloco pós-deploy só pode ler. Qualquer subcomando de escrita da CLI dentro
+# dele (deploy, delete, secrets set, db push...) transformaria uma verificação
+# em efeito colateral no destino — e passaria despercebido no teste acima,
+# porque ele roda com POST_DEPLOY_CHECK=0.
+pos_deploy="$(sed -n '/^# --- Verificação pós-deploy/,/^# --- Resumo/p' scripts/migrate-functions.sh)"
+escritas="$(printf '%s\n' "$pos_deploy" \
+  | grep -oE 'supabase[[:space:]]+[a-z-]+([[:space:]]+[a-z-]+)?' \
+  | grep -vE 'supabase[[:space:]]+functions[[:space:]]+list' || true)"
+if [[ -n "$escritas" ]]; then
+  echo "Falha: verificação pós-deploy chama a CLI fora de 'functions list':" >&2
+  printf '  %s\n' "$escritas" >&2
+  exit 1
+fi
+
 echo "OK: argumentos de deploy preservam o contrato JWT da CLI atual."
+echo "OK: verificação pós-deploy não chama subcomando de escrita da CLI." 

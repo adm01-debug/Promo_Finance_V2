@@ -59,6 +59,25 @@ check_absent() {
   fi
 }
 
+# Espelho de check_absent: há DDL cuja AUSÊNCIA quebra o replay. A migration
+# consolidada de 2026-03 precisa criar a tabela antes que as migrations
+# seguintes a referenciem.
+check_present() {
+  local pattern="$1"
+  local status
+  shift
+  if grep -qERi -- "$pattern" "$@"; then
+    return 0
+  fi
+  status=$?
+  if [[ "$status" -ne 1 ]]; then
+    echo "Falha: não foi possível verificar o padrão obrigatório '$pattern'." >&2
+    exit "$status"
+  fi
+  echo "Padrão obrigatório ausente: $pattern" >&2
+  fail=1
+}
+
 echo "Verificando replay safety das migrations críticas..."
 
 check_absent '^[[:space:]]*ALTER[[:space:]]+DATABASE[[:space:]]+"?postgres"?[[:space:]]+SET[[:space:]]+"?app\.jwt_secret' \
@@ -87,6 +106,27 @@ check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+"?update_(fornec
 
 check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+"?on_auth_user_created\b' \
   supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql
+
+# As migrations legadas de performance precisam respeitar o contrato atual da
+# coluna (`data_vencimento`) e não podem depender de relação já removida do
+# replay — as duas formas já quebraram o replay uma vez.
+check_absent '\bcontas_(pagar|receber)\(vencimento\)\b' \
+  supabase/migrations/20251231000001_performance_indexes.sql \
+  supabase/migrations/20251231000100_add_performance_indexes.sql
+
+check_absent '^[[:space:]]*(ON|ANALYZE)[[:space:]]+conciliacao_bancaria\b' \
+  supabase/migrations/20251231000100_add_performance_indexes.sql
+
+# DROP POLICY nua sobre relação que não existe no ponto histórico do replay:
+# `workflow_aprovacoes` nunca é criada e `contratos` só aparece em maio.
+check_absent '^[[:space:]]*DROP[[:space:]]+POLICY.*ON[[:space:]]+public\.(workflow_aprovacoes|contratos)[[:space:]]*;' \
+  supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql \
+  supabase/migrations/20260314213926_4aa99b17-ffa7-44c9-a6c4-3b1c6d00ffae.sql
+
+# Contrapartida: as migrations de 2026-03 em diante referenciam plano_contas,
+# que precisa continuar sendo criada aqui.
+check_present 'CREATE[[:space:]]+TABLE[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS[[:space:]]+public\.plano_contas' \
+  supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql
 
 if [[ "$fail" -ne 0 ]]; then
   echo "Falha: replay safety violado nas migrations críticas." >&2
