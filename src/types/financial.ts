@@ -1,6 +1,19 @@
 export type StatusPagamento = 'pago' | 'pendente' | 'vencido' | 'parcial' | 'cancelado';
 export type TipoTransacao = 'receita' | 'despesa';
-export type TipoCobranca = 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+// Vocabulario do banco: o enum public.tipo_cobranca nao tem 'cartao', tem
+// 'cartao_credito' e 'cartao_debito' (ver Constants.public.Enums.tipo_cobranca
+// em src/integrations/supabase/types.ts:19252). Em contas_pagar e
+// contas_receber a coluna e text livre, entao 'cartao' nao falhava — mas
+// pagamentos_recorrentes usa o enum de verdade e grava a forma dividida, e as
+// duas metades do sistema ficavam com vocabulario diferente para a mesma forma
+// de cobranca.
+export type TipoCobranca =
+  | 'boleto'
+  | 'pix'
+  | 'cartao_credito'
+  | 'cartao_debito'
+  | 'transferencia'
+  | 'dinheiro';
 export type PrioridadeAlerta = 'baixa' | 'media' | 'alta' | 'critica';
 export type EtapaReguaCobranca = 'preventiva' | 'lembrete' | 'cobranca' | 'negociacao' | 'juridico';
 

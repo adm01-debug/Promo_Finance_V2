@@ -46,7 +46,8 @@ export const statusConfig: Record<
 export const tipoCobrancaIcons: Record<TipoCobranca, typeof CreditCard> = {
   boleto: Banknote,
   pix: QrCode,
-  cartao: CreditCard,
+  cartao_credito: CreditCard,
+  cartao_debito: CreditCard,
   transferencia: Building2,
   dinheiro: DollarSign,
 };
