@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d9ff7e0c193d826c68eee34b3db0471502c18abf` (2026-11-16T16:28:18-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1d6ef946018032c57c0337064c8fb4c32a66332a` (2026-11-16T17:03:31-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2319), SQL (1095), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2319), SQL (1096), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3853 |
+| arquivos_total | 3854 |
 | arquivos_codigo | 2430 |
 | linhas_codigo | 433287 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
-| migrations | 1025 |
+| migrations | 1026 |
 | cron_jobs | 21 |
 | testes | 446 |
 | workflows | 19 |
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `1d6ef94` chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)
 - 2026-11-16 `d9ff7e0` fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)
 - 2026-11-16 `38f4896` fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)
 - 2026-11-16 `311bf35` fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `5272662` fix: estorno contábil de movimentação excluída/alterada, com as 6 correções da revisão da #340 (#366)
 - 2026-11-16 `bc42f17` chore(docs): registra a análise do log de produção de 14/11 (#367)
 - 2026-11-16 `c4b811d` fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)
-- 2026-11-16 `a6393dc` chore(ci): resgata docs/ci/kpi.json — custo e taxa de falha por workflow (#363)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

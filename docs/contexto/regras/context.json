@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d9ff7e0c193d826c68eee34b3db0471502c18abf",
+  "sha": "1d6ef946018032c57c0337064c8fb4c32a66332a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 19:29 UTC",
-  "files_total": 3895,
-  "code_files": 3526,
-  "code_lines": 500261
+  "generated_at": "2026-11-16 20:04 UTC",
+  "files_total": 3896,
+  "code_files": 3527,
+  "code_lines": 500438
  },
  "version": "1.3.2",
- "facts_hash": "e4ab37de8bbacc1d",
+ "facts_hash": "6e2193fe443ebfdb",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1225,
-   ".sql": 1095,
+   ".sql": 1096,
    ".tsx": 1094,
    ".mjs": 60,
    ".py": 45,
@@ -52588,6 +52588,7 @@
    "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
    "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
    "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
+   "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -72965,8 +72966,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1025,
-   "lines": 77892,
+   "files": 1026,
+   "lines": 78069,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -137115,6 +137116,10 @@
    },
    {
     "file": "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
     "call": "asaas"
    }
   ],
@@ -245948,6 +245953,13 @@
    "path": "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
    "lines": 27
   },
+  "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql": {
+   "path": "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
+   "lines": 177,
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -246056,10 +246068,19 @@
   }
  },
  "git": {
-  "sha": "d9ff7e0c193d826c68eee34b3db0471502c18abf",
+  "sha": "1d6ef946018032c57c0337064c8fb4c32a66332a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1d6ef94",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)",
+    "files": [
+     "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql"
+    ]
+   },
    {
     "sha": "d9ff7e0",
     "date": "2026-11-16",
@@ -246386,15 +246407,6 @@
      "supabase/functions/analise-preditiva/index.ts",
      "supabase/functions/copilot-global/index.ts"
     ]
-   },
-   {
-    "sha": "fc82460",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)",
-    "files": [
-     "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246413,6 +246425,10 @@
    [
     "supabase/functions/gerar-sped-ecf/index.ts",
     2
+   ],
+   [
+    "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
+    1
    ],
    [
     "src/components/contas-pagar/ContaPagarForm.helpers.ts",
@@ -246472,10 +246488,6 @@
    ],
    [
     "src/components/ui/advanced-filters.tsx",
-    1
-   ],
-   [
-    "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
     1
    ]
   ]

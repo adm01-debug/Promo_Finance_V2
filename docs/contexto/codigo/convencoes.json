@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)",
    "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)",
    "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)",
    "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)",
-   "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)",
-   "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)"
+   "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

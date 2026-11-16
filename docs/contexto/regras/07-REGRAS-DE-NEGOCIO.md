@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d9ff7e0c19` · branch `main` · 2026-11-16 19:29 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1d6ef94601` · branch `main` · 2026-11-16 20:04 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5658,6 +5658,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20261101120600_boletos_asaas_defaults.sql` |
 | `asaas` | `supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql` |
 | `asaas` | `supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql` |
+| `asaas` | `supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql` |
 
 ## N. Regras citadas em comentários do código
 

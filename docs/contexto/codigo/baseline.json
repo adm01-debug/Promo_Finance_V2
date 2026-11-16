@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d9ff7e0c193d826c68eee34b3db0471502c18abf",
+  "commit": "1d6ef946018032c57c0337064c8fb4c32a66332a",
   "branch": "main",
-  "data_commit": "2026-11-16T16:28:18-03:00",
+  "data_commit": "2026-11-16T17:03:31-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1d6ef94",
+    "data": "2026-11-16",
+    "assunto": "chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)"
+   },
    {
     "sha": "d9ff7e0",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "3f3da8c",
     "data": "2026-11-16",
     "assunto": "feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)"
-   },
-   {
-    "sha": "6b83746",
-    "data": "2026-11-16",
-    "assunto": "test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)"
    }
   ],
-  "arquivos_mudados_7d": 737,
+  "arquivos_mudados_7d": 738,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 141
+    "commits": 142
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3853,
+  "arquivos_total": 3854,
   "arquivos_codigo": 2430,
   "linhas_codigo": 433287,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1025,
+  "migrations": 1026,
   "cron_jobs": 21,
   "testes": 446,
   "workflows": 19,
