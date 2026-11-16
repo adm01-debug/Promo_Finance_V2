@@ -141,6 +141,10 @@ export function useExpertContext(): ExpertContextData {
       0
     );
 
+    // "Em aberto" = pendente + vencido. Uma conta vencida continua devida.
+    const pagarEmAberto = totalPagarPendente + totalPagarVencido;
+    const receberEmAberto = totalReceberPendente + totalReceberVencido;
+
     // Collection stages analysis
     const cobrancaEtapas =
       contasReceber?.reduce(
@@ -209,9 +213,9 @@ ${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo
     context += `
 ## FLUXO DE CAIXA PROJETADO (30 dias)
 - Saldo Atual: ${formatCurrency(saldoTotal)}
-- Entradas Previstas: ${formatCurrency(totalReceberPendente)}
-- Saídas Previstas: ${formatCurrency(totalPagarPendente)}
-- Saldo Projetado: ${formatCurrency(saldoTotal + totalReceberPendente - totalPagarPendente)}
+- Entradas Previstas: ${formatCurrency(receberEmAberto)}
+- Saídas Previstas: ${formatCurrency(pagarEmAberto)}
+- Saldo Projetado: ${formatCurrency(saldoTotal + receberEmAberto - pagarEmAberto)}
 `;
 
     if (aprovacoesPendentes && aprovacoesPendentes.length > 0) {
@@ -227,21 +231,23 @@ ${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo
     }
 
     // Add key indicators
+    // Os indicadores abaixo usavam os totais 'pendente', que significavam "em
+    // aberto" enquanto nada no sistema gravava 'vencido'. Com a rotina
+    // marcar_contas_vencidas() gravando, "em aberto" passa a ser
+    // pendente + vencido: a divida continua devida depois de vencer.
+    // Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e
+    // liquidez 'N/A' no contexto que o EXPERT le.
     const taxaInadimplencia =
-      totalReceberVencido > 0 && totalReceberPendente > 0
-        ? ((totalReceberVencido / (totalReceberPendente + totalReceberVencido)) * 100).toFixed(1)
-        : '0';
+      receberEmAberto > 0 ? ((totalReceberVencido / receberEmAberto) * 100).toFixed(1) : '0';
 
     const liquidez =
-      totalPagarPendente > 0
-        ? ((saldoDisponivel + totalReceberPendente) / totalPagarPendente).toFixed(2)
-        : 'N/A';
+      pagarEmAberto > 0 ? ((saldoDisponivel + receberEmAberto) / pagarEmAberto).toFixed(2) : 'N/A';
 
     context += `
 ## INDICADORES CHAVE
 - Taxa de Inadimplência: ${taxaInadimplencia}%
 - Índice de Liquidez: ${liquidez}
-- Cobertura de Caixa: ${totalPagarPendente > 0 ? Math.round((saldoDisponivel / totalPagarPendente) * 100) : 100}%
+- Cobertura de Caixa: ${pagarEmAberto > 0 ? Math.round((saldoDisponivel / pagarEmAberto) * 100) : 100}%
 `;
 
     return context;

@@ -107,8 +107,13 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
         contasReceber
           ?.filter((c) => c.status === 'vencido')
           .reduce((sum, c) => sum + Number(c.valor), 0) || 0;
-      const taxaInadimplencia =
-        totalReceber > 0 ? (totalVencido / (totalReceber + totalVencido)) * 100 : 0;
+      // Guard pela carteira em aberto (pendente + vencido), nao por totalReceber,
+      // que soma so 'pendente'. Com a rotina marcar_contas_vencidas() gravando
+      // 'vencido', uma carteira 100% vencida deixa totalReceber em 0 e o guard
+      // antigo devolvia taxa 0% — suprimindo o alerta exatamente no pior caso,
+      // ja que ele so dispara acima de 10%.
+      const carteiraAberta = totalReceber + totalVencido;
+      const taxaInadimplencia = carteiraAberta > 0 ? (totalVencido / carteiraAberta) * 100 : 0;
 
       if (taxaInadimplencia > 10) {
         newSuggestions.push({
