@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f48e9c1c34710c9110344f27b6983b9003aa4d1c",
+  "sha": "8f1767c8f0ba94e3d8b0d35164282687b314206f",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 23:05 UTC",
-  "files_total": 3900,
-  "code_files": 3531,
-  "code_lines": 501720
+  "generated_at": "2026-11-16 23:06 UTC",
+  "files_total": 3901,
+  "code_files": 3532,
+  "code_lines": 501852
  },
  "version": "1.3.2",
- "facts_hash": "923581e161d2f46c",
+ "facts_hash": "3063de3573e25edb",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1226,
-   ".sql": 1098,
+   ".sql": 1099,
    ".tsx": 1095,
    ".mjs": 60,
    ".py": 45,
@@ -43396,10 +43396,10 @@
     "args": "p_empresa_id uuid DEFAULT NULL::uuid, p_simulate boolean DEFAULT false",
     "returns": "jsonb",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE result JSONB; BEGIN IF p_empresa_id IS NULL OR NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'Sem permissão para esta empresa' USING ERRCODE = '42501'; END IF; IF p_simulate THEN result := jsonb_build_object( 'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status = 'pendente' AND empresa_id = p_empresa_id), 'message', 'Simulação concluída com base nos títulos pendentes.' ); ELSE result := jsonb_build_object( 'total_enfileirados', 0, 'message', 'Lógica de produção: disparos agendados.' ); END IF; RETURN result; END;",
+    "body": "DECLARE result JSONB; BEGIN IF p_empresa_id IS NULL OR NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'Sem permissão para esta empresa' USING ERRCODE = '42501'; END IF; IF p_simulate THEN result := jsonb_build_object( 'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status IN ('pendente', 'vencido', 'parcial', 'atrasado') AND empresa_id = p_empresa_id), 'message', 'Simulação concluída com base nos títulos em aberto.' ); ELSE result := jsonb_build_object( 'total_enfileirados', 0, 'message', 'Lógica de produção: disparos agendados.' ); END IF; RETURN result; END;",
     "raises": [
      "Sem permissão para esta empresa"
     ],
@@ -46052,6 +46052,20 @@
      "pg_class",
      "pg_inherits",
      "pg_namespace"
+    ]
+   },
+   "marcar_contas_vencidas": {
+    "args": "",
+    "returns": "jsonb",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "DECLARE v_hoje date := (now() AT TIME ZONE 'America/Sao_Paulo')::date; v_pagar_venc int; v_pagar_volta int; v_receber_venc int; v_receber_volta int; BEGIN UPDATE public.contas_pagar SET status = 'vencido' WHERE status = 'pendente' AND data_vencimento < v_hoje AND deleted_at IS NULL; GET DIAGNOSTICS v_pagar_venc = ROW_COUNT; UPDATE public.contas_pagar SET status = 'pendente' WHERE status = 'vencido' AND data_vencimento >= v_hoje AND deleted_at IS NULL; GET DIAGNOSTICS v_pagar_volta = ROW_COUNT; UPDATE public.contas_receber SET status = 'vencido' WHERE status IN ('pendente', 'atrasado') AND data_vencimento < v_hoje AND deleted_at IS NULL; GET DIAGNOSTICS v_receber_venc = ROW_COUNT; UPDATE publ …",
+    "raises": [],
+    "tables": [
+     "contas_pagar",
+     "contas_receber"
     ]
    },
    "exec_sql": {
@@ -51445,6 +51459,12 @@
     "schedule": "*/30 * * * *",
     "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/monitor-health', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'monitor_health_cron' LIMIT 1 ) ), body := '{\"source\":\"pg_cro …",
     "src": "supabase/migrations/20261101200000_monitor_health_cron.sql"
+   },
+   {
+    "job": "marcar-contas-vencidas",
+    "schedule": "5 3 * * *",
+    "body": "SELECT public.marcar_contas_vencidas();",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
    }
   ],
   "views": {
@@ -52590,6 +52610,7 @@
    "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
    "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
    "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
+   "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -60718,6 +60739,22 @@
     "objkind": "table",
     "roles": "service_role",
     "src": "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "marcar_contas_vencidas",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "marcar_contas_vencidas",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
    }
   ],
   "raises": [
@@ -61177,11 +61214,6 @@
     "src": "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql"
    },
    {
-    "function": "processar_regua_cobranca",
-    "msg": "Sem permissão para esta empresa",
-    "src": "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql"
-   },
-   {
     "function": "nfe_create_conta_pagar_from_nfe",
     "msg": "NFe % não encontrada",
     "src": "supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql"
@@ -61445,6 +61477,11 @@
     "function": "drop_old_partitions",
     "msg": "retention_months deve ser >= 1",
     "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+   },
+   {
+    "function": "processar_regua_cobranca",
+    "msg": "Sem permissão para esta empresa",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
    }
   ],
   "seed": [
@@ -72968,8 +73005,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1028,
-   "lines": 79084,
+   "files": 1029,
+   "lines": 79216,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -149868,10 +149905,10 @@
     "args": "p_empresa_id uuid DEFAULT NULL::uuid, p_simulate boolean DEFAULT false",
     "returns": "jsonb",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE result JSONB; BEGIN IF p_empresa_id IS NULL OR NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'Sem permissão para esta empresa' USING ERRCODE = '42501'; END IF; IF p_simulate THEN result := jsonb_build_object( 'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status = 'pendente' AND empresa_id = p_empresa_id), 'message', 'Simulação concluída com base nos títulos pendentes.' ); ELSE result := jsonb_build_object( 'total_enfileirados', 0, 'message', 'Lógica de produção: disparos agendados.' ); END IF; RETURN result; END;",
+    "body": "DECLARE result JSONB; BEGIN IF p_empresa_id IS NULL OR NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'Sem permissão para esta empresa' USING ERRCODE = '42501'; END IF; IF p_simulate THEN result := jsonb_build_object( 'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status IN ('pendente', 'vencido', 'parcial', 'atrasado') AND empresa_id = p_empresa_id), 'message', 'Simulação concluída com base nos títulos em aberto.' ); ELSE result := jsonb_build_object( 'total_enfileirados', 0, 'message', 'Lógica de produção: disparos agendados.' ); END IF; RETURN result; END;",
     "raises": [
      "Sem permissão para esta empresa"
     ],
@@ -152526,6 +152563,20 @@
      "pg_namespace"
     ]
    },
+   "marcar_contas_vencidas": {
+    "args": "",
+    "returns": "jsonb",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "DECLARE v_hoje date := (now() AT TIME ZONE 'America/Sao_Paulo')::date; v_pagar_venc int; v_pagar_volta int; v_receber_venc int; v_receber_volta int; BEGIN UPDATE public.contas_pagar SET status = 'vencido' WHERE status = 'pendente' AND data_vencimento < v_hoje AND deleted_at IS NULL; GET DIAGNOSTICS v_pagar_venc = ROW_COUNT; UPDATE public.contas_pagar SET status = 'pendente' WHERE status = 'vencido' AND data_vencimento >= v_hoje AND deleted_at IS NULL; GET DIAGNOSTICS v_pagar_volta = ROW_COUNT; UPDATE public.contas_receber SET status = 'vencido' WHERE status IN ('pendente', 'atrasado') AND data_vencimento < v_hoje AND deleted_at IS NULL; GET DIAGNOSTICS v_receber_venc = ROW_COUNT; UPDATE publ …",
+    "raises": [],
+    "tables": [
+     "contas_pagar",
+     "contas_receber"
+    ]
+   },
    "exec_sql": {
     "args": "",
     "returns": "?",
@@ -153310,11 +153361,6 @@
     "src": "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql"
    },
    {
-    "function": "processar_regua_cobranca",
-    "msg": "Sem permissão para esta empresa",
-    "src": "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql"
-   },
-   {
     "function": "nfe_create_conta_pagar_from_nfe",
     "msg": "NFe % não encontrada",
     "src": "supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql"
@@ -153578,6 +153624,11 @@
     "function": "drop_old_partitions",
     "msg": "retention_months deve ser >= 1",
     "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+   },
+   {
+    "function": "processar_regua_cobranca",
+    "msg": "Sem permissão para esta empresa",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
    }
   ],
   "db_generated": [
@@ -163119,6 +163170,7 @@
    "supabase/migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql",
    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
    "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
+   "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -171223,6 +171275,22 @@
     "objkind": "table",
     "roles": "service_role",
     "src": "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "marcar_contas_vencidas",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "marcar_contas_vencidas",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
    }
   ],
   "guards": [
@@ -246203,6 +246271,11 @@
    "lines": 135,
    "uses_service_role": true
   },
+  "supabase/migrations/20261117010000_marcar_contas_vencidas.sql": {
+   "path": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
+   "lines": 132,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -246311,10 +246384,19 @@
   }
  },
  "git": {
-  "sha": "f48e9c1c34710c9110344f27b6983b9003aa4d1c",
+  "sha": "8f1767c8f0ba94e3d8b0d35164282687b314206f",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8f1767c",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)",
+    "files": [
+     "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+    ]
+   },
    {
     "sha": "f48e9c1",
     "date": "2026-11-16",
@@ -246661,15 +246743,6 @@
     "files": [
      "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
     ]
-   },
-   {
-    "sha": "eb79007",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: libera INSERT/UPDATE com isolamento por empresa em compras e transações bancárias (#339)",
-    "files": [
-     "supabase/migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246710,6 +246783,10 @@
     2
    ],
    [
+    "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
+    1
+   ],
+   [
     "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
     1
    ],
@@ -246747,10 +246824,6 @@
    ],
    [
     "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260825230000_initplan_rls_e67.sql",
     1
    ]
   ]

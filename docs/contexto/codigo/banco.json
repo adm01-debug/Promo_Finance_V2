@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1028,
+ "migrations": 1029,
  "seeds": [],
  "avisos": [
   "191 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -468,6 +468,7 @@
   "log_rpc_observability_call",
   "log_sso_onboarding_event",
   "maintain_monthly_partitions",
+  "marcar_contas_vencidas",
   "mark_conta_pagar_as_paid",
   "mark_conta_receber_as_received",
   "mascarar_chave_pix",
@@ -2718,6 +2719,11 @@
    "nome": "maintain-monthly-partitions",
    "agenda": "10 3 * * *",
    "migration": "20260728110011_3239bd8f-24ff-4511-8e42-e028edd7cd87.sql"
+  },
+  {
+   "nome": "marcar-contas-vencidas",
+   "agenda": "5 3 * * *",
+   "migration": "20261117010000_marcar_contas_vencidas.sql"
   },
   {
    "nome": "monitor-health-check",

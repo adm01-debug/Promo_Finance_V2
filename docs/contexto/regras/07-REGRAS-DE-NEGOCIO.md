@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f48e9c1c34` · branch `main` · 2026-11-16 23:05 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `8f1767c8f0` · branch `main` · 2026-11-16 23:06 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1020,7 +1020,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `silenciar_alerta_erro_frontend` | assinatura obrigatoria | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
 | `increment_failed_attempts` | email obrigatório | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
 | `get_catalogos_tributarios_health` | acesso negado: requer papel admin | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
-| `processar_regua_cobranca` | Sem permissão para esta empresa | `supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql` |
 | `nfe_create_conta_pagar_from_nfe` | NFe % não encontrada | `supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql` |
 | `nfe_create_conta_pagar_from_nfe` | Sem permissão para esta NFe | `supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql` |
 | `nfe_create_conta_pagar_from_nfe` | NFe % sem valor_total válido para gerar conta a pagar | `supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql` |
@@ -1074,6 +1073,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `fn_sync_valor_pago_movimentacao` | movimentacao vinculada a conta_receber de outra empresa (%) | `supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql` |
 | `validar_partidas_dobradas` | Partidas não balanceadas no lançamento %: Débitos=% Créditos=% | `supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql` |
 | `drop_old_partitions` | retention_months deve ser >= 1 | `supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql` |
+| `processar_regua_cobranca` | Sem permissão para esta empresa | `supabase/migrations/20261117010000_marcar_contas_vencidas.sql` |
 
 ## E. Estados, máquinas de estado e transições
 
