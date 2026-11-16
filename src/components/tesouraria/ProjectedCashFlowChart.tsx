@@ -35,17 +35,31 @@ export function ProjectedCashFlowChart({
       const date = addDays(today, i);
       const dateStr = format(date, 'yyyy-MM-dd');
 
+      // 'parcial' entra na projeção: um título parcialmente liquidado continua
+      // tendo saldo a pagar/receber. Sem ele, o título desaparecia inteiro da
+      // curva. E o valor é o RESIDUAL (valor - valor_pago/valor_recebido), não
+      // o nominal: a convenção líquida é a regra do projeto e este arquivo era
+      // o único fora dela (useFluxoCaixa.ts:53,128;
+      // useContasPagarLogic.calculos.ts:40,45; useDashboardMetrics.ts:205,305;
+      // DashboardExecutivo.tsx:148; transaction-matcher/converters.ts:20;
+      // DashboardEmpresa.tsx:117). Os campos residuais já vinham na própria
+      // linha da view (views.types.ts:70 valor_pago, :25 valor_recebido) e
+      // eram ignorados.
       const dayPagar = pagar
         .filter(
-          (p) => p.data_vencimento === dateStr && ['pendente', 'vencido'].includes(p.status ?? '')
+          (p) =>
+            p.data_vencimento === dateStr &&
+            ['pendente', 'vencido', 'parcial'].includes(p.status ?? '')
         )
-        .reduce((sum, p) => sum + (p.valor || 0), 0);
+        .reduce((sum, p) => sum + Math.max((p.valor || 0) - (p.valor_pago || 0), 0), 0);
 
       const dayReceber = receber
         .filter(
-          (r) => r.data_vencimento === dateStr && ['pendente', 'vencido'].includes(r.status ?? '')
+          (r) =>
+            r.data_vencimento === dateStr &&
+            ['pendente', 'vencido', 'parcial'].includes(r.status ?? '')
         )
-        .reduce((sum, r) => sum + (r.valor || 0), 0);
+        .reduce((sum, r) => sum + Math.max((r.valor || 0) - (r.valor_recebido || 0), 0), 0);
 
       cumulativeSaldo += dayReceber - dayPagar;
 
