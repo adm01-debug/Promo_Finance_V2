@@ -3,6 +3,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { parseJsonBody } from '../_shared/validation.ts';
 // --- Tipos e Cronograma (Sincronizado com lib/tributario/projecao-reforma.ts) ---
 interface AliquotaTransicao {
   ano: number;
@@ -113,7 +114,9 @@ Deno.serve(
       const authHeader = req.headers.get('Authorization');
       if (!authHeader) return new Response('Unauthorized', { status: 401, headers: corsHeaders });
 
-      const raw = await req.json();
+      const __json = await parseJsonBody(req, 'projecao-reforma');
+      if (!__json.success) return __json.response;
+      const raw = __json.data;
       const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
       const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
       const Schema = z

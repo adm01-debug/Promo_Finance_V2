@@ -4,6 +4,7 @@ import {
   createErrorResponse,
   validatePayload,
   WhatsappIaProativoSchema,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
@@ -219,7 +220,9 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
     if (!guard.ok) return guard.resposta;
 
     try {
-      const rawBody = normalizarPayloadLegado(await req.json());
+      const __json = await parseJsonBody(req, 'whatsapp-ia-proativo');
+      if (!__json.success) return __json.response;
+      const rawBody = normalizarPayloadLegado(__json.data);
       const validation = validatePayload(WhatsappIaProativoSchema, rawBody, 'whatsapp-ia-proativo');
       if (!validation.success) {
         return createErrorResponse(validation.error, 400, validation.details, req);

@@ -4,6 +4,7 @@ import {
   corsHeaders,
   validatePayload,
   createErrorResponse,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import {
   withRetry,
@@ -66,7 +67,9 @@ Deno.serve(
           userAgent,
         });
         if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
-        const rawBody = await req.json();
+        const __json = await parseJsonBody(req, 'bling-proxy');
+        if (!__json.success) return __json.response;
+        const rawBody = __json.data;
         const validation = validatePayload(BlingProxySchema, rawBody, 'bling-proxy');
         if (!validation.success) {
           return createErrorResponse(validation.error, 400, validation.details, req);

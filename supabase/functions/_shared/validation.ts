@@ -38,6 +38,42 @@ export function validatePayload<T>(
   };
 }
 
+/**
+ * Lê o corpo JSON da requisição devolvendo 422 em vez de deixar o parser
+ * estourar. Sem isso o erro cru do parser sobe até o catch do handler, que
+ * responde 500: `withEdgeObservability` conta status >= 500 como erro, logo
+ * um corpo truncado (retry de provedor, integração instável, chamada
+ * malformada do app) inflava a taxa de erro e o p95 que alimentam o SLO
+ * diário, o health score e os alertas de performance.
+ *
+ * Resgatado de `fix/codex-h111911-preserva-c696391` (trabalho de outro agente
+ * que nunca foi mergeado). A assinatura difere da original: `functionName`
+ * vem antes de `headers`, que passa a ser opcional e cai em
+ * `corsHeadersPara(req)` — assim o call site não precisa ter uma variável
+ * de CORS em escopo.
+ */
+export async function parseJsonBody(
+  req: Request,
+  functionName = 'unknown',
+  headers?: Record<string, string>
+): Promise<{ success: true; data: unknown } | { success: false; response: Response }> {
+  try {
+    return { success: true, data: await req.json() };
+  } catch (error) {
+    logger.warn(`JSON malformado em ${functionName}`, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {
+      success: false,
+      response: createValidationErrorResponse(
+        [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+        headers ?? corsHeadersPara(req),
+        'JSON malformado'
+      ),
+    };
+  }
+}
+
 export function createErrorResponse(
   message: string,
   status = 400,
