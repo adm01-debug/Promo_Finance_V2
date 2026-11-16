@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "eb790072cc3339c3f488447926a7b8c636a261a5",
+  "commit": "91133e2d5ce043e44f5591b4e75920948cf34024",
   "branch": "main",
-  "data_commit": "2026-11-16T10:27:57-03:00",
+  "data_commit": "2026-11-16T10:31:06-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "91133e2",
+    "data": "2026-11-16",
+    "assunto": "fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)"
+   },
+   {
+    "sha": "af20e7e",
+    "data": "2026-11-16",
+    "assunto": "fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)"
+   },
    {
     "sha": "eb79007",
     "data": "2026-11-16",
@@ -121,19 +131,9 @@
     "sha": "095a3f6",
     "data": "2026-11-13",
     "assunto": "fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)"
-   },
-   {
-    "sha": "309bc9b",
-    "data": "2026-11-13",
-    "assunto": "fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)"
-   },
-   {
-    "sha": "7cbba6f",
-    "data": "2026-11-13",
-    "assunto": "lint zero + type-check estrito zerado (72→0) (#328)"
    }
   ],
-  "arquivos_mudados_7d": 685,
+  "arquivos_mudados_7d": 688,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,35 +199,39 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 29
+    "mudancas": 30
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 25
+    "mudancas": 26
    },
    {
     "arquivo": "supabase/config.toml",
-    "mudancas": 15
+    "mudancas": 16
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 15
+    "mudancas": 16
+   },
+   {
+    "arquivo": ".github/workflows/deno-tests.yml",
+    "mudancas": 14
    },
    {
     "arquivo": "supabase/functions/mcp-query/index.ts",
     "mudancas": 14
    },
    {
-    "arquivo": ".github/workflows/deno-tests.yml",
+    "arquivo": "env.manifest.json",
     "mudancas": 13
    },
    {
-    "arquivo": "env.manifest.json",
-    "mudancas": 13
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 11
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -238,23 +242,31 @@
     "mudancas": 11
    },
    {
+    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
+    "mudancas": 11
+   },
+   {
     "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 11
    },
    {
-    "arquivo": ".github/workflows/supabase-linter.yml",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
-    "mudancas": 10
-   },
-   {
     "arquivo": "src/App.tsx",
-    "mudancas": 10
+    "mudancas": 11
    },
    {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 11
+   },
+   {
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 10
    },
    {
@@ -266,42 +278,30 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": ".github/workflows/graphify.yml",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "analise-prs/progresso.json",
-    "mudancas": 8
-   },
-   {
     "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-    "mudancas": 8
+    "mudancas": 9
    },
    {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 8
+    "mudancas": 9
    },
    {
     "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 8
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/bling-webhook/index.ts",
+    "mudancas": 9
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 121
+    "commits": 123
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3835,
-  "arquivos_codigo": 2420,
-  "linhas_codigo": 431854,
+  "arquivos_total": 3837,
+  "arquivos_codigo": 2421,
+  "linhas_codigo": 431937,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,9 +330,9 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1019,
+  "migrations": 1020,
   "cron_jobs": 21,
-  "testes": 437,
+  "testes": 438,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 191
@@ -631,8 +631,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 976,
-   "linhas": 160355
+   "arquivos": 977,
+   "linhas": 160438
   },
   "src/config": {
    "arquivos": 1,

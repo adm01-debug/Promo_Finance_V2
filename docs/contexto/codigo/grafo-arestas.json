@@ -4105,6 +4105,7 @@
    "src/components/ui/dialog.tsx",
    "src/components/ui/form.tsx",
    "src/hooks/use-toast.ts",
+   "src/hooks/useAuth.tsx",
    "src/hooks/useConfetti.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/logger.ts",

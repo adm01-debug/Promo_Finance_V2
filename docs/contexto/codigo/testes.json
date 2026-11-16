@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 437,
+ "total": 438,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 361
+  "unit": 362
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 249
+   "arquivos": 250
   },
   {
    "padrao": "outro",
@@ -942,6 +942,15 @@
     "src/components/financeiro/AnexoList.tsx"
    ],
    "casos": 6
+  },
+  {
+   "arquivo": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+   "tipo": "unit",
+   "linhas": 78,
+   "testa": [
+    "src/components/fornecedores/FornecedorForm.tsx"
+   ],
+   "casos": 1
   },
   {
    "arquivo": "src/components/layout/sidebar/sidebarNavState.test.ts",
@@ -3915,6 +3924,7 @@
   "src/components/dashboard/DashboardConfigDialog.tsx": 1,
   "src/components/empresas/EmpresaHeroKPI.tsx": 1,
   "src/components/financeiro/AnexoList.tsx": 1,
+  "src/components/fornecedores/FornecedorForm.tsx": 1,
   "src/components/layout/PageHeader.tsx": 1,
   "src/components/layout/sidebar/sidebarNavState.ts": 1,
   "src/components/layout/transitions/presets.ts": 1,

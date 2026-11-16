@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `eb790072cc` · branch `main` · 2026-11-16 13:31 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `91133e2d5c` · branch `main` · 2026-11-16 13:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -885,12 +885,12 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | execute | `registrar_evento_receber`, `processar_regua_cobranca`, `confirmar_envio_cobranca`, `gerar_numero_acordo`, `registrar_auditoria_config`, `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `reprocess_dlq`, `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `compare_pg_stat_baseline` … +25 |
 | grant | authenticated | insert, update, delete | `ufs` |
 | grant | authenticated | references,trigger,truncate,maintain | `cnpja_cache` |
-| grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +44 |
+| grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +45 |
 | grant | authenticated | select, delete | `api_keys` |
-| grant | authenticated | select, insert | `audit_log`, `audit_logs`, `bling_sync_logs`, `audit_logs` |
+| grant | authenticated | select, insert | `audit_log`, `audit_logs`, `bling_sync_logs`, `audit_logs`, `audit_logs` |
 | grant | authenticated | select, insert, delete | `sso_sandbox_runs` |
 | grant | authenticated | select, insert, update | `fechamentos_tributarios` |
-| grant | authenticated | select, insert, update, delete | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `n8n_workflow_configs`, `empresas_certificados`, `plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`, `entregas_obrigacoes`, `conformidade_snapshots`, `user_digest_preferences`, `aliquotas_interestaduais`, `aliquotas_internas_uf`, `cnaes` … +45 |
+| grant | authenticated | select, insert, update, delete | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `n8n_workflow_configs`, `empresas_certificados`, `plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`, `entregas_obrigacoes`, `conformidade_snapshots`, `user_digest_preferences`, `aliquotas_interestaduais`, `aliquotas_internas_uf`, `cnaes` … +46 |
 | grant | authenticated | select, update | `webhook_dlq`, `nfe_recebidas`, `convites_contador` |
 | grant | authenticated | select,maintain | `frontend_error_silence_digest_log` |
 | grant | authenticated | usage, select | `public` |
@@ -926,10 +926,11 @@ Middleware matcher (Next.js): nenhum
 | revoke | anon, authenticated, PUBLIC | execute | `profile_sensitive_fields_unchanged`, `confirmar_envio_cobranca`, `audit_trigger_generic`, `has_permission`, `check_catalogos_tributarios_invariants`, `recarregar_seeds_fiscais`, `detectar_duplicidades_financeiras` |
 | revoke | anon, public | execute | `profile_sensitive_fields_unchanged` |
 | revoke | authenticated | execute | `audit_trigger_generic`, `auto_vincular_empresa_padrao`, `backfill_empresa_id`, `capture_index_usage_snapshot`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `check_catalogos_tributarios_invariants`, `check_integrity_invariants`, `check_nfe_xml_path_invariants`, `cleanup_log_tables`, `cleanup_pgss_baseline`, `cleanup_rpc_observability_metrics`, `clear_login_attempts`, `compare_pg_stat_baseline`, `confirmar_conciliacao` … +80 |
+| revoke | authenticated | insert | `frontend_error_logs` |
 | revoke | authenticated | select, insert, update, delete | `cnpja_cache` |
 | revoke | authenticated | update | `elisao_creditos_auditoria`, `asaas_audit_trail` |
 | revoke | authenticated | update, delete | `logs_baixa_automatica`, `logs_conciliacao_retroativa` |
-| revoke | authenticated | update, delete, truncate | `audit_logs` |
+| revoke | authenticated | update, delete, truncate | `audit_logs`, `audit_logs`, `frontend_error_logs` |
 | revoke | public | all | `registrar_tentativa_sso` |
 
 ## Riscos de acesso detectados

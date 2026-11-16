@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "eb790072cc3339c3f488447926a7b8c636a261a5",
+  "sha": "91133e2d5ce043e44f5591b4e75920948cf34024",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 13:31 UTC",
-  "files_total": 3877,
-  "code_files": 3510,
-  "code_lines": 497793
+  "generated_at": "2026-11-16 13:35 UTC",
+  "files_total": 3879,
+  "code_files": 3512,
+  "code_lines": 497925
  },
  "version": "1.3.2",
- "facts_hash": "44680fb2e844a6b4",
+ "facts_hash": "ced3931679872c42",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,8 +332,8 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1221,
-   ".sql": 1089,
-   ".tsx": 1088,
+   ".sql": 1090,
+   ".tsx": 1089,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -52574,6 +52574,7 @@
    "supabase/migrations/20261113181400_contas_pagar_status_constraint_unica.sql",
    "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
    "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql",
+   "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -60621,6 +60622,54 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select, insert",
+    "object": "audit_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "update, delete, truncate",
+    "object": "audit_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select, insert, update, delete",
+    "object": "planos_acao",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select",
+    "object": "frontend_error_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "insert",
+    "object": "frontend_error_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "update, delete, truncate",
+    "object": "frontend_error_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
    }
   ],
   "raises": [
@@ -68433,7 +68482,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 978,
+  "components_count": 979,
   "hooks": [
    {
     "name": "useContacts",
@@ -71448,8 +71497,8 @@
   },
   {
    "module": "src/components",
-   "files": 976,
-   "lines": 161331,
+   "files": 977,
+   "lines": 161415,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72863,8 +72912,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1019,
-   "lines": 76867,
+   "files": 1020,
+   "lines": 76915,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -82191,6 +82240,10 @@
    {
     "file": "src/components/fornecedores/FornecedorForm.tsx",
     "msg": "Fornecedor não encontrado"
+   },
+   {
+    "file": "src/components/fornecedores/FornecedorForm.tsx",
+    "msg": "Usuário não autenticado"
    },
    {
     "file": "src/components/insights-ia/anomalia/EntidadeDetalheDrawer.tsx",
@@ -123523,6 +123576,14 @@
    {
     "file": "src/components/financeiro/__tests__/AnexoList.storage.test.tsx",
     "name": "mostra erro quando a edge function recusa o arquivo"
+   },
+   {
+    "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+    "name": "FornecedorForm — cadastro"
+   },
+   {
+    "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+    "name": "envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita"
    },
    {
     "file": "src/components/layout/sidebar/sidebarNavState.test.ts",
@@ -170658,6 +170719,54 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select, insert",
+    "object": "audit_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "update, delete, truncate",
+    "object": "audit_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select, insert, update, delete",
+    "object": "planos_acao",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select",
+    "object": "frontend_error_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "insert",
+    "object": "frontend_error_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "update, delete, truncate",
+    "object": "frontend_error_logs",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
    }
   ],
   "guards": [
@@ -191949,7 +192058,7 @@
   },
   "src/components/fornecedores/FornecedorForm.tsx": {
    "path": "src/components/fornecedores/FornecedorForm.tsx",
-   "lines": 254,
+   "lines": 259,
    "exports": [
     "function FornecedorForm"
    ],
@@ -191971,7 +192080,8 @@
    "errors": [
     "Erro ao atualizar fornecedor",
     "Erro ao cadastrar fornecedor",
-    "Fornecedor não encontrado"
+    "Fornecedor não encontrado",
+    "Usuário não autenticado"
    ],
    "zod": [
     {
@@ -192021,6 +192131,16 @@
      "value": "spring",
      "kind": "escreve"
     }
+   ]
+  },
+  "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx": {
+   "path": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+   "lines": 79,
+   "is_test": true,
+   "doc": "Regressão: o cadastro de fornecedor precisa enviar `user_id`. A única policy de INSERT de public.fornecedores é `fornecedores_owner_insert`, com `WITH CHECK ((SELECT auth.uid()) = user_id)`, e não há trigger nem DEFAULT que preencha a coluna. Sem o campo no payload, todo cadastro era rejeitado pela …",
+   "tests": [
+    "FornecedorForm — cadastro",
+    "envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita"
    ]
   },
   "src/components/fornecedores/form/FornecedorContatoEndereco.tsx": {
@@ -245357,6 +245477,10 @@
    "path": "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql",
    "lines": 80
   },
+  "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql": {
+   "path": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
+   "lines": 48
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245465,10 +245589,29 @@
   }
  },
  "git": {
-  "sha": "eb790072cc3339c3f488447926a7b8c636a261a5",
+  "sha": "91133e2d5ce043e44f5591b4e75920948cf34024",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "91133e2",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)",
+    "files": [
+     "src/components/fornecedores/FornecedorForm.tsx",
+     "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx"
+    ]
+   },
+   {
+    "sha": "af20e7e",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)",
+    "files": [
+     "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+    ]
+   },
    {
     "sha": "eb79007",
     "date": "2026-11-16",
@@ -246062,27 +246205,6 @@
     "files": [
      "docs/prod-readiness.md"
     ]
-   },
-   {
-    "sha": "68bac76",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)",
-    "files": [
-     "src/components/dashboard/DashboardConfigDialog.tsx",
-     "src/components/dashboard/DashboardExecutivo.tsx",
-     "src/hooks/__tests__/useDashboardConfig.test.tsx",
-     "src/hooks/useDashboardConfig.ts"
-    ]
-   },
-   {
-    "sha": "821385c",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)",
-    "files": [
-     "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246091,11 +246213,11 @@
     4
    ],
    [
-    "src/components/dashboard/DashboardExecutivo.tsx",
-    3
+    "src/components/compras/PedidoCompraForm.tsx",
+    2
    ],
    [
-    "src/components/compras/PedidoCompraForm.tsx",
+    "src/components/dashboard/DashboardExecutivo.tsx",
     2
    ],
    [
@@ -246109,6 +246231,18 @@
    [
     "src/hooks/useAcordosParcelamento.ts",
     2
+   ],
+   [
+    "src/components/fornecedores/FornecedorForm.tsx",
+    1
+   ],
+   [
+    "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+    1
+   ],
+   [
+    "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
+    1
    ],
    [
     "supabase/migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql",
@@ -246152,18 +246286,6 @@
    ],
    [
     "scripts/generate-env-manifest.mjs",
-    1
-   ],
-   [
-    "supabase/functions/_shared/sentry.ts",
-    1
-   ],
-   [
-    "src/hooks/useDashboardMetrics.ts",
-    1
-   ],
-   [
-    "supabase/functions/analise-preditiva/index.ts",
     1
    ]
   ]

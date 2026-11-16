@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `eb790072cc3339c3f488447926a7b8c636a261a5` (2026-11-16T10:27:57-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `91133e2d5ce043e44f5591b4e75920948cf34024` (2026-11-16T10:31:06-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2309), SQL (1089), Markdown (191), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2310), SQL (1090), Markdown (191), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3835 |
-| arquivos_codigo | 2420 |
-| linhas_codigo | 431854 |
+| arquivos_total | 3837 |
+| arquivos_codigo | 2421 |
+| linhas_codigo | 431937 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,9 +46,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
-| migrations | 1019 |
+| migrations | 1020 |
 | cron_jobs | 21 |
-| testes | 437 |
+| testes | 438 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 191 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (249), outro (106), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (250), outro (106), co-localizado (*.test) (42)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -94,7 +94,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/empresas | 0 | 0 | 9 | 11 | 0 | 12 |
 | components/expert | 0 | 0 | 7 | 8 | 2 | 12 |
 | components/fluxo-caixa | 0 | 0 | 11 | 0 | 1 | 2 |
-| components/fornecedores | 0 | 0 | 7 | 18 | 1 | 13 |
+| components/fornecedores | 0 | 0 | 7 | 19 | 1 | 13 |
 | components/insights-ia | 0 | 0 | 15 | 14 | 3 | 9 |
 | components/integracoes | 0 | 0 | 6 | 1 | 3 | 5 |
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
@@ -460,21 +460,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (36)
-- bun.lock (29)
-- .github/workflows/ci.yml (25)
-- supabase/config.toml (15)
-- supabase/functions/asaas-proxy/index.ts (15)
+- package.json (37)
+- bun.lock (30)
+- .github/workflows/ci.yml (26)
+- supabase/config.toml (16)
+- supabase/functions/asaas-proxy/index.ts (16)
+- .github/workflows/deno-tests.yml (14)
 - supabase/functions/mcp-query/index.ts (14)
-- .github/workflows/deno-tests.yml (13)
 - env.manifest.json (13)
+- .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
+- e2e/auth/admin-rbac.e2e.ts (11)
 - scripts/generate-env-manifest.mjs (11)
-- .github/workflows/supabase-linter.yml (10)
-- e2e/auth/admin-rbac.e2e.ts (10)
-- src/App.tsx (10)
-- supabase/functions/n8n-callback/index.ts (10)
+- src/App.tsx (11)
+- supabase/functions/n8n-callback/index.ts (11)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -626,6 +626,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `91133e2` fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)
+- 2026-11-16 `af20e7e` fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)
 - 2026-11-16 `eb79007` fix: libera INSERT/UPDATE com isolamento por empresa em compras e transações bancárias (#339)
 - 2026-11-16 `a023fa6` fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)
 - 2026-11-16 `c5a3c4a` fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)
@@ -639,8 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `e0f7e5f` chore: contexto agendado de 10 min para 1x/hora (#350)
 - 2026-11-14 `0274005` fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)
 - 2026-11-14 `edeed28` fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#3
-- 2026-11-14 `f3b6700` chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica
-- 2026-11-14 `b7559c3` fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

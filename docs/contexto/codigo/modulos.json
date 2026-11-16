@@ -3682,13 +3682,14 @@
   {
    "modulo": "components/fornecedores",
    "arquivos": 7,
-   "testes": 0,
-   "linhas": 893,
+   "testes": 1,
+   "linhas": 898,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
    "componentes": 7,
    "hooks_locais": [
+    "useAuth",
     "useCentrosCusto",
     "useClientes",
     "useClientesPaginated",

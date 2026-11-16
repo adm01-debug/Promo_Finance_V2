@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `eb790072cc` · branch `main` · 2026-11-16 13:31 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `91133e2d5c` · branch `main` · 2026-11-16 13:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5037,7 +5037,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx` |
 | ; import { downloadLancamentosCsvTemplate } from  | `src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx` |
-| … +774 linhas — lista completa em `context.json` | |
+| … +775 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5095,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3351 testes em 279 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3353 testes em 280 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5361,6 +5361,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
 | `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
+| `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 2 | FornecedorForm — cadastro · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
 | `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
 | `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
 | `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
