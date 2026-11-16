@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `149a836faf198fca015420f843a00996ad48fc95` (2026-11-16T13:41:25Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `18bc738e0a107341a76a26b620d52f44240accce` (2026-11-16T11:44:04-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2310), SQL (1090), Markdown (191), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2310), SQL (1090), Markdown (192), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3837 |
+| arquivos_total | 3838 |
 | arquivos_codigo | 2421 |
 | linhas_codigo | 431937 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 438 |
 | workflows | 19 |
 | scripts | 107 |
-| docs_md | 191 |
+| docs_md | 192 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -462,7 +462,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (38)
 - bun.lock (31)
-- .github/workflows/ci.yml (27)
+- .github/workflows/ci.yml (28)
 - supabase/config.toml (17)
 - supabase/functions/asaas-proxy/index.ts (17)
 - .github/workflows/deno-tests.yml (15)
@@ -480,7 +480,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
 - `auto-update-pr-branch.yml` — Auto Update PR Branches (push, schedule, workflow_dispatch, workflow_run; cron 11,41 * * * *)
 - `automation-local.yml` — Automação local (pull_request, push, workflow_dispatch)
-- `ci.yml` — CI Pipeline (pull_request, push)
+- `ci.yml` — CI Pipeline (pull_request, push, workflow_dispatch)
 - `codeql.yml` — CodeQL Analysis (pull_request, push, schedule; cron 17 3 * * 1)
 - `contexto.yml` — Contexto para agentes de IA (10 min) (pull_request, push, schedule, workflow_dispatch; cron 7 * * * *)
 - `deno-tests.yml` — Deno Edge Function Tests (pull_request, push, workflow_dispatch)
@@ -622,10 +622,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (844 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (8), docs/execucao-cline (5), docs/runbooks (5), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (9), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `18bc738` infra(ci): quarentena E2E sai do gatilho de pull_request (#361)
+- 2026-11-16 `c1cd329` chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)
 - 2026-11-16 `149a836` fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em
 - 2026-11-16 `91133e2` fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)
 - 2026-11-16 `af20e7e` fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)
@@ -639,8 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `a0543f9` fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)
 - 2026-11-16 `e61e8b8` fix(edge): rate limit em copilot-global e analise-preditiva (#353)
 - 2026-11-16 `fc82460` fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)
-- 2026-11-16 `e0f7e5f` chore: contexto agendado de 10 min para 1x/hora (#350)
-- 2026-11-14 `0274005` fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

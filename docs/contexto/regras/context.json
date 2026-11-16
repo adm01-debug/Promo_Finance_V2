@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "149a836faf198fca015420f843a00996ad48fc95",
+  "sha": "18bc738e0a107341a76a26b620d52f44240accce",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 13:42 UTC",
-  "files_total": 3879,
+  "generated_at": "2026-11-16 14:44 UTC",
+  "files_total": 3880,
   "code_files": 3512,
   "code_lines": 497925
  },
  "version": "1.3.2",
- "facts_hash": "ced3931679872c42",
+ "facts_hash": "80bffaaa9d99a3a3",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -202,7 +202,8 @@
     "name": "CI Pipeline",
     "triggers": [
      "pull_request",
-     "push"
+     "push",
+     "workflow_dispatch"
     ]
    },
    {
@@ -245589,10 +245590,28 @@
   }
  },
  "git": {
-  "sha": "149a836faf198fca015420f843a00996ad48fc95",
+  "sha": "18bc738e0a107341a76a26b620d52f44240accce",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "18bc738",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "infra(ci): quarentena E2E sai do gatilho de pull_request (#361)",
+    "files": [
+     ".github/workflows/ci.yml"
+    ]
+   },
+   {
+    "sha": "c1cd329",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)",
+    "files": [
+     "docs/agentes/inventario-branches-2026-11-16.md"
+    ]
+   },
    {
     "sha": "149a836",
     "date": "2026-11-16",
@@ -246187,24 +246206,6 @@
      "src/test/a11y/indices-tab.test.tsx",
      "src/test/scenarios/__tests__/indices-simulation.spec.ts"
     ]
-   },
-   {
-    "sha": "2d3e3db",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)",
-    "files": [
-     "supabase/migrations/20261113112425_performance_alerts_source_weekly_trend.sql"
-    ]
-   },
-   {
-    "sha": "04e82b5",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)",
-    "files": [
-     ".github/workflows/ci.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -246231,6 +246232,14 @@
    [
     "src/hooks/useAcordosParcelamento.ts",
     2
+   ],
+   [
+    ".github/workflows/ci.yml",
+    1
+   ],
+   [
+    "docs/agentes/inventario-branches-2026-11-16.md",
+    1
    ],
    [
     ".github/workflows/prod-migrate.yml",
@@ -246278,14 +246287,6 @@
    ],
    [
     "scripts/security/test-migration-replay-safety.sh",
-    1
-   ],
-   [
-    "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md",
-    1
-   ],
-   [
-    "env.manifest.json",
     1
    ]
   ]

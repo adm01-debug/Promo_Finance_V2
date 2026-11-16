@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "149a836faf198fca015420f843a00996ad48fc95",
+  "commit": "18bc738e0a107341a76a26b620d52f44240accce",
   "branch": "main",
-  "data_commit": "2026-11-16T13:41:25Z",
+  "data_commit": "2026-11-16T11:44:04-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "18bc738",
+    "data": "2026-11-16",
+    "assunto": "infra(ci): quarentena E2E sai do gatilho de pull_request (#361)"
+   },
+   {
+    "sha": "c1cd329",
+    "data": "2026-11-16",
+    "assunto": "chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)"
+   },
    {
     "sha": "149a836",
     "data": "2026-11-16",
@@ -121,19 +131,9 @@
     "sha": "fd8c431",
     "data": "2026-11-13",
     "assunto": "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)"
-   },
-   {
-    "sha": "b933544",
-    "data": "2026-11-13",
-    "assunto": "feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)"
-   },
-   {
-    "sha": "a49b1c7",
-    "data": "2026-11-13",
-    "assunto": "fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)"
    }
   ],
-  "arquivos_mudados_7d": 688,
+  "arquivos_mudados_7d": 689,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -168,16 +168,16 @@
     "mudancas": 17
    },
    {
+    "pasta": ".github/workflows/ci.yml",
+    "mudancas": 14
+   },
+   {
     "pasta": "src/components/admin",
     "mudancas": 14
    },
    {
     "pasta": "src/components/nfe",
     "mudancas": 14
-   },
-   {
-    "pasta": ".github/workflows/ci.yml",
-    "mudancas": 13
    },
    {
     "pasta": "src/components/layout",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 27
+    "mudancas": 28
    },
    {
     "arquivo": "supabase/config.toml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 124
+    "commits": 126
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3837,
+  "arquivos_total": 3838,
   "arquivos_codigo": 2421,
   "linhas_codigo": 431937,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 438,
   "workflows": 19,
   "scripts": 107,
-  "docs_md": 191
+  "docs_md": 192
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

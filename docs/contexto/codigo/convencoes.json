@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra(ci): quarentena E2E sai do gatilho de pull_request (#361)",
+   "chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)",
    "fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em prod) (#333)",
    "fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)",
-   "fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)",
-   "fix: libera INSERT/UPDATE com isolamento por empresa em compras e transações bancárias (#339)",
-   "fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)"
+   "fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

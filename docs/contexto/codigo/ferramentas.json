@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2310)",
    "SQL (1090)",
-   "Markdown (191)",
+   "Markdown (192)",
    "JavaScript (68)",
    "Python (45)",
    "JSON (37)",
@@ -247,7 +247,8 @@
    "nome": "CI Pipeline",
    "gatilhos": [
     "pull_request",
-    "push"
+    "push",
+    "workflow_dispatch"
    ],
    "crons": [],
    "branches": [
@@ -1182,16 +1183,16 @@
  ],
  "docs_em_subpastas": [
   {
+   "pasta": "docs/agentes",
+   "arquivos_md": 9
+  },
+  {
    "pasta": "docs/archive",
    "arquivos_md": 9
   },
   {
    "pasta": "docs/guides",
    "arquivos_md": 9
-  },
-  {
-   "pasta": "docs/agentes",
-   "arquivos_md": 8
   },
   {
    "pasta": "docs/execucao-cline",
