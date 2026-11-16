@@ -30,7 +30,8 @@ const FUNCOES_PRIVILEGIADAS_AUDITADAS: Record<string, RegExp> = {
   'send-push-notification': /exigirInternaOuUsuario\s*\(/,
   'send-device-alert': /exigirUsuario\s*\(/,
   'gerar-alertas': /exigirChamadaInterna\s*\(/,
-  'mcp-query': /headers\.get\(\s*'x-mcp-secret'\s*\)/,
+  // timingSafeEqual(req.headers.get('x-mcp-secret'), secret) — index.ts:437.
+  'mcp-query': /timingSafeEqual\s*\(\s*req\.headers\.get\(\s*'x-mcp-secret'\s*\)/,
   // Resgatadas da branch fix/codex-h111911-preserva-c696391 (trabalho de outro
   // agente que nunca foi mergeado). Cada guarda abaixo foi reconferida no
   // código do `main`, não copiada: a branch apontava
@@ -58,23 +59,32 @@ const PADROES_AUTORIZACAO: readonly RegExp[] = [
   /exigirInternaOuUsuario\s*\(/,
   /authenticateWebhook\s*\(/,
   /auth\.get(?:Claims|User)\s*\(/,
-  // Ancorado na leitura do header: a forma solta `/x-mcp-secret/` casava com o
-  // nome citado em `Access-Control-Allow-Headers` e em comentário, aceitando
-  // como prova de origem um arquivo que nunca compara o segredo.
-  // mcp-query/index.ts:437 lê exatamente assim.
-  /headers\.get\(\s*'x-mcp-secret'\s*\)/,
-  // Provas de origem que já existiam no repo e não estavam na lista.
-  // Propositalmente ancoradas na CHAMADA e não no nome do header: um
-  // `x-cron-secret` citado só em `Access-Control-Allow-Headers` não é prova
-  // de nada (ver o teste de falso positivo mais abaixo).
+  // Provas de origem que já existiam no repo e não estavam na lista. Só
+  // CHAMADAS que de fato comparam o segredo — ler um header ou conferir o
+  // prefixo `Bearer ` não prova nada (um token inventado passaria), e o nome
+  // de um header citado em `Access-Control-Allow-Headers` muito menos.
   /exigirInternaOuUsuarioComPapel\s*\(/,
   /exigirInternaOuPapel\s*\(/,
   /segredosIguais\s*\(/,
   /timingSafeEqual\s*\(/,
   /verifyJwt\s*\(/,
-  /headers\.get\(\s*'x-cron-secret'\s*\)\s*!==/,
-  /startsWith\(\s*'Bearer /,
 ];
+
+/**
+ * Provas revisadas uma a uma, para funções cuja comparação do segredo está
+ * inline no `index.ts` em vez de num helper de `PADROES_AUTORIZACAO`. Cada
+ * regex exige a COMPARAÇÃO, não a leitura: `startsWith('Bearer ')` sozinho
+ * aceitaria qualquer token, e `headers.get('x-cron-secret')` sozinho idem.
+ */
+const PROVAS_ESPECIFICAS: Record<string, RegExp> = {
+  // index.ts:1048-1056 — hash do bearer conferido contra scim_tokens ativo.
+  'scim-server': /from\('scim_tokens'\)[\s\S]{0,300}eq\('token_hash'/,
+  // index.ts:537-543 — x-cron-secret comparado a SEFAZ_CRON_SECRET.
+  'sefaz-dfe-puxar': /provided !== cronSecret/,
+  // index.ts:59 e :34 — comparação inline do segredo de cron.
+  'sefaz-dfe-dispatcher': /headers\.get\('x-cron-secret'\) !== cronSecret/,
+  'executar-regua-cobranca': /headers\.get\('x-cron-secret'\) !== cronSecret/,
+};
 
 /**
  * `supabase/config.toml` é a única fonte sobre o que a borda do Supabase
@@ -87,18 +97,29 @@ function verifyJwtExplicito(nome: string): boolean | null {
   if (!existsSync(CONFIG_PATH)) return null;
   const config = readFileSync(CONFIG_PATH, 'utf8');
   const escapado = nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // `[^\[]` em vez de `[\s\S]`: a busca não pode atravessar o cabeçalho da
+  // seção seguinte, senão uma função que omite `verify_jwt` herdaria o valor
+  // declarado para a próxima. Como efeito colateral a âncora achou 56 seções
+  // com `verify_jwt = false` onde a versão de 160 caracteres achava 52.
   const achado = config.match(
-    new RegExp(String.raw`\[functions\.${escapado}\][\s\S]{0,160}?verify_jwt\s*=\s*(true|false)`)
+    new RegExp(String.raw`\[functions\.${escapado}\][^\[]{0,400}?verify_jwt\s*=\s*(true|false)`)
   );
   return achado ? achado[1] === 'true' : null;
 }
 
 function usaPrivilegioElevado(src: string): boolean {
-  return /\bSUPABASE_SERVICE_ROLE_KEY\b|\bserviceClient\s*\(|\bclientDeServico\s*\(/.test(src);
+  // `makeAdminClient()` (_shared/sefaz/pfx.ts:42-45) também devolve cliente com
+  // SUPABASE_SERVICE_ROLE_KEY. Sem ele, sefaz-dfe-puxar saía do conjunto
+  // avaliado e remover a validação de SEFAZ_CRON_SECRET passaria verde.
+  return /\bSUPABASE_SERVICE_ROLE_KEY\b|\bserviceClient\s*\(|\bclientDeServico\s*\(|\bmakeAdminClient\s*\(/.test(
+    src
+  );
 }
 
-function temProvaDeOrigem(src: string): boolean {
-  return PADROES_AUTORIZACAO.some((padrao) => padrao.test(src));
+function temProvaDeOrigem(src: string, nome?: string): boolean {
+  if (PADROES_AUTORIZACAO.some((padrao) => padrao.test(src))) return true;
+  const especifica = nome ? PROVAS_ESPECIFICAS[nome] : undefined;
+  return especifica ? especifica.test(src) : false;
 }
 
 /**
@@ -171,7 +192,7 @@ describe('Edge Functions — superfície com service_role', () => {
     const expostas = funcoes.filter((nome) => {
       if (verifyJwtExplicito(nome) !== false) return false;
       const src = readFileSync(join(FUNCTIONS_DIR, nome, 'index.ts'), 'utf8');
-      return usaPrivilegioElevado(src) && !temProvaDeOrigem(src);
+      return usaPrivilegioElevado(src) && !temProvaDeOrigem(src, nome);
     });
 
     const novas = expostas.filter((nome) => !(nome in PENDENTES_AUDITORIA_ORIGEM));
