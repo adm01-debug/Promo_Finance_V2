@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1027,
+ "migrations": 1028,
  "seeds": [],
  "avisos": [
-  "190 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "191 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -277,7 +277,6 @@
  "views": [
   "IF",
   "drivers_safe_view",
-  "estrategias_elisao_catalogo",
   "extratos_bancarios_importados",
   "mcp_probe",
   "mv_benchmark_setorial",
@@ -21640,8 +21639,65 @@
    "nao_usada": true
   },
   "estrategias_elisao_catalogo": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "ativo": {
+     "tipo": "boolean",
+     "nn": true,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "codigo": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "descricao": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "economia_estimada_padrao": {
+     "tipo": "numeric",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "nome": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "tipo": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "estrategias_elisao_catalogo_select",
@@ -21652,7 +21708,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
    "colunas_types": {
     "ativo": "boolean",
     "codigo": "string",
@@ -21662,6 +21718,10 @@
     "id": "string",
     "nome": "string",
     "tipo": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 1,
    "usada_em_edges": [],

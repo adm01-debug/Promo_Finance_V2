@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c4a6304aae` · branch `main` · 2026-11-16 22:12 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `02a26f0b4c` · branch `main` · 2026-11-16 22:13 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -123,7 +123,7 @@
 | `entity_versions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `entregas_obrigacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `estrategias_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
-| `estrategias_elisao_catalogo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
+| `estrategias_elisao_catalogo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `eventos_contabilizacao_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `evidencias_pacotes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `execucoes_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |

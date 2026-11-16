@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c4a6304aae` · branch `main` · 2026-11-16 22:12 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `02a26f0b4c` · branch `main` · 2026-11-16 22:13 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -132,7 +132,7 @@
 | `entity_versions` | enabled | public: true | public: auth.uid() = changed_by OR changed_by IS NULL | — | — |
 | `entregas_obrigacoes` | enabled | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (u …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (u …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND (u …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (EXISTS ( SELECT 1 FROM profiles p WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin': …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
 | `estrategias_elisao` | enabled | authenticated: true<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) |
-| `estrategias_elisao_catalogo` | não verificado | authenticated: true | ? | ? | ? |
+| `estrategias_elisao_catalogo` | enabled | authenticated: true | — | — | — |
 | `eventos_contabilizacao_log` | enabled | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role,'financeiro'::app_role]) AND empresa_acessivel(empresa_id) | — | — |
 | `evidencias_pacotes` | enabled | authenticated: public.has_role(auth.uid(), 'admin')<br>authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … | authenticated: public.has_role(auth.uid(), 'admin')<br>authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … | authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … | authenticated: (EXISTS ( SELECT 1 FROM verificacoes_conformidade vc WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (has_role((SELECT … |
 | `execucoes_cobranca` | enabled | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
@@ -327,7 +327,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 349 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 350 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -479,7 +479,7 @@
 - `supabase/functions/upload-anexo/index.ts`
 - `supabase/functions/validar-token-contador/index.ts`
 - `supabase/functions/validate-ip-geo/index.ts`
-- … +199 (lista completa em `context.json`)
+- … +200 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -884,7 +884,7 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | all | `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `public`, `public`, `public`, `anomalias_detectadas`, `anomalia_toast_eventos`, `centros_custo`, `contratos`, `metas_financeiras`, `partidas_contabeis` … +41 |
 | grant | authenticated | execute | `registrar_evento_receber`, `processar_regua_cobranca`, `confirmar_envio_cobranca`, `gerar_numero_acordo`, `registrar_auditoria_config`, `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `reprocess_dlq`, `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `compare_pg_stat_baseline` … +25 |
 | grant | authenticated | insert, update, delete | `ufs` |
-| grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +45 |
+| grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +46 |
 | grant | authenticated | select, delete | `api_keys` |
 | grant | authenticated | select, insert | `audit_log`, `audit_logs`, `bling_sync_logs`, `audit_logs`, `audit_logs` |
 | grant | authenticated | select, insert, delete | `sso_sandbox_runs` |
@@ -901,7 +901,7 @@ Middleware matcher (Next.js): nenhum
 | grant | public | execute | `is_ip_allowed_for_login`, `is_country_allowed_for_login` |
 | grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +142 |
 | grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +75 |
-| grant | service_role | select | `mv_benchmark_setorial`, `v_table_bloat`, `mv_performance_alerts_weekly`, `estrategias_elisao_catalogo`, `mv_benchmark_setorial`, `vw_edge_health`, `vw_transferencias_painel`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel` |
+| grant | service_role | select | `mv_benchmark_setorial`, `v_table_bloat`, `mv_performance_alerts_weekly`, `estrategias_elisao_catalogo`, `mv_benchmark_setorial`, `vw_edge_health`, `vw_transferencias_painel`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel`, `estrategias_elisao_catalogo` |
 | grant | service_role | usage, select | `rpc_observability_metrics_id_seq` |
 | grant | service_role, authenticated | execute | `sefaz_cursor_advance` |
 | grant | service_role, postgres | execute | `refresh_performance_alerts_weekly` |
@@ -1277,6 +1277,7 @@ Middleware matcher (Next.js): nenhum
 | `user_passkeys` | `created_at` |
 | `webauthn_challenges` | `created_at` |
 | `asaas_payment_links` | `created_at`, `created_by` |
+| `estrategias_elisao_catalogo` | `created_at` |
 | `audit_logs_2026_01` | `created_at` |
 | `audit_logs_2026_02` | `created_at` |
 | `audit_logs_2026_03` | `created_at` |
@@ -1288,7 +1289,6 @@ Middleware matcher (Next.js): nenhum
 | `audit_logs_2026_09` | `created_at` |
 | `audit_logs_2026_10` | `created_at` |
 | `audit_logs_default` | `created_at` |
-| `estrategias_elisao_catalogo` | `created_at` |
 | `frontend_error_logs_2026_01` | `created_at` |
 | `frontend_error_logs_2026_02` | `created_at` |
 | `frontend_error_logs_2026_03` | `created_at` |

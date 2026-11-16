@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c4a6304aae` · branch `main` · 2026-11-16 22:12 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `02a26f0b4c` · branch `main` · 2026-11-16 22:13 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2432,7 +2432,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `mv_performance_alerts_weekly` | `WITH weekly AS ( SELECT date_trunc('week', created_at)::date AS week_start, source, severity, COUNT(*) AS alert_count, COUNT(DISTINCT alert_key) AS distinct_keys, ROUND(AVG(NULLIF(current_value, 0))::numeric, 2) AS avg_current_ms, ROUND(MAX(current_value)::numeric, 2) AS max_current_ms, ROUND(AVG(NU …` |
 | `vw_edge_health` | `SELECT l.function_name, COUNT(*)::bigint AS total_calls, COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500)::bigint AS error_count, ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500) / NULLIF(CO …` |
 | `drivers_safe_view` | `SELECT id, name, vehicle_type, status, rating, risk_score, risk_level, total_deliveries, completed_deliveries, failed_deliveries, cancelled_deliveries, success_rate, failure_rate, avg_delay_minutes, lalamove_id, vehicle_plate, photo_url, blacklisted, blacklist_reason, whitelisted, notes, last_active …` |
-| `estrategias_elisao_catalogo` | `SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis, economia_estimada_percentual, risco, base_legal, requisitos, ativo, created_at, updated_at FROM public.estrategias_elisao` |
 | `extratos_bancarios_importados` | `SELECT id, user_id, conta_bancaria_id, data, descricao, valor, tipo, numero_documento, numero_documento_banco, codigo_transacao, arquivo_origem, importado_de, importado_em, linha_arquivo, hash_transacao, saldo, conciliado, created_at FROM public.extrato_bancario` |
 | `mcp_probe` | `SELECT 1 AS probe, CURRENT_TIMESTAMP AS ts` |
 | `mv_benchmark_setorial` | `WITH carga AS ( SELECT vw_tributario_dashboard.regime_tributario AS regime, vw_tributario_dashboard.empresa_id, sum(vw_tributario_dashboard.total_tributos) AS total_12m FROM public.vw_tributario_dashboard WHERE ((vw_tributario_dashboard.ano IS NOT NULL) AND (vw_tributario_dashboard.mes IS NOT NULL) …` |
