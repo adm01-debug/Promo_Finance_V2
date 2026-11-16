@@ -97,6 +97,25 @@ describe('useFluxoCaixaKPIs', () => {
     expect(result.current.data?.previsaoSaldo30d).toBe(1060);
   });
 
+  it('título vencido fora da janela não entra na previsão de 30 dias', async () => {
+    // A projeção diária começa HOJE (useFluxoCaixaProjetado usa .gte).
+    // Sem o limite inferior, o KPI contaria um recebível vencido em 2026-09 e
+    // os dois números da mesma tela divergiriam.
+    dados['contas_bancarias'] = [{ saldo_atual: 1000 }];
+    dados['contas_receber'] = [
+      { valor: 500, valor_recebido: 0, data_vencimento: emDias(-70), status: 'vencido' },
+    ];
+    dados['contas_pagar'] = [];
+
+    const { result } = renderHook(() => useFluxoCaixaKPIs(), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    // O cartão de total continua mostrando o vencido...
+    expect(result.current.data?.totalReceber).toBe(500);
+    // ...mas a previsão de 30 dias não o soma.
+    expect(result.current.data?.previsaoSaldo30d).toBe(1000);
+  });
+
   it('sem empresa selecionada não aplica filtro de empresa', async () => {
     mockUseAuth.mockReturnValue({ currentEmpresaId: null });
 

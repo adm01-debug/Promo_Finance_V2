@@ -17,6 +17,19 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
+// Os hooks passaram a ler a empresa selecionada (useAuth). Sem este mock o
+// wrapper só tem QueryClientProvider e useAuth lança "must be used within an
+// AuthProvider" antes de qualquer consulta. currentEmpresaId: null mantém o
+// que esta suíte mede — a aritmética dos KPIs — sem o .eq('empresa_id') extra
+// na cadeia mockada; o escopo por empresa é coberto em
+// useFluxoCaixa.escopo.test.tsx.
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ currentEmpresaId: null }),
+}));
+
+/** Dentro da janela de 30 dias que a previsão passou a respeitar. */
+const VENC_NA_JANELA = new Date().toISOString().slice(0, 10);
+
 import {
   useFluxoCaixaKPIs,
   useFluxoCaixaProjetado,
@@ -47,14 +60,17 @@ describe('useFluxoCaixaKPIs', () => {
         // contas_receber.select(...).in(...)
         return {
           in: inMock.mockResolvedValueOnce({
-            data: [{ valor: 1000, valor_recebido: 200 }],
+            data: [{ valor: 1000, valor_recebido: 200, data_vencimento: VENC_NA_JANELA }],
             error: null,
           }),
         };
       }
       // contas_pagar.select(...).in(...)
       return {
-        in: inMock.mockResolvedValueOnce({ data: [{ valor: 600, valor_pago: 100 }], error: null }),
+        in: inMock.mockResolvedValueOnce({
+          data: [{ valor: 600, valor_pago: 100, data_vencimento: VENC_NA_JANELA }],
+          error: null,
+        }),
       };
     });
   });

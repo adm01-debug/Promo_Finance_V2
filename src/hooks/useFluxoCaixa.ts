@@ -31,7 +31,13 @@ export function useFluxoCaixaKPIs() {
       // pendente, inclusive vencimento de anos à frente. As linhas de
       // useFluxoCaixaProjetado já usavam .gte/.lte('data_vencimento'), então a
       // janela existia no arquivo e faltava só aqui.
+      const hojeStr = format(new Date(), 'yyyy-MM-dd');
       const limite30d = format(addDays(new Date(), 30), 'yyyy-MM-dd');
+      // Janela fechada nos dois lados, igual à da projeção diária (que começa
+      // hoje): só o limite superior deixaria passar título vencido com
+      // vencimento no passado, e os dois números da mesma tela divergiriam.
+      const dentroDaJanela = (venc?: string | null) =>
+        !!venc && venc >= hojeStr && venc <= limite30d;
 
       // Buscar saldo total das contas bancárias
       let qContas = supabase.from('contas_bancarias').select('saldo_atual').eq('ativo', true);
@@ -56,7 +62,7 @@ export function useFluxoCaixaKPIs() {
         c.valor - (c.valor_recebido || 0);
       const totalReceber = (receber || []).reduce((sum, c) => sum + saldoReceber(c), 0);
       const receber30d = (receber || [])
-        .filter((c) => !!c.data_vencimento && c.data_vencimento <= limite30d)
+        .filter((c) => dentroDaJanela(c.data_vencimento))
         .reduce((sum, c) => sum + saldoReceber(c), 0);
 
       // Buscar total a pagar (pendentes)
@@ -73,7 +79,7 @@ export function useFluxoCaixaKPIs() {
         c.valor - (c.valor_pago || 0);
       const totalPagar = (pagar || []).reduce((sum, c) => sum + saldoPagar(c), 0);
       const pagar30d = (pagar || [])
-        .filter((c) => !!c.data_vencimento && c.data_vencimento <= limite30d)
+        .filter((c) => dentroDaJanela(c.data_vencimento))
         .reduce((sum, c) => sum + saldoPagar(c), 0);
 
       // Previsão de saldo em 30 dias — só o que vence dentro da janela.
