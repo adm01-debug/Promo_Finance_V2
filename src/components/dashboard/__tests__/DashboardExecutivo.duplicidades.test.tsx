@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 
 /**
  * Trava o escopo por empresa do card de duplicidades (DashboardExecutivo.tsx:60-63).
@@ -93,7 +93,13 @@ vi.mock('@/components/dashboard/DashboardSkeleton', () => ({
   DashboardSkeleton: () => <div>DashboardSkeleton</div>,
 }));
 vi.mock('@/components/dashboard/DashboardFiltersHeader', () => ({
-  DashboardFiltersHeader: () => <div>DashboardFiltersHeader</div>,
+  // O stub expõe setEmpresaFilter para o teste poder exercer a seleção
+  // explícita do filtro, que tem precedência sobre currentEmpresaId.
+  DashboardFiltersHeader: ({ setEmpresaFilter }: { setEmpresaFilter: (v: string) => void }) => (
+    <button type="button" onClick={() => setEmpresaFilter('empresa-2')}>
+      trocar-empresa
+    </button>
+  ),
 }));
 vi.mock('@/components/dashboard/SecondaryKPICards', () => ({
   SecondaryKPICards: () => <div>SecondaryKPICards</div>,
@@ -175,10 +181,16 @@ function metricasVazias() {
 }
 
 function opcoesDaQueryDeDuplicidades() {
-  const chamada = mockUseQuery.mock.calls.find(
+  // A ÚLTIMA chamada, não a primeira: depois de trocar o filtro o componente
+  // re-renderiza e `useQuery` é chamado de novo; pegar a primeira leria o
+  // estado anterior e o teste de precedência passaria sem medir nada.
+  const chamadas = mockUseQuery.mock.calls.filter(
     (c) => (c[0] as { queryKey?: unknown[] })?.queryKey?.[0] === 'bloqueios-duplicidade-stats'
   );
-  return chamada?.[0] as { queryKey: unknown[]; queryFn: () => Promise<unknown> };
+  return chamadas[chamadas.length - 1]?.[0] as {
+    queryKey: unknown[];
+    queryFn: () => Promise<unknown>;
+  };
 }
 
 describe('DashboardExecutivo — escopo por empresa do card de duplicidades', () => {
@@ -207,6 +219,29 @@ describe('DashboardExecutivo — escopo por empresa do card de duplicidades', ()
     expect(selectMock).toHaveBeenCalledWith('valor_bloqueado');
     expect(orderMock).toHaveBeenCalledWith('created_at', { ascending: false });
     expect(eqMock).toHaveBeenCalledWith('empresa_id', 'empresa-1');
+  });
+
+  it('a seleção explícita do filtro tem precedência sobre a empresa atual', async () => {
+    mockUseAuth.mockReturnValue({ currentEmpresaId: 'empresa-1' });
+
+    render(<DashboardExecutivo />);
+    expect(opcoesDaQueryDeDuplicidades().queryKey).toEqual([
+      'bloqueios-duplicidade-stats',
+      'empresa-1',
+    ]);
+
+    act(() => {
+      screen.getByRole('button', { name: 'trocar-empresa' }).click();
+    });
+
+    // Sem esta asserção, um escopo reduzido a `currentEmpresaId ?? null`
+    // passaria nos outros dois casos: é aqui que a precedência é medida.
+    const opcoes = opcoesDaQueryDeDuplicidades();
+    expect(opcoes.queryKey).toEqual(['bloqueios-duplicidade-stats', 'empresa-2']);
+
+    eqMock.mockClear();
+    await opcoes.queryFn();
+    expect(eqMock).toHaveBeenCalledWith('empresa_id', 'empresa-2');
   });
 
   it('sem empresa atual não aplica filtro (sentinela "all" vira null)', async () => {
