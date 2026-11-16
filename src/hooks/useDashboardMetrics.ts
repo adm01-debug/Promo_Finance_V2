@@ -25,7 +25,7 @@ export interface DashboardFilters {
   periodoFluxo: string;
 }
 
-function normalizeFilterSentinel(value: string | null | undefined): string | undefined {
+export function normalizeFilterSentinel(value: string | null | undefined): string | undefined {
   if (!value) return undefined;
   const normalized = value.trim().toLowerCase();
   if (normalized === 'all' || normalized === 'todas' || normalized === 'default') {
