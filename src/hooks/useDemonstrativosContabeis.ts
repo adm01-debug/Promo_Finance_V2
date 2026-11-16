@@ -36,7 +36,10 @@ export function useDemonstrativosContabeis(params: {
   // Competência: lê partidas contábeis no período + acumulado até o fim do período
   const inicio = `${ano}-${String(mes + 1).padStart(2, '0')}-01`;
   const fimDate = new Date(ano, mes + 1, 0);
-  const fim = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(fimDate.getDate()).padStart(2, '0')}`;
+  const fim = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(fimDate.getDate()).padStart(
+    2,
+    '0'
+  )}`;
 
   const partidasQuery = useQuery({
     queryKey: ['demonstrativos-partidas', empresaId, ano, mes],
@@ -44,9 +47,14 @@ export function useDemonstrativosContabeis(params: {
       let q = supabase
         .from('partidas_contabeis')
         .select(
-          'tipo, valor, conta:plano_contas(id, codigo, descricao, nome, tipo, natureza, centro_resultado), lancamento:lancamentos_contabeis!inner(data_lancamento, empresa_id)'
+          'tipo, valor, conta:plano_contas(id, codigo, descricao, nome, tipo, natureza, centro_resultado), lancamento:lancamentos_contabeis!inner(data_lancamento, empresa_id, status)'
         )
         .lte('lancamento.data_lancamento', fim)
+        // Lançamento cancelado é versão substituída (estorno/ajuste de
+        // movimentação): sem este filtro, editar uma movimentação de R$ 100
+        // para R$ 120 somaria R$ 220 aqui, enquanto fn_balancete — que já
+        // ignora 'cancelado' — mostraria R$ 120.
+        .neq('lancamento.status', 'cancelado')
         .limit(20000);
       if (empresaId !== 'todas') q = q.eq('lancamento.empresa_id', empresaId);
       const { data, error } = await q;
