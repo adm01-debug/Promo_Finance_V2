@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5272662d6ed934693065560af0be6bc44f67c449",
+  "sha": "cf94b6b91d3fdc90c82fbdded5622dc5b09f297b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 15:26 UTC",
-  "files_total": 3883,
-  "code_files": 3514,
-  "code_lines": 498480
+  "generated_at": "2026-11-16 15:32 UTC",
+  "files_total": 3884,
+  "code_files": 3515,
+  "code_lines": 498538
  },
  "version": "1.3.2",
- "facts_hash": "4e1fb684edad8be3",
+ "facts_hash": "c8659d324751447c",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1221,
-   ".sql": 1091,
+   ".sql": 1092,
    ".tsx": 1090,
    ".mjs": 60,
    ".py": 45,
@@ -42667,10 +42667,10 @@
     "args": "",
     "returns": "void",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260418140233_7d5861e9-57bc-4df3-827b-b9fda80cc806.sql",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "BEGIN REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_benchmark_setorial; EXCEPTION WHEN OTHERS THEN REFRESH MATERIALIZED VIEW public.mv_benchmark_setorial; END;",
+    "body": "BEGIN IF to_regclass('public.mv_benchmark_setorial') IS NULL THEN RETURN; END IF; BEGIN REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_benchmark_setorial; EXCEPTION WHEN feature_not_supported THEN REFRESH MATERIALIZED VIEW public.mv_benchmark_setorial; END; END;",
     "raises": [],
     "tables": []
    },
@@ -52575,6 +52575,7 @@
    "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql",
    "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
    "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
+   "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -60670,6 +60671,38 @@
     "objkind": "table",
     "roles": "authenticated",
     "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "PUBLIC",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "anon",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
    }
   ],
   "raises": [
@@ -72912,8 +72945,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1021,
-   "lines": 77387,
+   "files": 1022,
+   "lines": 77445,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -148772,10 +148805,10 @@
     "args": "",
     "returns": "void",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260418140233_7d5861e9-57bc-4df3-827b-b9fda80cc806.sql",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "BEGIN REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_benchmark_setorial; EXCEPTION WHEN OTHERS THEN REFRESH MATERIALIZED VIEW public.mv_benchmark_setorial; END;",
+    "body": "BEGIN IF to_regclass('public.mv_benchmark_setorial') IS NULL THEN RETURN; END IF; BEGIN REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_benchmark_setorial; EXCEPTION WHEN feature_not_supported THEN REFRESH MATERIALIZED VIEW public.mv_benchmark_setorial; END; END;",
     "raises": [],
     "tables": []
    },
@@ -162731,6 +162764,7 @@
    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
    "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql",
    "supabase/migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql",
+   "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -170803,6 +170837,38 @@
     "objkind": "table",
     "roles": "authenticated",
     "src": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "PUBLIC",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "anon",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "refresh_mv_benchmark_setorial",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
    }
   ],
   "guards": [
@@ -245552,6 +245618,11 @@
     "340 (branch claude/fix-estorno-contabil-movimentacao-261113-1811,"
    ]
   },
+  "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql": {
+   "path": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
+   "lines": 58,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245660,10 +245731,19 @@
   }
  },
  "git": {
-  "sha": "5272662d6ed934693065560af0be6bc44f67c449",
+  "sha": "cf94b6b91d3fdc90c82fbdded5622dc5b09f297b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "cf94b6b",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): refresh_mv_benchmark_setorial sai de PUBLIC e para de engolir erro em WHEN OTHERS (#370)",
+    "files": [
+     "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
+    ]
+   },
    {
     "sha": "5272662",
     "date": "2026-11-16",
@@ -245972,15 +246052,6 @@
      "src/hooks/useSecurityAlerts.ts",
      "src/integrations/supabase/types.ts"
     ]
-   },
-   {
-    "sha": "b933544",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)",
-    "files": [
-     "supabase/migrations/20261113163037_colunas_campos_formulario.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -245991,6 +246062,10 @@
    [
     "src/components/compras/PedidoCompraForm.tsx",
     2
+   ],
+   [
+    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
+    1
    ],
    [
     "src/hooks/useDemonstrativosContabeis.ts",
@@ -246058,10 +246133,6 @@
    ],
    [
     "supabase/functions/_shared/string-utils.ts",
-    1
-   ],
-   [
-    "supabase/functions/ci-security-gate-log/index.ts",
     1
    ]
   ]

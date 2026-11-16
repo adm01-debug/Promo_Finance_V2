@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5272662d6ed934693065560af0be6bc44f67c449",
+  "commit": "cf94b6b91d3fdc90c82fbdded5622dc5b09f297b",
   "branch": "main",
-  "data_commit": "2026-11-16T12:22:37-03:00",
+  "data_commit": "2026-11-16T12:28:32-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cf94b6b",
+    "data": "2026-11-16",
+    "assunto": "fix(db): refresh_mv_benchmark_setorial sai de PUBLIC e para de engolir erro em WHEN OTHERS (#370)"
+   },
    {
     "sha": "5272662",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "b7559c3",
     "data": "2026-11-14",
     "assunto": "fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)"
-   },
-   {
-    "sha": "53a33b6",
-    "data": "2026-11-14",
-    "assunto": "infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)"
    }
   ],
-  "arquivos_mudados_7d": 697,
+  "arquivos_mudados_7d": 698,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -210,11 +210,11 @@
     "mudancas": 30
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 19
+    "arquivo": "supabase/config.toml",
+    "mudancas": 18
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 18
    },
    {
@@ -223,10 +223,6 @@
    },
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
-    "mudancas": 14
-   },
-   {
-    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
     "mudancas": 14
    },
    {
@@ -240,6 +236,10 @@
    {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 14
+   },
+   {
+    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
+    "mudancas": 13
    },
    {
     "arquivo": "env.manifest.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 130
+    "commits": 131
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3841,
+  "arquivos_total": 3842,
   "arquivos_codigo": 2422,
   "linhas_codigo": 432019,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1021,
+  "migrations": 1022,
   "cron_jobs": 21,
   "testes": 439,
   "workflows": 19,
