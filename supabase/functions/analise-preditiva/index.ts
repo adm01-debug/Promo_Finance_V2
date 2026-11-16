@@ -11,6 +11,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('analise-preditiva');
 
 serve(
@@ -47,6 +48,19 @@ serve(
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        // Analise pesada com chamada paga de IA: 30/min por IP evita que um
+        // laco de cliente dispare custo sem teto.
+        const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+        const rl = await checkRateLimit(supabase, {
+          endpoint: 'analise-preditiva',
+          ip,
+          limit: 30,
+          windowSeconds: 60,
+          userAgent: req.headers.get('user-agent'),
+          failureMode: 'closed',
+        });
+        if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
         // Buscar dados financeiros para análise
         const hoje = new Date();
