@@ -1,0 +1,69 @@
+# docs:
+#   gatilho: agendado 1x/dia (07:19 UTC) e dispatch
+#   prova: o perímetro do GitHub (branch protection, merge, actions, environments) contra o baseline versionado
+#   falha: issue [settings-guard] aberta; sem escopo suficiente o guard reporta ponto cego em vez de falhar em silêncio
+#   avisa: issue [settings-guard]
+name: zzdiag-Settings Guard
+
+# Portado de Zapp_Web_V2 (scripts/ci/github-settings-guard.mjs, testado em
+# github-settings-guard.unit.mjs). Política esperada: scripts/ci/github-settings-baseline.json
+# (medido ao vivo via API em 2026-11-08). Regressão: restaura via PATCH o que sabe restaurar
+# e abre/atualiza a issue [settings-guard]. OK: fecha a issue se estiver aberta.
+#
+# Campo que o GITHUB_TOKEN padrão não consegue ler (403, ou 200 com o campo omitido) é PONTO
+# CEGO, não divergência — job verde com ::warning:: e 1 comentário por assinatura a cada 7
+# dias. Divergência real = job vermelho e comentário com dedupe de 6 h por causa.
+
+on:
+  push:
+    branches:
+      - 'claude/chore-diagnostico-actions-**'
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: settings-guard
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Verificar branch protection, merge e actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Verificar e restaurar configurações
+        run: node scripts/ci/github-settings-guard.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PAT fine-grained (administration:read, só este repo) para eliminar o ponto cego de
+          # branch protection/actions/merge (403 com GITHUB_TOKEN). Secret opcional — sem ele o
+          # guard roda do mesmo jeito (campos administrativos = NAO VERIFICAVEL), nunca quebra.
+          # Só LEITURA usa este token; issue e PATCH seguem com o GITHUB_TOKEN.
+          ADMIN_READ_TOKEN: ${{ secrets.SETTINGS_GUARD_TOKEN || github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          PERIMETER_SNAPSHOT_PATH: perimeter-snapshot.json
+
+      - name: Publicar snapshot do perímetro
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        with:
+          name: perimeter-snapshot-${{ github.run_id }}
+          path: perimeter-snapshot.json
+          if-no-files-found: ignore
+          retention-days: 14
