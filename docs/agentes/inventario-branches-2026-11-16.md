@@ -6,11 +6,14 @@ Levantamento das **113 branches remotas** (fora a `main`) antes da limpeza.
 
 Cada branch apagada cai num de dois casos, e a coluna "recuperação" das tabelas diz qual:
 
-**1. Tip alcançável pela `main` (36 branches).** O commit é ancestral da `main`, logo o objeto existe em qualquer clone, para sempre:
+**1. Tip alcançável pela `main` (36 branches).** O commit é ancestral da `main`, logo o objeto existe no remoto para sempre:
 
 ```bash
+git fetch --unshallow origin 2>/dev/null || git fetch origin   # ver nota abaixo
 git branch <nome-da-branch> <SHA>
 ```
+
+> **Clone raso.** Ser ancestral da `main` garante o objeto no **remoto**, não no seu disco. Num clone `--depth 1` (o padrão de muitos CIs e das sessões de agente deste repositório, que vêm com 50 commits) o commit antigo não está presente e `git branch` falha com `not a valid object name`. O `--unshallow` resolve; sem ele, o procedimento parece quebrado quando não está.
 
 **2. Tip órfão (54 branches).** O commit não é ancestral da `main`; sem uma ref apontando para ele, o Git o descarta e um clone novo nunca o recebe. Para esses foi criada uma **tag de arquivo** antes da exclusão:
 
@@ -19,7 +22,7 @@ git fetch origin tag arquivo/261116/<nome-da-branch-com-_-no-lugar-de-/>
 git branch <nome-da-branch> arquivo/261116/<nome-da-branch-com-_>
 ```
 
-Conferido num clone zerado (`git clone --depth 1 --no-tags`): o `fetch` da tag traz o commit e a branch volta com o conteúdo original.
+Conferido num clone zerado (`git clone --depth 1 --no-tags`): o `fetch` da tag traz o commit e a branch volta com o conteúdo original. Aqui o `fetch` da tag já baixa o que falta, então o caso 2 funciona mesmo em clone raso.
 
 > O SHA sozinho **não** preserva nada: ele identifica o commit, não o mantém vivo. Por isso as tags existem — é o que sobrevive à coleta de objetos do GitHub.
 
