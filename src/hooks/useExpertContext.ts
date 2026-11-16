@@ -141,6 +141,20 @@ export function useExpertContext(): ExpertContextData {
       0
     );
 
+    // Assimetria deliberada, pedida no review da PR #396:
+    //  - pagarEmAberto inclui 'vencido': a divida a pagar vencida continua
+    //    devida, e mais urgente. Entra em saidas, no divisor da liquidez e na
+    //    cobertura de caixa.
+    //  - receberEmAberto tambem inclui 'vencido', MAS so e usado na taxa de
+    //    inadimplencia, que precisa da carteira inteira no denominador.
+    //    NAO entra em "Entradas Previstas" nem no numerador da liquidez: um
+    //    recebivel vencido nao tem nova data de recebimento, logo nao e
+    //    previsao de entrada. Tratar como entrada mascararia deficit e daria
+    //    sinal oposto ao de ProactiveSuggestions.tsx:78-82, que projeta com
+    //    'pendente' apenas.
+    const pagarEmAberto = totalPagarPendente + totalPagarVencido;
+    const receberEmAberto = totalReceberPendente + totalReceberVencido;
+
     // Collection stages analysis
     const cobrancaEtapas =
       contasReceber?.reduce(
@@ -210,8 +224,8 @@ ${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo
 ## FLUXO DE CAIXA PROJETADO (30 dias)
 - Saldo Atual: ${formatCurrency(saldoTotal)}
 - Entradas Previstas: ${formatCurrency(totalReceberPendente)}
-- Saídas Previstas: ${formatCurrency(totalPagarPendente)}
-- Saldo Projetado: ${formatCurrency(saldoTotal + totalReceberPendente - totalPagarPendente)}
+- Saídas Previstas: ${formatCurrency(pagarEmAberto)}
+- Saldo Projetado: ${formatCurrency(saldoTotal + totalReceberPendente - pagarEmAberto)}
 `;
 
     if (aprovacoesPendentes && aprovacoesPendentes.length > 0) {
@@ -227,21 +241,25 @@ ${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo
     }
 
     // Add key indicators
+    // Os indicadores abaixo usavam os totais 'pendente', que significavam "em
+    // aberto" enquanto nada no sistema gravava 'vencido'. Com a rotina
+    // marcar_contas_vencidas() gravando, "em aberto" passa a ser
+    // pendente + vencido: a divida continua devida depois de vencer.
+    // Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e
+    // liquidez 'N/A' no contexto que o EXPERT le.
     const taxaInadimplencia =
-      totalReceberVencido > 0 && totalReceberPendente > 0
-        ? ((totalReceberVencido / (totalReceberPendente + totalReceberVencido)) * 100).toFixed(1)
-        : '0';
+      receberEmAberto > 0 ? ((totalReceberVencido / receberEmAberto) * 100).toFixed(1) : '0';
 
     const liquidez =
-      totalPagarPendente > 0
-        ? ((saldoDisponivel + totalReceberPendente) / totalPagarPendente).toFixed(2)
+      pagarEmAberto > 0
+        ? ((saldoDisponivel + totalReceberPendente) / pagarEmAberto).toFixed(2)
         : 'N/A';
 
     context += `
 ## INDICADORES CHAVE
 - Taxa de Inadimplência: ${taxaInadimplencia}%
 - Índice de Liquidez: ${liquidez}
-- Cobertura de Caixa: ${totalPagarPendente > 0 ? Math.round((saldoDisponivel / totalPagarPendente) * 100) : 100}%
+- Cobertura de Caixa: ${pagarEmAberto > 0 ? Math.round((saldoDisponivel / pagarEmAberto) * 100) : 100}%
 `;
 
     return context;
