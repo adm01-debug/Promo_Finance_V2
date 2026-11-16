@@ -1,0 +1,20 @@
+name: zz-diagnostico-actions
+
+# Workflow temporário de diagnóstico: o repositório inteiro está com
+# startup_failure em todos os workflows desde 2026-11-14. Este arquivo é o
+# menor workflow válido possível — se ele também falhar no startup, a causa
+# está na conta/repositório, não nos workflows. Remover depois do diagnóstico.
+
+on:
+  push:
+    branches:
+      - 'claude/chore-diagnostico-actions-**'
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "actions ok"
