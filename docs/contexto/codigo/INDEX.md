@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `91133e2d5ce043e44f5591b4e75920948cf34024` (2026-11-16T10:31:06-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `149a836faf198fca015420f843a00996ad48fc95` (2026-11-16T13:41:25Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -460,21 +460,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (37)
-- bun.lock (30)
-- .github/workflows/ci.yml (26)
-- supabase/config.toml (16)
-- supabase/functions/asaas-proxy/index.ts (16)
-- .github/workflows/deno-tests.yml (14)
+- package.json (38)
+- bun.lock (31)
+- .github/workflows/ci.yml (27)
+- supabase/config.toml (17)
+- supabase/functions/asaas-proxy/index.ts (17)
+- .github/workflows/deno-tests.yml (15)
 - supabase/functions/mcp-query/index.ts (14)
 - env.manifest.json (13)
-- .github/workflows/supabase-linter.yml (11)
+- .github/workflows/supabase-linter.yml (12)
+- e2e/auth/admin-rbac.e2e.ts (12)
+- src/App.tsx (12)
+- supabase/functions/n8n-callback/index.ts (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- e2e/auth/admin-rbac.e2e.ts (11)
 - scripts/generate-env-manifest.mjs (11)
-- src/App.tsx (11)
-- supabase/functions/n8n-callback/index.ts (11)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `149a836` fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em
 - 2026-11-16 `91133e2` fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)
 - 2026-11-16 `af20e7e` fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)
 - 2026-11-16 `eb79007` fix: libera INSERT/UPDATE com isolamento por empresa em compras e transações bancárias (#339)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `fc82460` fix(auth): login deixa de ser negado quando não há allowlist de IP/país ativa (#351)
 - 2026-11-16 `e0f7e5f` chore: contexto agendado de 10 min para 1x/hora (#350)
 - 2026-11-14 `0274005` fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)
-- 2026-11-14 `edeed28` fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#3
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

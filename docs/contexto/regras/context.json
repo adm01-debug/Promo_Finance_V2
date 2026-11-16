@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "91133e2d5ce043e44f5591b4e75920948cf34024",
+  "sha": "149a836faf198fca015420f843a00996ad48fc95",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 13:35 UTC",
+  "generated_at": "2026-11-16 13:42 UTC",
   "files_total": 3879,
   "code_files": 3512,
   "code_lines": 497925
@@ -245589,10 +245589,19 @@
   }
  },
  "git": {
-  "sha": "91133e2d5ce043e44f5591b4e75920948cf34024",
+  "sha": "149a836faf198fca015420f843a00996ad48fc95",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "149a836",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em prod) (#333)",
+    "files": [
+     ".github/workflows/prod-migrate.yml"
+    ]
+   },
    {
     "sha": "91133e2",
     "date": "2026-11-16",
@@ -246196,21 +246205,12 @@
     "files": [
      ".github/workflows/ci.yml"
     ]
-   },
-   {
-    "sha": "841109a",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "chore(docs): auditoria prod-readiness (#324)",
-    "files": [
-     "docs/prod-readiness.md"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/prod-readiness.md",
-    4
+    3
    ],
    [
     "src/components/compras/PedidoCompraForm.tsx",
@@ -246231,6 +246231,10 @@
    [
     "src/hooks/useAcordosParcelamento.ts",
     2
+   ],
+   [
+    ".github/workflows/prod-migrate.yml",
+    1
    ],
    [
     "src/components/fornecedores/FornecedorForm.tsx",
@@ -246282,10 +246286,6 @@
    ],
    [
     "env.manifest.json",
-    1
-   ],
-   [
-    "scripts/generate-env-manifest.mjs",
     1
    ]
   ]
