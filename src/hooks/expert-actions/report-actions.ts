@@ -10,7 +10,8 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
       const { data: contasPagar } = await supabase
         .from('contas_pagar')
         .select('data_vencimento, valor, status')
-        .eq('status', 'pendente')
+        // 'vencido' incluido, igual ao lado de contas_receber logo abaixo.
+        .in('status', ['pendente', 'vencido'])
         .order('data_vencimento');
 
       const { data: contasReceber } = await supabase
@@ -63,7 +64,8 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
       const { data } = await supabase
         .from('contas_pagar')
         .select('*')
-        .eq('status', 'pendente')
+        // 'vencido' incluido, igual ao relatorio de contas a receber abaixo.
+        .in('status', ['pendente', 'vencido'])
         .order('data_vencimento');
 
       if (!data || data.length === 0) {

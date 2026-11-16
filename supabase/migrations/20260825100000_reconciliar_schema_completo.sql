@@ -3,6 +3,24 @@
 
 BEGIN;
 
+-- check_function_bodies = off: este arquivo cria FUNCAO ANTES da TABELA que ela
+-- le. Exemplo medido: is_country_blocked() nasce na linha ~2703 e seu corpo le
+-- public.geo_blocks, que so e criada na linha ~4767 — 2064 linhas depois. Com
+-- LANGUAGE sql o corpo e validado na criacao, entao o CREATE levantava
+--   ERROR: relation "public.geo_blocks" does not exist
+-- e, como o arquivo roda em uma transacao, derrubava com ele a criacao de
+-- risk_rules, alerts_sent e watch_cron_failures, bloqueando por cascata outros
+-- arquivos da cadeia.
+--
+-- Desligar a validacao de corpo e o jeito idiomatico do PostgreSQL para
+-- referencia adiantada, e e exatamente o que pg_dump/pg_restore faz. Conferido
+-- em PG 16.15 que a funcao criada assim FUNCIONA depois (chamada devolveu
+-- resultado, nao erro), e que sem o SET o mesmo CREATE falha.
+--
+-- Em producao e no-op: o arquivo ja foi aplicado.
+SET LOCAL check_function_bodies = off;
+
+
 -- FASE 1: tipo_cobranca
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='tipo_cobranca' AND typnamespace='public'::regnamespace) THEN
   CREATE TYPE public.tipo_cobranca AS ENUM ('boleto','pix','transferencia','cartao','debito_automatico','dinheiro','cheque');
@@ -895,7 +913,25 @@ END $$;
 --
 
 
-GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated;
+-- MAINTAIN so existe no PostgreSQL 17. Producao e 17.6 e o privilegio ESTA
+-- concedido la (has_table_privilege('authenticated','public.cnpja_cache','MAINTAIN')
+-- = true; information_schema.role_table_grants nao expoe MAINTAIN, por isso
+-- uma primeira consulta minha deu falso negativo). Num servidor 15/16 o GRANT
+-- cru levanta ERROR 'unrecognized privilege type "maintain"' e, como este
+-- arquivo e UMA transacao (BEGIN na linha 4, COMMIT na 11503), as 11502 linhas
+-- inteiras davam rollback — era o maior bloqueio do replay. Condicionado por
+-- server_version_num: no 17 concede igual a producao, abaixo disso concede o
+-- resto e registra NOTICE.
+DO $mt$
+BEGIN
+  IF current_setting('server_version_num')::int >= 170000 THEN
+    EXECUTE 'GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated';
+  ELSE
+    EXECUTE 'GRANT REFERENCES,TRIGGER,TRUNCATE ON TABLE public.cnpja_cache TO authenticated';
+    RAISE NOTICE 'MAINTAIN em public.cnpja_cache ignorado: servidor % e anterior ao PG 17', current_setting('server_version');
+  END IF;
+END
+$mt$;
 GRANT ALL ON TABLE public.cnpja_cache TO service_role;
 DO $$ BEGIN
   GRANT SELECT,INSERT ON TABLE public.cnpja_cache TO sandbox_exec;
@@ -1456,7 +1492,25 @@ ALTER TABLE public.frontend_error_silence_digest_log ENABLE ROW LEVEL SECURITY;
 --
 
 
-GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated;
+-- MAINTAIN so existe no PostgreSQL 17. Producao e 17.6 e o privilegio ESTA
+-- concedido la (has_table_privilege('authenticated','public.frontend_error_silence_digest_log','MAINTAIN')
+-- = true; information_schema.role_table_grants nao expoe MAINTAIN, por isso
+-- uma primeira consulta minha deu falso negativo). Num servidor 15/16 o GRANT
+-- cru levanta ERROR 'unrecognized privilege type "maintain"' e, como este
+-- arquivo e UMA transacao (BEGIN na linha 4, COMMIT na 11503), as 11502 linhas
+-- inteiras davam rollback — era o maior bloqueio do replay. Condicionado por
+-- server_version_num: no 17 concede igual a producao, abaixo disso concede o
+-- resto e registra NOTICE.
+DO $mt$
+BEGIN
+  IF current_setting('server_version_num')::int >= 170000 THEN
+    EXECUTE 'GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated';
+  ELSE
+    EXECUTE 'GRANT SELECT ON TABLE public.frontend_error_silence_digest_log TO authenticated';
+    RAISE NOTICE 'MAINTAIN em public.frontend_error_silence_digest_log ignorado: servidor % e anterior ao PG 17', current_setting('server_version');
+  END IF;
+END
+$mt$;
 GRANT ALL ON TABLE public.frontend_error_silence_digest_log TO service_role;
 DO $$ BEGIN
   GRANT SELECT,INSERT ON TABLE public.frontend_error_silence_digest_log TO sandbox_exec;
@@ -9205,9 +9259,25 @@ END $$;
 
 
 DO $$ BEGIN
+-- Cast explicito em shared_with_roles. A coluna divergiu de tipo entre a cadeia
+-- e producao: 20260422115506:5 a cria como public.app_role[], e o text[] de
+-- 20260728161110:12 nao conserta porque esta num CREATE TABLE IF NOT EXISTS que
+-- e no-op (a tabela ja existe desde 20241231000000:8). Em PRODUCAO a coluna e
+-- _text (conferido no canonico). Sem o cast, o replay falhava com
+--   ERROR: operator does not exist: text = app_role
+-- e, como o arquivo roda em uma transacao, derrubava a criacao de risk_rules,
+-- alerts_sent, geo_blocks e watch_cron_failures.
+--
+-- Corrigido no CAST e nao no tipo da coluna de proposito: tentei trocar o tipo
+-- em 20260422115506 e MEDI que piorou (bloqueios 13 -> 18, falhas 50 -> 59),
+-- porque o proprio arquivo usa a coluna como app_role mais abaixo (:47, :118) e
+-- dava rollback, levando is_shared com ele. E alterar o tipo depois da policy de
+-- 20260728161110:34 existir e recusado pelo PostgreSQL (coluna usada em policy).
+-- O cast e equivalente nos dois tipos, entao serve para producao e para o replay.
+-- A divergencia de tipo em si fica registrada, nao resolvida aqui.
 CREATE POLICY saved_filters_select ON public.saved_filters FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR (is_shared AND (empresa_id IS NOT NULL) AND public.empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
    FROM public.user_roles ur
-  WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+  WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY ((saved_filters.shared_with_roles)::text[]))))))));
 EXCEPTION WHEN duplicate_object THEN NULL;
          WHEN undefined_table THEN NULL;
          WHEN undefined_column THEN NULL;

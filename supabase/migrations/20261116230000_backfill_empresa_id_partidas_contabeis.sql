@@ -27,9 +27,28 @@
 --
 -- Idempotente: o WHERE empresa_id IS NULL faz dele no-op em qualquer reexecucao,
 -- e em ambiente reconstruido (sem dados) tambem.
-UPDATE public.partidas_contabeis p
-   SET empresa_id = l.empresa_id
-  FROM public.lancamentos_contabeis l
- WHERE l.id = p.lancamento_id
-   AND p.empresa_id IS NULL
-   AND l.empresa_id IS NOT NULL;
+-- Guard de coluna: em ambiente reconstruido partidas_contabeis.empresa_id so
+-- nasce em 20260825130000_fixes_phd_validation.sql:25, arquivo que hoje ainda
+-- aborta no replay. Sem o guard, este UPDATE levantava
+--   ERROR: column p.empresa_id does not exist
+-- e virava o 14o bloqueio da cadeia — um que EU introduzi. Medido no replay.
+DO $bf$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = 'public'
+       AND table_name = 'partidas_contabeis'
+       AND column_name = 'empresa_id'
+  ) THEN
+    RAISE NOTICE 'partidas_contabeis.empresa_id ausente: backfill ignorado';
+    RETURN;
+  END IF;
+
+  UPDATE public.partidas_contabeis p
+     SET empresa_id = l.empresa_id
+    FROM public.lancamentos_contabeis l
+   WHERE l.id = p.lancamento_id
+     AND p.empresa_id IS NULL
+     AND l.empresa_id IS NOT NULL;
+END
+$bf$;

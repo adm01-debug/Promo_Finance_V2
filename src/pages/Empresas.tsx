@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-import { containerVariants, itemVariants, heroVariants } from './Empresas.helpers';
+import { containerVariants, itemVariants, heroVariants, tituloEmAberto } from './Empresas.helpers';
 import { EmpresasConteudo } from './EmpresasConteudo';
 import { EmpresasConteudo2 } from './EmpresasConteudo2';
 
@@ -81,8 +81,8 @@ export default function Empresas() {
       totalReceber: empresas.reduce((acc, e) => acc + getEmpresaStats(e.id).aReceber, 0),
       totalPagar: empresas.reduce((acc, e) => acc + getEmpresaStats(e.id).aPagar, 0),
       empresasAtivas: empresas.filter((e) => e.ativo).length,
-      titulosPendentesReceber: contasReceber.filter((c) => c.status === 'pendente').length,
-      titulosPendentesPagar: contasPagar.filter((c) => c.status === 'pendente').length,
+      titulosPendentesReceber: contasReceber.filter((c) => tituloEmAberto(c.status)).length,
+      titulosPendentesPagar: contasPagar.filter((c) => tituloEmAberto(c.status)).length,
     }),
     [empresas, getEmpresaStats, contasReceber, contasPagar]
   );
