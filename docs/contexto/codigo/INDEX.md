@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `02a26f0b4c770a7fd864d03d54297bc45a504a84` (2026-11-16T19:11:31-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c7bd81bf5652832dcd07674b1df04f6dbbcea758` (2026-11-16T19:23:25-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2319), SQL (1098), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2320), SQL (1098), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3856 |
-| arquivos_codigo | 2430 |
-| linhas_codigo | 433287 |
+| arquivos_total | 3857 |
+| arquivos_codigo | 2431 |
+| linhas_codigo | 433392 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1028 |
 | cron_jobs | 21 |
-| testes | 446 |
+| testes | 447 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 192 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (257), outro (107), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (258), outro (107), co-localizado (*.test) (42)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -460,21 +460,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (35)
-- bun.lock (30)
-- .github/workflows/ci.yml (28)
-- supabase/functions/asaas-proxy/index.ts (17)
-- .github/workflows/deno-tests.yml (16)
-- supabase/config.toml (16)
+- package.json (34)
+- bun.lock (29)
+- .github/workflows/ci.yml (27)
+- supabase/functions/asaas-proxy/index.ts (16)
+- .github/workflows/deno-tests.yml (15)
+- supabase/config.toml (15)
 - supabase/functions/mcp-query/index.ts (14)
-- .github/workflows/supabase-linter.yml (13)
 - env.manifest.json (13)
-- supabase/functions/bling-proxy/index.ts (13)
-- supabase/functions/n8n-callback/index.ts (13)
-- src/App.tsx (12)
-- supabase/functions/gerar-pacote-evidencias/index.ts (12)
+- .github/workflows/supabase-linter.yml (12)
+- supabase/functions/bling-proxy/index.ts (12)
+- supabase/functions/n8n-callback/index.ts (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
+- scripts/generate-env-manifest.mjs (11)
+- supabase/functions/gerar-pacote-evidencias/index.ts (11)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `c7bd81b` fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)
 - 2026-11-16 `02a26f0` fix(db): catálogo de elisão volta a ser tabela na cadeia, como já é em produção (#393)
 - 2026-11-16 `c4a6304` fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)
 - 2026-11-16 `442c34a` fix(db): destrava as 2 raízes do replay e o bloqueio que a #390 introduziu (#391)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `e314002` chore(db): versiona a DDL que está em produção e não existe no repositório (#380)
 - 2026-11-16 `8236365` fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)
 - 2026-11-16 `15dc272` fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)
-- 2026-11-16 `9003088` chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

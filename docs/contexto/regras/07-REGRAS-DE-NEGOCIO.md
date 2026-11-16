@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `02a26f0b4c` · branch `main` · 2026-11-16 22:13 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c7bd81bf56` · branch `main` · 2026-11-16 22:24 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1472,7 +1472,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `unknown` | escreve | `supabase/functions/health/index.ts` |
 | `status` | `uploading` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx`<br>`src/components/ui/file-upload.tsx` |
 | `status` | `utilizado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
-| `status` | `vencido` | compara, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/PrevisaoInadimplencia.tsx`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>… +26 |
+| `status` | `vencido` | compara, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/PrevisaoInadimplencia.tsx`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>… +27 |
 | `status` | `verified` | compara, escreve | `src/components/auth/MFASettings.tsx`<br>`src/hooks/useMFA.ts` |
 | `status` | `warn` | compara, escreve | `src/components/contabilidade/SpedChecklistRow.tsx`<br>`src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>`supabase/functions/gerar-sped-ecd/index.ts`<br>`supabase/functions/gerar-sped-ecf/index.ts` |
 | `estado` | `SP` | escreve | `supabase/functions/gerar-sped-ecd/__fixtures__/ecd-fixture.ts`<br>`supabase/functions/gerar-sped-ecf/__fixtures__/ecf-fixture.ts` |
@@ -2859,7 +2859,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **gerarRelatorio(tipo: string)** — `src/hooks/expert-actions/report-actions.ts`
   ```
-  switch (tipo) { case 'fluxo_caixa': { const { data: contasPagar } = await supabase .from('contas_pagar') .select('data_vencimento, valor, status') .eq('status', 'pendente') .order('data_vencimento'); const { data: contasReceber } = await supabase .from('contas_receber') .select('data_vencimento, valor, status') .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: saldos } = await supabase .from('contas_bancarias') .select('saldo_atual') .eq('ativo', true); const saldoI …
+  switch (tipo) { case 'fluxo_caixa': { const { data: contasPagar } = await supabase .from('contas_pagar') .select('data_vencimento, valor, status') // 'vencido' incluido, igual ao lado de contas_receber logo abaixo. .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: contasReceber } = await supabase .from('contas_receber') .select('data_vencimento, valor, status') .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: saldos } = await supabase …
   ```
 - **computeDiff(before: Record<string, unknown> | null | undefined, after: Record<string, unknown> | null | undefined)** — `src/lib/audit-diff.ts`
   ```
@@ -3687,7 +3687,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **gerarBalanco(supabase: any, empresaId: string | null)** — `supabase/functions/executar-relatorios/index.ts`
   ```
-  let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel'); let queryReceber = supabase .from('contas_receber') .select('valor, valor_recebido') .in('status', ['pendente', 'parcial']); let queryPagar = supabase .from('contas_pagar') .select('valor, valor_pago') .in('status', ['pendente', 'parcial']); if (empresaId) { queryContas = queryContas.eq('empresa_id', empresaId); queryReceber = queryReceber.eq('empresa_id', empresaId); queryPagar = queryPagar.eq('empresa_ …
+  let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel'); let queryReceber = supabase .from('contas_receber') // 'vencido' incluido: um recebivel em atraso continua sendo ativo circulante. // A rotina marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento. .select('valor, valor_recebido') .in('status', ['pendente', 'vencido', 'parcial']); let queryPagar = supabase .from('contas_pagar') // 'vencido' incluido: uma divida em atraso continua sendo pas …
   ```
 - **gerarInadimplencia(supabase: any, empresaId: string | null)** — `supabase/functions/executar-relatorios/index.ts`
   ```
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3383 testes em 287 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3386 testes em 288 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5360,6 +5360,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
 | `src/hooks/__tests__/useAprovacoes.test.tsx` | 3 | useComentariosAprovacao (contrato real user_id/comentario) · busca comentarios com select simples (sem embed profiles — FK inexistente) · propaga erro do supabase |
+| `src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts` | 3 | relatórios do EXPERT com contas vencidas · o fluxo de caixa pede contas a pagar vencidas, não só pendentes · o relatório de contas a pagar pede as vencidas e as soma no total |
 | `src/lib/__tests__/brazilian-validators.regression.test.ts` | 3 | brazilian-validators — regressão de API pública · preserva exports históricos · validateCPF/CNPJ geram e validam consistentes |
 | `src/lib/__tests__/sped-generator.regression.test.ts` | 3 | sped-generator — regressão de API pública · preserva exports históricos após modularização · validarArquivoSPED rejeita conteúdo inválido |
 | `src/lib/compras/__tests__/pedidos.test.ts` | 3 | calcularMetricasPedidosCompra · considera somente pedidos persistidos no mês de referência · não inventa dados quando não há pedidos com data de emissão |
@@ -5976,4 +5977,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | IRRF 10% incide sobre o valor integral quando o pagamento mensal supera o limite. | `src/lib/tributario/pf-vinculada.ts` |
 | Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
 | - Limite de faturamento (RBT12 < R$ 4.8M no Simples) | `src/lib/tributario/recomendar-empresa.ts` |
-| … +372 linhas — lista completa em `context.json` | |
+| … +374 linhas — lista completa em `context.json` | |

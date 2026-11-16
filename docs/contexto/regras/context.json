@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "02a26f0b4c770a7fd864d03d54297bc45a504a84",
+  "sha": "c7bd81bf5652832dcd07674b1df04f6dbbcea758",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 22:13 UTC",
-  "files_total": 3898,
-  "code_files": 3529,
-  "code_lines": 501453
+  "generated_at": "2026-11-16 22:24 UTC",
+  "files_total": 3899,
+  "code_files": 3530,
+  "code_lines": 501559
  },
  "version": "1.3.2",
- "facts_hash": "0630339499e3cf03",
+ "facts_hash": "04c3a1471e8c4369",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1225,
+   ".ts": 1226,
    ".sql": 1098,
    ".tsx": 1094,
    ".mjs": 60,
@@ -71546,7 +71546,7 @@
   {
    "module": "src/components",
    "files": 980,
-   "lines": 161930,
+   "lines": 161934,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71813,8 +71813,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 314,
-   "lines": 45641,
+   "files": 315,
+   "lines": 45733,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -72348,7 +72348,7 @@
   {
    "module": "src/pages",
    "files": 271,
-   "lines": 46823,
+   "lines": 46828,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -72421,7 +72421,7 @@
     "Auth.hooks.ts: Estado, efeitos e handlers da página Auth — extraídos para zerar max-lines.",
     "Configuracoes.constants.ts: Constantes e configuração inicial da página Configuracoes — extraídas para zerar max-lines.",
     "Configuracoes.parts.tsx: Atalhos rápidos da página Configuracoes — extraídos para zerar max-lines.",
-    "ReformaTributaria.tsx: PÁGINA: REFORMA TRIBUTÁRIA Módulo contábil para empresas Lucro Real"
+    "Empresas.helpers.ts: Titulo em aberto. 'vencido' entra: marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento e a divida continua devida."
    ],
    "deps": [
     "@tanstack/react-query",
@@ -72707,7 +72707,7 @@
   {
    "module": "supabase/functions",
    "files": 224,
-   "lines": 50090,
+   "lines": 50095,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -73764,6 +73764,9 @@
     ],
     "delete": [
      "src/hooks/financial/useContasPagar.ts"
+    ],
+    "ref": [
+     "supabase/functions/executar-relatorios/index.ts"
     ]
    },
    "contas_receber": {
@@ -73822,7 +73825,8 @@
      "supabase/functions/bitrix24-sync/index.ts"
     ],
     "ref": [
-     "src/hooks/useAcordosParcelamento.ts"
+     "src/hooks/useAcordosParcelamento.ts",
+     "supabase/functions/executar-relatorios/index.ts"
     ],
     "delete": [
      "src/hooks/useContasReceberLogic.ts"
@@ -87058,6 +87062,10 @@
     "text": "e sobrescreveria a seleção manual de \"todas\". O efeito deve reagir APENAS a"
    },
    {
+    "file": "src/pages/Empresas.helpers.ts",
+    "text": "'pendente' -> 'vencido' no vencimento e a divida continua devida."
+   },
+   {
     "file": "src/pages/ThemeDiagnostics.tsx",
     "text": "* A página é pública para permitir validação rápida antes do login."
    },
@@ -87656,6 +87664,10 @@
    {
     "file": "supabase/functions/executar-fechamento-tributario/index.ts",
     "text": "Apenas registra status em_revisao"
+   },
+   {
+    "file": "supabase/functions/executar-relatorios/index.ts",
+    "text": "A rotina marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento."
    },
    {
     "file": "supabase/functions/expert-agent/index.ts",
@@ -113895,15 +113907,15 @@
     "kind": "escreve"
    },
    {
-    "file": "src/pages/Empresas.tsx",
+    "file": "src/pages/Empresas.helpers.ts",
     "field": "status",
     "value": "pendente",
     "kind": "compara"
    },
    {
-    "file": "src/pages/Empresas.tsx",
+    "file": "src/pages/Empresas.helpers.ts",
     "field": "status",
-    "value": "pendente",
+    "value": "vencido",
     "kind": "compara"
    },
    {
@@ -118256,7 +118268,7 @@
     "file": "src/hooks/expert-actions/report-actions.ts",
     "name": "gerarRelatorio",
     "params": "tipo: string",
-    "body": "switch (tipo) { case 'fluxo_caixa': { const { data: contasPagar } = await supabase .from('contas_pagar') .select('data_vencimento, valor, status') .eq('status', 'pendente') .order('data_vencimento'); const { data: contasReceber } = await supabase .from('contas_receber') .select('data_vencimento, valor, status') .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: saldos } = await supabase .from('contas_bancarias') .select('saldo_atual') .eq('ativo', true); const saldoI …"
+    "body": "switch (tipo) { case 'fluxo_caixa': { const { data: contasPagar } = await supabase .from('contas_pagar') .select('data_vencimento, valor, status') // 'vencido' incluido, igual ao lado de contas_receber logo abaixo. .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: contasReceber } = await supabase .from('contas_receber') .select('data_vencimento, valor, status') .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: saldos } = await supabase …"
    },
    {
     "file": "src/lib/audit-diff.ts",
@@ -119498,7 +119510,7 @@
     "file": "supabase/functions/executar-relatorios/index.ts",
     "name": "gerarBalanco",
     "params": "supabase: any, empresaId: string | null",
-    "body": "let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel'); let queryReceber = supabase .from('contas_receber') .select('valor, valor_recebido') .in('status', ['pendente', 'parcial']); let queryPagar = supabase .from('contas_pagar') .select('valor, valor_pago') .in('status', ['pendente', 'parcial']); if (empresaId) { queryContas = queryContas.eq('empresa_id', empresaId); queryReceber = queryReceber.eq('empresa_id', empresaId); queryPagar = queryPagar.eq('empresa_ …"
+    "body": "let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel'); let queryReceber = supabase .from('contas_receber') // 'vencido' incluido: um recebivel em atraso continua sendo ativo circulante. // A rotina marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento. .select('valor, valor_recebido') .in('status', ['pendente', 'vencido', 'parcial']); let queryPagar = supabase .from('contas_pagar') // 'vencido' incluido: uma divida em atraso continua sendo pas …"
    },
    {
     "file": "supabase/functions/executar-relatorios/index.ts",
@@ -126355,6 +126367,18 @@
    {
     "file": "src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts",
     "name": "grava etapa_anterior e etapa_nova em colunas próprias"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+    "name": "relatórios do EXPERT com contas vencidas"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+    "name": "o fluxo de caixa pede contas a pagar vencidas, não só pendentes"
+   },
+   {
+    "file": "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+    "name": "o relatório de contas a pagar pede as vencidas e as soma no total"
    },
    {
     "file": "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
@@ -155810,6 +155834,7 @@
       "compara:src/pages/BenchmarkingSetorial.tsx",
       "compara:src/pages/DashboardEmpresa.tsx",
       "compara:src/pages/DashboardReceber.tsx",
+      "compara:src/pages/Empresas.helpers.ts",
       "compara:src/pages/Financeiro.tsx",
       "compara:supabase/functions/analise-preditiva/index.ts",
       "compara:supabase/functions/gerar-alertas/index.ts",
@@ -155923,7 +155948,7 @@
       "compara:src/hooks/useSplitPayment.ts",
       "compara:src/lib/sefaz-contingency/rules.ts",
       "compara:src/lib/sefaz-contingency/state.ts",
-      "compara:src/pages/Empresas.tsx",
+      "compara:src/pages/Empresas.helpers.ts",
       "compara:src/pages/Financeiro.tsx",
       "compara:src/pages/NotasFiscais.tsx",
       "escreve:src/components/aprovacoes/AprovacoesPendentesConteudo.tsx",
@@ -183559,7 +183584,7 @@
   },
   "src/components/asaas/NovaCobrancaDialog.tsx": {
    "path": "src/components/asaas/NovaCobrancaDialog.tsx",
-   "lines": 337,
+   "lines": 338,
    "exports": [
     "function NovaCobrancaDialog"
    ],
@@ -183575,7 +183600,6 @@
      "descricao",
      "empresa_id",
      "id",
-     "status",
      "valor"
     ]
    },
@@ -191912,7 +191936,7 @@
   },
   "src/components/expert/ProactiveSuggestions.tsx": {
    "path": "src/components/expert/ProactiveSuggestions.tsx",
-   "lines": 337,
+   "lines": 340,
    "exports": [
     "function ProactiveSuggestions"
    ],
@@ -191945,7 +191969,6 @@
     ],
     "contas_pagar": [
      "data_vencimento",
-     "status",
      "valor"
     ],
     "contas_receber": [
@@ -210951,7 +210974,7 @@
   },
   "src/hooks/expert-actions/report-actions.ts": {
    "path": "src/hooks/expert-actions/report-actions.ts",
-   "lines": 125,
+   "lines": 127,
    "exports": [
     "function gerarRelatorio"
    ],
@@ -211048,7 +211071,7 @@
     {
      "name": "gerarRelatorio",
      "params": "tipo: string",
-     "body": "switch (tipo) { case 'fluxo_caixa': { const { data: contasPagar } = await supabase .from('contas_pagar') .select('data_vencimento, valor, status') .eq('status', 'pendente') .order('data_vencimento'); const { data: contasReceber } = await supabase .from('contas_receber') .select('data_vencimento, valor, status') .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: saldos } = await supabase .from('contas_bancarias') .select('saldo_atual') .eq('ativo', true); const saldoI …"
+     "body": "switch (tipo) { case 'fluxo_caixa': { const { data: contasPagar } = await supabase .from('contas_pagar') .select('data_vencimento, valor, status') // 'vencido' incluido, igual ao lado de contas_receber logo abaixo. .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: contasReceber } = await supabase .from('contas_receber') .select('data_vencimento, valor, status') .in('status', ['pendente', 'vencido']) .order('data_vencimento'); const { data: saldos } = await supabase …"
     }
    ]
   },
@@ -211103,6 +211126,19 @@
     "grava user_id do autor (e não created_by)",
     "agendarCobranca",
     "grava etapa_anterior e etapa_nova em colunas próprias"
+   ]
+  },
+  "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts": {
+   "path": "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+   "lines": 90,
+   "is_test": true,
+   "rule_comments": [
+    "vencimento, o relatório de fluxo de caixa passaria a mostrar as entradas"
+   ],
+   "tests": [
+    "relatórios do EXPERT com contas vencidas",
+    "o fluxo de caixa pede contas a pagar vencidas, não só pendentes",
+    "o relatório de contas a pagar pede as vencidas e as soma no total"
    ]
   },
   "src/hooks/financial/externalData.ts": {
@@ -224468,8 +224504,9 @@
   },
   "src/pages/Empresas.helpers.ts": {
    "path": "src/pages/Empresas.helpers.ts",
-   "lines": 25,
+   "lines": 30,
    "exports": [
+    "const tituloEmAberto",
     "const containerVariants",
     "const itemVariants",
     "const heroVariants"
@@ -224484,16 +224521,7 @@
      "field": "type",
      "value": "spring",
      "kind": "escreve"
-    }
-   ]
-  },
-  "src/pages/Empresas.tsx": {
-   "path": "src/pages/Empresas.tsx",
-   "lines": 423,
-   "exports": [
-    "function Empresas"
-   ],
-   "status_values": [
+    },
     {
      "field": "status",
      "value": "pendente",
@@ -224501,9 +224529,20 @@
     },
     {
      "field": "status",
-     "value": "pendente",
+     "value": "vencido",
      "kind": "compara"
     }
+   ],
+   "rule_comments": [
+    "'pendente' -> 'vencido' no vencimento e a divida continua devida."
+   ],
+   "doc": "Titulo em aberto. 'vencido' entra: marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento e a divida continua devida."
+  },
+  "src/pages/Empresas.tsx": {
+   "path": "src/pages/Empresas.tsx",
+   "lines": 423,
+   "exports": [
+    "function Empresas"
    ],
    "percents": [
     "transition={{ delay: 0.3 + i * 0.15 }}"
@@ -232565,7 +232604,7 @@
   },
   "supabase/functions/bitrix24-sync/index.ts": {
    "path": "supabase/functions/bitrix24-sync/index.ts",
-   "lines": 905,
+   "lines": 907,
    "tables": [
     {
      "table": "bitrix_oauth_tokens",
@@ -235359,7 +235398,7 @@
   },
   "supabase/functions/executar-relatorios/index.ts": {
    "path": "supabase/functions/executar-relatorios/index.ts",
-   "lines": 580,
+   "lines": 583,
    "tables": [
     {
      "table": "relatorios_agendados",
@@ -235411,11 +235450,11 @@
     },
     {
      "table": "contas_receber",
-     "op": "select"
+     "op": "ref"
     },
     {
      "table": "contas_pagar",
-     "op": "select"
+     "op": "ref"
     },
     {
      "table": "contas_receber",
@@ -235514,6 +235553,9 @@
      "kind": "filtra"
     }
    ],
+   "rule_comments": [
+    "A rotina marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento."
+   ],
    "calc_fns": [
     {
      "name": "gerarDadosRelatorio",
@@ -235543,7 +235585,7 @@
     {
      "name": "gerarBalanco",
      "params": "supabase: any, empresaId: string | null",
-     "body": "let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel'); let queryReceber = supabase .from('contas_receber') .select('valor, valor_recebido') .in('status', ['pendente', 'parcial']); let queryPagar = supabase .from('contas_pagar') .select('valor, valor_pago') .in('status', ['pendente', 'parcial']); if (empresaId) { queryContas = queryContas.eq('empresa_id', empresaId); queryReceber = queryReceber.eq('empresa_id', empresaId); queryPagar = queryPagar.eq('empresa_ …"
+     "body": "let queryContas = supabase.from('contas_bancarias').select('saldo_atual, saldo_disponivel'); let queryReceber = supabase .from('contas_receber') // 'vencido' incluido: um recebivel em atraso continua sendo ativo circulante. // A rotina marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento. .select('valor, valor_recebido') .in('status', ['pendente', 'vencido', 'parcial']); let queryPagar = supabase .from('contas_pagar') // 'vencido' incluido: uma divida em atraso continua sendo pas …"
     },
     {
      "name": "gerarInadimplencia",
@@ -246205,10 +246247,26 @@
   }
  },
  "git": {
-  "sha": "02a26f0b4c770a7fd864d03d54297bc45a504a84",
+  "sha": "c7bd81bf5652832dcd07674b1df04f6dbbcea758",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "c7bd81b",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)",
+    "files": [
+     "src/components/asaas/NovaCobrancaDialog.tsx",
+     "src/components/expert/ProactiveSuggestions.tsx",
+     "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+     "src/hooks/expert-actions/report-actions.ts",
+     "src/pages/Empresas.helpers.ts",
+     "src/pages/Empresas.tsx",
+     "supabase/functions/bitrix24-sync/index.ts",
+     "supabase/functions/executar-relatorios/index.ts"
+    ]
+   },
    {
     "sha": "02a26f0",
     "date": "2026-11-16",
@@ -246546,21 +246604,13 @@
     "files": [
      "src/components/compras/PedidoCompraForm.tsx"
     ]
-   },
-   {
-    "sha": "c5a3c4a",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)",
-    "files": [
-     "supabase/functions/_shared/string-utils.ts",
-     "supabase/functions/ci-security-gate-log/index.ts",
-     "supabase/functions/mcp-query/index.ts",
-     "supabase/functions/n8n-callback/index.ts"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "supabase/functions/bitrix24-sync/index.ts",
+    2
+   ],
    [
     "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
     2
@@ -246590,6 +246640,34 @@
     2
    ],
    [
+    "src/components/asaas/NovaCobrancaDialog.tsx",
+    1
+   ],
+   [
+    "src/components/expert/ProactiveSuggestions.tsx",
+    1
+   ],
+   [
+    "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+    1
+   ],
+   [
+    "src/hooks/expert-actions/report-actions.ts",
+    1
+   ],
+   [
+    "src/pages/Empresas.helpers.ts",
+    1
+   ],
+   [
+    "src/pages/Empresas.tsx",
+    1
+   ],
+   [
+    "supabase/functions/executar-relatorios/index.ts",
+    1
+   ],
+   [
     "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
     1
    ],
@@ -246607,38 +246685,6 @@
    ],
    [
     "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
     1
    ]
   ]

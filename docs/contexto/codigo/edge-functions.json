@@ -465,7 +465,7 @@
    "nome": "bitrix24-sync",
    "entrada": "supabase/functions/bitrix24-sync/index.ts",
    "arquivos": 1,
-   "linhas": 904,
+   "linhas": 906,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1750,7 +1750,7 @@
    "nome": "executar-relatorios",
    "entrada": "supabase/functions/executar-relatorios/index.ts",
    "arquivos": 1,
-   "linhas": 579,
+   "linhas": 582,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"

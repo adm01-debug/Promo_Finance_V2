@@ -1747,7 +1747,7 @@
     "NovaCobrancaDialog"
    ],
    "export_default": null,
-   "linhas": 336,
+   "linhas": 337,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -6926,7 +6926,7 @@
     "ProactiveSuggestions"
    ],
    "export_default": null,
-   "linhas": 336,
+   "linhas": 339,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [

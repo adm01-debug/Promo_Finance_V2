@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 446,
+ "total": 447,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 370
+  "unit": 371
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 257
+   "arquivos": 258
   },
   {
    "padrao": "outro",
@@ -1567,6 +1567,15 @@
     "src/hooks/expert-actions/types.ts"
    ],
    "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
+   "tipo": "unit",
+   "linhas": 89,
+   "testa": [
+    "src/hooks/expert-actions/report-actions.ts"
+   ],
+   "casos": 2
   },
   {
    "arquivo": "src/hooks/expert-actions/financial-actions.test.ts",
@@ -4032,6 +4041,7 @@
   "src/hooks/anomaliaPreferencesValidation.ts": 1,
   "src/hooks/conciliacaoPage.types.ts": 1,
   "src/hooks/expert-actions/financial-actions.ts": 3,
+  "src/hooks/expert-actions/report-actions.ts": 1,
   "src/hooks/expert-actions/types.ts": 1,
   "src/hooks/financial/useContasPagar.ts": 1,
   "src/hooks/financial/useContasReceber.ts": 1,
