@@ -5,6 +5,7 @@ import {
   validatePayload,
   createErrorResponse,
   ParametrosSimulacaoSchema,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -19,7 +20,9 @@ serve(
       const guard = await exigirUsuario(req);
       if (!guard.ok) return guard.resposta;
 
-      const raw = await req.json();
+      const __json = await parseJsonBody(req, 'simular-real');
+      if (!__json.success) return __json.response;
+      const raw = __json.data;
       const parsed = validatePayload(ParametrosSimulacaoSchema, raw, 'simular-real');
       if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
       const result = simularReal(parsed.data as Parameters<typeof simularReal>[0]);

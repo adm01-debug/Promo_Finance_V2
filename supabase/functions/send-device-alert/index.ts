@@ -4,6 +4,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { parseJsonBody } from '../_shared/validation.ts';
 const log = createLogger('send-device-alert');
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -33,7 +34,9 @@ const handler = async (req: Request): Promise<Response> => {
   if (!auth.ok) return auth.resposta;
 
   try {
-    const raw = await req.json();
+    const __json = await parseJsonBody(req, 'send-device-alert');
+    if (!__json.success) return __json.response;
+    const raw = __json.data;
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const Schema = z

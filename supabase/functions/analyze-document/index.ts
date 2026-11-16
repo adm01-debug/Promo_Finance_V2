@@ -5,6 +5,7 @@ import {
   createErrorResponse,
   AnalyzeDocumentSchema,
   corsHeaders,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
@@ -40,7 +41,9 @@ export const handler = async (req: Request): Promise<Response> => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const body = await req.json();
+    const __json = await parseJsonBody(req, 'analyze-document');
+    if (!__json.success) return __json.response;
+    const body = __json.data;
     const validation = validatePayload(AnalyzeDocumentSchema, body);
 
     if (!validation.success) {

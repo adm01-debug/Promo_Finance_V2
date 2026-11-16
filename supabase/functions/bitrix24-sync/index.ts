@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
+import { Bitrix24SyncSchema, validatePayload, createErrorResponse, parseJsonBody } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -834,7 +834,9 @@ serve(
         const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
         if (inativa) return inativa;
 
-        const rawBody = await req.json();
+        const __json = await parseJsonBody(req, 'bitrix24-sync');
+        if (!__json.success) return __json.response;
+        const rawBody = __json.data;
         const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');
         if (!validation.success) {
           return createErrorResponse(validation.error, 400, validation.details, req);

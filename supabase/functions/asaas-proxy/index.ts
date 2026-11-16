@@ -4,7 +4,7 @@
 // ============================================
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { validatePayload, createErrorResponse, AsaasProxySchema } from '../_shared/validation.ts';
+import { validatePayload, createErrorResponse, AsaasProxySchema, parseJsonBody } from '../_shared/validation.ts';
 import {
   createCircuitBreaker,
   respostaIntegracaoDesativada,
@@ -125,7 +125,9 @@ export const handler = async (req: Request) => {
     });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-    const rawBody = await req.json();
+    const __json = await parseJsonBody(req, 'asaas-proxy');
+    if (!__json.success) return __json.response;
+    const rawBody = __json.data;
     const validation = validatePayload(AsaasProxySchema, rawBody, 'asaas-proxy');
 
     if (!validation.success) {

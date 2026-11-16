@@ -12,6 +12,7 @@ import { exigirVinculoEmpresa, mfaAdminInsuficiente } from '../_shared/auth-guar
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { parseJsonBody } from '../_shared/validation.ts';
 
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -105,7 +106,9 @@ Deno.serve(
         );
       }
 
-      const rawBody = await req.json();
+      const __json = await parseJsonBody(req, 'nfe-upload-certificado');
+      if (!__json.success) return __json.response;
+      const rawBody = __json.data;
       const parsed = BodySchema.safeParse(rawBody);
       if (!parsed.success) {
         return createValidationErrorResponse(parsed.error, corsHeaders);

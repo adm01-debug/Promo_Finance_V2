@@ -2,7 +2,7 @@
 // Registra no Bitrix24 (timeline + status do deal) o resultado de cada geração SPED ECF/ECD,
 // informando se foi BLOQUEADA ou GERADA e a quantidade de erros/avisos retornados.
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, validatePayload, parseJsonBody } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -91,7 +91,9 @@ Deno.serve(
       const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
       if (inativa) return inativa;
 
-      const body: ReqBody = await req.json();
+      const __json = await parseJsonBody(req, 'log-sped-bitrix24');
+      if (!__json.success) return __json.response;
+      const body = __json.data as ReqBody;
       const __contract = validatePayload(
         z
           .object({

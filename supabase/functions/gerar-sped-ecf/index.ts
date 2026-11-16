@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, validatePayload, parseJsonBody } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { buildEcfLinhas, calcularApuracaoEcf } from './layout.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -66,7 +66,9 @@ Deno.serve(
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 
-      const body = await req.json();
+      const __json = await parseJsonBody(req, 'gerar-sped-ecf');
+      if (!__json.success) return __json.response;
+      const body = __json.data;
       const __contract = validatePayload(
         z.object({
           empresa_id: z.string().uuid(),

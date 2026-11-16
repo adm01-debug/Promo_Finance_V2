@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { createErrorResponse, validatePayload, parseJsonBody } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -42,7 +42,9 @@ serve(
         }
         const userId = userData.user.id;
 
-        const body = (await req.json()) as Payload;
+        const __json = await parseJsonBody(req, 'processar-solicitacao-lgpd');
+        if (!__json.success) return __json.response;
+        const body = __json.data as Payload;
         const __contract = validatePayload(
           z.object({ solicitacao_id: z.string().uuid() }),
           (typeof body === 'object' ? body : {}) as unknown,

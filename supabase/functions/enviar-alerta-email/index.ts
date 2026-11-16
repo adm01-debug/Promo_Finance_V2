@@ -6,6 +6,7 @@ import {
   createErrorResponse,
   EnviarAlertaEmailSchema,
   validatePayload,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -33,7 +34,9 @@ export const handler = async (req: Request): Promise<Response> => {
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const rawBody = await req.json();
+    const __json = await parseJsonBody(req, 'enviar-alerta-email');
+    if (!__json.success) return __json.response;
+    const rawBody = __json.data;
     const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, 'enviar-alerta-email');
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details, req);
