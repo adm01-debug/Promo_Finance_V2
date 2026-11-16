@@ -89,7 +89,7 @@ const DEFAULT_VALUES: FornecedorFormData = {
 
 export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFormProps) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, currentEmpresaId } = useAuth();
   const { customCelebration } = useConfetti();
   const isEditing = !!fornecedor;
 
@@ -135,9 +135,17 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
   const createMutation = useMutation({
     mutationFn: async (data: FornecedorFormData) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
+      // empresa_id junto do user_id: sem ele o fornecedor nasce sem empresa e
+      // nenhuma consulta por empresa o alcança (useClientesFornecedores.ts:27 e
+      // PedidoCompraForm.tsx:68 não filtram por empresa, mas a policy por
+      // tenant depende da coluna). Mesmo padrão de ClienteForm.tsx:141,156.
+      // user_id continua obrigatório: é o que a policy
+      // fornecedores_owner_insert exige, e o que a regressão de 2026-07-28
+      // custou.
+      if (!currentEmpresaId) throw new Error('Empresa não selecionada');
       const { error } = await supabase
         .from('fornecedores')
-        .insert({ ...buildPayload(data), user_id: user.id });
+        .insert({ ...buildPayload(data), user_id: user.id, empresa_id: currentEmpresaId });
       if (error) throw error;
     },
     onSuccess: () => {
