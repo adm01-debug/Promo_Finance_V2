@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { format } from 'date-fns';
 
 const eqMock = vi.fn();
 const inMock = vi.fn();
@@ -27,8 +28,14 @@ vi.mock('@/hooks/useAuth', () => ({
   useAuth: () => ({ currentEmpresaId: null }),
 }));
 
-/** Dentro da janela de 30 dias que a previsão passou a respeitar. */
-const VENC_NA_JANELA = new Date().toISOString().slice(0, 10);
+/**
+ * Dentro da janela de 30 dias que a previsão passou a respeitar.
+ * Usa a MESMA formatação local do hook (useFluxoCaixa.ts:34 chama
+ * `format(new Date(), 'yyyy-MM-dd')` do date-fns). Com toISOString, que é UTC,
+ * o teste quebrava em fuso de offset positivo na primeira hora do dia: às 00h30
+ * em Tóquio a data seria a de ontem e `venc >= hojeStr` falharia.
+ */
+const VENC_NA_JANELA = format(new Date(), 'yyyy-MM-dd');
 
 import {
   useFluxoCaixaKPIs,
