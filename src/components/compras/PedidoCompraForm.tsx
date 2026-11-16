@@ -29,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useEmpresas } from '@/hooks/useFinancialData';
 
 const itemSchema = z.object({
   descricao: z.string().min(1, 'Descrição é obrigatória'),
@@ -37,6 +38,7 @@ const itemSchema = z.object({
 });
 
 const formSchema = z.object({
+  empresa_id: z.string().min(1, 'Empresa é obrigatória'),
   fornecedor_id: z.string().min(1, 'Fornecedor é obrigatório'),
   centro_custo_id: z.string().optional(),
   data_entrega_prevista: z.string().optional(),
@@ -56,6 +58,8 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
       itens: [{ descricao: '', quantidade: 1, valor_unitario: 0 }],
     },
   });
+
+  const { data: empresas = [] } = useEmpresas();
 
   const { data: fornecedores } = useQuery({
     queryKey: ['fornecedores'],
@@ -92,6 +96,7 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
       const { data: pedido, error: pedidoError } = await supabase
         .from('pedidos_compra')
         .insert({
+          empresa_id: values.empresa_id,
           user_id: user.id,
           centro_custo_id: values.centro_custo_id || null,
           fornecedor_id: values.fornecedor_id,
@@ -140,6 +145,31 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="empresa_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Empresa</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-card/5 border-white/10">
+                        <SelectValue placeholder="Selecione a empresa" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {empresas.map((e) => (
+                        <SelectItem key={e.id} value={e.id}>
+                          {e.nome_fantasia || e.razao_social}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
