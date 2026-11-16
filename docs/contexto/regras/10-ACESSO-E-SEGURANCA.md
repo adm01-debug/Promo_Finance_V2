@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `91ff2d8628` · branch `main` · 2026-11-16 21:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `442c34ae6a` · branch `main` · 2026-11-16 21:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -884,7 +884,6 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | all | `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `public`, `public`, `public`, `anomalias_detectadas`, `anomalia_toast_eventos`, `centros_custo`, `contratos`, `metas_financeiras`, `partidas_contabeis` … +41 |
 | grant | authenticated | execute | `registrar_evento_receber`, `processar_regua_cobranca`, `confirmar_envio_cobranca`, `gerar_numero_acordo`, `registrar_auditoria_config`, `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `reprocess_dlq`, `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `compare_pg_stat_baseline` … +25 |
 | grant | authenticated | insert, update, delete | `ufs` |
-| grant | authenticated | references,trigger,truncate,maintain | `cnpja_cache` |
 | grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +45 |
 | grant | authenticated | select, delete | `api_keys` |
 | grant | authenticated | select, insert | `audit_log`, `audit_logs`, `bling_sync_logs`, `audit_logs`, `audit_logs` |
@@ -892,7 +891,6 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | select, insert, update | `fechamentos_tributarios` |
 | grant | authenticated | select, insert, update, delete | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `n8n_workflow_configs`, `empresas_certificados`, `plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`, `entregas_obrigacoes`, `conformidade_snapshots`, `user_digest_preferences`, `aliquotas_interestaduais`, `aliquotas_internas_uf`, `cnaes` … +46 |
 | grant | authenticated | select, update | `webhook_dlq`, `nfe_recebidas`, `convites_contador` |
-| grant | authenticated | select,maintain | `frontend_error_silence_digest_log` |
 | grant | authenticated | usage, select | `public` |
 | grant | authenticated, anon | execute | `registrar_tentativa_sso` |
 | grant | authenticated, anon | insert | `frontend_error_logs` |

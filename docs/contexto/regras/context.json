@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "91ff2d8628e10e84d119d88b3e9fb2d18a61d450",
+  "sha": "442c34ae6a797ba1db9752119d8e4a0d657cf840",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 21:20 UTC",
+  "generated_at": "2026-11-16 21:35 UTC",
   "files_total": 3897,
   "code_files": 3528,
-  "code_lines": 501122
+  "code_lines": 501203
  },
  "version": "1.3.2",
- "facts_hash": "1974fd5aeaab77dc",
+ "facts_hash": "2e2c4397ad65160a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -45162,14 +45162,12 @@
     "args": "",
     "returns": "TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)",
     "lang": "sql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "SELECT s.access_token, s.refresh_token, s.user_fid, EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 AS token_age_hours, EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 > 20 AS needs_refresh FROM public.lalamove_uapi_sessions s WHERE s.is_active = true LIMIT 1;",
+    "body": "SELECT NULL::text, NULL::text, NULL::text, NULL::numeric, NULL::boolean WHERE false",
     "raises": [],
-    "tables": [
-     "lalamove_uapi_sessions"
-    ]
+    "tables": []
    },
    "capture_index_usage_snapshot": {
     "args": "",
@@ -58925,14 +58923,6 @@
    },
    {
     "kind": "grant",
-    "privs": "references,trigger,truncate,maintain",
-    "object": "cnpja_cache",
-    "objkind": "table",
-    "roles": "authenticated",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   {
-    "kind": "grant",
     "privs": "all",
     "object": "cnpja_cache",
     "objkind": "table",
@@ -59015,14 +59005,6 @@
     "kind": "grant",
     "privs": "select",
     "object": "frontend_error_alert_state",
-    "objkind": "table",
-    "roles": "authenticated",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   {
-    "kind": "grant",
-    "privs": "select,maintain",
-    "object": "frontend_error_silence_digest_log",
     "objkind": "table",
     "roles": "authenticated",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
@@ -72973,7 +72955,7 @@
   {
    "module": "supabase/migrations",
    "files": 1027,
-   "lines": 78753,
+   "lines": 78834,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -151570,14 +151552,12 @@
     "args": "",
     "returns": "TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)",
     "lang": "sql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "SELECT s.access_token, s.refresh_token, s.user_fid, EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 AS token_age_hours, EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 > 20 AS needs_refresh FROM public.lalamove_uapi_sessions s WHERE s.is_active = true LIMIT 1;",
+    "body": "SELECT NULL::text, NULL::text, NULL::text, NULL::numeric, NULL::boolean WHERE false",
     "raises": [],
-    "tables": [
-     "lalamove_uapi_sessions"
-    ]
+    "tables": []
    },
    "capture_index_usage_snapshot": {
     "args": "",
@@ -169366,14 +169346,6 @@
    },
    {
     "kind": "grant",
-    "privs": "references,trigger,truncate,maintain",
-    "object": "cnpja_cache",
-    "objkind": "table",
-    "roles": "authenticated",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   {
-    "kind": "grant",
     "privs": "all",
     "object": "cnpja_cache",
     "objkind": "table",
@@ -169456,14 +169428,6 @@
     "kind": "grant",
     "privs": "select",
     "object": "frontend_error_alert_state",
-    "objkind": "table",
-    "roles": "authenticated",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   {
-    "kind": "grant",
-    "privs": "select,maintain",
-    "object": "frontend_error_silence_digest_log",
     "objkind": "table",
     "roles": "authenticated",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
@@ -245454,7 +245418,7 @@
   },
   "supabase/migrations/20260825100000_reconciliar_schema_completo.sql": {
    "path": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
-   "lines": 11503,
+   "lines": 11539,
    "errors": [
     " ELSE ",
     " END,\n    "
@@ -245476,7 +245440,7 @@
   },
   "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql": {
    "path": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-   "lines": 7233,
+   "lines": 7259,
    "errors": [
     " ELSE ",
     " END,\n    "
@@ -246099,7 +246063,7 @@
   },
   "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql": {
    "path": "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
-   "lines": 36
+   "lines": 55
   },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
@@ -246209,10 +246173,21 @@
   }
  },
  "git": {
-  "sha": "91ff2d8628e10e84d119d88b3e9fb2d18a61d450",
+  "sha": "442c34ae6a797ba1db9752119d8e4a0d657cf840",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "442c34a",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): destrava as 2 raízes do replay e o bloqueio que a #390 introduziu (#391)",
+    "files": [
+     "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
+     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+     "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql"
+    ]
+   },
    {
     "sha": "91ff2d8",
     "date": "2026-11-16",
@@ -246549,18 +246524,13 @@
     "files": [
      "scripts/security/test-migration-replay-safety.sh"
     ]
-   },
-   {
-    "sha": "08f9783",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)",
-    "files": [
-     "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
+    2
+   ],
    [
     "src/components/fornecedores/FornecedorForm.tsx",
     2
@@ -246578,7 +246548,11 @@
     2
    ],
    [
-    "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
+    "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
     1
    ],
    [
@@ -246631,14 +246605,6 @@
    ],
    [
     "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
     1
    ]
   ]
