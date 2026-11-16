@@ -93,6 +93,38 @@ describe('indicadores do EXPERT com a carteira vencida', () => {
     expect(result.current.resumoFinanceiro).toContain('Cobertura de Caixa: 200%');
   });
 
+  it('recebível vencido NÃO entra como entrada prevista nem na liquidez', async () => {
+    // Exemplo exato do review da PR #396: saldo 0, R$ 1.000 a receber vencidos,
+    // R$ 600 a pagar pendentes. Um recebível vencido não tem nova data de
+    // recebimento, então não é previsão de entrada — tratá-lo como entrada
+    // anunciaria superávit de R$ 400 enquanto ProactiveSuggestions.tsx:78-82,
+    // que projeta só com 'pendente', mostra déficit de R$ 600. Os dois lados do
+    // EXPERT dariam sinais opostos para os mesmos títulos.
+    dados['contas_bancarias'] = [{ banco: 'X', saldo_atual: 0, saldo_disponivel: 0 }];
+    dados['contas_receber'] = [
+      { id: '1', valor: 1000, data_vencimento: hojeISO, status: 'vencido', cliente_nome: 'A' },
+    ];
+    dados['contas_pagar'] = [
+      { id: '2', valor: 600, data_vencimento: hojeISO, status: 'pendente', fornecedor_nome: 'F' },
+    ];
+
+    const { result } = renderHook(() => useExpertContext(), { wrapper });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    // Intl.NumberFormat('pt-BR') usa espaço não-separável (U+00A0) depois de R$.
+    const ctx = result.current.resumoFinanceiro.replace(/\u00a0/g, ' ');
+
+    // entrada prevista nao conta o vencido
+    expect(ctx).toContain('Entradas Previstas: R$ 0,00');
+    // saida conta a divida a pagar, que continua devida
+    expect(ctx).toContain('Saídas Previstas: R$ 600,00');
+    // deficit, nao superavit: mesmo sinal que ProactiveSuggestions
+    expect(ctx).toContain('Saldo Projetado: -R$ 600,00');
+    // liquidez nao infla com recebivel vencido no numerador
+    expect(ctx).toContain('Índice de Liquidez: 0.00');
+    // mas a inadimplencia ve a carteira inteira
+    expect(ctx).toContain('Taxa de Inadimplência: 100.0%');
+  });
+
   it('carteira vazia continua em zero', async () => {
     dados['contas_receber'] = [];
     dados['contas_pagar'] = [];

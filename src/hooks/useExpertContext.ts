@@ -141,7 +141,17 @@ export function useExpertContext(): ExpertContextData {
       0
     );
 
-    // "Em aberto" = pendente + vencido. Uma conta vencida continua devida.
+    // Assimetria deliberada, pedida no review da PR #396:
+    //  - pagarEmAberto inclui 'vencido': a divida a pagar vencida continua
+    //    devida, e mais urgente. Entra em saidas, no divisor da liquidez e na
+    //    cobertura de caixa.
+    //  - receberEmAberto tambem inclui 'vencido', MAS so e usado na taxa de
+    //    inadimplencia, que precisa da carteira inteira no denominador.
+    //    NAO entra em "Entradas Previstas" nem no numerador da liquidez: um
+    //    recebivel vencido nao tem nova data de recebimento, logo nao e
+    //    previsao de entrada. Tratar como entrada mascararia deficit e daria
+    //    sinal oposto ao de ProactiveSuggestions.tsx:78-82, que projeta com
+    //    'pendente' apenas.
     const pagarEmAberto = totalPagarPendente + totalPagarVencido;
     const receberEmAberto = totalReceberPendente + totalReceberVencido;
 
@@ -213,9 +223,9 @@ ${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo
     context += `
 ## FLUXO DE CAIXA PROJETADO (30 dias)
 - Saldo Atual: ${formatCurrency(saldoTotal)}
-- Entradas Previstas: ${formatCurrency(receberEmAberto)}
+- Entradas Previstas: ${formatCurrency(totalReceberPendente)}
 - Saídas Previstas: ${formatCurrency(pagarEmAberto)}
-- Saldo Projetado: ${formatCurrency(saldoTotal + receberEmAberto - pagarEmAberto)}
+- Saldo Projetado: ${formatCurrency(saldoTotal + totalReceberPendente - pagarEmAberto)}
 `;
 
     if (aprovacoesPendentes && aprovacoesPendentes.length > 0) {
@@ -241,7 +251,9 @@ ${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo
       receberEmAberto > 0 ? ((totalReceberVencido / receberEmAberto) * 100).toFixed(1) : '0';
 
     const liquidez =
-      pagarEmAberto > 0 ? ((saldoDisponivel + receberEmAberto) / pagarEmAberto).toFixed(2) : 'N/A';
+      pagarEmAberto > 0
+        ? ((saldoDisponivel + totalReceberPendente) / pagarEmAberto).toFixed(2)
+        : 'N/A';
 
     context += `
 ## INDICADORES CHAVE
