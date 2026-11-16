@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (250)",
+   "co-localizado (__tests__) (251)",
    "outro (106)",
    "co-localizado (*.test) (42)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)",
+   "chore(ci): resgata docs/ci/kpi.json — custo e taxa de falha por workflow (#363)",
    "infra(ci): quarentena E2E sai do gatilho de pull_request (#361)",
    "chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)",
-   "fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em prod) (#333)",
-   "fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)",
-   "fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)"
+   "fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em prod) (#333)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

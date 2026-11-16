@@ -6208,7 +6208,7 @@
     "DashboardFiltersHeader"
    ],
    "export_default": null,
-   "linhas": 147,
+   "linhas": 153,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth"

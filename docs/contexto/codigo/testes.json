@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 438,
+ "total": 439,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 362
+  "unit": 363
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 250
+   "arquivos": 251
   },
   {
    "padrao": "outro",
@@ -933,6 +933,15 @@
     "src/components/contas-receber/EnviarCobrancaDialog.tsx"
    ],
    "casos": 13
+  },
+  {
+   "arquivo": "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx",
+   "tipo": "unit",
+   "linhas": 50,
+   "testa": [
+    "src/components/dashboard/DashboardFiltersHeader.tsx"
+   ],
+   "casos": 1
   },
   {
    "arquivo": "src/components/financeiro/__tests__/AnexoList.storage.test.tsx",
@@ -3922,6 +3931,7 @@
   "src/components/contas-receber/ContasReceberTableRow.tsx": 2,
   "src/components/contas-receber/EnviarCobrancaDialog.tsx": 1,
   "src/components/dashboard/DashboardConfigDialog.tsx": 1,
+  "src/components/dashboard/DashboardFiltersHeader.tsx": 1,
   "src/components/empresas/EmpresaHeroKPI.tsx": 1,
   "src/components/financeiro/AnexoList.tsx": 1,
   "src/components/fornecedores/FornecedorForm.tsx": 1,
