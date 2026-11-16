@@ -13,12 +13,26 @@
 --     asaas_payments/customers.empresa_id NOT NULL  20260315192305_dda7f758-...sql:10,25 (no CREATE TABLE)
 --     historico_conciliacao_ia.sessao_id + FK ..... 20260519121217_fe028d08-...sql:14
 --
---   dos 12 indices do step13, 11 nao sao divergencia: 3 ja tem CREATE e DROP
---   na cadeia e 8 nunca sao criados por ela (o DROP seria no-op). So sobra um.
+--   dos 12 indices do step13, 9 nao sao divergencia: 3 ja tem CREATE e DROP na
+--   cadeia e 6 nunca sao criados por ela (o DROP seria no-op). Sobram TRES.
+--
+--   Correcao da revisao: minha primeira classificacao usou
+--   `CREATE INDEX[^;]*<nome>`, que NAO casa com `CREATE UNIQUE INDEX`, e por
+--   isso eu havia tirado daqui dois DROP que sao necessarios. Reclassificado
+--   com `CREATE (UNIQUE )?INDEX( IF NOT EXISTS)? +<nome>\b`.
 
--- 1. idx_ncms_st: a cadeia CRIA e nunca remove; producao nao tem.
---    Sem isto, todo ambiente reconstruido nasce com um indice que producao
+-- 1. Tres indices que a cadeia CRIA e nunca remove, e que producao nao tem.
+--    Sem estes DROP, todo ambiente reconstruido nasce com indice que producao
 --    nao tem, e o gate de paridade acusa para sempre.
+--      uq_index_usage_snapshots_snapshot_schema_index
+--        <- 20260831153000_corrigir_12_erros_lint_funcoes.sql:292-293 (condicional)
+--      ux_integration_secrets_chave
+--        <- 20260827090000_reconciliar_integration_secrets_sem_drop.sql:61-62
+--      idx_ncms_st  <- criado em 2 migrations
+--    Conferido em producao: nenhum dos 12 indices do step13 existe no
+--    canonico (consulta em pg_indexes com os 12 nomes devolveu vazio).
+DROP INDEX IF EXISTS public.uq_index_usage_snapshots_snapshot_schema_index;
+DROP INDEX IF EXISTS public.ux_integration_secrets_chave;
 DROP INDEX IF EXISTS public.idx_ncms_st;
 
 -- 2. autovacuum nas 6 tabelas que 20261101120200_autovacuum_scale_factor.sql
