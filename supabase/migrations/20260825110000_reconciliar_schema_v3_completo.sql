@@ -1,3 +1,20 @@
+-- check_function_bodies = off: este arquivo cria FUNCAO ANTES da TABELA que ela
+-- le. Exemplo medido: is_country_blocked() nasce na linha ~2703 e seu corpo le
+-- public.geo_blocks, que so e criada na linha ~4767 — 2064 linhas depois. Com
+-- LANGUAGE sql o corpo e validado na criacao, entao o CREATE levantava
+--   ERROR: relation "public.geo_blocks" does not exist
+-- e, como o arquivo roda em uma transacao, derrubava com ele a criacao de
+-- risk_rules, alerts_sent e watch_cron_failures, bloqueando por cascata outros
+-- arquivos da cadeia.
+--
+-- Desligar a validacao de corpo e o jeito idiomatico do PostgreSQL para
+-- referencia adiantada, e e exatamente o que pg_dump/pg_restore faz. Conferido
+-- em PG 16.15 que a funcao criada assim FUNCIONA depois (chamada devolveu
+-- resultado, nao erro), e que sem o SET o mesmo CREATE falha.
+--
+-- Em producao e no-op: o arquivo ja foi aplicado.
+SET check_function_bodies = off;
+
 -- SECAO 1: Funcoes ausentes (128)
 
 CREATE OR REPLACE FUNCTION public.auditar_acessos_cross_tenant(_horas integer DEFAULT 1) RETURNS jsonb
@@ -7256,3 +7273,6 @@ END $do_block$;
 INSERT INTO supabase_migrations.schema_migrations(version,name,statements)
 VALUES('20260825110000','reconciliar_schema_v3_completo',ARRAY['reconciliar_schema_v3_completo'])
 ON CONFLICT DO NOTHING;
+
+-- Volta a validacao de corpo ao padrao, para nao vazar para o proximo arquivo.
+RESET check_function_bodies;

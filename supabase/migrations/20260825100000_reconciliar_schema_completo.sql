@@ -3,6 +3,24 @@
 
 BEGIN;
 
+-- check_function_bodies = off: este arquivo cria FUNCAO ANTES da TABELA que ela
+-- le. Exemplo medido: is_country_blocked() nasce na linha ~2703 e seu corpo le
+-- public.geo_blocks, que so e criada na linha ~4767 — 2064 linhas depois. Com
+-- LANGUAGE sql o corpo e validado na criacao, entao o CREATE levantava
+--   ERROR: relation "public.geo_blocks" does not exist
+-- e, como o arquivo roda em uma transacao, derrubava com ele a criacao de
+-- risk_rules, alerts_sent e watch_cron_failures, bloqueando por cascata outros
+-- arquivos da cadeia.
+--
+-- Desligar a validacao de corpo e o jeito idiomatico do PostgreSQL para
+-- referencia adiantada, e e exatamente o que pg_dump/pg_restore faz. Conferido
+-- em PG 16.15 que a funcao criada assim FUNCIONA depois (chamada devolveu
+-- resultado, nao erro), e que sem o SET o mesmo CREATE falha.
+--
+-- Em producao e no-op: o arquivo ja foi aplicado.
+SET LOCAL check_function_bodies = off;
+
+
 -- FASE 1: tipo_cobranca
 DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='tipo_cobranca' AND typnamespace='public'::regnamespace) THEN
   CREATE TYPE public.tipo_cobranca AS ENUM ('boleto','pix','transferencia','cartao','debito_automatico','dinheiro','cheque');
