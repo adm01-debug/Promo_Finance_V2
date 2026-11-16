@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { validateCnpjCpf } from '@/lib/masks';
 import { logger } from '@/lib/logger';
+import { useAuth } from '@/hooks/useAuth';
 import { FornecedorDadosBasicos } from './form/FornecedorDadosBasicos';
 import { FornecedorContatoEndereco } from './form/FornecedorContatoEndereco';
 import { FornecedorObservacoes } from './form/FornecedorObservacoes';
@@ -88,6 +89,7 @@ const DEFAULT_VALUES: FornecedorFormData = {
 
 export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFormProps) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const { customCelebration } = useConfetti();
   const isEditing = !!fornecedor;
 
@@ -132,7 +134,10 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
 
   const createMutation = useMutation({
     mutationFn: async (data: FornecedorFormData) => {
-      const { error } = await supabase.from('fornecedores').insert(buildPayload(data));
+      if (!user?.id) throw new Error('Usuário não autenticado');
+      const { error } = await supabase
+        .from('fornecedores')
+        .insert({ ...buildPayload(data), user_id: user.id });
       if (error) throw error;
     },
     onSuccess: () => {
