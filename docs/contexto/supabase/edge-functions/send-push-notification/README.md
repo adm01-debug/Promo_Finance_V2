@@ -4,7 +4,7 @@
 |---|---|
 | nome | send-push-notification |
 | status | ACTIVE |
-| versão | 27 |
+| versão | 28 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/send-push-notification/index.ts |
 | import_map |  |

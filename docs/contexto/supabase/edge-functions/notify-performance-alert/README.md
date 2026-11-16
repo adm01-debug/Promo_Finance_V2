@@ -4,7 +4,7 @@
 |---|---|
 | nome | notify-performance-alert |
 | status | ACTIVE |
-| versão | 26 |
+| versão | 27 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/notify-performance-alert/index.ts |
 | import_map |  |

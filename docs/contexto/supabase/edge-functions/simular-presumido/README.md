@@ -4,7 +4,7 @@
 |---|---|
 | nome | simular-presumido |
 | status | ACTIVE |
-| versão | 28 |
+| versão | 29 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/simular-presumido/index.ts |
 | import_map |  |

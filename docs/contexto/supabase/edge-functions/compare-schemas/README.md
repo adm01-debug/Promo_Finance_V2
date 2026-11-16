@@ -4,7 +4,7 @@
 |---|---|
 | nome | compare-schemas |
 | status | ACTIVE |
-| versão | 27 |
+| versão | 28 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/compare-schemas/index.ts |
 | import_map |  |
