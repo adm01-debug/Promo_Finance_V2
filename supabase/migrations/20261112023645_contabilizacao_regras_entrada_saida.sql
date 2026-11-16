@@ -96,6 +96,24 @@ BEGIN
 END;
 $function$;
 
+-- A coluna acoes nasceu na criação original da tabela (fora da cadeia versionada) e
+-- nenhum CREATE TABLE da cadeia a recria: a definição vencedora
+-- (20260825100000_reconciliar_schema_completo.sql:2126) a omite. Garante a coluna
+-- para recriar o banco do zero; em produção a coluna já existe, então é no-op.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = 'public'
+       AND table_name = 'regras_contabilizacao_automatica'
+       AND column_name = 'acoes'
+  ) THEN
+    ALTER TABLE public.regras_contabilizacao_automatica
+      ADD COLUMN acoes jsonb NOT NULL DEFAULT '{}'::jsonb;
+    RAISE NOTICE 'regras_contabilizacao_automatica.acoes criada (ausente na cadeia versionada)';
+  END IF;
+END $$;
+
 -- Regras padrão da empresa 610db558 (entrada: D 1.01.02 Bancos / C 3.01.01 Receita de Vendas;
 -- saída: D 4.02.01 Despesas Administrativas / C 1.01.02 Bancos). Ajustáveis na tela.
 INSERT INTO public.regras_contabilizacao_automatica
