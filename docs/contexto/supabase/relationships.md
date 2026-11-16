@@ -120,6 +120,7 @@
 | public.folha_pagamento | created_by | auth.users | id | NO ACTION | NO ACTION |
 | public.folha_pagamento | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.formas_pagamento | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
+| public.fornecedores | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.fornecedores | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.frontend_performance_logs | user_id | auth.users | id | SET NULL | NO ACTION |
 | public.geo_blocks | blocked_by | auth.users | id | NO ACTION | NO ACTION |

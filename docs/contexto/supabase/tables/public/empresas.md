@@ -99,6 +99,7 @@
 | public.fluxos_aprovacao_niveis | fluxos_aprovacao_niveis_empresa_id_fkey | empresa_id | NO ACTION |
 | public.folha_pagamento | folha_pagamento_empresa_id_fkey | empresa_id | NO ACTION |
 | public.formas_pagamento | formas_pagamento_empresa_id_fkey | empresa_id | NO ACTION |
+| public.fornecedores | fornecedores_empresa_id_fkey | empresa_id | NO ACTION |
 | public.health_scores_operacionais | health_scores_operacionais_empresa_id_fkey | empresa_id | NO ACTION |
 | public.historico_cobranca | historico_cobranca_empresa_id_fkey | empresa_id | NO ACTION |
 | public.historico_cobranca_whatsapp | historico_cobranca_whatsapp_empresa_id_fkey | empresa_id | NO ACTION |

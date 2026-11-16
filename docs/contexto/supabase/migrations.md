@@ -1026,3 +1026,4 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261116151000 | [grants_authenticated_audit_por_coluna](migrations/20261116151000_grants_authenticated_audit_por_coluna.sql) | 8 |
 | 20261116170000 | [estorno_contabil_movimentacao_origem](migrations/20261116170000_estorno_contabil_movimentacao_origem.sql) | 4 |
 | 20261116180000 | [refresh_mv_benchmark_grants_excecao_estreita](migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql) | 5 |
+| 20261116200000 | [fornecedores_empresa_id_reconcilia](migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql) | 2 |

@@ -37,6 +37,7 @@
 | 18 | `ramo_atividade` | `text` | sim |  |  |  |
 | 19 | `score` | `numeric` | sim | `0` |  |  |
 | 20 | `telefone` | `text` | sim |  |  |  |
+| 21 | `empresa_id` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
@@ -44,6 +45,7 @@
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
 | fornecedores_cnpj_key | UNIQUE | `UNIQUE (cnpj)` |  |  | sim |
+| fornecedores_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` | NO ACTION | NO ACTION | sim |
 | fornecedores_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | fornecedores_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 
@@ -64,6 +66,7 @@
 |---|---|---|---|---|---|---|
 | fornecedores_cnpj_key | btree | cnpj | sim | sim |  | `CREATE UNIQUE INDEX fornecedores_cnpj_key ON public.fornecedores USING btree (cnpj)` |
 | fornecedores_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX fornecedores_pkey ON public.fornecedores USING btree (id)` |
+| idx_fornecedores_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_fornecedores_empresa_id ON public.fornecedores USING btree (empresa_id)` |
 | idx_fornecedores_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_fornecedores_user_id_fk ON public.fornecedores USING btree (user_id)` |
 
 

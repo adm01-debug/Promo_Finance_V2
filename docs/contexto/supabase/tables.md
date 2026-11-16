@@ -121,7 +121,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.fluxos_aprovacao_niveis](tables/public/fluxos_aprovacao_niveis.md) | table | sim | 1 | 11 | não |  |
 | [public.folha_pagamento](tables/public/folha_pagamento.md) | table | sim | 1 | 16 | não |  |
 | [public.formas_pagamento](tables/public/formas_pagamento.md) | table | sim | 1 | 6 | não |  |
-| [public.fornecedores](tables/public/fornecedores.md) | table | sim | 4 | 20 | não |  |
+| [public.fornecedores](tables/public/fornecedores.md) | table | sim | 4 | 21 | não |  |
 | [public.frontend_error_alert_state](tables/public/frontend_error_alert_state.md) | table | sim | 1 | 17 | não |  |
 | [public.frontend_error_logs](tables/public/frontend_error_logs.md) | table | sim | 3 | 9 | não |  |
 | [public.frontend_error_logs_2026_01](tables/public/frontend_error_logs_2026_01.md) | table | sim | 1 | 8 | não |  |

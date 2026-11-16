@@ -304,6 +304,7 @@ Uso e tamanho em `stats.md`.
 | public.formas_pagamento | idx_formas_pagamento_empresa_id | btree | empresa_id | não | sim |  |
 | public.fornecedores | fornecedores_cnpj_key | btree | cnpj | sim | sim |  |
 | public.fornecedores | fornecedores_pkey | btree | id | sim | sim |  |
+| public.fornecedores | idx_fornecedores_empresa_id | btree | empresa_id | não | sim |  |
 | public.fornecedores | idx_fornecedores_user_id_fk | btree | user_id | não | sim |  |
 | public.frontend_error_alert_state | frontend_error_alert_state_pkey | btree | id | sim | sim |  |
 | public.frontend_error_alert_state | frontend_error_alert_state_signature_key | btree | signature | sim | sim |  |
