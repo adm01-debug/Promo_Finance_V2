@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { calcularKpisContasReceber } from '@/hooks/useContasReceberLogic.calculos';
 import { calcularKpisContasPagar } from '@/hooks/useContasPagarLogic.calculos';
 
@@ -16,10 +16,26 @@ import { calcularKpisContasPagar } from '@/hooks/useContasPagarLogic.calculos';
  * (:35) devolve null quando o anterior é undefined ou 0, escondendo o selo.
  */
 
-const hoje = new Date();
+/**
+ * Relógio fixo no meio do mês, meio-dia LOCAL: `iso()` usa toISOString (UTC) e
+ * o cálculo compara getMonth() LOCAL, então uma data de borda cai em meses
+ * diferentes nos dois lados em fuso de offset positivo (ex.: 01/11 00h30 em
+ * UTC+2 -> iso devolve 31/10). No meio do mês ao meio-dia os dois lados
+ * concordam em qualquer fuso de -12 a +12.
+ */
+const RELOGIO = new Date(2026, 5, 15, 12, 0, 0);
+const hoje = RELOGIO;
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 describe('KPIs não fabricam o período anterior', () => {
+  beforeAll(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(RELOGIO);
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it('a receber: os "anteriores" sem fonte real ficam undefined, não soma * 0.9 / * 1.1', () => {
     const k = calcularKpisContasReceber([
       { valor: 1000, status: 'pendente', data_vencimento: iso(hoje) },
