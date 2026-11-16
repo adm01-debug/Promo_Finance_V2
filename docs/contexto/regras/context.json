@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "cf94b6b91d3fdc90c82fbdded5622dc5b09f297b",
+  "sha": "9782d3800aae7932ec74907e5abb6b06f0e5ccf6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 15:32 UTC",
-  "files_total": 3884,
-  "code_files": 3515,
-  "code_lines": 498538
+  "generated_at": "2026-11-16 16:05 UTC",
+  "files_total": 3885,
+  "code_files": 3516,
+  "code_lines": 498767
  },
  "version": "1.3.2",
- "facts_hash": "c8659d324751447c",
+ "facts_hash": "8f2f3aa0e6f4533b",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1221,
+   ".ts": 1222,
    ".sql": 1092,
    ".tsx": 1090,
    ".mjs": 60,
@@ -71234,7 +71234,7 @@
   {
    "module": "scripts",
    "files": 142,
-   "lines": 48567,
+   "lines": 48569,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -72683,8 +72683,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 223,
-   "lines": 49863,
+   "files": 224,
+   "lines": 50090,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72819,7 +72819,7 @@
     "sql-write-guard.ts: ComandoSqlMcp, AnaliseSqlMcp, removerComentariosELiterais, analisarSqlMcp, validarEscritaEscopada",
     "string-utils.ts: timingSafeEqual",
     "tributario-logic.ts: RegimeTributario, AnexoSimples, PeriodicidadeApuracao, FaturamentoMes, FolhaMes, ParametrosSimulacao",
-    "validation.ts: buildCorsHeaders, validatePayload, createErrorResponse, isWebhookProcessed, WebhookIdempotencySchema, AsaasWebhookSchema",
+    "validation.ts: buildCorsHeaders, validatePayload, parseJsonBody, createErrorResponse, isWebhookProcessed, WebhookIdempotencySchema",
     "versioned-contract.ts: CONTRACT_VERSION_HEADER, SUPPORTED_CONTRACT_VERSIONS, ContractVersion, VersionedContractResult, validateVersionedContract, contractVersionHeaders",
     "webhook-auth.ts: WebhookAuthOk, WebhookAuthFail, WebhookAuthResult, resolveSecret, authenticateWebhook",
     "webhook-idempotency.ts: WebhookClaim, WebhookFailureResult, serviceClient, claimWebhook, markSuccess, markFailure",
@@ -72895,6 +72895,7 @@
     "supabase/functions/_shared/tributario-logic.ts",
     "supabase/functions/_shared/tributario-logic_test.ts",
     "supabase/functions/_shared/validation.ts",
+    "supabase/functions/_shared/validation_test.ts",
     "supabase/functions/_shared/versioned-contract.ts",
     "supabase/functions/_shared/versioned-contract_test.ts",
     "supabase/functions/_shared/webhook-auth.ts",
@@ -72939,8 +72940,7 @@
     "supabase/functions/asaas-webhook/index.ts",
     "supabase/functions/benchmarking-setorial/index.ts",
     "supabase/functions/bitrix24-sync/index.ts",
-    "supabase/functions/bitrix24-webhook/index.test.ts",
-    "supabase/functions/bitrix24-webhook/index.ts"
+    "supabase/functions/bitrix24-webhook/index.test.ts"
    ]
   },
   {
@@ -87572,7 +87572,7 @@
    },
    {
     "file": "supabase/functions/enviar-alerta-email/index.ts",
-    "text": "6b7280;\">Vencimento: ${dados.dataVencimento}</p>` : ''}"
+    "text": "6b7280;\">Vencimento: ${dados.dataVencimento}</p>`"
    },
    {
     "file": "supabase/functions/enviar-convite-organizacao/index.ts",
@@ -180596,7 +180596,7 @@
   },
   "scripts/security/test_gates_shell.py": {
    "path": "scripts/security/test_gates_shell.py",
-   "lines": 587,
+   "lines": 589,
    "exports": [
     "def _rodar",
     "class _MiniRepo",
@@ -230043,10 +230043,11 @@
   },
   "supabase/functions/_shared/validation.ts": {
    "path": "supabase/functions/_shared/validation.ts",
-   "lines": 433,
+   "lines": 469,
    "exports": [
     "const buildCorsHeaders",
     "function validatePayload",
+    "function parseJsonBody",
     "function createErrorResponse",
     "function isWebhookProcessed",
     "const WebhookIdempotencySchema",
@@ -230303,6 +230304,10 @@
    "pagination": [
     "1"
    ]
+  },
+  "supabase/functions/_shared/validation_test.ts": {
+   "path": "supabase/functions/_shared/validation_test.ts",
+   "lines": 66
   },
   "supabase/functions/_shared/versioned-contract.ts": {
    "path": "supabase/functions/_shared/versioned-contract.ts",
@@ -231512,7 +231517,7 @@
   },
   "supabase/functions/analyze-document/index.ts": {
    "path": "supabase/functions/analyze-document/index.ts",
-   "lines": 214,
+   "lines": 217,
    "exports": [
     "const handler"
    ],
@@ -231676,7 +231681,7 @@
   },
   "supabase/functions/asaas-proxy/index.ts": {
    "path": "supabase/functions/asaas-proxy/index.ts",
-   "lines": 1329,
+   "lines": 1336,
    "exports": [
     "const handler"
    ],
@@ -232126,7 +232131,7 @@
   },
   "supabase/functions/benchmarking-setorial/index.ts": {
    "path": "supabase/functions/benchmarking-setorial/index.ts",
-   "lines": 183,
+   "lines": 188,
    "exports": [
     "const handler"
    ],
@@ -232161,7 +232166,7 @@
   },
   "supabase/functions/bitrix24-sync/index.ts": {
    "path": "supabase/functions/bitrix24-sync/index.ts",
-   "lines": 894,
+   "lines": 905,
    "tables": [
     {
      "table": "bitrix_oauth_tokens",
@@ -232444,7 +232449,7 @@
   },
   "supabase/functions/bling-proxy/index.ts": {
    "path": "supabase/functions/bling-proxy/index.ts",
-   "lines": 1013,
+   "lines": 1016,
    "tables": [
     {
      "table": "user_roles",
@@ -234186,7 +234191,7 @@
   },
   "supabase/functions/enviar-alerta-email/index.ts": {
    "path": "supabase/functions/enviar-alerta-email/index.ts",
-   "lines": 227,
+   "lines": 281,
    "exports": [
     "const handler"
    ],
@@ -234232,7 +234237,7 @@
     }
    ],
    "rule_comments": [
-    "6b7280;\">Vencimento: ${dados.dataVencimento}</p>` : ''}"
+    "6b7280;\">Vencimento: ${dados.dataVencimento}</p>`"
    ],
    "side_effects": [
     "asaas"
@@ -236472,7 +236477,7 @@
   },
   "supabase/functions/gerar-sped-ecd/index.ts": {
    "path": "supabase/functions/gerar-sped-ecd/index.ts",
-   "lines": 352,
+   "lines": 354,
    "tables": [
     {
      "table": "user_roles",
@@ -236699,7 +236704,7 @@
   },
   "supabase/functions/gerar-sped-ecf/index.ts": {
    "path": "supabase/functions/gerar-sped-ecf/index.ts",
-   "lines": 390,
+   "lines": 392,
    "tables": [
     {
      "table": "user_roles",
@@ -237091,7 +237096,7 @@
   },
   "supabase/functions/log-sped-bitrix24/index.ts": {
    "path": "supabase/functions/log-sped-bitrix24/index.ts",
-   "lines": 241,
+   "lines": 243,
    "tables": [
     {
      "table": "audit_logs",
@@ -237479,7 +237484,7 @@
   },
   "supabase/functions/n8n-dispatch/index.ts": {
    "path": "supabase/functions/n8n-dispatch/index.ts",
-   "lines": 214,
+   "lines": 217,
    "tables": [
     {
      "table": "n8n_workflow_configs",
@@ -237524,7 +237529,7 @@
   },
   "supabase/functions/nfe-upload-certificado/index.ts": {
    "path": "supabase/functions/nfe-upload-certificado/index.ts",
-   "lines": 270,
+   "lines": 273,
    "tables": [
     {
      "table": "sefaz_dfe_cursor",
@@ -237661,7 +237666,7 @@
   },
   "supabase/functions/notify-saved-filter/index.ts": {
    "path": "supabase/functions/notify-saved-filter/index.ts",
-   "lines": 251,
+   "lines": 258,
    "tables": [
     {
      "table": "notification_history",
@@ -238239,7 +238244,7 @@
   },
   "supabase/functions/processar-solicitacao-lgpd/index.ts": {
    "path": "supabase/functions/processar-solicitacao-lgpd/index.ts",
-   "lines": 238,
+   "lines": 240,
    "tables": [
     {
      "table": "solicitacoes_lgpd",
@@ -238344,7 +238349,7 @@
   },
   "supabase/functions/projecao-reforma/index.ts": {
    "path": "supabase/functions/projecao-reforma/index.ts",
-   "lines": 207,
+   "lines": 210,
    "errors": [
     "Unauthorized"
    ],
@@ -239238,7 +239243,7 @@
   },
   "supabase/functions/send-device-alert/index.ts": {
    "path": "supabase/functions/send-device-alert/index.ts",
-   "lines": 181,
+   "lines": 184,
    "external_urls": [
     "https://api.resend.com/emails"
    ],
@@ -239271,7 +239276,7 @@
   },
   "supabase/functions/send-push-notification/index.ts": {
    "path": "supabase/functions/send-push-notification/index.ts",
-   "lines": 366,
+   "lines": 369,
    "exports": [
     "function handler"
    ],
@@ -239334,15 +239339,15 @@
   },
   "supabase/functions/simular-presumido/index.ts": {
    "path": "supabase/functions/simular-presumido/index.ts",
-   "lines": 34
+   "lines": 37
   },
   "supabase/functions/simular-real/index.ts": {
    "path": "supabase/functions/simular-real/index.ts",
-   "lines": 34
+   "lines": 37
   },
   "supabase/functions/simular-simples/index.ts": {
    "path": "supabase/functions/simular-simples/index.ts",
-   "lines": 49
+   "lines": 52
   },
   "supabase/functions/sincronizar-anomalia-bitrix24/index.ts": {
    "path": "supabase/functions/sincronizar-anomalia-bitrix24/index.ts",
@@ -240606,7 +240611,7 @@
   },
   "supabase/functions/whatsapp-ia-proativo/index.ts": {
    "path": "supabase/functions/whatsapp-ia-proativo/index.ts",
-   "lines": 918,
+   "lines": 921,
    "exports": [
     "interface WhatsappIaProativoDependencies",
     "function createHandler",
@@ -245731,10 +245736,42 @@
   }
  },
  "git": {
-  "sha": "cf94b6b91d3fdc90c82fbdded5622dc5b09f297b",
+  "sha": "9782d3800aae7932ec74907e5abb6b06f0e5ccf6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9782d38",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)",
+    "files": [
+     "scripts/security/test_gates_shell.py",
+     "scripts/security/zod-coverage.sh",
+     "supabase/functions/_shared/validation.ts",
+     "supabase/functions/_shared/validation_test.ts",
+     "supabase/functions/analyze-document/index.ts",
+     "supabase/functions/asaas-proxy/index.ts",
+     "supabase/functions/benchmarking-setorial/index.ts",
+     "supabase/functions/bitrix24-sync/index.ts",
+     "supabase/functions/bling-proxy/index.ts",
+     "supabase/functions/enviar-alerta-email/index.ts",
+     "supabase/functions/gerar-sped-ecd/index.ts",
+     "supabase/functions/gerar-sped-ecf/index.ts",
+     "supabase/functions/log-sped-bitrix24/index.ts",
+     "supabase/functions/n8n-dispatch/index.ts",
+     "supabase/functions/nfe-upload-certificado/index.ts",
+     "supabase/functions/notify-saved-filter/index.ts",
+     "supabase/functions/processar-solicitacao-lgpd/index.ts",
+     "supabase/functions/projecao-reforma/index.ts",
+     "supabase/functions/send-device-alert/index.ts",
+     "supabase/functions/send-push-notification/index.ts",
+     "supabase/functions/simular-presumido/index.ts",
+     "supabase/functions/simular-real/index.ts",
+     "supabase/functions/simular-simples/index.ts",
+     "supabase/functions/whatsapp-ia-proativo/index.ts"
+    ]
+   },
    {
     "sha": "cf94b6b",
     "date": "2026-11-16",
@@ -246034,24 +246071,6 @@
      "src/hooks/useRealtimeAnomalias.ts",
      "src/hooks/useScimTokens.ts"
     ]
-   },
-   {
-    "sha": "fd8c431",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)",
-    "files": [
-     "src/components/asaas/WebhooksLogPanel.tsx",
-     "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
-     "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts",
-     "src/components/pix-hub/PixTemplates.tsx",
-     "src/hooks/useOportunidadesElisao.ts",
-     "src/hooks/usePixTemplates.test.ts",
-     "src/hooks/usePixTemplates.ts",
-     "src/hooks/useScimChecklist.ts",
-     "src/hooks/useSecurityAlerts.ts",
-     "src/integrations/supabase/types.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -246060,79 +246079,79 @@
     3
    ],
    [
+    "supabase/functions/gerar-sped-ecd/index.ts",
+    2
+   ],
+   [
+    "supabase/functions/gerar-sped-ecf/index.ts",
+    2
+   ],
+   [
     "src/components/compras/PedidoCompraForm.tsx",
     2
    ],
    [
-    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
+    "scripts/security/test_gates_shell.py",
     1
    ],
    [
-    "src/hooks/useDemonstrativosContabeis.ts",
+    "scripts/security/zod-coverage.sh",
     1
    ],
    [
-    "supabase/functions/gerar-sped-ecd/index.ts",
+    "supabase/functions/_shared/validation.ts",
     1
    ],
    [
-    "supabase/functions/gerar-sped-ecf/index.ts",
+    "supabase/functions/_shared/validation_test.ts",
     1
    ],
    [
-    "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
+    "supabase/functions/analyze-document/index.ts",
     1
    ],
    [
-    "src/components/dashboard/DashboardFiltersHeader.tsx",
+    "supabase/functions/asaas-proxy/index.ts",
     1
    ],
    [
-    "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx",
+    "supabase/functions/benchmarking-setorial/index.ts",
     1
    ],
    [
-    "docs/ci/MATRIZ_EDGE_TABELA.md",
+    "supabase/functions/bitrix24-sync/index.ts",
     1
    ],
    [
-    "docs/ci/README.md",
+    "supabase/functions/bling-proxy/index.ts",
     1
    ],
    [
-    "docs/ci/kpi.json",
+    "supabase/functions/enviar-alerta-email/index.ts",
     1
    ],
    [
-    ".github/workflows/ci.yml",
+    "supabase/functions/log-sped-bitrix24/index.ts",
     1
    ],
    [
-    "docs/agentes/inventario-branches-2026-11-16.md",
+    "supabase/functions/n8n-dispatch/index.ts",
     1
    ],
    [
-    ".github/workflows/prod-migrate.yml",
+    "supabase/functions/nfe-upload-certificado/index.ts",
     1
    ],
    [
-    "src/components/fornecedores/FornecedorForm.tsx",
+    "supabase/functions/notify-saved-filter/index.ts",
     1
    ],
    [
-    "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+    "supabase/functions/processar-solicitacao-lgpd/index.ts",
     1
    ],
    [
-    "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql",
-    1
-   ],
-   [
-    "supabase/functions/_shared/string-utils.ts",
+    "supabase/functions/projecao-reforma/index.ts",
     1
    ]
   ]

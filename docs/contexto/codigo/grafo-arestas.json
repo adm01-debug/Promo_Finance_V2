@@ -11474,7 +11474,8 @@
    "supabase/functions/_shared/contract-validator.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
-   "supabase/functions/_shared/observability.ts"
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/nfe-vinculo-proxy/index.ts": [
    "supabase/functions/_shared/contract-response.ts",

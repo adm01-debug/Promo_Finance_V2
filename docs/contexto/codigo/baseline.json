@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "cf94b6b91d3fdc90c82fbdded5622dc5b09f297b",
+  "commit": "9782d3800aae7932ec74907e5abb6b06f0e5ccf6",
   "branch": "main",
-  "data_commit": "2026-11-16T12:28:32-03:00",
+  "data_commit": "2026-11-16T13:03:21-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9782d38",
+    "data": "2026-11-16",
+    "assunto": "fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)"
+   },
    {
     "sha": "cf94b6b",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "f3b6700",
     "data": "2026-11-14",
     "assunto": "chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica"
-   },
-   {
-    "sha": "b7559c3",
-    "data": "2026-11-14",
-    "assunto": "fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)"
    }
   ],
-  "arquivos_mudados_7d": 698,
+  "arquivos_mudados_7d": 714,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -156,15 +156,15 @@
     "mudancas": 19
    },
    {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 19
+   },
+   {
     "pasta": "src/components/contas-receber",
     "mudancas": 17
    },
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 17
-   },
-   {
-    "pasta": "supabase/functions/_shared",
     "mudancas": 17
    },
    {
@@ -210,11 +210,11 @@
     "mudancas": 30
    },
    {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 18
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "mudancas": 19
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "arquivo": "supabase/config.toml",
     "mudancas": 18
    },
    {
@@ -230,6 +230,10 @@
     "mudancas": 14
    },
    {
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "mudancas": 14
+   },
+   {
     "arquivo": "supabase/functions/mcp-query/index.ts",
     "mudancas": 14
    },
@@ -238,15 +242,7 @@
     "mudancas": 14
    },
    {
-    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
-    "mudancas": 13
-   },
-   {
     "arquivo": "env.manifest.json",
-    "mudancas": 13
-   },
-   {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 13
    },
    {
@@ -256,6 +252,14 @@
    {
     "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 13
+   },
+   {
+    "arquivo": "supabase/functions/n8n-dispatch/index.ts",
+    "mudancas": 13
+   },
+   {
+    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
+    "mudancas": 12
    },
    {
     "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
@@ -282,26 +286,22 @@
     "mudancas": 12
    },
    {
-    "arquivo": "supabase/functions/n8n-dispatch/index.ts",
+    "arquivo": "supabase/functions/enviar-alerta-email/index.ts",
     "mudancas": 12
    },
    {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "arquivo": "supabase/functions/gerar-sped-ecd/index.ts",
     "mudancas": 12
    },
    {
-    "arquivo": "AGENTS.md",
-    "mudancas": 11
-   },
-   {
-    "arquivo": "PENDENCIAS.md",
-    "mudancas": 11
+    "arquivo": "supabase/functions/gerar-sped-ecf/index.ts",
+    "mudancas": 12
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 131
+    "commits": 132
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3842,
-  "arquivos_codigo": 2422,
-  "linhas_codigo": 432019,
+  "arquivos_total": 3843,
+  "arquivos_codigo": 2423,
+  "linhas_codigo": 432247,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1022,
   "cron_jobs": 21,
-  "testes": 439,
+  "testes": 440,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 192
@@ -580,7 +580,7 @@
   },
   "scripts/security": {
    "arquivos": 13,
-   "linhas": 4423
+   "linhas": 4425
   },
   "scripts/simular-observabilidade-digest.ts": {
    "arquivos": 1,
@@ -679,8 +679,8 @@
    "linhas": 939
   },
   "supabase/functions": {
-   "arquivos": 223,
-   "linhas": 49640
+   "arquivos": 224,
+   "linhas": 49866
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -714,7 +714,7 @@
   },
   {
    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-   "linhas": 1328
+   "linhas": 1335
   },
   {
    "arquivo": "scripts/graphify-local.mjs",
@@ -738,7 +738,7 @@
   },
   {
    "arquivo": "supabase/functions/bling-proxy/index.ts",
-   "linhas": 1012
+   "linhas": 1015
   },
   {
    "arquivo": "scripts/mcp-phd-suite.mjs",
@@ -754,11 +754,11 @@
   },
   {
    "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",
-   "linhas": 917
+   "linhas": 920
   },
   {
    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-   "linhas": 893
+   "linhas": 904
   },
   {
    "arquivo": "scripts/ci/github-settings-guard.mjs",
@@ -872,7 +872,7 @@
   },
   {
    "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",
-   "linha": 264,
+   "linha": 267,
    "tipo": "TODO",
    "texto": "acesso de usuário precisa do"
   },
@@ -884,7 +884,7 @@
   },
   {
    "arquivo": "scripts/security/test_gates_shell.py",
-   "linha": 112,
+   "linha": 113,
    "tipo": "TODO",
    "texto": "validatePayload(S, b)\\n */\\nconst b = await req.json();\\n\","
   }

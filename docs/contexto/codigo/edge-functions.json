@@ -121,6 +121,7 @@
   "supabase/functions/_shared/tributario-logic.ts",
   "supabase/functions/_shared/tributario-logic_test.ts",
   "supabase/functions/_shared/validation.ts",
+  "supabase/functions/_shared/validation_test.ts",
   "supabase/functions/_shared/versioned-contract.ts",
   "supabase/functions/_shared/versioned-contract_test.ts",
   "supabase/functions/_shared/webhook-auth.ts",
@@ -251,7 +252,7 @@
    "nome": "analyze-document",
    "entrada": "supabase/functions/analyze-document/index.ts",
    "arquivos": 1,
-   "linhas": 213,
+   "linhas": 216,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -323,7 +324,7 @@
    "nome": "asaas-proxy",
    "entrada": "supabase/functions/asaas-proxy/index.ts",
    "arquivos": 3,
-   "linhas": 1371,
+   "linhas": 1378,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -426,7 +427,7 @@
    "nome": "benchmarking-setorial",
    "entrada": "supabase/functions/benchmarking-setorial/index.ts",
    "arquivos": 1,
-   "linhas": 182,
+   "linhas": 187,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -464,7 +465,7 @@
    "nome": "bitrix24-sync",
    "entrada": "supabase/functions/bitrix24-sync/index.ts",
    "arquivos": 1,
-   "linhas": 893,
+   "linhas": 904,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -551,7 +552,7 @@
    "nome": "bling-proxy",
    "entrada": "supabase/functions/bling-proxy/index.ts",
    "arquivos": 1,
-   "linhas": 1012,
+   "linhas": 1015,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1397,7 +1398,7 @@
    "nome": "enviar-alerta-email",
    "entrada": "supabase/functions/enviar-alerta-email/index.ts",
    "arquivos": 1,
-   "linhas": 226,
+   "linhas": 280,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2414,7 +2415,7 @@
    "nome": "gerar-sped-ecd",
    "entrada": "supabase/functions/gerar-sped-ecd/index.ts",
    "arquivos": 2,
-   "linhas": 624,
+   "linhas": 626,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2456,7 +2457,7 @@
    "nome": "gerar-sped-ecf",
    "entrada": "supabase/functions/gerar-sped-ecf/index.ts",
    "arquivos": 2,
-   "linhas": 617,
+   "linhas": 619,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2631,7 +2632,7 @@
    "nome": "log-sped-bitrix24",
    "entrada": "supabase/functions/log-sped-bitrix24/index.ts",
    "arquivos": 1,
-   "linhas": 240,
+   "linhas": 242,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2812,7 +2813,7 @@
    "nome": "n8n-dispatch",
    "entrada": "supabase/functions/n8n-dispatch/index.ts",
    "arquivos": 1,
-   "linhas": 213,
+   "linhas": 216,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2850,7 +2851,7 @@
    "nome": "nfe-upload-certificado",
    "entrada": "supabase/functions/nfe-upload-certificado/index.ts",
    "arquivos": 1,
-   "linhas": 269,
+   "linhas": 272,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2880,7 +2881,8 @@
     "contract-validator.ts",
     "cors.ts",
     "edge-observability.ts",
-    "observability.ts"
+    "observability.ts",
+    "validation.ts"
    ],
    "chamada_pelo_front": [
     "src/hooks/useCertificadosDigitais.ts"
@@ -2966,7 +2968,7 @@
    "nome": "notify-saved-filter",
    "entrada": "supabase/functions/notify-saved-filter/index.ts",
    "arquivos": 1,
-   "linhas": 250,
+   "linhas": 257,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3218,7 +3220,7 @@
    "nome": "processar-solicitacao-lgpd",
    "entrada": "supabase/functions/processar-solicitacao-lgpd/index.ts",
    "arquivos": 1,
-   "linhas": 237,
+   "linhas": 239,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3263,7 +3265,7 @@
    "nome": "projecao-reforma",
    "entrada": "supabase/functions/projecao-reforma/index.ts",
    "arquivos": 1,
-   "linhas": 206,
+   "linhas": 209,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3507,7 +3509,7 @@
    "nome": "send-device-alert",
    "entrada": "supabase/functions/send-device-alert/index.ts",
    "arquivos": 1,
-   "linhas": 180,
+   "linhas": 183,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3544,7 +3546,7 @@
    "nome": "send-push-notification",
    "entrada": "supabase/functions/send-push-notification/index.ts",
    "arquivos": 1,
-   "linhas": 365,
+   "linhas": 368,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3590,7 +3592,7 @@
    "nome": "simular-presumido",
    "entrada": "supabase/functions/simular-presumido/index.ts",
    "arquivos": 1,
-   "linhas": 33,
+   "linhas": 36,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3618,7 +3620,7 @@
    "nome": "simular-real",
    "entrada": "supabase/functions/simular-real/index.ts",
    "arquivos": 1,
-   "linhas": 33,
+   "linhas": 36,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3646,7 +3648,7 @@
    "nome": "simular-simples",
    "entrada": "supabase/functions/simular-simples/index.ts",
    "arquivos": 1,
-   "linhas": 48,
+   "linhas": 51,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -4280,7 +4282,7 @@
    "nome": "whatsapp-ia-proativo",
    "entrada": "supabase/functions/whatsapp-ia-proativo/index.ts",
    "arquivos": 1,
-   "linhas": 917,
+   "linhas": 920,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"

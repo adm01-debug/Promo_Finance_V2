@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 439,
+ "total": 440,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 363
+  "unit": 364
  },
  "onde_ficam": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 106
+   "arquivos": 107
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -662,7 +662,7 @@
   {
    "arquivo": "scripts/security/test_gates_shell.py",
    "tipo": "pytest",
-   "linhas": 586,
+   "linhas": 588,
    "testa": [],
    "casos": 0
   },
@@ -3445,6 +3445,15 @@
    "casos": 4
   },
   {
+   "arquivo": "supabase/functions/_shared/validation_test.ts",
+   "tipo": "unit",
+   "linhas": 65,
+   "testa": [
+    "supabase/functions/_shared/validation.ts"
+   ],
+   "casos": 4
+  },
+  {
    "arquivo": "supabase/functions/_shared/versioned-contract_test.ts",
    "tipo": "contrato",
    "linhas": 60,
@@ -4183,7 +4192,7 @@
   "supabase/functions/_shared/sped/push-helper.ts": 1,
   "supabase/functions/_shared/sql-write-guard.ts": 1,
   "supabase/functions/_shared/tributario-logic.ts": 2,
-  "supabase/functions/_shared/validation.ts": 2,
+  "supabase/functions/_shared/validation.ts": 3,
   "supabase/functions/_shared/versioned-contract.ts": 1,
   "supabase/functions/_shared/webhook-auth.ts": 1,
   "supabase/functions/_shared/zod.ts": 2,

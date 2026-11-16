@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cf94b6b91d3fdc90c82fbdded5622dc5b09f297b` (2026-11-16T12:28:32-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9782d3800aae7932ec74907e5abb6b06f0e5ccf6` (2026-11-16T13:03:21-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2311), SQL (1092), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2312), SQL (1092), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3842 |
-| arquivos_codigo | 2422 |
-| linhas_codigo | 432019 |
+| arquivos_total | 3843 |
+| arquivos_codigo | 2423 |
+| linhas_codigo | 432247 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1022 |
 | cron_jobs | 21 |
-| testes | 439 |
+| testes | 440 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 192 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (251), outro (106), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (251), outro (107), co-localizado (*.test) (42)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -463,18 +463,18 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (40)
 - bun.lock (33)
 - .github/workflows/ci.yml (30)
+- supabase/functions/asaas-proxy/index.ts (19)
 - supabase/config.toml (18)
-- supabase/functions/asaas-proxy/index.ts (18)
 - .github/workflows/deno-tests.yml (17)
 - .github/workflows/supabase-linter.yml (14)
 - src/App.tsx (14)
+- supabase/functions/bling-proxy/index.ts (14)
 - supabase/functions/mcp-query/index.ts (14)
 - supabase/functions/n8n-callback/index.ts (14)
-- e2e/auth/admin-rbac.e2e.ts (13)
 - env.manifest.json (13)
-- supabase/functions/bling-proxy/index.ts (13)
 - supabase/functions/enviar-convite-organizacao/index.ts (13)
 - supabase/functions/gerar-pacote-evidencias/index.ts (13)
+- supabase/functions/n8n-dispatch/index.ts (13)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `9782d38` fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)
 - 2026-11-16 `cf94b6b` fix(db): refresh_mv_benchmark_setorial sai de PUBLIC e para de engolir erro em WHEN OTHERS (#370)
 - 2026-11-16 `5272662` fix: estorno contábil de movimentação excluída/alterada, com as 6 correções da revisão da #340 (#366)
 - 2026-11-16 `bc42f17` chore(docs): registra a análise do log de produção de 14/11 (#367)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `a023fa6` fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)
 - 2026-11-16 `c5a3c4a` fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)
 - 2026-11-16 `3f3da8c` feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)
-- 2026-11-16 `6b83746` test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

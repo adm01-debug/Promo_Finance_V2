@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 1989,
- "arestas": 8424,
+ "arestas": 8425,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -113,12 +113,12 @@
    "importado_por": 50
   },
   {
-   "arquivo": "src/components/ui/separator.tsx",
-   "importado_por": 49
+   "arquivo": "supabase/functions/_shared/validation.ts",
+   "importado_por": 50
   },
   {
-   "arquivo": "supabase/functions/_shared/validation.ts",
-   "importado_por": 48
+   "arquivo": "src/components/ui/separator.tsx",
+   "importado_por": 49
   },
   {
    "arquivo": "src/components/ui/textarea.tsx",

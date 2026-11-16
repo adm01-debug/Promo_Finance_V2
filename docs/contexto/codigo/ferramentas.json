@@ -3,7 +3,7 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2311)",
+   "TypeScript (2312)",
    "SQL (1092)",
    "Markdown (192)",
    "JavaScript (68)",
@@ -1680,6 +1680,10 @@
     "arquivos": 1
    },
    {
+    "host": "exemplo.test",
+    "arquivos": 1
+   },
+   {
     "host": "existing.png",
     "arquivos": 1
    },
@@ -1773,6 +1777,10 @@
    },
    {
     "host": "outro.exemplo",
+    "arquivos": 1
+   },
+   {
+    "host": "precedencia.invalido",
     "arquivos": 1
    },
    {

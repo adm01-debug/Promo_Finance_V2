@@ -1099,7 +1099,7 @@
   {
    "arquivo": "scripts/security/zod-coverage.sh",
    "descricao": "Zod coverage gate for Supabase Edge Functions. Emite a lista de funções que consomem `req.json()` sem passar por",
-   "linhas": 88,
+   "linhas": 91,
    "env": [],
    "npm_scripts": [],
    "workflows": [
