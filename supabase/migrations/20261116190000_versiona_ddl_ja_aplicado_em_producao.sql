@@ -25,6 +25,12 @@
 --
 --   Os 8 DROP CONSTRAINT do step13: 3 a cadeia nunca cria (no-op, fora daqui)
 --   e 5 ela cria e nunca derruba (divergencia real, entram aqui).
+--
+--   Correcao da segunda revisao: o DROP das 5 constraints e do 4o indice era
+--   solto, e as respectivas gemeas de producao NAO sao criadas pela cadeia.
+--   No replay isso removeria a unica garantia de unicidade de 5 tabelas
+--   fiscais e o unico indice de empresa_id de outra. Agora cada par CRIA a
+--   gemea antes de derrubar a original (secoes 1a e 1b).
 
 -- 1. Quatro indices que a cadeia CRIA e nunca remove, e que producao nao tem.
 --    Sem estes DROP, todo ambiente reconstruido nasce com indice que producao
@@ -37,38 +43,96 @@
 --      idx_relatorios_tributarios_agendados_empresa_id
 --        <- 20260825100000_reconciliar_schema_completo.sql:10139
 --    Conferido em producao: nenhum dos 16 indices do step13 existe no canonico
---    (pg_indexes com os 16 nomes devolveu vazio). Para o indice de
---    relatorios_tributarios_agendados, producao mantem o gemeo
---    idx_relatorios_tributarios_agendados_empresa, tambem em (empresa_id):
---    a cobertura de leitura nao muda.
+--    (pg_indexes com os 16 nomes devolveu vazio).
 DROP INDEX IF EXISTS public.uq_index_usage_snapshots_snapshot_schema_index;
 DROP INDEX IF EXISTS public.ux_integration_secrets_chave;
 DROP INDEX IF EXISTS public.idx_ncms_st;
+
+-- 1a. O quarto indice exige CRIAR o gemeo ANTES de derrubar o original.
+--     Producao tem idx_relatorios_tributarios_agendados_empresa em (empresa_id)
+--     e NAO tem o ..._empresa_id. Mas a cadeia so cria o ..._empresa_id e nunca
+--     cria o ..._empresa (conferido: grep do nome exato em supabase/migrations/
+--     nao devolve nada). Derrubar sem criar deixaria o ambiente reconstruido SEM
+--     nenhum indice em empresa_id nessa tabela, e a tela de relatorios agendados
+--     passaria a varrer a tabela inteira.
+--     Em producao as duas linhas sao no-op: a primeira porque o indice existe, a
+--     segunda porque o ..._empresa_id nao existe.
+CREATE INDEX IF NOT EXISTS idx_relatorios_tributarios_agendados_empresa
+  ON public.relatorios_tributarios_agendados (empresa_id);
 DROP INDEX IF EXISTS public.idx_relatorios_tributarios_agendados_empresa_id;
 
 -- 1b. Cinco constraints UNIQUE que a cadeia CRIA (dentro do CREATE TABLE, em 3
---     arquivos cada) e nunca derruba, e que producao nao tem. Sao duplicatas: o
---     step13 derrubou cada uma mantendo a gemea de maior idx_scan. Conferido em
---     producao que a gemea sobreviveu com AS MESMAS COLUNAS, uma a uma, logo a
---     unicidade do negocio continua garantida:
---       aliquotas_interestaduais_unq (uf_origem, uf_destino, vigente_de)
---         -> gemea viva: aliquotas_interestaduais_unique, mesmas colunas
---       protocolos_st_ufs_unq (protocolo_id, uf)
---         -> gemea viva: protocolos_st_ufs_unique, mesmas colunas
---       aliquotas_internas_uf_unq (uf, categoria_produto, vigente_de)
---         -> gemea viva: aliquotas_internas_uf_unique, mesmas colunas
---       faixas_simples_unq (anexo, faixa, vigente_de)
---         -> gemea viva: faixas_simples_anexo_faixa_key, mesmas colunas
---       fechamento_unico (empresa_id, ano, mes)
---         -> gemea viva: fechamentos_tributarios_empresa_id_ano_mes_key, idem
+--     arquivos cada) e nunca derruba, e que producao nao tem. O step13 derrubou
+--     cada uma mantendo a gemea de maior idx_scan, e a gemea sobreviveu em
+--     producao com AS MESMAS COLUNAS, uma a uma.
+--
+--     ATENCAO (achado da revisao, devin + codex, e eles estao certos): as cinco
+--     gemeas existem SO em producao. A cadeia de migrations nunca as cria —
+--     `grep -rn "<nome_da_gemea>" supabase/migrations/` devolve ZERO para as
+--     cinco. Logo um DROP solto aqui tiraria, no replay, a UNICA garantia de
+--     unicidade dessas tabelas fiscais: alicotas interestaduais e internas,
+--     faixas do Simples, vinculo protocolo-UF e fechamento tributario passariam
+--     a aceitar duplicata para a mesma chave e vigencia. Provar no banco de
+--     producao nao prova nada sobre o replay — foi o mesmo erro da secao 3.
+--
+--     Por isso: CRIAR a gemea (idempotente) ANTES de derrubar a original.
+--       em producao: ADD e no-op (gemea existe), DROP e no-op (original nao
+--                    existe)  -> a migration inteira continua no-op
+--       no replay ..: ADD cria a gemea com as mesmas colunas, DROP remove a
+--                    original -> a unicidade continua garantida, sob o nome que
+--                    producao usa
+--
+--     original derrubada                      -> gemea criada (mesmas colunas)
+--       aliquotas_interestaduais_unq          -> aliquotas_interestaduais_unique
+--         (uf_origem, uf_destino, vigente_de)
+--       protocolos_st_ufs_unq                 -> protocolos_st_ufs_unique
+--         (protocolo_id, uf)
+--       aliquotas_internas_uf_unq             -> aliquotas_internas_uf_unique
+--         (uf, categoria_produto, vigente_de)
+--       faixas_simples_unq                    -> faixas_simples_anexo_faixa_key
+--         (anexo, faixa, vigente_de)
+--       fechamento_unico                      -> fechamentos_tributarios_empresa_id_ano_mes_key
+--         (empresa_id, ano, mes)
+--
 --     Os outros 3 DROP CONSTRAINT do step13 ficam fora: a cadeia nunca cria
 --     conformidade_snapshots_empresa_id_competencia_key, entregas_obrigacoes_uniq
 --     nem user_active_filters_user_id_entity_type_key (o DROP seria no-op).
-ALTER TABLE public.aliquotas_interestaduais DROP CONSTRAINT IF EXISTS aliquotas_interestaduais_unq;
-ALTER TABLE public.protocolos_st_ufs        DROP CONSTRAINT IF EXISTS protocolos_st_ufs_unq;
-ALTER TABLE public.aliquotas_internas_uf    DROP CONSTRAINT IF EXISTS aliquotas_internas_uf_unq;
-ALTER TABLE public.faixas_simples_nacional  DROP CONSTRAINT IF EXISTS faixas_simples_unq;
-ALTER TABLE public.fechamentos_tributarios  DROP CONSTRAINT IF EXISTS fechamento_unico;
+DO $cons$
+DECLARE r record;
+BEGIN
+  FOR r IN
+    SELECT * FROM (VALUES
+      ('aliquotas_interestaduais', 'aliquotas_interestaduais_unique',
+       '(uf_origem, uf_destino, vigente_de)', 'aliquotas_interestaduais_unq'),
+      ('protocolos_st_ufs', 'protocolos_st_ufs_unique',
+       '(protocolo_id, uf)', 'protocolos_st_ufs_unq'),
+      ('aliquotas_internas_uf', 'aliquotas_internas_uf_unique',
+       '(uf, categoria_produto, vigente_de)', 'aliquotas_internas_uf_unq'),
+      ('faixas_simples_nacional', 'faixas_simples_anexo_faixa_key',
+       '(anexo, faixa, vigente_de)', 'faixas_simples_unq'),
+      ('fechamentos_tributarios', 'fechamentos_tributarios_empresa_id_ano_mes_key',
+       '(empresa_id, ano, mes)', 'fechamento_unico')
+    ) AS t(tabela, gemea, colunas, original)
+  LOOP
+    IF to_regclass('public.' || quote_ident(r.tabela)) IS NULL THEN
+      RAISE NOTICE 'tabela public.% ausente: par %/% ignorado', r.tabela, r.gemea, r.original;
+      CONTINUE;
+    END IF;
+
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_constraint
+       WHERE conname = r.gemea
+         AND conrelid = ('public.' || quote_ident(r.tabela))::regclass
+    ) THEN
+      EXECUTE format('ALTER TABLE public.%I ADD CONSTRAINT %I UNIQUE %s',
+                     r.tabela, r.gemea, r.colunas);
+    END IF;
+
+    EXECUTE format('ALTER TABLE public.%I DROP CONSTRAINT IF EXISTS %I',
+                   r.tabela, r.original);
+  END LOOP;
+END
+$cons$;
 
 -- 2. autovacuum nas 6 tabelas que 20261101120200_autovacuum_scale_factor.sql
 --    NAO cobre (lá estão movimentacoes, contas_receber, contas_pagar, boletos,
