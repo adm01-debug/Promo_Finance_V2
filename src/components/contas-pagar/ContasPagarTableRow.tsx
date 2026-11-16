@@ -34,6 +34,7 @@ import {
 } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import type { StatusPagamento, TipoCobranca } from '@/types/financial';
+import { rotuloTipoCobranca } from '@/types/tipo-cobranca-rotulo';
 import { ContaPagarRowAprovacaoBadge } from './ContaPagarRowAprovacaoBadge';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { VersionHistory } from '@/components/common/VersionHistory';
@@ -92,7 +93,7 @@ export const ContasPagarTableRow = memo(
               <div className="flex items-center gap-2 mt-0.5">
                 <TipoIcon className="h-3 w-3 text-muted-foreground/40" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 capitalize">
-                  {conta.tipo_cobranca}
+                  {rotuloTipoCobranca(conta.tipo_cobranca)}
                 </span>
               </div>
             </div>

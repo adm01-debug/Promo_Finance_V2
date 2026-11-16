@@ -12,7 +12,13 @@ export interface ContaReceberFormValues {
   categoria_id?: string;
   conta_bancaria_id?: string;
   vendedor_id?: string;
-  tipo_cobranca?: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
+  tipo_cobranca?:
+    | 'boleto'
+    | 'pix'
+    | 'cartao_credito'
+    | 'cartao_debito'
+    | 'transferencia'
+    | 'dinheiro';
   numero_documento?: string;
   codigo_barras?: string;
   chave_pix?: string;
