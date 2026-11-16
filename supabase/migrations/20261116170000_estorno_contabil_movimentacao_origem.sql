@@ -441,3 +441,31 @@ BEGIN
   RETURN NEW;
 END;
 $function$;
+
+-- fn_livro_razao somava as duas versoes (revisao desta PR, convergente entre
+-- devin e codex): fn_balancete ja filtra 'cancelado', esta nao filtrava. Com o
+-- versionamento acima (cancela a antiga, cria a nova), uma movimentacao de
+-- R$ 100 alterada para R$ 120 passaria a aparecer como R$ 220 no razao.
+-- Mesmo corpo de 20261113181100_balancete_tipo_partida_debito_credito.sql,
+-- so com o filtro de status.
+CREATE OR REPLACE FUNCTION public.fn_livro_razao(
+  p_empresa_id uuid,
+  p_conta_id uuid,
+  p_data_inicio date DEFAULT (date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone))::date,
+  p_data_fim date DEFAULT CURRENT_DATE
+)
+ RETURNS TABLE(data_lancamento date, descricao text, tipo text, valor numeric, saldo_acumulado numeric)
+ LANGUAGE sql STABLE
+ SET search_path TO 'public', 'extensions', 'pg_temp'
+AS $function$
+  SELECT l.data_lancamento, l.historico, p.tipo, p.valor,
+    SUM(CASE WHEN p.tipo='debito' THEN p.valor ELSE -p.valor END)
+      OVER (ORDER BY l.data_lancamento, l.created_at)
+  FROM public.partidas_contabeis p
+  JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id
+  WHERE l.empresa_id = p_empresa_id
+    AND p.conta_contabil_id = p_conta_id
+    AND l.status IS DISTINCT FROM 'cancelado'
+    AND l.data_lancamento BETWEEN p_data_inicio AND p_data_fim
+  ORDER BY l.data_lancamento, l.created_at;
+$function$;

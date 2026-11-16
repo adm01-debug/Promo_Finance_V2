@@ -143,6 +143,9 @@ Deno.serve(
           'id, numero_lancamento, data_lancamento, historico, valor_total, partidas:partidas_contabeis(conta_id, tipo, valor)'
         )
         .eq('empresa_id', empresa_id)
+        // Versão substituída não entra no arquivo fiscal: o estorno/ajuste de
+        // movimentação cancela o lançamento antigo e cria o novo.
+        .neq('status', 'cancelado')
         .gte('data_lancamento', periodo_inicio)
         .lte('data_lancamento', periodo_fim);
       const lancamentos = (lancsRaw || []) as unknown as Array<{
@@ -207,7 +210,13 @@ Deno.serve(
         label: 'ECD do mesmo período localizada (cross-check)',
         status: ecdAnterior ? 'ok' : 'error',
         detail: ecdAnterior
-          ? `ECD #${ecdAnterior.id.substring(0, 8)} · hash ${(ecdAnterior.hash_sha256 || '').substring(0, 12)}…${ecdAnterior.recibo_transmissao ? ` · recibo ${ecdAnterior.recibo_transmissao}` : ' · sem recibo'}`
+          ? `ECD #${ecdAnterior.id.substring(0, 8)} · hash ${(
+              ecdAnterior.hash_sha256 || ''
+            ).substring(0, 12)}…${
+              ecdAnterior.recibo_transmissao
+                ? ` · recibo ${ecdAnterior.recibo_transmissao}`
+                : ' · sem recibo'
+            }`
           : 'Gere a ECD do período antes de transmitir a ECF',
       });
 
@@ -231,7 +240,9 @@ Deno.serve(
         label: 'Lucro líquido coerente com movimentação',
         status: temMovimento && lucro_liquido !== 0 ? 'ok' : 'warn',
         detail: temMovimento
-          ? `Lucro líquido: R$ ${lucro_liquido.toFixed(2)} (Rec ${receitas.toFixed(2)} − Desp ${despesas.toFixed(2)})`
+          ? `Lucro líquido: R$ ${lucro_liquido.toFixed(2)} (Rec ${receitas.toFixed(
+              2
+            )} − Desp ${despesas.toFixed(2)})`
           : 'Sem movimento de receita/despesa no período',
       });
 
@@ -267,7 +278,9 @@ Deno.serve(
         id: 'apuracao',
         label: 'Apuração IRPJ/CSLL com base ≥ 0',
         status: base_irpj >= 0 ? 'ok' : 'error',
-        detail: `Base R$ ${base_irpj.toFixed(2)} · IRPJ R$ ${irpj.toFixed(2)} · CSLL R$ ${csll.toFixed(2)}`,
+        detail: `Base R$ ${base_irpj.toFixed(2)} · IRPJ R$ ${irpj.toFixed(
+          2
+        )} · CSLL R$ ${csll.toFixed(2)}`,
       });
 
       const erros = checklist.filter((c) => c.status === 'error').map((c) => c.detail || c.label);
