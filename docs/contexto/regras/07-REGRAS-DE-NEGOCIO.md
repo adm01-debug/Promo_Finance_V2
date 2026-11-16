@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `38f4896d85` · branch `main` · 2026-11-16 19:27 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d9ff7e0c19` · branch `main` · 2026-11-16 19:29 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1739,7 +1739,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | UFS | 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO', | `src/pages/tributario/consulta-rapida/ufs.ts` |
 | StatusPagamento | pago \| pendente \| vencido \| parcial \| cancelado | `src/types/financial.ts` |
 | TipoTransacao | receita \| despesa | `src/types/financial.ts` |
-| TipoCobranca | boleto \| pix \| cartao \| transferencia \| dinheiro | `src/types/financial.ts` |
+| TipoCobranca | boleto \| pix \| cartao_credito \| cartao_debito \| transferencia \| dinheiro | `src/types/financial.ts` |
 | PrioridadeAlerta | baixa \| media \| alta \| critica | `src/types/financial.ts` |
 | EtapaReguaCobranca | preventiva \| lembrete \| cobranca \| negociacao \| juridico | `src/types/financial.ts` |
 | RegimeTributario | lucro_real \| lucro_presumido \| simples_nacional \| mei | `src/types/reforma-tributaria/enums.ts` |
@@ -1810,7 +1810,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **contaPagarSchema** (`src/components/contas-pagar/ContaPagarForm.helpers.ts`, z.object):
   ```ts
-  { fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50, 'Número muito longo').optional(), codigo_barras: z.string().max(100 …
+  { fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum([ 'boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro', ]), numero_documento: z.string().max(50, 'Número muito longo').optional(), codig …
   ```
 - **pagamentoSchema** (`src/components/contas-pagar/RegistrarPagamentoDialog.helpers.ts`, z.object):
   ```ts
@@ -1818,7 +1818,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **contaReceberSchema** (`src/components/contas-receber/ContaReceberForm.tsx`, z.object):
   ```ts
-  { cliente_id: z.string().optional(), cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório').max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), vendedor_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50).optional(), codigo_barras: z.string().max(1 …
+  { cliente_id: z.string().optional(), cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório').max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), vendedor_id: z.string().optional(), tipo_cobranca: z.enum([ 'boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro', ]), numero_documento: z.string().max(50).optional(), cod …
   ```
 - **recebimentoSchema** (`src/components/contas-receber/RegistrarRecebimentoDialog.tsx`, z.object):
   ```ts
@@ -5104,7 +5104,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3377 testes em 286 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3383 testes em 287 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5112,7 +5112,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/formatters.test.ts` | 80 | formatCurrency · formata valor positivo · formata zero · formata null … |
 | `src/lib/__tests__/brazilian-validators.test.ts` | 76 | validateCPF · CPF válido · CPF válido sem formatação · CPF inválido - dígito errado … |
 | `src/pages/__tests__/AdminTelemetria.test.tsx` | 68 | formatDuration · formats 0ms · formats 1ms · formats 500ms … |
-| `src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx` | 60 | ContasReceberTableRow · Gap #14 - Coluna Empresa · mostra coluna empresa quando showEmpresa=true · não mostra coluna empresa quando showEmpresa=false … |
+| `src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx` | 61 | ContasReceberTableRow · Gap #14 - Coluna Empresa · mostra coluna empresa quando showEmpresa=true · não mostra coluna empresa quando showEmpresa=false … |
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
 | `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 47 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
@@ -5326,6 +5326,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/secure-random.test.ts` | 5 | secureRandomInt · returns integers inside [min, max) · handles a single-element range and rejects inverted bounds · rejects ranges wider than the 32-bit source instead of looping … |
 | `src/lib/tributario/__tests__/catalogos-saude.test.ts` | 5 | calcularSaudeCatalogos · retorna saudável e score 100 sem divergências nem rejeições · classifica como crítico quando há divergência crítica · conta rejeições de overlay como atenção mesmo sem divergências … |
 | `src/lib/tributario/__tests__/restauracao-snapshot.test.ts` | 5 | restauração reprodutível de snapshots · remove campos opcionais ausentes no snapshot · preserva os campos presentes no snapshot · não muta o objeto de parâmetros correntes … |
+| `src/types/__tests__/tipo-cobranca-vocabulario.test.ts` | 5 | vocabulário de tipo_cobranca · as opções de Contas a Receber são todas valores do enum do banco · nenhuma opção oferece o valor inexistente  · cartão aparece dividido em crédito e débito, como no banco … |
 | `supabase/functions/ci-security-gate-log/index.test.ts` | 5 | ci-security-gate-log: OPTIONS responde 200 sem efeitos colaterais · ci-security-gate-log: 405 em método diferente de POST · ci-security-gate-log: 503 quando o segredo não está configurado · ci-security-gate-log: 401 com segredo incorreto e zero efeitos antes do guard … |
 | `supabase/functions/n8n-callback/index.test.ts` | 5 | n8n-callback: OPTIONS responde 200 sem tocar body ou DB · n8n-callback: 405 para método inválido · n8n-callback: 503 quando o segredo não está configurado · n8n-callback: 401 com segredo incorreto … |
 | `supabase/functions/notify-performance-alert/index.test.ts` | 5 | notify-performance-alert: OPTIONS responde 200 sem guard nem I/O · notify-performance-alert: 405 em método inválido · notify-performance-alert: preserva falha de misconfig do guard e não toca body/fetch/DB · notify-performance-alert: 401 do guard bloqueia efeitos antes do body … |

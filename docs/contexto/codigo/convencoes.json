@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (256)",
+   "co-localizado (__tests__) (257)",
    "outro (107)",
    "co-localizado (*.test) (42)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)",
    "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)",
    "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)",
    "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)",
-   "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)",
-   "fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)"
+   "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

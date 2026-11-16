@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "38f4896d858301f082d322ea017c288d03a9d4fb",
+  "sha": "d9ff7e0c193d826c68eee34b3db0471502c18abf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 19:27 UTC",
-  "files_total": 3893,
-  "code_files": 3524,
-  "code_lines": 500115
+  "generated_at": "2026-11-16 19:29 UTC",
+  "files_total": 3895,
+  "code_files": 3526,
+  "code_lines": 500261
  },
  "version": "1.3.2",
- "facts_hash": "6dc07f7f4276382a",
+ "facts_hash": "e4ab37de8bbacc1d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1223,
+   ".ts": 1225,
    ".sql": 1095,
    ".tsx": 1094,
    ".mjs": 60,
@@ -62140,7 +62140,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 138
+    "deps_count": 139
    },
    {
     "path": "",
@@ -62180,7 +62180,7 @@
     ],
     "invokes_transitive": [],
     "rpc_transitive": [],
-    "deps_count": 40
+    "deps_count": 41
    },
    {
     "path": "",
@@ -63116,7 +63116,7 @@
      "aprovar_solicitacao_pagamento",
      "registrar_auditoria_config"
     ],
-    "deps_count": 190
+    "deps_count": 191
    },
    {
     "path": "/contas-pagar/bloqueios",
@@ -63185,7 +63185,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 206
+    "deps_count": 207
    },
    {
     "path": "/contratos",
@@ -71543,7 +71543,7 @@
   {
    "module": "src/components",
    "files": 980,
-   "lines": 161867,
+   "lines": 161930,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72651,11 +72651,12 @@
   },
   {
    "module": "src/types",
-   "files": 15,
-   "lines": 954,
+   "files": 17,
+   "lines": 1037,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
+    "tipo-cobranca-rotulo.ts: rotuloTipoCobranca",
     "cashback.ts: ConfiguracaoCashback, CASHBACK_PERCENTUAIS",
     "creditos.ts: CreditoTributario, SaldoCreditosTributarios",
     "enums.ts: RegimeTributario, TipoTributoNovo, TipoTributoAntigo, FaseTransicao, CategoriaIS, StatusCreditoTributario",
@@ -72673,11 +72674,18 @@
     "reforma-tributaria.ts: Barrel: API pública histórica após modularização. Implementação em src/types/reforma-tributaria/*.",
     "enums.ts: Enums e types unions da reforma tributária."
    ],
-   "deps": [],
-   "imports_modules": [],
+   "deps": [
+    "vitest"
+   ],
+   "imports_modules": [
+    "src/components",
+    "src/integrations"
+   ],
    "file_list": [
     "src/types/financial.ts",
     "src/types/reforma-tributaria.ts",
+    "src/types/tipo-cobranca-rotulo.ts",
+    "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
     "src/types/reforma-tributaria/cashback.ts",
     "src/types/reforma-tributaria/creditos.ts",
     "src/types/reforma-tributaria/enums.ts",
@@ -78185,7 +78193,7 @@
     "file": "src/components/contas-pagar/ContaPagarForm.helpers.ts",
     "name": "contaPagarSchema",
     "kind": "object",
-    "body": "{ fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50, 'Número muito longo').optional(), codigo_barras: z.string().max(100 …",
+    "body": "{ fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum([ 'boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro', ]), numero_documento: z.string().max(50, 'Número muito longo').optional(), codig …",
     "refines": [],
     "chain": []
    },
@@ -78201,7 +78209,7 @@
     "file": "src/components/contas-receber/ContaReceberForm.tsx",
     "name": "contaReceberSchema",
     "kind": "object",
-    "body": "{ cliente_id: z.string().optional(), cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório').max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), vendedor_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50).optional(), codigo_barras: z.string().max(1 …",
+    "body": "{ cliente_id: z.string().optional(), cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório').max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), vendedor_id: z.string().optional(), tipo_cobranca: z.enum([ 'boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro', ]), numero_documento: z.string().max(50).optional(), cod …",
     "refines": [],
     "chain": []
    },
@@ -80596,7 +80604,7 @@
    {
     "file": "src/types/financial.ts",
     "name": "TipoCobranca",
-    "values": "boleto | pix | cartao | transferencia | dinheiro"
+    "values": "boleto | pix | cartao_credito | cartao_debito | transferencia | dinheiro"
    },
    {
     "file": "src/types/financial.ts",
@@ -123435,7 +123443,11 @@
    },
    {
     "file": "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
-    "name": "exibe badge Cartão"
+    "name": "exibe badge Cartão de crédito"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
+    "name": "exibe badge Cartão de débito"
    },
    {
     "file": "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
@@ -135460,6 +135472,26 @@
    {
     "file": "src/test/scenarios/__tests__/scenarios.spec.ts",
     "name": "${COUNT} cenários combinatórios: zero violações de invariantes"
+   },
+   {
+    "file": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+    "name": "vocabulário de tipo_cobranca"
+   },
+   {
+    "file": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+    "name": "as opções de Contas a Receber são todas valores do enum do banco"
+   },
+   {
+    "file": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+    "name": "nenhuma opção oferece o valor inexistente "
+   },
+   {
+    "file": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+    "name": "cartão aparece dividido em crédito e débito, como no banco"
+   },
+   {
+    "file": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+    "name": "a tela não mostra o valor cru do banco"
    },
    {
     "file": "supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts",
@@ -189013,7 +189045,7 @@
   },
   "src/components/contas-pagar/ContaPagarForm.helpers.ts": {
    "path": "src/components/contas-pagar/ContaPagarForm.helpers.ts",
-   "lines": 23,
+   "lines": 30,
    "exports": [
     "const contaPagarSchema"
    ],
@@ -189021,7 +189053,7 @@
     {
      "name": "contaPagarSchema",
      "kind": "object",
-     "body": "{ fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50, 'Número muito longo').optional(), codigo_barras: z.string().max(100 …",
+     "body": "{ fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum([ 'boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro', ]), numero_documento: z.string().max(50, 'Número muito longo').optional(), codig …",
      "refines": [],
      "chain": []
     }
@@ -189060,7 +189092,7 @@
   },
   "src/components/contas-pagar/ContaPagarForm.types.ts": {
    "path": "src/components/contas-pagar/ContaPagarForm.types.ts",
-   "lines": 31,
+   "lines": 37,
    "exports": [
     "type ContaPagarFormData",
     "interface ContaPagar",
@@ -189069,14 +189101,14 @@
   },
   "src/components/contas-pagar/ContaPagarFormFields.tsx": {
    "path": "src/components/contas-pagar/ContaPagarFormFields.tsx",
-   "lines": 376,
+   "lines": 377,
    "exports": [
     "function ContaPagarFormFields"
    ]
   },
   "src/components/contas-pagar/ContaPagarFormFormulario.tsx": {
    "path": "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
-   "lines": 229,
+   "lines": 241,
    "exports": [
     "function ContaPagarFormFormulario"
    ]
@@ -189136,7 +189168,7 @@
   },
   "src/components/contas-pagar/ContasPagarTableRow.helpers.ts": {
    "path": "src/components/contas-pagar/ContasPagarTableRow.helpers.ts",
-   "lines": 53,
+   "lines": 54,
    "exports": [
     "const statusConfig",
     "const tipoCobrancaIcons"
@@ -189144,7 +189176,7 @@
   },
   "src/components/contas-pagar/ContasPagarTableRow.tsx": {
    "path": "src/components/contas-pagar/ContasPagarTableRow.tsx",
-   "lines": 351,
+   "lines": 352,
    "exports": [
     "const ContasPagarTableRow"
    ],
@@ -189590,7 +189622,7 @@
   },
   "src/components/contas-receber/ContaReceberDetailDrawer.tsx": {
    "path": "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
-   "lines": 415,
+   "lines": 417,
    "exports": [
     "function ContaReceberDetailDrawer"
    ],
@@ -189668,7 +189700,7 @@
   },
   "src/components/contas-receber/ContaReceberForm.tsx": {
    "path": "src/components/contas-receber/ContaReceberForm.tsx",
-   "lines": 413,
+   "lines": 420,
    "exports": [
     "function ContaReceberForm"
    ],
@@ -189698,7 +189730,7 @@
     {
      "name": "contaReceberSchema",
      "kind": "object",
-     "body": "{ cliente_id: z.string().optional(), cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório').max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), vendedor_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50).optional(), codigo_barras: z.string().max(1 …",
+     "body": "{ cliente_id: z.string().optional(), cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório').max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), vendedor_id: z.string().optional(), tipo_cobranca: z.enum([ 'boleto', 'pix', 'cartao_credito', 'cartao_debito', 'transferencia', 'dinheiro', ]), numero_documento: z.string().max(50).optional(), cod …",
      "refines": [],
      "chain": []
     }
@@ -189716,7 +189748,7 @@
   },
   "src/components/contas-receber/ContaReceberFormFields.helpers.ts": {
    "path": "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
-   "lines": 20,
+   "lines": 21,
    "exports": [
     "const tipoCobrancaOptions",
     "const frequenciaOptions"
@@ -189731,7 +189763,7 @@
   },
   "src/components/contas-receber/ContaReceberFormFields.types.ts": {
    "path": "src/components/contas-receber/ContaReceberFormFields.types.ts",
-   "lines": 77,
+   "lines": 83,
    "exports": [
     "interface ContaReceberFormValues",
     "interface ClienteOption",
@@ -189745,7 +189777,7 @@
   },
   "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx": {
    "path": "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
-   "lines": 90,
+   "lines": 97,
    "exports": [
     "function ContaReceberFormFieldsCamposCondicionais"
    ]
@@ -189773,7 +189805,7 @@
   },
   "src/components/contas-receber/ContasReceberFilters.tsx": {
    "path": "src/components/contas-receber/ContasReceberFilters.tsx",
-   "lines": 170,
+   "lines": 171,
    "exports": [
     "function ContasReceberFilters"
    ]
@@ -190154,7 +190186,7 @@
   },
   "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx": {
    "path": "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
-   "lines": 419,
+   "lines": 424,
    "is_test": true,
    "rule_comments": [
     "Sem botões de receber/cobrar, apenas ver e dropdown",
@@ -190183,7 +190215,8 @@
     "Gap #16 - Badges tipo cobrança",
     "exibe badge Boleto",
     "exibe badge PIX",
-    "exibe badge Cartão",
+    "exibe badge Cartão de crédito",
+    "exibe badge Cartão de débito",
     "exibe badge TED",
     "exibe badge Dinheiro",
     "Gap #25 - Indicador protesto",
@@ -190353,7 +190386,7 @@
   },
   "src/components/contas-receber/row/rowConfig.ts": {
    "path": "src/components/contas-receber/row/rowConfig.ts",
-   "lines": 123,
+   "lines": 128,
    "exports": [
     "const statusConfig",
     "const tipoCobrancaConfig",
@@ -197011,7 +197044,7 @@
   },
   "src/components/ui/advanced-filters.tsx": {
    "path": "src/components/ui/advanced-filters.tsx",
-   "lines": 399,
+   "lines": 400,
    "exports": [
     "interface AdvancedFilters",
     "function AdvancedFiltersPopover"
@@ -229114,7 +229147,7 @@
   },
   "src/types/financial.ts": {
    "path": "src/types/financial.ts",
-   "lines": 238,
+   "lines": 251,
    "exports": [
     "type StatusPagamento",
     "type TipoTransacao",
@@ -229152,7 +229185,7 @@
     },
     {
      "name": "TipoCobranca",
-     "values": "boleto | pix | cartao | transferencia | dinheiro"
+     "values": "boleto | pix | cartao_credito | cartao_debito | transferencia | dinheiro"
     },
     {
      "name": "PrioridadeAlerta",
@@ -229190,6 +229223,25 @@
    "path": "src/types/reforma-tributaria.ts",
    "lines": 6,
    "doc": "Barrel: API pública histórica após modularização. Implementação em src/types/reforma-tributaria/*."
+  },
+  "src/types/tipo-cobranca-rotulo.ts": {
+   "path": "src/types/tipo-cobranca-rotulo.ts",
+   "lines": 21,
+   "exports": [
+    "function rotuloTipoCobranca"
+   ]
+  },
+  "src/types/__tests__/tipo-cobranca-vocabulario.test.ts": {
+   "path": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+   "lines": 49,
+   "is_test": true,
+   "tests": [
+    "vocabulário de tipo_cobranca",
+    "as opções de Contas a Receber são todas valores do enum do banco",
+    "nenhuma opção oferece o valor inexistente ",
+    "cartão aparece dividido em crédito e débito, como no banco",
+    "a tela não mostra o valor cru do banco"
+   ]
   },
   "src/types/reforma-tributaria/cashback.ts": {
    "path": "src/types/reforma-tributaria/cashback.ts",
@@ -246004,10 +246056,36 @@
   }
  },
  "git": {
-  "sha": "38f4896d858301f082d322ea017c288d03a9d4fb",
+  "sha": "d9ff7e0c193d826c68eee34b3db0471502c18abf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d9ff7e0",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)",
+    "files": [
+     "src/components/contas-pagar/ContaPagarForm.helpers.ts",
+     "src/components/contas-pagar/ContaPagarForm.types.ts",
+     "src/components/contas-pagar/ContaPagarFormFields.tsx",
+     "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
+     "src/components/contas-pagar/ContasPagarTableRow.helpers.ts",
+     "src/components/contas-pagar/ContasPagarTableRow.tsx",
+     "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
+     "src/components/contas-receber/ContaReceberForm.tsx",
+     "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
+     "src/components/contas-receber/ContaReceberFormFields.types.ts",
+     "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
+     "src/components/contas-receber/ContasReceberFilters.tsx",
+     "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
+     "src/components/contas-receber/row/rowConfig.ts",
+     "src/components/ui/advanced-filters.tsx",
+     "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
+     "src/types/financial.ts",
+     "src/types/tipo-cobranca-rotulo.ts"
+    ]
+   },
    {
     "sha": "38f4896",
     "date": "2026-11-16",
@@ -246317,15 +246395,6 @@
     "files": [
      "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql"
     ]
-   },
-   {
-    "sha": "e0f7e5f",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore: contexto agendado de 10 min para 1x/hora (#350)",
-    "files": [
-     ".github/workflows/contexto.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -246346,67 +246415,67 @@
     2
    ],
    [
-    "src/components/tesouraria/ProjectedCashFlowChart.tsx",
+    "src/components/contas-pagar/ContaPagarForm.helpers.ts",
     1
    ],
    [
-    "src/components/tesouraria/TesourariaCentralizada.tsx",
+    "src/components/contas-pagar/ContaPagarForm.types.ts",
     1
    ],
    [
-    "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
+    "src/components/contas-pagar/ContaPagarFormFields.tsx",
     1
    ],
    [
-    "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx",
+    "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
     1
    ],
    [
-    "src/hooks/__tests__/useFluxoCaixa.test.ts",
+    "src/components/contas-pagar/ContasPagarTableRow.helpers.ts",
     1
    ],
    [
-    "src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx",
+    "src/components/contas-pagar/ContasPagarTableRow.tsx",
     1
    ],
    [
-    "src/hooks/useFluxoCaixa.ts",
+    "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
     1
    ],
    [
-    "src/hooks/useFluxoCaixaPage.ts",
+    "src/components/contas-receber/ContaReceberForm.tsx",
     1
    ],
    [
-    "src/hooks/__tests__/kpis-comparativo-anterior.test.ts",
+    "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
     1
    ],
    [
-    "src/hooks/useContasPagarLogic.calculos.ts",
+    "src/components/contas-receber/ContaReceberFormFields.types.ts",
     1
    ],
    [
-    "src/hooks/useContasReceberLogic.calculos.ts",
+    "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
     1
    ],
    [
-    "src/pages/ContasReceberConteudo.types.ts",
+    "src/components/contas-receber/ContasReceberFilters.tsx",
     1
    ],
    [
-    "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql",
+    "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
     1
    ],
    [
-    "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
+    "src/components/contas-receber/row/rowConfig.ts",
     1
    ],
    [
-    "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
+    "src/components/ui/advanced-filters.tsx",
     1
    ],
    [
-    "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
+    "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
     1
    ]
   ]

@@ -3192,7 +3192,8 @@
    "src/integrations/supabase/client.ts",
    "src/lib/formatters.ts",
    "src/lib/utils.ts",
-   "src/types/financial.ts"
+   "src/types/financial.ts",
+   "src/types/tipo-cobranca-rotulo.ts"
   ],
   "src/components/contas-pagar/LeitorCodigoBarras.tsx": [
    "src/components/ui/alert.tsx",
@@ -3304,7 +3305,8 @@
    "src/integrations/supabase/client.ts",
    "src/lib/formatters.ts",
    "src/lib/utils.ts",
-   "src/types/financial.ts"
+   "src/types/financial.ts",
+   "src/types/tipo-cobranca-rotulo.ts"
   ],
   "src/components/contas-receber/ContaReceberForm.tsx": [
    "src/components/contas-receber/ContaReceberFormFields.tsx",
@@ -10869,6 +10871,9 @@
   ],
   "src/types/reforma-tributaria/simulacao.ts": [
    "src/types/reforma-tributaria/enums.ts"
+  ],
+  "src/types/tipo-cobranca-rotulo.ts": [
+   "src/types/financial.ts"
   ],
   "supabase/functions/_shared/auth-guard.ts": [
    "supabase/functions/_shared/cors.ts"

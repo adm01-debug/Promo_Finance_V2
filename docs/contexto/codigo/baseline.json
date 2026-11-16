@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "38f4896d858301f082d322ea017c288d03a9d4fb",
+  "commit": "d9ff7e0c193d826c68eee34b3db0471502c18abf",
   "branch": "main",
-  "data_commit": "2026-11-16T16:25:26-03:00",
+  "data_commit": "2026-11-16T16:28:18-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d9ff7e0",
+    "data": "2026-11-16",
+    "assunto": "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)"
+   },
    {
     "sha": "38f4896",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "6b83746",
     "data": "2026-11-16",
     "assunto": "test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)"
-   },
-   {
-    "sha": "08f9783",
-    "data": "2026-11-16",
-    "assunto": "docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)"
    }
   ],
-  "arquivos_mudados_7d": 728,
+  "arquivos_mudados_7d": 737,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -148,6 +148,10 @@
     "mudancas": 27
    },
    {
+    "pasta": "src/components/contas-receber",
+    "mudancas": 25
+   },
+   {
     "pasta": "package.json",
     "mudancas": 20
    },
@@ -160,8 +164,8 @@
     "mudancas": 19
    },
    {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 17
+    "pasta": "src/components/contas-pagar",
+    "mudancas": 18
    },
    {
     "pasta": "src/lib/tributario",
@@ -186,10 +190,6 @@
    {
     "pasta": "src/hooks/__tests__",
     "mudancas": 13
-   },
-   {
-    "pasta": "src/components/contas-pagar",
-    "mudancas": 12
    },
    {
     "pasta": "PENDENCIAS.md",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 140
+    "commits": 141
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,21 +318,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3851,
-  "arquivos_codigo": 2428,
-  "linhas_codigo": 433143,
+  "arquivos_total": 3853,
+  "arquivos_codigo": 2430,
+  "linhas_codigo": 433287,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
-  "modulos": 127,
+  "modulos": 128,
   "componentes": 990,
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
   "migrations": 1025,
   "cron_jobs": 21,
-  "testes": 445,
+  "testes": 446,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 192
@@ -632,7 +632,7 @@
   },
   "src/components": {
    "arquivos": 980,
-   "linhas": 160887
+   "linhas": 160950
   },
   "src/config": {
    "arquivos": 1,
@@ -675,8 +675,8 @@
    "linhas": 2108
   },
   "src/types": {
-   "arquivos": 15,
-   "linhas": 939
+   "arquivos": 17,
+   "linhas": 1020
   },
   "supabase/functions": {
    "arquivos": 224,

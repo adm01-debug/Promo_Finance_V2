@@ -5366,7 +5366,7 @@
     "ContaPagarFormFields"
    ],
    "export_default": null,
-   "linhas": 375,
+   "linhas": 376,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5380,7 +5380,7 @@
     "ContaPagarFormFormulario"
    ],
    "export_default": null,
-   "linhas": 228,
+   "linhas": 240,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5436,7 +5436,7 @@
     "ContasPagarTableRow"
    ],
    "export_default": null,
-   "linhas": 350,
+   "linhas": 351,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [
@@ -5608,7 +5608,7 @@
     "ContaReceberDetailDrawer"
    ],
    "export_default": null,
-   "linhas": 414,
+   "linhas": 416,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [
@@ -5628,7 +5628,7 @@
     "ContaReceberForm"
    ],
    "export_default": null,
-   "linhas": 412,
+   "linhas": 419,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useAuth",
@@ -5668,7 +5668,7 @@
     "ContaReceberFormFieldsCamposCondicionais"
    ],
    "export_default": null,
-   "linhas": 89,
+   "linhas": 96,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5724,7 +5724,7 @@
     "ContasReceberFilters"
    ],
    "export_default": null,
-   "linhas": 169,
+   "linhas": 170,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -10874,7 +10874,7 @@
     "AdvancedFiltersPopover"
    ],
    "export_default": null,
-   "linhas": 398,
+   "linhas": 399,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],

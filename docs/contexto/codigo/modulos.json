@@ -2282,7 +2282,7 @@
    "modulo": "components/contas-pagar",
    "arquivos": 19,
    "testes": 0,
-   "linhas": 3275,
+   "linhas": 3303,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -2414,7 +2414,7 @@
    "modulo": "components/contas-receber",
    "arquivos": 34,
    "testes": 6,
-   "linhas": 5370,
+   "linhas": 5399,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -5890,7 +5890,7 @@
    "modulo": "components/ui",
    "arquivos": 102,
    "testes": 5,
-   "linhas": 18758,
+   "linhas": 18759,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -12762,9 +12762,9 @@
   },
   {
    "modulo": "types",
-   "arquivos": 2,
+   "arquivos": 3,
    "testes": 0,
-   "linhas": 242,
+   "linhas": 275,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -12795,6 +12795,34 @@
    "depende_de_modulos": [
     "types/reforma-tributaria"
    ],
+   "pacotes_externos": []
+  },
+  {
+   "modulo": "types/__tests__",
+   "arquivos": 0,
+   "testes": 1,
+   "linhas": 0,
+   "itens_menu": [],
+   "telas": [],
+   "rotas_http": [],
+   "componentes": 0,
+   "hooks_locais": [],
+   "hooks_definidos": [],
+   "edges": [],
+   "tabelas": [],
+   "rpcs": [],
+   "buckets": [],
+   "canais_realtime": [],
+   "env": [],
+   "flags": [],
+   "papeis": [],
+   "diretos": {
+    "edges": [],
+    "tabelas": [],
+    "rpcs": []
+   },
+   "importado_por_outros_modulos": [],
+   "depende_de_modulos": [],
    "pacotes_externos": []
   },
   {
