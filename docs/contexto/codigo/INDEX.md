@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c5a3c4a6fb99ce992176742b5fe64dd82e430a9b` (2026-11-16T09:49:34-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a023fa641891670637caf5ef825e8c2204e2aa3b` (2026-11-16T10:24:35-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3834 |
 | arquivos_codigo | 2420 |
-| linhas_codigo | 431824 |
+| linhas_codigo | 431854 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `a023fa6` fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)
 - 2026-11-16 `c5a3c4a` fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)
 - 2026-11-16 `3f3da8c` feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)
 - 2026-11-16 `6b83746` test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-14 `f3b6700` chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica
 - 2026-11-14 `b7559c3` fix: contas_pagar fica com uma única CHECK de status (aceita 'vencido') (#341)
 - 2026-11-14 `53a33b6` infra: paridade de migrations ignora artefatos fora do fluxo, como o prod-migrate (#342)
-- 2026-11-13 `76173e7` fix: simulação da Contabilização Automática deixa de receber 400 (#337)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

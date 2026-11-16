@@ -3770,10 +3770,11 @@
    "edges": [],
    "hooks_internos": [],
    "canais_realtime": [],
-   "usado_por": 52,
+   "usado_por": 53,
    "usado_por_arquivos": [
     "src/components/admin/sso/ScimTokensTab.tsx",
     "src/components/clientes/ClienteDetailDialog.tsx",
+    "src/components/compras/PedidoCompraForm.tsx",
     "src/components/conciliacao/ConciliacaoFilters.tsx",
     "src/components/contabilidade/BalanceteTab.tsx",
     "src/components/contabilidade/DreBalancoTab.tsx",
@@ -3800,8 +3801,7 @@
     "src/components/tesouraria/ConsolidacaoMultiCNPJ.tsx",
     "src/components/tesouraria/FluxoInterEmpresas.tsx",
     "src/components/tesouraria/MatrizCNPJBanco.tsx",
-    "src/components/tesouraria/TesourariaCentralizada.tsx",
-    "src/components/vendedores/VendedorDashboard.tsx"
+    "src/components/tesouraria/TesourariaCentralizada.tsx"
    ],
    "coberto_por_testes": 0
   },

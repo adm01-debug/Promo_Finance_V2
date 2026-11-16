@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c5a3c4a6fb` · branch `main` · 2026-11-16 12:54 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a023fa6418` · branch `main` · 2026-11-16 13:25 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1802,7 +1802,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **formSchema** (`src/components/compras/PedidoCompraForm.tsx`, z.object):
   ```ts
-  { fornecedor_id: z.string().min(1, 'Fornecedor é obrigatório'), centro_custo_id: z.string().optional(), data_entrega_prevista: z.string().optional(), observacoes: z.string().optional(), itens: z.array(itemSchema).min(1, 'Adicione pelo menos um item'), }
+  { empresa_id: z.string().min(1, 'Empresa é obrigatória'), fornecedor_id: z.string().min(1, 'Fornecedor é obrigatório'), centro_custo_id: z.string().optional(), data_entrega_prevista: z.string().optional(), observacoes: z.string().optional(), itens: z.array(itemSchema).min(1, 'Adicione pelo menos um item'), }
   ```
 - **ipSchema** (`src/components/configuracoes/SecuritySettings.tsx`, z.string):
   ```ts

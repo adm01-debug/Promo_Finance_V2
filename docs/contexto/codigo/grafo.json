@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 1989,
- "arestas": 8422,
+ "arestas": 8423,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -102,7 +102,7 @@
   },
   {
    "arquivo": "src/hooks/useFinancialData.ts",
-   "importado_por": 52
+   "importado_por": 53
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
@@ -296,7 +296,7 @@
   {
    "modulo": "hooks",
    "depende_de": 22,
-   "importado_por": 65
+   "importado_por": 66
   },
   {
    "modulo": "components/ui",

@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)",
    "fix(edge): comparação de segredo vazava o comprimento por timing em duas funções (#357)",
    "feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)",
    "test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)",
-   "docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)",
-   "fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)"
+   "docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

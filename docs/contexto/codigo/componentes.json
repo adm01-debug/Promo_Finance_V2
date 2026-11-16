@@ -3448,9 +3448,11 @@
     "PedidoCompraForm"
    ],
    "export_default": null,
-   "linhas": 304,
+   "linhas": 334,
    "dominio": "components/compras",
-   "hooks_locais": [],
+   "hooks_locais": [
+    "useEmpresas"
+   ],
    "tabelas": [
     "centros_custo",
     "fornecedores",
