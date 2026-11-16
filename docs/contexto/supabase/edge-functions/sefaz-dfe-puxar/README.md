@@ -4,7 +4,7 @@
 |---|---|
 | nome | sefaz-dfe-puxar |
 | status | ACTIVE |
-| versão | 40 |
+| versão | 42 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/sefaz-dfe-puxar/index.ts |
 | import_map |  |

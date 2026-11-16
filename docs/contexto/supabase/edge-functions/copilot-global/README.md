@@ -4,7 +4,7 @@
 |---|---|
 | nome | copilot-global |
 | status | ACTIVE |
-| versão | 38 |
+| versão | 40 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/copilot-global/index.ts |
 | import_map |  |

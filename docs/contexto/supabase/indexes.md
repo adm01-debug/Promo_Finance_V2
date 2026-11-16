@@ -420,6 +420,7 @@ Uso e tamanho em `stats.md`.
 | public.nfe_recebidas | idx_nfe_recebidas_conta_pagar_id_fk | btree | conta_pagar_id | não | sim |  |
 | public.nfe_recebidas | nfe_recebidas_chave_acesso_key | btree | chave_acesso | sim | sim |  |
 | public.nfe_recebidas | nfe_recebidas_pkey | btree | id | sim | sim |  |
+| public.nfe_recebidas | uq_nfe_rec_conta_pagar | btree | conta_pagar_id | sim | sim | `(conta_pagar_id IS NOT NULL)` |
 | public.notas_fiscais | idx_notas_fiscais_empresa_id | btree | empresa_id | não | sim |  |
 | public.notas_fiscais | notas_fiscais_chave_acesso_key | btree | chave_acesso | sim | sim |  |
 | public.notas_fiscais | notas_fiscais_pkey | btree | id | sim | sim |  |

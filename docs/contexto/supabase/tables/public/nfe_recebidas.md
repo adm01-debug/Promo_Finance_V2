@@ -67,6 +67,7 @@
 | idx_nfe_recebidas_conta_pagar_id_fk | btree | conta_pagar_id | não | sim |  | `CREATE INDEX idx_nfe_recebidas_conta_pagar_id_fk ON public.nfe_recebidas USING btree (conta_pagar_id)` |
 | nfe_recebidas_chave_acesso_key | btree | chave_acesso | sim | sim |  | `CREATE UNIQUE INDEX nfe_recebidas_chave_acesso_key ON public.nfe_recebidas USING btree (chave_acesso)` |
 | nfe_recebidas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX nfe_recebidas_pkey ON public.nfe_recebidas USING btree (id)` |
+| uq_nfe_rec_conta_pagar | btree | conta_pagar_id | sim | sim | `(conta_pagar_id IS NOT NULL)` | `CREATE UNIQUE INDEX uq_nfe_rec_conta_pagar ON public.nfe_recebidas USING btree (conta_pagar_id) WHERE (conta_pagar_id IS NOT NULL)` |
 
 
 ## Policies (RLS)

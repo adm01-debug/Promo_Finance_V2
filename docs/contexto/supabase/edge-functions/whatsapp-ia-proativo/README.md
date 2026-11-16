@@ -4,7 +4,7 @@
 |---|---|
 | nome | whatsapp-ia-proativo |
 | status | ACTIVE |
-| versão | 42 |
+| versão | 44 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/whatsapp-ia-proativo/index.ts |
 | import_map |  |
