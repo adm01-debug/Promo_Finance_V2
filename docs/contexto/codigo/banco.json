@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1022,
+ "migrations": 1023,
  "seeds": [],
  "avisos": [
   "183 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -24791,6 +24791,11 @@
     {
      "nome": "idx_fornecedores_cnpj",
      "colunas": "cnpj",
+     "unico": false
+    },
+    {
+     "nome": "idx_fornecedores_empresa_id",
+     "colunas": "empresa_id",
      "unico": false
     },
     {

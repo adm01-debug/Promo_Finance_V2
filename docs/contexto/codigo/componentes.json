@@ -7287,7 +7287,7 @@
     "FornecedorForm"
    ],
    "export_default": null,
-   "linhas": 258,
+   "linhas": 266,
    "dominio": "components/fornecedores",
    "hooks_locais": [
     "useAuth",

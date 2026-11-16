@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `90030888828506efe50f5f188edccef23c8f42f7` (2026-11-16T13:03:36-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `15dc272083c8c0452aba577c95990a60f5db044d` (2026-11-16T13:48:14-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2313), SQL (1092), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2313), SQL (1093), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3844 |
+| arquivos_total | 3845 |
 | arquivos_codigo | 2424 |
-| linhas_codigo | 432632 |
+| linhas_codigo | 432661 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
-| migrations | 1022 |
+| migrations | 1023 |
 | cron_jobs | 21 |
 | testes | 441 |
 | workflows | 19 |
@@ -460,21 +460,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (39)
-- bun.lock (32)
-- .github/workflows/ci.yml (30)
-- supabase/config.toml (18)
-- supabase/functions/asaas-proxy/index.ts (18)
-- .github/workflows/deno-tests.yml (17)
-- .github/workflows/supabase-linter.yml (14)
-- src/App.tsx (14)
-- supabase/functions/bling-proxy/index.ts (14)
+- package.json (38)
+- bun.lock (31)
+- .github/workflows/ci.yml (29)
+- supabase/config.toml (17)
+- supabase/functions/asaas-proxy/index.ts (17)
+- .github/workflows/deno-tests.yml (16)
 - supabase/functions/mcp-query/index.ts (14)
-- supabase/functions/n8n-callback/index.ts (14)
+- .github/workflows/supabase-linter.yml (13)
 - env.manifest.json (13)
-- supabase/functions/gerar-pacote-evidencias/index.ts (13)
-- supabase/functions/n8n-dispatch/index.ts (13)
-- src/components/layout/sidebar/SidebarNavGroups.tsx (12)
+- src/App.tsx (13)
+- supabase/functions/bling-proxy/index.ts (13)
+- supabase/functions/n8n-callback/index.ts (13)
+- supabase/functions/gerar-pacote-evidencias/index.ts (12)
+- supabase/functions/n8n-dispatch/index.ts (12)
+- PENDENCIAS.md (11)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -626,6 +626,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `15dc272` fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)
 - 2026-11-16 `9003088` chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)
 - 2026-11-16 `0bb1b7a` chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)
 - 2026-11-16 `9782d38` fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)
@@ -640,7 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `91133e2` fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)
 - 2026-11-16 `af20e7e` fix(db): reaplica GRANTs de authenticated preservando a restrição por coluna (#362)
 - 2026-11-16 `eb79007` fix: libera INSERT/UPDATE com isolamento por empresa em compras e transações bancárias (#339)
-- 2026-11-16 `a023fa6` fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

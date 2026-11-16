@@ -965,11 +965,11 @@
   {
    "arquivo": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
    "tipo": "unit",
-   "linhas": 78,
+   "linhas": 99,
    "testa": [
     "src/components/fornecedores/FornecedorForm.tsx"
    ],
-   "casos": 1
+   "casos": 2
   },
   {
    "arquivo": "src/components/layout/sidebar/sidebarNavState.test.ts",

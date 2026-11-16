@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "90030888828506efe50f5f188edccef23c8f42f7",
+  "sha": "15dc272083c8c0452aba577c95990a60f5db044d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 16:10 UTC",
-  "files_total": 3886,
-  "code_files": 3517,
-  "code_lines": 499153
+  "generated_at": "2026-11-16 16:48 UTC",
+  "files_total": 3887,
+  "code_files": 3518,
+  "code_lines": 499218
  },
  "version": "1.3.2",
- "facts_hash": "629dbac17205da96",
+ "facts_hash": "671b65ea5105b131",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1222,
-   ".sql": 1092,
+   ".sql": 1093,
    ".tsx": 1091,
    ".mjs": 60,
    ".py": 45,
@@ -711,6 +711,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728170640_5f70d392-005d-458f-80ba-f0e573ef414e.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "UUID REFERENCES public.empresas(id)",
+      "fk": "empresas.id",
+      "generated": "",
+      "src": "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql"
      }
     ],
     "constraints": [],
@@ -51305,6 +51312,14 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261113163037_colunas_campos_formulario.sql"
+   },
+   {
+    "name": "idx_fornecedores_empresa_id",
+    "table": "fornecedores",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql"
    }
   ],
   "cron_jobs": [
@@ -52576,6 +52591,7 @@
    "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
    "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
+   "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -71531,7 +71547,7 @@
   {
    "module": "src/components",
    "files": 979,
-   "lines": 161732,
+   "lines": 161761,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72945,8 +72961,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1022,
-   "lines": 77445,
+   "files": 1023,
+   "lines": 77481,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -82264,6 +82280,10 @@
    },
    {
     "file": "src/components/fornecedores/FornecedorForm.tsx",
+    "msg": "Empresa não selecionada"
+   },
+   {
+    "file": "src/components/fornecedores/FornecedorForm.tsx",
     "msg": "Erro ao atualizar fornecedor"
    },
    {
@@ -88015,6 +88035,11 @@
     "table": "fornecedores",
     "column": "ativo",
     "rule": "default true"
+   },
+   {
+    "table": "fornecedores",
+    "column": "empresa_id",
+    "rule": "FK → empresas.id"
    },
    {
     "table": "contas_pagar",
@@ -123665,6 +123690,10 @@
    {
     "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
     "name": "FornecedorForm — cadastro"
+   },
+   {
+    "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+    "name": "envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa"
    },
    {
     "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
@@ -172349,6 +172378,7 @@
   "tenant_key": "empresa_id",
   "tenant_tables": [
    "clientes",
+   "fornecedores",
    "contas_pagar",
    "contas_receber",
    "categorias",
@@ -192204,7 +192234,7 @@
   },
   "src/components/fornecedores/FornecedorForm.tsx": {
    "path": "src/components/fornecedores/FornecedorForm.tsx",
-   "lines": 259,
+   "lines": 267,
    "exports": [
     "function FornecedorForm"
    ],
@@ -192224,6 +192254,7 @@
     ]
    },
    "errors": [
+    "Empresa não selecionada",
     "Erro ao atualizar fornecedor",
     "Erro ao cadastrar fornecedor",
     "Fornecedor não encontrado",
@@ -192281,11 +192312,12 @@
   },
   "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx": {
    "path": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
-   "lines": 79,
+   "lines": 100,
    "is_test": true,
    "doc": "Regressão: o cadastro de fornecedor precisa enviar `user_id`. A única policy de INSERT de public.fornecedores é `fornecedores_owner_insert`, com `WITH CHECK ((SELECT auth.uid()) = user_id)`, e não há trigger nem DEFAULT que preencha a coluna. Sem o campo no payload, todo cadastro era rejeitado pela …",
    "tests": [
     "FornecedorForm — cadastro",
+    "envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa",
     "envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita"
    ]
   },
@@ -245670,6 +245702,10 @@
    "lines": 58,
    "uses_service_role": true
   },
+  "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql": {
+   "path": "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
+   "lines": 36
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245778,10 +245814,21 @@
   }
  },
  "git": {
-  "sha": "90030888828506efe50f5f188edccef23c8f42f7",
+  "sha": "15dc272083c8c0452aba577c95990a60f5db044d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "15dc272",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)",
+    "files": [
+     "src/components/fornecedores/FornecedorForm.tsx",
+     "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+     "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql"
+    ]
+   },
    {
     "sha": "9003088",
     "date": "2026-11-16",
@@ -246080,20 +246127,17 @@
     "files": [
      ".github/workflows/schema-drift.yml"
     ]
-   },
-   {
-    "sha": "76173e7",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: simulação da Contabilização Automática deixa de receber 400 (#337)",
-    "files": [
-     "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
-     "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
-     "supabase/functions/contabilizar-evento/index.ts"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "src/components/fornecedores/FornecedorForm.tsx",
+    2
+   ],
+   [
+    "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
+    2
+   ],
    [
     "supabase/functions/gerar-sped-ecd/index.ts",
     2
@@ -246105,6 +246149,10 @@
    [
     "docs/prod-readiness.md",
     2
+   ],
+   [
+    "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
+    1
    ],
    [
     "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
@@ -246160,18 +246208,6 @@
    ],
    [
     "supabase/functions/n8n-dispatch/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/nfe-upload-certificado/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/notify-saved-filter/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/processar-solicitacao-lgpd/index.ts",
     1
    ]
   ]

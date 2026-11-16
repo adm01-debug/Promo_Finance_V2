@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9003088882` · branch `main` · 2026-11-16 16:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `15dc272083` · branch `main` · 2026-11-16 16:48 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -139,7 +139,7 @@
 | `fluxos_aprovacao_niveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `folha_pagamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `formas_pagamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
-| `fornecedores` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
+| `fornecedores` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
 | `frontend_error_alert_state` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `frontend_error_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `frontend_error_logs_2026_01` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | types.ts |
