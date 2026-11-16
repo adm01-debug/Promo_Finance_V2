@@ -92,6 +92,7 @@ class ZodCoverage(_MiniRepo):
             "safe-parse": "const b = await req.json();\nconst p = Schema.safeParse(b);\n",
             "multilinha": "const b = await req.json();\nconst p = Schema\n  .safeParse(\n    b,\n  );\n",
             "crlf": "const b = await req.json();\r\nvalidatePayload(S, b);\r\n",
+            "parse-json-body": "const j = await parseJsonBody(req, 'x');\nvalidatePayload(S, j.data);\n",
             "sem-corpo-json": "export default () => new Response('ok');\n",
             "vazio": "",
         }
@@ -114,6 +115,7 @@ class ZodCoverage(_MiniRepo):
             "clone": "const b = await req.clone().json();\n",
             "clone-multilinha": "const b = await req\n  .clone()\n  .json()\n  .catch(() => null);\n",
             "request": "const b = await request.json();\n",
+            "parse-json-body-sem-validar": "const j = await parseJsonBody(req, 'x');\nreturn new Response(JSON.stringify(j.data));\n",
             "com espaço": "const b = await req.json();\n",
             "nome_com-hifen_e_underscore": "const b = await req.json();\n",
         }

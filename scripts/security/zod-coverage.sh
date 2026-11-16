@@ -40,7 +40,10 @@ for d in "$FUNCS_DIR"/*/; do
   code=$(grep -vE '^[[:space:]]*(//|/\*|\*)' "$f") || [ $? -eq 1 ]
   # Sem espaços: cobre a leitura quebrada em várias linhas (`req\n.clone()\n.json()`).
   compact=$(tr -d '[:space:]' <<<"$code")
-  if grep -qE '(req|request)(\.clone\(\))?\.json\(\)' <<<"$compact"; then
+  # `parseJsonBody(` conta como leitura do corpo: a função delega o
+  # `req.json()` a `_shared/validation.ts`, e sem esta alternativa as funções
+  # que a adotam sairiam do conjunto avaliado — o gate deixaria de cobri-las.
+  if grep -qE '(req|request)(\.clone\(\))?\.json\(\)|parseJsonBody\(' <<<"$compact"; then
     # Exige a CHAMADA: só importar `_shared/validation` não valida nada.
     if ! grep -qE 'validatePayload\(|validateContract\(|\.safeParse\(' <<<"$compact"; then
       missing+=("$name")

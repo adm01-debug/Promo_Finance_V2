@@ -5,6 +5,7 @@ import {
   corsHeaders,
   validatePayload,
   createErrorResponse,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
@@ -40,7 +41,9 @@ export const handler = async (req: Request): Promise<Response> => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const rawBody = await req.json();
+    const __json = await parseJsonBody(req, 'benchmarking-setorial');
+    if (!__json.success) return __json.response;
+    const rawBody = __json.data;
     const validation = validatePayload(
       BenchmarkingSetorialSchema,
       rawBody,
@@ -54,7 +57,9 @@ export const handler = async (req: Request): Promise<Response> => {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
 
-    const prompt = `Você é um consultor financeiro especialista no setor de "${setor || 'Eventos e Produção'}".
+    const prompt = `Você é um consultor financeiro especialista no setor de "${
+      setor || 'Eventos e Produção'
+    }".
 
 Analise as métricas da empresa abaixo e compare com benchmarks do setor. Forneça uma análise completa.
 
