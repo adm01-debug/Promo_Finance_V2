@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "0cdf2a77c4e743cccc893799fbff504f70905ab0",
+  "sha": "91ff2d8628e10e84d119d88b3e9fb2d18a61d450",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 21:19 UTC",
-  "files_total": 3896,
-  "code_files": 3527,
-  "code_lines": 501086
+  "generated_at": "2026-11-16 21:20 UTC",
+  "files_total": 3897,
+  "code_files": 3528,
+  "code_lines": 501122
  },
  "version": "1.3.2",
- "facts_hash": "e49be2234fee7ee8",
+ "facts_hash": "1974fd5aeaab77dc",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1225,
-   ".sql": 1096,
+   ".sql": 1097,
    ".tsx": 1094,
    ".mjs": 60,
    ".py": 45,
@@ -52594,6 +52594,7 @@
    "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql",
    "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql",
    "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
+   "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -72971,8 +72972,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1026,
-   "lines": 78717,
+   "files": 1027,
+   "lines": 78753,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -246096,6 +246097,10 @@
     "asaas"
    ]
   },
+  "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql": {
+   "path": "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
+   "lines": 36
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -246204,10 +246209,19 @@
   }
  },
  "git": {
-  "sha": "0cdf2a77c4e743cccc893799fbff504f70905ab0",
+  "sha": "91ff2d8628e10e84d119d88b3e9fb2d18a61d450",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "91ff2d8",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): preenche empresa_id nas 42 partidas contábeis antigas (#390)",
+    "files": [
+     "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql"
+    ]
+   },
    {
     "sha": "0cdf2a7",
     "date": "2026-11-16",
@@ -246544,17 +246558,6 @@
     "files": [
      "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md"
     ]
-   },
-   {
-    "sha": "d06f11e",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)",
-    "files": [
-     "env.manifest.json",
-     "scripts/generate-env-manifest.mjs",
-     "supabase/functions/_shared/sentry.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -246573,6 +246576,10 @@
    [
     "supabase/functions/gerar-sped-ecf/index.ts",
     2
+   ],
+   [
+    "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
+    1
    ],
    [
     "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
@@ -246632,10 +246639,6 @@
    ],
    [
     "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260712223141_stub-alerts-tables.sql",
     1
    ]
   ]

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "0cdf2a77c4e743cccc893799fbff504f70905ab0",
+  "commit": "91ff2d8628e10e84d119d88b3e9fb2d18a61d450",
   "branch": "main",
-  "data_commit": "2026-11-16T18:19:03-03:00",
+  "data_commit": "2026-11-16T18:19:20-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "91ff2d8",
+    "data": "2026-11-16",
+    "assunto": "fix(db): preenche empresa_id nas 42 partidas contábeis antigas (#390)"
+   },
    {
     "sha": "0cdf2a7",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "eb79007",
     "data": "2026-11-16",
     "assunto": "fix: libera INSERT/UPDATE com isolamento por empresa em compras e transações bancárias (#339)"
-   },
-   {
-    "sha": "a023fa6",
-    "data": "2026-11-16",
-    "assunto": "fix: pedido de compra passa a enviar a empresa (campo obrigatório no formulário) (#344)"
    }
   ],
-  "arquivos_mudados_7d": 751,
+  "arquivos_mudados_7d": 752,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 144
+    "commits": 145
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3854,
+  "arquivos_total": 3855,
   "arquivos_codigo": 2430,
   "linhas_codigo": 433287,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1026,
+  "migrations": 1027,
   "cron_jobs": 21,
   "testes": 446,
   "workflows": 19,
