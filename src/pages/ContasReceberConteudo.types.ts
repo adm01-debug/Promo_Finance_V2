@@ -9,9 +9,12 @@ export interface ContasReceberConteudoProps {
     taxaInadimplencia: number;
     venceHoje: number;
     venceSemana: number;
-    totalReceberAnterior: number;
+    // number | undefined: sem fonte real do período anterior o cálculo devolve
+    // undefined, e ContasReceberKPIs esconde o selo de variação (calcVariation
+    // :35 retorna null). Antes vinha um número fabricado a partir do atual.
+    totalReceberAnterior: number | undefined;
     totalRecebidoMesAnterior: number;
-    totalVencidoAnterior: number;
+    totalVencidoAnterior: number | undefined;
   };
   handleKpiClick: (filter: string) => void;
   filterType: import('@/components/ui/quick-date-filters').DateFilterOption;

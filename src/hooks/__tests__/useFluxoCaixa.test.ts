@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { format } from 'date-fns';
 
 const eqMock = vi.fn();
 const inMock = vi.fn();
@@ -16,6 +17,25 @@ vi.mock('@/integrations/supabase/client', () => ({
     from: vi.fn(() => ({ select: selectMock })),
   },
 }));
+
+// Os hooks passaram a ler a empresa selecionada (useAuth). Sem este mock o
+// wrapper só tem QueryClientProvider e useAuth lança "must be used within an
+// AuthProvider" antes de qualquer consulta. currentEmpresaId: null mantém o
+// que esta suíte mede — a aritmética dos KPIs — sem o .eq('empresa_id') extra
+// na cadeia mockada; o escopo por empresa é coberto em
+// useFluxoCaixa.escopo.test.tsx.
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ currentEmpresaId: null }),
+}));
+
+/**
+ * Dentro da janela de 30 dias que a previsão passou a respeitar.
+ * Usa a MESMA formatação local do hook (useFluxoCaixa.ts:34 chama
+ * `format(new Date(), 'yyyy-MM-dd')` do date-fns). Com toISOString, que é UTC,
+ * o teste quebrava em fuso de offset positivo na primeira hora do dia: às 00h30
+ * em Tóquio a data seria a de ontem e `venc >= hojeStr` falharia.
+ */
+const VENC_NA_JANELA = format(new Date(), 'yyyy-MM-dd');
 
 import {
   useFluxoCaixaKPIs,
@@ -47,14 +67,17 @@ describe('useFluxoCaixaKPIs', () => {
         // contas_receber.select(...).in(...)
         return {
           in: inMock.mockResolvedValueOnce({
-            data: [{ valor: 1000, valor_recebido: 200 }],
+            data: [{ valor: 1000, valor_recebido: 200, data_vencimento: VENC_NA_JANELA }],
             error: null,
           }),
         };
       }
       // contas_pagar.select(...).in(...)
       return {
-        in: inMock.mockResolvedValueOnce({ data: [{ valor: 600, valor_pago: 100 }], error: null }),
+        in: inMock.mockResolvedValueOnce({
+          data: [{ valor: 600, valor_pago: 100, data_vencimento: VENC_NA_JANELA }],
+          error: null,
+        }),
       };
     });
   });

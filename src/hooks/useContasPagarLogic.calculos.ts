@@ -53,14 +53,18 @@ export function calcularKpisContasPagar<C extends ContaKpi>(
     })
     .reduce((sum, c) => sum + (c.valor_pago || 0), 0);
 
-  const totalPagoMesAnterior =
-    allContas
-      .filter((c) => {
-        if (c.status !== 'pago' || !c.data_pagamento) return false;
-        const dataPag = parseISO(c.data_pagamento);
-        return isWithinInterval(dataPag, { start: startOfPrevMonth, end: endOfPrevMonth });
-      })
-      .reduce((sum, c) => sum + (c.valor_pago || 0), 0) || totalPagoMes * 0.95;
+  const totalPagoMesAnterior = allContas
+    .filter((c) => {
+      if (c.status !== 'pago' || !c.data_pagamento) return false;
+      const dataPag = parseISO(c.data_pagamento);
+      return isWithinInterval(dataPag, { start: startOfPrevMonth, end: endOfPrevMonth });
+    })
+    // Mesmo defeito do lado Contas a Receber (e o achado CP-05 de
+    // docs/AUDITORIA_PLANEJADO_X_EXECUTADO_2026-10-12.md:305): o fallback
+    // disparava justamente quando nada foi pago no mês anterior, trocando o
+    // zero real por 95% do mês atual. ContasPagarKPIs.tsx:30 já exige
+    // `totalPagoMesAnterior && > 0` para exibir a variação.
+    .reduce((sum, c) => sum + (c.valor_pago || 0), 0);
 
   const venceHoje = allContas.filter((c) => {
     return isSameDay(parseISO(c.data_vencimento), today) && c.status === 'pendente';

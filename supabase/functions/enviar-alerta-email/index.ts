@@ -6,6 +6,7 @@ import {
   createErrorResponse,
   EnviarAlertaEmailSchema,
   validatePayload,
+  parseJsonBody,
 } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -33,7 +34,9 @@ export const handler = async (req: Request): Promise<Response> => {
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const rawBody = await req.json();
+    const __json = await parseJsonBody(req, 'enviar-alerta-email');
+    if (!__json.success) return __json.response;
+    const rawBody = __json.data;
     const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, 'enviar-alerta-email');
     if (!validation.success) {
       return createErrorResponse(validation.error, 400, validation.details, req);
@@ -79,9 +82,24 @@ export const handler = async (req: Request): Promise<Response> => {
             <div style="padding: 30px; background: #f9fafb;">
               <h2 style="color: #1f2937; margin-top: 0;">${dados.titulo}</h2>
               <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
-              ${dados.valor ? `<p style="font-size: 24px; font-weight: bold; color: #1f2937;">Valor: R$ ${dados.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>` : ''}
-              ${dados.dataVencimento ? `<p style="color: #6b7280;">Vencimento: ${dados.dataVencimento}</p>` : ''}
-              ${dados.urlAcao ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Detalhes</a>` : ''}
+              ${
+                dados.valor
+                  ? `<p style="font-size: 24px; font-weight: bold; color: #1f2937;">Valor: R$ ${dados.valor.toLocaleString(
+                      'pt-BR',
+                      { minimumFractionDigits: 2 }
+                    )}</p>`
+                  : ''
+              }
+              ${
+                dados.dataVencimento
+                  ? `<p style="color: #6b7280;">Vencimento: ${dados.dataVencimento}</p>`
+                  : ''
+              }
+              ${
+                dados.urlAcao
+                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Detalhes</a>`
+                  : ''
+              }
             </div>
             <div style="background: #e5e7eb; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
               Sistema Financeiro - Alerta Automático
@@ -99,8 +117,19 @@ export const handler = async (req: Request): Promise<Response> => {
             <div style="padding: 30px; background: #f9fafb;">
               <h2 style="color: #1f2937; margin-top: 0;">${dados.titulo}</h2>
               <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
-              ${dados.valor ? `<p style="font-size: 24px; font-weight: bold; color: #ef4444;">Valor em atraso: R$ ${dados.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>` : ''}
-              ${dados.urlAcao ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Iniciar Cobrança</a>` : ''}
+              ${
+                dados.valor
+                  ? `<p style="font-size: 24px; font-weight: bold; color: #ef4444;">Valor em atraso: R$ ${dados.valor.toLocaleString(
+                      'pt-BR',
+                      { minimumFractionDigits: 2 }
+                    )}</p>`
+                  : ''
+              }
+              ${
+                dados.urlAcao
+                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Iniciar Cobrança</a>`
+                  : ''
+              }
             </div>
             <div style="background: #e5e7eb; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
               Sistema Financeiro - Alerta Automático
@@ -118,8 +147,19 @@ export const handler = async (req: Request): Promise<Response> => {
             <div style="padding: 30px; background: #f9fafb;">
               <h2 style="color: #1f2937; margin-top: 0;">${dados.titulo}</h2>
               <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
-              ${dados.valor ? `<p style="font-size: 24px; font-weight: bold; color: #1f2937;">Valor: R$ ${dados.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>` : ''}
-              ${dados.urlAcao ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Aprovar Agora</a>` : ''}
+              ${
+                dados.valor
+                  ? `<p style="font-size: 24px; font-weight: bold; color: #1f2937;">Valor: R$ ${dados.valor.toLocaleString(
+                      'pt-BR',
+                      { minimumFractionDigits: 2 }
+                    )}</p>`
+                  : ''
+              }
+              ${
+                dados.urlAcao
+                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Aprovar Agora</a>`
+                  : ''
+              }
             </div>
             <div style="background: #e5e7eb; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
               Sistema Financeiro - Alerta Automático
@@ -137,8 +177,18 @@ export const handler = async (req: Request): Promise<Response> => {
             <div style="padding: 30px; background: #fef2f2; border: 2px solid #fecaca;">
               <h2 style="color: #991b1b; margin-top: 0;">${dados.titulo}</h2>
               <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
-              ${dados.valor ? `<p style="font-size: 24px; font-weight: bold; color: #991b1b;">Déficit projetado: R$ ${Math.abs(dados.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>` : ''}
-              ${dados.urlAcao ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Fluxo de Caixa</a>` : ''}
+              ${
+                dados.valor
+                  ? `<p style="font-size: 24px; font-weight: bold; color: #991b1b;">Déficit projetado: R$ ${Math.abs(
+                      dados.valor
+                    ).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>`
+                  : ''
+              }
+              ${
+                dados.urlAcao
+                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Fluxo de Caixa</a>`
+                  : ''
+              }
             </div>
             <div style="background: #e5e7eb; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
               Sistema Financeiro - Alerta Crítico Automático
@@ -156,7 +206,11 @@ export const handler = async (req: Request): Promise<Response> => {
             <div style="padding: 30px; background: #fff1f2; border: 2px solid #fecdd3;">
               <h2 style="color: #9f1239; margin-top: 0;">${dados.titulo}</h2>
               <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
-              ${dados.urlAcao ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Painel de Retentativas</a>` : ''}
+              ${
+                dados.urlAcao
+                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Painel de Retentativas</a>`
+                  : ''
+              }
             </div>
           </div>
         `,
