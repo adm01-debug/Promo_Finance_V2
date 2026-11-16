@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { format, startOfDay } from 'date-fns';
 import type { ContasPagarPainelRow, ContasReceberPainelRow } from '@/hooks/financial/views.types';
 
 /**
@@ -35,7 +36,15 @@ vi.mock('recharts', () => {
 
 const { ProjectedCashFlowChart } = await import('@/components/tesouraria/ProjectedCashFlowChart');
 
-const hoje = new Date().toISOString().slice(0, 10);
+/**
+ * A MESMA representação local do componente: ProjectedCashFlowChart.tsx:30-36
+ * monta o dia com `startOfDay(new Date())` e `format(date, 'yyyy-MM-dd')`, que
+ * são locais. Com toISOString, que é UTC, o teste quebrava em America/Sao_Paulo
+ * entre 21h e meia-noite (a fixture caía no segundo ponto do gráfico e
+ * dadosCapturados[0] vinha zerado) e em qualquer fuso de offset positivo na
+ * primeira hora do dia.
+ */
+const hoje = format(startOfDay(new Date()), 'yyyy-MM-dd');
 
 const pagar = [
   { data_vencimento: hoje, status: 'parcial', valor: 1000, valor_pago: 700 },
