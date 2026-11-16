@@ -221,7 +221,9 @@ function renderEmail(input: {
     .map((l) => escapeHtml(l))
     .join('<br/>');
   const cta = input.url
-    ? `<a href="${escapeHtml(input.url)}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:20px;">Ver no app</a>`
+    ? `<a href="${escapeHtml(
+        input.url
+      )}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:20px;">Ver no app</a>`
     : '';
   return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
@@ -234,7 +236,9 @@ function renderEmail(input: {
         ${cta}
       </div>
       <div style="background:#f3f4f6;padding:15px;text-align:center;color:#6b7280;font-size:12px;">
-        Você recebeu este e-mail porque ativou notificações para o filtro "${escapeHtml(input.filterName)}".
+        Você recebeu este e-mail porque ativou notificações para o filtro "${escapeHtml(
+          input.filterName
+        )}".
       </div>
     </div>
   `;

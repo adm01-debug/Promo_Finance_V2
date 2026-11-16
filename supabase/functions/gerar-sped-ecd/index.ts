@@ -220,7 +220,9 @@ Deno.serve(
         id: 'balancete',
         label: 'Balancete consolidado (∑ débitos = ∑ créditos)',
         status: balanceteOk ? 'ok' : 'error',
-        detail: `D: ${totalDeb.toFixed(2)} · C: ${totalCre.toFixed(2)} · Δ: ${Math.abs(totalDeb - totalCre).toFixed(2)}`,
+        detail: `D: ${totalDeb.toFixed(2)} · C: ${totalCre.toFixed(2)} · Δ: ${Math.abs(
+          totalDeb - totalCre
+        ).toFixed(2)}`,
       });
 
       const nums = lancamentos.map((l) => l.numero_lancamento).sort((a, b) => a - b);

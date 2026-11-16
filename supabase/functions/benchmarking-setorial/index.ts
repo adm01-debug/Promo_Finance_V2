@@ -57,7 +57,9 @@ export const handler = async (req: Request): Promise<Response> => {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
 
-    const prompt = `Você é um consultor financeiro especialista no setor de "${setor || 'Eventos e Produção'}".
+    const prompt = `Você é um consultor financeiro especialista no setor de "${
+      setor || 'Eventos e Produção'
+    }".
 
 Analise as métricas da empresa abaixo e compare com benchmarks do setor. Forneça uma análise completa.
 

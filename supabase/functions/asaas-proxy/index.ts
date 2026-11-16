@@ -4,7 +4,12 @@
 // ============================================
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { validatePayload, createErrorResponse, AsaasProxySchema, parseJsonBody } from '../_shared/validation.ts';
+import {
+  validatePayload,
+  createErrorResponse,
+  AsaasProxySchema,
+  parseJsonBody,
+} from '../_shared/validation.ts';
 import {
   createCircuitBreaker,
   respostaIntegracaoDesativada,

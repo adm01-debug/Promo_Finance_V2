@@ -1,6 +1,11 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { Bitrix24SyncSchema, validatePayload, createErrorResponse, parseJsonBody } from '../_shared/validation.ts';
+import {
+  Bitrix24SyncSchema,
+  validatePayload,
+  createErrorResponse,
+  parseJsonBody,
+} from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -607,7 +612,9 @@ async function exportPaymentStatus(
           id: conta.bitrix_deal_id,
           fields: {
             STAGE_ID: 'WON',
-            COMMENTS: `Pagamento recebido em ${conta.data_recebimento || new Date().toISOString().split('T')[0]}`,
+            COMMENTS: `Pagamento recebido em ${
+              conta.data_recebimento || new Date().toISOString().split('T')[0]
+            }`,
           },
         });
 
@@ -686,7 +693,9 @@ async function syncElisaoTask(
     const taskParams = {
       fields: {
         TITLE: `[RECUPERAÇÃO FISCAL] ${tarefa.titulo}`,
-        DESCRIPTION: `${tarefa.descricao}\n\nValor estimado: R$ ${tarefa.valor_envolvido}\nPrazo: ${tarefa.prazo || 'N/D'}`,
+        DESCRIPTION: `${tarefa.descricao}\n\nValor estimado: R$ ${tarefa.valor_envolvido}\nPrazo: ${
+          tarefa.prazo || 'N/D'
+        }`,
         RESPONSIBLE_ID: 1,
         DEADLINE: tarefa.prazo ? `${tarefa.prazo}T18:00:00` : undefined,
       },
