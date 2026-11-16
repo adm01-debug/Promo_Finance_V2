@@ -154,7 +154,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.integrity_alerts](tables/public/integrity_alerts.md) | table | sim | 2 | 14 | não |  |
 | [public.ip_whitelist](tables/public/ip_whitelist.md) | table | sim | 5 | 8 | não |  |
 | [public.itens_lista_iss](tables/public/itens_lista_iss.md) | table | sim | 2 | 10 | não |  |
-| [public.itens_pedido_compra](tables/public/itens_pedido_compra.md) | table | sim | 1 | 7 | não |  |
+| [public.itens_pedido_compra](tables/public/itens_pedido_compra.md) | table | sim | 2 | 7 | não |  |
 | [public.kpis_operacionais](tables/public/kpis_operacionais.md) | table | sim | 1 | 14 | não |  |
 | [public.lancamentos_contabeis](tables/public/lancamentos_contabeis.md) | table | sim | 1 | 14 | não |  |
 | [public.login_attempts](tables/public/login_attempts.md) | table | sim | 4 | 14 | não |  |
@@ -185,7 +185,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.partidas_contabeis](tables/public/partidas_contabeis.md) | table | sim | 5 | 10 | não |  |
 | [public.password_reset_requests](tables/public/password_reset_requests.md) | table | sim | 3 | 15 | não |  |
 | [public.password_reset_tokens](tables/public/password_reset_tokens.md) | table | sim | 4 | 7 | não |  |
-| [public.pedidos_compra](tables/public/pedidos_compra.md) | table | sim | 1 | 11 | não |  |
+| [public.pedidos_compra](tables/public/pedidos_compra.md) | table | sim | 2 | 11 | não |  |
 | [public.per_dcomp](tables/public/per_dcomp.md) | table | sim | 5 | 25 | não |  |
 | [public.performance_alerts](tables/public/performance_alerts.md) | table | sim | 1 | 15 | sim |  |
 | [public.permissions](tables/public/permissions.md) | table | sim | 4 | 6 | não |  |
@@ -251,7 +251,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.sso_user_groups](tables/public/sso_user_groups.md) | table | sim | 1 | 11 | não |  |
 | [public.tax_audit_trail](tables/public/tax_audit_trail.md) | table | sim | 1 | 11 | não |  |
 | [public.templates_cobranca](tables/public/templates_cobranca.md) | table | sim | 2 | 15 | não |  |
-| [public.transacoes_bancarias](tables/public/transacoes_bancarias.md) | table | sim | 1 | 24 | sim |  |
+| [public.transacoes_bancarias](tables/public/transacoes_bancarias.md) | table | sim | 3 | 24 | sim |  |
 | [public.transferencias](tables/public/transferencias.md) | table | sim | 1 | 17 | não |  |
 | [public.ufs](tables/public/ufs.md) | table | sim | 3 | 15 | não |  |
 | [public.user_action_audit](tables/public/user_action_audit.md) | table | sim | 2 | 8 | não |  |

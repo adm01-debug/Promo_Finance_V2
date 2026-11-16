@@ -2,6 +2,16 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-16 13:40 UTC
+
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** alterado (5): `public.empresa_acessivel(_empresa_id uuid)`, `public.frontend_error_logs_sanitize()`, `public.has_any_role(_user_id uuid, _roles app_role[])`, `public.is_country_allowed_for_login(_country text)`, `public.is_ip_allowed_for_login(_ip inet)`
+- **grants** adicionado (3): `public.audit_logs:authenticated`, `public.frontend_error_logs:authenticated`, `public.planos_acao:authenticated`
+- **migrations** adicionado (3): `20261113181200_rls_escrita_compras_transacoes_bancarias`, `20261116120000_login_allowlist_permissiva_sem_regras`, `20261116151000_grants_authenticated_audit_por_coluna`
+- **policies (RLS)** adicionado (4): `public.itens_pedido_compra.itens_pedido_compra_financeiro_insert`, `public.pedidos_compra.pedidos_compra_financeiro_insert`, `public.transacoes_bancarias.transacoes_bancarias_financeiro_insert`, `public.transacoes_bancarias.transacoes_bancarias_financeiro_update`
+- **realtime** adicionado (2): `supabase_realtime_messages_publication:realtime.messages_2026_11_18`, `supabase_realtime_messages_publication:realtime.messages_2026_11_19`
+- **realtime** removido (2): `supabase_realtime_messages_publication:realtime.messages_2026_11_11`, `supabase_realtime_messages_publication:realtime.messages_2026_11_12`
+
 ## 2026-11-14 14:41 UTC
 
 - **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)

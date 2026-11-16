@@ -1019,5 +1019,8 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261113114643 | [drop_old_partitions_alinha_repo](migrations/20261113114643_drop_old_partitions_alinha_repo.sql) | 0 |
 | 20261113163037 | [colunas_campos_formulario](migrations/20261113163037_colunas_campos_formulario.sql) | 0 |
 | 20261113181100 | [balancete_tipo_partida_debito_credito](migrations/20261113181100_balancete_tipo_partida_debito_credito.sql) | 2 |
+| 20261113181200 | [rls_escrita_compras_transacoes_bancarias](migrations/20261113181200_rls_escrita_compras_transacoes_bancarias.sql) | 8 |
 | 20261113181400 | [contas_pagar_status_constraint_unica](migrations/20261113181400_contas_pagar_status_constraint_unica.sql) | 4 |
 | 20261114083000 | [rls_policies_alerts_risk_rules](migrations/20261114083000_rls_policies_alerts_risk_rules.sql) | 26 |
+| 20261116120000 | [login_allowlist_permissiva_sem_regras](migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql) | 3 |
+| 20261116151000 | [grants_authenticated_audit_por_coluna](migrations/20261116151000_grants_authenticated_audit_por_coluna.sql) | 8 |

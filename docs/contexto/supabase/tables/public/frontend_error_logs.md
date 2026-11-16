@@ -88,4 +88,18 @@
 | role | privilégios |
 |---|---|
 | anon | INSERT |
+| authenticated | SELECT |
 | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
+
+
+Grants por coluna:
+
+| coluna | role | privilégios |
+|---|---|---|
+| error_message | authenticated | INSERT |
+| error_stack | authenticated | INSERT |
+| metadata | authenticated | INSERT |
+| severity | authenticated | INSERT |
+| url | authenticated | INSERT |
+| user_agent | authenticated | INSERT |
+| user_id | authenticated | INSERT |

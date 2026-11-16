@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 1 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -52,6 +52,16 @@
 | roles | authenticated |
 | USING | `(pedido_id IN ( SELECT pedidos_compra.id    FROM pedidos_compra   WHERE (pedidos_compra.empresa_id IN ( SELECT user_empresas.empresa_id            FROM user_empresas           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true))))))` |
 | WITH CHECK |  |
+
+### `itens_pedido_compra_financeiro_insert`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(has_any_role(( SELECT auth.uid() AS uid), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (EXISTS ( SELECT 1    FROM pedidos_compra pc   WHERE ((pc.id = itens_pedido_compra.pedido_id) AND empresa_acessivel(pc.empresa_id)))))` |
 
 
 ## Triggers

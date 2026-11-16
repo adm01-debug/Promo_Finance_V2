@@ -69,6 +69,7 @@ Roles da API: `anon` (sem login), `authenticated` (logado), `service_role` (bypa
 | public.asaas_sync_queue | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.asaas_transfers | authenticated | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.asaas_transfers | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
+| public.audit_logs | authenticated | INSERT, SELECT |
 | public.audit_logs | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.audit_logs_2026_01 | authenticated | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.audit_logs_2026_01 | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
@@ -247,6 +248,7 @@ Roles da API: `anon` (sem login), `authenticated` (logado), `service_role` (bypa
 | public.frontend_error_alert_state | authenticated | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.frontend_error_alert_state | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.frontend_error_logs | anon | INSERT |
+| public.frontend_error_logs | authenticated | SELECT |
 | public.frontend_error_logs | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.frontend_error_logs_2026_01 | authenticated | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.frontend_error_logs_2026_01 | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
@@ -384,6 +386,7 @@ Roles da API: `anon` (sem login), `authenticated` (logado), `service_role` (bypa
 | public.pix_templates | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.plano_contas | authenticated | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.plano_contas | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
+| public.planos_acao | authenticated | DELETE, INSERT, SELECT, UPDATE |
 | public.planos_acao | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.portal_cliente_acessos | authenticated | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
 | public.portal_cliente_acessos | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |
@@ -616,7 +619,15 @@ Roles da API: `anon` (sem login), `authenticated` (logado), `service_role` (bypa
 
 ## Colunas (grants parciais)
 
-_nenhum_
+| coluna | role | privilégios |
+|---|---|---|
+| public.frontend_error_logs.error_message | authenticated | INSERT |
+| public.frontend_error_logs.error_stack | authenticated | INSERT |
+| public.frontend_error_logs.metadata | authenticated | INSERT |
+| public.frontend_error_logs.severity | authenticated | INSERT |
+| public.frontend_error_logs.url | authenticated | INSERT |
+| public.frontend_error_logs.user_agent | authenticated | INSERT |
+| public.frontend_error_logs.user_id | authenticated | INSERT |
 
 
 ## Sequences (roles da API)

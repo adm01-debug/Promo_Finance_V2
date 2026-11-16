@@ -89,4 +89,5 @@ _nenhum_
 
 | role | privilégios |
 |---|---|
+| authenticated | INSERT, SELECT |
 | service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |

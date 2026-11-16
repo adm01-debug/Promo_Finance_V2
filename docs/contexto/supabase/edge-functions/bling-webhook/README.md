@@ -4,7 +4,7 @@
 |---|---|
 | nome | bling-webhook |
 | status | ACTIVE |
-| versão | 20 |
+| versão | 27 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/bling-webhook/index.ts |
 | import_map |  |
