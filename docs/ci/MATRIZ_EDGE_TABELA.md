@@ -75,7 +75,7 @@
 | `insights-relatorio` | — |
 | `log-sped-bitrix24` | `audit_logs` |
 | `mcp-query` | — |
-| `monitor-health` | `alertas`, `webhooks_log` |
+| `monitor-health` | `alertas`, `profiles`, `webhooks_log` |
 | `monitorar-erros-frontend` | `profiles`, `user_roles` |
 | `n8n-callback` | — |
 | `n8n-dispatch` | `n8n_dispatch_logs`, `n8n_workflow_configs` |
@@ -201,7 +201,7 @@
 | `overlay_rejeicoes_auditoria` | `overlay-rejeicoes-auditoria` |
 | `partidas_contabeis` | `contabilizar-evento` |
 | `plano_contas` | `gerar-sped-ecd`, `gerar-sped-ecf` |
-| `profiles` | `convidar-usuario`, `digest-silenciamentos-erro`, `enviar-digest-conformidade`, `monitorar-erros-frontend`, `processar-solicitacao-lgpd`, `relatorio-diario-anomalias`, `scim-server`, `sso-callback`, `sync-profile-to-bitrix` |
+| `profiles` | `convidar-usuario`, `digest-silenciamentos-erro`, `enviar-digest-conformidade`, `monitor-health`, `monitorar-erros-frontend`, `processar-solicitacao-lgpd`, `relatorio-diario-anomalias`, `scim-server`, `sso-callback`, `sync-profile-to-bitrix` |
 | `protocolos_st_ncms` | `consulta-tributaria` |
 | `protocolos_st_ufs` | `consulta-tributaria` |
 | `push_subscriptions` | `send-push-notification` |

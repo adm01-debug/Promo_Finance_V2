@@ -1,0 +1,142 @@
+{
+  "actionlint.yml": {
+    "runs": 88,
+    "custo_semana_min": 617.8,
+    "taxa_falha_7d": "0%"
+  },
+  "auto-update-pr-branch.yml": {
+    "runs": 982,
+    "custo_semana_min": 5004.1,
+    "taxa_falha_7d": "0.5%"
+  },
+  "automation-local.yml": {
+    "runs": 460,
+    "custo_semana_min": 6514.2,
+    "taxa_falha_7d": "3.9%"
+  },
+  "ci.yml": {
+    "runs": 501,
+    "custo_semana_min": 25617.3,
+    "taxa_falha_7d": "7.4%"
+  },
+  "codeql.yml": {
+    "runs": 138,
+    "custo_semana_min": 1622.6,
+    "taxa_falha_7d": "18.8%"
+  },
+  "contexto.yml": {
+    "runs": 733,
+    "custo_semana_min": 7582.6,
+    "taxa_falha_7d": "1.8%"
+  },
+  "copilot": {
+    "runs": 12,
+    "custo_semana_min": 25.9,
+    "taxa_falha_7d": "16.7%"
+  },
+  "copilot-pull-request-reviewer": {
+    "runs": 4,
+    "custo_semana_min": 33.7,
+    "taxa_falha_7d": "50%"
+  },
+  "deno-tests.yml": {
+    "runs": 501,
+    "custo_semana_min": 8301.7,
+    "taxa_falha_7d": "1.6%"
+  },
+  "dependabot-updates": {
+    "runs": 11,
+    "custo_semana_min": 36.8,
+    "taxa_falha_7d": "0%"
+  },
+  "dependency-review.yml": {
+    "runs": 432,
+    "custo_semana_min": 3958.2,
+    "taxa_falha_7d": "4.9%"
+  },
+  "estado-real.yml": {
+    "runs": 23,
+    "custo_semana_min": 108.4,
+    "taxa_falha_7d": "4.3%"
+  },
+  "functions-deploy.yml": {
+    "runs": 15,
+    "custo_semana_min": 41.9,
+    "taxa_falha_7d": "6.7%"
+  },
+  "graphify.yml": {
+    "runs": 328,
+    "custo_semana_min": 6029.3,
+    "taxa_falha_7d": "1.8%"
+  },
+  "inventario-estado.yml": {
+    "runs": 18,
+    "custo_semana_min": 289.2,
+    "taxa_falha_7d": "0%"
+  },
+  "prod-migrate.yml": {
+    "runs": 7,
+    "custo_semana_min": 324.1,
+    "taxa_falha_7d": "42.9%"
+  },
+  "schema-drift.yml": {
+    "runs": 3,
+    "custo_semana_min": 34.5,
+    "taxa_falha_7d": "100%"
+  },
+  "settings-guard.yml": {
+    "runs": 4,
+    "custo_semana_min": 3.4,
+    "taxa_falha_7d": "0%"
+  },
+  "supabase-linter.yml": {
+    "runs": 470,
+    "custo_semana_min": 4293.6,
+    "taxa_falha_7d": "2.6%"
+  },
+  "update-graph": {
+    "runs": 2,
+    "custo_semana_min": 3.5,
+    "taxa_falha_7d": "0%"
+  },
+  "zz-diagnostico-actions.yml": {
+    "runs": 4,
+    "custo_semana_min": 0.5,
+    "taxa_falha_7d": "0%"
+  },
+  "zzdiag-automation-local.yml": {
+    "runs": 3,
+    "custo_semana_min": 0.8,
+    "taxa_falha_7d": "66.7%"
+  },
+  "zzdiag-codeql.yml": {
+    "runs": 3,
+    "custo_semana_min": 3.3,
+    "taxa_falha_7d": "100%"
+  },
+  "zzdiag-dependency-review.yml": {
+    "runs": 3,
+    "custo_semana_min": 0.2,
+    "taxa_falha_7d": "100%"
+  },
+  "zzdiag-settings-guard.yml": {
+    "runs": 3,
+    "custo_semana_min": 0.2,
+    "taxa_falha_7d": "66.7%"
+  },
+  "zzuses-3d3c42e5aac5.yml": {
+    "runs": 2,
+    "custo_semana_min": 0.2,
+    "taxa_falha_7d": "50%"
+  },
+  "zzuses-v4.yml": {
+    "runs": 2,
+    "custo_semana_min": 0.1,
+    "taxa_falha_7d": "50%"
+  },
+  "zzuses-v5.yml": {
+    "runs": 2,
+    "custo_semana_min": 0.2,
+    "taxa_falha_7d": "50%"
+  }
+}
