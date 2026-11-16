@@ -50,23 +50,24 @@ export function calcularKpisContasReceber(allContas: ContaReceberKpi[]) {
     // pelo valor total — convenção já usada em Financeiro/BI/Dashboards.
     .reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0);
 
-  const totalReceberAnterior =
-    allContas
-      .filter((c) => {
-        if (!c.data_vencimento) return false;
-        const venc = parseISO(c.data_vencimento);
-        return venc < today && c.status !== 'cancelado';
-      })
-      .reduce((sum, c) => sum + (c.valor ?? 0), 0) * 0.9; // Simulação de dados anteriores
+  // Não há fonte para "total a receber do período anterior": a soma que ficava
+  // aqui era o total JÁ VENCIDO multiplicado por 0.9 ("Simulação de dados
+  // anteriores"), ou seja o número atual disfarçado. ContasReceberKPIs.tsx:53
+  // já declara a política correta — "a variação só é exibida quando há dados
+  // reais do período anterior" — e calcVariation (:35) devolve null quando o
+  // anterior é undefined, escondendo o selo. undefined é a resposta honesta.
+  const totalReceberAnterior: number | undefined = undefined;
 
-  const totalRecebidoMesAnterior =
-    allContas
-      .filter((c) => {
-        if ((c.status !== 'pago' && c.status !== 'recebido') || !c.data_recebimento) return false;
-        const dataRec = parseISO(c.data_recebimento);
-        return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
-      })
-      .reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0) || totalRecebidoMes * 0.95;
+  const totalRecebidoMesAnterior = allContas
+    .filter((c) => {
+      if ((c.status !== 'pago' && c.status !== 'recebido') || !c.data_recebimento) return false;
+      const dataRec = parseISO(c.data_recebimento);
+      return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
+    })
+    // Sem `|| totalRecebidoMes * 0.95`: o fallback disparava exatamente quando
+    // a resposta verdadeira era "nada foi recebido no mês anterior" (0 é
+    // falsy), trocando o zero real por 95% do mês atual.
+    .reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0);
 
   const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
@@ -92,6 +93,8 @@ export function calcularKpisContasReceber(allContas: ContaReceberKpi[]) {
     venceSemana,
     totalReceberAnterior,
     totalRecebidoMesAnterior,
-    totalVencidoAnterior: totalVencido * 1.1,
+    // totalVencido * 1.1 fazia o cartão de vencidos mostrar sempre ≈ -9%,
+    // uma melhora que nunca aconteceu. Sem fonte real, undefined.
+    totalVencidoAnterior: undefined as number | undefined,
   };
 }
