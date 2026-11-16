@@ -13,7 +13,9 @@ vi.mock('@/components/ui/ux-validator', () => ({
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...props}>{children}</div>
+    ),
   },
 }));
 
@@ -39,7 +41,7 @@ describe('DashboardFiltersHeader', () => {
         centroCustoFilter="all"
         setCentroCustoFilter={vi.fn()}
         onOpenConfig={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.getByLabelText(/filtro de empresa do dashboard/i)).toBeInTheDocument();
