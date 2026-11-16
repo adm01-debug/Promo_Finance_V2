@@ -4,7 +4,7 @@
 |---|---|
 | nome | open-finance |
 | status | ACTIVE |
-| versão | 32 |
+| versão | 40 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/open-finance/index.ts |
 | import_map |  |

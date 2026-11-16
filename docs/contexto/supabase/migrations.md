@@ -1024,3 +1024,5 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261114083000 | [rls_policies_alerts_risk_rules](migrations/20261114083000_rls_policies_alerts_risk_rules.sql) | 26 |
 | 20261116120000 | [login_allowlist_permissiva_sem_regras](migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql) | 3 |
 | 20261116151000 | [grants_authenticated_audit_por_coluna](migrations/20261116151000_grants_authenticated_audit_por_coluna.sql) | 8 |
+| 20261116170000 | [estorno_contabil_movimentacao_origem](migrations/20261116170000_estorno_contabil_movimentacao_origem.sql) | 4 |
+| 20261116180000 | [refresh_mv_benchmark_grants_excecao_estreita](migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql) | 5 |

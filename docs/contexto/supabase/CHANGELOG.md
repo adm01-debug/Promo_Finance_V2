@@ -2,6 +2,14 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-16 16:20 UTC
+
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** adicionado (1): `public.refresh_mv_benchmark_setorial()`
+- **functions** alterado (6): `public.contabilizar_movimentacao_registro(m movimentacoes)`, `public.empresa_acessivel(_empresa_id uuid)`, `public.fn_lancamento_estorno_marker()`, `public.fn_livro_razao(p_empresa_id uuid, p_conta_id uuid, p_data_inicio date, p_data_fim date)`, `public.fn_saldo_movimentacao()`, `public.obter_totais_movimentacoes(p_start date, p_end date, p_tipo text, p_search text)`
+- **indexes** adicionado (1): `public.idx_historico_conciliacao_ia_sessao`
+- **migrations** adicionado (2): `20261116170000_estorno_contabil_movimentacao_origem`, `20261116180000_refresh_mv_benchmark_grants_excecao_estreita`
+
 ## 2026-11-16 14:34 UTC
 
 - **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)

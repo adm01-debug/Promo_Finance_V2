@@ -345,6 +345,7 @@ Uso e tamanho em `stats.md`.
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_aprovado_por_fk | btree | aprovado_por | não | sim |  |
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_conta_receber_id_fk | btree | conta_receber_id | não | sim |  |
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_created_by_fk | btree | created_by | não | sim |  |
+| public.historico_conciliacao_ia | idx_historico_conciliacao_ia_sessao | btree | sessao_id | não | sim |  |
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_sessao_id_fk | btree | sessao_id | não | sim |  |
 | public.historico_relatorios | historico_relatorios_pkey | btree | id | sim | sim |  |
 | public.historico_relatorios | idx_historico_relatorios_relatorio_agendado_id_fk | btree | relatorio_agendado_id | não | sim |  |

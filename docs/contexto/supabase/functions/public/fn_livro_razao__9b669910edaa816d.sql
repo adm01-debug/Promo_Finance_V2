@@ -11,6 +11,7 @@ AS $function$
   JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id
   WHERE l.empresa_id = p_empresa_id
     AND p.conta_contabil_id = p_conta_id
+    AND l.status IS DISTINCT FROM 'cancelado'
     AND l.data_lancamento BETWEEN p_data_inicio AND p_data_fim
   ORDER BY l.data_lancamento, l.created_at;
 $function$

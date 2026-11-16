@@ -19,16 +19,31 @@ BEGIN
     RETURN 'ignorada';
   END IF;
 
-  -- Idempotência: uma movimentação gera no máximo um lançamento.
+  -- Idempotência: uma movimentação gera no máximo um lançamento VIGENTE.
+  -- Lançamento 'cancelado' (estorno da exclusão ou substituição por
+  -- alteração em fn_saldo_movimentacao) não bloqueia a recontabilização.
+  -- A origem legada entra aqui (correcao da #340): um lancamento
+  -- 'financeiro_movimentacao' ainda vigente tambem impede um segundo
+  -- lancamento para a mesma movimentacao.
   IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis
-              WHERE origem = 'movimentacao' AND origem_id = m.id) THEN
+              WHERE origem IN ('movimentacao', 'financeiro_movimentacao')
+                AND origem_id = m.id
+                AND status IS DISTINCT FROM 'cancelado') THEN
     RETURN 'duplicado';
   END IF;
 
   BEGIN
+    -- Escopo por empresa (correcao da #340): sem o filtro, mover a
+    -- movimentacao para outra empresa mantendo conta_pagar_id/conta_receber_id
+    -- copiava a categoria -- e logo o plano_conta_id -- do tenant anterior para
+    -- uma partida declarada na empresa nova. trg_sync_valor_pago nao dispara
+    -- nesse UPDATE (seu UPDATE OF nao inclui empresa_id nem conta_bancaria_id),
+    -- portanto o vinculo cruzado chega aqui intacto.
     SELECT COALESCE(
-             (SELECT categoria_id FROM public.contas_pagar   WHERE id = m.conta_pagar_id),
-             (SELECT categoria_id FROM public.contas_receber WHERE id = m.conta_receber_id))
+             (SELECT categoria_id FROM public.contas_pagar
+               WHERE id = m.conta_pagar_id AND empresa_id = m.empresa_id),
+             (SELECT categoria_id FROM public.contas_receber
+               WHERE id = m.conta_receber_id AND empresa_id = m.empresa_id))
       INTO v_categoria;
 
     -- Regra mais específica primeiro: categoria igual > genérica; tipo
@@ -56,7 +71,8 @@ BEGIN
     v_deb := v_regra.conta_debito_id;
     v_cred := v_regra.conta_credito_id;
     IF v_regra.categoria_id IS NULL AND v_categoria IS NOT NULL THEN
-      SELECT plano_conta_id INTO v_conta_cat FROM public.categorias WHERE id = v_categoria;
+      SELECT plano_conta_id INTO v_conta_cat FROM public.categorias
+        WHERE id = v_categoria AND empresa_id = m.empresa_id;
       IF v_conta_cat IS NOT NULL THEN
         IF m.tipo = 'saida' THEN v_deb := v_conta_cat;
         ELSIF m.tipo = 'entrada' THEN v_cred := v_conta_cat;
@@ -84,7 +100,22 @@ BEGIN
     INSERT INTO public.eventos_contabilizacao_log
       (empresa_id, tipo_evento, evento, evento_id, regra_id, lancamento_id, status)
     VALUES (m.empresa_id, 'movimentacao', 'movimentacao.criada', m.id,
-            v_regra.id, v_lanc, 'sucesso');
+            v_regra.id, v_lanc, 'sucesso')
+    -- uq_eventos_contab_sucesso admite 1 'sucesso' por movimentação: na
+    -- recontabilização o registro passa a apontar o lançamento vigente.
+    ON CONFLICT (tipo_evento, evento_id) WHERE status = 'sucesso'
+    -- empresa_id e created_at tambem (correcao da #340): sem empresa_id o log
+    -- guardava a empresa ANTIGA junto dos identificadores contabeis da NOVA, e
+    -- eventos_contab_select autoriza leitura por empresa_acessivel(empresa_id)
+    -- -- usuarios do tenant anterior enxergariam lancamento_id/regra_id do
+    -- tenant novo, e o sucesso nao apareceria para a empresa de destino. Sem
+    -- created_at a recontabilizacao herdava a data do primeiro sucesso e podia
+    -- nao entrar nos 50 registros mais recentes de useContabilizacaoQueries.
+    DO UPDATE SET empresa_id = EXCLUDED.empresa_id,
+                  lancamento_id = EXCLUDED.lancamento_id,
+                  regra_id = EXCLUDED.regra_id,
+                  created_at = now(),
+                  detalhe = 'recontabilizada após alteração/restauração da movimentação';
     RETURN 'sucesso';
   EXCEPTION WHEN OTHERS THEN
     -- Nunca bloquear a movimentação financeira por causa da contabilidade.
