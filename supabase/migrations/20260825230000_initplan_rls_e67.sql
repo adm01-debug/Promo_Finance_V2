@@ -718,9 +718,25 @@ DROP POLICY IF EXISTS saved_filters_admin_all ON public.saved_filters; CREATE PO
   WHERE ((p.id = (SELECT auth.uid())) AND (p.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))));
 DROP POLICY IF EXISTS saved_filters_owner_all ON public.saved_filters; CREATE POLICY saved_filters_owner_all ON public.saved_filters AS PERMISSIVE FOR ALL TO authenticated USING ((user_id = (SELECT auth.uid()))) WITH CHECK ((user_id = (SELECT auth.uid())));
 DROP POLICY IF EXISTS saved_filters_owner_write ON public.saved_filters; CREATE POLICY saved_filters_owner_write ON public.saved_filters AS PERMISSIVE FOR ALL TO authenticated USING ((user_id = (SELECT auth.uid()))) WITH CHECK ((user_id = (SELECT auth.uid())));
+-- Cast explicito em shared_with_roles. A coluna divergiu de tipo entre a cadeia
+-- e producao: 20260422115506:5 a cria como public.app_role[], e o text[] de
+-- 20260728161110:12 nao conserta porque esta num CREATE TABLE IF NOT EXISTS que
+-- e no-op (a tabela ja existe desde 20241231000000:8). Em PRODUCAO a coluna e
+-- _text (conferido no canonico). Sem o cast, o replay falhava com
+--   ERROR: operator does not exist: text = app_role
+-- e, como o arquivo roda em uma transacao, derrubava a criacao de risk_rules,
+-- alerts_sent, geo_blocks e watch_cron_failures.
+--
+-- Corrigido no CAST e nao no tipo da coluna de proposito: tentei trocar o tipo
+-- em 20260422115506 e MEDI que piorou (bloqueios 13 -> 18, falhas 50 -> 59),
+-- porque o proprio arquivo usa a coluna como app_role mais abaixo (:47, :118) e
+-- dava rollback, levando is_shared com ele. E alterar o tipo depois da policy de
+-- 20260728161110:34 existir e recusado pelo PostgreSQL (coluna usada em policy).
+-- O cast e equivalente nos dois tipos, entao serve para producao e para o replay.
+-- A divergencia de tipo em si fica registrada, nao resolvida aqui.
 DROP POLICY IF EXISTS saved_filters_select ON public.saved_filters; CREATE POLICY saved_filters_select ON public.saved_filters AS PERMISSIVE FOR SELECT TO authenticated USING (((user_id = (SELECT auth.uid())) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
    FROM user_roles ur
-  WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+  WHERE ((ur.user_id = (SELECT auth.uid())) AND ((ur.role)::text = ANY ((saved_filters.shared_with_roles)::text[]))))))));
 DROP POLICY IF EXISTS scim_operations_log_admin_select ON public.scim_operations_log; CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins manage scim_tokens" ON public.scim_tokens; CREATE POLICY "Admins manage scim_tokens" ON public.scim_tokens AS PERMISSIVE FOR ALL TO authenticated USING ((EXISTS ( SELECT 1
    FROM user_roles
