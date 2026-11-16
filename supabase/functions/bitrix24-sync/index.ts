@@ -255,7 +255,6 @@ async function syncDeals(
             cliente_nome: `Bitrix Deal #${deal.ID}`,
             empresa_id: empresaId,
             created_by: userId,
-            status: 'pendente',
           };
 
           // Check if already exists
@@ -267,10 +266,13 @@ async function syncDeals(
 
           if (existing) {
             // Update
+            // status fora do update de proposito: quem escreve nessa coluna e o
+            // usuario e a rotina marcar_contas_vencidas(). Reenviar 'pendente'
+            // aqui desfazia o 'vencido' (e tambem 'recebido'/'parcial').
             await supabase.from('contas_receber').update(contaData).eq('id', existing.id);
           } else {
             // Insert
-            await supabase.from('contas_receber').insert(contaData);
+            await supabase.from('contas_receber').insert({ ...contaData, status: 'pendente' });
           }
 
           processed++;

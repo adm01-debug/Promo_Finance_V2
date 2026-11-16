@@ -1,3 +1,8 @@
+// Titulo em aberto. 'vencido' entra: marcar_contas_vencidas() passa
+// 'pendente' -> 'vencido' no vencimento e a divida continua devida.
+export const tituloEmAberto = (status?: string | null) =>
+  status === 'pendente' || status === 'vencido';
+
 export const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } },

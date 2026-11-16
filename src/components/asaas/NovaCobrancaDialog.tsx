@@ -69,7 +69,8 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
         .from('contas_receber')
         .select('id, descricao, valor, data_vencimento')
         .eq('empresa_id', empresaId)
-        .eq('status', 'pendente')
+        // 'vencido' incluido: o titulo em atraso e justamente o que se quer cobrar.
+        .in('status', ['pendente', 'vencido'])
         .order('data_vencimento', { ascending: true });
       if (error) throw error;
       return data;

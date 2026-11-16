@@ -61,7 +61,10 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
       const { data: contasPagar } = await supabase
         .from('contas_pagar')
         .select('valor, data_vencimento')
-        .eq('status', 'pendente')
+        // 'vencido' incluido: a janela nao tem piso de data, entao o titulo em
+        // atraso esta dentro dela e continua sendo divida a pagar. Sem isso o
+        // saldo projetado sobe e o alerta de saldo negativo para de disparar.
+        .in('status', ['pendente', 'vencido'])
         .lte('data_vencimento', toISOLocal(em30Dias));
 
       const { data: contasReceber } = await supabase
