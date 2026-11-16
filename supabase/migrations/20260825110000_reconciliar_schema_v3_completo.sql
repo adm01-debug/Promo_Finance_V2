@@ -6551,9 +6551,25 @@ DROP POLICY IF EXISTS saved_filters_owner_write ON public.saved_filters;
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS saved_filters_select ON public.saved_filters;
+-- Cast explicito em shared_with_roles. A coluna divergiu de tipo entre a cadeia
+-- e producao: 20260422115506:5 a cria como public.app_role[], e o text[] de
+-- 20260728161110:12 nao conserta porque esta num CREATE TABLE IF NOT EXISTS que
+-- e no-op (a tabela ja existe desde 20241231000000:8). Em PRODUCAO a coluna e
+-- _text (conferido no canonico). Sem o cast, o replay falhava com
+--   ERROR: operator does not exist: text = app_role
+-- e, como o arquivo roda em uma transacao, derrubava a criacao de risk_rules,
+-- alerts_sent, geo_blocks e watch_cron_failures.
+--
+-- Corrigido no CAST e nao no tipo da coluna de proposito: tentei trocar o tipo
+-- em 20260422115506 e MEDI que piorou (bloqueios 13 -> 18, falhas 50 -> 59),
+-- porque o proprio arquivo usa a coluna como app_role mais abaixo (:47, :118) e
+-- dava rollback, levando is_shared com ele. E alterar o tipo depois da policy de
+-- 20260728161110:34 existir e recusado pelo PostgreSQL (coluna usada em policy).
+-- O cast e equivalente nos dois tipos, entao serve para producao e para o replay.
+-- A divergencia de tipo em si fica registrada, nao resolvida aqui.
 CREATE POLICY saved_filters_select ON public.saved_filters FOR SELECT TO authenticated USING (((user_id = auth.uid()) OR (is_shared AND (empresa_id IS NOT NULL) AND public.empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1
    FROM public.user_roles ur
-  WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles))))))));
+  WHERE ((ur.user_id = auth.uid()) AND ((ur.role)::text = ANY ((saved_filters.shared_with_roles)::text[]))))))));
 
 DROP POLICY IF EXISTS scim_operations_log_admin_select ON public.scim_operations_log;
 CREATE POLICY scim_operations_log_admin_select ON public.scim_operations_log FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
@@ -7006,8 +7022,20 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='al
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alertas_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alertas
     ADD CONSTRAINT alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE;'; END IF; END $do_block$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_driver_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+-- alerts_driver_id_fkey: public.drivers e resto do modulo Lalamove, que a cadeia
+-- NUNCA cria (grep de CREATE TABLE drivers em supabase/migrations/ devolve zero)
+-- e que 20260824124500_descomissionar_modulo_lalamove.sql desmontou. Conferido
+-- no canonico: tem_drivers=0 e fk_alerts_driver=0 — a FK tambem NAO existe em
+-- producao, so a coluna alerts.driver_id (alerts_tem_driver_id=1). Logo o guard
+-- abaixo reproduz producao: sem a tabela, sem a FK.
+DO $do_block$ BEGIN
+  IF to_regclass('public.drivers') IS NULL THEN
+    RAISE NOTICE 'public.drivers ausente (modulo Lalamove descomissionado): alerts_driver_id_fkey nao criada, igual a producao';
+  ELSIF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_driver_id_fkey' AND connamespace='public'::regnamespace) THEN
+    EXECUTE 'ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT alerts_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON DELETE SET NULL;';
+  END IF;
+END $do_block$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
