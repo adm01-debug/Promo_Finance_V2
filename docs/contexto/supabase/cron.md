@@ -36,3 +36,4 @@ Horários em UTC. Execuções recentes em `cron-runs.md`.
 | 42 | enviar-digest-conformidade-horario | `30 * * * *` | sim | postgres | postgres | `SELECT public.invocar_digest_conformidade();` |
 | 43 | enviar-digest-conformidade-diario | `0 8 * * *` | sim | postgres | postgres | `SELECT 1` |
 | 44 | monitor-health-check | `*/30 * * * *` | sim | postgres | postgres | `     SELECT net.http_post(       url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/monitor-health',       headers := jsonb_build_object(         'Content-Type',  'application/json',         'x-cron-secret', (           SELECT valor           FROM integration_secrets           WHERE chave = 'monitor_health_cron'           LIMIT 1         )       ),       body    := '{"source":"pg_cron"}'::jsonb     );   ` |
+| 49 | marcar-contas-vencidas | `5 3 * * *` | sim | postgres | postgres | `SELECT public.marcar_contas_vencidas();` |

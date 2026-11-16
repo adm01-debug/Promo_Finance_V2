@@ -13,8 +13,10 @@ BEGIN
 
     IF p_simulate THEN
         result := jsonb_build_object(
-            'total_enfileirados', (SELECT count(*) FROM public.contas_receber WHERE status = 'pendente' AND empresa_id = p_empresa_id),
-            'message', 'Simulação concluída com base nos títulos pendentes.'
+            'total_enfileirados', (SELECT count(*) FROM public.contas_receber
+                                    WHERE status IN ('pendente', 'vencido', 'parcial', 'atrasado')
+                                      AND empresa_id = p_empresa_id),
+            'message', 'Simulação concluída com base nos títulos em aberto.'
         );
     ELSE
         result := jsonb_build_object(

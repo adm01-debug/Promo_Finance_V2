@@ -1032,3 +1032,4 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261116220000 | [reconcilia_17_colunas_que_so_existem_em_producao](migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql) | 3 |
 | 20261116230000 | [backfill_empresa_id_partidas_contabeis](migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql) | 1 |
 | 20261117000000 | [catalogo_elisao_volta_a_ser_tabela](migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql) | 9 |
+| 20261117010000 | [marcar_contas_vencidas](migrations/20261117010000_marcar_contas_vencidas.sql) | 5 |

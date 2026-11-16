@@ -4,7 +4,7 @@
 |---|---|
 | nome | processar-fila-cobrancas |
 | status | ACTIVE |
-| versão | 49 |
+| versão | 51 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/processar-fila-cobrancas/index.ts |
 | import_map |  |
