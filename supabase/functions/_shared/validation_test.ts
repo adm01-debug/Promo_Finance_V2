@@ -42,7 +42,24 @@ Deno.test('corpo vazio devolve 422, não 500', async () => {
 });
 
 Deno.test('headers explícitos têm precedência sobre o CORS calculado', async () => {
-  const r = await parseJsonBody(req('nao-e-json'), 'teste', { 'x-marcador': 'sim' });
+  // Access-Control-Allow-Origin EM CONFLITO com o que corsHeadersPara(req)
+  // devolveria: um header só-meu (x-marcador) não provaria precedência, porque
+  // uma implementação que sobrescrevesse os explícitos com o CORS calculado
+  // continuaria passando — o header não colide com nada.
+  const semExplicito = await parseJsonBody(req('nao-e-json'), 'teste');
+  assertEquals(semExplicito.success, false);
+  if (semExplicito.success) return;
+  const origemCalculada = semExplicito.response.headers.get('access-control-allow-origin');
+
+  const explicito = 'https://precedencia.invalido';
+  assertEquals(origemCalculada === explicito, false);
+
+  const r = await parseJsonBody(req('nao-e-json'), 'teste', {
+    'Access-Control-Allow-Origin': explicito,
+    'x-marcador': 'sim',
+  });
   assertEquals(r.success, false);
-  if (!r.success) assertEquals(r.response.headers.get('x-marcador'), 'sim');
+  if (r.success) return;
+  assertEquals(r.response.headers.get('access-control-allow-origin'), explicito);
+  assertEquals(r.response.headers.get('x-marcador'), 'sim');
 });
