@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "0274005f67ffa268af31e0c88478e915fc3374b6",
+  "sha": "e0f7e5f0e1110088e92be9987e3e4dbc6a00e928",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-14 14:22 UTC",
+  "generated_at": "2026-11-16 12:21 UTC",
   "files_total": 3873,
   "code_files": 3507,
   "code_lines": 497554
  },
  "version": "1.3.2",
- "facts_hash": "bc079f9ac8095169",
+ "facts_hash": "137cae472089155d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -68360,7 +68360,7 @@
    },
    {
     "kind": "GitHub Actions cron",
-    "detail": "7-59/10 * * * *",
+    "detail": "7 * * * *",
     "file": ".github/workflows/contexto.yml"
    },
    {
@@ -245344,10 +245344,19 @@
   }
  },
  "git": {
-  "sha": "0274005f67ffa268af31e0c88478e915fc3374b6",
+  "sha": "e0f7e5f0e1110088e92be9987e3e4dbc6a00e928",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e0f7e5f",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore: contexto agendado de 10 min para 1x/hora (#350)",
+    "files": [
+     ".github/workflows/contexto.yml"
+    ]
+   },
    {
     "sha": "0274005",
     "date": "2026-11-14",
@@ -245953,24 +245962,6 @@
      "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
      "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql"
     ]
-   },
-   {
-    "sha": "f2bda64",
-    "date": "2026-11-12",
-    "author": "adm01-debug",
-    "subject": "fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)",
-    "files": [
-     "supabase/functions/convidar-contador/index.ts",
-     "supabase/functions/digest-silenciamentos-erro/index.ts",
-     "supabase/functions/enviar-alerta-email/index.ts",
-     "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
-     "supabase/functions/executar-fechamento-tributario/index.ts",
-     "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
-     "supabase/functions/monitorar-erros-frontend/index.ts",
-     "supabase/functions/notify-saved-filter/index.ts",
-     "supabase/functions/relatorio-diario-anomalias/index.ts",
-     "supabase/functions/send-device-alert/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -246001,6 +245992,10 @@
    [
     "src/App.tsx",
     2
+   ],
+   [
+    ".github/workflows/contexto.yml",
+    1
    ],
    [
     "supabase/migrations/20261113181100_balancete_tipo_partida_debito_credito.sql",
@@ -246048,10 +246043,6 @@
    ],
    [
     "src/hooks/__tests__/colunasReligadas.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/__tests__/useContratos.test.tsx",
     1
    ]
   ]

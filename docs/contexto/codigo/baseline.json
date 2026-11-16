@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "0274005f67ffa268af31e0c88478e915fc3374b6",
+  "commit": "e0f7e5f0e1110088e92be9987e3e4dbc6a00e928",
   "branch": "main",
-  "data_commit": "2026-11-14T11:07:03-03:00",
+  "data_commit": "2026-11-16T12:17:06Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e0f7e5f",
+    "data": "2026-11-16",
+    "assunto": "chore: contexto agendado de 10 min para 1x/hora (#350)"
+   },
    {
     "sha": "0274005",
     "data": "2026-11-14",
@@ -126,14 +131,9 @@
     "sha": "05920df",
     "data": "2026-11-12",
     "assunto": "fix: contas a pagar aceita status parcial (#318)"
-   },
-   {
-    "sha": "7c4bc25",
-    "data": "2026-11-12",
-    "assunto": "feat: contabilização usa a conta contábil da categoria (#317)"
    }
   ],
-  "arquivos_mudados_7d": 833,
+  "arquivos_mudados_7d": 678,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 110
+    "commits": 111
    },
    {
     "autor": "devin-ai-integration[bot]",

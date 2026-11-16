@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0274005f67ffa268af31e0c88478e915fc3374b6` (2026-11-14T11:07:03-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e0f7e5f0e1110088e92be9987e3e4dbc6a00e928` (2026-11-16T12:17:06Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -482,7 +482,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `automation-local.yml` — Automação local (pull_request, push, workflow_dispatch)
 - `ci.yml` — CI Pipeline (pull_request, push)
 - `codeql.yml` — CodeQL Analysis (pull_request, push, schedule; cron 17 3 * * 1)
-- `contexto.yml` — Contexto para agentes de IA (10 min) (pull_request, push, schedule, workflow_dispatch; cron 7-59/10 * * * *)
+- `contexto.yml` — Contexto para agentes de IA (10 min) (pull_request, push, schedule, workflow_dispatch; cron 7 * * * *)
 - `deno-tests.yml` — Deno Edge Function Tests (pull_request, push, workflow_dispatch)
 - `dependency-review.yml` — Dependency Review (pull_request)
 - `estado-real.yml` — Estado real (CI e edge functions) (push, schedule, workflow_dispatch; cron 38 11 * * 1)
@@ -625,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `e0f7e5f` chore: contexto agendado de 10 min para 1x/hora (#350)
 - 2026-11-14 `0274005` fix: balancete e razão passam a reconhecer partidas 'debito'/'credito' (#338)
 - 2026-11-14 `edeed28` fix: policies RLS do Grupo B (alert_configurations, alerts, risk_rules) ausentes em prod — lockout via authenticated (#3
 - 2026-11-14 `f3b6700` chore: prod-readiness 14/11 — lockout RLS Grupo B (#346), runs vermelhas diagnosticadas (13 órfãs do ledger, #341 aplica
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-13 `095a3f6` fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)
 - 2026-11-13 `309bc9b` fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)
 - 2026-11-13 `7cbba6f` lint zero + type-check estrito zerado (72→0) (#328)
-- 2026-11-13 `2d3e3db` fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
