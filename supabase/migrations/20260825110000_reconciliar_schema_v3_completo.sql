@@ -2096,6 +2096,28 @@ CREATE OR REPLACE FUNCTION public.get_acessos_suspeitos(_horas integer DEFAULT 1
   LIMIT 500;
 $$;
 
+-- get_active_uapi_token le public.lalamove_uapi_sessions, tabela que a propria
+-- cadeia DERRUBA em 20260824124500_descomissionar_modulo_lalamove.sql:31 e
+-- nunca recria. LANGUAGE sql valida o corpo na criacao, entao este CREATE
+-- levantava ERROR 'relation public.lalamove_uapi_sessions does not exist' e,
+-- como o arquivo e uma transacao unica, derrubava com ele a criacao de
+-- risk_rules, alerts_sent e watch_cron_failures — o que por cascata bloqueava
+-- outros 5 arquivos da cadeia (20260825120000, 20260825140000, 20260825230000,
+-- 20260831153000 e 20261114083000).
+--
+-- Em PRODUCAO a funcao existe e a tabela NAO (conferido: tem_fn=1,
+-- tem_lalamove=0), ou seja ela ja esta quebrada em tempo de chamada lá. Nenhum
+-- codigo a chama (grep em src/, supabase/functions/ e scripts/ so acha a
+-- assinatura gerada em types.ts). Aqui a criacao fica condicionada a tabela
+-- existir: no replay a funcao morta nao nasce, o resto do arquivo passa, e a
+-- divergencia (producao tem a funcao morta) fica registrada em vez de
+-- derrubar a reconstrucao inteira.
+DO $uapi$
+BEGIN
+  IF to_regclass('public.lalamove_uapi_sessions') IS NULL THEN
+    RAISE NOTICE 'public.lalamove_uapi_sessions ausente: get_active_uapi_token() nao criada';
+  ELSE
+    EXECUTE $uapi_fn$
 CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
@@ -2110,6 +2132,10 @@ CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_t
   WHERE s.is_active = true
   LIMIT 1;
 $$;
+    $uapi_fn$;
+  END IF;
+END
+$uapi$;
 
 CREATE OR REPLACE FUNCTION public.get_asaas_payment_stats(p_empresa_id uuid) RETURNS jsonb
     LANGUAGE plpgsql STABLE SECURITY DEFINER

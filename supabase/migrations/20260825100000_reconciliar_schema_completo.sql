@@ -895,7 +895,25 @@ END $$;
 --
 
 
-GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated;
+-- MAINTAIN so existe no PostgreSQL 17. Producao e 17.6 e o privilegio ESTA
+-- concedido la (has_table_privilege('authenticated','public.cnpja_cache','MAINTAIN')
+-- = true; information_schema.role_table_grants nao expoe MAINTAIN, por isso
+-- uma primeira consulta minha deu falso negativo). Num servidor 15/16 o GRANT
+-- cru levanta ERROR 'unrecognized privilege type "maintain"' e, como este
+-- arquivo e UMA transacao (BEGIN na linha 4, COMMIT na 11503), as 11502 linhas
+-- inteiras davam rollback — era o maior bloqueio do replay. Condicionado por
+-- server_version_num: no 17 concede igual a producao, abaixo disso concede o
+-- resto e registra NOTICE.
+DO $mt$
+BEGIN
+  IF current_setting('server_version_num')::int >= 170000 THEN
+    EXECUTE 'GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.cnpja_cache TO authenticated';
+  ELSE
+    EXECUTE 'GRANT REFERENCES,TRIGGER,TRUNCATE ON TABLE public.cnpja_cache TO authenticated';
+    RAISE NOTICE 'MAINTAIN em public.cnpja_cache ignorado: servidor % e anterior ao PG 17', current_setting('server_version');
+  END IF;
+END
+$mt$;
 GRANT ALL ON TABLE public.cnpja_cache TO service_role;
 DO $$ BEGIN
   GRANT SELECT,INSERT ON TABLE public.cnpja_cache TO sandbox_exec;
@@ -1456,7 +1474,25 @@ ALTER TABLE public.frontend_error_silence_digest_log ENABLE ROW LEVEL SECURITY;
 --
 
 
-GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated;
+-- MAINTAIN so existe no PostgreSQL 17. Producao e 17.6 e o privilegio ESTA
+-- concedido la (has_table_privilege('authenticated','public.frontend_error_silence_digest_log','MAINTAIN')
+-- = true; information_schema.role_table_grants nao expoe MAINTAIN, por isso
+-- uma primeira consulta minha deu falso negativo). Num servidor 15/16 o GRANT
+-- cru levanta ERROR 'unrecognized privilege type "maintain"' e, como este
+-- arquivo e UMA transacao (BEGIN na linha 4, COMMIT na 11503), as 11502 linhas
+-- inteiras davam rollback — era o maior bloqueio do replay. Condicionado por
+-- server_version_num: no 17 concede igual a producao, abaixo disso concede o
+-- resto e registra NOTICE.
+DO $mt$
+BEGIN
+  IF current_setting('server_version_num')::int >= 170000 THEN
+    EXECUTE 'GRANT SELECT,MAINTAIN ON TABLE public.frontend_error_silence_digest_log TO authenticated';
+  ELSE
+    EXECUTE 'GRANT SELECT ON TABLE public.frontend_error_silence_digest_log TO authenticated';
+    RAISE NOTICE 'MAINTAIN em public.frontend_error_silence_digest_log ignorado: servidor % e anterior ao PG 17', current_setting('server_version');
+  END IF;
+END
+$mt$;
 GRANT ALL ON TABLE public.frontend_error_silence_digest_log TO service_role;
 DO $$ BEGIN
   GRANT SELECT,INSERT ON TABLE public.frontend_error_silence_digest_log TO sandbox_exec;
