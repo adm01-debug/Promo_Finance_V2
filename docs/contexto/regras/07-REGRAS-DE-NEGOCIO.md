@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c4b811dc10` · branch `main` · 2026-11-16 15:02 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5272662d6e` · branch `main` · 2026-11-16 15:26 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1364,7 +1364,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
 | `status` | `cancelada` | compara, escreve | `src/components/nfe/NFePreview.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/pages/NotasFiscais.tsx` |
-| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>`src/components/contas-receber/row/VencimentoCell.tsx`<br>… +21 |
+| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>`src/components/contas-receber/row/VencimentoCell.tsx`<br>… +23 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
 | `status` | `complete` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
@@ -5779,6 +5779,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Throttle uma função - executa no máximo uma vez por intervalo | `src/hooks/useDebounce.ts` |
 | * Hook para input numérico com validação debounced | `src/hooks/useDebounce.ts` |
 | Permite apenas números, vírgula e ponto | `src/hooks/useDebounce.ts` |
+| Lançamento cancelado é versão substituída (estorno/ajuste de | `src/hooks/useDemonstrativosContabeis.ts` |
 | * Etapa T — Leitura do log de envios do digest (somente admin, via RLS). | `src/hooks/useDigestEnviosLog.ts` |
 | calculado no cliente porque o filtro é apenas de exibição — a RLS já garante | `src/hooks/useDigestEnviosLog.ts` |
 | e grava apenas a própria. O hook faz upsert por `user_id`, o que torna a | `src/hooks/useDigestPreferences.ts` |
@@ -5946,5 +5947,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Regra de bump: | `src/lib/tributario/versao.ts` |
 | - MINOR: nova regra fiscal (ex.: CPP Anexo IV, FPAS/Terceiros). | `src/lib/tributario/versao.ts` |
 | - PATCH: correção de cálculo sem nova regra. | `src/lib/tributario/versao.ts` |
-| Compensação de prejuízo fiscal — limite 30% | `src/lib/tributario/calculadora/lucro-real.ts` |
-| … +363 linhas — lista completa em `context.json` | |
+| … +367 linhas — lista completa em `context.json` | |

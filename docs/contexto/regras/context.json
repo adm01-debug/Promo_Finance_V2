@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "c4b811dc1060f12ebabf7837bdd887dc03517bbb",
+  "sha": "5272662d6ed934693065560af0be6bc44f67c449",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-16 15:02 UTC",
-  "files_total": 3882,
-  "code_files": 3513,
-  "code_lines": 497982
+  "generated_at": "2026-11-16 15:26 UTC",
+  "files_total": 3883,
+  "code_files": 3514,
+  "code_lines": 498480
  },
  "version": "1.3.2",
- "facts_hash": "50775ebfccf35969",
+ "facts_hash": "4e1fb684edad8be3",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1221,
-   ".sql": 1090,
+   ".sql": 1091,
    ".tsx": 1090,
    ".mjs": 60,
    ".py": 45,
@@ -44259,20 +44259,17 @@
     ]
    },
    "fn_livro_razao": {
-    "args": "p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_conta_id uuid DEFAULT NULL::uuid",
-    "returns": "TABLE(conta_id uuid, codigo text, nome text, saldo_anterior numeric, lancamento_id uuid, data_lancamento date, numero_lancamento bigint, historico text, debito numeric, credito numeric, saldo_corrido numeric)",
+    "args": "p_empresa_id uuid, p_conta_id uuid, p_data_inicio date DEFAULT (date_trunc('month'::text, (CURRENT_DATE",
+    "returns": "TABLE(data_lancamento date, descricao text, tipo text, valor numeric, saldo_acumulado numeric)",
     "lang": "sql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "WITH base AS ( SELECT p.conta_id AS c_id, pc.codigo AS c_codigo, pc.nome AS c_nome, l.id AS l_id, l.data_lancamento AS l_data, l.numero_lancamento AS l_numero, COALESCE(l.historico, COALESCE(p.historico_complementar, '')) AS l_hist, CASE WHEN p.tipo = 'D' THEN p.valor ELSE 0 END AS deb, CASE WHEN p.tipo = 'C' THEN p.valor ELSE 0 END AS cred, (l.data_lancamento < p_data_inicio) AS anterior, COALESCE(p.ordem, 0) AS p_ordem FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id JOIN public.plano_contas pc ON pc.id = p.conta_id WHERE l.empresa_id = p_empresa_id AND l.data_lancamento <= p_data_fim AND COALESCE(l.status, 'ativo') <> 'cancelado' AND (p_conta_ …",
+    "body": "SELECT l.data_lancamento, l.historico, p.tipo, p.valor, SUM(CASE WHEN p.tipo='debito' THEN p.valor ELSE -p.valor END) OVER (ORDER BY l.data_lancamento, l.created_at) FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id WHERE l.empresa_id = p_empresa_id AND p.conta_contabil_id = p_conta_id AND l.status IS DISTINCT FROM 'cancelado' AND l.data_lancamento BETWEEN p_data_inicio AND p_data_fim ORDER BY l.data_lancamento, l.created_at;",
     "raises": [],
     "tables": [
-     "ant",
-     "base",
      "lancamentos_contabeis",
-     "partidas_contabeis",
-     "plano_contas"
+     "partidas_contabeis"
     ]
    },
    "fn_norm_conta_codigo": {
@@ -45963,12 +45960,12 @@
    },
    "fn_lancamento_estorno_marker": {
     "args": "",
-    "returns": "TRIGGER",
+    "returns": "trigger",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql",
+    "src": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "BEGIN IF NEW.status IS DISTINCT FROM OLD.status AND current_user IN ('authenticated', 'anon') AND position('[estornado pela exclusão da movimentação]' in NEW.historico) > 0 THEN NEW.historico := replace(NEW.historico, ' [estornado pela exclusão da movimentação]', ''); END IF; RETURN NEW; END;",
+    "body": "BEGIN IF NEW.status IS DISTINCT FROM OLD.status AND current_user IN ('authenticated', 'anon') THEN IF position('[estornado pela exclusão da movimentação]' in NEW.historico) > 0 THEN NEW.historico := replace(NEW.historico, ' [estornado pela exclusão da movimentação]', ''); END IF; IF position('[substituído pela alteração da movimentação]' in NEW.historico) > 0 THEN NEW.historico := replace(NEW.historico, ' [substituído pela alteração da movimentação]', ''); END IF; END IF; RETURN NEW; END;",
     "raises": [],
     "tables": [
      "OLD"
@@ -46000,12 +45997,13 @@
     "args": "m public.movimentacoes",
     "returns": "text",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql",
+    "src": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_categoria uuid; v_regra public.regras_contabilizacao_automatica%ROWTYPE; v_lanc uuid; v_hist text; v_conta_cat uuid; v_deb uuid; v_cred uuid; BEGIN IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL OR m.origem = 'transferencia' OR m.empresa_id IS NULL OR COALESCE(m.valor, 0) <= 0 THEN RETURN 'ignorada'; END IF; IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE origem = 'movimentacao' AND origem_id = m.id) THEN RETURN 'duplicado'; END IF; BEGIN SELECT COALESCE( (SELECT categoria_id FROM public.contas_pagar WHERE id = m.conta_pagar_id), (SELECT categoria_id FROM public.contas_receber WHERE id = m.conta_receber_id)) INTO v_categoria; SELECT * INTO v_regra FROM pu …",
+    "body": "DECLARE v_categoria uuid; v_regra public.regras_contabilizacao_automatica%ROWTYPE; v_lanc uuid; v_hist text; v_conta_cat uuid; v_deb uuid; v_cred uuid; BEGIN IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL OR m.origem = 'transferencia' OR m.empresa_id IS NULL OR COALESCE(m.valor, 0) <= 0 THEN RETURN 'ignorada'; END IF; IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE origem IN ('movimentacao', 'financeiro_movimentacao') AND origem_id = m.id AND status IS DISTINCT FROM 'cancelado') THEN RETURN 'duplicado'; END IF; BEGIN SELECT COALESCE( (SELECT categoria_id FROM public.contas_pagar WHERE id = m.conta_pagar_id AND empresa_id = m.empresa_id), (SELECT categoria_id FROM p …",
     "raises": [],
     "tables": [
+     "SET",
      "categorias",
      "contas_pagar",
      "contas_receber",
@@ -52576,6 +52574,7 @@
    "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
    "supabase/migrations/20261116120000_login_allowlist_permissiva_sem_regras.sql",
    "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
+   "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -71767,7 +71766,7 @@
   {
    "module": "src/hooks",
    "files": 311,
-   "lines": 45256,
+   "lines": 45264,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -72652,7 +72651,7 @@
   {
    "module": "supabase/functions",
    "files": 223,
-   "lines": 49845,
+   "lines": 49863,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72913,8 +72912,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1020,
-   "lines": 76915,
+   "files": 1021,
+   "lines": 77387,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -85763,6 +85762,10 @@
     "text": "Permite apenas números, vírgula e ponto"
    },
    {
+    "file": "src/hooks/useDemonstrativosContabeis.ts",
+    "text": "Lançamento cancelado é versão substituída (estorno/ajuste de"
+   },
+   {
     "file": "src/hooks/useDigestEnviosLog.ts",
     "text": "* Etapa T — Leitura do log de envios do digest (somente admin, via RLS)."
    },
@@ -87623,6 +87626,14 @@
     "text": "que tendência e multa acumulada considerem todo o histórico, não só"
    },
    {
+    "file": "supabase/functions/gerar-sped-ecd/index.ts",
+    "text": "Versão substituída não entra no arquivo fiscal: o estorno/ajuste de"
+   },
+   {
+    "file": "supabase/functions/gerar-sped-ecf/index.ts",
+    "text": "Versão substituída não entra no arquivo fiscal: o estorno/ajuste de"
+   },
+   {
     "file": "supabase/functions/gerar-sped-ecf/layout_test.ts",
     "text": "Tudo entre J050 e J100 deve ser J051 — sem defeito de posicionamento"
    },
@@ -87885,6 +87896,10 @@
    {
     "file": "supabase/migrations/20260903000700_fix_auditar_cross_tenant_coalesce_ativo.sql",
     "text": "28: somente admins autenticados ou processos internos (pg_cron/service_role)."
+   },
+   {
+    "file": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
+    "text": "340 (branch claude/fix-estorno-contabil-movimentacao-261113-1811,"
    }
   ],
   "db_constraints": [
@@ -116215,6 +116230,12 @@
     "kind": "compara"
    },
    {
+    "file": "supabase/functions/gerar-sped-ecd/index.ts",
+    "field": "status",
+    "value": "cancelado",
+    "kind": "filtra"
+   },
+   {
     "file": "supabase/functions/gerar-sped-ecd/layout.ts",
     "field": "tipo",
     "value": "sintetica",
@@ -116351,6 +116372,12 @@
     "field": "status",
     "value": "warn",
     "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/gerar-sped-ecf/index.ts",
+    "field": "status",
+    "value": "cancelado",
+    "kind": "filtra"
    },
    {
     "file": "supabase/functions/gerar-sped-ecf/index.ts",
@@ -150337,20 +150364,17 @@
     ]
    },
    "fn_livro_razao": {
-    "args": "p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_conta_id uuid DEFAULT NULL::uuid",
-    "returns": "TABLE(conta_id uuid, codigo text, nome text, saldo_anterior numeric, lancamento_id uuid, data_lancamento date, numero_lancamento bigint, historico text, debito numeric, credito numeric, saldo_corrido numeric)",
+    "args": "p_empresa_id uuid, p_conta_id uuid, p_data_inicio date DEFAULT (date_trunc('month'::text, (CURRENT_DATE",
+    "returns": "TABLE(data_lancamento date, descricao text, tipo text, valor numeric, saldo_acumulado numeric)",
     "lang": "sql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "WITH base AS ( SELECT p.conta_id AS c_id, pc.codigo AS c_codigo, pc.nome AS c_nome, l.id AS l_id, l.data_lancamento AS l_data, l.numero_lancamento AS l_numero, COALESCE(l.historico, COALESCE(p.historico_complementar, '')) AS l_hist, CASE WHEN p.tipo = 'D' THEN p.valor ELSE 0 END AS deb, CASE WHEN p.tipo = 'C' THEN p.valor ELSE 0 END AS cred, (l.data_lancamento < p_data_inicio) AS anterior, COALESCE(p.ordem, 0) AS p_ordem FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id JOIN public.plano_contas pc ON pc.id = p.conta_id WHERE l.empresa_id = p_empresa_id AND l.data_lancamento <= p_data_fim AND COALESCE(l.status, 'ativo') <> 'cancelado' AND (p_conta_ …",
+    "body": "SELECT l.data_lancamento, l.historico, p.tipo, p.valor, SUM(CASE WHEN p.tipo='debito' THEN p.valor ELSE -p.valor END) OVER (ORDER BY l.data_lancamento, l.created_at) FROM public.partidas_contabeis p JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id WHERE l.empresa_id = p_empresa_id AND p.conta_contabil_id = p_conta_id AND l.status IS DISTINCT FROM 'cancelado' AND l.data_lancamento BETWEEN p_data_inicio AND p_data_fim ORDER BY l.data_lancamento, l.created_at;",
     "raises": [],
     "tables": [
-     "ant",
-     "base",
      "lancamentos_contabeis",
-     "partidas_contabeis",
-     "plano_contas"
+     "partidas_contabeis"
     ]
    },
    "fn_norm_conta_codigo": {
@@ -152041,12 +152065,12 @@
    },
    "fn_lancamento_estorno_marker": {
     "args": "",
-    "returns": "TRIGGER",
+    "returns": "trigger",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql",
+    "src": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "BEGIN IF NEW.status IS DISTINCT FROM OLD.status AND current_user IN ('authenticated', 'anon') AND position('[estornado pela exclusão da movimentação]' in NEW.historico) > 0 THEN NEW.historico := replace(NEW.historico, ' [estornado pela exclusão da movimentação]', ''); END IF; RETURN NEW; END;",
+    "body": "BEGIN IF NEW.status IS DISTINCT FROM OLD.status AND current_user IN ('authenticated', 'anon') THEN IF position('[estornado pela exclusão da movimentação]' in NEW.historico) > 0 THEN NEW.historico := replace(NEW.historico, ' [estornado pela exclusão da movimentação]', ''); END IF; IF position('[substituído pela alteração da movimentação]' in NEW.historico) > 0 THEN NEW.historico := replace(NEW.historico, ' [substituído pela alteração da movimentação]', ''); END IF; END IF; RETURN NEW; END;",
     "raises": [],
     "tables": [
      "OLD"
@@ -152078,12 +152102,13 @@
     "args": "m public.movimentacoes",
     "returns": "text",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql",
+    "src": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_categoria uuid; v_regra public.regras_contabilizacao_automatica%ROWTYPE; v_lanc uuid; v_hist text; v_conta_cat uuid; v_deb uuid; v_cred uuid; BEGIN IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL OR m.origem = 'transferencia' OR m.empresa_id IS NULL OR COALESCE(m.valor, 0) <= 0 THEN RETURN 'ignorada'; END IF; IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE origem = 'movimentacao' AND origem_id = m.id) THEN RETURN 'duplicado'; END IF; BEGIN SELECT COALESCE( (SELECT categoria_id FROM public.contas_pagar WHERE id = m.conta_pagar_id), (SELECT categoria_id FROM public.contas_receber WHERE id = m.conta_receber_id)) INTO v_categoria; SELECT * INTO v_regra FROM pu …",
+    "body": "DECLARE v_categoria uuid; v_regra public.regras_contabilizacao_automatica%ROWTYPE; v_lanc uuid; v_hist text; v_conta_cat uuid; v_deb uuid; v_cred uuid; BEGIN IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL OR m.origem = 'transferencia' OR m.empresa_id IS NULL OR COALESCE(m.valor, 0) <= 0 THEN RETURN 'ignorada'; END IF; IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE origem IN ('movimentacao', 'financeiro_movimentacao') AND origem_id = m.id AND status IS DISTINCT FROM 'cancelado') THEN RETURN 'duplicado'; END IF; BEGIN SELECT COALESCE( (SELECT categoria_id FROM public.contas_pagar WHERE id = m.conta_pagar_id AND empresa_id = m.empresa_id), (SELECT categoria_id FROM p …",
     "raises": [],
     "tables": [
+     "SET",
      "categorias",
      "contas_pagar",
      "contas_receber",
@@ -155763,7 +155788,9 @@
       "escreve:src/hooks/useFinancialOperations.ts",
       "escreve:src/hooks/useOperacoesTributaveis.ts",
       "escreve:src/hooks/usePerDcomp.ts",
-      "filtra:src/components/contas-receber/BaixaAutomaticaDialog.tsx"
+      "filtra:src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+      "filtra:supabase/functions/gerar-sped-ecd/index.ts",
+      "filtra:supabase/functions/gerar-sped-ecf/index.ts"
      ],
      "parcial": [
       "compara:src/components/clientes/ClienteDetailDialog.tsx",
@@ -202764,7 +202791,7 @@
   },
   "src/hooks/useDemonstrativosContabeis.ts": {
    "path": "src/hooks/useDemonstrativosContabeis.ts",
-   "lines": 307,
+   "lines": 315,
    "exports": [
     "function useDemonstrativosContabeis"
    ],
@@ -202876,6 +202903,9 @@
      "value": "vencido",
      "kind": "compara"
     }
+   ],
+   "rule_comments": [
+    "Lançamento cancelado é versão substituída (estorno/ajuste de"
    ],
    "hooks": [
     "useDemonstrativosContabeis"
@@ -236376,7 +236406,7 @@
   },
   "supabase/functions/gerar-sped-ecd/index.ts": {
    "path": "supabase/functions/gerar-sped-ecd/index.ts",
-   "lines": 347,
+   "lines": 352,
    "tables": [
     {
      "table": "user_roles",
@@ -236477,10 +236507,18 @@
      "field": "status",
      "value": "warn",
      "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "cancelado",
+     "kind": "filtra"
     }
    ],
    "role_checks": [
     "admin"
+   ],
+   "rule_comments": [
+    "Versão substituída não entra no arquivo fiscal: o estorno/ajuste de"
    ],
    "uses_service_role": true
   },
@@ -236595,7 +236633,7 @@
   },
   "supabase/functions/gerar-sped-ecf/index.ts": {
    "path": "supabase/functions/gerar-sped-ecf/index.ts",
-   "lines": 377,
+   "lines": 390,
    "tables": [
     {
      "table": "user_roles",
@@ -236717,6 +236755,11 @@
      "kind": "compara"
     },
     {
+     "field": "status",
+     "value": "cancelado",
+     "kind": "filtra"
+    },
+    {
      "field": "tipo",
      "value": "ECD",
      "kind": "filtra"
@@ -236724,6 +236767,9 @@
    ],
    "role_checks": [
     "admin"
+   ],
+   "rule_comments": [
+    "Versão substituída não entra no arquivo fiscal: o estorno/ajuste de"
    ],
    "pagination": [
     "1"
@@ -245499,6 +245545,13 @@
    "path": "supabase/migrations/20261116151000_grants_authenticated_audit_por_coluna.sql",
    "lines": 48
   },
+  "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql": {
+   "path": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
+   "lines": 472,
+   "rule_comments": [
+    "340 (branch claude/fix-estorno-contabil-movimentacao-261113-1811,"
+   ]
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245607,10 +245660,31 @@
   }
  },
  "git": {
-  "sha": "c4b811dc1060f12ebabf7837bdd887dc03517bbb",
+  "sha": "5272662d6ed934693065560af0be6bc44f67c449",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5272662",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix: estorno contábil de movimentação excluída/alterada, com as 6 correções da revisão da #340 (#366)",
+    "files": [
+     "src/hooks/useDemonstrativosContabeis.ts",
+     "supabase/functions/gerar-sped-ecd/index.ts",
+     "supabase/functions/gerar-sped-ecf/index.ts",
+     "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql"
+    ]
+   },
+   {
+    "sha": "bc42f17",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(docs): registra a análise do log de produção de 14/11 (#367)",
+    "files": [
+     "docs/prod-readiness.md"
+    ]
+   },
    {
     "sha": "c4b811d",
     "date": "2026-11-16",
@@ -245907,34 +245981,32 @@
     "files": [
      "supabase/migrations/20261113163037_colunas_campos_formulario.sql"
     ]
-   },
-   {
-    "sha": "a49b1c7",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: gate do banco deixa de exigir confirmar_conciliacao removida por segurança (#335)",
-    "files": [
-     "scripts/security/test-canonical-db-gates.mjs"
-    ]
-   },
-   {
-    "sha": "095a3f6",
-    "date": "2026-11-13",
-    "author": "adm01-debug",
-    "subject": "fix: alinha drop_old_partitions de produção com o repo (só apaga partição real) (#330)",
-    "files": [
-     "supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "docs/prod-readiness.md",
+    3
+   ],
    [
     "src/components/compras/PedidoCompraForm.tsx",
     2
    ],
    [
-    "docs/prod-readiness.md",
-    2
+    "src/hooks/useDemonstrativosContabeis.ts",
+    1
+   ],
+   [
+    "supabase/functions/gerar-sped-ecd/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/gerar-sped-ecf/index.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
+    1
    ],
    [
     "src/components/dashboard/DashboardFiltersHeader.tsx",
@@ -245990,22 +246062,6 @@
    ],
    [
     "supabase/functions/ci-security-gate-log/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/mcp-query/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/n8n-callback/index.ts",
-    1
-   ],
-   [
-    "scripts/migrate-functions.sh",
-    1
-   ],
-   [
-    "scripts/security/test-functions-deploy.sh",
     1
    ]
   ]

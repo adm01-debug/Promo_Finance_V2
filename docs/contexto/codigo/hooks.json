@@ -3273,7 +3273,7 @@
    "hooks_exportados": [
     "useDemonstrativosContabeis"
    ],
-   "linhas": 306,
+   "linhas": 314,
    "dominio": "hooks",
    "tabelas": [
     "partidas_contabeis"

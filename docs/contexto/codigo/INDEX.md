@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c4b811dc1060f12ebabf7837bdd887dc03517bbb` (2026-11-16T12:02:07-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5272662d6ed934693065560af0be6bc44f67c449` (2026-11-16T12:22:37-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2311), SQL (1090), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2311), SQL (1091), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3840 |
+| arquivos_total | 3841 |
 | arquivos_codigo | 2422 |
-| linhas_codigo | 431993 |
+| linhas_codigo | 432019 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
-| migrations | 1020 |
+| migrations | 1021 |
 | cron_jobs | 21 |
 | testes | 439 |
 | workflows | 19 |
@@ -460,21 +460,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (39)
-- bun.lock (32)
-- .github/workflows/ci.yml (29)
+- package.json (40)
+- bun.lock (33)
+- .github/workflows/ci.yml (30)
+- supabase/functions/asaas-proxy/index.ts (19)
 - supabase/config.toml (18)
-- supabase/functions/asaas-proxy/index.ts (18)
-- .github/workflows/deno-tests.yml (16)
+- .github/workflows/deno-tests.yml (17)
+- .github/workflows/supabase-linter.yml (14)
+- e2e/auth/admin-rbac.e2e.ts (14)
+- src/App.tsx (14)
 - supabase/functions/mcp-query/index.ts (14)
-- .github/workflows/supabase-linter.yml (13)
-- e2e/auth/admin-rbac.e2e.ts (13)
+- supabase/functions/n8n-callback/index.ts (14)
 - env.manifest.json (13)
-- src/App.tsx (13)
-- supabase/functions/n8n-callback/index.ts (13)
-- supabase/functions/bling-proxy/index.ts (12)
-- supabase/functions/enviar-convite-organizacao/index.ts (12)
-- supabase/functions/gerar-pacote-evidencias/index.ts (12)
+- supabase/functions/bling-proxy/index.ts (13)
+- supabase/functions/enviar-convite-organizacao/index.ts (13)
+- supabase/functions/gerar-pacote-evidencias/index.ts (13)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -620,12 +620,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/TESTING.md` — Guia de Testes (60 linhas)
 - `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (182 linhas)
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
-- `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (844 linhas)
+- `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
 - subpastas de docs/: docs/agentes (9), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `5272662` fix: estorno contábil de movimentação excluída/alterada, com as 6 correções da revisão da #340 (#366)
+- 2026-11-16 `bc42f17` chore(docs): registra a análise do log de produção de 14/11 (#367)
 - 2026-11-16 `c4b811d` fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)
 - 2026-11-16 `a6393dc` chore(ci): resgata docs/ci/kpi.json — custo e taxa de falha por workflow (#363)
 - 2026-11-16 `18bc738` infra(ci): quarentena E2E sai do gatilho de pull_request (#361)
@@ -639,8 +641,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `3f3da8c` feat(deploy): religa a verificação pós-deploy das edge functions (8 scripts órfãos no repo) (#356)
 - 2026-11-16 `6b83746` test(ci): gate de replay volta a travar 3 defeitos que já quebraram o replay (#359)
 - 2026-11-16 `08f9783` docs: resgata o plano de endurecimento dos workflows citado pela auditoria (#358)
-- 2026-11-16 `d06f11e` fix(edge): sentry lê EDGE_SENTRY_DSN, redige o contexto e reporta envio rejeitado (#354)
-- 2026-11-16 `a0543f9` fix(dashboard): card de duplicidades bloqueadas ignorava o filtro de empresa (#355)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

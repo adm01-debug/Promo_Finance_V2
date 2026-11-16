@@ -4,7 +4,7 @@
  "stack": {
   "linguagens": [
    "TypeScript (2311)",
-   "SQL (1090)",
+   "SQL (1091)",
    "Markdown (192)",
    "JavaScript (68)",
    "Python (45)",
@@ -1173,7 +1173,7 @@
   {
    "arquivo": "docs/prod-readiness.md",
    "titulo": "Prontidão para produção — Promo_Finance_V2",
-   "linhas": 844
+   "linhas": 861
   },
   {
    "arquivo": "docs/testing-architecture.md",
