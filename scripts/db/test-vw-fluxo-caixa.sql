@@ -3,8 +3,15 @@
 -- Cobre os casos que a review pediu: duas empresas no mesmo vencimento,
 -- pagamento/recebimento parcial e título excluído logicamente.
 --
--- Contrato: o script devolve ZERO linhas quando tudo passa. Cada linha
+-- Contrato: cada um dos 3 blocos devolve ZERO linhas quando passa. Cada linha
 -- devolvida é uma expectativa quebrada, com o valor esperado e o obtido.
+--
+--   Bloco 1 — agregação, sobre fixtures em CTE (não toca dado de produção).
+--   Bloco 2 — a VIEW INSTALADA: janela e limites, invariantes que valem com
+--             qualquer dado. É o bloco que falha se a view divergir deste
+--             script ou nem existir.
+--   Bloco 3 — nenhuma linha inesperada em toda a janela, não só nos dias
+--             conferidos no bloco 1.
 --
 -- Como rodar:
 --   psql "$DATABASE_URL" -f scripts/db/test-vw-fluxo-caixa.sql
@@ -74,7 +81,16 @@ esperado(caso, empresa_id, dia, receitas_previstas, despesas_previstas, saldo_di
     ('A em D+4: dia sem titulo fica zerado',
       'aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 4,    0.00::numeric,   0.00::numeric,    0.00::numeric),
     ('B em D+4: dia sem titulo fica zerado',
-      'bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE + 4,    0.00::numeric,   0.00::numeric,    0.00::numeric)
+      'bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE + 4,    0.00::numeric,   0.00::numeric,    0.00::numeric),
+    -- bordas da janela: o primeiro e o ultimo dia tem de existir, zerados
+    ('A no primeiro dia da janela (D+0)',
+      'aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE,        0.00::numeric,   0.00::numeric,    0.00::numeric),
+    ('A no ultimo dia da janela (D+90)',
+      'aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 90,   0.00::numeric,   0.00::numeric,    0.00::numeric),
+    ('B no primeiro dia da janela (D+0)',
+      'bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE,        0.00::numeric,   0.00::numeric,    0.00::numeric),
+    ('B no ultimo dia da janela (D+90)',
+      'bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE + 90,   0.00::numeric,   0.00::numeric,    0.00::numeric)
 )
 SELECT
   esp.caso,
@@ -93,3 +109,94 @@ WHERE obt.empresa_id IS NULL
    OR obt.receitas_previstas <> esp.receitas_previstas
    OR obt.despesas_previstas <> esp.despesas_previstas
    OR obt.saldo_dia <> esp.saldo_dia;
+
+-- ---------------------------------------------------------------------------
+-- Bloco 2 — a VIEW INSTALADA. Invariantes estruturais, independentes de dado:
+-- a janela tem exatamente 91 dias por empresa, começa em CURRENT_DATE e
+-- termina em CURRENT_DATE + 90, e existe uma linha por (empresa, dia) para
+-- toda empresa cadastrada. Zero linhas = passou.
+--
+-- Este é o bloco que o bloco 1 não cobre: ele consulta
+-- `public.vw_fluxo_caixa` de verdade, então falha se a view estiver ausente,
+-- sem `empresa_id`/`dia`, ou com janela diferente da que este script descreve.
+
+SELECT
+  'janela da view instalada' AS caso,
+  z.dias_distintos,
+  z.primeiro_dia,
+  z.ultimo_dia,
+  z.linhas,
+  z.empresas,
+  (z.empresas * 91) AS linhas_esperadas
+FROM (
+  SELECT
+    count(DISTINCT v.dia)                       AS dias_distintos,
+    min(v.dia)                                  AS primeiro_dia,
+    max(v.dia)                                  AS ultimo_dia,
+    count(*)                                    AS linhas,
+    (SELECT count(*) FROM public.empresas)      AS empresas
+  FROM public.vw_fluxo_caixa v
+) z
+WHERE z.dias_distintos <> 91
+   OR z.primeiro_dia <> CURRENT_DATE
+   OR z.ultimo_dia <> CURRENT_DATE + 90
+   OR z.linhas <> z.empresas * 91;
+
+-- ---------------------------------------------------------------------------
+-- Bloco 3 — nenhuma linha inesperada em TODA a janela, não só nos dias
+-- conferidos no bloco 1. Com as mesmas fixtures, o único dia com valor é
+-- D+3; qualquer outro dia com receita ou despesa diferente de zero significa
+-- que algo vazou — por exemplo o título de D+200, o excluído logicamente ou
+-- o já recebido. Zero linhas = passou.
+
+WITH cr_fx(empresa_id, data_vencimento, valor, valor_recebido, status, deleted_at) AS (
+  VALUES
+    ('aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 3,   4000.00::numeric, NULL::numeric,    'pendente', NULL::timestamptz),
+    ('bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE + 3,   1000.00::numeric,  400.00::numeric, 'parcial',  NULL::timestamptz),
+    ('aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 3,   9999.00::numeric, NULL::numeric,    'pendente', now()),
+    ('aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 3,   7777.00::numeric, 7777.00::numeric, 'recebido', NULL::timestamptz),
+    ('aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 200, 5555.00::numeric, NULL::numeric,    'pendente', NULL::timestamptz)
+),
+cp_fx(empresa_id, data_vencimento, valor, valor_pago, status, deleted_at) AS (
+  VALUES
+    ('aaaaaaaa-0000-0000-0000-000000000001'::uuid, CURRENT_DATE + 3, 1000.00::numeric, 250.00::numeric, 'parcial',  NULL::timestamptz),
+    ('bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE + 3,  600.00::numeric, NULL::numeric,   'pendente', NULL::timestamptz),
+    ('bbbbbbbb-0000-0000-0000-000000000002'::uuid, CURRENT_DATE + 3,  800.00::numeric, NULL::numeric,   'pendente', now())
+),
+obtido AS (
+  SELECT
+    e.id AS empresa_id,
+    d.dia::date AS dia,
+    COALESCE(r.valor, 0) AS receitas_previstas,
+    COALESCE(p.valor, 0) AS despesas_previstas
+  FROM (VALUES
+    ('aaaaaaaa-0000-0000-0000-000000000001'::uuid),
+    ('bbbbbbbb-0000-0000-0000-000000000002'::uuid)
+  ) e(id)
+  CROSS JOIN generate_series(
+    CURRENT_DATE::timestamp,
+    (CURRENT_DATE + 90)::timestamp,
+    '1 day'::interval
+  ) AS d(dia)
+  LEFT JOIN (
+    SELECT empresa_id, data_vencimento AS dia, SUM(valor - COALESCE(valor_recebido, 0)) AS valor
+    FROM cr_fx
+    WHERE status IN ('pendente', 'parcial') AND deleted_at IS NULL
+    GROUP BY 1, 2
+  ) r ON r.empresa_id = e.id AND r.dia = d.dia::date
+  LEFT JOIN (
+    SELECT empresa_id, data_vencimento AS dia, SUM(valor - COALESCE(valor_pago, 0)) AS valor
+    FROM cp_fx
+    WHERE status IN ('pendente', 'parcial') AND deleted_at IS NULL
+    GROUP BY 1, 2
+  ) p ON p.empresa_id = e.id AND p.dia = d.dia::date
+)
+SELECT
+  'linha inesperada fora de D+3' AS caso,
+  o.empresa_id,
+  o.dia,
+  o.receitas_previstas,
+  o.despesas_previstas
+FROM obtido o
+WHERE o.dia <> CURRENT_DATE + 3
+  AND (o.receitas_previstas <> 0 OR o.despesas_previstas <> 0);
