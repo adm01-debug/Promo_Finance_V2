@@ -1128,41 +1128,42 @@ export const handler = async (req: Request) => {
             results.push({ id: item.id, status: 'FAILED' });
           }
         }
-        const { count: failureCount } = await supabase
-          .from('asaas_sync_queue')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'FAILED')
-          .gte('updated_at', new Date(Date.now() - 3600000).toISOString());
+        // Alerta por empresa (AGENTS.md §4): a contagem de falhas é escopada
+        // pela empresa do pagamento — a fila não tem empresa_id, ele vem de
+        // asaas_payments pela FK — e cada empresa usa o próprio limite e o
+        // próprio destinatário. Uma leitura global faria o destinatário de uma
+        // empresa receber alerta disparado pelas falhas das outras.
+        const desdeUmaHora = new Date(Date.now() - 3600000).toISOString();
+        for (const [empresaId, cfg] of configPorEmpresa) {
+          const temEmail = Boolean(cfg.alert_email_enabled && cfg.alert_email_address);
+          const temWhatsapp = Boolean(cfg.alert_whatsapp_enabled && cfg.alert_whatsapp_number);
+          if (!temEmail && !temWhatsapp) continue;
 
-        // A contagem de falhas é da fila inteira (a tabela não tem empresa_id),
-        // então o alerta é operacional e sai uma vez por execução: usa a
-        // configuração de alerta de quem a tiver habilitado, sem repetir por
-        // empresa, e a mensagem não nomeia empresa nenhuma.
-        const cfgAlerta =
-          [...configPorEmpresa.values()].find(
-            (cfg) => cfg.alert_email_enabled && cfg.alert_email_address
-          ) ??
-          [...configPorEmpresa.values()].find(
-            (cfg) => cfg.alert_whatsapp_enabled && cfg.alert_whatsapp_number
-          ) ??
-          {};
-        const threshold = cfgAlerta.failure_threshold || 5;
-        if (failureCount && failureCount >= threshold) {
-          if (cfgAlerta.alert_email_enabled && cfgAlerta.alert_email_address) {
+          const { count: failureCount } = await supabase
+            .from('asaas_sync_queue')
+            .select('id, asaas_payments!inner(empresa_id)', { count: 'exact', head: true })
+            .eq('asaas_payments.empresa_id', empresaId)
+            .eq('status', 'FAILED')
+            .gte('updated_at', desdeUmaHora);
+
+          const threshold = cfg.failure_threshold || 5;
+          if (!failureCount || failureCount < threshold) continue;
+
+          if (temEmail) {
             await supabase.functions.invoke('enviar-alerta-email', {
               body: {
                 tipo: 'asaas_failure',
-                destinatario: cfgAlerta.alert_email_address,
+                destinatario: cfg.alert_email_address,
                 dados: {
                   titulo: 'Limite de falhas na sincronização Asaas atingido',
-                  mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. O limite configurado é de ${threshold}.`,
+                  mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas da sua empresa na última hora. O limite configurado é de ${threshold}.`,
                   urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/asaas`,
                 },
               },
             });
           }
 
-          if (cfgAlerta.alert_whatsapp_enabled && cfgAlerta.alert_whatsapp_number) {
+          if (temWhatsapp) {
             // NÃO entrega a mensagem: a ação `enviar-mensagem` de
             // whatsapp-ia-proativo apenas monta um link wa.me e o devolve
             // (index.ts:673-679), e aqui ninguém abre esse link. Fica
@@ -1173,7 +1174,7 @@ export const handler = async (req: Request) => {
             );
             await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
-                phone: cfgAlerta.alert_whatsapp_number,
+                phone: cfg.alert_whatsapp_number,
                 message: `⚠️ *ALERTA ASAAS:* Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. Acesse o painel para verificar.`,
               },
             });
