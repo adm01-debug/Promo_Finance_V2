@@ -1042,7 +1042,10 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261117193000 | [colunas_nunca_aplicadas](migrations/20261117193000_colunas_nunca_aplicadas.sql) | 27 |
 | 20261117195500 | [restaura_cnpja_rate_limit](migrations/20261117195500_restaura_cnpja_rate_limit.sql) | 7 |
 | 20261117201000 | [sso_login_attempts_state](migrations/20261117201000_sso_login_attempts_state.sql) | 3 |
+| 20261117204500 | [indices_financeiros_ausentes](migrations/20261117204500_indices_financeiros_ausentes.sql) | 0 |
+| 20261117211000 | [clientes_bitrix_ids](migrations/20261117211000_clientes_bitrix_ids.sql) | 0 |
 | 20261117220000 | [colunas_declaradas_classe_select](migrations/20261117220000_colunas_declaradas_classe_select.sql) | 0 |
 | 20261117223000 | [converge_saved_filter_subscriptions](migrations/20261117223000_converge_saved_filter_subscriptions.sql) | 0 |
 | 20261117224000 | [vw_fluxo_caixa_por_empresa](migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql) | 0 |
 | 20261117225000 | [indices_recuperados_da_445](migrations/20261117225000_indices_recuperados_da_445.sql) | 0 |
+| 20261117232000 | [indices_anti_duplicata_contas](migrations/20261117232000_indices_anti_duplicata_contas.sql) | 0 |

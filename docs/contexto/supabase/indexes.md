@@ -199,7 +199,7 @@ Uso e tamanho em `stats.md`.
 | public.contas_pagar | idx_contas_pagar_fornecedor_id | btree | fornecedor_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_fornecedor_id_fk | btree | fornecedor_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` |
-| public.contas_pagar | idx_contas_pagar_prevent_duplicates | btree | fornecedor_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (fornecedor_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
+| public.contas_pagar | idx_contas_pagar_prevent_duplicates | btree | empresa_id, fornecedor_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (fornecedor_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
 | public.contas_pagar | idx_contas_pagar_status | btree | status | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_user_created | btree | user_id, created_at | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_user_id | btree | user_id | não | sim |  |
@@ -220,7 +220,7 @@ Uso e tamanho em `stats.md`.
 | public.contas_receber | idx_contas_receber_empresa_id | btree | empresa_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  |
 | public.contas_receber | idx_contas_receber_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` |
-| public.contas_receber | idx_contas_receber_prevent_duplicates | btree | cliente_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (cliente_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
+| public.contas_receber | idx_contas_receber_prevent_duplicates | btree | empresa_id, cliente_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (cliente_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
 | public.contas_receber | idx_contas_receber_status | btree | status | não | sim |  |
 | public.contas_receber | idx_contas_receber_transacao_conciliada_id_fk | btree | transacao_conciliada_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_user_created | btree | user_id, created_at | não | sim |  |

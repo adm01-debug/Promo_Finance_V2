@@ -2,6 +2,12 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-17 22:15 UTC
+
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **indexes** alterado (2): `public.idx_contas_pagar_prevent_duplicates`, `public.idx_contas_receber_prevent_duplicates`
+- **migrations** adicionado (3): `20261117204500_indices_financeiros_ausentes`, `20261117211000_clientes_bitrix_ids`, `20261117232000_indices_anti_duplicata_contas`
+
 ## 2026-11-17 21:16 UTC
 
 - **colunas** adicionado (25): `public.clientes.bitrix_company_id`, `public.clientes.bitrix_contact_id`, `public.cnpja_rate_limit.request_count`, `public.cnpja_rate_limit.user_id`, `public.cnpja_rate_limit.window_start`, `public.empresas.inscricao_municipal`, `public.movimentacoes.centro_custo_id`, `public.profiles.telefone`, `public.regras_conciliacao.categoria`, `public.saved_filter_subscriptions.horario_preferido`, `public.saved_filter_subscriptions.last_seen_at`, `public.saved_filter_subscriptions.next_dispatch_at`, `public.saved_filter_subscriptions.notify_email`, `public.saved_filter_subscriptions.notify_inapp`, `public.saved_filter_subscriptions.notify_push`, `public.saved_filter_subscriptions.rate_limit_max`, `public.saved_filter_subscriptions.rate_limit_window_min`, `public.saved_filter_subscriptions.severidades_criticas`, `public.saved_filter_subscriptions.tipos_eventos_ativos`, `public.solicitacoes_lgpd.atendida_por`, `public.sso_login_attempts.expires_at`, `public.sso_login_attempts.state`, `public.vw_fluxo_caixa.despesas_previstas`, `public.vw_fluxo_caixa.dia`, `public.vw_fluxo_caixa.receitas_previstas`

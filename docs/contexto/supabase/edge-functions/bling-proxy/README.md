@@ -4,7 +4,7 @@
 |---|---|
 | nome | bling-proxy |
 | status | ACTIVE |
-| versão | 100 |
+| versão | 101 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/bling-proxy/index.ts |
 | import_map |  |
