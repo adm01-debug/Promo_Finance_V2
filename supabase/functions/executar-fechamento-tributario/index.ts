@@ -124,7 +124,12 @@ Deno.serve(
         .from('verificacoes_conformidade' as never)
         .select('score')
         .eq('empresa_id', body.empresa_id)
-        .order('verificado_em', { ascending: false })
+        // verificacoes_conformidade não tem `verificado_em` (nem é declarada
+        // em nenhuma migration); a coluna de data é `created_at`, como já
+        // usam useConformidadeFiscal e useComplianceKpis. Com o nome errado o
+        // select falhava, score caía para 0 e o check crítico de conformidade
+        // reprovava todo fechamento
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
       const score = Number((conf as { score?: number } | null)?.score ?? 0);
