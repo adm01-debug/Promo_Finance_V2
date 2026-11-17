@@ -38,10 +38,41 @@
 -- segunda empresa entrar. Os DROP INDEX fazem o banco que já aplicou a versão
 -- anterior desta migration convergir para a chave com empresa_id.
 --
+-- NULLS NOT DISTINCT nos dois indices: `empresa_id` aceita NULL
+-- (20260518164611:50-74 adicionou a coluna sem NOT NULL) e UNIQUE trata NULL
+-- como distinto, entao sem isso duas contas identicas com empresa_id NULL --
+-- escrita de servico ou SQL administrativo, fora das policies -- passariam
+-- pelos dois indices. `empresa_id` e a UNICA coluna da chave que aceita NULL:
+-- valor e data_vencimento sao NOT NULL, fornecedor_id/cliente_id e
+-- numero_documento ja sao excluidos pelo predicado. Postgres 17.6 em producao
+-- suporta a clausula (PG >= 15). Verificado em producao: a gemea com empresa_id
+-- NULL passava a ser recusada com 23505 (INSERT em bloco revertido).
+--
 -- Replay: os UPDATEs usam row_number() > 1, então num banco sem duplicata são
 -- no-op, e num banco COM duplicata cancelam a cópia mais nova — que é
 -- exatamente o que o índice exige para poder existir. Idempotente nas duas
 -- situações. Sem CONCURRENTLY (falha no gateway transacional, AGENTS §4).
+
+-- Trigger legado `trg_validar_duplicidade_pagar`
+-- (20260508200327_cb379296-ba4d-4201-9f04-d175b2535749.sql:112-114) e
+-- BEFORE INSERT OR UPDATE e `validar_duplicidade_avancada()` nao verifica se
+-- NEW.status passou para 'cancelado': ele procura outra conta nao cancelada com
+-- a mesma chave e levanta DUPLICIDADE_DETECTADA ao achar justamente a copia
+-- antiga que esta limpeza preserva. Num banco COM duplicata e COM esse trigger
+-- instalado (replay do zero -- nenhuma migration posterior o derruba), o UPDATE
+-- abaixo abortaria. Produção nao tem o trigger (pg_trigger em
+-- contas_pagar: set_updated_at e trg_anexos_sync_empresa), entao os dois blocos
+-- abaixo sao no-op la. Suspende so ele, so durante a limpeza, e devolve depois.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid
+    WHERE c.relname = 'contas_pagar' AND t.tgname = 'trg_validar_duplicidade_pagar'
+      AND NOT t.tgisinternal
+  ) THEN
+    ALTER TABLE public.contas_pagar DISABLE TRIGGER trg_validar_duplicidade_pagar;
+  END IF;
+END $$;
 
 WITH dup AS (
   SELECT
@@ -93,9 +124,21 @@ FROM dup
 WHERE dup.id = c.id
   AND dup.rn > 1;
 
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_trigger t JOIN pg_class c ON c.oid = t.tgrelid
+    WHERE c.relname = 'contas_pagar' AND t.tgname = 'trg_validar_duplicidade_pagar'
+      AND NOT t.tgisinternal AND t.tgenabled = 'D'
+  ) THEN
+    ALTER TABLE public.contas_pagar ENABLE TRIGGER trg_validar_duplicidade_pagar;
+  END IF;
+END $$;
+
 DROP INDEX IF EXISTS public.idx_contas_pagar_prevent_duplicates;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_pagar_prevent_duplicates
   ON public.contas_pagar USING btree (empresa_id, fornecedor_id, valor, data_vencimento, numero_documento)
+  NULLS NOT DISTINCT
   WHERE (((status)::text <> 'cancelado'::text)
      AND (fornecedor_id IS NOT NULL)
      AND (numero_documento IS NOT NULL));
@@ -103,6 +146,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_pagar_prevent_duplicates
 DROP INDEX IF EXISTS public.idx_contas_receber_prevent_duplicates;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_contas_receber_prevent_duplicates
   ON public.contas_receber USING btree (empresa_id, cliente_id, valor, data_vencimento, numero_documento)
+  NULLS NOT DISTINCT
   WHERE (((status)::text <> 'cancelado'::text)
      AND (cliente_id IS NOT NULL)
      AND (numero_documento IS NOT NULL));
