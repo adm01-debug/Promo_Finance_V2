@@ -133,14 +133,19 @@ function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: stri
   return 'Manter acompanhamento padrão';
 }
 
-function useAnaliseInadimplencia() {
+function useAnaliseInadimplencia(empresaId?: string) {
   return useQuery({
-    queryKey: ['analise-inadimplencia'],
+    queryKey: ['analise-inadimplencia', empresaId ?? 'all'],
     queryFn: async (): Promise<AnaliseInadimplencia> => {
       const hoje = new Date();
       const em30Dias = addDays(hoje, 30);
 
-      const { data: contasPendentes } = await supabase
+      // Filtro funcional por empresa, alem do RLS: sem ele a tela somaria
+      // clientes de todas as empresas acessiveis num unico ranking de risco.
+      // AGENTS.md secao 4 pede isolamento por empresa_id, e o achado F17 da
+      // auditoria de 2026-09-10 registra que "RLS pode restringir acesso, mas
+      // nao substitui filtro funcional da empresa selecionada".
+      let qPendentes = supabase
         .from('contas_receber')
         .select(
           `
@@ -152,6 +157,9 @@ function useAnaliseInadimplencia() {
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
         .lte('data_vencimento', format(em30Dias, 'yyyy-MM-dd'))
         .order('data_vencimento');
+      if (empresaId) qPendentes = qPendentes.eq('empresa_id', empresaId);
+
+      const { data: contasPendentes } = await qPendentes;
 
       if (!contasPendentes || contasPendentes.length === 0) {
         return {
@@ -202,11 +210,16 @@ function useAnaliseInadimplencia() {
       const clientesAnalise: ClienteRisco[] = [];
 
       for (const [clienteId, { cliente, contas }] of clientesMap.entries()) {
-        const { data: historico } = await supabase
+        // O historico que alimenta a probabilidade tambem fica na empresa: sem
+        // isso, atraso do mesmo cliente em OUTRA empresa elevaria o risco aqui.
+        let qHistorico = supabase
           .from('contas_receber')
           .select('status')
           .eq('cliente_id', clienteId)
           .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
+        if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
+
+        const { data: historico } = await qHistorico;
 
         const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
           status: h.status ?? '',
@@ -273,9 +286,14 @@ function useAnaliseInadimplencia() {
   });
 }
 
-export function PrevisaoInadimplencia() {
+interface PrevisaoInadimplenciaProps {
+  /** Empresa selecionada. Sem ela, a analise some de empresas diferentes. */
+  empresaId?: string;
+}
+
+export function PrevisaoInadimplencia({ empresaId }: PrevisaoInadimplenciaProps) {
   const [tabAtiva, setTabAtiva] = useState('todos');
-  const { data, isLoading, refetch, isFetching } = useAnaliseInadimplencia();
+  const { data, isLoading, refetch, isFetching } = useAnaliseInadimplencia(empresaId);
 
   const clientesFiltrados =
     data?.clientes.filter((c) => {
