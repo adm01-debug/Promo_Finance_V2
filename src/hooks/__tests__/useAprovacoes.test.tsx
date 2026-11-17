@@ -300,14 +300,36 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
     expect(chain.eq).toHaveBeenCalledWith('id', 'z');
     expect(chain.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
   });
-  it('desligar o workflow alcanca as OUTRAS faixas, sem tocar nos limites delas', async () => {
-    // Revisao da PR #400, round 5 (Codex): com faixas de 5.000/50.000/999.999,
-    // desligar o "Status do Workflow" atingia so as duplicatas de 5.000. O card
-    // anuncia "Todos os pagamentos serao liberados automaticamente"
-    // (ConfiguracaoAprovacaoCard.tsx:125), mas a leitura passava a escolher a
-    // faixa de 50.000 e o dialogo seguia bloqueando acima disso.
-    const chain = buildChain({ data: [{ id: 'a' }], error: null });
-    mockFrom.mockReturnValue(chain);
+  it('recusa subir o limite acima de outra faixa ativa, em vez de nao fazer efeito', async () => {
+    // Revisao da PR #400, round 6 (Codex): salvar 100.000 atualizava as
+    // duplicatas de 5.000 mas 50.000 seguia ativa; as duas leituras voltavam a
+    // escolher 50.000, o card substituia o valor recem-salvo e pagamento de
+    // 75.000 seguia bloqueado -- com toast de sucesso.
+    const consulta = buildChain({ data: [{ valor_minimo_aprovacao: 50000 }], error: null });
+    mockFrom.mockReturnValue(consulta);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_original: 5000,
+      valor_minimo_aprovacao: 100000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(String(result.current.error?.message)).toMatch(/outra faixa ativa/i);
+    expect(String(result.current.error?.message)).toMatch(/nao teria efeito/i);
+    // recusou ANTES de gravar
+    expect(consulta.update).not.toHaveBeenCalled();
+  });
+
+  it('recusa desativar quando outra faixa ativa continuaria exigindo aprovacao', async () => {
+    const consulta = buildChain({ data: [{ valor_minimo_aprovacao: 50000 }], error: null });
+    mockFrom.mockReturnValue(consulta);
 
     const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
       wrapper: makeWrapper(),
@@ -320,21 +342,17 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
       aprovadores_obrigatorios: 1,
       ativo: false,
     });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    // 1o update: a faixa editada, com limite e quorum
-    expect(chain.update).toHaveBeenCalledWith({
-      valor_minimo_aprovacao: 5000,
-      aprovadores_obrigatorios: 1,
-      ativo: false,
-    });
-    // 2o update: SO a coluna ativo, nas demais faixas da empresa
-    expect(chain.update).toHaveBeenCalledWith({ ativo: false });
-    expect(chain.neq).toHaveBeenCalledWith('valor_minimo_aprovacao', 5000);
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(String(result.current.error?.message)).toMatch(/nao desliga o workflow/i);
+    expect(consulta.update).not.toHaveBeenCalled();
   });
 
-  it('o segundo update nao leva limite nem quorum, para nao apagar patamar', async () => {
-    const chain = buildChain({ data: [{ id: 'a' }], error: null });
+  it('sem outra faixa ativa, grava normalmente em UM unico update', async () => {
+    // Um request so: o esquema de dois updates sem transacao deixava o limite
+    // gravado quando o segundo falhava, e a nova tentativa acusava conflito
+    // contra um valor que nao existia mais (Devin, round 6).
+    const chain = buildChain({ data: [{ id: 'a' }, { id: 'd' }], error: null });
     mockFrom.mockReturnValue(chain);
 
     const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
@@ -345,18 +363,18 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
       empresa_id: 'e1',
       valor_minimo_original: 5000,
       valor_minimo_aprovacao: 10000,
-      aprovadores_obrigatorios: 2,
+      aprovadores_obrigatorios: 1,
       ativo: true,
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    const chamadas = chain.update.mock.calls.map((c) => c[0]);
-    const soAtivo = chamadas.filter(
-      (p) => Object.keys(p as object).length === 1 && 'ativo' in (p as object)
-    );
-    expect(soAtivo).toHaveLength(1);
-    // nenhuma chamada grava 10000 fora do escopo da faixa editada
-    expect(chamadas.filter((p) => 'valor_minimo_aprovacao' in (p as object))).toHaveLength(1);
+    expect(chain.update).toHaveBeenCalledTimes(1);
+    expect(chain.update).toHaveBeenCalledWith({
+      valor_minimo_aprovacao: 10000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    });
+    expect(chain.eq).toHaveBeenCalledWith('valor_minimo_aprovacao', 5000);
   });
 
   it('conflito: zero linha atualizada NAO pode virar sucesso', async () => {

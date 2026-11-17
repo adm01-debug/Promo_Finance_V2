@@ -125,59 +125,89 @@ export const useUpdateConfiguracaoAprovacao = () => {
     mutationFn: async (
       config: Partial<ConfiguracaoAprovacao> & { id: string; valor_minimo_original?: number }
     ) => {
-      // Escopo por CAMPO, porque o painel mistura duas coisas numa tela:
+      // UM unico update, na FAIXA editada (empresa + valor que o painel carregou).
       //
-      //  - `ativo` e o interruptor do workflow da empresa. O card anuncia
-      //    "Todos os pagamentos serao liberados automaticamente"
-      //    (ConfiguracaoAprovacaoCard.tsx:125), entao desligar tem de alcancar
-      //    TODAS as faixas. Atingindo so a faixa editada, a de 50.000 seguia
-      //    ativa e o dialogo continuava bloqueando pagamento acima disso --
-      //    a tela afirmando liberacao total enquanto o bloqueio continuava.
+      // As rodadas anteriores desta PR tentaram cinco escopos diferentes e cada
+      // um quebrava outro lado, porque o painel apresenta UM "Alcada Minima
+      // Global" enquanto a tabela guarda tres faixas (5.000 / 50.000 / 999.999)
+      // para a mesma empresa. Com tres faixas, nenhuma gravacao desta tela pode
+      // estar certa:
+      //   - so o id        -> a duplicata de mesmo valor segue a menor e o
+      //                       limite salvo nao faz efeito;
+      //   - a empresa toda -> apaga os patamares de 50.000 e 999.999;
+      //   - a faixa + um
+      //     segundo update
+      //     para `ativo`   -> dois requests sem transacao: falhando o segundo, o
+      //                       limite fica gravado, o erro aparece, e a nova
+      //                       tentativa acusa conflito contra um valor que nao
+      //                       existe mais.
       //
-      //  - limite e quorum pertencem a FAIXA editada: empresa + o valor que o
-      //    painel carregou. Aplicar na empresa inteira gravava o limite exibido
-      //    tambem nas faixas de 50.000 e 999.999, apagando patamares que a tela
-      //    nem mostra e nao sabe restaurar.
-      //
-      // Sem empresa ou sem valor original (linha legada), tudo cai no id.
+      // Entao em vez de adivinhar, a gravacao RECUSA o que nao pode virar o
+      // limite efetivo, e diz qual faixa esta no caminho. Nao perde dado, nao
+      // precisa de transacao, e nunca anuncia sucesso para algo sem efeito.
       const porFaixa = config.empresa_id != null && config.valor_minimo_original != null;
 
-      const patchFaixa = {
+      if (porFaixa) {
+        const { data: outras, error: erroOutras } = await supabase
+          .from('configuracoes_aprovacao')
+          .select('valor_minimo_aprovacao')
+          .eq('empresa_id', config.empresa_id as string)
+          .eq('ativo', true)
+          .neq('valor_minimo_aprovacao', config.valor_minimo_original as number)
+          .order('valor_minimo_aprovacao', { ascending: true })
+          .limit(1);
+        if (erroOutras) throw erroOutras;
+
+        const menorOutra = outras?.[0]?.valor_minimo_aprovacao as number | undefined;
+        const fmt = (v: number) =>
+          v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        if (menorOutra != null) {
+          // Desligar aqui nao desliga o workflow: a outra faixa ativa continua
+          // exigindo aprovacao, e o card anuncia liberacao total.
+          if (config.ativo === false) {
+            throw new Error(
+              `Existe outra faixa ativa em ${fmt(menorOutra)} para esta empresa. ` +
+                'Desativar aqui nao desliga o workflow: pagamentos acima desse valor ' +
+                'continuariam exigindo aprovacao. Remova a duplicidade de faixas antes.'
+            );
+          }
+          // Subir o limite acima de outra faixa ativa nao muda o limite efetivo.
+          if (config.valor_minimo_aprovacao != null && config.valor_minimo_aprovacao > menorOutra) {
+            throw new Error(
+              `Existe outra faixa ativa em ${fmt(menorOutra)}, menor que o valor ` +
+                'informado. O limite efetivo continuaria sendo o dela, entao a ' +
+                'alteracao nao teria efeito. Remova a duplicidade de faixas antes.'
+            );
+          }
+        }
+      }
+
+      const patch = {
         valor_minimo_aprovacao: config.valor_minimo_aprovacao,
         aprovadores_obrigatorios: config.aprovadores_obrigatorios,
         ativo: config.ativo,
       };
 
-      const baseFaixa = supabase.from('configuracoes_aprovacao').update(patchFaixa);
+      const base = supabase.from('configuracoes_aprovacao').update(patch);
       const { data, error } = porFaixa
-        ? await baseFaixa
+        ? await base
             .eq('empresa_id', config.empresa_id as string)
             .eq('valor_minimo_aprovacao', config.valor_minimo_original as number)
             .select()
-        : await baseFaixa.eq('id', config.id).select();
+        : await base.eq('id', config.id).select();
 
       if (error) throw error;
 
       // `data: []` com `error: null` acontece quando o filtro nao casa linha
       // nenhuma: outro administrador mudou a faixa entre o carregamento e o
       // salvamento. Sem esta checagem, o toast anunciava sucesso e nada tinha
-      // sido gravado -- o mesmo tipo de mentira que esta PR comecou corrigindo.
+      // sido gravado.
       if (porFaixa && (!data || data.length === 0)) {
         throw new Error(
           'A faixa foi alterada por outra pessoa desde que esta tela carregou. ' +
             'Recarregue a configuracao e tente de novo.'
         );
-      }
-
-      // O interruptor alcanca as outras faixas da empresa SEM tocar nos limites
-      // delas: so a coluna `ativo` vai neste segundo update.
-      if (porFaixa && typeof config.ativo === 'boolean') {
-        const { error: erroAtivo } = await supabase
-          .from('configuracoes_aprovacao')
-          .update({ ativo: config.ativo })
-          .eq('empresa_id', config.empresa_id as string)
-          .neq('valor_minimo_aprovacao', config.valor_minimo_original as number);
-        if (erroAtivo) throw erroAtivo;
       }
 
       return data;
