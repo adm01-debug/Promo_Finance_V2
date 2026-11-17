@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ed338a2dd5be7973fcf7098f1e68ef4254a1cb80` (2026-11-17T18:56:57-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b` (2026-11-17T20:03:17-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1117), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2360), SQL (1117), Markdown (201), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3935 |
+| arquivos_total | 3936 |
 | arquivos_codigo | 2474 |
 | linhas_codigo | 440624 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 478 |
 | workflows | 19 |
 | scripts | 114 |
-| docs_md | 200 |
+| docs_md | 201 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -625,10 +625,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/agentes (12), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (13), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `f17d2d4` docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)
+- 2026-11-17 `c862e68` docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)
 - 2026-11-17 `ed338a2` fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)
 - 2026-11-17 `ec4122e` fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)
 - 2026-11-17 `b75c138` feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)
@@ -642,8 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `5be2cfc` feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)
 - 2026-11-17 `176877a` infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)
 - 2026-11-17 `4ba4b44` fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)
-- 2026-11-17 `a378486` infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)
-- 2026-11-17 `1ccd853` fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

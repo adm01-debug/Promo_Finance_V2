@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ed338a2dd5be7973fcf7098f1e68ef4254a1cb80",
+  "commit": "f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b",
   "branch": "main",
-  "data_commit": "2026-11-17T18:56:57-03:00",
+  "data_commit": "2026-11-17T20:03:17-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f17d2d4",
+    "data": "2026-11-17",
+    "assunto": "docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)"
+   },
+   {
+    "sha": "c862e68",
+    "data": "2026-11-17",
+    "assunto": "docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)"
+   },
    {
     "sha": "ed338a2",
     "data": "2026-11-17",
@@ -121,19 +131,9 @@
     "sha": "17a5777",
     "data": "2026-11-17",
     "assunto": "chore(db): harness de replay das migrations num Postgres local efêmero (#433)"
-   },
-   {
-    "sha": "a45b5d8",
-    "data": "2026-11-17",
-    "assunto": "fix(ci): destrava o bun audit do advisory novo do picomatch (#434)"
-   },
-   {
-    "sha": "512c1e7",
-    "data": "2026-11-17",
-    "assunto": "chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)"
    }
   ],
-  "arquivos_mudados_7d": 925,
+  "arquivos_mudados_7d": 926,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 209
+    "commits": 211
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3935,
+  "arquivos_total": 3936,
   "arquivos_codigo": 2474,
   "linhas_codigo": 440624,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 478,
   "workflows": 19,
   "scripts": 114,
-  "docs_md": 200
+  "docs_md": 201
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

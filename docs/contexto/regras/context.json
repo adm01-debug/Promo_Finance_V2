@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "ed338a2dd5be7973fcf7098f1e68ef4254a1cb80",
+  "sha": "f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 21:57 UTC",
-  "files_total": 3974,
+  "generated_at": "2026-11-17 23:14 UTC",
+  "files_total": 3975,
   "code_files": 3592,
   "code_lines": 510799
  },
@@ -245128,10 +245128,28 @@
   }
  },
  "git": {
-  "sha": "ed338a2dd5be7973fcf7098f1e68ef4254a1cb80",
+  "sha": "f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f17d2d4",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)",
+    "files": [
+     "docs/agentes/banco-inter-api.md"
+    ]
+   },
+   {
+    "sha": "c862e68",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)",
+    "files": [
+     "docs/agentes/auditoria-branches-2026-11-17.md"
+    ]
+   },
    {
     "sha": "ed338a2",
     "date": "2026-11-17",
@@ -245413,27 +245431,6 @@
      "supabase/functions/monitor-health/index.test.ts",
      "supabase/functions/monitor-health/index.ts"
     ]
-   },
-   {
-    "sha": "710f7a8",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)",
-    "files": [
-     ".prettierignore",
-     "docs/ci/MATRIZ_EDGE_TABELA.md",
-     "docs/ci/README.md",
-     "docs/ci/kpi.json"
-    ]
-   },
-   {
-    "sha": "ab257ab",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)",
-    "files": [
-     "docs/agentes/auditoria-branches-2026-11-17.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245452,6 +245449,10 @@
    [
     "supabase/functions/executar-fechamento-tributario/index.ts",
     2
+   ],
+   [
+    "docs/agentes/banco-inter-api.md",
+    1
    ],
    [
     "supabase/migrations/20261117232000_indices_anti_duplicata_contas.sql",
@@ -245511,10 +245512,6 @@
    ],
    [
     "supabase/functions/comparar-benchmark-setorial/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/copilot-global/index.ts",
     1
    ]
   ]
