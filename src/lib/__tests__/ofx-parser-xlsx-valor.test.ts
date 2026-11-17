@@ -125,3 +125,42 @@ describe('CSV separado por virgula com valor BRL sem aspas (F01)', () => {
     expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
   });
 });
+
+/**
+ * Regressao que eu introduzi na primeira versao da correcao do F01 e que os
+ * revisores da PR #413 pegaram: virgula sobrando no FIM da linha tambem cria
+ * coluna extra, e ai a vizinha do valor e dado legitimo (`parcela`) -- a
+ * recomposicao somava a parcela ao valor.
+ */
+describe('recomposicao nao confunde coluna extra do fim com valor partido', () => {
+  it('virgula final com parcela declarada: valor continua 1234, sem recomposicao', () => {
+    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,2,\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+
+  it('valor entre aspas com parcela e virgula final nao e concatenado nem descartado', () => {
+    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,"1.234,56",2,\n', 'e.csv');
+    expect(r.sucesso).toBe(true);
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+
+  it('valor que JA tem virgula nunca e recomposto com a vizinha', () => {
+    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,"1.234,56",2\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+
+  it('valor partido E parcela na mesma linha: recompoe o valor e preserva a parcela', () => {
+    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,56,2\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).toMatch(/centavos foram recompostos/i);
+  });
+
+  it('valor internacional com ponto decimal segue intacto', () => {
+    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,1234.56\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+});

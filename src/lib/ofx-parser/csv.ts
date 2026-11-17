@@ -69,31 +69,56 @@ export function parseCSV(
       // menor -- e sem nenhum aviso, porque '1.234' e milhar BRL valido para o
       // parser. Era a ressalva que manteve o achado F01 como PARCIAL.
       //
-      // A recomposicao e deliberadamente estreita: so quando a linha tem
-      // EXATAMENTE uma coluna a mais que o cabecalho e a vizinha do valor tem
-      // 1 ou 2 digitos. Uma planilha com coluna extra declarada (valor,parcela)
-      // tem o mesmo numero de colunas do cabecalho e nao entra aqui.
-      let colunas = cols;
-      const vizinha = valorIdx !== -1 ? (cols[valorIdx + 1] ?? '') : '';
+      // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no
+      // fim da linha tambem produz coluna extra, e ai a coluna seguinte ao valor
+      // e dado legitimo (ex.: `parcela`). Nesse caso a recomposicao somava a
+      // parcela ao valor -- 1.234 + 2 virava 1.234,2 (achado dos revisores na
+      // PR #413). Entao, nesta ordem:
+      //   1) coluna vazia no FIM (vinda de delimitador final) nao conta;
+      //   2) o valor nao pode ja ter virgula -- se tem, os centavos estao la;
+      //   3) a vizinha tem de ser 1 ou 2 digitos;
+      //   4) o valor recomposto tem de ser aceito pelo parser, senao fica como
+      //      estava.
+      const semVaziosNoFim = [...cols];
+      while (semVaziosNoFim.length > headers.length && semVaziosNoFim.at(-1) === '') {
+        semVaziosNoFim.pop();
+      }
+
+      let colunas = semVaziosNoFim;
+      const valorCelula = valorIdx !== -1 ? (semVaziosNoFim[valorIdx] ?? '') : '';
+      const vizinha = valorIdx !== -1 ? (semVaziosNoFim[valorIdx + 1] ?? '') : '';
       if (
         delimiter === ',' &&
         valorIdx !== -1 &&
-        cols.length === headers.length + 1 &&
+        semVaziosNoFim.length === headers.length + 1 &&
+        !valorCelula.includes(',') &&
         /^\d{1,2}$/.test(vizinha)
       ) {
-        colunas = [
-          ...cols.slice(0, valorIdx),
-          `${cols[valorIdx]},${vizinha}`,
-          ...cols.slice(valorIdx + 2),
-        ];
-        avisos.push(
-          `Linha ${i + 1}: valor "${cols[valorIdx]},${vizinha}" estava sem aspas num CSV separado por vírgula; os centavos foram recompostos. Exporte com aspas ou use ponto e vírgula.`
-        );
-      } else if (cols.length !== headers.length) {
+        const recomposto = `${valorCelula},${vizinha}`;
+        let aceito = false;
+        try {
+          parseValorMonetario(recomposto);
+          aceito = true;
+        } catch {
+          aceito = false;
+        }
+        if (aceito) {
+          colunas = [
+            ...semVaziosNoFim.slice(0, valorIdx),
+            recomposto,
+            ...semVaziosNoFim.slice(valorIdx + 2),
+          ];
+          avisos.push(
+            `Linha ${i + 1}: valor "${recomposto}" estava sem aspas num CSV separado por vírgula; os centavos foram recompostos. Exporte com aspas ou use ponto e vírgula.`
+          );
+        }
+      }
+
+      if (colunas === semVaziosNoFim && semVaziosNoFim.length !== headers.length) {
         // Nao descarta a linha (CSV com coluna sobrando funciona hoje), mas a
         // leitura pode estar deslocada e isso deixa de ser silencioso.
         avisos.push(
-          `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento.`
+          `Linha ${i + 1}: ${semVaziosNoFim.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento.`
         );
       }
 
