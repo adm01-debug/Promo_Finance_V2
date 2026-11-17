@@ -4,7 +4,7 @@
 |---|---|
 | nome | copilot-tributario |
 | status | ACTIVE |
-| versão | 72 |
+| versão | 76 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/copilot-tributario/index.ts |
 | import_map |  |
