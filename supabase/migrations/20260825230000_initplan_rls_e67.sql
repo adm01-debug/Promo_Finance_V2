@@ -103,16 +103,34 @@ DROP POLICY IF EXISTS asaas_transfers_empresa_select ON public.asaas_transfers; 
 DROP POLICY IF EXISTS asaas_transfers_tenant_rw ON public.asaas_transfers; CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers AS PERMISSIVE FOR ALL TO authenticated USING ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))) WITH CHECK ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)));
 DROP POLICY IF EXISTS "Admins can view audit logs" ON public.audit_logs; CREATE POLICY "Admins can view audit logs" ON public.audit_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS audit_logs_insert_self_attributed ON public.audit_logs; CREATE POLICY audit_logs_insert_self_attributed ON public.audit_logs AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (((user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email'::text))))));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_01 ON public.audit_logs_2026_01; CREATE POLICY admin_only_audit_logs_2026_01 ON public.audit_logs_2026_01 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_02 ON public.audit_logs_2026_02; CREATE POLICY admin_only_audit_logs_2026_02 ON public.audit_logs_2026_02 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_03 ON public.audit_logs_2026_03; CREATE POLICY admin_only_audit_logs_2026_03 ON public.audit_logs_2026_03 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_04 ON public.audit_logs_2026_04; CREATE POLICY admin_only_audit_logs_2026_04 ON public.audit_logs_2026_04 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_05 ON public.audit_logs_2026_05; CREATE POLICY admin_only_audit_logs_2026_05 ON public.audit_logs_2026_05 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_06 ON public.audit_logs_2026_06; CREATE POLICY admin_only_audit_logs_2026_06 ON public.audit_logs_2026_06 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_07 ON public.audit_logs_2026_07; CREATE POLICY admin_only_audit_logs_2026_07 ON public.audit_logs_2026_07 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_08 ON public.audit_logs_2026_08; CREATE POLICY admin_only_audit_logs_2026_08 ON public.audit_logs_2026_08 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_09 ON public.audit_logs_2026_09; CREATE POLICY admin_only_audit_logs_2026_09 ON public.audit_logs_2026_09 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_audit_logs_2026_10 ON public.audit_logs_2026_10; CREATE POLICY admin_only_audit_logs_2026_10 ON public.audit_logs_2026_10 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
+-- Particoes mensais de audit_logs: os nomes abaixo sao fixos, mas quem as cria e
+-- ensure_monthly_partitions('audit_logs', 6, 3) em 20260711164339, cuja janela e
+-- relativa a now() (-6..+3 meses). Em 11/07/2026 a janela foi 2026_01..2026_10 (as 10
+-- que existem em producao); num replay de data posterior a janela nao cobre mais os
+-- meses iniciais e CREATE POLICY numa relacao inexistente aborta a cadeia inteira.
+-- Aplica a policy apenas quando a relacao existe. Em producao as 10 existem, logo o
+-- resultado e identico as 10 linhas originais.
+DO $e67_audit_logs_particoes$
+DECLARE
+  v_part text;
+BEGIN
+  FOREACH v_part IN ARRAY ARRAY[
+    'audit_logs_2026_01','audit_logs_2026_02','audit_logs_2026_03','audit_logs_2026_04',
+    'audit_logs_2026_05','audit_logs_2026_06','audit_logs_2026_07','audit_logs_2026_08',
+    'audit_logs_2026_09','audit_logs_2026_10'
+  ] LOOP
+    IF EXISTS (
+      SELECT 1 FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relname = v_part AND c.relkind IN ('r','p')
+    ) THEN
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', 'admin_only_' || v_part, v_part);
+      EXECUTE format('CREATE POLICY %I ON public.%I AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), ''admin''::app_role)) WITH CHECK (has_role((SELECT auth.uid()), ''admin''::app_role))', 'admin_only_' || v_part, v_part);
+    ELSE
+      RAISE NOTICE 'e67: public.% nao existe (mes fora da janela de ensure_monthly_partitions) - policy admin_only_% ignorada', v_part, v_part;
+    END IF;
+  END LOOP;
+END $e67_audit_logs_particoes$;
 DROP POLICY IF EXISTS admin_only_audit_logs_default ON public.audit_logs_default; CREATE POLICY admin_only_audit_logs_default ON public.audit_logs_default AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS auditoria_financeira_empresa_select ON public.auditoria_financeira; CREATE POLICY auditoria_financeira_empresa_select ON public.auditoria_financeira AS PERMISSIVE FOR SELECT TO authenticated USING ((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM user_empresas
@@ -381,16 +399,34 @@ DROP POLICY IF EXISTS fornecedores_owner_update ON public.fornecedores; CREATE P
 DROP POLICY IF EXISTS fe_alert_state_admin_select ON public.frontend_error_alert_state; CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state AS PERMISSIVE FOR SELECT TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins can view frontend errors" ON public.frontend_error_logs; CREATE POLICY "Admins can view frontend errors" ON public.frontend_error_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS frontend_error_user_insert ON public.frontend_error_logs; CREATE POLICY frontend_error_user_insert ON public.frontend_error_logs AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK ((((SELECT auth.uid()) = user_id) OR (user_id IS NULL)));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_01 ON public.frontend_error_logs_2026_01; CREATE POLICY admin_only_frontend_error_logs_2026_01 ON public.frontend_error_logs_2026_01 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_02 ON public.frontend_error_logs_2026_02; CREATE POLICY admin_only_frontend_error_logs_2026_02 ON public.frontend_error_logs_2026_02 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_03 ON public.frontend_error_logs_2026_03; CREATE POLICY admin_only_frontend_error_logs_2026_03 ON public.frontend_error_logs_2026_03 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_04 ON public.frontend_error_logs_2026_04; CREATE POLICY admin_only_frontend_error_logs_2026_04 ON public.frontend_error_logs_2026_04 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_05 ON public.frontend_error_logs_2026_05; CREATE POLICY admin_only_frontend_error_logs_2026_05 ON public.frontend_error_logs_2026_05 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_06 ON public.frontend_error_logs_2026_06; CREATE POLICY admin_only_frontend_error_logs_2026_06 ON public.frontend_error_logs_2026_06 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_07 ON public.frontend_error_logs_2026_07; CREATE POLICY admin_only_frontend_error_logs_2026_07 ON public.frontend_error_logs_2026_07 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_08 ON public.frontend_error_logs_2026_08; CREATE POLICY admin_only_frontend_error_logs_2026_08 ON public.frontend_error_logs_2026_08 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_09 ON public.frontend_error_logs_2026_09; CREATE POLICY admin_only_frontend_error_logs_2026_09 ON public.frontend_error_logs_2026_09 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
-DROP POLICY IF EXISTS admin_only_frontend_error_logs_2026_10 ON public.frontend_error_logs_2026_10; CREATE POLICY admin_only_frontend_error_logs_2026_10 ON public.frontend_error_logs_2026_10 AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
+-- Particoes mensais de frontend_error_logs: os nomes abaixo sao fixos, mas quem as cria e
+-- ensure_monthly_partitions('frontend_error_logs', 6, 3) em 20260711164339, cuja janela e
+-- relativa a now() (-6..+3 meses). Em 11/07/2026 a janela foi 2026_01..2026_10 (as 10
+-- que existem em producao); num replay de data posterior a janela nao cobre mais os
+-- meses iniciais e CREATE POLICY numa relacao inexistente aborta a cadeia inteira.
+-- Aplica a policy apenas quando a relacao existe. Em producao as 10 existem, logo o
+-- resultado e identico as 10 linhas originais.
+DO $e67_frontend_error_logs_particoes$
+DECLARE
+  v_part text;
+BEGIN
+  FOREACH v_part IN ARRAY ARRAY[
+    'frontend_error_logs_2026_01','frontend_error_logs_2026_02','frontend_error_logs_2026_03','frontend_error_logs_2026_04',
+    'frontend_error_logs_2026_05','frontend_error_logs_2026_06','frontend_error_logs_2026_07','frontend_error_logs_2026_08',
+    'frontend_error_logs_2026_09','frontend_error_logs_2026_10'
+  ] LOOP
+    IF EXISTS (
+      SELECT 1 FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relname = v_part AND c.relkind IN ('r','p')
+    ) THEN
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', 'admin_only_' || v_part, v_part);
+      EXECUTE format('CREATE POLICY %I ON public.%I AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), ''admin''::app_role)) WITH CHECK (has_role((SELECT auth.uid()), ''admin''::app_role))', 'admin_only_' || v_part, v_part);
+    ELSE
+      RAISE NOTICE 'e67: public.% nao existe (mes fora da janela de ensure_monthly_partitions) - policy admin_only_% ignorada', v_part, v_part;
+    END IF;
+  END LOOP;
+END $e67_frontend_error_logs_particoes$;
 DROP POLICY IF EXISTS admin_only_frontend_error_logs_default ON public.frontend_error_logs_default; CREATE POLICY admin_only_frontend_error_logs_default ON public.frontend_error_logs_default AS PERMISSIVE FOR ALL TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role)) WITH CHECK (has_role((SELECT auth.uid()), 'admin'::app_role));
 DROP POLICY IF EXISTS fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log; CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log AS PERMISSIVE FOR SELECT TO authenticated USING (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role));
 DROP POLICY IF EXISTS "Admins can view performance logs" ON public.frontend_performance_logs; CREATE POLICY "Admins can view performance logs" ON public.frontend_performance_logs AS PERMISSIVE FOR SELECT TO authenticated USING (has_role((SELECT auth.uid()), 'admin'::app_role));
