@@ -69,12 +69,12 @@
    "importado_por": 94
   },
   {
-   "arquivo": "src/lib/logger.ts",
+   "arquivo": "src/components/ui/tabs.tsx",
    "importado_por": 91
   },
   {
-   "arquivo": "src/components/ui/tabs.tsx",
-   "importado_por": 90
+   "arquivo": "src/lib/logger.ts",
+   "importado_por": 91
   },
   {
    "arquivo": "src/components/ui/alert.tsx",

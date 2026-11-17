@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "3ea2086067a19506edef05ac5be9424bf29eb8ff",
+  "sha": "a133ea066fee7c7fa7f25325f6ff1d256c7c02e9",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 00:35 UTC",
-  "files_total": 3901,
-  "code_files": 3532,
-  "code_lines": 501962
+  "generated_at": "2026-11-17 00:43 UTC",
+  "files_total": 3902,
+  "code_files": 3533,
+  "code_lines": 502171
  },
  "version": "1.3.2",
- "facts_hash": "dc619355174938ed",
+ "facts_hash": "0c83f24d8b0ca913",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1226,
    ".sql": 1099,
-   ".tsx": 1095,
+   ".tsx": 1096,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -72182,8 +72182,8 @@
   },
   {
    "module": "src/pages",
-   "files": 271,
-   "lines": 46828,
+   "files": 272,
+   "lines": 47037,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -86967,6 +86967,10 @@
    {
     "file": "src/pages/tributario/oportunidades-elisao/AuditoriaTab.tsx",
     "text": "O caller embute nota:notas_fiscais_ocr(*) e regra:elisao_regras_creditos(*) no select,"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/constants.ts",
+    "text": "nenhum dos 8 códigos do catálogo aparece em src/. Apenas duas estratégias têm"
    },
    {
     "file": "supabase/functions/fuzz_test.ts",
@@ -135286,6 +135290,30 @@
    {
     "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
     "name": "cobre as 27 unidades federativas sem duplicidade"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "name": "AnaliseTab — catálogo não avaliado"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "name": "lista a estratégia catalogada que não tem detector, com o valor de referência"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "name": "NÃO lista a catalogada cujo equivalente o motor já avalia"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "name": "soma só o que não é avaliado"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "name": "NÃO lista CRED_PIS_COFINS: o detector Tema 779 já avalia o mesmo crédito"
+   },
+   {
+    "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "name": "sem catálogo não renderiza a seção"
    },
    {
     "file": "src/test/a11y/critical-pages.test.tsx",
@@ -226860,7 +226888,7 @@
   },
   "src/pages/tributario/OportunidadesElisao.tsx": {
    "path": "src/pages/tributario/OportunidadesElisao.tsx",
-   "lines": 153,
+   "lines": 154,
    "exports": [
     "function OportunidadesElisao"
    ],
@@ -227294,8 +227322,9 @@
   },
   "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx": {
    "path": "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx",
-   "lines": 107,
+   "lines": 192,
    "exports": [
+    "interface EstrategiaCatalogo",
     "function AnaliseTab"
    ],
    "navigates": [
@@ -227372,10 +227401,27 @@
   },
   "src/pages/tributario/oportunidades-elisao/constants.ts": {
    "path": "src/pages/tributario/oportunidades-elisao/constants.ts",
-   "lines": 16,
+   "lines": 33,
    "exports": [
     "const RISCO_BADGE",
+    "const CATALOGO_PARA_DETECTOR",
     "const STATUS_LABEL"
+   ],
+   "rule_comments": [
+    "nenhum dos 8 códigos do catálogo aparece em src/. Apenas duas estratégias têm"
+   ]
+  },
+  "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx": {
+   "path": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+   "lines": 106,
+   "is_test": true,
+   "tests": [
+    "AnaliseTab — catálogo não avaliado",
+    "lista a estratégia catalogada que não tem detector, com o valor de referência",
+    "NÃO lista a catalogada cujo equivalente o motor já avalia",
+    "soma só o que não é avaliado",
+    "NÃO lista CRED_PIS_COFINS: o detector Tema 779 já avalia o mesmo crédito",
+    "sem catálogo não renderiza a seção"
    ]
   },
   "src/routes/adminPages.ts": {
@@ -245805,10 +245851,22 @@
   }
  },
  "git": {
-  "sha": "3ea2086067a19506edef05ac5be9424bf29eb8ff",
+  "sha": "a133ea066fee7c7fa7f25325f6ff1d256c7c02e9",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "a133ea0",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)",
+    "files": [
+     "src/pages/tributario/OportunidadesElisao.tsx",
+     "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx",
+     "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+     "src/pages/tributario/oportunidades-elisao/constants.ts"
+    ]
+   },
    {
     "sha": "3ea2086",
     "date": "2026-11-16",
@@ -246161,16 +246219,6 @@
     "files": [
      ".github/workflows/prod-migrate.yml"
     ]
-   },
-   {
-    "sha": "91133e2",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(fornecedores): cadastro de fornecedor falhava por RLS — insert não enviava user_id (#352)",
-    "files": [
-     "src/components/fornecedores/FornecedorForm.tsx",
-     "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -246199,20 +246247,28 @@
     2
    ],
    [
-    "src/components/fornecedores/FornecedorForm.tsx",
-    2
-   ],
-   [
-    "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
-    2
-   ],
-   [
     "supabase/functions/gerar-sped-ecd/index.ts",
     2
    ],
    [
     "supabase/functions/gerar-sped-ecf/index.ts",
     2
+   ],
+   [
+    "src/pages/tributario/OportunidadesElisao.tsx",
+    1
+   ],
+   [
+    "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx",
+    1
+   ],
+   [
+    "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    1
+   ],
+   [
+    "src/pages/tributario/oportunidades-elisao/constants.ts",
+    1
    ],
    [
     "supabase/migrations/20260825250000_recreate_6_constraints.sql",
@@ -246244,14 +246300,6 @@
    ],
    [
     "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
-    1
-   ],
-   [
-    "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/useExpertContext.ts",
     1
    ]
   ]

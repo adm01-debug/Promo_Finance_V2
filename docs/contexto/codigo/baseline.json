@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "3ea2086067a19506edef05ac5be9424bf29eb8ff",
+  "commit": "a133ea066fee7c7fa7f25325f6ff1d256c7c02e9",
   "branch": "main",
-  "data_commit": "2026-11-16T21:33:30-03:00",
+  "data_commit": "2026-11-16T21:42:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a133ea0",
+    "data": "2026-11-16",
+    "assunto": "feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)"
+   },
    {
     "sha": "3ea2086",
     "data": "2026-11-16",
@@ -126,18 +131,13 @@
     "sha": "bc42f17",
     "data": "2026-11-16",
     "assunto": "chore(docs): registra a análise do log de produção de 14/11 (#367)"
-   },
-   {
-    "sha": "c4b811d",
-    "data": "2026-11-16",
-    "assunto": "fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)"
    }
   ],
-  "arquivos_mudados_7d": 765,
+  "arquivos_mudados_7d": 769,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
-    "mudancas": 34
+    "mudancas": 38
    },
    {
     "pasta": "src/components/contabilidade",
@@ -227,7 +227,7 @@
    },
    {
     "arquivo": "supabase/functions/mcp-query/index.ts",
-    "mudancas": 13
+    "mudancas": 12
    },
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 152
+    "commits": 153
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3859,
-  "arquivos_codigo": 2432,
-  "linhas_codigo": 433552,
+  "arquivos_total": 3860,
+  "arquivos_codigo": 2433,
+  "linhas_codigo": 433760,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 448,
+  "testes": 449,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 192
@@ -663,8 +663,8 @@
    "linhas": 76
   },
   "src/pages": {
-   "arquivos": 271,
-   "linhas": 46557
+   "arquivos": 272,
+   "linhas": 46765
   },
   "src/routes": {
    "arquivos": 16,

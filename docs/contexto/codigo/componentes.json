@@ -15353,10 +15353,11 @@
   {
    "arquivo": "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx",
    "exports": [
-    "AnaliseTab"
+    "AnaliseTab",
+    "EstrategiaCatalogo"
    ],
    "export_default": null,
-   "linhas": 106,
+   "linhas": 191,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -15426,7 +15427,7 @@
     "OportunidadesElisao"
    ],
    "export_default": "OportunidadesElisao",
-   "linhas": 152,
+   "linhas": 153,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",

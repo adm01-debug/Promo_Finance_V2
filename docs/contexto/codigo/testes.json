@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 448,
+ "total": 449,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 372
+  "unit": 373
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 259
+   "arquivos": 260
   },
   {
    "padrao": "outro",
@@ -3224,6 +3224,17 @@
    "casos": 5
   },
   {
+   "arquivo": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+   "tipo": "unit",
+   "linhas": 105,
+   "testa": [
+    "src/components/ui/tabs.tsx",
+    "src/lib/tributario/elisao/index.ts",
+    "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx"
+   ],
+   "casos": 5
+  },
+  {
    "arquivo": "src/test/a11y/critical-pages.test.tsx",
    "tipo": "unit",
    "linhas": 48,
@@ -4043,6 +4054,7 @@
   "src/components/ui/input.tsx": 2,
   "src/components/ui/label.tsx": 1,
   "src/components/ui/table.tsx": 1,
+  "src/components/ui/tabs.tsx": 1,
   "src/components/ui/tooltip.tsx": 1,
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
   "src/contexts/EmpresaScopeContext.tsx": 1,
@@ -4201,6 +4213,7 @@
   "src/lib/tributario/elisao/detectar-jcp.ts": 1,
   "src/lib/tributario/elisao/detectar-recuperacao-pis-cofins.ts": 1,
   "src/lib/tributario/elisao/detectar-sudene-sudam.ts": 1,
+  "src/lib/tributario/elisao/index.ts": 1,
   "src/lib/tributario/elisao/orquestrador-elisao.ts": 4,
   "src/lib/tributario/elisao/types.ts": 5,
   "src/lib/tributario/fator-r.ts": 3,
@@ -4253,6 +4266,7 @@
   "src/pages/tributario/consulta-rapida/format.ts": 1,
   "src/pages/tributario/consulta-rapida/offlineMeta.ts": 1,
   "src/pages/tributario/consulta-rapida/ufs.ts": 1,
+  "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx": 1,
   "src/types/reforma-tributaria.ts": 1,
   "src/types/tipo-cobranca-rotulo.ts": 1,
   "supabase/functions/_shared/auth-guard.ts": 1,

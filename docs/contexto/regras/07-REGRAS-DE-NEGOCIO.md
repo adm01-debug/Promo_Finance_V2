@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `3ea2086067` · branch `main` · 2026-11-17 00:35 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a133ea066f` · branch `main` · 2026-11-17 00:43 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3392 testes em 289 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3398 testes em 290 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5309,6 +5309,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/rbt12.test.ts` | 6 | calcularRBT12 · deve somar os últimos 12 meses quando houver histórico completo · deve proporcionalizar quando houver menos de 12 meses (início de atividade) · deve retornar 0 se não houver faturamento anterior … |
 | `src/lib/tributario/__tests__/resumo-mva-st.test.ts` | 6 | resumo de cobertura da carga real de protocolos · aceita integralmente a carga semeada, sem rejeições · cobre as 27 unidades federadas em todos os protocolos · descreve a faixa de MVA por protocolo … |
 | `src/lib/tributario/calculadora/__tests__/presumido-atividade-servicos.test.ts` | 6 | presunção da parcela de serviços por atividade · aplica o percentual legal de %s com 100%% de serviços · mantém 32% na parcela de serviços quando a atividade é mercantil · respeita overrides explícitos acima da derivação por atividade … |
+| `src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx` | 6 | AnaliseTab — catálogo não avaliado · lista a estratégia catalogada que não tem detector, com o valor de referência · NÃO lista a catalogada cujo equivalente o motor já avalia · soma só o que não é avaliado … |
 | `src/test/scenarios/__tests__/faults.spec.ts` | 6 | faults · reorder é permutação (mesmo multiset) · duplicate mantém todos os originais e não perde nenhum · shouldFail(none) nunca falha … |
 | `src/test/scenarios/__tests__/indices-simulation.spec.ts` | 6 | simulação de índices contábeis · executa ${CENARIOS} cenários sem NaN, Infinity ou exceção · empresa sem movimento não gera indicadores de razão zerados (usa  · classificação é monotônica em relação ao valor … |
 | `supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts` | 6 | buildInfEvento gera Id ID<tipo><chave><seq2> · buildInfEvento inclui xJust apenas em 210240 · buildEnvEvento serializa envelope SOAP · recepcaoEventoEndpoint distingue produção/homologação … |
@@ -5978,4 +5979,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Limite superior do desconto redutor da isenção ampliada. */ | `src/lib/tributario/pf-vinculada.ts` |
 | IRRF 10% incide sobre o valor integral quando o pagamento mensal supera o limite. | `src/lib/tributario/pf-vinculada.ts` |
 | Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
-| … +375 linhas — lista completa em `context.json` | |
+| … +376 linhas — lista completa em `context.json` | |

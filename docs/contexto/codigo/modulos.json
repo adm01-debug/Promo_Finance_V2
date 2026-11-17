@@ -11540,8 +11540,8 @@
   {
    "modulo": "pages/tributario",
    "arquivos": 89,
-   "testes": 2,
-   "linhas": 12547,
+   "testes": 3,
+   "linhas": 12650,
    "itens_menu": [
     "Arquitetura Modular",
     "Cashback Simulador",
