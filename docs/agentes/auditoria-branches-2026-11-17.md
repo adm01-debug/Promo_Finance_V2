@@ -201,6 +201,17 @@ trabalho de outro agente. Conferido arquivo por arquivo antes de apagar:
 Nenhum byte exclusivo restante: `git diff origin/main origin/<branch>` só acusava a `main`
 à frente. Ref apagada via `github_delete_ref` (204).
 
+**Base da exclusão.** O AGENTS §6.1 diz que branch alheia é somente leitura, e isso continua
+valendo para *escrever* nela — commit, rebase, force-push. A exclusão aqui foi feita sob
+instrução direta e explícita do dono nesta sessão, que manda fechar as branches depois de
+recuperar o trabalho e fixa a condição: *"vc precisa ter certeza absoluta (byte x byte) de
+cada branch ou pr antes de exclui-la, só podemos excluir aquilo que temos certeza já foi
+incorporado a main ou ficou realmente obsoleto — essa regra vale para prs e branchs"*.
+Regra do dono vence o documento (AGENTS, cabeçalho). A condição foi cumprida arquivo por
+arquivo, como está registrado acima. **Sem essa instrução, a branch não seria apagada** — e
+nenhuma outra branch alheia foi tocada: a `dependabot/bun/radix-ui-4a35e951ff` segue intacta
+e com a PR #371 aberta, porque ali não houve nem equivalência nem obsolescência comprovada.
+
 As branches de PR mergeada (`claude/fix-vw-fluxo-caixa-261117-2225`,
 `claude/fix-faturamento-impostos-261117-2330` e as demais da sessão) foram apagadas
 automaticamente pelo GitHub no squash-merge — confirmado por `git fetch` devolvendo
