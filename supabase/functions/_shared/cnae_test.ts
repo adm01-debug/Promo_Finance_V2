@@ -4,6 +4,7 @@ import {
   porPrefixoMaisEspecifico,
   prefixosCnaeCandidatos,
   regimeParaBenchmark,
+  cargaDoPeriodo,
 } from './cnae.ts';
 
 Deno.test('prefixos cobrem o codigo da empresa, do mais especifico ao mais generico', () => {
@@ -63,4 +64,24 @@ Deno.test('faixa de referencia interna mapeia do canonico para o rotulo curto', 
   assertEquals(chaveReferenciaInterna('lucro_real'), 'real');
   assertEquals(chaveReferenciaInterna('arbitrado'), 'real');
   assertEquals(chaveReferenciaInterna(null), 'simples');
+});
+
+Deno.test('carga do periodo usa a receita do mes apurado, nao a media de 12 meses', () => {
+  const faturamentos = [
+    { ano: 2026, mes: 9, receita_bruta: 80_000 },
+    { ano: 2026, mes: 10, receita_bruta: 100_000 },
+  ];
+  // 6.500 / 100.000 = 6,5% (o rbt12/12 daria 180.000/12 = 15.000 -> 43,3%)
+  assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 10 }, faturamentos), 6.5);
+});
+
+Deno.test('carga do periodo nao compara quando falta a receita do mes', () => {
+  assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 11 }, [
+    { ano: 2026, mes: 10, receita_bruta: 100_000 },
+  ]), null);
+  assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 10 }, [
+    { ano: 2026, mes: 10, receita_bruta: 0 },
+  ]), null);
+  assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 10 }, []), null);
+  assertEquals(cargaDoPeriodo(null, [{ ano: 2026, mes: 10, receita_bruta: 100_000 }]), null);
 });

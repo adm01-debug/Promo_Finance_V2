@@ -6,6 +6,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import {
+  cargaDoPeriodo,
   porPrefixoMaisEspecifico,
   prefixosCnaeCandidatos,
   regimeParaBenchmark,
@@ -241,8 +242,12 @@ export const handler = async (req: Request): Promise<Response> => {
               `ultima_apuracao_${empresa.id}`
             );
 
-            if (ultimaApuracao?.[0]) {
-              const cargaAtual = (Number(ultimaApuracao[0].total_geral) / (rbt12 / 12)) * 100;
+            // A carga sai do MESMO periodo da apuracao (ver cargaDoPeriodo):
+            // dividir um mes de tributo por rbt12/12 comparava com a media de
+            // 12 meses e, com historico parcial, gravava alerta errado.
+            const cargaAtual = cargaDoPeriodo(ultimaApuracao?.[0], faturamentos);
+
+            if (cargaAtual !== null) {
               const cargaBench = Number(bench[0].carga_media_pct);
               const desvio = Math.abs(cargaAtual - cargaBench);
               if (desvio > cargaBench * 0.2) {
