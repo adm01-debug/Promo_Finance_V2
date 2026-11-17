@@ -13,6 +13,10 @@
 -- webhook_replay grava: status 'pending', next_retry_at = now(), orcamento de
 -- tentativas zerado, erro limpo, dlq_id solto) e so INSERE quando nao existe
 -- registro original -- caso de item de DLQ importado sem par em webhooks_log.
+-- O registro original e travado (`FOR UPDATE`) e o estado dele decide: em
+-- 'success' o item da DLQ e resolvido SEM reexecutar (webhook_replay deixa o
+-- item aberto, e reexecutar sobrescreveria um evento posterior); em
+-- 'processing' a funcao recusa, para nao competir com o worker.
 -- `FOR UPDATE` no item da DLQ impede que dois cliques no painel reagendem duas
 -- vezes. O worker pega a linha por
 --   status IN ('pending','retrying') AND next_retry_at <= now()
@@ -28,6 +32,7 @@ AS $function$
 DECLARE
   v_dlq public.webhook_dlq%ROWTYPE;
   v_log_id UUID;
+  v_log_status TEXT;
 BEGIN
   IF NOT public.has_role(auth.uid(), 'admin'::public.app_role) THEN
     RAISE EXCEPTION 'Acesso negado: apenas administradores podem reprocessar DLQ.';
@@ -42,19 +47,45 @@ BEGIN
   END IF;
 
   -- 1) o registro original, achado pelo vinculo gravado na promocao
-  SELECT id INTO v_log_id
+  SELECT id, status INTO v_log_id, v_log_status
     FROM public.webhooks_log
    WHERE dlq_id = p_dlq_id
    ORDER BY created_at DESC
-   LIMIT 1;
+   LIMIT 1
+   FOR UPDATE;
 
   -- 2) sem vinculo, cai na chave de idempotencia, que e o que o indice protege
   IF v_log_id IS NULL AND v_dlq.external_id IS NOT NULL THEN
-    SELECT id INTO v_log_id
+    SELECT id, status INTO v_log_id, v_log_status
       FROM public.webhooks_log
      WHERE source = v_dlq.source AND external_id = v_dlq.external_id
      ORDER BY created_at DESC
-     LIMIT 1;
+     LIMIT 1
+     FOR UPDATE;
+  END IF;
+
+  -- Evento JA CONCLUIDO por outro caminho: webhook_replay limpa `dlq_id` antes
+  -- de olhar esse vinculo (20260723124731:187-200 -- o IF da 196 le o valor ja
+  -- anulado), entao o item da DLQ fica aberto mesmo depois do sucesso.
+  -- Reagendar aqui reexecutaria um evento
+  -- concluido -- um PAYMENT_RECEIVED antigo sobrescreveria um REFUNDED
+  -- posterior. Resolve so o item obsoleto e preserva o registro.
+  IF v_log_status = 'success' THEN
+    UPDATE public.webhook_dlq
+       SET resolved_at = now(),
+           resolved_by = auth.uid(),
+           notes = concat_ws(
+             ' | ',
+             COALESCE(p_notes, notes),
+             'evento ja concluido (webhooks_log.status=success): item resolvido sem reexecucao'
+           )
+     WHERE id = p_dlq_id;
+    RETURN v_log_id;
+  END IF;
+
+  -- Em execucao agora: reiniciar competiria com o worker que o reservou.
+  IF v_log_status = 'processing' THEN
+    RAISE EXCEPTION 'Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual.', v_log_id;
   END IF;
 
   IF v_log_id IS NOT NULL THEN
