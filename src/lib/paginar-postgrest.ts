@@ -8,8 +8,18 @@
  * paginacao publica resultado parcial como completo.
  */
 export const PAGINA = 1000;
-/** Teto de seguranca: 50 paginas = 50 mil titulos no periodo. */
-const MAX_PAGINAS = 50;
+/**
+ * Teto de LINHAS, nao de requisicoes: com o servidor devolvendo menos que a
+ * janela (db-max-rows menor que PAGINA), contar requisicoes acusava
+ * "mais de 50 mil titulos" com 25 mil (achado do Devin na PR #404).
+ */
+export const MAX_LINHAS = 50_000;
+/**
+ * Teto de requisicoes, independente do de linhas: so existe para a leitura nao
+ * girar sem fim se o servidor devolver paginas minusculas. A mensagem diz o que
+ * aconteceu de verdade, nao um total inventado.
+ */
+const MAX_REQUISICOES = 500;
 
 /**
  * Le TODAS as linhas de uma consulta, usando a CONTAGEM EXATA como criterio de
@@ -36,12 +46,20 @@ export async function paginarTudo<T>(consulta: {
   // servidor limitar a resposta abaixo da janela (db-max-rows menor que
   // PAGINA), somar 1.000 a cada volta pularia linhas (achado do Devin).
   let de = 0;
-  for (let p = 0; p < MAX_PAGINAS; p++) {
+  for (let p = 0; p < MAX_REQUISICOES; p++) {
     const { data, error, count } = await consulta.range(de, de + PAGINA - 1);
     if (error) throw error;
     const pagina = data ?? [];
     tudo.push(...pagina);
     const total = typeof count === 'number' ? count : null;
+
+    // O teto e pelo TOTAL real, conhecido na primeira resposta.
+    if (total != null && total > MAX_LINHAS) {
+      throw new Error(
+        `${total} títulos no período: a previsão não calcula somatório parcial acima de ` +
+          `${MAX_LINHAS}. Reduza o intervalo ou peça a agregação no banco.`
+      );
+    }
 
     if (total != null) {
       if (tudo.length >= total) return tudo;
@@ -62,7 +80,7 @@ export async function paginarTudo<T>(consulta: {
     de += pagina.length;
   }
   throw new Error(
-    `Mais de ${MAX_PAGINAS * PAGINA} títulos no período: a previsão não calcula somatório parcial. ` +
-      'Reduza o intervalo ou peça a agregação no banco.'
+    `A leitura dos títulos não terminou em ${MAX_REQUISICOES} requisições (${tudo.length} linhas ` +
+      'lidas). A previsão não calcula somatório parcial. Tente de novo.'
   );
 }

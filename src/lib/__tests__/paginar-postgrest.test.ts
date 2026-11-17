@@ -5,7 +5,7 @@
  * deslocamento pelo pedido em vez do recebido.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { paginarTudo, PAGINA } from '../paginar-postgrest';
+import { MAX_LINHAS, paginarTudo, PAGINA } from '../paginar-postgrest';
 
 /** Consulta falsa: devolve fatias de `linhas`, com teto opcional do servidor. */
 function consultaFalsa(linhas: number[], tetoServidor?: number) {
@@ -52,6 +52,22 @@ describe('paginarTudo', () => {
       .mockResolvedValueOnce({ data: [1, 2], error: null, count: 10 })
       .mockResolvedValueOnce({ data: [], error: null, count: 10 });
     await expect(paginarTudo({ range })).rejects.toThrow(/Leitura incompleta/i);
+  });
+
+  it('25 mil linhas em paginas de 500 NAO falha (teto e de linhas, nao de requisicoes)', async () => {
+    // Revisao da PR #404 (Devin): com teto de 50 requisicoes e servidor
+    // limitado a 500 linhas, 25.001 titulos acusavam "mais de 50 mil titulos".
+    const linhas = Array.from({ length: 25_001 }, (_, i) => i);
+    const { consulta, janelas } = consultaFalsa(linhas, 500);
+    const tudo = await paginarTudo<number>(consulta);
+    expect(tudo.length).toBe(25_001);
+    expect(janelas.length).toBe(51); // 50 paginas de 500 + a ultima com 1
+  });
+
+  it('acima do teto de linhas, a mensagem diz o total REAL', async () => {
+    const linhas = Array.from({ length: MAX_LINHAS + 1 }, (_, i) => i);
+    const { consulta } = consultaFalsa(linhas);
+    await expect(paginarTudo(consulta)).rejects.toThrow(new RegExp(`${MAX_LINHAS + 1} títulos`));
   });
 
   it('erro de qualquer pagina e propagado', async () => {
