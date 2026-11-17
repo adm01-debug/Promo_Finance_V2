@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "41310e8e9e089dcbf4e7e0ca590c5c7bd90adf1c",
+  "commit": "2c931d533813d87ec230ea3ace735923bbda31ea",
   "branch": "main",
-  "data_commit": "2026-11-17T00:41:43-03:00",
+  "data_commit": "2026-11-17T00:52:26-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2c931d5",
+    "data": "2026-11-17",
+    "assunto": "chore(deps-dev): bump vite from 8.2.2 to 8.3.8 (#372)"
+   },
    {
     "sha": "41310e8",
     "data": "2026-11-17",
@@ -126,11 +131,6 @@
     "sha": "15dc272",
     "data": "2026-11-16",
     "assunto": "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)"
-   },
-   {
-    "sha": "9003088",
-    "data": "2026-11-16",
-    "assunto": "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)"
    }
   ],
   "arquivos_mudados_7d": 804,
@@ -152,16 +152,16 @@
     "mudancas": 25
    },
    {
+    "pasta": "package.json",
+    "mudancas": 21
+   },
+   {
     "pasta": "src/components/contas-pagar",
     "mudancas": 21
    },
    {
-    "pasta": "package.json",
-    "mudancas": 20
-   },
-   {
     "pasta": "bun.lock",
-    "mudancas": 19
+    "mudancas": 20
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 33
+    "mudancas": 34
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 28
+    "mudancas": 29
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 12
+    "commits": 13
    },
    {
     "autor": "Joaquim Ataides",

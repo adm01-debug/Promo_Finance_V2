@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `41310e8e9e089dcbf4e7e0ca590c5c7bd90adf1c` (2026-11-17T00:41:43-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2c931d533813d87ec230ea3ace735923bbda31ea` (2026-11-17T00:52:26-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -461,8 +461,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (33)
-- bun.lock (28)
+- package.json (34)
+- bun.lock (29)
 - .github/workflows/ci.yml (26)
 - supabase/functions/asaas-proxy/index.ts (15)
 - .github/workflows/deno-tests.yml (14)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `2c931d5` chore(deps-dev): bump vite from 8.2.2 to 8.3.8 (#372)
 - 2026-11-17 `41310e8` fix(aprovações): a alçada configurada nunca era exigida de nenhum pagamento (#400)
 - 2026-11-17 `0b95e25` fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, "1247 empresas") 
 - 2026-11-16 `90e96ca` chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `c4a6304` fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)
 - 2026-11-16 `442c34a` fix(db): destrava as 2 raízes do replay e o bloqueio que a #390 introduziu (#391)
 - 2026-11-16 `91ff2d8` fix(db): preenche empresa_id nas 42 partidas contábeis antigas (#390)
-- 2026-11-16 `0cdf2a7` fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
