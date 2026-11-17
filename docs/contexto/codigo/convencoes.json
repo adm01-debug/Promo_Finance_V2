@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)",
    "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)",
    "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)",
    "infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)",
-   "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)",
-   "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)"
+   "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

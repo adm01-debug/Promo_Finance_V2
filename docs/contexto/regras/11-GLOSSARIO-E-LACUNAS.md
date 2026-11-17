@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1702166d43` · branch `main` · 2026-11-17 20:49 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f76fcd2116` · branch `main` · 2026-11-17 20:57 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -76,7 +76,7 @@
 | `categorias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `centros_custo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `ci_security_gate_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
-| `clientes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
+| `clientes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
 | `cnaes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `cnpja_cache` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `cnpja_rate_limit` | _(sem COMMENT ON TABLE — significado não documentado)_ | 3 colunas | migration |
@@ -403,7 +403,6 @@
 | status | valor `detector_conciliacao` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `detector_regime` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `persistindo` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
-| coluna | coluna `bitrix_id` usada no código não existe no schema de `clientes` |  |
 | coluna | coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca` |  |
 | coluna | coluna `count` usada no código não existe no schema de `asaas_config` |  |
 | tabela | tabela `companies` usada no código não existe nas migrations/types do repo | `supabase/functions/external-data/index.ts` |

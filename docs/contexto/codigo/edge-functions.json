@@ -473,7 +473,7 @@
    "nome": "bitrix24-sync",
    "entrada": "supabase/functions/bitrix24-sync/index.ts",
    "arquivos": 1,
-   "linhas": 906,
+   "linhas": 963,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -485,7 +485,7 @@
     "clientes",
     "contas_receber",
     "elisao_tarefas_acionaveis",
-    "empresas"
+    "user_empresas"
    ],
    "rpcs": [],
    "env": [

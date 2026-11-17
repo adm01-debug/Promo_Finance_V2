@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1702166d43` · branch `main` · 2026-11-17 20:49 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f76fcd2116` · branch `main` · 2026-11-17 20:57 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5015,7 +5015,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +791 linhas — lista completa em `context.json` | |
+| … +792 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

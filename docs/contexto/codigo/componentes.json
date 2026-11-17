@@ -2367,7 +2367,7 @@
     "BitrixClientsTab"
    ],
    "export_default": null,
-   "linhas": 100,
+   "linhas": 101,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],

@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1042,
+ "migrations": 1043,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -13885,6 +13885,16 @@
      "unico": false
     },
     {
+     "nome": "idx_clientes_bitrix_company_id",
+     "colunas": "bitrix_company_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_clientes_bitrix_contact_id",
+     "colunas": "bitrix_contact_id",
+     "unico": false
+    },
+    {
      "nome": "idx_clientes_cpf_cnpj",
      "colunas": "cpf_cnpj",
      "unico": false
@@ -20157,7 +20167,6 @@
    },
    "usada_no_front": 14,
    "usada_em_edges": [
-    "bitrix24-sync",
     "calcular-health-score-operacional",
     "comparar-benchmark-setorial",
     "copilot-tributario",
@@ -46667,6 +46676,7 @@
     "_shared",
     "api-keys-manage",
     "asaas-proxy",
+    "bitrix24-sync",
     "calcular-health-score-operacional",
     "comparar-benchmark-setorial",
     "contabilizar-evento",

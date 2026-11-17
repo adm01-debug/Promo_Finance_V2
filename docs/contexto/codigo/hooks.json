@@ -2016,7 +2016,7 @@
    "hooks_exportados": [
     "useBitrix24"
    ],
-   "linhas": 304,
+   "linhas": 307,
    "dominio": "hooks",
    "tabelas": [
     "bitrix_field_mappings",

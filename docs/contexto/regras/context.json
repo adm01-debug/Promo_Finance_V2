@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "1702166d4312845031e6f3960aeb634cbc17db7e",
+  "sha": "f76fcd2116140780d3b447d00f5c620de8ad785d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:49 UTC",
-  "files_total": 3969,
-  "code_files": 3587,
-  "code_lines": 510145
+  "generated_at": "2026-11-17 20:57 UTC",
+  "files_total": 3970,
+  "code_files": 3588,
+  "code_lines": 510249
  },
  "version": "1.3.2",
- "facts_hash": "2df6ef8f25190754",
+ "facts_hash": "e7918f8842090386",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,8 +333,8 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1245,
+   ".sql": 1114,
    ".tsx": 1114,
-   ".sql": 1113,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -561,6 +561,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518165826_e969533a-d7d8-43b0-b080-14e45222dca9.sql"
+     },
+     {
+      "name": "bitrix_contact_id",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
+     },
+     {
+      "name": "bitrix_company_id",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
      }
     ],
     "constraints": [
@@ -49662,6 +49676,22 @@
     "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
    },
    {
+    "name": "idx_clientes_bitrix_contact_id",
+    "table": "clientes",
+    "columns": "bitrix_contact_id",
+    "unique": false,
+    "where": "WHERE bitrix_contact_id IS NOT NULL",
+    "src": "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
+   },
+   {
+    "name": "idx_clientes_bitrix_company_id",
+    "table": "clientes",
+    "columns": "bitrix_company_id",
+    "unique": false,
+    "where": "WHERE bitrix_company_id IS NOT NULL",
+    "src": "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
+   },
+   {
     "name": "idx_movimentacoes_centro_custo_id",
     "table": "movimentacoes",
     "columns": "centro_custo_id",
@@ -51318,6 +51348,7 @@
    "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
    "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
    "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
+   "supabase/migrations/20261117211000_clientes_bitrix_ids.sql",
    "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
    "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
    "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
@@ -62913,7 +62944,7 @@
      "contas_receber",
      "edge_function_logs",
      "elisao_tarefas_acionaveis",
-     "empresas"
+     "user_empresas"
     ],
     "env": [
      "BITRIX24_ACCESS_TOKEN",
@@ -62932,10 +62963,11 @@
      "Authorization header required",
      "Deal Bitrix24 não encontrado para este boleto",
      "Invalid authentication token",
-     "Nenhuma empresa cadastrada no sistema",
      "No valid Bitrix24 access token available",
      "Tarefa não encontrada",
-     "Unknown action: ${action}"
+     "Unknown action: ${action}",
+     "Usuario autenticado nao tem empresa ativa vinculada em user_empresas — vincule antes de sincronizar",
+     "resolver empresa do usuario: ${error.message}"
     ],
     "side_effects": [],
     "webhook_events": [],
@@ -70359,7 +70391,7 @@
   {
    "module": "src/components",
    "files": 997,
-   "lines": 164813,
+   "lines": 164814,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70628,7 +70660,7 @@
   {
    "module": "src/hooks",
    "files": 319,
-   "lines": 47096,
+   "lines": 47099,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71523,7 +71555,7 @@
   {
    "module": "supabase/functions",
    "files": 235,
-   "lines": 51541,
+   "lines": 51598,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -71784,8 +71816,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1042,
-   "lines": 80464,
+   "files": 1043,
+   "lines": 80507,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -72822,7 +72854,6 @@
      "src/pages/admin/ScimAudit.tsx",
      "src/pages/admin/shared-filters-admin/useSharedFiltersAdmin.ts",
      "src/pages/bloqueios-duplicidade/useBloqueiosData.ts",
-     "supabase/functions/bitrix24-sync/index.ts",
      "supabase/functions/calcular-health-score-operacional/index.ts",
      "supabase/functions/comparar-benchmark-setorial/index.ts",
      "supabase/functions/copilot-tributario/index.ts",
@@ -74141,6 +74172,7 @@
      "supabase/functions/_shared/auth-guard.ts",
      "supabase/functions/api-keys-manage/index.ts",
      "supabase/functions/asaas-proxy/index.ts",
+     "supabase/functions/bitrix24-sync/index.ts",
      "supabase/functions/calcular-health-score-operacional/index.ts",
      "supabase/functions/comparar-benchmark-setorial/index.ts",
      "supabase/functions/contabilizar-evento/index.ts",
@@ -74645,7 +74677,8 @@
    ],
    "clientes": [
     "ativo",
-    "bitrix_id",
+    "bitrix_company_id",
+    "bitrix_contact_id",
     "created_at",
     "empresa_id",
     "id",
@@ -76895,10 +76928,6 @@
    "webhook_events"
   ],
   "columns_unknown": [
-   {
-    "table": "clientes",
-    "column": "bitrix_id"
-   },
    {
     "table": "execucoes_cobranca",
     "column": "provider_message_id"
@@ -83513,10 +83542,6 @@
    },
    {
     "file": "supabase/functions/bitrix24-sync/index.ts",
-    "msg": "Nenhuma empresa cadastrada no sistema"
-   },
-   {
-    "file": "supabase/functions/bitrix24-sync/index.ts",
     "msg": "No valid Bitrix24 access token available"
    },
    {
@@ -83526,6 +83551,14 @@
    {
     "file": "supabase/functions/bitrix24-sync/index.ts",
     "msg": "Unknown action: ${action}"
+   },
+   {
+    "file": "supabase/functions/bitrix24-sync/index.ts",
+    "msg": "Usuario autenticado nao tem empresa ativa vinculada em user_empresas — vincule antes de sincronizar"
+   },
+   {
+    "file": "supabase/functions/bitrix24-sync/index.ts",
+    "msg": "resolver empresa do usuario: ${error.message}"
    },
    {
     "file": "supabase/functions/bitrix24-webhook/index.ts",
@@ -173752,11 +173785,6 @@
    },
    {
     "kind": "coluna",
-    "msg": "coluna `bitrix_id` usada no código não existe no schema de `clientes`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca`",
     "where": []
    },
@@ -182259,7 +182287,7 @@
   },
   "src/components/bitrix/BitrixClientsTab.tsx": {
    "path": "src/components/bitrix/BitrixClientsTab.tsx",
-   "lines": 101,
+   "lines": 102,
    "exports": [
     "function BitrixClientsTab"
    ]
@@ -199096,7 +199124,7 @@
   },
   "src/hooks/useBitrix24.ts": {
    "path": "src/hooks/useBitrix24.ts",
-   "lines": 305,
+   "lines": 308,
    "exports": [
     "function useBitrix24"
    ],
@@ -199125,9 +199153,6 @@
    "table_cols": {
     "contas_receber": [
      "bitrix_deal_id"
-    ],
-    "clientes": [
-     "bitrix_id"
     ],
     "bitrix_field_mappings": [
      "id"
@@ -231249,7 +231274,7 @@
   },
   "supabase/functions/bitrix24-sync/index.ts": {
    "path": "supabase/functions/bitrix24-sync/index.ts",
-   "lines": 907,
+   "lines": 964,
    "tables": [
     {
      "table": "bitrix_oauth_tokens",
@@ -231260,15 +231285,15 @@
      "op": "insert"
     },
     {
+     "table": "user_empresas",
+     "op": "select"
+    },
+    {
      "table": "bitrix_sync_logs",
      "op": "insert,select"
     },
     {
      "table": "bitrix_field_mappings",
-     "op": "select"
-    },
-    {
-     "table": "empresas",
      "op": "select"
     },
     {
@@ -231373,15 +231398,19 @@
     }
    ],
    "table_cols": {
+    "user_empresas": [
+     "ativo",
+     "empresa_id",
+     "is_default",
+     "user_id"
+    ],
     "bitrix_field_mappings": [
      "ativo",
      "entidade"
     ],
-    "empresas": [
-     "id"
-    ],
     "contas_receber": [
      "bitrix_deal_id",
+     "empresa_id",
      "id",
      "status"
     ],
@@ -231389,7 +231418,9 @@
      "id"
     ],
     "clientes": [
-     "bitrix_id",
+     "bitrix_company_id",
+     "bitrix_contact_id",
+     "empresa_id",
      "id"
     ],
     "elisao_tarefas_acionaveis": [
@@ -231411,10 +231442,11 @@
     "Authorization header required",
     "Deal Bitrix24 não encontrado para este boleto",
     "Invalid authentication token",
-    "Nenhuma empresa cadastrada no sistema",
     "No valid Bitrix24 access token available",
     "Tarefa não encontrada",
-    "Unknown action: ${action}"
+    "Unknown action: ${action}",
+    "Usuario autenticado nao tem empresa ativa vinculada em user_empresas — vincule antes de sincronizar",
+    "resolver empresa do usuario: ${error.message}"
    ],
    "status_values": [
     {
@@ -244919,6 +244951,10 @@
    "path": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
    "lines": 111
   },
+  "supabase/migrations/20261117211000_clientes_bitrix_ids.sql": {
+   "path": "supabase/migrations/20261117211000_clientes_bitrix_ids.sql",
+   "lines": 43
+  },
   "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql": {
    "path": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
    "lines": 57
@@ -245044,10 +245080,22 @@
   }
  },
  "git": {
-  "sha": "1702166d4312845031e6f3960aeb634cbc17db7e",
+  "sha": "f76fcd2116140780d3b447d00f5c620de8ad785d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f76fcd2",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)",
+    "files": [
+     "src/components/bitrix/BitrixClientsTab.tsx",
+     "src/hooks/useBitrix24.ts",
+     "supabase/functions/bitrix24-sync/index.ts",
+     "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
+    ]
+   },
    {
     "sha": "1702166",
     "date": "2026-11-17",
@@ -245417,15 +245465,6 @@
      "src/lib/sefaz-event-logger.ts",
      "src/lib/sefaz-rejection-monitor.ts"
     ]
-   },
-   {
-    "sha": "9cfb6b3",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)",
-    "files": [
-     "docs/auditoria/INVENTARIO_TRABALHO_INACABADO_2026-11-17.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245452,6 +245491,22 @@
    [
     "src/components/nfe/EventosHistorico.tsx",
     2
+   ],
+   [
+    "src/components/bitrix/BitrixClientsTab.tsx",
+    1
+   ],
+   [
+    "src/hooks/useBitrix24.ts",
+    1
+   ],
+   [
+    "supabase/functions/bitrix24-sync/index.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261117211000_clientes_bitrix_ids.sql",
+    1
    ],
    [
     "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
@@ -245491,22 +245546,6 @@
    ],
    [
     "supabase/functions/n8n-callback/index.ts",
-    1
-   ],
-   [
-    "vite.config.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
-    1
-   ],
-   [
-    ".github/workflows/dependency-review.yml",
-    1
-   ],
-   [
-    "supabase/functions/gerar-acoes-recomendadas/index.ts",
     1
    ]
   ]
