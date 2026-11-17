@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9aa7ea65eca1304792c685affdde683058282793",
+  "sha": "f9b3094ba80b4004405ec9ef5f561592374a668c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:42 UTC",
-  "files_total": 3965,
-  "code_files": 3583,
-  "code_lines": 509768
+  "generated_at": "2026-11-17 20:45 UTC",
+  "files_total": 3968,
+  "code_files": 3586,
+  "code_lines": 510009
  },
  "version": "1.3.2",
- "facts_hash": "ce39cb4bd2cf94b5",
+ "facts_hash": "ae289bb10feef7b1",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,9 +332,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1243,
+   ".ts": 1245,
    ".tsx": 1114,
-   ".sql": 1111,
+   ".sql": 1112,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -49598,6 +49598,350 @@
     "unique": false,
     "where": "WHERE centro_custo_id IS NOT NULL",
     "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
+   },
+   {
+    "name": "idx_boletos_conta_bancaria_id",
+    "table": "boletos",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_boletos_conta_pagar_id",
+    "table": "boletos",
+    "columns": "conta_pagar_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_boletos_created_by_fk",
+    "table": "boletos",
+    "columns": "created_by",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_boletos_empresa_id",
+    "table": "boletos",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_clientes_user_id_fk",
+    "table": "clientes",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_conciliacoes_conta_bancaria_id_fk",
+    "table": "conciliacoes",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_aprovado_por_fk",
+    "table": "contas_pagar",
+    "columns": "aprovado_por",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_categoria_id_fk",
+    "table": "contas_pagar",
+    "columns": "categoria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_centro_custo_id",
+    "table": "contas_pagar",
+    "columns": "centro_custo_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_conta_bancaria_id",
+    "table": "contas_pagar",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_data_pagamento",
+    "table": "contas_pagar",
+    "columns": "data_pagamento",
+    "unique": false,
+    "where": "WHERE (data_pagamento IS NOT NULL)",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_empresa_id",
+    "table": "contas_pagar",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_empresa_status_venc",
+    "table": "contas_pagar",
+    "columns": "empresa_id, status, data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_fornecedor_id_fk",
+    "table": "contas_pagar",
+    "columns": "fornecedor_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_pendentes_venc",
+    "table": "contas_pagar",
+    "columns": "empresa_id, data_vencimento",
+    "unique": false,
+    "where": "WHERE ((status)::text = 'pendente'::text)",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_pagar_user_created",
+    "table": "contas_pagar",
+    "columns": "user_id, created_at DESC",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_cp_pendentes",
+    "table": "contas_pagar",
+    "columns": "data_vencimento",
+    "unique": false,
+    "where": "WHERE ((status)::text = ANY ((ARRAY['pendente'::character varying, 'vencida'::character varying])::text[]))",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_categoria_id",
+    "table": "contas_receber",
+    "columns": "categoria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_centro_custo_id",
+    "table": "contas_receber",
+    "columns": "centro_custo_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_cliente_id",
+    "table": "contas_receber",
+    "columns": "cliente_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_conta_bancaria_id",
+    "table": "contas_receber",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_data_recebimento",
+    "table": "contas_receber",
+    "columns": "data_recebimento",
+    "unique": false,
+    "where": "WHERE (data_recebimento IS NOT NULL)",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_empresa_id",
+    "table": "contas_receber",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_empresa_status_venc",
+    "table": "contas_receber",
+    "columns": "empresa_id, status, data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_pendentes_venc",
+    "table": "contas_receber",
+    "columns": "empresa_id, data_vencimento",
+    "unique": false,
+    "where": "WHERE ((status)::text = 'pendente'::text)",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_contas_receber_user_created",
+    "table": "contas_receber",
+    "columns": "user_id, created_at DESC",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_cr_pendentes",
+    "table": "contas_receber",
+    "columns": "data_vencimento",
+    "unique": false,
+    "where": "WHERE ((status)::text = ANY ((ARRAY['pendente'::character varying, 'vencida'::character varying])::text[]))",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_extrato_bancario_conta_bancaria_id_fk",
+    "table": "extrato_bancario",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_fornecedores_empresa_id",
+    "table": "fornecedores",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_fornecedores_user_id_fk",
+    "table": "fornecedores",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_lancamentos_contabeis_empresa_user",
+    "table": "lancamentos_contabeis",
+    "columns": "empresa_id, user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "lancamentos_contabeis_empresa_data_idx",
+    "table": "lancamentos_contabeis",
+    "columns": "empresa_id, data_lancamento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_movimentacoes_categoria_id",
+    "table": "movimentacoes",
+    "columns": "categoria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_movimentacoes_centro_custo_id_fk",
+    "table": "movimentacoes",
+    "columns": "centro_custo_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_movimentacoes_conta_bancaria_id",
+    "table": "movimentacoes",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_movimentacoes_empresa_data",
+    "table": "movimentacoes",
+    "columns": "empresa_id, data_movimentacao",
+    "unique": false,
+    "where": "WHERE (deleted_at IS NULL)",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_movimentacoes_empresa_id",
+    "table": "movimentacoes",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_partidas_contabeis_conta_contabil_id_fk",
+    "table": "partidas_contabeis",
+    "columns": "conta_contabil_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_partidas_contabeis_empresa_id",
+    "table": "partidas_contabeis",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_partidas_contabeis_lancamento_id",
+    "table": "partidas_contabeis",
+    "columns": "lancamento_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_transacoes_bancarias_confirmado_por_fk",
+    "table": "transacoes_bancarias",
+    "columns": "confirmado_por",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_transacoes_bancarias_regra_id_fk",
+    "table": "transacoes_bancarias",
+    "columns": "regra_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+   },
+   {
+    "name": "idx_transacoes_pendentes",
+    "table": "transacoes_bancarias",
+    "columns": "conta_bancaria_id, data DESC",
+    "unique": false,
+    "where": "WHERE (status = 'pendente'::text)",
+    "src": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
    }
   ],
   "cron_jobs": [
@@ -50889,6 +51233,7 @@
    "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
    "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
    "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
+   "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -71090,8 +71435,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 233,
-   "lines": 51381,
+   "files": 235,
+   "lines": 51541,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -71208,6 +71553,7 @@
     "app-url.ts: getAppBaseUrl",
     "asaas-config.ts: ConfiguracoesAsaas, lerConfigAsaas, resolverEncargo, pareceIdClienteAsaas, achatarInstrumentosBoleto",
     "auth-guard.ts: corsHeadersComSegredoPara, corsHeadersComSegredo, segredosIguais, UsuarioAutenticado, ResultadoGuard, exigirUsuario",
+    "carga-tributaria.ts: LinhaFaturamento, cargaEfetivaDeFaturamento, Competencia, competenciasConsecutivas",
     "cnae.ts: prefixosCnaeCandidatos, porPrefixoMaisEspecifico, REGIMES_CANONICOS, RegimeCanonico, regimeParaBenchmark, chaveReferenciaInterna",
     "concurrency-limiter.ts: ConcurrencyLimiter",
     "contract-response.ts: VALIDATION_ERROR_CODE, ContractFieldError, ContractValidationError, normalizeValidationFields, createValidationErrorResponse",
@@ -71243,16 +71589,15 @@
     "types.ts: RegimeAplicavel, Periodicidade, Orgao, RegraPrazo, AjusteDiaNaoUtil, BaseMulta",
     "endpoints.ts: Ambiente, DistDFeEndpoint, distDFeEndpoint, UF_IBGE, cUFAutor, ambienteToTpAmb",
     "gunzip.ts: gzipBase64, gunzipBase64, corruptedGzipBase64",
-    "manifestacao.ts: ManifTipo, MANIF_DESCRICAO, EventoInput, recepcaoEventoEndpoint, RECEPCAO_EVENTO_SOAP_ACTION, buildInfEvento",
-    "parser.ts: SchemaTipo, ParsedNFe, ParsedEvento, ParsedDoc, detectSchema, parseDoc"
+    "manifestacao.ts: ManifTipo, MANIF_DESCRICAO, EventoInput, recepcaoEventoEndpoint, RECEPCAO_EVENTO_SOAP_ACTION, buildInfEvento"
    ],
    "docs": [
     "asaas-config.ts: Leitura das configurações do Asaas. A tela de configuração (src/hooks/useAsaas.ts) grava tudo dentro da coluna JSONB `asaas_config.configuracoes` — a tabela não tem colunas planas para esses parâmetros. As edge functions, porém, liam `config?.retry_limit`, `config?.alert_email_address` e companhia d …",
+    "carga-tributaria.ts: Helpers de carga tributária compartilhados entre o benchmark setorial e o detector de anomalias. Estão aqui, e não dentro de cada `index.ts`, porque os dois arquivos chamam `serve` no topo e não podem ser importados por teste.",
     "concurrency-limiter.ts: Concurrency Limiter Utility Limits the number of concurrent asynchronous operations.",
     "correlation.ts: Correlation ID helper para Edge Functions (Sprint 3.2 — auditoria sênior). Lê o header `x-request-id` propagado pelo client Supabase e o expõe para uso em logs estruturados e/ou `SET LOCAL app.request_id` em queries SQL. Gera um id efêmero quando ausente (webhooks externos, chamadas curl).",
     "edge-observability.ts: Observabilidade de borda das edge functions: um wrapper em volta do handler do Deno.serve que emite métricas RED (Rate, Errors, Duration) para edge_function_logs e captura exceções não tratadas no Sentry — tudo sem SDK, via a API pública de envelopes. Uso: Deno.serve(withEdgeObservability('minha-fn' …",
-    "erros.ts: Normalizacao de erros capturados. Em `catch (e)` o TypeScript tipa `e` como `unknown` (comportamento correto: JavaScript permite lancar qualquer valor, nao so `Error`). Acessar `e.message` direto quebra o type-check e, em runtime, produz `undefined` quando o que foi lancado e uma string, um objeto d …",
-    "load-tester.ts: Simple Load Tester for Edge Functions. Measures latency, throughput, and error rates."
+    "erros.ts: Normalizacao de erros capturados. Em `catch (e)` o TypeScript tipa `e` como `unknown` (comportamento correto: JavaScript permite lancar qualquer valor, nao so `Error`). Acessar `e.message` direto quebra o type-check e, em runtime, produz `undefined` quando o que foi lancado e uma string, um objeto d …"
    ],
    "deps": [
     "https:",
@@ -71275,6 +71620,8 @@
     "supabase/functions/_shared/asaas-config_test.ts",
     "supabase/functions/_shared/auth-guard.ts",
     "supabase/functions/_shared/auth-guard_test.ts",
+    "supabase/functions/_shared/carga-tributaria.test.ts",
+    "supabase/functions/_shared/carga-tributaria.ts",
     "supabase/functions/_shared/cnae.ts",
     "supabase/functions/_shared/cnae_test.ts",
     "supabase/functions/_shared/concurrency-limiter.ts",
@@ -71345,15 +71692,13 @@
     "supabase/functions/asaas-proxy/credit-risk.test.ts",
     "supabase/functions/asaas-proxy/credit-risk.ts",
     "supabase/functions/asaas-proxy/index.test.ts",
-    "supabase/functions/asaas-proxy/index.ts",
-    "supabase/functions/asaas-proxy/test_plan.ts",
-    "supabase/functions/asaas-webhook/index.test.ts"
+    "supabase/functions/asaas-proxy/index.ts"
    ]
   },
   {
    "module": "supabase/migrations",
-   "files": 1040,
-   "lines": 80247,
+   "files": 1041,
+   "lines": 80328,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -72532,10 +72877,8 @@
      "src/hooks/useHistoricoFinanceiro.ts",
      "src/hooks/useOportunidadesElisao.ts",
      "src/hooks/useSimulacaoRegimes.ts",
-     "supabase/functions/comparar-benchmark-setorial/index.ts",
      "supabase/functions/decidir-regime/index.ts",
      "supabase/functions/gerar-alertas-tributarios/index.ts",
-     "supabase/functions/gerar-dre-tributaria/index.ts",
      "supabase/functions/gerar-heatmap-tributario/index.ts",
      "supabase/functions/prever-carga-tributaria/index.ts"
     ],
@@ -72544,6 +72887,10 @@
     ],
     "delete": [
      "src/hooks/useHistoricoFinanceiro.ts"
+    ],
+    "ref": [
+     "supabase/functions/comparar-benchmark-setorial/index.ts",
+     "supabase/functions/gerar-dre-tributaria/index.ts"
     ]
    },
    "fechamentos_tributarios": {
@@ -73221,11 +73568,11 @@
    },
    "regime_decision_cache": {
     "select": [
-     "supabase/functions/decidir-regime/index.ts",
-     "supabase/functions/detectar-anomalias-financeiras/index.ts"
+     "supabase/functions/decidir-regime/index.ts"
     ],
     "ref": [
-     "supabase/functions/decidir-regime/index.ts"
+     "supabase/functions/decidir-regime/index.ts",
+     "supabase/functions/detectar-anomalias-financeiras/index.ts"
     ]
    },
    "regimes_especiais_empresa": {
@@ -74482,8 +74829,7 @@
     "empresa_id",
     "id",
     "mes",
-    "receita_bruta",
-    "total_tributos"
+    "receita_bruta"
    ],
    "feedback_conciliacao_ia": [
     "acao",
@@ -74813,12 +75159,10 @@
    ],
    "regime_decision_cache": [
     "ano",
-    "carga_pct",
     "decisao",
     "empresa_id",
     "expires_at",
-    "mes",
-    "regime_recomendado"
+    "mes"
    ],
    "regimes_especiais_empresa": [
     "id"
@@ -76475,18 +76819,6 @@
    {
     "table": "asaas_config",
     "column": "count"
-   },
-   {
-    "table": "faturamento_mensal",
-    "column": "total_tributos"
-   },
-   {
-    "table": "regime_decision_cache",
-    "column": "carga_pct"
-   },
-   {
-    "table": "regime_decision_cache",
-    "column": "regime_recomendado"
    }
   ]
  },
@@ -120222,6 +120554,10 @@
     "line": "<TableHead>INSS 11%</TableHead>"
    },
    {
+    "file": "supabase/functions/_shared/carga-tributaria.ts",
+    "line": "* envia imposto nenhum. Publicar 0% faria o benchmark classificar a empresa"
+   },
+   {
     "file": "supabase/functions/_shared/tributario-logic.ts",
     "line": "* Alíquota RAT/FAP aplicada à folha (fração). Limitada a 6% — teto legal do"
    },
@@ -120312,6 +120648,14 @@
    {
     "file": "supabase/functions/_shared/obrigacoes/types.ts",
     "line": "/** Percentual mensal da multa (fração, ex.: 0.02 = 2% a.m.). */"
+   },
+   {
+    "file": "supabase/functions/comparar-benchmark-setorial/index.ts",
+    "line": "// imposto, publicar 0% faria o benchmark dizer \"operacao eficiente\""
+   },
+   {
+    "file": "supabase/functions/detectar-anomalias-financeiras/index.ts",
+    "line": "// janeiro vs novembro virava \"variacao MoM\" de 100%"
    },
    {
     "file": "supabase/functions/expert-agent/index.ts",
@@ -134186,6 +134530,50 @@
    {
     "file": "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
     "name": "a tela não mostra o valor cru do banco"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "carga: soma receita e tributo e devolve o percentual com uma decimal"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "carga: tributo zero com receita positiva devolve null, nao 0%"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "carga: receita zero devolve null em vez de dividir por zero"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "carga: lista vazia devolve null"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "carga: aceita numero em string, como o PostgREST devolve numeric"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "competencia: mes seguinte e consecutivo"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "competencia: virada dezembro/janeiro e consecutiva"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "competencia: salto de dez meses nao e consecutivo"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "competencia: mesma competencia nao e consecutiva"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "competencia: ordem invertida nao e consecutiva"
+   },
+   {
+    "file": "supabase/functions/_shared/carga-tributaria.test.ts",
+    "name": "competencia: ano ou mes ausente ou invalido devolve false"
    },
    {
     "file": "supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts",
@@ -173236,21 +173624,6 @@
    {
     "kind": "coluna",
     "msg": "coluna `count` usada no código não existe no schema de `asaas_config`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `total_tributos` usada no código não existe no schema de `faturamento_mensal`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `carga_pct` usada no código não existe no schema de `regime_decision_cache`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `regime_recomendado` usada no código não existe no schema de `regime_decision_cache`",
     "where": []
    },
    {
@@ -227830,6 +228203,38 @@
    ],
    "uses_service_role": true
   },
+  "supabase/functions/_shared/carga-tributaria.test.ts": {
+   "path": "supabase/functions/_shared/carga-tributaria.test.ts",
+   "lines": 60,
+   "is_test": true,
+   "tests": [
+    "carga: soma receita e tributo e devolve o percentual com uma decimal",
+    "carga: tributo zero com receita positiva devolve null, nao 0%",
+    "carga: receita zero devolve null em vez de dividir por zero",
+    "carga: lista vazia devolve null",
+    "carga: aceita numero em string, como o PostgREST devolve numeric",
+    "competencia: mes seguinte e consecutivo",
+    "competencia: virada dezembro/janeiro e consecutiva",
+    "competencia: salto de dez meses nao e consecutivo",
+    "competencia: mesma competencia nao e consecutiva",
+    "competencia: ordem invertida nao e consecutiva",
+    "competencia: ano ou mes ausente ou invalido devolve false"
+   ]
+  },
+  "supabase/functions/_shared/carga-tributaria.ts": {
+   "path": "supabase/functions/_shared/carga-tributaria.ts",
+   "lines": 68,
+   "exports": [
+    "interface LinhaFaturamento",
+    "function cargaEfetivaDeFaturamento",
+    "interface Competencia",
+    "function competenciasConsecutivas"
+   ],
+   "doc": "Helpers de carga tributária compartilhados entre o benchmark setorial e o detector de anomalias. Estão aqui, e não dentro de cada `index.ts`, porque os dois arquivos chamam `serve` no topo e não podem ser importados por teste.",
+   "percents": [
+    "* envia imposto nenhum. Publicar 0% faria o benchmark classificar a empresa"
+   ]
+  },
   "supabase/functions/_shared/cnae.ts": {
    "path": "supabase/functions/_shared/cnae.ts",
    "lines": 110,
@@ -231515,7 +231920,7 @@
   },
   "supabase/functions/comparar-benchmark-setorial/index.ts": {
    "path": "supabase/functions/comparar-benchmark-setorial/index.ts",
-   "lines": 310,
+   "lines": 316,
    "tables": [
     {
      "table": "user_empresas",
@@ -231527,7 +231932,7 @@
     },
     {
      "table": "faturamento_mensal",
-     "op": "select"
+     "op": "ref"
     },
     {
      "table": "benchmarks_setoriais",
@@ -231546,11 +231951,6 @@
      "id",
      "razao_social",
      "regime_tributario"
-    ],
-    "faturamento_mensal": [
-     "empresa_id",
-     "receita_bruta",
-     "total_tributos"
     ],
     "benchmarks_setoriais": [
      "carga_media_pct",
@@ -231584,6 +231984,9 @@
     "2026-11-17). Usada apenas quando a tabela nao tem linha vigente para o"
    ],
    "doc": "Edge: comparar-benchmark-setorial — versão determinística (stub) Substitui a versão que dependia de LOVABLE_API_KEY (ausente neste projeto). Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.",
+   "percents": [
+    "// imposto, publicar 0% faria o benchmark dizer \"operacao eficiente\""
+   ],
    "pagination": [
     "12"
    ],
@@ -232141,7 +232544,7 @@
   },
   "supabase/functions/copilot-global/index.ts": {
    "path": "supabase/functions/copilot-global/index.ts",
-   "lines": 320,
+   "lines": 323,
    "tables": [
     {
      "table": "contas_pagar",
@@ -232459,7 +232862,7 @@
   },
   "supabase/functions/detectar-anomalias-financeiras/index.ts": {
    "path": "supabase/functions/detectar-anomalias-financeiras/index.ts",
-   "lines": 415,
+   "lines": 430,
    "tables": [
     {
      "table": "anomalia_detection_runs",
@@ -232503,7 +232906,7 @@
     },
     {
      "table": "regime_decision_cache",
-     "op": "select"
+     "op": "ref"
     },
     {
      "table": "anomalias_detectadas",
@@ -232548,13 +232951,6 @@
      "descricao",
      "id",
      "valor"
-    ],
-    "regime_decision_cache": [
-     "ano",
-     "carga_pct",
-     "empresa_id",
-     "mes",
-     "regime_recomendado"
     ],
     "anomalias_detectadas": [
      "detectada_em",
@@ -232664,6 +233060,9 @@
    "temporal": [
     ".gte('started_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())",
     ".lt('created_at', new Date(Date.now() - 5 * 60 * 1000).toISOString());"
+   ],
+   "percents": [
+    "// janeiro vs novembro virava \"variacao MoM\" de 100%"
    ],
    "pagination": [
     "1",
@@ -233282,7 +233681,7 @@
   },
   "supabase/functions/executar-fechamento-tributario/index.ts": {
    "path": "supabase/functions/executar-fechamento-tributario/index.ts",
-   "lines": 364,
+   "lines": 369,
    "tables": [
     {
      "table": "user_roles",
@@ -234432,7 +234831,7 @@
   },
   "supabase/functions/gerar-dre-tributaria/index.ts": {
    "path": "supabase/functions/gerar-dre-tributaria/index.ts",
-   "lines": 163,
+   "lines": 166,
    "tables": [
     {
      "table": "user_empresas",
@@ -234440,7 +234839,7 @@
     },
     {
      "table": "faturamento_mensal",
-     "op": "select"
+     "op": "ref"
     },
     {
      "table": "empresas",
@@ -234453,13 +234852,6 @@
      "empresa_id",
      "id",
      "user_id"
-    ],
-    "faturamento_mensal": [
-     "ano",
-     "empresa_id",
-     "mes",
-     "receita_bruta",
-     "total_tributos"
     ],
     "empresas": [
      "id",
@@ -244392,6 +244784,10 @@
    "path": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
    "lines": 57
   },
+  "supabase/migrations/20261117225000_indices_recuperados_da_445.sql": {
+   "path": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
+   "lines": 81
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -244500,10 +244896,44 @@
   }
  },
  "git": {
-  "sha": "9aa7ea65eca1304792c685affdde683058282793",
+  "sha": "f9b3094ba80b4004405ec9ef5f561592374a668c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f9b3094",
+    "date": "2026-11-17",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
+   {
+    "sha": "2e8ac1d",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)",
+    "files": [
+     "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
+    ]
+   },
+   {
+    "sha": "31bd09e",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)",
+    "files": [
+     "supabase/functions/_shared/carga-tributaria.test.ts",
+     "supabase/functions/_shared/carga-tributaria.ts",
+     "supabase/functions/comparar-benchmark-setorial/index.ts",
+     "supabase/functions/copilot-global/index.ts",
+     "supabase/functions/detectar-anomalias-financeiras/index.ts",
+     "supabase/functions/executar-fechamento-tributario/index.ts",
+     "supabase/functions/gerar-dre-tributaria/index.ts"
+    ]
+   },
    {
     "sha": "9aa7ea6",
     "date": "2026-11-17",
@@ -244851,48 +245281,24 @@
      "supabase/functions/asaas-proxy/index.ts",
      "supabase/functions/gerar-resumo-financeiro-diario/index.ts"
     ]
-   },
-   {
-    "sha": "9fe3277",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)",
-    "files": [
-     "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
-    ]
-   },
-   {
-    "sha": "e4c5fa9",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)",
-    "files": [
-     "supabase/functions/_shared/cnae.ts",
-     "supabase/functions/_shared/cnae_test.ts",
-     "supabase/functions/gerar-alertas-tributarios/index.ts",
-     "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
-     "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql",
-     "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
-     "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
-     "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
-    ]
-   },
-   {
-    "sha": "2627e95",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)",
-    "files": [
-     "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
-     "src/hooks/useConciliacaoPage.ts",
-     "src/lib/conciliacao-page-helpers.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "supabase/functions/asaas-proxy/index.ts",
     3
+   ],
+   [
+    "bun.lock",
+    2
+   ],
+   [
+    "package.json",
+    2
+   ],
+   [
+    "supabase/functions/executar-fechamento-tributario/index.ts",
+    2
    ],
    [
     "src/components/nfe/AlertasRejeicao.tsx",
@@ -244909,6 +245315,34 @@
    [
     "supabase/functions/_shared/asaas-config_test.ts",
     2
+   ],
+   [
+    "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
+    1
+   ],
+   [
+    "supabase/functions/_shared/carga-tributaria.test.ts",
+    1
+   ],
+   [
+    "supabase/functions/_shared/carga-tributaria.ts",
+    1
+   ],
+   [
+    "supabase/functions/comparar-benchmark-setorial/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/copilot-global/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/detectar-anomalias-financeiras/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/gerar-dre-tributaria/index.ts",
+    1
    ],
    [
     "docs/DB_HEALTH.md",
@@ -244928,46 +245362,6 @@
    ],
    [
     ".github/workflows/dependency-review.yml",
-    1
-   ],
-   [
-    "supabase/functions/gerar-acoes-recomendadas/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
-    1
-   ],
-   [
-    "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
-    1
-   ],
-   [
-    "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
-    1
-   ],
-   [
-    "supabase/functions/processar-solicitacao-lgpd/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/analise-preditiva/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/executar-analise-preditiva/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/executar-fechamento-tributario/index.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
     1
    ]
   ]

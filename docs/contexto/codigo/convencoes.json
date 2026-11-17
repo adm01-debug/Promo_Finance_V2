@@ -23,7 +23,7 @@
   "testes": [
    "co-localizado (__tests__) (281)",
    "outro (110)",
-   "co-localizado (*.test) (45)"
+   "co-localizado (*.test) (46)"
   ],
   "edge_functions": "supabase/functions",
   "migrations": "supabase/migrations",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)",
+   "infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)",
+   "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)",
    "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)",
-   "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)",
-   "infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)",
-   "fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)",
-   "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)"
+   "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

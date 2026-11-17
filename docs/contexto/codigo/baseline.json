@@ -2,11 +2,26 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9aa7ea65eca1304792c685affdde683058282793",
+  "commit": "f9b3094ba80b4004405ec9ef5f561592374a668c",
   "branch": "main",
-  "data_commit": "2026-11-17T17:40:05-03:00",
+  "data_commit": "2026-11-17T17:42:04-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f9b3094",
+    "data": "2026-11-17",
+    "assunto": "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)"
+   },
+   {
+    "sha": "2e8ac1d",
+    "data": "2026-11-17",
+    "assunto": "infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)"
+   },
+   {
+    "sha": "31bd09e",
+    "data": "2026-11-17",
+    "assunto": "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)"
+   },
    {
     "sha": "9aa7ea6",
     "data": "2026-11-17",
@@ -116,24 +131,9 @@
     "sha": "cf7bc77",
     "data": "2026-11-17",
     "assunto": "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)"
-   },
-   {
-    "sha": "19a248a",
-    "data": "2026-11-17",
-    "assunto": "fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)"
-   },
-   {
-    "sha": "ece50dc",
-    "data": "2026-11-17",
-    "assunto": "fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)"
-   },
-   {
-    "sha": "b2929c4",
-    "data": "2026-11-17",
-    "assunto": "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)"
    }
   ],
-  "arquivos_mudados_7d": 912,
+  "arquivos_mudados_7d": 916,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -152,16 +152,16 @@
     "mudancas": 29
    },
    {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 29
+   },
+   {
     "pasta": "src/components/reforma-tributaria",
     "mudancas": 28
    },
    {
-    "pasta": "supabase/functions/_shared",
-    "mudancas": 27
-   },
-   {
     "pasta": "package.json",
-    "mudancas": 22
+    "mudancas": 23
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -169,7 +169,7 @@
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 20
+    "mudancas": 21
    },
    {
     "pasta": "src/components/admin",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 37
+    "mudancas": 38
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 32
+    "mudancas": 33
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -250,10 +250,6 @@
     "mudancas": 10
    },
    {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
-    "mudancas": 10
-   },
-   {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 10
    },
@@ -278,6 +274,14 @@
     "mudancas": 9
    },
    {
+    "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "mudancas": 9
+   },
+   {
     "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 9
    },
@@ -292,20 +296,16 @@
    {
     "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
-   },
-   {
-    "arquivo": "src/App.tsx",
-    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 201
+    "commits": 203
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 13
+    "commits": 14
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3926,
-  "arquivos_codigo": 2471,
-  "linhas_codigo": 440296,
+  "arquivos_total": 3929,
+  "arquivos_codigo": 2473,
+  "linhas_codigo": 440454,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,9 +330,9 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1040,
+  "migrations": 1041,
   "cron_jobs": 22,
-  "testes": 476,
+  "testes": 477,
   "workflows": 19,
   "scripts": 113,
   "docs_md": 200
@@ -683,8 +683,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 233,
-   "linhas": 51148
+   "arquivos": 235,
+   "linhas": 51306
   },
   "supabase/tests": {
    "arquivos": 2,

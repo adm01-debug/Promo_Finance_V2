@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9aa7ea65ec` · branch `main` · 2026-11-17 20:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f9b3094ba8` · branch `main` · 2026-11-17 20:45 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -406,9 +406,6 @@
 | coluna | coluna `bitrix_id` usada no código não existe no schema de `clientes` |  |
 | coluna | coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca` |  |
 | coluna | coluna `count` usada no código não existe no schema de `asaas_config` |  |
-| coluna | coluna `total_tributos` usada no código não existe no schema de `faturamento_mensal` |  |
-| coluna | coluna `carga_pct` usada no código não existe no schema de `regime_decision_cache` |  |
-| coluna | coluna `regime_recomendado` usada no código não existe no schema de `regime_decision_cache` |  |
 | tabela | tabela `companies` usada no código não existe nas migrations/types do repo | `supabase/functions/external-data/index.ts` |
 | rls | `operacoes_tributaveis`: front faz INSERT mas nenhuma política RLS permite INSERT → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | rls | `operacoes_tributaveis`: front faz UPDATE mas nenhuma política RLS permite UPDATE → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |

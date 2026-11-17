@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9aa7ea65ec` · branch `main` · 2026-11-17 20:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f9b3094ba8` · branch `main` · 2026-11-17 20:45 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4042,7 +4042,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `economia_min: economiaEstimada * 0.9,` | `src/lib/tributario/elisao/detectar-deliberacao-lucros.ts` |
 | `* (valor do dinheiro no tempo), não como o valor cheio de 34% do investimento.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
 | `// Dedução antecipada em relação ao regime normal (10 anos, 10% a.a.):` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| … +183 linhas — lista completa em `context.json` | |
+| … +186 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -5074,7 +5074,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3590 testes em 314 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3601 testes em 315 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5193,6 +5193,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/icms-overlay.test.ts` | 11 | normalizarAliquota · aceita fração, percentual e string com vírgula · rejeita valores não numéricos ou negativos · aplicarOverlayUfs … |
 | `src/lib/tributario/__tests__/icms-st-difal.difal.test.ts` | 11 | icms — DIFAL (EC 87/2015 e LC 190/2022) · aplica base dupla para consumidor final não contribuinte · aplica base única para destinatário contribuinte · base dupla é sempre maior ou igual à base única … |
 | `src/lib/tributario/calculadora/__tests__/lucro-real.test.ts` | 11 | calcularLucroReal · calcula IRPJ com adicional 10% acima de R$ 240k anual · CSLL padrão 9% · CSLL 15% quando flag financeira … |
+| `supabase/functions/_shared/carga-tributaria.test.ts` | 11 | carga: soma receita e tributo e devolve o percentual com uma decimal · carga: tributo zero com receita positiva devolve null, nao 0% · carga: receita zero devolve null em vez de dividir por zero · carga: lista vazia devolve null … |
 | `src/__tests__/validators.test.ts` | 10 | Validators · validateCPF · should return true for valid CPF · should return false for invalid CPF … |
 | `src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx` | 10 | PrevisaoInadimplencia — escala do score e atraso no historico · score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom · score nulo e exibido como nao calculado, sem inventar 100 · titulo sem cadastro de cliente NAO derruba a previsao dos demais … |
 | `src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx` | 10 | ReguaCobrancaConfig · Renderização da régua · exibe título da configuração · exibe etapa Preventiva … |
@@ -5377,8 +5378,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
 | `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
 | `src/hooks/usePixTemplates.test.ts` | 2 | useCreatePixTemplate · preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade |
-| `src/hooks/useUserEmpresas.test.tsx` | 2 | useUserEmpresas · mantém erro de consulta distinto de usuário sem vínculo |
-| … +14 linhas — lista completa em `context.json` | | |
+| … +15 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

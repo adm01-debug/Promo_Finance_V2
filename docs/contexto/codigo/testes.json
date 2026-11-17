@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 476,
+ "total": 477,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 400
+  "unit": 401
  },
  "onde_ficam": [
   {
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 45
+   "arquivos": 46
   },
   {
    "padrao": "e2e/",
@@ -3623,6 +3623,15 @@
    "casos": 2
   },
   {
+   "arquivo": "supabase/functions/_shared/carga-tributaria.test.ts",
+   "tipo": "unit",
+   "linhas": 59,
+   "testa": [
+    "supabase/functions/_shared/carga-tributaria.ts"
+   ],
+   "casos": 11
+  },
+  {
    "arquivo": "supabase/functions/_shared/cnae_test.ts",
    "tipo": "unit",
    "linhas": 93,
@@ -4547,6 +4556,7 @@
   "src/types/tipo-cobranca-rotulo.ts": 1,
   "supabase/functions/_shared/asaas-config.ts": 1,
   "supabase/functions/_shared/auth-guard.ts": 1,
+  "supabase/functions/_shared/carga-tributaria.ts": 1,
   "supabase/functions/_shared/cnae.ts": 1,
   "supabase/functions/_shared/contract-response.ts": 1,
   "supabase/functions/_shared/cors.ts": 1,

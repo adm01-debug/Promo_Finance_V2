@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9aa7ea65eca1304792c685affdde683058282793` (2026-11-17T17:40:05-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f9b3094ba80b4004405ec9ef5f561592374a668c` (2026-11-17T17:42:04-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2357), SQL (1111), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2359), SQL (1112), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3926 |
-| arquivos_codigo | 2471 |
-| linhas_codigo | 440296 |
+| arquivos_total | 3929 |
+| arquivos_codigo | 2473 |
+| linhas_codigo | 440454 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,9 +46,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 321 |
-| migrations | 1040 |
+| migrations | 1041 |
 | cron_jobs | 22 |
-| testes | 476 |
+| testes | 477 |
 | workflows | 19 |
 | scripts | 113 |
 | docs_md | 200 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (281), outro (110), co-localizado (*.test) (45)
+- testes: co-localizado (__tests__) (281), outro (110), co-localizado (*.test) (46)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -461,8 +461,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (37)
-- bun.lock (32)
+- package.json (38)
+- bun.lock (33)
 - .github/workflows/ci.yml (25)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
@@ -474,8 +474,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - .github/workflows/supabase-linter.yml (10)
 - src/hooks/useConciliacaoPage.ts (10)
 - supabase/config.toml (10)
-- supabase/functions/gerar-pacote-evidencias/index.ts (10)
 - supabase/functions/n8n-callback/index.ts (10)
+- .github/workflows/deno-tests.yml (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -629,6 +629,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `f9b3094` chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)
+- 2026-11-17 `2e8ac1d` infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)
+- 2026-11-17 `31bd09e` fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)
 - 2026-11-17 `9aa7ea6` chore: recupera e termina o trabalho da PR #442, de outro agente (#449)
 - 2026-11-17 `5be2cfc` feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)
 - 2026-11-17 `176877a` infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)
@@ -641,9 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `b982315` fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)
 - 2026-11-17 `9ae3a5f` fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)
 - 2026-11-17 `6d1f269` chore(docs): auditoria de drift entre migrations e produção (#437)
-- 2026-11-17 `6c6dec8` chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)
-- 2026-11-17 `17a5777` chore(db): harness de replay das migrations num Postgres local efêmero (#433)
-- 2026-11-17 `a45b5d8` fix(ci): destrava o bun audit do advisory novo do picomatch (#434)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

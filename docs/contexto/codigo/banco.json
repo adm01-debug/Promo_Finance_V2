@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1040,
+ "migrations": 1041,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -12544,6 +12544,11 @@
      "unico": false
     },
     {
+     "nome": "idx_boletos_created_by_fk",
+     "colunas": "created_by",
+     "unico": false
+    },
+    {
      "nome": "idx_boletos_empresa_id",
      "colunas": "empresa_id",
      "unico": false
@@ -13905,6 +13910,11 @@
      "unico": false
     },
     {
+     "nome": "idx_clientes_user_id_fk",
+     "colunas": "user_id",
+     "unico": false
+    },
+    {
      "nome": "idx_clientes_vendedor_id",
      "colunas": "vendedor_id",
      "unico": false
@@ -14466,6 +14476,11 @@
     }
    ],
    "indices": [
+    {
+     "nome": "idx_conciliacoes_conta_bancaria_id_fk",
+     "colunas": "conta_bancaria_id",
+     "unico": false
+    },
     {
      "nome": "idx_conciliacoes_empresa_id_fk",
      "colunas": "empresa_id",
@@ -15734,8 +15749,18 @@
    ],
    "indices": [
     {
+     "nome": "idx_contas_pagar_aprovado_por_fk",
+     "colunas": "aprovado_por",
+     "unico": false
+    },
+    {
      "nome": "idx_contas_pagar_categoria",
      "colunas": "categoria",
+     "unico": false
+    },
+    {
+     "nome": "idx_contas_pagar_categoria_id_fk",
+     "colunas": "categoria_id",
      "unico": false
     },
     {
@@ -15780,6 +15805,11 @@
     },
     {
      "nome": "idx_contas_pagar_fornecedor_id",
+     "colunas": "fornecedor_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_contas_pagar_fornecedor_id_fk",
      "colunas": "fornecedor_id",
      "unico": false
     },
@@ -21911,6 +21941,11 @@
    ],
    "indices": [
     {
+     "nome": "idx_extrato_bancario_conta_bancaria_id_fk",
+     "colunas": "conta_bancaria_id",
+     "unico": false
+    },
+    {
      "nome": "idx_extrato_bancario_user_id_fk",
      "colunas": "user_id",
      "unico": false
@@ -23875,6 +23910,11 @@
     },
     {
      "nome": "idx_fornecedores_user_id",
+     "colunas": "user_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_fornecedores_user_id_fk",
      "colunas": "user_id",
      "unico": false
     }
@@ -28722,6 +28762,11 @@
      "unico": false
     },
     {
+     "nome": "idx_movimentacoes_centro_custo_id_fk",
+     "colunas": "centro_custo_id",
+     "unico": false
+    },
+    {
      "nome": "idx_movimentacoes_conta_bancaria_id",
      "colunas": "conta_bancaria_id",
      "unico": false
@@ -33100,6 +33145,16 @@
     {
      "nome": "idx_partidas_conta",
      "colunas": "conta_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_partidas_contabeis_conta_contabil_id_fk",
+     "colunas": "conta_contabil_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_partidas_contabeis_empresa_id",
+     "colunas": "empresa_id",
      "unico": false
     },
     {
@@ -44827,6 +44882,11 @@
    ],
    "indices": [
     {
+     "nome": "idx_transacoes_bancarias_confirmado_por_fk",
+     "colunas": "confirmado_por",
+     "unico": false
+    },
+    {
      "nome": "idx_transacoes_bancarias_created_at",
      "colunas": "created_at DESC",
      "unico": false
@@ -44834,6 +44894,11 @@
     {
      "nome": "idx_transacoes_bancarias_empresa_data",
      "colunas": "conta_bancaria_id, data DESC",
+     "unico": false
+    },
+    {
+     "nome": "idx_transacoes_bancarias_regra_id_fk",
+     "colunas": "regra_id",
      "unico": false
     },
     {

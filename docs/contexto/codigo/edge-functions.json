@@ -63,6 +63,8 @@
   "supabase/functions/_shared/asaas-config_test.ts",
   "supabase/functions/_shared/auth-guard.ts",
   "supabase/functions/_shared/auth-guard_test.ts",
+  "supabase/functions/_shared/carga-tributaria.test.ts",
+  "supabase/functions/_shared/carga-tributaria.ts",
   "supabase/functions/_shared/cnae.ts",
   "supabase/functions/_shared/cnae_test.ts",
   "supabase/functions/_shared/concurrency-limiter.ts",
@@ -870,7 +872,7 @@
    "nome": "comparar-benchmark-setorial",
    "entrada": "supabase/functions/comparar-benchmark-setorial/index.ts",
    "arquivos": 1,
-   "linhas": 309,
+   "linhas": 315,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -894,6 +896,7 @@
    "hosts_externos": [],
    "usa_shared": [
     "auth-guard.ts",
+    "carga-tributaria.ts",
     "cnae.ts",
     "cors.ts",
     "edge-observability.ts",
@@ -1182,7 +1185,7 @@
    "nome": "copilot-global",
    "entrada": "supabase/functions/copilot-global/index.ts",
    "arquivos": 1,
-   "linhas": 319,
+   "linhas": 322,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1317,7 +1320,7 @@
    "nome": "detectar-anomalias-financeiras",
    "entrada": "supabase/functions/detectar-anomalias-financeiras/index.ts",
    "arquivos": 1,
-   "linhas": 414,
+   "linhas": 429,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -1344,6 +1347,7 @@
    "hosts_externos": [],
    "usa_shared": [
     "auth-guard.ts",
+    "carga-tributaria.ts",
     "contract-validator.ts",
     "cors.ts",
     "edge-observability.ts",
@@ -1670,7 +1674,7 @@
    "nome": "executar-fechamento-tributario",
    "entrada": "supabase/functions/executar-fechamento-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 363,
+   "linhas": 368,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2087,7 +2091,7 @@
    "nome": "gerar-dre-tributaria",
    "entrada": "supabase/functions/gerar-dre-tributaria/index.ts",
    "arquivos": 1,
-   "linhas": 162,
+   "linhas": 165,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
