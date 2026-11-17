@@ -45,12 +45,21 @@ const wrapper = () => {
   );
 };
 
+/**
+ * Vencimento sempre a 20 dias de HOJE: a probabilidade ganha +10 pontos quando o
+ * proximo vencimento esta a 7 dias ou menos, e +10 a 3 dias ou menos
+ * (PrevisaoInadimplencia.tsx:105-112). Com data fixa, o teste de 30% viraria 40%
+ * ao chegar perto do vencimento -- falha sem regressao no produto (revisao da
+ * PR #404, Devin).
+ */
+const VENCE_EM_20_DIAS = new Date(Date.now() + 20 * 86_400_000).toISOString().slice(0, 10);
+
 /** Uma pendencia + um cliente, para a analise chegar na consulta do historico. */
 const PENDENTE = {
   id: 't1',
   valor: 10000,
   valor_recebido: null,
-  data_vencimento: '2026-12-01',
+  data_vencimento: VENCE_EM_20_DIAS,
   status: 'pendente',
   cliente_id: 'cli-1',
   cliente_nome: 'Cliente Um',
