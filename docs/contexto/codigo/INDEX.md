@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e0aba347b8acde1a87b958fdb11a581d81c22bcf` (2026-11-17T06:33:16-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b2929c43ab3908edb82ff5cba27a6790c6beaaff` (2026-11-17T07:39:53-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2348), SQL (1104), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2351), SQL (1104), Markdown (197), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3905 |
-| arquivos_codigo | 2462 |
-| linhas_codigo | 438821 |
+| arquivos_total | 3909 |
+| arquivos_codigo | 2465 |
+| linhas_codigo | 439437 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,17 +48,17 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1034 |
 | cron_jobs | 22 |
-| testes | 468 |
+| testes | 471 |
 | workflows | 19 |
 | scripts | 111 |
-| docs_md | 196 |
+| docs_md | 197 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (276), outro (109), co-localizado (*.test) (43)
+- testes: co-localizado (__tests__) (279), outro (109), co-localizado (*.test) (43)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -625,10 +625,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/agentes (9), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (9), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `b2929c4` fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)
+- 2026-11-17 `9cfb6b3` chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)
 - 2026-11-17 `e0aba34` fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)
 - 2026-11-17 `9fe3277` fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)
 - 2026-11-17 `e4c5fa9` infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)
@@ -642,8 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `1bbc484` fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)
 - 2026-11-17 `44c623c` chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)
 - 2026-11-17 `9224222` chore: declara o Node que o projeto ja exige (>=22.12) (#411)
-- 2026-11-17 `f62e08e` feat(webhooks): botao de reprocessar na fila de falhas (#410)
-- 2026-11-17 `58d7e40` feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

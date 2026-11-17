@@ -2552,7 +2552,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 92,
+   "usado_por": 93,
    "usado_por_modulos": [
     "components/admin",
     "components/aprovacoes",
@@ -2573,6 +2573,7 @@
     "components/fluxo-caixa",
     "components/fornecedores",
     "components/integracoes",
+    "components/nfe",
     "components/reforma-tributaria",
     "components/relatorios",
     "components/security",
@@ -3597,7 +3598,7 @@
     "lib",
     "lib/sefaz-contingency"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -3614,7 +3615,7 @@
     "updateContingencyRule"
    ],
    "export_default": null,
-   "linhas": 183,
+   "linhas": 197,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3627,7 +3628,7 @@
    "usado_por_modulos": [
     "lib"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -3645,7 +3646,7 @@
     "updatePendingNFe"
    ],
    "export_default": null,
-   "linhas": 154,
+   "linhas": 153,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3659,7 +3660,7 @@
     "lib",
     "lib/sefaz-contingency"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -3672,7 +3673,7 @@
     "updateSefazHealthStatus"
    ],
    "export_default": null,
-   "linhas": 68,
+   "linhas": 95,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3686,7 +3687,7 @@
     "lib",
     "lib/sefaz-contingency"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -3702,7 +3703,7 @@
     "SefazHealthStatus"
    ],
    "export_default": null,
-   "linhas": 71,
+   "linhas": 81,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3755,12 +3756,11 @@
     "getEventosPorNumero",
     "getEventosPorPeriodo",
     "getEventosPorTipo",
-    "inicializarEventosDemo",
     "limparEventosAntigos",
     "registrarEvento"
    ],
    "export_default": null,
-   "linhas": 238,
+   "linhas": 152,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3786,7 +3786,6 @@
     "analisarPadroesRejeicao",
     "getAlertas",
     "getAlertasNaoLidos",
-    "inicializarAlertasDemo",
     "limparAlertas",
     "marcarAlertaComoLido",
     "marcarTodosComoLidos",
@@ -3795,7 +3794,7 @@
     "verificarRejeicoesConsecutivas"
    ],
    "export_default": null,
-   "linhas": 216,
+   "linhas": 194,
    "tabelas": [],
    "rpcs": [],
    "edges": [],

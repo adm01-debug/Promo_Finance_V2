@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 468,
+ "total": 471,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 392
+  "unit": 395
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 276
+   "arquivos": 279
   },
   {
    "padrao": "outro",
@@ -1072,6 +1072,27 @@
     "src/lib/navigation.ts"
    ],
    "casos": 11
+  },
+  {
+   "arquivo": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+   "tipo": "unit",
+   "linhas": 103,
+   "testa": [
+    "src/components/nfe/SefazMonitor.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+   "tipo": "unit",
+   "linhas": 197,
+   "testa": [
+    "src/components/nfe/EventosHistorico.tsx",
+    "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx",
+    "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx",
+    "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx"
+   ],
+   "casos": 7
   },
   {
    "arquivo": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
@@ -2183,6 +2204,18 @@
    "testa": [
     "src/lib/sefaz-event-logger.ts",
     "src/lib/sefaz-rejection-monitor.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+   "tipo": "unit",
+   "linhas": 177,
+   "testa": [
+    "src/lib/sefaz-contingency/constants.ts",
+    "src/lib/sefaz-contingency/rules.ts",
+    "src/lib/sefaz-contingency/state.ts",
+    "src/lib/sefaz-contingency/storage.ts"
    ],
    "casos": 11
   },
@@ -4221,9 +4254,14 @@
   "src/components/layout/transitions/types.ts": 1,
   "src/components/navigation/BackButton.tsx": 1,
   "src/components/nfe/CancelamentoNFe.tsx": 1,
+  "src/components/nfe/EventosHistorico.tsx": 1,
   "src/components/nfe/InutilizacaoNFe.tsx": 1,
+  "src/components/nfe/SefazMonitor.tsx": 1,
   "src/components/nfe/contingencia/ContingenciaPendingList.tsx": 1,
   "src/components/nfe/nfe-types.ts": 1,
+  "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx": 1,
+  "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx": 1,
+  "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx": 1,
   "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts": 1,
   "src/components/reforma-tributaria/AnimatedCounter.tsx": 1,
   "src/components/reforma-tributaria/EmptyStateTributario.tsx": 1,
@@ -4355,8 +4393,10 @@
   "src/lib/queryClient.ts": 1,
   "src/lib/reforma-tributaria-calculator.ts": 1,
   "src/lib/secure-random.ts": 1,
-  "src/lib/sefaz-contingency/state.ts": 1,
-  "src/lib/sefaz-contingency/storage.ts": 1,
+  "src/lib/sefaz-contingency/constants.ts": 1,
+  "src/lib/sefaz-contingency/rules.ts": 1,
+  "src/lib/sefaz-contingency/state.ts": 2,
+  "src/lib/sefaz-contingency/storage.ts": 2,
   "src/lib/sefaz-event-logger.ts": 1,
   "src/lib/sefaz-rejection-monitor.ts": 1,
   "src/lib/sefaz-simulator.ts": 1,

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e0aba347b8` · branch `main` · 2026-11-17 09:33 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b2929c43ab` · branch `main` · 2026-11-17 10:40 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1502,7 +1502,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
-| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
+| `tipo` | `AUTORIZACAO` | compara | `src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
 | … +230 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
@@ -3137,7 +3137,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **shouldAutoDeactivate()** — `src/lib/sefaz-contingency/rules.ts`
   ```
-  const config = getAutoContingencyConfig(); const state = getContingencyState(); const health = getSefazHealthStatus(); if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') { return false; } if (!health.online) return false; if (state.pendingNFes.some((n) => n.status === 'pendente')) return false; const onlineFor = (Date.now() - health.lastCheck.getTime()) / (1000 * 60); return onlineFor >= config.autoDeactivateDelayMinutes;
+  const config = getAutoContingencyConfig(); const state = getContingencyState(); const health = getSefazHealthStatus(); if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') { return false; } // `online !== true` cobre o status desconhecido: sem medição não se devolve a // emissão ao modo normal automaticamente. if (health.online !== true || health.lastCheck === null) return false; if (state.pendingNFes.some((n) => n.status === 'pendente')) return false; const o …
   ```
 - **generateContingencyXml(_nfeData: NFeData, mode: ContingencyMode, chaveAcesso: string)** — `src/lib/sefaz-contingency/xml.ts`
   ```
@@ -3845,6 +3845,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `transition={{ delay: idx * 0.1 }}` | `src/components/layout/KeyboardShortcutsDialog.tsx` |
 | `transition={{ delay: idx * 0.03 }}` | `src/components/nfe/BlingNFePanel.tsx` |
 | `transition={{ delay: index * 0.03 }}` | `src/components/nfe/EventosHistorico.tsx` |
+| `// `null` enquanto nenhuma verificação real aconteceu: 100% seria uptime` | `src/components/nfe/SefazMonitor.tsx` |
+| `// Sem evento nenhum no período, taxa e tempo não existem: exibir 0,0% de sucesso` | `src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx` |
 | `delay: Math.random() * 0.5,` | `src/components/onboarding/OnboardingChecklist.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/onboarding/OnboardingChecklist.tsx` |
 | `transition={{ delay: i * 0.05 }}` | `src/components/orcamento/OrcamentoCardsView.tsx` |
@@ -4054,9 +4056,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `economia_min: economiaEstimada * 0.9,` | `src/lib/tributario/elisao/detectar-deliberacao-lucros.ts` |
 | `* (valor do dinheiro no tempo), não como o valor cheio de 34% do investimento.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
 | `// Dedução antecipada em relação ao regime normal (10 anos, 10% a.a.):` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| `// no 1º ano deduz-se 100% em vez de 10% → 90% do investimento antecipado.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| `const baseAntecipada = investimento * 0.9;` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| … +181 linhas — lista completa em `context.json` | |
+| … +183 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -4149,6 +4149,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `DIAS_VALIDADE_CONVITE` | `7` | `src/lib/organizacoes/convites.ts` |
 | `BOM` | `'\uFEFF'` | `src/lib/pdf-generator/fluxo-caixa.ts` |
 | `SCIM_USER_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:User'` | `src/lib/scim/userTemplate.ts` |
+| `HEALTH_VERSAO` | `2` | `src/lib/sefaz-contingency/storage.ts` |
 | `BULK_MAX_USERS` | `200` | `src/lib/sso/sandbox-bulk-runner.ts` |
 | `TOLERANCIA_CENTAVOS` | `0.5` | `src/lib/transaction-matcher/types.ts` |
 | `LIMITE_SIMPLES_NACIONAL` | `4` | `src/lib/tributario/aliquotas-simples.ts` |
@@ -4487,7 +4488,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `volatile: 5 * 60 * 1000,` | `src/lib/queryClient.ts` |
 | `const duasHorasAtras = new Date(Date.now() - 2 * 60 * 60 * 1000);` | `src/lib/sefaz-rejection-monitor.ts` |
 | `const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000);` | `src/lib/sefaz-rejection-monitor.ts` |
-| `dataDetectado: new Date(Date.now() - 30 * 60 * 1000),` | `src/lib/sefaz-rejection-monitor.ts` |
 | `new Date().getTime() - a.dataDetectado.getTime() < 5 * 60 * 1000` | `src/lib/sefaz-rejection-monitor.ts` |
 | `export const TTL_PADRAO_MS = 7 * 24 * 60 * 60 * 1000;` | `src/lib/offline/fiscal-cache.ts` |
 | `(Date.now() - new Date(dados.dataEmissao).getTime()) / (1000 * 60 * 60 * 24)` | `src/lib/sefaz-simulator/validacao.ts` |
@@ -5035,7 +5035,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
-| … +784 linhas — lista completa em `context.json` | |
+| … +785 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5094,7 +5094,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3541 testes em 307 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3564 testes em 310 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5198,6 +5198,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useBulkActions.test.ts` | 12 | useBulkActions · toggle adiciona e remove id da seleção · selectAll seleciona todos e limpa quando já estão todos selecionados · deselectAll/clearSelection limpa a seleção … |
 | `src/lib/__tests__/filterHydrationTelemetry.test.ts` | 12 | filterHydrationTelemetry · registra evento com timestamp ISO · filtra falhas via getHydrationFailures · mantém buffer FIFO limitado a 100 eventos … |
 | `src/lib/__tests__/sefaz-rejection-monitor.test.ts` | 12 | sefaz-rejection-monitor · retorna null quando não há rejeições suficientes · gera alerta tipo aviso ao atingir limite mínimo · gera alerta crítico ao atingir limite superior … |
+| `src/lib/__tests__/sefaz-sem-status-fabricado.test.ts` | 12 | SEFAZ não fabrica status (F11) · sem nada gravado, o status é desconhecido — não  · status gravado sem lastCheck não vira 01/01/1970 · registro gravado pela versão que sorteava status é descartado na leitura … |
 | `src/lib/sso/__tests__/sandbox-csv.test.ts` | 12 | parseBulkCsv · parse cabeçalho + groups com pipe · detecta delimitador ; · reporta erro quando faltam colunas … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-ncm.test.ts` | 12 | coerência NCM — catálogo espelho · não acusa divergência quando o banco espelha a TIPI · catálogo vazio acusa todos os NCMs da TIPI como ausentes · coerência NCM — detecção de drift … |
 | `src/lib/tributario/__tests__/serie-comparativa.test.ts` | 12 | comparativo temporal — utilitários · formata rótulos do eixo e tolera lixo · gera dataKeys válidas e únicas · comparativo temporal — casos de borda … |
@@ -5250,6 +5251,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx` | 8 | PrevisaoInadimplencia — escopo por empresa · filtra contas_receber pela empresa informada · SEM empresa a consulta nao roda: pede para selecionar · historico vem em LOTE, uma consulta para todos os clientes … |
 | `src/components/cobranca/previsao/__tests__/risco.test.ts` | 8 | teveAtraso · titulo ABERTO e ja vencido conta como atraso · vencido conta, cancelado nao conta · pago depois do vencimento conta; pago antes, nao … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
+| `src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx` | 8 | painel da SEFAZ não exibe métrica fabricada (F11) · status desconhecido: banner diz  · status desconhecido:  · sem medição, os cards não mostram latência nem uptime numéricos … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
@@ -5363,6 +5365,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx` | 3 | RegistrarPagamentoDialog — empresa da alcada · consulta a alcada da empresa do titulo, nao a do filtro global · registro legado sem empresa_id cai no filtro global |
 | `src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx` | 3 | WhatsAppHistoryIA — envio sem provedor · por padrao nao oferece campo de envio, e explica por que · com permitirEnvio o campo volta (para quando houver provedor) |
 | `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
+| `src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx` | 3 | monitor da SEFAZ não verifica em laço (regressão #423) · com status CONHECIDO verifica uma vez e respeita o intervalo · com status desconhecido não verifica nada e o rodapé não promete monitoramento |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
@@ -5395,10 +5398,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useQueuedMessage.test.tsx` | 2 | useQueuedMessage · entrega todas as mensagens na ordem quando a operação atual termina |
 | `src/hooks/expert-actions/financial-actions.test.ts` | 2 | gerarBoleto · falha fechada sem consultar conta nem fabricar linha digitável |
 | `src/lib/navigation-intent.test.ts` | 2 | intenção de navegação para novo registro · aceita somente a intenção explícita |
-| `src/lib/__tests__/reforma-tributaria-types.regression.test.ts` | 2 | types/reforma-tributaria — regressão de API pública · preserva constantes e catálogos exportados |
-| `src/lib/__tests__/relatorio-pdf.regression.test.ts` | 2 | relatorio-pdf — regressão de API pública · preserva exports históricos |
-| `src/lib/__tests__/sefaz-simulator.regression.test.ts` | 2 | sefaz-simulator — regressão de API pública · preserva exports históricos |
-| … +7 linhas — lista completa em `context.json` | | |
+| … +10 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5983,4 +5983,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
-| … +422 linhas — lista completa em `context.json` | |
+| … +423 linhas — lista completa em `context.json` | |

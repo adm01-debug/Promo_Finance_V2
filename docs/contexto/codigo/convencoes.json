@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (276)",
+   "co-localizado (__tests__) (279)",
    "outro (109)",
    "co-localizado (*.test) (43)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)",
+   "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)",
    "fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)",
    "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)",
-   "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)",
-   "fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)",
-   "fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)"
+   "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

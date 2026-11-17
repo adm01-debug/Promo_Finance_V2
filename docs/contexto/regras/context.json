@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "e0aba347b8acde1a87b958fdb11a581d81c22bcf",
+  "sha": "b2929c43ab3908edb82ff5cba27a6790c6beaaff",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 09:33 UTC",
-  "files_total": 3944,
-  "code_files": 3567,
-  "code_lines": 507686
+  "generated_at": "2026-11-17 10:40 UTC",
+  "files_total": 3948,
+  "code_files": 3570,
+  "code_lines": 508305
  },
  "version": "1.3.2",
- "facts_hash": "656a07a99b810f4a",
+ "facts_hash": "5427af9ed4310952",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,8 +332,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1238,
-   ".tsx": 1110,
+   ".ts": 1239,
+   ".tsx": 1112,
    ".sql": 1104,
    ".mjs": 63,
    ".py": 45,
@@ -68412,7 +68412,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 995,
+  "components_count": 997,
   "hooks": [
    {
     "name": "useContacts",
@@ -71431,8 +71431,8 @@
   },
   {
    "module": "src/components",
-   "files": 993,
-   "lines": 164159,
+   "files": 995,
+   "lines": 164658,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72037,8 +72037,8 @@
   },
   {
    "module": "src/lib",
-   "files": 413,
-   "lines": 55172,
+   "files": 414,
+   "lines": 55292,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -82311,6 +82311,10 @@
    },
    {
     "file": "src/components/nfe/ContingenciaNFe.tsx",
+    "msg": "Status da SEFAZ indisponível: a integração ainda precisa ser homologada e responder de verdade."
+   },
+   {
+    "file": "src/components/nfe/ContingenciaNFe.tsx",
     "msg": "Transmissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar autorização real."
    },
    {
@@ -86476,6 +86480,10 @@
    {
     "file": "src/lib/scim/userTemplate.ts",
     "text": "- emails[work].value    (opcional, mas se presente deve ser e-mail válido)"
+   },
+   {
+    "file": "src/lib/sefaz-contingency/state.ts",
+    "text": "verdade, e os testes de regra de 3 falhas continuam valendo sobre elas."
    },
    {
     "file": "src/lib/sso/consistency.ts",
@@ -102108,6 +102116,11 @@
     "value": "'urn:ietf:params:scim:schemas:core:2.0:User'"
    },
    {
+    "file": "src/lib/sefaz-contingency/storage.ts",
+    "name": "HEALTH_VERSAO",
+    "value": "2"
+   },
+   {
     "file": "src/lib/sso/sandbox-bulk-runner.ts",
     "name": "BULK_MAX_USERS",
     "value": "200"
@@ -111856,48 +111869,6 @@
     "file": "src/lib/sefaz-event-logger.ts",
     "field": "tipo",
     "value": "AUTORIZACAO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "ENVIO_LOTE",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "VALIDACAO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "AUTORIZACAO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "CANCELAMENTO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "REJEICAO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "CONSULTA",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/lib/sefaz-event-logger.ts",
-    "field": "tipo",
-    "value": "AUTORIZACAO",
     "kind": "compara"
    },
    {
@@ -111917,12 +111888,6 @@
     "field": "tipo",
     "value": "TIMEOUT",
     "kind": "compara"
-   },
-   {
-    "file": "src/lib/sefaz-rejection-monitor.ts",
-    "field": "tipo",
-    "value": "aviso",
-    "kind": "escreve"
    },
    {
     "file": "src/lib/sefaz-rejection-monitor.ts",
@@ -118818,7 +118783,7 @@
     "file": "src/lib/sefaz-contingency/rules.ts",
     "name": "shouldAutoDeactivate",
     "params": "",
-    "body": "const config = getAutoContingencyConfig(); const state = getContingencyState(); const health = getSefazHealthStatus(); if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') { return false; } if (!health.online) return false; if (state.pendingNFes.some((n) => n.status === 'pendente')) return false; const onlineFor = (Date.now() - health.lastCheck.getTime()) / (1000 * 60); return onlineFor >= config.autoDeactivateDelayMinutes;"
+    "body": "const config = getAutoContingencyConfig(); const state = getContingencyState(); const health = getSefazHealthStatus(); if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') { return false; } // `online !== true` cobre o status desconhecido: sem medição não se devolve a // emissão ao modo normal automaticamente. if (health.online !== true || health.lastCheck === null) return false; if (state.pendingNFes.some((n) => n.status === 'pendente')) return false; const o …"
    },
    {
     "file": "src/lib/sefaz-contingency/xml.ts",
@@ -120346,10 +120311,6 @@
    },
    {
     "file": "src/lib/sefaz-rejection-monitor.ts",
-    "line": "dataDetectado: new Date(Date.now() - 30 * 60 * 1000),"
-   },
-   {
-    "file": "src/lib/sefaz-rejection-monitor.ts",
     "line": "new Date().getTime() - a.dataDetectado.getTime() < 5 * 60 * 1000"
    },
    {
@@ -121177,6 +121138,14 @@
    {
     "file": "src/components/nfe/EventosHistorico.tsx",
     "line": "transition={{ delay: index * 0.03 }}"
+   },
+   {
+    "file": "src/components/nfe/SefazMonitor.tsx",
+    "line": "// `null` enquanto nenhuma verificação real aconteceu: 100% seria uptime"
+   },
+   {
+    "file": "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx",
+    "line": "// Sem evento nenhum no período, taxa e tempo não existem: exibir 0,0% de sucesso"
    },
    {
     "file": "src/components/onboarding/OnboardingChecklist.tsx",
@@ -124243,6 +124212,50 @@
    {
     "file": "src/components/navigation/__tests__/BackButton.test.tsx",
     "name": "falls back to "
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+    "name": "monitor da SEFAZ não verifica em laço (regressão #423)"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+    "name": "com status CONHECIDO verifica uma vez e respeita o intervalo"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+    "name": "com status desconhecido não verifica nada e o rodapé não promete monitoramento"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "painel da SEFAZ não exibe métrica fabricada (F11)"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "status desconhecido: banner diz "
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "status desconhecido: "
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "sem medição, os cards não mostram latência nem uptime numéricos"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "analytics sem evento: taxa de sucesso e tempo médio aparecem como "
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "analytics com evento real volta a exibir os percentuais medidos"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "evento sem tempo de resposta não vira "
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "name": "histórico vazio não anuncia "
    },
    {
     "file": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
@@ -130031,6 +130044,54 @@
    {
     "file": "src/lib/__tests__/sefaz-rejection-monitor.test.ts",
     "name": "detecta tendência aumentando"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "SEFAZ não fabrica status (F11)"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "sem nada gravado, o status é desconhecido — não "
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "status gravado sem lastCheck não vira 01/01/1970"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "registro gravado pela versão que sorteava status é descartado na leitura"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "checkSefazHealth apaga o carimbo fabricado que estava no navegador"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "updateSefazHealthStatus não carimba verificação em quem não verificou"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "quem mede de verdade passa lastCheck e ele é preservado"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "checkSefazHealth devolve desconhecido em vez de sortear online/latência"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "checkSefazHealth preserva os contadores de falha já registrados"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "a regra de 3 falhas continua existindo e dispararia — nada foi removido"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "runAutoContingencyCheck não ativa contingência com status desconhecido"
+   },
+   {
+    "file": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+    "name": "não devolve a emissão ao modo normal sozinho com status desconhecido"
    },
    {
     "file": "src/lib/__tests__/sefaz-simulator.regression.test.ts",
@@ -157743,28 +157804,23 @@
       "compara:src/components/nfe/EventosHistorico.helpers.ts",
       "compara:src/components/nfe/SefazAnalytics.tsx",
       "compara:src/lib/sefaz-event-logger.ts",
-      "compara:src/lib/sefaz-rejection-monitor.ts",
-      "escreve:src/lib/sefaz-event-logger.ts"
+      "compara:src/lib/sefaz-rejection-monitor.ts"
      ],
      "REJEICAO": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts",
       "compara:src/components/nfe/SefazAnalytics.tsx",
       "compara:src/lib/sefaz-event-logger.ts",
-      "compara:src/lib/sefaz-rejection-monitor.ts",
-      "escreve:src/lib/sefaz-event-logger.ts"
+      "compara:src/lib/sefaz-rejection-monitor.ts"
      ],
      "CANCELAMENTO": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "compara:src/components/nfe/SefazAnalytics.tsx",
-      "escreve:src/lib/sefaz-event-logger.ts"
+      "compara:src/components/nfe/SefazAnalytics.tsx"
      ],
      "CONSULTA": [
-      "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "escreve:src/lib/sefaz-event-logger.ts"
+      "compara:src/components/nfe/EventosHistorico.helpers.ts"
      ],
      "ENVIO_LOTE": [
-      "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "escreve:src/lib/sefaz-event-logger.ts"
+      "compara:src/components/nfe/EventosHistorico.helpers.ts"
      ],
      "RETORNO_LOTE": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts"
@@ -157780,8 +157836,7 @@
       "compara:src/lib/sefaz-event-logger.ts"
      ],
      "VALIDACAO": [
-      "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "escreve:src/lib/sefaz-event-logger.ts"
+      "compara:src/components/nfe/EventosHistorico.helpers.ts"
      ],
      "INUTILIZACAO": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts"
@@ -194066,7 +194121,7 @@
   },
   "src/components/nfe/AlertasRejeicao.tsx": {
    "path": "src/components/nfe/AlertasRejeicao.tsx",
-   "lines": 432,
+   "lines": 436,
    "exports": [
     "const AlertasRejeicao"
    ],
@@ -194200,7 +194255,7 @@
   },
   "src/components/nfe/ContingenciaNFe.tsx": {
    "path": "src/components/nfe/ContingenciaNFe.tsx",
-   "lines": 362,
+   "lines": 401,
    "exports": [
     "function ContingenciaNFe"
    ],
@@ -194208,6 +194263,7 @@
     "Contingência automática ativada: ${result.rule.name}",
     "Erro ao verificar status da SEFAZ",
     "Informe o motivo da contingência",
+    "Status da SEFAZ indisponível: a integração ainda precisa ser homologada e responder de verdade.",
     "Transmissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar autorização real.",
     "Transmita todas as NF-e pendentes antes de desativar"
    ],
@@ -194344,7 +194400,7 @@
   },
   "src/components/nfe/EventosHistorico.tsx": {
    "path": "src/components/nfe/EventosHistorico.tsx",
-   "lines": 249,
+   "lines": 265,
    "exports": [
     "function EventosHistorico"
    ],
@@ -194411,7 +194467,7 @@
   },
   "src/components/nfe/SefazAnalytics.tsx": {
    "path": "src/components/nfe/SefazAnalytics.tsx",
-   "lines": 391,
+   "lines": 401,
    "exports": [
     "const SefazAnalytics"
    ],
@@ -194481,7 +194537,7 @@
   },
   "src/components/nfe/SefazMonitor.tsx": {
    "path": "src/components/nfe/SefazMonitor.tsx",
-   "lines": 201,
+   "lines": 228,
    "exports": [
     "function SefazMonitor"
    ],
@@ -194511,6 +194567,9 @@
      "value": "failure_count",
      "kind": "compara"
     }
+   ],
+   "percents": [
+    "// `null` enquanto nenhuma verificação real aconteceu: 100% seria uptime"
    ]
   },
   "src/components/nfe/SefazStatusPanel.tsx": {
@@ -194534,6 +194593,33 @@
      "value": "autorizada",
      "kind": "escreve"
     }
+   ]
+  },
+  "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx": {
+   "path": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+   "lines": 104,
+   "is_test": true,
+   "doc": "Regressão da PR #423 (achado 🔴 do Devin e P1 do Codex): ao remover a espera simulada de `checkSefazHealth`, o monitor passou a verificar em laço contínuo. `performHealthCheck` dependia de `health`, cada verificação devolve um objeto novo, e o `setHealth` recriava o callback → recriava o efeito → nov …",
+   "tests": [
+    "monitor da SEFAZ não verifica em laço (regressão #423)",
+    "com status CONHECIDO verifica uma vez e respeita o intervalo",
+    "com status desconhecido não verifica nada e o rodapé não promete monitoramento"
+   ]
+  },
+  "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx": {
+   "path": "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+   "lines": 198,
+   "is_test": true,
+   "doc": "Achado F11 (P0): o painel da SEFAZ anunciava status, latência e uptime que ninguém mediu — `checkSefazHealth` sorteava o resultado localmente e o default do storage abria a tela como \"Online / 0ms\". As telas de histórico, analytics e alertas de rejeição vinham semeadas com eventos de demonstração. E …",
+   "tests": [
+    "painel da SEFAZ não exibe métrica fabricada (F11)",
+    "status desconhecido: banner diz ",
+    "status desconhecido: ",
+    "sem medição, os cards não mostram latência nem uptime numéricos",
+    "analytics sem evento: taxa de sucesso e tempo médio aparecem como ",
+    "analytics com evento real volta a exibir os percentuais medidos",
+    "evento sem tempo de resposta não vira ",
+    "histórico vazio não anuncia "
    ]
   },
   "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx": {
@@ -194697,9 +194783,12 @@
   },
   "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx": {
    "path": "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx",
-   "lines": 118,
+   "lines": 133,
    "exports": [
     "function SefazAnalyticsKPIs"
+   ],
+   "percents": [
+    "// Sem evento nenhum no período, taxa e tempo não existem: exibir 0,0% de sucesso"
    ]
   },
   "src/components/nfe/sefaz-monitor/SefazAlertsPanel.tsx": {
@@ -194775,14 +194864,14 @@
   },
   "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx": {
    "path": "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx",
-   "lines": 151,
+   "lines": 198,
    "exports": [
     "function SefazMetricsCards"
    ]
   },
   "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx": {
    "path": "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx",
-   "lines": 122,
+   "lines": 161,
    "exports": [
     "function SefazStatusBanner"
    ]
@@ -213850,7 +213939,7 @@
   },
   "src/lib/sefaz-event-logger.ts": {
    "path": "src/lib/sefaz-event-logger.ts",
-   "lines": 239,
+   "lines": 153,
    "exports": [
     "type EventoTipo",
     "interface EventoSefaz",
@@ -213862,8 +213951,7 @@
     "function getEventosPorPeriodo",
     "function limparEventosAntigos",
     "function getEstatisticas",
-    "const eventTypeConfig",
-    "function inicializarEventosDemo"
+    "const eventTypeConfig"
    ],
    "enums": [
     {
@@ -213872,41 +213960,6 @@
     }
    ],
    "status_values": [
-    {
-     "field": "tipo",
-     "value": "AUTORIZACAO",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "ENVIO_LOTE",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "VALIDACAO",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "AUTORIZACAO",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "CANCELAMENTO",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "REJEICAO",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "CONSULTA",
-     "kind": "escreve"
-    },
     {
      "field": "tipo",
      "value": "AUTORIZACAO",
@@ -213939,7 +213992,7 @@
   },
   "src/lib/sefaz-rejection-monitor.ts": {
    "path": "src/lib/sefaz-rejection-monitor.ts",
-   "lines": 217,
+   "lines": 195,
    "exports": [
     "interface AlertaRejeicao",
     "function adicionarListenerAlerta",
@@ -213951,15 +214004,9 @@
     "function marcarTodosComoLidos",
     "function removerAlerta",
     "function limparAlertas",
-    "function analisarPadroesRejeicao",
-    "function inicializarAlertasDemo"
+    "function analisarPadroesRejeicao"
    ],
    "status_values": [
-    {
-     "field": "tipo",
-     "value": "aviso",
-     "kind": "escreve"
-    },
     {
      "field": "tipo",
      "value": "aviso",
@@ -213989,7 +214036,6 @@
    "temporal": [
     "const duasHorasAtras = new Date(Date.now() - 2 * 60 * 60 * 1000);",
     "const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000);",
-    "dataDetectado: new Date(Date.now() - 30 * 60 * 1000),",
     "new Date().getTime() - a.dataDetectado.getTime() < 5 * 60 * 1000"
    ],
    "percents": [
@@ -215715,6 +215761,28 @@
     "detecta tendência aumentando"
    ]
   },
+  "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts": {
+   "path": "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+   "lines": 178,
+   "is_test": true,
+   "tests": [
+    "SEFAZ não fabrica status (F11)",
+    "sem nada gravado, o status é desconhecido — não ",
+    "status gravado sem lastCheck não vira 01/01/1970",
+    "registro gravado pela versão que sorteava status é descartado na leitura",
+    "checkSefazHealth apaga o carimbo fabricado que estava no navegador",
+    "updateSefazHealthStatus não carimba verificação em quem não verificou",
+    "quem mede de verdade passa lastCheck e ele é preservado",
+    "checkSefazHealth devolve desconhecido em vez de sortear online/latência",
+    "checkSefazHealth preserva os contadores de falha já registrados",
+    "a regra de 3 falhas continua existindo e dispararia — nada foi removido",
+    "runAutoContingencyCheck não ativa contingência com status desconhecido",
+    "não devolve a emissão ao modo normal sozinho com status desconhecido"
+   ],
+   "side_effects": [
+    "notifyOnActivation"
+   ]
+  },
   "src/lib/__tests__/sefaz-simulator.regression.test.ts": {
    "path": "src/lib/__tests__/sefaz-simulator.regression.test.ts",
    "lines": 10,
@@ -217408,7 +217476,7 @@
   },
   "src/lib/sefaz-contingency/rules.ts": {
    "path": "src/lib/sefaz-contingency/rules.ts",
-   "lines": 184,
+   "lines": 198,
    "exports": [
     "function getAutoContingencyConfig",
     "function saveAutoContingencyConfig",
@@ -217455,13 +217523,13 @@
     {
      "name": "shouldAutoDeactivate",
      "params": "",
-     "body": "const config = getAutoContingencyConfig(); const state = getContingencyState(); const health = getSefazHealthStatus(); if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') { return false; } if (!health.online) return false; if (state.pendingNFes.some((n) => n.status === 'pendente')) return false; const onlineFor = (Date.now() - health.lastCheck.getTime()) / (1000 * 60); return onlineFor >= config.autoDeactivateDelayMinutes;"
+     "body": "const config = getAutoContingencyConfig(); const state = getContingencyState(); const health = getSefazHealthStatus(); if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') { return false; } // `online !== true` cobre o status desconhecido: sem medição não se devolve a // emissão ao modo normal automaticamente. if (health.online !== true || health.lastCheck === null) return false; if (state.pendingNFes.some((n) => n.status === 'pendente')) return false; const o …"
     }
    ]
   },
   "src/lib/sefaz-contingency/state.ts": {
    "path": "src/lib/sefaz-contingency/state.ts",
-   "lines": 155,
+   "lines": 154,
    "exports": [
     "function activateContingency",
     "function deactivateContingency",
@@ -217484,21 +217552,30 @@
      "value": "pendente",
      "kind": "compara"
     }
+   ],
+   "rule_comments": [
+    "verdade, e os testes de regra de 3 falhas continuam valendo sobre elas."
    ]
   },
   "src/lib/sefaz-contingency/storage.ts": {
    "path": "src/lib/sefaz-contingency/storage.ts",
-   "lines": 69,
+   "lines": 96,
    "exports": [
     "function getContingencyState",
     "function saveContingencyState",
     "function getSefazHealthStatus",
     "function updateSefazHealthStatus"
+   ],
+   "params": [
+    {
+     "name": "HEALTH_VERSAO",
+     "value": "2"
+    }
    ]
   },
   "src/lib/sefaz-contingency/types.ts": {
    "path": "src/lib/sefaz-contingency/types.ts",
-   "lines": 72,
+   "lines": 82,
    "exports": [
     "type ContingencyMode",
     "interface ContingencyState",
@@ -247382,10 +247459,44 @@
   }
  },
  "git": {
-  "sha": "e0aba347b8acde1a87b958fdb11a581d81c22bcf",
+  "sha": "b2929c43ab3908edb82ff5cba27a6790c6beaaff",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b2929c4",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)",
+    "files": [
+     "src/components/nfe/AlertasRejeicao.tsx",
+     "src/components/nfe/ContingenciaNFe.tsx",
+     "src/components/nfe/EventosHistorico.tsx",
+     "src/components/nfe/SefazAnalytics.tsx",
+     "src/components/nfe/SefazMonitor.tsx",
+     "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+     "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+     "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx",
+     "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx",
+     "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx",
+     "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
+     "src/lib/sefaz-contingency/rules.ts",
+     "src/lib/sefaz-contingency/state.ts",
+     "src/lib/sefaz-contingency/storage.ts",
+     "src/lib/sefaz-contingency/types.ts",
+     "src/lib/sefaz-event-logger.ts",
+     "src/lib/sefaz-rejection-monitor.ts"
+    ]
+   },
+   {
+    "sha": "9cfb6b3",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)",
+    "files": [
+     "docs/auditoria/INVENTARIO_TRABALHO_INACABADO_2026-11-17.md"
+    ]
+   },
    {
     "sha": "e0aba34",
     "date": "2026-11-17",
@@ -247734,34 +247845,6 @@
      "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
      "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql"
     ]
-   },
-   {
-    "sha": "a133ea0",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)",
-    "files": [
-     "src/pages/tributario/OportunidadesElisao.tsx",
-     "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx",
-     "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
-     "src/pages/tributario/oportunidades-elisao/constants.ts"
-    ]
-   },
-   {
-    "sha": "3ea2086",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)",
-    "files": [
-     "supabase/migrations/20260825230000_initplan_rls_e67.sql",
-     "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-     "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
-     "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql",
-     "supabase/migrations/20261101140000_drop_idle_indexes.sql",
-     "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
-     "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
-     "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -247772,6 +247855,10 @@
    [
     "bun.lock",
     5
+   ],
+   [
+    "src/components/nfe/ContingenciaNFe.tsx",
+    2
    ],
    [
     "supabase/functions/_shared/cnae.ts",
@@ -247818,31 +247905,27 @@
     2
    ],
    [
-    "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-    2
-   ],
-   [
-    "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
-    2
-   ],
-   [
-    "supabase/functions/_shared/asaas-config.ts",
+    "src/components/nfe/AlertasRejeicao.tsx",
     1
    ],
    [
-    "supabase/functions/_shared/asaas-config_test.ts",
+    "src/components/nfe/EventosHistorico.tsx",
     1
    ],
    [
-    "supabase/functions/asaas-proxy/index.ts",
+    "src/components/nfe/SefazAnalytics.tsx",
     1
    ],
    [
-    "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
+    "src/components/nfe/SefazMonitor.tsx",
     1
    ],
    [
-    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
+    "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
+    1
+   ],
+   [
+    "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
     1
    ]
   ]

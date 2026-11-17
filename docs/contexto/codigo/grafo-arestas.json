@@ -4550,6 +4550,7 @@
    "src/components/ui/switch.tsx",
    "src/components/ui/tabs.tsx",
    "src/lib/formatters.ts",
+   "src/lib/logger.ts",
    "src/lib/sefaz-contingency.ts",
    "src/lib/sefaz-event-logger.ts"
   ],

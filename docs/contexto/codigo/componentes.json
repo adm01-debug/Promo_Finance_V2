@@ -7984,7 +7984,7 @@
     "AlertasRejeicao"
    ],
    "export_default": null,
-   "linhas": 431,
+   "linhas": 435,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8114,7 +8114,7 @@
     "ContingenciaNFe"
    ],
    "export_default": null,
-   "linhas": 361,
+   "linhas": 400,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8170,7 +8170,7 @@
     "EventosHistorico"
    ],
    "export_default": null,
-   "linhas": 248,
+   "linhas": 264,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8230,7 +8230,7 @@
     "SefazAnalyticsKPIs"
    ],
    "export_default": null,
-   "linhas": 117,
+   "linhas": 132,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8272,7 +8272,7 @@
     "SefazMetricsCards"
    ],
    "export_default": null,
-   "linhas": 150,
+   "linhas": 197,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8286,7 +8286,7 @@
     "SefazStatusBanner"
    ],
    "export_default": null,
-   "linhas": 121,
+   "linhas": 160,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8300,7 +8300,7 @@
     "SefazAnalytics"
    ],
    "export_default": null,
-   "linhas": 390,
+   "linhas": 400,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8314,7 +8314,7 @@
     "SefazMonitor"
    ],
    "export_default": null,
-   "linhas": 200,
+   "linhas": 227,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
