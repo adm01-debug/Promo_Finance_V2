@@ -21,6 +21,15 @@ ALTER TABLE public.cnaes
 -- ── C2: faixas_simples — corrigir função + add NOT VALID ─────────────
 -- Bug fn: chaves UPPERCASE + soma esperada 1.00; dados têm lowercase+100.00
 -- Dois formatos históricos coexistem; 14 linhas UPPERCASE genuinamente inválidas
+-- A cadeia cria esta funcao antes com o parametro chamado _rep
+-- (20260728124719:42 e 20260825110000:1427), e CREATE OR REPLACE nao
+-- renomeia parametro de entrada. A producao tem p_reparticao, entao o
+-- nome canonico e este: dropa a versao antiga (e o CHECK que depende
+-- dela, readicionado logo abaixo) antes de recriar.
+ALTER TABLE public.faixas_simples_nacional
+  DROP CONSTRAINT IF EXISTS faixas_simples_reparticao_soma_chk;
+DROP FUNCTION IF EXISTS public.faixa_simples_reparticao_valida(jsonb);
+
 CREATE OR REPLACE FUNCTION public.faixa_simples_reparticao_valida(p_reparticao jsonb)
 RETURNS boolean LANGUAGE sql IMMUTABLE
 SECURITY INVOKER SET search_path = public, pg_catalog
@@ -43,6 +52,9 @@ ALTER TABLE public.faixas_simples_nacional
 -- Bug: <= 3 (impossível — todos os 20 registros têm mva_original=40.0)
 -- MVA é percentual livre (40% = 40.0); sem limite superior válido na lei BR
 ALTER TABLE public.protocolos_st_ncms
+  DROP CONSTRAINT IF EXISTS protocolos_st_ncms_mva_range_chk;
+
+ALTER TABLE public.protocolos_st_ncms
   ADD CONSTRAINT protocolos_st_ncms_mva_range_chk
   CHECK (mva_original IS NULL OR mva_original >= 0);
 
@@ -51,6 +63,9 @@ ALTER TABLE public.protocolos_st_ncms
 
 -- ── C5: elisao_regras_creditos_aliquota_check ───────────────────────
 -- Bug: <= 1 (esperava decimal). numeric(5,2) guarda percentuais (5.00..18.00)
+ALTER TABLE public.elisao_regras_creditos
+  DROP CONSTRAINT IF EXISTS elisao_regras_creditos_aliquota_check;
+
 ALTER TABLE public.elisao_regras_creditos
   ADD CONSTRAINT elisao_regras_creditos_aliquota_check
   CHECK (aliquota IS NULL OR (aliquota >= 0 AND aliquota <= 100));
