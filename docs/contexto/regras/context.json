@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa",
+  "sha": "5be2cfc7436f4bc4240ae678b82247346718fa47",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:25 UTC",
-  "files_total": 3963,
-  "code_files": 3581,
-  "code_lines": 509578
+  "generated_at": "2026-11-17 20:35 UTC",
+  "files_total": 3965,
+  "code_files": 3583,
+  "code_lines": 509756
  },
  "version": "1.3.2",
- "facts_hash": "2638629e33ec8675",
+ "facts_hash": "ef2cddc063855549",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1243,
    ".tsx": 1114,
-   ".sql": 1109,
+   ".sql": 1111,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -1547,6 +1547,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518173107_33c5b93d-df4e-4dd5-ba5e-58a068a54b39.sql"
+     },
+     {
+      "name": "telefone",
+      "type": "TEXT",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
      }
     ],
     "constraints": [],
@@ -1804,6 +1811,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260729144753_7b436acf-1789-4031-979d-14e510877713.sql"
+     },
+     {
+      "name": "inscricao_municipal",
+      "type": "TEXT",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
      }
     ],
     "constraints": [
@@ -8866,6 +8880,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728170640_5f70d392-005d-458f-80ba-f0e573ef414e.sql"
+     },
+     {
+      "name": "categoria",
+      "type": "TEXT",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
      }
     ],
     "constraints": [],
@@ -9801,10 +9822,18 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261113163037_colunas_campos_formulario.sql"
+     },
+     {
+      "name": "centro_custo_id",
+      "type": "UUID",
+      "fk": "centros_custo.id ON DELETE SET NULL",
+      "generated": "",
+      "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
      }
     ],
     "constraints": [
-     "constraint movimentacoes_tipo_check CHECK ((tipo = ANY (ARRAY['entrada'::text, 'saida'::text]))) NOT VALID"
+     "constraint movimentacoes_tipo_check CHECK ((tipo = ANY (ARRAY['entrada'::text, 'saida'::text]))) NOT VALID",
+     "constraint movimentacoes_centro_custo_id_fkey FOREIGN KEY (centro_custo_id) REFERENCES public.centros_custo(id) ON DELETE SET NULL"
     ],
     "src": "supabase/migrations/20260519120619_7d71cd0d-921a-40ae-970b-b138a1c5d9ab.sql",
     "comment": "",
@@ -13003,6 +13032,13 @@
       "fk": "empresas.id ON DELETE CASCADE",
       "generated": "",
       "src": "supabase/migrations/20260728213152_aa0405a8-7a82-418c-a59e-c8b00d7db1ae.sql"
+     },
+     {
+      "name": "atendida_por",
+      "type": "UUID",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
      }
     ],
     "constraints": [
@@ -49050,6 +49086,518 @@
     "unique": false,
     "where": "WHERE state IS NOT NULL",
     "src": "supabase/migrations/20261117201000_sso_login_attempts_state.sql"
+   },
+   {
+    "name": "idx_boletos_conta_receber_id",
+    "table": "boletos",
+    "columns": "conta_receber_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_boletos_status",
+    "table": "boletos",
+    "columns": "status",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_boletos_user_id_fk",
+    "table": "boletos",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_boletos_vencimento",
+    "table": "boletos",
+    "columns": "vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_clientes_ativo",
+    "table": "clientes",
+    "columns": "ativo",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_clientes_cpf_cnpj",
+    "table": "clientes",
+    "columns": "cpf_cnpj",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_clientes_empresa_id_fk",
+    "table": "clientes",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_clientes_nome",
+    "table": "clientes",
+    "columns": "nome",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_clientes_ramo_atividade",
+    "table": "clientes",
+    "columns": "ramo_atividade",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_clientes_user_id",
+    "table": "clientes",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_conciliacoes_empresa_id_fk",
+    "table": "conciliacoes",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_conciliacoes_user_id_fk",
+    "table": "conciliacoes",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_categoria",
+    "table": "contas_pagar",
+    "columns": "categoria",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_data_vencimento",
+    "table": "contas_pagar",
+    "columns": "data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_fornecedor",
+    "table": "contas_pagar",
+    "columns": "fornecedor_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_fornecedor_id",
+    "table": "contas_pagar",
+    "columns": "fornecedor_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_status",
+    "table": "contas_pagar",
+    "columns": "status",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_user_id",
+    "table": "contas_pagar",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_pagar_vencimento",
+    "table": "contas_pagar",
+    "columns": "data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cp_descricao_gin",
+    "table": "contas_pagar",
+    "columns": "to_tsvector('portuguese'::regconfig, (descricao",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cp_fornecedor_status",
+    "table": "contas_pagar",
+    "columns": "fornecedor_id, status",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cp_status_data_vencimento",
+    "table": "contas_pagar",
+    "columns": "status, data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cp_status_vencimento",
+    "table": "contas_pagar",
+    "columns": "status, data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_cliente",
+    "table": "contas_receber",
+    "columns": "cliente_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_data_vencimento",
+    "table": "contas_receber",
+    "columns": "data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_status",
+    "table": "contas_receber",
+    "columns": "status",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_transacao_conciliada_id_fk",
+    "table": "contas_receber",
+    "columns": "transacao_conciliada_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_user_id",
+    "table": "contas_receber",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_vencimento",
+    "table": "contas_receber",
+    "columns": "data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_contas_receber_vendedor_id",
+    "table": "contas_receber",
+    "columns": "vendedor_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cr_cliente_status",
+    "table": "contas_receber",
+    "columns": "cliente_id, status",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cr_descricao_gin",
+    "table": "contas_receber",
+    "columns": "to_tsvector('portuguese'::regconfig, (descricao",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_cr_status_vencimento",
+    "table": "contas_receber",
+    "columns": "status, data_vencimento",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_extrato_bancario_user_id_fk",
+    "table": "extrato_bancario",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_fornecedores_ativo",
+    "table": "fornecedores",
+    "columns": "ativo",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_fornecedores_cnpj",
+    "table": "fornecedores",
+    "columns": "cnpj",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_fornecedores_empresa_id_fk",
+    "table": "fornecedores",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_fornecedores_razao_social",
+    "table": "fornecedores",
+    "columns": "razao_social",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_fornecedores_user_id",
+    "table": "fornecedores",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_lanc_emp_data",
+    "table": "lancamentos_contabeis",
+    "columns": "empresa_id, data_lancamento DESC",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_lanc_origem",
+    "table": "lancamentos_contabeis",
+    "columns": "origem, origem_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_lancamentos_contabeis_user_id_fk",
+    "table": "lancamentos_contabeis",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "lancamentos_contabeis_empresa_comp_idx",
+    "table": "lancamentos_contabeis",
+    "columns": "empresa_id, competencia",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_movimentacoes_conta_bancaria_id_fk",
+    "table": "movimentacoes",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_movimentacoes_conta_pagar_id_fk",
+    "table": "movimentacoes",
+    "columns": "conta_pagar_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_movimentacoes_conta_receber_id_fk",
+    "table": "movimentacoes",
+    "columns": "conta_receber_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_movimentacoes_empresa_id_fk",
+    "table": "movimentacoes",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_nfe_data_emissao",
+    "table": "notas_fiscais",
+    "columns": "data_emissao",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_nfe_numero",
+    "table": "notas_fiscais",
+    "columns": "numero",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_notas_fiscais_data",
+    "table": "notas_fiscais",
+    "columns": "data_emissao",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_notas_fiscais_empresa_id_fk",
+    "table": "notas_fiscais",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_notas_fiscais_status",
+    "table": "notas_fiscais",
+    "columns": "status",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_partidas_conta",
+    "table": "partidas_contabeis",
+    "columns": "conta_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_partidas_lanc",
+    "table": "partidas_contabeis",
+    "columns": "lancamento_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "partidas_contabeis_conta_idx",
+    "table": "partidas_contabeis",
+    "columns": "conta_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "partidas_contabeis_conta_lanc_idx",
+    "table": "partidas_contabeis",
+    "columns": "conta_id, lancamento_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_bancarias_created_at",
+    "table": "transacoes_bancarias",
+    "columns": "created_at DESC",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_bancarias_empresa_data",
+    "table": "transacoes_bancarias",
+    "columns": "conta_bancaria_id, data DESC",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_compensacao_aceita_em",
+    "table": "transacoes_bancarias",
+    "columns": "compensacao_aceita_em",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_compensacao_aceita_por",
+    "table": "transacoes_bancarias",
+    "columns": "compensacao_aceita_por",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_compensacao_classificacao",
+    "table": "transacoes_bancarias",
+    "columns": "compensacao_classificacao",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_conta",
+    "table": "transacoes_bancarias",
+    "columns": "conta_bancaria_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_transacoes_data",
+    "table": "transacoes_bancarias",
+    "columns": "data",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+   },
+   {
+    "name": "idx_movimentacoes_centro_custo_id",
+    "table": "movimentacoes",
+    "columns": "centro_custo_id",
+    "unique": false,
+    "where": "WHERE centro_custo_id IS NOT NULL",
+    "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
    }
   ],
   "cron_jobs": [
@@ -50339,6 +50887,8 @@
    "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
    "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
    "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
+   "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
+   "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -70540,7 +71090,7 @@
   {
    "module": "supabase/functions",
    "files": 233,
-   "lines": 51367,
+   "lines": 51377,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -70801,8 +71351,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1038,
-   "lines": 80079,
+   "files": 1040,
+   "lines": 80247,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -73851,7 +74401,6 @@
     "id"
    ],
    "empresas": [
-    "ativa",
     "ativo",
     "cnae_principal",
     "cnpj",
@@ -75909,32 +76458,12 @@
   ],
   "columns_unknown": [
    {
-    "table": "profiles",
-    "column": "telefone"
-   },
-   {
     "table": "clientes",
     "column": "bitrix_id"
    },
    {
-    "table": "regras_conciliacao",
-    "column": "categoria"
-   },
-   {
-    "table": "empresas",
-    "column": "ativa"
-   },
-   {
-    "table": "empresas",
-    "column": "inscricao_municipal"
-   },
-   {
     "table": "execucoes_cobranca",
     "column": "provider_message_id"
-   },
-   {
-    "table": "movimentacoes",
-    "column": "centro_custo_id"
    },
    {
     "table": "asaas_config",
@@ -89962,8 +90491,18 @@
    },
    {
     "table": "movimentacoes",
+    "column": "centro_custo_id",
+    "rule": "FK → centros_custo.id ON DELETE SET NULL"
+   },
+   {
+    "table": "movimentacoes",
     "column": "(tabela)",
     "rule": "constraint movimentacoes_tipo_check CHECK ((tipo = ANY (ARRAY['entrada'::text, 'saida'::text]))) NOT VALID"
+   },
+   {
+    "table": "movimentacoes",
+    "column": "(tabela)",
+    "rule": "constraint movimentacoes_centro_custo_id_fkey FOREIGN KEY (centro_custo_id) REFERENCES public.centros_custo(id) ON DELETE SET NULL"
    },
    {
     "table": "transferencias",
@@ -171050,6 +171589,10 @@
     "email"
    ],
    [
+    "profiles",
+    "telefone"
+   ],
+   [
     "empresas",
     "cnpj"
    ],
@@ -172675,37 +173218,12 @@
    },
    {
     "kind": "coluna",
-    "msg": "coluna `telefone` usada no código não existe no schema de `profiles`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `bitrix_id` usada no código não existe no schema de `clientes`",
     "where": []
    },
    {
     "kind": "coluna",
-    "msg": "coluna `categoria` usada no código não existe no schema de `regras_conciliacao`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `ativa` usada no código não existe no schema de `empresas`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `inscricao_municipal` usada no código não existe no schema de `empresas`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `centro_custo_id` usada no código não existe no schema de `movimentacoes`",
     "where": []
    },
    {
@@ -233425,7 +233943,7 @@
   },
   "supabase/functions/gerar-acoes-recomendadas/index.ts": {
    "path": "supabase/functions/gerar-acoes-recomendadas/index.ts",
-   "lines": 228,
+   "lines": 233,
    "tables": [
     {
      "table": "empresas",
@@ -233462,7 +233980,6 @@
    ],
    "table_cols": {
     "empresas": [
-     "ativa",
      "id",
      "razao_social"
     ],
@@ -234242,7 +234759,7 @@
   },
   "supabase/functions/gerar-resumo-executivo-semanal/index.ts": {
    "path": "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
-   "lines": 317,
+   "lines": 322,
    "tables": [
     {
      "table": "contas_receber",
@@ -234300,7 +234817,6 @@
      "prioridade"
     ],
     "empresas": [
-     "ativa",
      "id",
      "razao_social"
     ],
@@ -243859,6 +244375,14 @@
    "path": "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
    "lines": 36
   },
+  "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql": {
+   "path": "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
+   "lines": 111
+  },
+  "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql": {
+   "path": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
+   "lines": 57
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -243967,10 +244491,47 @@
   }
  },
  "git": {
-  "sha": "1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa",
+  "sha": "5be2cfc7436f4bc4240ae678b82247346718fa47",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5be2cfc",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)",
+    "files": [
+     "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
+    ]
+   },
+   {
+    "sha": "176877a",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)",
+    "files": [
+     ".github/workflows/dependency-review.yml"
+    ]
+   },
+   {
+    "sha": "4ba4b44",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)",
+    "files": [
+     "supabase/functions/gerar-acoes-recomendadas/index.ts",
+     "supabase/functions/gerar-resumo-executivo-semanal/index.ts"
+    ]
+   },
+   {
+    "sha": "a378486",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)",
+    "files": [
+     "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
+    ]
+   },
    {
     "sha": "1ccd853",
     "date": "2026-11-17",
@@ -244316,49 +244877,6 @@
      "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
      "src/hooks/financial/useContasReceber.ts"
     ]
-   },
-   {
-    "sha": "685b65c",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)",
-    "files": [
-     "src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx",
-     "src/hooks/useOportunidadesElisao.ts"
-    ]
-   },
-   {
-    "sha": "a8d124b",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)",
-    "files": [
-     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
-     "src/hooks/financial/useContasPagar.ts"
-    ]
-   },
-   {
-    "sha": "c19b86c",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)",
-    "files": [
-     "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
-     "src/lib/ofx-parser/csv.ts"
-    ]
-   },
-   {
-    "sha": "00a7783",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)",
-    "files": [
-     "src/hooks/__tests__/useFluxoCaixaPage.saldo.test.tsx",
-     "src/hooks/useFluxoCaixa.ts",
-     "src/hooks/useFluxoCaixaPage.ts",
-     "src/lib/__tests__/cashflow-scenarios.test.ts",
-     "src/lib/cashflow-scenarios.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -244383,8 +244901,24 @@
     2
    ],
    [
-    "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
-    2
+    "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
+    1
+   ],
+   [
+    ".github/workflows/dependency-review.yml",
+    1
+   ],
+   [
+    "supabase/functions/gerar-acoes-recomendadas/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
+    1
    ],
    [
     "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
@@ -244424,22 +244958,6 @@
    ],
    [
     "supabase/functions/processar-fila-cobrancas/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/whatsapp-webhook/index.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
-    1
-   ],
-   [
-    "docs/agentes/auditoria-drift-banco-2026-11-17.md",
-    1
-   ],
-   [
-    "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
     1
    ]
   ]

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa` (2026-11-17T17:10:44-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5be2cfc7436f4bc4240ae678b82247346718fa47` (2026-11-17T17:29:17-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2357), SQL (1109), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2357), SQL (1111), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3924 |
+| arquivos_total | 3926 |
 | arquivos_codigo | 2471 |
-| linhas_codigo | 440274 |
+| linhas_codigo | 440284 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 321 |
-| migrations | 1038 |
+| migrations | 1040 |
 | cron_jobs | 22 |
 | testes | 476 |
 | workflows | 19 |
@@ -463,18 +463,18 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (38)
 - bun.lock (33)
-- .github/workflows/ci.yml (27)
+- .github/workflows/ci.yml (26)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
 - .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
-- supabase/config.toml (11)
 - supabase/functions/bling-proxy/index.ts (11)
 - .github/workflows/deno-tests.yml (10)
 - .github/workflows/functions-deploy.yml (10)
 - src/hooks/useConciliacaoPage.ts (10)
+- supabase/config.toml (10)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
 
 ## Workflows
@@ -629,6 +629,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `5be2cfc` feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)
+- 2026-11-17 `176877a` infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)
+- 2026-11-17 `4ba4b44` fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)
+- 2026-11-17 `a378486` infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)
 - 2026-11-17 `1ccd853` fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)
 - 2026-11-17 `e9cd145` fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)
 - 2026-11-17 `8215f7d` fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)
@@ -640,10 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `17a5777` chore(db): harness de replay das migrations num Postgres local efêmero (#433)
 - 2026-11-17 `a45b5d8` fix(ci): destrava o bun audit do advisory novo do picomatch (#434)
 - 2026-11-17 `512c1e7` chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)
-- 2026-11-17 `8c70124` infra: monitor-health entra na lista de funcoes implantaveis (#426)
-- 2026-11-17 `6c4a75c` chore: remove 3 TODOs de rename ja concluidos no banco (#432)
-- 2026-11-17 `900fcbd` feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)
-- 2026-11-17 `710f7a8` chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

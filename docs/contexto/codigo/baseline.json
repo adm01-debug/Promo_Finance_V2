@@ -2,11 +2,31 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa",
+  "commit": "5be2cfc7436f4bc4240ae678b82247346718fa47",
   "branch": "main",
-  "data_commit": "2026-11-17T17:10:44-03:00",
+  "data_commit": "2026-11-17T17:29:17-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5be2cfc",
+    "data": "2026-11-17",
+    "assunto": "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)"
+   },
+   {
+    "sha": "176877a",
+    "data": "2026-11-17",
+    "assunto": "infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)"
+   },
+   {
+    "sha": "4ba4b44",
+    "data": "2026-11-17",
+    "assunto": "fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)"
+   },
+   {
+    "sha": "a378486",
+    "data": "2026-11-17",
+    "assunto": "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)"
+   },
    {
     "sha": "1ccd853",
     "data": "2026-11-17",
@@ -111,29 +131,9 @@
     "sha": "9cfb6b3",
     "data": "2026-11-17",
     "assunto": "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)"
-   },
-   {
-    "sha": "e0aba34",
-    "data": "2026-11-17",
-    "assunto": "fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)"
-   },
-   {
-    "sha": "9fe3277",
-    "data": "2026-11-17",
-    "assunto": "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)"
-   },
-   {
-    "sha": "e4c5fa9",
-    "data": "2026-11-17",
-    "assunto": "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)"
-   },
-   {
-    "sha": "2627e95",
-    "data": "2026-11-17",
-    "assunto": "fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)"
    }
   ],
-  "arquivos_mudados_7d": 918,
+  "arquivos_mudados_7d": 910,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -161,7 +161,7 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 23
+    "mudancas": 22
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -169,7 +169,7 @@
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 21
+    "mudancas": 20
    },
    {
     "pasta": "src/components/admin",
@@ -189,7 +189,7 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 13
+    "mudancas": 12
    },
    {
     "pasta": "src/components/dashboard",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 27
+    "mudancas": 26
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -234,10 +234,6 @@
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 11
-   },
-   {
     "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 11
    },
@@ -251,6 +247,10 @@
    },
    {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/config.toml",
     "mudancas": 10
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 196
+    "commits": 200
    },
    {
     "autor": "dependabot[bot]",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 10
+    "commits": 9
    },
    {
     "autor": "Joaquim Ataides",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3924,
+  "arquivos_total": 3926,
   "arquivos_codigo": 2471,
-  "linhas_codigo": 440274,
+  "linhas_codigo": 440284,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1038,
+  "migrations": 1040,
   "cron_jobs": 22,
   "testes": 476,
   "workflows": 19,
@@ -684,7 +684,7 @@
   },
   "supabase/functions": {
    "arquivos": 233,
-   "linhas": 51134
+   "linhas": 51144
   },
   "supabase/tests": {
    "arquivos": 2,

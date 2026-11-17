@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1ccd8539da` · branch `main` · 2026-11-17 20:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5be2cfc743` · branch `main` · 2026-11-17 20:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -109,7 +109,7 @@
 | `elisao_simulacoes_regime` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `elisao_tarefas_acionaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `email_verifications` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `empresas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
+| `empresas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 25 colunas | migration |
 | `empresas_certificados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `entregas_obrigacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `estrategias_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
@@ -171,7 +171,7 @@
 | `logs_conciliacao_retroativa` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `metas_financeiras` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `mfa_sessions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| `movimentacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
+| `movimentacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `n8n_dispatch_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `n8n_workflow_configs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `ncms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
@@ -205,7 +205,7 @@
 | `portal_cliente_acessos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `portal_cliente_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `prejuizos_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
-| `profiles` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `profiles` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `projecoes_reforma` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
 | `protestos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `protocolos_st` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
@@ -219,7 +219,7 @@
 | `regimes_especiais_empresa` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `regimes_simulados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `regimes_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `regras_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `regras_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `regras_contabilizacao_automatica` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `regras_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `regras_roteamento_financeiro` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
@@ -250,7 +250,7 @@
 | `slo_metrics_diarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `slow_query_alerts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `solicitacoes_aprovacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
-| `solicitacoes_lgpd` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `solicitacoes_lgpd` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `sped_contabil_arquivos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `split_payment_transacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
 | `sso_login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
@@ -403,13 +403,8 @@
 | status | valor `detector_conciliacao` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `detector_regime` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `persistindo` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
-| coluna | coluna `telefone` usada no código não existe no schema de `profiles` |  |
 | coluna | coluna `bitrix_id` usada no código não existe no schema de `clientes` |  |
-| coluna | coluna `categoria` usada no código não existe no schema de `regras_conciliacao` |  |
-| coluna | coluna `ativa` usada no código não existe no schema de `empresas` |  |
-| coluna | coluna `inscricao_municipal` usada no código não existe no schema de `empresas` |  |
 | coluna | coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca` |  |
-| coluna | coluna `centro_custo_id` usada no código não existe no schema de `movimentacoes` |  |
 | coluna | coluna `count` usada no código não existe no schema de `asaas_config` |  |
 | coluna | coluna `total_tributos` usada no código não existe no schema de `faturamento_mensal` |  |
 | coluna | coluna `carga_pct` usada no código não existe no schema de `regime_decision_cache` |  |

@@ -1925,7 +1925,7 @@
    "nome": "gerar-acoes-recomendadas",
    "entrada": "supabase/functions/gerar-acoes-recomendadas/index.ts",
    "arquivos": 1,
-   "linhas": 227,
+   "linhas": 232,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2295,7 +2295,7 @@
    "nome": "gerar-resumo-executivo-semanal",
    "entrada": "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
    "arquivos": 1,
-   "linhas": 316,
+   "linhas": 321,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"

@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1038,
+ "migrations": 1040,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -12554,6 +12554,11 @@
      "unico": false
     },
     {
+     "nome": "idx_boletos_user_id_fk",
+     "colunas": "user_id",
+     "unico": false
+    },
+    {
      "nome": "idx_boletos_vencimento",
      "colunas": "vencimento",
      "unico": false
@@ -13880,6 +13885,11 @@
      "unico": false
     },
     {
+     "nome": "idx_clientes_empresa_id_fk",
+     "colunas": "empresa_id",
+     "unico": false
+    },
+    {
      "nome": "idx_clientes_nome",
      "colunas": "nome",
      "unico": false
@@ -14455,7 +14465,18 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [],
+   "indices": [
+    {
+     "nome": "idx_conciliacoes_empresa_id_fk",
+     "colunas": "empresa_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_conciliacoes_user_id_fk",
+     "colunas": "user_id",
+     "unico": false
+    }
+   ],
    "fks": [
     "conta_bancaria_id->contas_bancarias",
     "empresa_id->empresas",
@@ -15809,7 +15830,7 @@
     },
     {
      "nome": "idx_cp_descricao_gin",
-     "colunas": "to_tsvector('portuguese', descricao",
+     "colunas": "to_tsvector('portuguese'::regconfig, (descricao",
      "unico": false
     },
     {
@@ -16529,6 +16550,11 @@
      "unico": false
     },
     {
+     "nome": "idx_contas_receber_transacao_conciliada_id_fk",
+     "colunas": "transacao_conciliada_id",
+     "unico": false
+    },
+    {
      "nome": "idx_contas_receber_user_created",
      "colunas": "user_id, created_at DESC",
      "unico": false
@@ -16555,7 +16581,7 @@
     },
     {
      "nome": "idx_cr_descricao_gin",
-     "colunas": "to_tsvector('portuguese', descricao",
+     "colunas": "to_tsvector('portuguese'::regconfig, (descricao",
      "unico": false
     },
     {
@@ -21883,7 +21909,13 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [],
+   "indices": [
+    {
+     "nome": "idx_extrato_bancario_user_id_fk",
+     "colunas": "user_id",
+     "unico": false
+    }
+   ],
    "fks": [
     "conta_bancaria_id->contas_bancarias",
     "empresa_id->empresas",
@@ -23828,6 +23860,11 @@
     },
     {
      "nome": "idx_fornecedores_empresa_id",
+     "colunas": "empresa_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_fornecedores_empresa_id_fk",
      "colunas": "empresa_id",
      "unico": false
     },
@@ -27549,6 +27586,11 @@
      "unico": false
     },
     {
+     "nome": "idx_lancamentos_contabeis_user_id_fk",
+     "colunas": "user_id",
+     "unico": false
+    },
+    {
      "nome": "lancamentos_contabeis_empresa_comp_idx",
      "colunas": "empresa_id, competencia",
      "unico": false
@@ -28425,7 +28467,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "centros_custo"
+     "ref": null
     },
     "conciliacao_id": {
      "tipo": "uuid",
@@ -28675,8 +28717,28 @@
      "unico": false
     },
     {
+     "nome": "idx_movimentacoes_centro_custo_id",
+     "colunas": "centro_custo_id",
+     "unico": false
+    },
+    {
      "nome": "idx_movimentacoes_conta_bancaria_id",
      "colunas": "conta_bancaria_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_movimentacoes_conta_bancaria_id_fk",
+     "colunas": "conta_bancaria_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_movimentacoes_conta_pagar_id_fk",
+     "colunas": "conta_pagar_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_movimentacoes_conta_receber_id_fk",
+     "colunas": "conta_receber_id",
      "unico": false
     },
     {
@@ -28686,6 +28748,11 @@
     },
     {
      "nome": "idx_movimentacoes_empresa_id",
+     "colunas": "empresa_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_movimentacoes_empresa_id_fk",
      "colunas": "empresa_id",
      "unico": false
     }
@@ -30397,6 +30464,11 @@
     {
      "nome": "idx_notas_fiscais_data",
      "colunas": "data_emissao",
+     "unico": false
+    },
+    {
+     "nome": "idx_notas_fiscais_empresa_id_fk",
+     "colunas": "empresa_id",
      "unico": false
     },
     {
