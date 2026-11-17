@@ -1,4 +1,4 @@
-import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
+import { exigirInternaOuUsuarioComPapel, empresasDoUsuario } from '../_shared/auth-guard.ts';
 import { lerConfigAsaas } from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
@@ -25,8 +25,30 @@ export const handler = async (req: Request) => {
 
     log.info('Gerando relatório diário de operações financeiras...');
 
-    // 1. Buscar todas as empresas ativas
-    const { data: empresas } = await supabase.from('empresas').select('id, razao_social');
+    // 1. Empresas no escopo. Chamada interna (cron) processa todas; chamada de
+    // usuário fica limitada às empresas a que ele está vinculado — o client é
+    // service_role e ignora RLS, então sem este recorte um usuário financeiro
+    // provocaria o envio do relatório de clientes que ele nem acessa (achado do
+    // Codex na PR #421). Antes a coluna inexistente barrava qualquer envio.
+    let escopoEmpresas: string[] | null = null;
+    if (ctx.dados.origem === 'usuario' && ctx.dados.userId) {
+      escopoEmpresas = await empresasDoUsuario(ctx.dados.userId);
+      if (escopoEmpresas === null) {
+        return new Response(JSON.stringify({ error: 'Falha ao validar vínculo de empresa.' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (escopoEmpresas.length === 0) {
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    let consultaEmpresas = supabase.from('empresas').select('id, razao_social');
+    if (escopoEmpresas) consultaEmpresas = consultaEmpresas.in('id', escopoEmpresas);
+    const { data: empresas } = await consultaEmpresas;
 
     for (const empresa of empresas || []) {
       const { data: configRow } = await supabase
