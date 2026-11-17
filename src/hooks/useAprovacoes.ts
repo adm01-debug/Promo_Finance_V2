@@ -181,12 +181,20 @@ export const useUpdateConfiguracaoAprovacao = () => {
                 'continuariam exigindo aprovacao. Remova a duplicidade de faixas antes.'
             );
           }
-          // Subir o limite acima de outra faixa ativa nao muda o limite efetivo.
-          if (config.valor_minimo_aprovacao != null && config.valor_minimo_aprovacao > menorOutra) {
+          // Subir o limite ACIMA de outra faixa ativa nao muda o limite efetivo.
+          // IGUAL tambem nao serve: o update so alcanca as linhas que estavam no
+          // valor original, entao sobrariam duas faixas ativas no mesmo valor com
+          // quoruns diferentes, e a leitura (que ordena por ativo e valor) podia
+          // devolver a antiga -- o painel substituiria o quorum recem-salvo
+          // (achado P2 do Codex na 8a rodada da PR #400).
+          const novo = config.valor_minimo_aprovacao;
+          if (novo != null && novo >= menorOutra) {
+            const porque =
+              novo === menorOutra
+                ? 'no mesmo valor informado. Ficariam duas faixas ativas no mesmo limite com quoruns diferentes, e a tela poderia mostrar a outra.'
+                : 'menor que o valor informado. O limite efetivo continuaria sendo o dela, entao a alteracao nao teria efeito.';
             throw new Error(
-              `Existe outra faixa ativa em ${fmt(menorOutra)}, menor que o valor ` +
-                'informado. O limite efetivo continuaria sendo o dela, entao a ' +
-                'alteracao nao teria efeito. Remova a duplicidade de faixas antes.'
+              `Existe outra faixa ativa em ${fmt(menorOutra)}, ${porque} Remova a duplicidade de faixas antes.`
             );
           }
         }

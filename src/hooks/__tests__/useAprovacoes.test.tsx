@@ -327,6 +327,31 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
     expect(consulta.update).not.toHaveBeenCalled();
   });
 
+  it('recusa o limite IGUAL ao de outra faixa ativa (colisao de quorum)', async () => {
+    // Revisao da PR #400, round 8 (Codex): salvar a faixa de 5.000 como 50.000 com
+    // quorum 2 passava no `>`, mas o update so alcanca as linhas que estavam em
+    // 5.000: sobrariam duas faixas ativas em 50.000 com quoruns diferentes, e a
+    // leitura podia devolver a antiga, substituindo o quorum recem-salvo.
+    const consulta = buildChain({ data: [{ valor_minimo_aprovacao: 50000 }], error: null });
+    mockFrom.mockReturnValue(consulta);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_original: 5000,
+      valor_minimo_aprovacao: 50000,
+      aprovadores_obrigatorios: 2,
+      ativo: true,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(String(result.current.error?.message)).toMatch(/no mesmo valor informado/i);
+    expect(consulta.update).not.toHaveBeenCalled();
+  });
+
   it('recusa desativar quando outra faixa ativa continuaria exigindo aprovacao', async () => {
     const consulta = buildChain({ data: [{ valor_minimo_aprovacao: 50000 }], error: null });
     mockFrom.mockReturnValue(consulta);
