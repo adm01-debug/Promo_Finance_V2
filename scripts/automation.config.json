@@ -910,6 +910,22 @@
       "reason": "Legado mantido no fluxo existente; referÃªncias literais: .github/workflows/auto-update-pr-branch.yml. O dispatcher nÃ£o executa esta operaÃ§Ã£o."
     },
     {
+      "id": "legacy-colunas-select-ci",
+      "kind": "legacy",
+      "files": ["scripts/ci/check-colunas-select.mjs"],
+      "manual": ["node", "scripts/ci/check-colunas-select.mjs"],
+      "triggers": ["manual"],
+      "reason": "Gate de colunas inexistentes em select/order; referencias literais: .github/workflows/ci.yml. Dispatcher nao executa."
+    },
+    {
+      "id": "legacy-colunas-select-unit-ci",
+      "kind": "legacy",
+      "files": ["scripts/ci/check-colunas-select.unit.mjs"],
+      "manual": ["node", "--test", "scripts/ci/check-colunas-select.unit.mjs"],
+      "triggers": ["manual"],
+      "reason": "Suite do gate de colunas select/order; referencias literais: .github/workflows/ci.yml. Dispatcher nao executa."
+    },
+    {
       "id": "legacy-a4b5c6d7e8f90123",
       "kind": "legacy",
       "files": ["scripts/ci/github-settings-guard.mjs"],
