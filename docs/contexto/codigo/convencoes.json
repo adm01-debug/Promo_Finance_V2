@@ -23,7 +23,7 @@
   "testes": [
    "co-localizado (__tests__) (281)",
    "outro (110)",
-   "co-localizado (*.test) (44)"
+   "co-localizado (*.test) (45)"
   ],
   "edge_functions": "supabase/functions",
   "migrations": "supabase/migrations",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)",
    "fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)",
    "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)",
    "fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)",
-   "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)",
-   "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)"
+   "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

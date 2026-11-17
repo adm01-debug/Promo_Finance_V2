@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e9cd14550a` · branch `main` · 2026-11-17 20:01 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1ccd8539da` · branch `main` · 2026-11-17 20:25 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1334,7 +1334,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `aprovado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`<br>`src/hooks/useConformidadeFiscal.ts`<br>`src/hooks/useContasPagarLogic.calculos.ts`<br>… +4 |
 | `status` | `assinado` | compara | `src/components/documentos/AssinaturaDigital.tsx` |
 | `status` | `atencao` | compara | `src/pages/OrcamentoEvento.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
-| `status` | `atendida` | compara, escreve | `src/pages/CentroPrivacidadeLGPD.tsx`<br>`supabase/functions/processar-solicitacao-lgpd/index.ts` |
+| `status` | `atendida` | compara, escreve | `src/pages/CentroPrivacidadeLGPD.tsx`<br>`supabase/functions/processar-solicitacao-lgpd/escrita.ts` |
 | `status` | `ativo` | compara, escreve | `src/components/contratos/GestaoContratos.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useAcordosParcelamento.types.ts`<br>`src/hooks/useContratos.ts`<br>`src/pages/Integracoes.tsx`<br>… +1 |
 | `status` | `atrasada` | compara | `src/components/reforma-tributaria/ObrigacoesAcessorias.tsx` |
 | `status` | `atrasado` | compara | `src/pages/Financeiro.tsx` |
@@ -5015,7 +5015,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +789 linhas — lista completa em `context.json` | |
+| … +791 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5074,7 +5074,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3586 testes em 313 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3590 testes em 314 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5336,6 +5336,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/fator-r.test.ts` | 4 | Fator R · deve calcular corretamente a proporção folha/receita · deve retornar 0 se a receita for zero ou negativa para evitar divisão por zero · deve determinar o anexo correto com base no fator r |
 | `src/lib/tributario/__tests__/icms-overlay-mva-fuzz.test.ts` | 4 | fuzzing do overlay de MVA/ST — 750 cenários · nenhuma entrada malformada quebra o overlay ou viola invariantes · monotonicidade: MVA maior nunca reduz o ICMS-ST, mantidos os demais parâmetros · operação interna converge a MVA ajustada para a MVA original em todas as UFs |
 | `src/test/a11y/critical-pages.test.tsx` | 4 | A11y — componentes críticos WCAG 2.1 AA · SkipLinks não possui violações · Formulário básico (Label + Input + Button) não possui violações · Botão com aria-label não possui violações |
+| `supabase/functions/processar-solicitacao-lgpd/escrita.test.ts` | 4 | anonimização grava só colunas que existem em profiles · erro na anonimização propaga e impede o fechamento · fechamento guarda atendida_por dentro de payload_resposta · erro no fechamento propaga em vez de responder sucesso |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/integration_test.ts` | 4 | runPuxador processa NFe + evento e avança cursor · runPuxador — cStat=137 (empty) não persiste nada · runPuxador — cStat=656 (rate_limit) marca erro no cursor sem persistir docs · runPuxador — reprocessamento é idempotente (mesmo NSU não avança cursor duas vezes) |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/soap_test.ts` | 4 | buildDistDFeEnvelope inclui CNPJ, tpAmb e ultNSU 15 dígitos · parseDistDFeResponse extrai cStat/ultNSU/maxNSU e docs · classifyCStat mapeia códigos corretamente · parseDistDFeResponse lança em envelope malformado |
 | `supabase/functions/sso-test-login/index.test.ts` | 4 | JIT + group mapping: payload completo quando usuário não existe e grupo mapeia role · JIT + múltiplos grupos: apenas o primeiro match define a role; demais ficam  · JIT bloqueado: auto_provision_users=false retorna would_jit_provision=false com motivo · Domínio fora da allowlist: success=false e payload ainda preserva role mapping |
@@ -5377,8 +5378,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
 | `src/hooks/usePixTemplates.test.ts` | 2 | useCreatePixTemplate · preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade |
 | `src/hooks/useUserEmpresas.test.tsx` | 2 | useUserEmpresas · mantém erro de consulta distinto de usuário sem vínculo |
-| `src/hooks/useWebAuthn.safety.test.tsx` | 2 | WebAuthn sem verificação no servidor · não registra credencial e não aceita login local |
-| … +13 linhas — lista completa em `context.json` | | |
+| … +14 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5967,4 +5967,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +425 linhas — lista completa em `context.json` | |
+| … +426 linhas — lista completa em `context.json` | |

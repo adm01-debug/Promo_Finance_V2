@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e9cd14550a3ca6528593e9236700191388c778d6",
+  "commit": "1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa",
   "branch": "main",
-  "data_commit": "2026-11-17T16:39:13-03:00",
+  "data_commit": "2026-11-17T17:10:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1ccd853",
+    "data": "2026-11-17",
+    "assunto": "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)"
+   },
    {
     "sha": "e9cd145",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "2627e95",
     "data": "2026-11-17",
     "assunto": "fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)"
-   },
-   {
-    "sha": "c772d63",
-    "data": "2026-11-17",
-    "assunto": "fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)"
    }
   ],
-  "arquivos_mudados_7d": 916,
+  "arquivos_mudados_7d": 918,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 195
+    "commits": 196
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3922,
-  "arquivos_codigo": 2469,
-  "linhas_codigo": 440113,
+  "arquivos_total": 3924,
+  "arquivos_codigo": 2471,
+  "linhas_codigo": 440274,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 321,
   "migrations": 1038,
   "cron_jobs": 22,
-  "testes": 475,
+  "testes": 476,
   "workflows": 19,
   "scripts": 113,
   "docs_md": 200
@@ -683,8 +683,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 231,
-   "linhas": 50973
+   "arquivos": 233,
+   "linhas": 51134
   },
   "supabase/tests": {
    "arquivos": 2,

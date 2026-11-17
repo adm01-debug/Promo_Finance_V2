@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 475,
+ "total": 476,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 399
+  "unit": 400
  },
  "onde_ficam": [
   {
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 44
+   "arquivos": 45
   },
   {
    "padrao": "e2e/",
@@ -4053,6 +4053,15 @@
    "casos": 4
   },
   {
+   "arquivo": "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+   "tipo": "unit",
+   "linhas": 94,
+   "testa": [
+    "supabase/functions/processar-solicitacao-lgpd/escrita.ts"
+   ],
+   "casos": 4
+  },
+  {
    "arquivo": "supabase/functions/sefaz-dfe-dispatcher/policy_test.ts",
    "tipo": "unit",
    "linhas": 176,
@@ -4595,6 +4604,7 @@
   "supabase/functions/nfe-vinculo-proxy/index.ts": 1,
   "supabase/functions/notify-performance-alert/index.ts": 1,
   "supabase/functions/open-finance/index.ts": 1,
+  "supabase/functions/processar-solicitacao-lgpd/escrita.ts": 1,
   "supabase/functions/sefaz-dfe-dispatcher/policy.ts": 1,
   "supabase/functions/sefaz-dfe-puxar/index.ts": 3,
   "supabase/functions/sefaz-manifestar/index.ts": 1,
@@ -5007,7 +5017,6 @@
    "prever-carga-tributaria",
    "processar-fila-cobrancas",
    "processar-nf-ocr",
-   "processar-solicitacao-lgpd",
    "relatorio-diario-anomalias",
    "scim-server",
    "send-device-alert",

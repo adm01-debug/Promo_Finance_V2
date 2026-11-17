@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "e9cd14550a3ca6528593e9236700191388c778d6",
+  "sha": "1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:01 UTC",
-  "files_total": 3961,
-  "code_files": 3579,
-  "code_lines": 509415
+  "generated_at": "2026-11-17 20:25 UTC",
+  "files_total": 3963,
+  "code_files": 3581,
+  "code_lines": 509578
  },
  "version": "1.3.2",
- "facts_hash": "12c26386259118ba",
+ "facts_hash": "2638629e33ec8675",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1241,
+   ".ts": 1243,
    ".tsx": 1114,
    ".sql": 1109,
    ".mjs": 63,
@@ -70539,8 +70539,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 231,
-   "lines": 51204,
+   "files": 233,
+   "lines": 51367,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72586,7 +72586,7 @@
     ],
     "update": [
      "src/pages/MeuPerfil.tsx",
-     "supabase/functions/processar-solicitacao-lgpd/index.ts",
+     "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
      "supabase/functions/scim-server/index.ts",
      "supabase/functions/sso-callback/index.ts"
     ],
@@ -72935,7 +72935,7 @@
      "src/hooks/useSolicitacoesLGPD.ts"
     ],
     "update": [
-     "supabase/functions/processar-solicitacao-lgpd/index.ts"
+     "supabase/functions/processar-solicitacao-lgpd/escrita.ts"
     ]
    },
    "sped_contabil_arquivos": {
@@ -82781,6 +82781,14 @@
     "msg": "LOVABLE_API_KEY não configurado"
    },
    {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
+    "msg": "anonimizar titular: ${error.message}"
+   },
+   {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
+    "msg": "fechar solicitação LGPD: ${error.message}"
+   },
+   {
     "file": "supabase/functions/projecao-reforma/index.ts",
     "msg": "Unauthorized"
    },
@@ -85875,6 +85883,10 @@
    {
     "file": "supabase/functions/processar-fila-cobrancas/index.ts",
     "text": "A RPC devolve apenas fila_id/canal/destinatario/mensagem/cliente_nome/etapa/"
+   },
+   {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
+    "text": "* Contrato mínimo usado por estas duas escritas: `from(tabela).update(payload).eq(coluna, valor)`."
    },
    {
     "file": "supabase/functions/processar-solicitacao-lgpd/index.ts",
@@ -114362,7 +114374,7 @@
     "kind": "escreve"
    },
    {
-    "file": "supabase/functions/processar-solicitacao-lgpd/index.ts",
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
     "field": "status",
     "value": "atendida",
     "kind": "escreve"
@@ -133920,6 +133932,22 @@
    {
     "file": "supabase/functions/notify-performance-alert/index.test.ts",
     "name": "notify-performance-alert: warning interno notifica canais configurados e grava telemetria"
+   },
+   {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+    "name": "anonimização grava só colunas que existem em profiles"
+   },
+   {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+    "name": "erro na anonimização propaga e impede o fechamento"
+   },
+   {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+    "name": "fechamento guarda atendida_por dentro de payload_resposta"
+   },
+   {
+    "file": "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+    "name": "erro no fechamento propaga em vez de responder sucesso"
    },
    {
     "file": "supabase/functions/sefaz-dfe-puxar/__tests__/integration_test.ts",
@@ -153998,7 +154026,7 @@
      ],
      "atendida": [
       "compara:src/pages/CentroPrivacidadeLGPD.tsx",
-      "escreve:supabase/functions/processar-solicitacao-lgpd/index.ts"
+      "escreve:supabase/functions/processar-solicitacao-lgpd/escrita.ts"
      ],
      "atrasado": [
       "compara:src/pages/Financeiro.tsx"
@@ -236273,9 +236301,72 @@
    ],
    "uses_service_role": true
   },
+  "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts": {
+   "path": "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+   "lines": 95,
+   "is_test": true,
+   "params": [
+    {
+     "name": "AGORA",
+     "value": "'2026-11-17T19:00:00.000Z'"
+    }
+   ],
+   "rule_comments": [
+    "* Cliente mínimo: guarda o payload do update e devolve o erro configurado. */"
+   ],
+   "tests": [
+    "anonimização grava só colunas que existem em profiles",
+    "erro na anonimização propaga e impede o fechamento",
+    "fechamento guarda atendida_por dentro de payload_resposta",
+    "erro no fechamento propaga em vez de responder sucesso"
+   ]
+  },
+  "supabase/functions/processar-solicitacao-lgpd/escrita.ts": {
+   "path": "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
+   "lines": 80,
+   "exports": [
+    "interface RespostaEscrita",
+    "interface ClienteEscrita",
+    "function anonimizarTitular",
+    "function fecharSolicitacao"
+   ],
+   "tables": [
+    {
+     "table": "profiles",
+     "op": "update"
+    },
+    {
+     "table": "solicitacoes_lgpd",
+     "op": "update"
+    }
+   ],
+   "table_cols": {
+    "profiles": [
+     "id"
+    ],
+    "solicitacoes_lgpd": [
+     "id"
+    ]
+   },
+   "errors": [
+    "anonimizar titular: ${error.message}",
+    "fechar solicitação LGPD: ${error.message}"
+   ],
+   "status_values": [
+    {
+     "field": "status",
+     "value": "atendida",
+     "kind": "escreve"
+    }
+   ],
+   "rule_comments": [
+    "* Contrato mínimo usado por estas duas escritas: `from(tabela).update(payload).eq(coluna, valor)`."
+   ],
+   "doc": "Escritas da solicitação LGPD, em módulo próprio para serem testáveis sem importar o `index.ts` — que chama `serve` no topo."
+  },
   "supabase/functions/processar-solicitacao-lgpd/index.ts": {
    "path": "supabase/functions/processar-solicitacao-lgpd/index.ts",
-   "lines": 240,
+   "lines": 228,
    "tables": [
     {
      "table": "solicitacoes_lgpd",
@@ -236296,14 +236387,6 @@
     {
      "table": "solicitacoes_lgpd",
      "op": "select"
-    },
-    {
-     "table": "profiles",
-     "op": "update"
-    },
-    {
-     "table": "solicitacoes_lgpd",
-     "op": "update"
     },
     {
      "table": "auditoria_tributaria",
@@ -236337,11 +236420,6 @@
     "SUPABASE_URL"
    ],
    "status_values": [
-    {
-     "field": "status",
-     "value": "atendida",
-     "kind": "escreve"
-    },
     {
      "field": "tipo",
      "value": "acesso",
@@ -243889,10 +243967,21 @@
   }
  },
  "git": {
-  "sha": "e9cd14550a3ca6528593e9236700191388c778d6",
+  "sha": "1ccd8539da9b26b9fd064e9255bcd9d08cb28eaa",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1ccd853",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)",
+    "files": [
+     "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+     "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
+     "supabase/functions/processar-solicitacao-lgpd/index.ts"
+    ]
+   },
    {
     "sha": "e9cd145",
     "date": "2026-11-17",
@@ -244270,17 +244359,6 @@
      "src/lib/__tests__/cashflow-scenarios.test.ts",
      "src/lib/cashflow-scenarios.ts"
     ]
-   },
-   {
-    "sha": "629b697",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)",
-    "files": [
-     "src/components/contabilidade/balancete/BalanceteTable.tsx",
-     "src/lib/contabil/__tests__/balancete-utils.test.ts",
-     "src/lib/contabil/balancete-utils.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -244307,6 +244385,18 @@
    [
     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
     2
+   ],
+   [
+    "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
+    1
+   ],
+   [
+    "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
+    1
+   ],
+   [
+    "supabase/functions/processar-solicitacao-lgpd/index.ts",
+    1
    ],
    [
     "supabase/functions/analise-preditiva/index.ts",
@@ -244350,18 +244440,6 @@
    ],
    [
     "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
-    1
-   ],
-   [
-    "docs/agentes/replay-migrations-2026-11-17.md",
-    1
-   ],
-   [
-    "scripts/automation.config.json",
-    1
-   ],
-   [
-    "scripts/db/replay-bootstrap.sql",
     1
    ]
   ]

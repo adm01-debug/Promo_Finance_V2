@@ -11585,7 +11585,8 @@
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts",
-   "supabase/functions/_shared/validation.ts"
+   "supabase/functions/_shared/validation.ts",
+   "supabase/functions/processar-solicitacao-lgpd/escrita.ts"
   ],
   "supabase/functions/projecao-reforma/index.ts": [
    "supabase/functions/_shared/correlation.ts",
