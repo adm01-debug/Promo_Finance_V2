@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c",
+  "sha": "cf7bc77bfee93888fe9f078f3edb7ce5732a3d39",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 10:58 UTC",
+  "generated_at": "2026-11-17 15:19 UTC",
   "files_total": 3951,
   "code_files": 3573,
-  "code_lines": 508586
+  "code_lines": 508674
  },
  "version": "1.3.2",
- "facts_hash": "cb7af7596a75aa47",
+ "facts_hash": "152cd4ffb7727006",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -71436,7 +71436,7 @@
   {
    "module": "src/components",
    "files": 997,
-   "lines": 164746,
+   "lines": 164813,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72239,7 +72239,7 @@
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47122,
+   "lines": 47143,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -182831,7 +182831,7 @@
   },
   "src/components/admin/sso/SSOWizardDialog.tsx": {
    "path": "src/components/admin/sso/SSOWizardDialog.tsx",
-   "lines": 264,
+   "lines": 267,
    "exports": [
     "function SSOWizardDialog"
    ],
@@ -184447,7 +184447,7 @@
   },
   "src/components/audit/jit/SSOJitEventsTable.tsx": {
    "path": "src/components/audit/jit/SSOJitEventsTable.tsx",
-   "lines": 211,
+   "lines": 214,
    "exports": [
     "function SSOJitEventsTable"
    ]
@@ -185366,7 +185366,7 @@
   },
   "src/components/clientes/ClienteDetailDialog.tsx": {
    "path": "src/components/clientes/ClienteDetailDialog.tsx",
-   "lines": 220,
+   "lines": 223,
    "exports": [
     "function ClienteDetailDialog"
    ],
@@ -185411,7 +185411,7 @@
   },
   "src/components/clientes/ClienteForm.tsx": {
    "path": "src/components/clientes/ClienteForm.tsx",
-   "lines": 288,
+   "lines": 291,
    "exports": [
     "function ClienteForm"
    ],
@@ -186059,7 +186059,7 @@
   },
   "src/components/command-palette/CommandPalette.tsx": {
    "path": "src/components/command-palette/CommandPalette.tsx",
-   "lines": 194,
+   "lines": 198,
    "exports": [
     "function CommandPalette"
    ],
@@ -186175,7 +186175,7 @@
   },
   "src/components/compliance/EvidenciaStatusDialog.tsx": {
    "path": "src/components/compliance/EvidenciaStatusDialog.tsx",
-   "lines": 270,
+   "lines": 273,
    "exports": [
     "function EvidenciaStatusDialog"
    ],
@@ -186451,7 +186451,7 @@
   },
   "src/components/compras/PedidoCompraForm.tsx": {
    "path": "src/components/compras/PedidoCompraForm.tsx",
-   "lines": 335,
+   "lines": 338,
    "exports": [
     "function PedidoCompraForm"
    ],
@@ -187312,7 +187312,7 @@
   },
   "src/components/conciliacao/RegrasConciliacaoPanel.tsx": {
    "path": "src/components/conciliacao/RegrasConciliacaoPanel.tsx",
-   "lines": 400,
+   "lines": 406,
    "exports": [
     "function RegrasConciliacaoPanel"
    ],
@@ -187899,14 +187899,14 @@
   },
   "src/components/contabilidade/DreBalancoTab.tsx": {
    "path": "src/components/contabilidade/DreBalancoTab.tsx",
-   "lines": 278,
+   "lines": 281,
    "exports": [
     "function DreBalancoTab"
    ]
   },
   "src/components/contabilidade/FilterPresetsManager.tsx": {
    "path": "src/components/contabilidade/FilterPresetsManager.tsx",
-   "lines": 173,
+   "lines": 176,
    "exports": [
     "function FilterPresetsManager"
    ]
@@ -188018,7 +188018,7 @@
   },
   "src/components/contabilidade/NovoLancamentoDialog.tsx": {
    "path": "src/components/contabilidade/NovoLancamentoDialog.tsx",
-   "lines": 288,
+   "lines": 291,
    "exports": [
     "function NovoLancamentoDialog"
    ]
@@ -188045,7 +188045,7 @@
   },
   "src/components/contabilidade/PlanoContasTab.tsx": {
    "path": "src/components/contabilidade/PlanoContasTab.tsx",
-   "lines": 379,
+   "lines": 388,
    "exports": [
     "function PlanoContasTab"
    ],
@@ -189750,7 +189750,7 @@
   },
   "src/components/contas-bancarias/RegrasConciliacaoDialog.tsx": {
    "path": "src/components/contas-bancarias/RegrasConciliacaoDialog.tsx",
-   "lines": 38,
+   "lines": 41,
    "exports": [
     "function RegrasConciliacaoDialog"
    ]
@@ -189794,7 +189794,7 @@
   },
   "src/components/contas-pagar/ContaPagarForm.tsx": {
    "path": "src/components/contas-pagar/ContaPagarForm.tsx",
-   "lines": 376,
+   "lines": 379,
    "exports": [
     "function ContaPagarForm"
    ],
@@ -190447,7 +190447,7 @@
   },
   "src/components/contas-receber/ContaReceberForm.tsx": {
    "path": "src/components/contas-receber/ContaReceberForm.tsx",
-   "lines": 420,
+   "lines": 423,
    "exports": [
     "function ContaReceberForm"
    ],
@@ -192918,7 +192918,7 @@
   },
   "src/components/financeiro/TransferenciaDialog.tsx": {
    "path": "src/components/financeiro/TransferenciaDialog.tsx",
-   "lines": 259,
+   "lines": 262,
    "exports": [
     "function TransferenciaDialog"
    ],
@@ -193193,7 +193193,7 @@
   },
   "src/components/fornecedores/FornecedorDetailDialog.tsx": {
    "path": "src/components/fornecedores/FornecedorDetailDialog.tsx",
-   "lines": 214,
+   "lines": 217,
    "exports": [
     "function FornecedorDetailDialog"
    ],
@@ -193243,7 +193243,7 @@
   },
   "src/components/fornecedores/FornecedorForm.tsx": {
    "path": "src/components/fornecedores/FornecedorForm.tsx",
-   "lines": 267,
+   "lines": 270,
    "exports": [
     "function FornecedorForm"
    ],
@@ -194061,7 +194061,7 @@
   },
   "src/components/nfe/AlertasRejeicao.tsx": {
    "path": "src/components/nfe/AlertasRejeicao.tsx",
-   "lines": 436,
+   "lines": 439,
    "exports": [
     "const AlertasRejeicao"
    ],
@@ -224220,7 +224220,7 @@
   },
   "src/pages/Asaas.parts.tsx": {
    "path": "src/pages/Asaas.parts.tsx",
-   "lines": 404,
+   "lines": 407,
    "exports": [
     "function AsaasHeader",
     "function AsaasKpis",
@@ -224781,7 +224781,7 @@
   },
   "src/pages/Boletos.tsx": {
    "path": "src/pages/Boletos.tsx",
-   "lines": 374,
+   "lines": 377,
    "exports": [
     "function Boletos"
    ],
@@ -224841,7 +224841,7 @@
   },
   "src/pages/CentroCustos.tsx": {
    "path": "src/pages/CentroCustos.tsx",
-   "lines": 202,
+   "lines": 208,
    "exports": [
     "function CentroCustos"
    ],
@@ -225571,7 +225571,7 @@
   },
   "src/pages/Empresas.tsx": {
    "path": "src/pages/Empresas.tsx",
-   "lines": 423,
+   "lines": 426,
    "exports": [
     "function Empresas"
    ],
@@ -225954,7 +225954,7 @@
   },
   "src/pages/NotasFiscaisAbas.tsx": {
    "path": "src/pages/NotasFiscaisAbas.tsx",
-   "lines": 345,
+   "lines": 348,
    "exports": [
     "function NotasFiscaisAbas"
    ],
@@ -226757,7 +226757,7 @@
   },
   "src/pages/admin/ScimAudit.tsx": {
    "path": "src/pages/admin/ScimAudit.tsx",
-   "lines": 412,
+   "lines": 415,
    "exports": [
     "function ScimAudit"
    ],
@@ -247363,10 +247363,73 @@
   }
  },
  "git": {
-  "sha": "19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c",
+  "sha": "cf7bc77bfee93888fe9f078f3edb7ce5732a3d39",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "cf7bc77",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)",
+    "files": [
+     "src/components/admin/sso/SSOWizardDialog.tsx",
+     "src/components/admin/sso/ScimTokensTab.tsx",
+     "src/components/admin/telemetry/weekly-trend/WeekDetailDialog.tsx",
+     "src/components/aprovacoes/PasswordResetApprovals.tsx",
+     "src/components/audit/AuditLogTable.tsx",
+     "src/components/audit/jit/SSOJitEventsTable.tsx",
+     "src/components/bling/BlingEstoquePanel.tsx",
+     "src/components/bling/BlingFinanceiroPanel.tsx",
+     "src/components/categorias/CategoriaForm.tsx",
+     "src/components/clientes/ClienteDetailDialog.tsx",
+     "src/components/clientes/ClienteForm.tsx",
+     "src/components/cobranca/NegativacoesProtestosPanel.tsx",
+     "src/components/command-palette/CommandPalette.tsx",
+     "src/components/compliance/AuditDetailDialog.tsx",
+     "src/components/compliance/EvidenciaStatusDialog.tsx",
+     "src/components/compras/PedidoCompraForm.tsx",
+     "src/components/conciliacao/RegrasConciliacaoPanel.tsx",
+     "src/components/conciliacao/RelatorioImportacaoDialog.tsx",
+     "src/components/configuracoes/SecuritySettings.tsx",
+     "src/components/configuracoes/TemplatesTab.tsx",
+     "src/components/contabilidade/AuditoriaLancamentosPanel.tsx",
+     "src/components/contabilidade/DreBalancoTab.tsx",
+     "src/components/contabilidade/FilterPresetsManager.tsx",
+     "src/components/contabilidade/NovoLancamentoDialog.tsx",
+     "src/components/contabilidade/PlanoContasTab.tsx",
+     "src/components/contabilidade/contabilizacao-automatica/RegraFormDialog.tsx",
+     "src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx",
+     "src/components/contas-bancarias/ContaBancariaCard.tsx",
+     "src/components/contas-bancarias/NovaContaDialog.tsx",
+     "src/components/contas-bancarias/RegrasConciliacaoDialog.tsx",
+     "src/components/contas-pagar/ContaPagarForm.tsx",
+     "src/components/contas-receber/ContaReceberForm.tsx",
+     "src/components/contratos/GestaoContratos.tsx",
+     "src/components/dashboard/MetasFinanceirasPanel.tsx",
+     "src/components/financeiro/TransferenciaDialog.tsx",
+     "src/components/fornecedores/FornecedorDetailDialog.tsx",
+     "src/components/fornecedores/FornecedorForm.tsx",
+     "src/components/layout/KeyboardShortcutsDialog.tsx",
+     "src/components/nfe/AlertasRejeicao.tsx",
+     "src/components/nfe/EventosHistorico.tsx",
+     "src/components/pix-hub/AprovacaoRapidaMobile.tsx",
+     "src/components/pix-hub/PixTemplates.tsx",
+     "src/components/quick-create/QuickCreateModal.tsx",
+     "src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx",
+     "src/components/shared/saved-filters-bar/SavePresetDialog.tsx",
+     "src/components/tributario/dashboard/RelatoriosAgendadosCard.tsx",
+     "src/pages/Asaas.parts.tsx",
+     "src/pages/Boletos.tsx",
+     "src/pages/BoletosHeader.tsx",
+     "src/pages/CentroCustos.tsx",
+     "src/pages/Empresas.tsx",
+     "src/pages/NotasFiscais.tsx",
+     "src/pages/NotasFiscaisAbas.tsx",
+     "src/pages/Vendedores.tsx",
+     "src/pages/admin/ScimAudit.tsx"
+    ]
+   },
    {
     "sha": "19a248a",
     "date": "2026-11-17",
@@ -247729,30 +247792,6 @@
      "supabase/functions/gerar-heatmap-tributario/index.test.ts",
      "supabase/functions/gerar-heatmap-tributario/index.ts"
     ]
-   },
-   {
-    "sha": "90e96ca",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)",
-    "files": [
-     "docs/AUDITORIA_FINANCEIRA_EVIDENCIAS_2026-09-10.md",
-     "docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md",
-     "docs/auditoria-financeira-20260910/INTERFACE_E_INVENTARIO.md",
-     "docs/auditoria-financeira-20260910/SHA256SUMS",
-     "docs/auditoria-financeira-20260910/STATUS_2026-11-17.md",
-     "docs/auditoria-financeira-20260910/VERIFICACOES.json",
-     "docs/auditoria-financeira-20260910/cenarios.json",
-     "docs/auditoria-financeira-20260910/inventario.json.gz",
-     "docs/auditoria-financeira-20260910/navegacao.json.gz",
-     "docs/auditoria-financeira-20260910/nfe-simulada.png",
-     "docs/auditoria-financeira-20260910/resumo.json",
-     "scripts/auditoria-financeira/cenarios.ts",
-     "scripts/auditoria-financeira/consolidar.mjs",
-     "scripts/auditoria-financeira/inventario.mjs",
-     "scripts/auditoria-financeira/navegacao.mjs",
-     "scripts/automation.config.json"
-    ]
    }
   ],
   "hot_files": [
@@ -247763,6 +247802,14 @@
    [
     "bun.lock",
     5
+   ],
+   [
+    "src/components/nfe/AlertasRejeicao.tsx",
+    2
+   ],
+   [
+    "src/components/nfe/EventosHistorico.tsx",
+    2
    ],
    [
     "supabase/functions/_shared/asaas-config.ts",
@@ -247817,23 +247864,15 @@
     2
    ],
    [
-    "src/components/conciliacao/ImportarExtratoDialog.tsx",
+    "src/components/admin/sso/SSOWizardDialog.tsx",
     1
    ],
    [
-    "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
+    "src/components/admin/sso/ScimTokensTab.tsx",
     1
    ],
    [
-    "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
-    1
-   ],
-   [
-    "src/components/integracoes/OpenFinancePanel.tsx",
-    1
-   ],
-   [
-    "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+    "src/components/admin/telemetry/weekly-trend/WeekDetailDialog.tsx",
     1
    ]
   ]

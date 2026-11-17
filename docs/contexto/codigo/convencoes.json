@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)",
    "fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)",
    "fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)",
    "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)",
-   "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)",
-   "fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)"
+   "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -1066,7 +1066,7 @@
     "SSOWizardDialog"
    ],
    "export_default": null,
-   "linhas": 263,
+   "linhas": 266,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOConsistency",
@@ -2053,7 +2053,7 @@
     "SSOJitEventsTable"
    ],
    "export_default": null,
-   "linhas": 210,
+   "linhas": 213,
    "dominio": "components/audit",
    "hooks_locais": [
     "useIpMaskPreference"
@@ -2867,7 +2867,7 @@
     "ClienteDetailDialog"
    ],
    "export_default": null,
-   "linhas": 219,
+   "linhas": 222,
    "dominio": "components/clientes",
    "hooks_locais": [],
    "tabelas": [
@@ -2883,7 +2883,7 @@
     "ClienteForm"
    ],
    "export_default": null,
-   "linhas": 287,
+   "linhas": 290,
    "dominio": "components/clientes",
    "hooks_locais": [
     "useAuth",
@@ -3192,7 +3192,7 @@
     "CommandPalette"
    ],
    "export_default": null,
-   "linhas": 193,
+   "linhas": 197,
    "dominio": "components/command-palette",
    "hooks_locais": [
     "useTheme"
@@ -3332,7 +3332,7 @@
     "EvidenciaStatusDialog"
    ],
    "export_default": null,
-   "linhas": 269,
+   "linhas": 272,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3449,7 +3449,7 @@
     "PedidoCompraForm"
    ],
    "export_default": null,
-   "linhas": 334,
+   "linhas": 337,
    "dominio": "components/compras",
    "hooks_locais": [
     "useEmpresas"
@@ -3834,7 +3834,7 @@
     "RegrasConciliacaoPanel"
    ],
    "export_default": null,
-   "linhas": 399,
+   "linhas": 405,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useAuth"
@@ -4321,7 +4321,7 @@
     "DreBalancoTab"
    ],
    "export_default": null,
-   "linhas": 277,
+   "linhas": 280,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
@@ -4400,7 +4400,7 @@
     "FilterPresetsManager"
    ],
    "export_default": null,
-   "linhas": 172,
+   "linhas": 175,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
@@ -4598,7 +4598,7 @@
     "NovoLancamentoDialog"
    ],
    "export_default": null,
-   "linhas": 287,
+   "linhas": 290,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useCriarLancamento"
@@ -4628,7 +4628,7 @@
     "PlanoContasTab"
    ],
    "export_default": null,
-   "linhas": 378,
+   "linhas": 387,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuditoriaCFC",
@@ -5292,7 +5292,7 @@
     "RegrasConciliacaoDialog"
    ],
    "export_default": null,
-   "linhas": 37,
+   "linhas": 40,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [],
    "tabelas": [],
@@ -5340,7 +5340,7 @@
     "ContaPagarForm"
    ],
    "export_default": null,
-   "linhas": 375,
+   "linhas": 378,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useCategorias",
@@ -5629,7 +5629,7 @@
     "ContaReceberForm"
    ],
    "export_default": null,
-   "linhas": 419,
+   "linhas": 422,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useAuth",
@@ -7060,7 +7060,7 @@
     "TransferenciaDialog"
    ],
    "export_default": null,
-   "linhas": 258,
+   "linhas": 261,
    "dominio": "components/financeiro",
    "hooks_locais": [
     "useContasBancarias",
@@ -7277,7 +7277,7 @@
     "FornecedorDetailDialog"
    ],
    "export_default": null,
-   "linhas": 213,
+   "linhas": 216,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [
@@ -7321,7 +7321,7 @@
     "FornecedorForm"
    ],
    "export_default": null,
-   "linhas": 266,
+   "linhas": 269,
    "dominio": "components/fornecedores",
    "hooks_locais": [
     "useAuth",
@@ -7984,7 +7984,7 @@
     "AlertasRejeicao"
    ],
    "export_default": null,
-   "linhas": 435,
+   "linhas": 438,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -11327,7 +11327,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 137,
+   "usado_por": 138,
    "orfao": false
   },
   {
@@ -12663,7 +12663,7 @@
     "ScimAudit"
    ],
    "export_default": "ScimAudit",
-   "linhas": 411,
+   "linhas": 414,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth"
@@ -12888,7 +12888,7 @@
     "ReprocessDialog"
    ],
    "export_default": null,
-   "linhas": 403,
+   "linhas": 406,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13231,7 +13231,7 @@
     "Boletos"
    ],
    "export_default": "Boletos",
-   "linhas": 373,
+   "linhas": 376,
    "dominio": "pages",
    "hooks_locais": [
     "useBoletos"
@@ -13291,7 +13291,7 @@
     "CentroCustos"
    ],
    "export_default": "CentroCustos",
-   "linhas": 201,
+   "linhas": 207,
    "dominio": "pages",
    "hooks_locais": [
     "useAllCentrosCusto",
@@ -14092,7 +14092,7 @@
     "Empresas"
    ],
    "export_default": "Empresas",
-   "linhas": 422,
+   "linhas": 425,
    "dominio": "pages",
    "hooks_locais": [
     "useAllEmpresas",
@@ -14343,7 +14343,7 @@
     "NotasFiscaisAbas"
    ],
    "export_default": null,
-   "linhas": 344,
+   "linhas": 347,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],

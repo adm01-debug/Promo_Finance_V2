@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c",
+  "commit": "cf7bc77bfee93888fe9f078f3edb7ce5732a3d39",
   "branch": "main",
-  "data_commit": "2026-11-17T07:57:37-03:00",
+  "data_commit": "2026-11-17T12:18:13-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cf7bc77",
+    "data": "2026-11-17",
+    "assunto": "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)"
+   },
    {
     "sha": "19a248a",
     "data": "2026-11-17",
@@ -126,26 +131,21 @@
     "sha": "9871bfb",
     "data": "2026-11-17",
     "assunto": "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)"
-   },
-   {
-    "sha": "d97021a",
-    "data": "2026-11-17",
-    "assunto": "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)"
    }
   ],
-  "arquivos_mudados_7d": 872,
+  "arquivos_mudados_7d": 908,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
     "mudancas": 38
    },
    {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 31
+    "pasta": "src/components/contabilidade",
+    "mudancas": 36
    },
    {
-    "pasta": "src/components/contabilidade",
-    "mudancas": 30
+    "pasta": "src/components/contas-receber",
+    "mudancas": 32
    },
    {
     "pasta": "src/components/nfe",
@@ -153,7 +153,7 @@
    },
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 27
+    "mudancas": 28
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -169,7 +169,11 @@
    },
    {
     "pasta": "src/components/contas-pagar",
-    "mudancas": 21
+    "mudancas": 22
+   },
+   {
+    "pasta": "src/components/admin",
+    "mudancas": 19
    },
    {
     "pasta": "src/hooks/__tests__",
@@ -180,7 +184,7 @@
     "mudancas": 17
    },
    {
-    "pasta": "src/components/admin",
+    "pasta": "src/components/conciliacao",
     "mudancas": 16
    },
    {
@@ -188,12 +192,8 @@
     "mudancas": 14
    },
    {
-    "pasta": "src/components/conciliacao",
-    "mudancas": 14
-   },
-   {
     "pasta": "src/components/layout",
-    "mudancas": 13
+    "mudancas": 14
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 180
+    "commits": 181
    },
    {
     "autor": "dependabot[bot]",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 15
+    "commits": 12
    },
    {
     "autor": "Joaquim Ataides",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3912,
   "arquivos_codigo": 2468,
-  "linhas_codigo": 439715,
+  "linhas_codigo": 439803,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -636,7 +636,7 @@
   },
   "src/components": {
    "arquivos": 997,
-   "linhas": 163749
+   "linhas": 163816
   },
   "src/config": {
    "arquivos": 1,
@@ -668,7 +668,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46849
+   "linhas": 46870
   },
   "src/routes": {
    "arquivos": 16,

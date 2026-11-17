@@ -1767,6 +1767,7 @@
    "src/components/theme/ThemeContext.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/command.tsx",
+   "src/components/ui/dialog.tsx",
    "src/lib/unsaved-guard.ts",
    "src/lib/utils.ts"
   ],
