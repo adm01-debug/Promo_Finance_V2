@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "fee7c1da1e562fd66c901f5e7dc886adc81b247a",
+  "commit": "2aa38510eff1df92f15e73fddde07eaca44b14d5",
   "branch": "main",
-  "data_commit": "2026-11-17T20:24:19-03:00",
+  "data_commit": "2026-11-17T20:50:33-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2aa3851",
+    "data": "2026-11-17",
+    "assunto": "fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)"
+   },
+   {
+    "sha": "6d521cd",
+    "data": "2026-11-17",
+    "assunto": "docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)"
+   },
    {
     "sha": "fee7c1d",
     "data": "2026-11-17",
@@ -121,19 +131,9 @@
     "sha": "9ae3a5f",
     "data": "2026-11-17",
     "assunto": "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)"
-   },
-   {
-    "sha": "6d1f269",
-    "data": "2026-11-17",
-    "assunto": "chore(docs): auditoria de drift entre migrations e produção (#437)"
-   },
-   {
-    "sha": "6c6dec8",
-    "data": "2026-11-17",
-    "assunto": "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)"
    }
   ],
-  "arquivos_mudados_7d": 926,
+  "arquivos_mudados_7d": 927,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -203,7 +203,7 @@
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 212
+    "commits": 214
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3936,
+  "arquivos_total": 3937,
   "arquivos_codigo": 2474,
   "linhas_codigo": 440624,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1045,
+  "migrations": 1046,
   "cron_jobs": 22,
   "testes": 478,
   "workflows": 19,

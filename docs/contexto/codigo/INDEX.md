@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `fee7c1da1e562fd66c901f5e7dc886adc81b247a` (2026-11-17T20:24:19-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2aa38510eff1df92f15e73fddde07eaca44b14d5` (2026-11-17T20:50:33-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1117), Markdown (201), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2360), SQL (1118), Markdown (201), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3936 |
+| arquivos_total | 3937 |
 | arquivos_codigo | 2474 |
 | linhas_codigo | 440624 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 321 |
-| migrations | 1045 |
+| migrations | 1046 |
 | cron_jobs | 22 |
 | testes | 478 |
 | workflows | 19 |
@@ -462,7 +462,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (39)
-- bun.lock (34)
+- bun.lock (33)
 - .github/workflows/ci.yml (24)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
@@ -629,6 +629,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `2aa3851` fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)
+- 2026-11-17 `6d521cd` docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)
 - 2026-11-17 `fee7c1d` chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)
 - 2026-11-17 `f17d2d4` docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)
 - 2026-11-17 `c862e68` docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)
@@ -642,8 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `2e8ac1d` infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)
 - 2026-11-17 `31bd09e` fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)
 - 2026-11-17 `9aa7ea6` chore: recupera e termina o trabalho da PR #442, de outro agente (#449)
-- 2026-11-17 `5be2cfc` feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)
-- 2026-11-17 `176877a` infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
