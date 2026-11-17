@@ -99,7 +99,7 @@ export function useContasPagarLogic() {
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: empresas = [] } = useEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();
-  const { data: configuracao } = useConfiguracaoAprovacao();
+  const { data: configuracao } = useConfiguracaoAprovacao(currentEmpresaId || undefined);
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
   const deleteMutation = useDeleteContaPagar();
   const updateMutation = useUpdateContaPagar();

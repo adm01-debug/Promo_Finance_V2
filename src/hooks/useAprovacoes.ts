@@ -63,18 +63,30 @@ export interface ComentarioAprovacao {
   created_at: string;
 }
 
-export const useConfiguracaoAprovacao = () => {
+export const useConfiguracaoAprovacao = (empresaId?: string) => {
   return useQuery({
-    queryKey: ['configuracao-aprovacao'],
+    queryKey: ['configuracao-aprovacao', empresaId ?? 'all'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // `maybeSingle()` devolve erro quando o filtro casa mais de uma linha, e
+      // producao tem 6 linhas com ativo=true na mesma empresa (tres faixas --
+      // 5.000 / 50.000 / 999.999 -- semeadas duas vezes em 2026-07-28). O erro
+      // caia no `throw` abaixo, a configuracao nunca carregava, e os tres
+      // consumidores decidem por `!config?.ativo` -> requerAprovacao = false:
+      // a alcada configurada pelo dono nunca era exigida de pagamento nenhum.
+      // Escolha conservadora e deterministica: a MENOR faixa ativa, que e a que
+      // mais protege. Escopo por empresa quando o chamador souber qual e.
+      let q = supabase
         .from('configuracoes_aprovacao')
         .select('*')
         .eq('ativo', true)
-        .maybeSingle();
+        .order('valor_minimo_aprovacao', { ascending: true })
+        .limit(1);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
+
+      const { data, error } = await q;
 
       if (error) throw error;
-      return data as ConfiguracaoAprovacao | null;
+      return (data?.[0] ?? null) as ConfiguracaoAprovacao | null;
     },
   });
 };

@@ -16,7 +16,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-import { useComentariosAprovacao } from '@/hooks/useAprovacoes';
+import { useComentariosAprovacao, useConfiguracaoAprovacao } from '@/hooks/useAprovacoes';
 
 const makeWrapper = () => {
   const qc = new QueryClient({
@@ -34,6 +34,7 @@ const buildChain = (resultado: { data: unknown; error: unknown } = { data: null,
     eq: vi.fn(),
     order: vi.fn(),
     select: vi.fn(),
+    limit: vi.fn(),
     maybeSingle: vi.fn(),
     single: vi.fn(),
     then: ((
@@ -48,6 +49,7 @@ const buildChain = (resultado: { data: unknown; error: unknown } = { data: null,
   builder.eq.mockReturnValue(builder);
   builder.order.mockReturnValue(builder);
   builder.select.mockReturnValue(builder);
+  builder.limit.mockReturnValue(builder);
   builder.maybeSingle.mockReturnValue(builder);
   builder.single.mockReturnValue(builder);
   return builder;
@@ -93,5 +95,120 @@ describe('useComentariosAprovacao (contrato real user_id/comentario)', () => {
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+});
+
+describe('useConfiguracaoAprovacao (alcada com varias faixas ativas)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // As tres faixas de producao (5.000 / 50.000 / 999.999), semeadas duas vezes
+  // em 2026-07-28: 6 linhas com ativo=true para a mesma empresa.
+  const seisFaixasAtivas = [
+    {
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 5000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    },
+    {
+      id: 'b',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 50000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    },
+    {
+      id: 'c',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 999999,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    },
+    {
+      id: 'd',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 5000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    },
+    {
+      id: 'e',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 50000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    },
+    {
+      id: 'f',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 999999,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    },
+  ];
+
+  it('carrega a configuracao com 6 faixas ativas, em vez de quebrar no maybeSingle', async () => {
+    // Antes: .maybeSingle() com 6 linhas devolvia erro, o hook fazia throw, e os
+    // consumidores caiam em requerAprovacao = false -- nenhum pagamento exigia
+    // aprovacao, qualquer que fosse o valor.
+    const chain = buildChain({ data: [seisFaixasAtivas[0]], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useConfiguracaoAprovacao('e1'), {
+      wrapper: makeWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.error).toBeNull();
+    expect(result.current.data).not.toBeNull();
+    expect(result.current.data?.ativo).toBe(true);
+    expect(result.current.data?.valor_minimo_aprovacao).toBe(5000);
+  });
+
+  it('pede a MENOR faixa ativa ao banco: ordena crescente e limita a 1', async () => {
+    const chain = buildChain({ data: [seisFaixasAtivas[0]], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useConfiguracaoAprovacao('e1'), {
+      wrapper: makeWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockFrom).toHaveBeenCalledWith('configuracoes_aprovacao');
+    expect(chain.order).toHaveBeenCalledWith('valor_minimo_aprovacao', { ascending: true });
+    expect(chain.limit).toHaveBeenCalledWith(1);
+    // o contrato antigo nao pode voltar
+    expect(chain.maybeSingle).not.toHaveBeenCalled();
+    expect(chain.single).not.toHaveBeenCalled();
+  });
+
+  it('filtra por empresa quando o chamador informa, e nao filtra quando nao informa', async () => {
+    const comEmpresa = buildChain({ data: [seisFaixasAtivas[0]], error: null });
+    mockFrom.mockReturnValue(comEmpresa);
+    const r1 = renderHook(() => useConfiguracaoAprovacao('e1'), { wrapper: makeWrapper() });
+    await waitFor(() => expect(r1.result.current.isSuccess).toBe(true));
+    expect(comEmpresa.eq).toHaveBeenCalledWith('empresa_id', 'e1');
+
+    vi.clearAllMocks();
+    const semEmpresa = buildChain({ data: [seisFaixasAtivas[0]], error: null });
+    mockFrom.mockReturnValue(semEmpresa);
+    const r2 = renderHook(() => useConfiguracaoAprovacao(), { wrapper: makeWrapper() });
+    await waitFor(() => expect(r2.result.current.isSuccess).toBe(true));
+    expect(semEmpresa.eq).toHaveBeenCalledWith('ativo', true);
+    expect(semEmpresa.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
+  });
+
+  it('sem faixa ativa devolve null, e nao um objeto falso', async () => {
+    const chain = buildChain({ data: [], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useConfiguracaoAprovacao('e1'), {
+      wrapper: makeWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeNull();
   });
 });
