@@ -14,6 +14,7 @@ import {
   exigirRegistroLocalDaCobranca,
   getNextBoletoNumber,
   validarEmissaoBoletoConfirmada,
+  variacoesDocumento,
 } from './useBoletos.helpers';
 
 export function useBoletos() {
@@ -136,7 +137,7 @@ export function useBoletos() {
           .from('asaas_customers')
           .select('asaas_id')
           .eq('empresa_id', data.empresa_id)
-          .eq('cpf_cnpj', data.sacado_cpf_cnpj)
+          .in('cpf_cnpj', variacoesDocumento(data.sacado_cpf_cnpj))
           .not('asaas_id', 'is', null)
           .limit(1)
           .maybeSingle();

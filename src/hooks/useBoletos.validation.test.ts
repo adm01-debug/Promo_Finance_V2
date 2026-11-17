@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   exigirRegistroLocalDaCobranca,
   validarEmissaoBoletoConfirmada,
+  variacoesDocumento,
 } from './useBoletos.helpers';
 
 describe('validarEmissaoBoletoConfirmada', () => {
@@ -55,5 +56,29 @@ describe('exigirRegistroLocalDaCobranca', () => {
   it('não trata resposta sem o campo como falha', () => {
     expect(() => exigirRegistroLocalDaCobranca({ id: 'pay_1' })).not.toThrow();
     expect(() => exigirRegistroLocalDaCobranca(null)).not.toThrow();
+  });
+});
+
+describe('variacoesDocumento', () => {
+  it('aceita o documento com a pontuação sugerida pelo próprio formulário', () => {
+    expect(variacoesDocumento('12.345.678/0001-99')).toEqual([
+      '12345678000199',
+      '12.345.678/0001-99',
+    ]);
+  });
+
+  it('não duplica quando o documento já vem só com dígitos', () => {
+    expect(variacoesDocumento('12345678000199')).toEqual(['12345678000199']);
+  });
+
+  it('cobre CPF com e sem pontuação', () => {
+    expect(variacoesDocumento('123.456.789-09')).toEqual(['12345678909', '123.456.789-09']);
+  });
+
+  it('documento vazio ou ausente não gera filtro', () => {
+    expect(variacoesDocumento('')).toEqual([]);
+    expect(variacoesDocumento(null)).toEqual([]);
+    expect(variacoesDocumento(undefined)).toEqual([]);
+    expect(variacoesDocumento('   ')).toEqual([]);
   });
 });
