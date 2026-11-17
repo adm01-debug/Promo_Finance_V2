@@ -100,3 +100,45 @@ BEGIN
       UNIQUE (empresa_id, semana_inicio);
   END IF;
 END $$;
+
+-- Chaves estrangeiras declaradas junto com 4 dessas colunas e ausentes em
+-- produção. Tipo e default iguais não garantem integridade referencial: sem
+-- isto o banco aceitaria user_id, cliente_id ou empresa_id apontando para
+-- registro que não existe. As 4 tabelas-alvo existem; asaas_audit_trail,
+-- asaas_transfers e sso_login_attempts estão vazias, e as 10 linhas de
+-- execucoes_cobranca têm cliente_id nulo (coluna recém-criada), então a
+-- validação não encontra violação.
+--
+-- Fora daqui: as FKs de payment_id em asaas_audit_trail e asaas_sync_queue, que
+-- as migrations declaram sobre a coluna fantasma payment_id — o vínculo real é
+-- o de asaas_payment_id, que já existe em produção, e o código foi corrigido
+-- para usá-lo na PR #441.
+DO $$
+DECLARE
+  r record;
+BEGIN
+  FOR r IN
+    SELECT *
+    FROM (
+      VALUES
+        ('asaas_audit_trail', 'asaas_audit_trail_user_id_fkey',
+         'FOREIGN KEY (user_id) REFERENCES auth.users(id)'),
+        ('asaas_transfers', 'asaas_transfers_user_id_fkey',
+         'FOREIGN KEY (user_id) REFERENCES auth.users(id)'),
+        ('execucoes_cobranca', 'execucoes_cobranca_cliente_id_fkey',
+         'FOREIGN KEY (cliente_id) REFERENCES public.clientes(id)'),
+        ('sso_login_attempts', 'sso_login_attempts_empresa_id_fkey',
+         'FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE SET NULL')
+    ) AS v(tabela, nome, definicao)
+  LOOP
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_constraint c
+      JOIN pg_class t ON t.oid = c.conrelid
+      JOIN pg_namespace n ON n.oid = t.relnamespace
+      WHERE n.nspname = 'public' AND t.relname = r.tabela AND c.conname = r.nome
+    ) THEN
+      EXECUTE format('ALTER TABLE public.%I ADD CONSTRAINT %I %s', r.tabela, r.nome, r.definicao);
+    END IF;
+  END LOOP;
+END $$;
