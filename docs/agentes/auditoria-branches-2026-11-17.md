@@ -111,3 +111,37 @@ commit de `main` desta sessão (`1ccd853` e `4ba4b44`). Isso confirma a seção 
 entrega de workflow ativo, não trabalho abandonado.
 
 **Nenhuma das 13 contém código-fonte, migration, edge function ou UI ausente da `main`.**
+
+### 4.4 Comparação byte a byte, não por contagem
+
+Contar commit e arquivo não prova equivalência. O teste aplicado nas 4 branches sem PR
+compara **hash de blob**, arquivo por arquivo:
+
+```bash
+# arquivos exclusivos da branch que sejam código-fonte
+comm -13 <(git ls-tree -r --name-only origin/main | sort) \
+         <(git ls-tree -r --name-only origin/<branch> | sort) \
+  | grep -cE '^(src/|supabase/(functions|migrations)/)'
+
+# arquivos compartilhados cujo CONTEÚDO difere (blob hash diferente)
+join <(git ls-tree -r origin/main      | awk '{print $4" "$3}' | sort) \
+     <(git ls-tree -r origin/<branch>  | awk '{print $4" "$3}' | sort) \
+  | awk '$2!=$3{print $1}' | grep -E '^(src/|supabase/(functions|migrations)/)'
+```
+
+| branch                   | exclusivos que são código-fonte | blobs de código divergentes da `main` | divergentes **contra o próprio merge-base** |
+| ------------------------ | ------------------------------- | ------------------------------------- | ------------------------------------------- |
+| `contexto`               | **0** (de 1687 exclusivos)      | **0**                                 | —                                           |
+| `inventario`             | **0** (de 3)                    | **0**                                 | —                                           |
+| `automation/estado-real` | **0** (de 0)                    | 6 edge functions                      | **0** (merge-base `176877a`)                |
+| `computador_local`       | **0** (de 0)                    | 9 edge functions                      | **0** (merge-base `e9cd145`)                |
+
+As divergências das duas últimas são a `main` ter avançado: os blobs delas são
+**byte-idênticos ao próprio merge-base**, e o único commit exclusivo de
+`automation/estado-real` (`c29292ea0`) toca apenas
+`docs/ci/{MATRIZ_EDGE_TABELA.md,README.md,kpi.json}`. Não é versão alternativa de edge
+function — é a versão anterior ao merge.
+
+**Conclusão byte a byte: não existe um byte de código-fonte, migration, edge function ou UI
+em branch alguma que não esteja na `main` ou não seja uma versão mais antiga de algo que
+está na `main`.**
