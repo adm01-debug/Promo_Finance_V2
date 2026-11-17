@@ -308,7 +308,10 @@ serve(
         await updateRun({ current_step: 'detector_regime', step_index: 5 });
         const { data: regimes } = await client
           .from('regime_decision_cache')
-          .select('empresa_id, ano, mes, carga_pct, regime_recomendado')
+          // regime_decision_cache não tem `carga_pct` nem `regime_recomendado`:
+          // a decisão inteira fica em `decisao` (jsonb), e pedir as colunas
+          // inexistentes derrubava o select, desligando este detector
+          .select('empresa_id, ano, mes, decisao')
           .order('ano', { ascending: false })
           .order('mes', { ascending: false })
           .limit(500);
@@ -319,8 +322,16 @@ serve(
           >();
           for (const r of regimes) {
             if (!r.empresa_id) continue;
+            const decisao = (r.decisao ?? {}) as {
+              recomendado?: { cargaEfetiva?: number | null };
+            };
+            const carga = decisao.recomendado?.cargaEfetiva;
             if (!byEmp.has(r.empresa_id)) byEmp.set(r.empresa_id, []);
-            byEmp.get(r.empresa_id)!.push(r);
+            byEmp.get(r.empresa_id)!.push({
+              carga_pct: typeof carga === 'number' ? carga : null,
+              ano: r.ano,
+              mes: r.mes,
+            });
           }
           for (const [empId, arr] of byEmp.entries()) {
             if (arr.length < 2) continue;

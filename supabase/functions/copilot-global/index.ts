@@ -136,7 +136,10 @@ async function executeTool(name: string, sb: ReturnType<typeof createClient>, us
       const { data } = await (sb as any)
         .from('health_scores_operacionais')
         .select('*')
-        .order('calculado_em', { ascending: false })
+        // health_scores_operacionais não tem `calculado_em`; a coluna de data é
+        // `created_at`, e com o nome errado a consulta falhava — a ferramenta
+        // respondia sempre "Nenhum health score calculado ainda"
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
       return data ?? { mensagem: 'Nenhum health score calculado ainda' };

@@ -105,7 +105,10 @@ Deno.serve(
 
         const { data: fat } = await supa
           .from('faturamento_mensal')
-          .select('receita_bruta, total_tributos')
+          // a coluna de tributos em faturamento_mensal é `valor_impostos`;
+          // `total_tributos` não existe e derrubava o select inteiro, deixando
+          // a carga da empresa sem histórico nenhum
+          .select('receita_bruta, valor_impostos')
           .eq('empresa_id', empresaId)
           .order('ano', { ascending: false })
           .order('mes', { ascending: false })
@@ -113,7 +116,7 @@ Deno.serve(
 
         if (fat && fat.length > 0) {
           const totReceita = fat.reduce((acc, r) => acc + Number(r.receita_bruta || 0), 0);
-          const totTrib = fat.reduce((acc, r) => acc + Number(r.total_tributos || 0), 0);
+          const totTrib = fat.reduce((acc, r) => acc + Number(r.valor_impostos || 0), 0);
           if (totReceita > 0) cargaEmpresa12m = Math.round((totTrib / totReceita) * 1000) / 10;
         }
       }
