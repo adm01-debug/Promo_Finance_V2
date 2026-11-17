@@ -122,7 +122,10 @@ export const handler = async (req: Request) => {
               if (updErr) throw new RetryableError(`update asaas_payments: ${updErr.message}`);
 
               await supabase.from('asaas_audit_trail').insert({
-                payment_id: localPayment.id,
+                // A coluna é asaas_payment_id (FK -> asaas_payments.id); com
+                // `payment_id` o INSERT era recusado e nenhum evento de webhook
+                // do Asaas ficava registrado.
+                asaas_payment_id: localPayment.id,
                 action: 'WEBHOOK_PAYMENT',
                 previous_status: localPayment.status,
                 new_status: newStatus,

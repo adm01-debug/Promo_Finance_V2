@@ -132,10 +132,11 @@ export const handler = async (req: Request) => {
               .maybeSingle();
 
             if (exec) {
+              // conta_receber_id não é id de asaas_payments, então não cabe em
+              // asaas_payment_id (FK -> asaas_payments.id): vai em details.
               const { error: auditError } = await supabase.from('asaas_audit_trail').insert({
-                payment_id: exec.conta_receber_id,
                 action: 'WHATSAPP_REPLY',
-                details: { message: body.text, from },
+                details: { message: body.text, from, conta_receber_id: exec.conta_receber_id },
               });
               if (auditError)
                 throw new RetryableError(`insert asaas_audit_trail: ${auditError.message}`);
