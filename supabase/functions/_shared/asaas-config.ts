@@ -60,3 +60,43 @@ export function resolverEncargo(
   }
   return escolhido;
 }
+
+/**
+ * O identificador de cliente do Asaas é texto com prefixo `cus_`. Já a coluna
+ * `asaas_payments.asaas_customer_id` é `uuid` com FK para `asaas_customers.id`
+ * — são duas identidades diferentes, e gravar uma no lugar da outra derruba o
+ * insert com 22P02 (invalid input syntax for type uuid). Checar o prefixo antes
+ * de chamar o provedor evita criar cobrança que o banco não consegue registrar.
+ */
+export function pareceIdClienteAsaas(valor: unknown): boolean {
+  return typeof valor === 'string' && valor.trim().startsWith('cus_');
+}
+
+/**
+ * Instrumentos de pagamento do boleto achatados na raiz da resposta.
+ *
+ * O proxy devolvia a linha digitável e o código de barras só dentro de
+ * `boletoData`, enquanto o front valida `identificationField`/`barCode` na
+ * raiz (src/hooks/useBoletos.helpers.ts) — então toda emissão era recusada com
+ * "ASAAS não retornou linha digitável e código de barras válidos" mesmo quando
+ * o Asaas devolvia os dois. Mantém `boletoData` intacto para quem já o lia.
+ */
+export function achatarInstrumentosBoleto(boletoData: unknown): {
+  identificationField?: string;
+  barCode?: string;
+  nossoNumero?: string;
+} {
+  if (!boletoData || typeof boletoData !== 'object') return {};
+  const registro = boletoData as Record<string, unknown>;
+  const achatado: { identificationField?: string; barCode?: string; nossoNumero?: string } = {};
+  if (typeof registro.identificationField === 'string' && registro.identificationField.trim()) {
+    achatado.identificationField = registro.identificationField;
+  }
+  if (typeof registro.barCode === 'string' && registro.barCode.trim()) {
+    achatado.barCode = registro.barCode;
+  }
+  if (typeof registro.nossoNumero === 'string' && registro.nossoNumero.trim()) {
+    achatado.nossoNumero = registro.nossoNumero;
+  }
+  return achatado;
+}

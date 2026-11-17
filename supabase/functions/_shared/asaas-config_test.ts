@@ -1,5 +1,10 @@
 import { assertEquals } from 'https://deno.land/std@0.190.0/testing/asserts.ts';
-import { lerConfigAsaas, resolverEncargo } from './asaas-config.ts';
+import {
+  achatarInstrumentosBoleto,
+  lerConfigAsaas,
+  pareceIdClienteAsaas,
+  resolverEncargo,
+} from './asaas-config.ts';
 
 Deno.test('lerConfigAsaas: le os campos de dentro de configuracoes (onde a UI grava)', () => {
   const linha = {
@@ -69,4 +74,38 @@ Deno.test('resolverEncargo: valor invalido nao vira encargo', () => {
   assertEquals(resolverEncargo(Number.NaN, 2), undefined);
   assertEquals(resolverEncargo(-1, 2), undefined);
   assertEquals(resolverEncargo(undefined, Number.POSITIVE_INFINITY), undefined);
+});
+
+Deno.test('pareceIdClienteAsaas: aceita o id do provedor', () => {
+  assertEquals(pareceIdClienteAsaas('cus_000005113026'), true);
+  assertEquals(pareceIdClienteAsaas('  cus_abc  '), true);
+});
+
+Deno.test('pareceIdClienteAsaas: recusa uuid, CPF/CNPJ e vazio', () => {
+  assertEquals(pareceIdClienteAsaas('1f1a2b3c-4d5e-6f70-8192-a3b4c5d6e7f8'), false);
+  assertEquals(pareceIdClienteAsaas('12345678000199'), false);
+  assertEquals(pareceIdClienteAsaas(''), false);
+  assertEquals(pareceIdClienteAsaas(null), false);
+  assertEquals(pareceIdClienteAsaas(undefined), false);
+});
+
+Deno.test('achatarInstrumentosBoleto: sobe linha digitavel e codigo de barras', () => {
+  assertEquals(
+    achatarInstrumentosBoleto({
+      identificationField: '00190500954014481606906809350314337370000000100',
+      barCode: '00193373700000001000500940144816060680935031',
+      nossoNumero: '9876',
+    }),
+    {
+      identificationField: '00190500954014481606906809350314337370000000100',
+      barCode: '00193373700000001000500940144816060680935031',
+      nossoNumero: '9876',
+    }
+  );
+});
+
+Deno.test('achatarInstrumentosBoleto: ausencia e campo vazio nao viram instrumento', () => {
+  assertEquals(achatarInstrumentosBoleto(null), {});
+  assertEquals(achatarInstrumentosBoleto({ identificationField: '   ', barCode: '' }), {});
+  assertEquals(achatarInstrumentosBoleto('cus_1'), {});
 });
