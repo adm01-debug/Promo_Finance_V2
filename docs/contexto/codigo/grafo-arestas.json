@@ -6551,6 +6551,7 @@
    "src/hooks/financial/views.schemas.ts",
    "src/hooks/financial/views.types.ts",
    "src/integrations/supabase/client.ts",
+   "src/lib/logger.ts",
    "src/lib/queryClient.ts"
   ],
   "src/hooks/financial/useDashboardKPIs.ts": [

@@ -1720,13 +1720,13 @@
   {
    "arquivo": "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
    "tipo": "unit",
-   "linhas": 347,
+   "linhas": 388,
    "testa": [
     "src/hooks/financial/useContasPagar.ts",
     "src/hooks/financial/useContasReceber.ts",
     "src/hooks/financial/views.types.ts"
    ],
-   "casos": 12
+   "casos": 14
   },
   {
    "arquivo": "src/hooks/financial/__tests__/views.schemas.test.ts",

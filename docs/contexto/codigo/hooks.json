@@ -908,7 +908,7 @@
     "useContasReceber",
     "useContasReceberPaginated"
    ],
-   "linhas": 109,
+   "linhas": 143,
    "dominio": "hooks/financial",
    "tabelas": [
     "contas_receber",

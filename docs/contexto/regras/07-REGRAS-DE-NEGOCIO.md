@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `685b65c525` · branch `main` · 2026-11-17 07:57 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c772d6357f` · branch `main` · 2026-11-17 07:58 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4116,6 +4116,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `EXPORT_CAP` | `5000` | `src/hooks/useTrilhaAuditoria.ts` |
 | `PAGINA_CONTAS_PAGAR` | `1000` | `src/hooks/financial/useContasPagar.ts` |
 | `TETO_CONTAS_PAGAR` | `20` | `src/hooks/financial/useContasPagar.ts` |
+| `PAGINA_CONTAS_RECEBER` | `1000` | `src/hooks/financial/useContasReceber.ts` |
+| `TETO_CONTAS_RECEBER` | `20` | `src/hooks/financial/useContasReceber.ts` |
 | `ANOMALIA_DRAWER_EVENT` | `'open-anomalia-drawer'` | `src/lib/anomalia-routes.ts` |
 | `BOM` | `'\uFEFF'` | `src/lib/export-utils.ts` |
 | `BUFFER_MAX` | `100` | `src/lib/filterHydrationTelemetry.ts` |
@@ -5091,7 +5093,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3535 testes em 307 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3537 testes em 307 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5143,6 +5145,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/conformidade-fiscal.test.ts` | 19 | classificarConformidade · mapeia as quatro faixas nos limites exatos · calcularConformidade — casos unitários · retorna 100 para conjunto vazio (sem obrigações, sem risco) … |
 | `src/components/reforma-tributaria/__tests__/KPIComparativo.test.tsx` | 18 | KPIComparativo · Cálculo de variação · exibe variação positiva · exibe variação negativa … |
 | `src/components/ui/__tests__/card.test.tsx` | 18 | Card · renders children · has default classes · applies custom className … |
+| `src/hooks/financial/__tests__/useContasReceberPagar.test.tsx` | 18 | useContasReceber · consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e primeira pagina · agrega todas as paginas: totais deixam de parar nos primeiros 1.000 titulos · propaga erro de uma pagina seguinte em vez de devolver agregado parcial … |
 | `src/lib/__tests__/audit-priority.test.ts` | 18 | audit-priority · classifyAuditPriority · mapeia actions base corretamente · tabela sensível eleva para high … |
 | `src/lib/__tests__/currency.test.ts` | 18 | Currency Utilities - Robustness & Regression · Floating Point Precision · deve somar valores decimais corretamente evitando erros de precisão IEEE 754 · deve lidar com somas complexas com muitos decimais … |
 | `src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx` | 17 | NavigationTributaria · Renderização de grupos · renderiza grupos na versão mobile · Badge de alertas dinâmico … |
@@ -5153,7 +5156,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
-| `src/hooks/financial/__tests__/useContasReceberPagar.test.tsx` | 16 | useContasReceber · consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e limit 1000 · filtra por empresa_id quando informado e ignora quando  · propaga erro do backend … |
 | `src/lib/__tests__/sped-generator.test.ts` | 16 | SPED Generator · gerarEFD_IBS_CBS · gera arquivo com registro inicial 0000 · gera arquivo com registro final 9999 … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
@@ -5898,6 +5900,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | *Contas a Pagar:** Nenhum vencimento no período ✅\n\n`; | `src/hooks/expert-actions/query-actions.ts` |
 | *Contas a Receber:** Nenhum vencimento no período\n`; | `src/hooks/expert-actions/query-actions.ts` |
 | useContasPagarPaginated. Com `.limit(1000)` fixo, uma empresa com mais | `src/hooks/financial/useContasPagar.ts` |
+| useContasReceberPaginated. Com `.limit(1000)` fixo, acima de mil | `src/hooks/financial/useContasReceber.ts` |
 | * Zod schemas para validação runtime das views financeiras. | `src/hooks/financial/views.schemas.ts` |
 | * Tamanho mínimo (nunca reduz abaixo disso). Default: 2. */ | `src/lib/adaptive-chunk.ts` |
 | * Tamanho máximo (nunca cresce acima disso). Default: 50. */ | `src/lib/adaptive-chunk.ts` |
@@ -5977,5 +5980,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| 2) o valor nao pode ja ter virgula -- se tem, os centavos estao la; | `src/lib/ofx-parser/csv.ts` |
-| … +414 linhas — lista completa em `context.json` | |
+| … +415 linhas — lista completa em `context.json` | |
