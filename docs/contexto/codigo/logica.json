@@ -4535,12 +4535,13 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 32,
+   "usado_por": 33,
    "usado_por_modulos": [
     "components/admin",
     "components/compliance",
     "components/configuracoes",
     "components/contabilidade",
+    "components/contas-receber",
     "hooks",
     "hooks/bling",
     "hooks/financial",
@@ -8285,7 +8286,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 312,
+   "usado_por": 313,
    "usado_por_modulos": [
     "components/admin",
     "components/alertas",

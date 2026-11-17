@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `58d7e40dc2f3d2c556aa8b8543df0b833fed22b3` (2026-11-17T02:34:57-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f62e08ec5ffd78fe558a061c74bad4d6a2129822` (2026-11-17T03:07:13-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2342), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2343), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,15 +34,15 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3894 |
-| arquivos_codigo | 2456 |
-| linhas_codigo | 437770 |
+| arquivos_total | 3895 |
+| arquivos_codigo | 2457 |
+| linhas_codigo | 437985 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
 | modulos | 128 |
-| componentes | 991 |
+| componentes | 992 |
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
@@ -55,7 +55,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (777), src/pages (210), src/hooks (2)
+- componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
 - testes: co-localizado (__tests__) (273), outro (108), co-localizado (*.test) (43)
@@ -88,7 +88,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/contabilidade | 0 | 0 | 106 | 45 | 5 | 29 |
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
 | components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
-| components/contas-receber | 0 | 0 | 35 | 32 | 3 | 26 |
+| components/contas-receber | 0 | 0 | 36 | 32 | 3 | 26 |
 | components/dashboard | 0 | 0 | 26 | 93 | 8 | 40 |
 | components/demonstrativos | 0 | 0 | 9 | 22 | 1 | 16 |
 | components/empresas | 0 | 0 | 9 | 11 | 0 | 12 |
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `f62e08e` feat(webhooks): botao de reprocessar na fila de falhas (#410)
 - 2026-11-17 `58d7e40` feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)
 - 2026-11-17 `2698b5b` fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)
 - 2026-11-17 `61d2a4b` fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `90e96ca` chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)
 - 2026-11-16 `5bc41a5` fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)
 - 2026-11-16 `e93d744` fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)
-- 2026-11-16 `a133ea0` feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

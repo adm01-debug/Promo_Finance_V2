@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 991,
+ "total": 992,
  "orfaos": 39,
  "nomes_duplicados": {
   "Accordion": [
@@ -5982,12 +5982,27 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/contas-receber/WebhookDlqItem.tsx",
+   "exports": [
+    "DlqRow",
+    "WebhookDlqItem"
+   ],
+   "export_default": null,
+   "linhas": 77,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/contas-receber/WebhookDlqPanel.tsx",
    "exports": [
     "WebhookDlqPanel"
    ],
    "export_default": null,
-   "linhas": 227,
+   "linhas": 280,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useAuth"
@@ -10922,7 +10937,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 13,
+   "usado_por": 14,
    "orfao": false
   },
   {
@@ -10976,7 +10991,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 447,
+   "usado_por": 448,
    "orfao": false
   },
   {
@@ -11025,7 +11040,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 528,
+   "usado_por": 529,
    "orfao": false
   },
   {

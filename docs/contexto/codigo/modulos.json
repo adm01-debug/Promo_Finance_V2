@@ -2413,13 +2413,13 @@
   },
   {
    "modulo": "components/contas-receber",
-   "arquivos": 35,
+   "arquivos": 36,
    "testes": 7,
-   "linhas": 5633,
+   "linhas": 5763,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
-   "componentes": 31,
+   "componentes": 32,
    "hooks_locais": [
     "useAuth",
     "useCategoria",
@@ -2488,7 +2488,9 @@
     "webhook_dlq",
     "webhooks_log"
    ],
-   "rpcs": [],
+   "rpcs": [
+    "reprocess_dlq"
+   ],
    "buckets": [],
    "canais_realtime": [
     "webhook-logs-realtime-${Math.random().toString(36).slice(2, 8)}"
@@ -2526,7 +2528,9 @@
      "webhook_dlq",
      "webhooks_log"
     ],
-    "rpcs": []
+    "rpcs": [
+     "reprocess_dlq"
+    ]
    },
    "importado_por_outros_modulos": [
     "hooks",
@@ -4984,6 +4988,7 @@
     "get_cron_run_history",
     "log_audit",
     "registrar_auditoria_config",
+    "reprocess_dlq",
     "toggle_cron_job",
     "totais_contas_pagar",
     "totais_contas_receber"
@@ -7557,6 +7562,7 @@
     "processar_regua_cobranca",
     "registrar_auditoria_config",
     "registrar_nfe_com_creditos",
+    "reprocess_dlq",
     "resolve_integrity_alert",
     "resolve_sso_providers_for_domain",
     "silenciar_alerta_erro_frontend",
@@ -10152,6 +10158,7 @@
     "processar_regua_cobranca",
     "registrar_auditoria_config",
     "registrar_nfe_com_creditos",
+    "reprocess_dlq",
     "reset_failed_attempts",
     "resolve_integrity_alert",
     "resolve_sso_providers_for_domain",
@@ -12682,6 +12689,7 @@
     "processar_regua_cobranca",
     "registrar_auditoria_config",
     "registrar_nfe_com_creditos",
+    "reprocess_dlq",
     "resolve_integrity_alert",
     "silenciar_alerta_erro_frontend",
     "toggle_cron_job",

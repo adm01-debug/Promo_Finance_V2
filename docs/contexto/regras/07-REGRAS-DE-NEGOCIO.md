@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `58d7e40dc2` · branch `main` · 2026-11-17 05:35 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f62e08ec5f` · branch `main` · 2026-11-17 06:07 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5038,7 +5038,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
-| … +788 linhas — lista completa em `context.json` | |
+| … +790 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5097,7 +5097,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3497 testes em 304 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3500 testes em 304 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5194,6 +5194,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 13 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS pleno 8,8%, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `src/lib/tributario/__tests__/snapshot-normalizacao.test.ts` | 13 | normalizarParametrosSnapshot — contrato · rejeita payloads que não são objeto · rejeita snapshot sem faturamento anual finito · coage faturamento anual persistido como string numérica … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
+| `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 12 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
 | `src/components/navigation/__tests__/BackButton.test.tsx` | 12 | BackButton · renders on non-home pages · does NOT render on home page · does NOT render on /dashboard … |
 | `src/hooks/__tests__/useBulkActions.test.ts` | 12 | useBulkActions · toggle adiciona e remove id da seleção · selectAll seleciona todos e limpa quando já estão todos selecionados · deselectAll/clearSelection limpa a seleção … |
 | `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 12 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
@@ -5231,7 +5232,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/convidar-usuario/index.test.ts` | 10 | convite de usuário: preflight não exige autenticação · convite de usuário: anônimo não alcança Auth nem banco · convite de usuário: payload inválido não cria convite · convite de usuário: rate limit bloqueia antes de consultar ou convidar … |
 | `supabase/functions/sso-callback/build-profile-sync-delta.test.ts` | 10 | idempotência: incoming idêntico ao current → changes/updates vazios · idempotência: espaços extras nas pontas (incoming) são ignorados · idempotência: espaços extras no current também são ignorados · idempotência: incoming vazio/whitespace-only nunca sobrescreve … |
 | `src/components/admin/telemetry/__tests__/TelemetryCharts.test.tsx` | 9 | TelemetryCharts · renders nothing when rows is empty · renders three chart cards when rows have data · renders without error for timeFilter=%s … |
-| `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 9 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
 | `src/components/layout/sidebar/sidebarNavState.test.ts` | 9 | isSidebarNavItemActive · exige hash correspondente quando o link aponta para uma âncora · mantém rotas sem hash ativas no mesmo pathname · mantém o item-pai ativo em rotas filhas (detalhe/edição) … |
 | `src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx` | 9 | heatmap tributario — ano sem faturamento · renderiza o estado vazio em vez de quebrar no insights.mes_pico · resposta sem a chave insights ainda renderiza (nao le antes da guarda) · heatmap tributario — ano parcial … |
 | `src/hooks/__tests__/use-toast.test.ts` | 9 | use-toast (adapter sonner) · variant default delega para sonner com title e description · variant destructive delega para sonner.error · propaga duration … |
@@ -5752,6 +5752,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | "permission denied for table webhook_dlq") atras do texto genérico. Mesmo | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | Paginacao por `range`, nao por `limit` crescente: o PostgREST corta a | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha | `src/components/contas-receber/WebhookDlqPanel.tsx` |
+| Reprocessar reentrega um evento real (cobranca, baixa, estorno), entao | `src/components/contas-receber/WebhookDlqPanel.tsx` |
+| Falha de reprocessamento nao pode sumir: alem do toast, o motivo fica na | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | * Falha de leitura NAO pode virar "nenhuma falha": era justamente esse | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | Delta do recebido: último mês vs anterior (apenas com base real > 0) | `src/components/dashboard-receber/ReceberKpis.tsx` |
 | A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente. | `src/components/empresas/EmpresaForm.tsx` |
@@ -5982,6 +5984,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Toda a regra de negócio (validade, normalização, hierarquia de papéis) fica | `src/lib/organizacoes/convites.ts` |
 | ambiente um token de convite NÃO pode nascer de PRNG fraco — falha | `src/lib/organizacoes/convites.ts` |
 | - emails[work].value    (opcional, mas se presente deve ser e-mail válido) | `src/lib/scim/userTemplate.ts` |
-| Validação de consistência da configuração SSO | `src/lib/sso/consistency.ts` |
-| * Executa um lote de simulações com limite de concorrência. | `src/lib/sso/sandbox-bulk-runner.ts` |
-| … +406 linhas — lista completa em `context.json` | |
+| … +408 linhas — lista completa em `context.json` | |

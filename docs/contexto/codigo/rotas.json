@@ -7722,7 +7722,8 @@
     "webhooks_log"
    ],
    "rpcs": [
-    "registrar_auditoria_config"
+    "registrar_auditoria_config",
+    "reprocess_dlq"
    ],
    "edges": [
     "categorizar-despesa",
@@ -7753,7 +7754,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 220
+   "arquivos_puxados": 222
   },
   {
    "protegida": true,

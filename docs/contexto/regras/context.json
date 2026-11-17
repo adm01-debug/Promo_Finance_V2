@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "58d7e40dc2f3d2c556aa8b8543df0b833fed22b3",
+  "sha": "f62e08ec5ffd78fe558a061c74bad4d6a2129822",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 05:35 UTC",
-  "files_total": 3933,
-  "code_files": 3556,
-  "code_lines": 506265
+  "generated_at": "2026-11-17 06:07 UTC",
+  "files_total": 3934,
+  "code_files": 3557,
+  "code_lines": 506481
  },
  "version": "1.3.2",
- "facts_hash": "2d6c39750f03c2e1",
+ "facts_hash": "984bf1d8a4f9b7b8",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1236,
-   ".tsx": 1106,
+   ".tsx": 1107,
    ".sql": 1099,
    ".mjs": 63,
    ".py": 45,
@@ -61971,7 +61971,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 140
+    "deps_count": 142
    },
    {
     "path": "",
@@ -63019,7 +63019,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 209
+    "deps_count": 211
    },
    {
     "path": "/contratos",
@@ -68362,7 +68362,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 993,
+  "components_count": 994,
   "hooks": [
    {
     "name": "useContacts",
@@ -71381,8 +71381,8 @@
   },
   {
    "module": "src/components",
-   "files": 991,
-   "lines": 164161,
+   "files": 992,
+   "lines": 164377,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -82066,7 +82066,15 @@
    },
    {
     "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "msg": "\n              className="
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
     "msg": " className="
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "msg": "Não foi possível reprocessar: ${mensagemDeErro(erro)}"
    },
    {
     "file": "src/components/copilot/CopilotGlobalFloat.tsx",
@@ -85487,6 +85495,14 @@
    {
     "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
     "text": "resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "Reprocessar reentrega um evento real (cobranca, baixa, estorno), entao"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "Falha de reprocessamento nao pode sumir: alem do toast, o motivo fica na"
    },
    {
     "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
@@ -124010,6 +124026,18 @@
    {
     "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
     "name": "fila realmente vazia diz que esta vazia"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "reprocessa a falha pela RPC reprocess_dlq, com o id do item"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "cancelar a confirmacao NAO reprocessa"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "falha do reprocessamento aparece na tela, nao so no toast"
    },
    {
     "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
@@ -190601,9 +190629,18 @@
     "10"
    ]
   },
+  "src/components/contas-receber/WebhookDlqItem.tsx": {
+   "path": "src/components/contas-receber/WebhookDlqItem.tsx",
+   "lines": 78,
+   "exports": [
+    "interface DlqRow",
+    "const WebhookDlqItem"
+   ],
+   "doc": "Uma falha da fila `webhook_dlq`. Extraido de WebhookDlqPanel com `memo` porque \"Carregar mais\" acumula paginas na mesma lista: sem isso, cada janela nova re-renderizava todas as linhas ja em tela (ate 1.001 falhas, cada uma com badge, mensagem e botao). Os props sao estaveis -- `onReprocessar` vem d …"
+  },
   "src/components/contas-receber/WebhookDlqPanel.tsx": {
    "path": "src/components/contas-receber/WebhookDlqPanel.tsx",
-   "lines": 228,
+   "lines": 281,
    "exports": [
     "function WebhookDlqPanel"
    ],
@@ -190628,7 +190665,9 @@
     ]
    },
    "errors": [
-    " className="
+    "\n              className=",
+    " className=",
+    "Não foi possível reprocessar: ${mensagemDeErro(erro)}"
    ],
    "params": [
     {
@@ -190651,6 +190690,8 @@
     "\"permission denied for table webhook_dlq\") atras do texto genérico. Mesmo",
     "Paginacao por `range`, nao por `limit` crescente: o PostgREST corta a",
     "resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha",
+    "Reprocessar reentrega um evento real (cobranca, baixa, estorno), entao",
+    "Falha de reprocessamento nao pode sumir: alem do toast, o motivo fica na",
     "* Falha de leitura NAO pode virar \"nenhuma falha\": era justamente esse"
    ]
   },
@@ -190864,11 +190905,15 @@
   },
   "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx": {
    "path": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
-   "lines": 247,
+   "lines": 332,
    "is_test": true,
+   "errors": [
+    ")).not.toBeInTheDocument();\n  });\n\n  it("
+   ],
    "rule_comments": [
     "isAdmin do provider prioriza o papel da EMPRESA -- o painel NAO deve usar",
-    "Revisao da PR #406 (Devin): `.limit(limite)` nunca passa do teto de 1.000"
+    "Revisao da PR #406 (Devin): `.limit(limite)` nunca passa do teto de 1.000",
+    "tempo e estourava o limite do teste. A asserção e a mesma."
    ],
    "doc": "O back-end da fila de falhas estava completo em producao (tabela webhook_dlq com RLS admin, `webhook_mark_failure` gravando nela e a RPC `reprocess_dlq`) e NENHUM arquivo de src/ lia a tabela: webhook de cobranca que esgota as tentativas saia de cena sem aviso.",
    "tests": [
@@ -190880,7 +190925,10 @@
     "admin GLOBAL com papel menor na empresa consulta normalmente",
     "contador mostra o TOTAL em aberto, nao o recorte da pagina",
     "falha 1.001 aparece: paginacao por range, nao por limite crescente",
-    "fila realmente vazia diz que esta vazia"
+    "fila realmente vazia diz que esta vazia",
+    "reprocessa a falha pela RPC reprocess_dlq, com o id do item",
+    "cancelar a confirmacao NAO reprocessa",
+    "falha do reprocessamento aparece na tela, nao so no toast"
    ],
    "side_effects": [
     "asaas"
@@ -247031,10 +247079,21 @@
   }
  },
  "git": {
-  "sha": "58d7e40dc2f3d2c556aa8b8543df0b833fed22b3",
+  "sha": "f62e08ec5ffd78fe558a061c74bad4d6a2129822",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f62e08e",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "feat(webhooks): botao de reprocessar na fila de falhas (#410)",
+    "files": [
+     "src/components/contas-receber/WebhookDlqItem.tsx",
+     "src/components/contas-receber/WebhookDlqPanel.tsx",
+     "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx"
+    ]
+   },
    {
     "sha": "58d7e40",
     "date": "2026-11-17",
@@ -247422,18 +247481,6 @@
      "src/hooks/useFluxoCaixa.ts",
      "src/hooks/useFluxoCaixaPage.ts"
     ]
-   },
-   {
-    "sha": "40876f4",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)",
-    "files": [
-     "src/hooks/__tests__/kpis-comparativo-anterior.test.ts",
-     "src/hooks/useContasPagarLogic.calculos.ts",
-     "src/hooks/useContasReceberLogic.calculos.ts",
-     "src/pages/ContasReceberConteudo.types.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -247448,6 +247495,14 @@
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
     3
+   ],
+   [
+    "src/components/contas-receber/WebhookDlqPanel.tsx",
+    2
+   ],
+   [
+    "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    2
    ],
    [
     "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
@@ -247486,6 +247541,10 @@
     2
    ],
    [
+    "src/components/contas-receber/WebhookDlqItem.tsx",
+    1
+   ],
+   [
     "src/components/cobranca/PrevisaoInadimplencia.tsx",
     1
    ],
@@ -247503,18 +247562,6 @@
    ],
    [
     "src/components/cobranca/previsao/__tests__/risco.test.ts",
-    1
-   ],
-   [
-    "src/components/cobranca/previsao/risco.ts",
-    1
-   ],
-   [
-    "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
-    1
-   ],
-   [
-    "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
     1
    ]
   ]

@@ -6,7 +6,7 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (777)",
+   "src/components (778)",
    "src/pages (210)",
    "src/hooks (2)"
   ],
@@ -47,7 +47,7 @@
  },
  "barrels_index": 27,
  "extensao_componentes": [
-  ".tsx (991)"
+  ".tsx (992)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat(webhooks): botao de reprocessar na fila de falhas (#410)",
    "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)",
    "fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)",
    "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)",
-   "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)",
-   "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)"
+   "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

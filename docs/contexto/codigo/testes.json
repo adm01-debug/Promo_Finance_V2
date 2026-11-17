@@ -991,11 +991,11 @@
   {
    "arquivo": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
    "tipo": "unit",
-   "linhas": 246,
+   "linhas": 331,
    "testa": [
     "src/components/contas-receber/WebhookDlqPanel.tsx"
    ],
-   "casos": 8
+   "casos": 11
   },
   {
    "arquivo": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
