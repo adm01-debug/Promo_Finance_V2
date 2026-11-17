@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f62e08ec5ffd78fe558a061c74bad4d6a2129822",
+  "sha": "92242221b8f1cc050bd4dcf7399a7f0cec4d6963",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 06:07 UTC",
+  "generated_at": "2026-11-17 06:18 UTC",
   "files_total": 3934,
   "code_files": 3557,
   "code_lines": 506481
  },
  "version": "1.3.2",
- "facts_hash": "984bf1d8a4f9b7b8",
+ "facts_hash": "5ba3a2ac5a8d1e99",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -176386,7 +176386,7 @@
   ]
  },
  "manual": [],
- "readme": "# Promo Finance\n\nSistema financeiro corporativo multi-empresa: Contas a Pagar, Contas a Receber, Conciliação Bancária, Cobrança, Contabilidade/SPED e Reforma Tributária — construído com Vite + React + TypeScript + Supabase.\n\n## Stack\n\n- **Frontend**: Vite, React 18, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, React Router\n- **Backend**: Supabase (Postgres + RLS, Auth, Edge Functions em Deno)\n- **Testes**: Vitest + Testing Library (unit/integração), Playwright (E2E)\n\n## Como rodar localmente\n\nPré-requisito: Node.js ≥ 18.18 (ou Bun ≥ 1.1, usado no CI).\n\n```sh\n# 1. Clone e entre no diretório\ngit clone <URL_DO_REPO>\ncd promo-finance-v2\n\n# 2. Configure as variáveis de ambiente\ncp .env.example .env   # preencha VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY\n\n# 3. Instale as dependências\nnpm install            # ou: bun install\n\n# 4. Suba o dev server (porta 8080)\nnpm run dev\n```\n\nO app fica disponível em `http://localhost:8080`.\n\n## Scripts principais\n\n| Script                      | Descrição                                          |\n| --------------------------- | -------------------------------------------------- |\n| `npm run dev`               | Dev server com HMR (porta 8080)                    |\n| `npm run build`             | Build de produção (`dist/`)                        |\n| `npm run lint` / `lint:fix` | ESLint (flat config)                               |\n| `npm run type-check`        | `tsc --noEmit`                                     |\n| `npm run test` / `test:run` | Suite Vitest (watch / single run)                  |\n| `npm run test:coverage`     | Cobertura (v8)                                     |\n| `npm run test:e2e`          | Playwright E2E (sobe o dev server automaticamente) |\n| `npm run format`            | Prettier em `src/`                                 |\n\n## Banco de dados\n\nAs migrations vivem em `supabase/migrations/` (fonte da verdade do schema) e as edge functions em `supabase/functions/`. Use `npm run db:migrate` (Supabase CLI) para aplicá-las.\n\n> **Nota**: `src/integrations/supabase/types.ts` é gerado a partir do banco. Vários hooks usam `@ts-nocheck` enquanto os types estiverem desatualizados — regenere os types e remova os pragmas.\n\n## Documentação técnica\n\nA arquitetura do projeto é baseada em princípios de **resiliência, telemetria e segurança multi-empresa**. Para entender os fluxos de dados, padrões de código e responsabilidades de cada camada, consulte a documentação técnica oficial:\n\n- **[Arquitetura Principal (Padrões e Camadas)](docs/ARCHITECTURE.md)**: visão geral da stack, decisões de design e fluxo ponta a ponta.\n- **[Auditoria Técnica e Resiliência](docs/archive/TECHNICAL_AUDIT_RESILIENCE.md)**: telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.\n- **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: como rodar e escrever testes.\n- **[Acessibilidade](docs/ACCESSIBILITY.md)**: padrões WCAG seguidos no frontend.\n- **[Graphify — integração e plano de 50 etapas](docs/GRAPHIFY_PLANO_50_ETAPAS.md)**: piloto local de análise estrutural, sem acesso ao banco ou IA externa.\n- **[ADR-001 — módulo Lalamove fora de escopo](docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md)**: decisão que identifica os 14 objetos de outro projeto que não devem ser recuperados.\n- **[ADR-002 — funções essenciais do Promo Finance](docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md)**: registro das funções legítimas que devem ser preservadas ou recuperadas.\n\nNovos desenvolvedores devem começar pelo `ARCHITECTURE.md` para entender como a comunicação com o Supabase é interceptada para logs e como as permissões de empresa são aplicadas automaticamente em todas as rotas.",
+ "readme": "# Promo Finance\n\nSistema financeiro corporativo multi-empresa: Contas a Pagar, Contas a Receber, Conciliação Bancária, Cobrança, Contabilidade/SPED e Reforma Tributária — construído com Vite + React + TypeScript + Supabase.\n\n## Stack\n\n- **Frontend**: Vite, React 18, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, React Router\n- **Backend**: Supabase (Postgres + RLS, Auth, Edge Functions em Deno)\n- **Testes**: Vitest + Testing Library (unit/integração), Playwright (E2E)\n\n## Como rodar localmente\n\nPré-requisito: Node.js ≥ 22.12 (ou Bun ≥ 1.1, usado no CI). É o que a CI usa (`NODE_VERSION: 22`) e o que as dependências instaladas já exigem — `vite@8` e `@sentry/react@11` pedem `^20.19.0 || >=22.12.0`.\n\n```sh\n# 1. Clone e entre no diretório\ngit clone <URL_DO_REPO>\ncd promo-finance-v2\n\n# 2. Configure as variáveis de ambiente\ncp .env.example .env   # preencha VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY\n\n# 3. Instale as dependências\nnpm install            # ou: bun install\n\n# 4. Suba o dev server (porta 8080)\nnpm run dev\n```\n\nO app fica disponível em `http://localhost:8080`.\n\n## Scripts principais\n\n| Script                      | Descrição                                          |\n| --------------------------- | -------------------------------------------------- |\n| `npm run dev`               | Dev server com HMR (porta 8080)                    |\n| `npm run build`             | Build de produção (`dist/`)                        |\n| `npm run lint` / `lint:fix` | ESLint (flat config)                               |\n| `npm run type-check`        | `tsc --noEmit`                                     |\n| `npm run test` / `test:run` | Suite Vitest (watch / single run)                  |\n| `npm run test:coverage`     | Cobertura (v8)                                     |\n| `npm run test:e2e`          | Playwright E2E (sobe o dev server automaticamente) |\n| `npm run format`            | Prettier em `src/`                                 |\n\n## Banco de dados\n\nAs migrations vivem em `supabase/migrations/` (fonte da verdade do schema) e as edge functions em `supabase/functions/`. Use `npm run db:migrate` (Supabase CLI) para aplicá-las.\n\n> **Nota**: `src/integrations/supabase/types.ts` é gerado a partir do banco. Vários hooks usam `@ts-nocheck` enquanto os types estiverem desatualizados — regenere os types e remova os pragmas.\n\n## Documentação técnica\n\nA arquitetura do projeto é baseada em princípios de **resiliência, telemetria e segurança multi-empresa**. Para entender os fluxos de dados, padrões de código e responsabilidades de cada camada, consulte a documentação técnica oficial:\n\n- **[Arquitetura Principal (Padrões e Camadas)](docs/ARCHITECTURE.md)**: visão geral da stack, decisões de design e fluxo ponta a ponta.\n- **[Auditoria Técnica e Resiliência](docs/archive/TECHNICAL_AUDIT_RESILIENCE.md)**: telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.\n- **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: como rodar e escrever testes.\n- **[Acessibilidade](docs/ACCESSIBILITY.md)**: padrões WCAG seguidos no frontend.\n- **[Graphify — integração e plano de 50 etapas](docs/GRAPHIFY_PLANO_50_ETAPAS.md)**: piloto local de análise estrutural, sem acesso ao banco ou IA externa.\n- **[ADR-001 — módulo Lalamove fora de escopo](docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md)**: decisão que identifica os 14 objetos de outro projeto que não devem ser recuperados.\n- **[ADR-002 — funções essenciais do Promo Finance](docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md)**: registro das funções legítimas que devem ser preservadas ou recuperadas.\n\nNovos desenvolvedores devem começar pelo `ARCHITECTURE.md` para entender como a comunicação com o Supabase é interceptada para logs e como as permissões de empresa são aplicadas automaticamente em todas as rotas.",
  "code_files": {
   "eslint.config.js": {
    "path": "eslint.config.js",
@@ -247079,10 +247079,20 @@
   }
  },
  "git": {
-  "sha": "f62e08ec5ffd78fe558a061c74bad4d6a2129822",
+  "sha": "92242221b8f1cc050bd4dcf7399a7f0cec4d6963",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9224222",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore: declara o Node que o projeto ja exige (>=22.12) (#411)",
+    "files": [
+     "README.md",
+     "package.json"
+    ]
+   },
    {
     "sha": "f62e08e",
     "date": "2026-11-17",
@@ -247468,28 +247478,15 @@
      "src/components/tesouraria/TesourariaCentralizada.tsx",
      "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx"
     ]
-   },
-   {
-    "sha": "311bf35",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)",
-    "files": [
-     "src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx",
-     "src/hooks/__tests__/useFluxoCaixa.test.ts",
-     "src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx",
-     "src/hooks/useFluxoCaixa.ts",
-     "src/hooks/useFluxoCaixaPage.ts"
-    ]
    }
   ],
   "hot_files": [
    [
-    "bun.lock",
-    4
+    "package.json",
+    5
    ],
    [
-    "package.json",
+    "bun.lock",
     4
    ],
    [
@@ -247541,6 +247538,10 @@
     2
    ],
    [
+    "README.md",
+    1
+   ],
+   [
     "src/components/contas-receber/WebhookDlqItem.tsx",
     1
    ],
@@ -247558,10 +247559,6 @@
    ],
    [
     "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
-    1
-   ],
-   [
-    "src/components/cobranca/previsao/__tests__/risco.test.ts",
     1
    ]
   ]

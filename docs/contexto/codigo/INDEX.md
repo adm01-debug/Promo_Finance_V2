@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f62e08ec5ffd78fe558a061c74bad4d6a2129822` (2026-11-17T03:07:13-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `92242221b8f1cc050bd4dcf7399a7f0cec4d6963` (2026-11-17T03:18:02-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -25,7 +25,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - ui: tailwind, radix/shadcn
 - estado: react-query
 - gerenciador_pacotes: bun
-- node: >=18.18.0
+- node: >=22.12.0
 - python: n/d
 - deploy: vercel
 - monorepo: n/d
@@ -461,7 +461,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (36)
+- package.json (37)
 - bun.lock (32)
 - .github/workflows/ci.yml (26)
 - supabase/functions/asaas-proxy/index.ts (15)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `9224222` chore: declara o Node que o projeto ja exige (>=22.12) (#411)
 - 2026-11-17 `f62e08e` feat(webhooks): botao de reprocessar na fila de falhas (#410)
 - 2026-11-17 `58d7e40` feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)
 - 2026-11-17 `2698b5b` fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `0b95e25` fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, "1247 empresas") 
 - 2026-11-16 `90e96ca` chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)
 - 2026-11-16 `5bc41a5` fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)
-- 2026-11-16 `e93d744` fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

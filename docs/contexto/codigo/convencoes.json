@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: declara o Node que o projeto ja exige (>=22.12) (#411)",
    "feat(webhooks): botao de reprocessar na fila de falhas (#410)",
    "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)",
    "fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)",
-   "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)",
-   "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)"
+   "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

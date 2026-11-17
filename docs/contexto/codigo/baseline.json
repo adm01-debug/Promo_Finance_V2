@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f62e08ec5ffd78fe558a061c74bad4d6a2129822",
+  "commit": "92242221b8f1cc050bd4dcf7399a7f0cec4d6963",
   "branch": "main",
-  "data_commit": "2026-11-17T03:07:13-03:00",
+  "data_commit": "2026-11-17T03:18:02-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9224222",
+    "data": "2026-11-17",
+    "assunto": "chore: declara o Node que o projeto ja exige (>=22.12) (#411)"
+   },
    {
     "sha": "f62e08e",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "91ff2d8",
     "data": "2026-11-16",
     "assunto": "fix(db): preenche empresa_id nas 42 partidas contábeis antigas (#390)"
-   },
-   {
-    "sha": "0cdf2a7",
-    "data": "2026-11-16",
-    "assunto": "fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)"
    }
   ],
-  "arquivos_mudados_7d": 828,
+  "arquivos_mudados_7d": 829,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -153,7 +153,7 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 24
+    "mudancas": 25
    },
    {
     "pasta": "bun.lock",
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 164
+    "commits": 165
    },
    {
     "autor": "dependabot[bot]",
