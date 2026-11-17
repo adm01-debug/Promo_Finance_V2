@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c19b86c63f5b7c6e8d61db0bb715e6ca218ff432` (2026-11-17T04:15:34-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a8d124b09bd13a67e0e1a93fe6b987e069523adc` (2026-11-17T04:39:12-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3897 |
 | arquivos_codigo | 2459 |
-| linhas_codigo | 438159 |
+| linhas_codigo | 438238 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `a8d124b` fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)
 - 2026-11-17 `c19b86c` fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)
 - 2026-11-17 `00a7783` fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)
 - 2026-11-17 `629b697` fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `915784c` chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)
 - 2026-11-17 `9871bfb` feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)
 - 2026-11-17 `d97021a` chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)
-- 2026-11-17 `66fc736` chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

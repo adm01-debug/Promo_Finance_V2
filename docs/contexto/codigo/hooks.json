@@ -881,7 +881,7 @@
     "useDeleteContaPagar",
     "useUpdateContaPagar"
    ],
-   "linhas": 191,
+   "linhas": 223,
    "dominio": "hooks/financial",
    "tabelas": [
     "contas_pagar",
