@@ -58,7 +58,10 @@ Deno.serve(
 
         const { data: fat } = await supa
           .from('faturamento_mensal')
-          .select('receita_bruta, total_tributos')
+          // `total_tributos` não existe em faturamento_mensal (e nada aqui usava
+          // o valor): pedir a coluna derrubava o select inteiro e a DRE saía
+          // com receita bruta zero
+          .select('receita_bruta')
           .eq('empresa_id', empresaId)
           .eq('ano', ano)
           .eq('mes', mes)
