@@ -76,8 +76,25 @@ Deno.serve(
         if (typeof emp?.regime_tributario === 'string') regime = emp.regime_tributario;
       }
 
-      // Receita fallback se vazia
-      if (receitaBruta === 0) receitaBruta = 285000;
+      // Sem faturamento no periodo nao se monta DRE: a receita era substituida
+      // por 285000 fixos e TODA a DRE saia dai -- PIS, COFINS, ICMS, ISS,
+      // CBS, IBS, imposto seletivo, IRPJ, CSLL e lucro liquido. O usuario via
+      // uma DRE tributaria completa e plausivel construida sobre um numero que
+      // nao existe. O painel ja trata a ausencia
+      // (DRETributariaPanel.tsx:74 -> "Sem dados para o periodo."), entao devolver
+      // nada e o comportamento honesto e nao quebra tela.
+      if (receitaBruta === 0) {
+        return jsonComCors(
+          {
+            dre: null,
+            motivo: 'sem_faturamento_no_periodo',
+            detalhe:
+              'Nao ha faturamento lancado para o periodo informado. Lance o faturamento mensal para a DRE tributaria ser calculada.',
+          },
+          200,
+          req
+        );
+      }
 
       // Decomposição fiscal proporcional à carga média brasileira
       const pis = receitaBruta * 0.0165;
