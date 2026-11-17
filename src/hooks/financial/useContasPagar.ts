@@ -11,23 +11,55 @@ import { sel, type StatusPagamento } from './types';
 import type { ContasPagarPainelRow } from './views.types';
 import { parseContasPagarRows } from './views.schemas';
 
+/** Tamanho de cada página lida da view. */
+const PAGINA_CONTAS_PAGAR = 1000;
+/** Teto de segurança: além disso o agregado para de crescer e registra o corte. */
+const TETO_CONTAS_PAGAR = 20_000;
+
 export function useContasPagar(empresaId?: string) {
   return useQuery<ContasPagarPainelRow[]>({
     queryKey: ['contas-pagar', empresaId],
     queryFn: async () => {
-      let query = supabaseDyn
-        .from('vw_contas_pagar_painel')
-        .select(sel('*'))
-        .order('data_vencimento', { ascending: true })
-        .limit(1000);
+      // Este hook é consumido como agregado (KPIs do painel, tesouraria,
+      // fluxo de caixa contábil), não como lista paginada — a tabela usa
+      // useContasPagarPaginated. Com `.limit(1000)` fixo, uma empresa com mais
+      // de mil contas via o "total a pagar" encolher sem nenhum aviso. Agora lê
+      // em páginas até o fim, ordenando também por id para que o corte entre
+      // páginas seja estável quando houver vencimentos iguais.
+      const linhas: unknown[] = [];
+      let truncado = true;
 
-      if (empresaId && empresaId !== 'all') {
-        query = query.eq('empresa_id', empresaId);
+      for (let inicio = 0; inicio < TETO_CONTAS_PAGAR; inicio += PAGINA_CONTAS_PAGAR) {
+        let query = supabaseDyn
+          .from('vw_contas_pagar_painel')
+          .select(sel('*'))
+          .order('data_vencimento', { ascending: true })
+          .order('id', { ascending: true })
+          .range(inicio, inicio + PAGINA_CONTAS_PAGAR - 1);
+
+        if (empresaId && empresaId !== 'all') {
+          query = query.eq('empresa_id', empresaId);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const pagina = (data ?? []) as unknown[];
+        linhas.push(...pagina);
+        if (pagina.length < PAGINA_CONTAS_PAGAR) {
+          truncado = false;
+          break;
+        }
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return parseContasPagarRows((data ?? []) as unknown[]);
+      if (truncado) {
+        logger.warn('useContasPagar: teto de linhas atingido, KPIs podem estar parciais', {
+          empresaId,
+          teto: TETO_CONTAS_PAGAR,
+        });
+      }
+
+      return parseContasPagarRows(linhas);
     },
     staleTime: STALE_TIMES.financial,
   });
