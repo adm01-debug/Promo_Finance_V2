@@ -1905,6 +1905,10 @@
    ],
    "rpcs": [
     "duplicate_saved_filter",
+    "get_acessos_suspeitos",
+    "get_catalogos_tributarios_health",
+    "get_catalogos_tributarios_history",
+    "get_cobertura_fiscal_uf",
     "get_cron_jobs",
     "get_cron_run_history",
     "get_integrity_alerts",
@@ -1912,6 +1916,7 @@
     "get_performance_alerts_weekly",
     "get_retencao_politicas_status",
     "get_retention_history",
+    "get_ultima_carga_fiscal",
     "has_role",
     "log_audit",
     "registrar_auditoria_config",
@@ -1949,7 +1954,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 204
+   "arquivos_puxados": 208
   },
   {
    "protegida": true,
@@ -2659,11 +2664,16 @@
     "user_onboarding_progress"
    ],
    "rpcs": [
+    "get_acessos_suspeitos",
+    "get_catalogos_tributarios_health",
+    "get_catalogos_tributarios_history",
+    "get_cobertura_fiscal_uf",
     "get_integrity_alerts",
     "get_performance_alerts",
     "get_performance_alerts_weekly",
     "get_retencao_politicas_status",
     "get_retention_history",
+    "get_ultima_carga_fiscal",
     "registrar_auditoria_config",
     "resolve_integrity_alert"
    ],
@@ -2681,6 +2691,7 @@
    ],
    "flags": [],
    "papeis": [
+    "alert",
     "assistant",
     "dialog",
     "link",
@@ -2688,7 +2699,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 114
+   "arquivos_puxados": 119
   },
   {
    "protegida": true,

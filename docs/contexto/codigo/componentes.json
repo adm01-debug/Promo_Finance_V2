@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "total": 990,
- "orfaos": 44,
+ "orfaos": 40,
  "nomes_duplicados": {
   "Accordion": [
    "src/components/ui/accordion.tsx",
@@ -1100,13 +1100,13 @@
     "AcessosSuspeitosPanel"
    ],
    "export_default": null,
-   "linhas": 204,
+   "linhas": 239,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 0,
-   "orfao": true
+   "usado_por": 1,
+   "orfao": false
   },
   {
    "arquivo": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
@@ -1119,8 +1119,8 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 0,
-   "orfao": true
+   "usado_por": 1,
+   "orfao": false
   },
   {
    "arquivo": "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx",
@@ -1133,8 +1133,8 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 0,
-   "orfao": true
+   "usado_por": 1,
+   "orfao": false
   },
   {
    "arquivo": "src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx",
@@ -1147,8 +1147,8 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 0,
-   "orfao": true
+   "usado_por": 1,
+   "orfao": false
   },
   {
    "arquivo": "src/components/admin/telemetry/IntegrityAlertsPanel.tsx",
@@ -12797,7 +12797,7 @@
     "AdminTelemetriaPage"
    ],
    "export_default": "AdminTelemetriaPage",
-   "linhas": 361,
+   "linhas": 377,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [

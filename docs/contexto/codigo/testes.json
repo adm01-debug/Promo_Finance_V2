@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 454,
+ "total": 456,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 378
+  "unit": 380
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 264
+   "arquivos": 266
   },
   {
    "padrao": "outro",
@@ -767,6 +767,15 @@
     "src/components/admin/anomalias-review-queue/useReviewQueue.ts"
    ],
    "casos": 7
+  },
+  {
+   "arquivo": "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+   "tipo": "unit",
+   "linhas": 85,
+   "testa": [
+    "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx",
@@ -3183,6 +3192,13 @@
    "casos": 43
   },
   {
+   "arquivo": "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
+   "tipo": "unit",
+   "linhas": 42,
+   "testa": [],
+   "casos": 2
+  },
+  {
    "arquivo": "src/pages/__tests__/admin-telemetria-test-utils.ts",
    "tipo": "unit",
    "linhas": 101,
@@ -4052,6 +4068,7 @@
   "scripts/security/test-rpc-runtime.ts": 1,
   "src/components/accessibility/SkipLinks.tsx": 1,
   "src/components/admin/anomalias-review-queue/useReviewQueue.ts": 1,
+  "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx": 1,
   "src/components/admin/telemetry/IntegrityAlertsPanel.tsx": 1,
   "src/components/admin/telemetry/RetentionPoliciesPanel.tsx": 1,
   "src/components/admin/telemetry/TelemetryCharts.tsx": 1,

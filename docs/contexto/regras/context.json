@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d97021a274c65818b6aeb998e8f97c5901f2cdce",
+  "sha": "9871bfbd5ba063528310b25866ef859f540c5025",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 03:54 UTC",
-  "files_total": 3919,
-  "code_files": 3542,
-  "code_lines": 503961
+  "generated_at": "2026-11-17 03:55 UTC",
+  "files_total": 3921,
+  "code_files": 3544,
+  "code_lines": 504141
  },
  "version": "1.3.2",
- "facts_hash": "b003f95bc071a449",
+ "facts_hash": "eefecc9b85047db8",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,9 +332,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1229,
+   ".ts": 1230,
+   ".tsx": 1100,
    ".sql": 1099,
-   ".tsx": 1099,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -62370,10 +62370,11 @@
     ],
     "invokes_transitive": [],
     "rpc_transitive": [
+     "get_catalogos_tributarios_history",
      "registrar_auditoria_config",
      "resolve_integrity_alert"
     ],
-    "deps_count": 109
+    "deps_count": 114
    },
    {
     "path": "/aprovacoes",
@@ -68358,7 +68359,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 984,
+  "components_count": 985,
   "hooks": [
    {
     "name": "useContacts",
@@ -71377,8 +71378,8 @@
   },
   {
    "module": "src/components",
-   "files": 982,
-   "lines": 162313,
+   "files": 983,
+   "lines": 162434,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72179,8 +72180,8 @@
   },
   {
    "module": "src/pages",
-   "files": 272,
-   "lines": 47048,
+   "files": 273,
+   "lines": 47107,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -72265,6 +72266,8 @@
     "jspdf",
     "jspdf-autotable",
     "lucide-react",
+    "node:fs",
+    "node:path",
     "react",
     "react-day-picker",
     "react-router-dom",
@@ -81379,6 +81382,10 @@
    {
     "file": "src/components/admin/sso/sandbox/SandboxHistory.tsx",
     "msg": "Erro ao remover"
+   },
+   {
+    "file": "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
+    "msg": " className="
    },
    {
     "file": "src/components/admin/telemetry/IntegrityAlertsPanel.tsx",
@@ -122774,6 +122781,22 @@
     "name": "#7 [guard comentário curto] não invoca mutation nem trava inFlight"
    },
    {
+    "file": "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+    "name": "AcessosSuspeitosPanel"
+   },
+   {
+    "file": "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+    "name": "consulta get_acessos_suspeitos com os parametros canonicos"
+   },
+   {
+    "file": "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+    "name": "falha na consulta NAO vira auditoria limpa"
+   },
+   {
+    "file": "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+    "name": "achado critico aparece na tabela"
+   },
+   {
     "file": "src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx",
     "name": "IntegrityAlertsPanel"
    },
@@ -135328,6 +135351,18 @@
    {
     "file": "src/pages/__tests__/admin-telemetria-logica.test.ts",
     "name": "top offenders sorted by count desc"
+   },
+   {
+    "file": "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
+    "name": "AdminTelemetria — paineis ligados na pagina"
+   },
+   {
+    "file": "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
+    "name": "%s esta importado"
+   },
+   {
+    "file": "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
+    "name": "%s esta renderizado no JSX"
    },
    {
     "file": "src/pages/auth/__tests__/CorporateOnboarding.test.tsx",
@@ -182523,10 +182558,13 @@
   },
   "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx": {
    "path": "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
-   "lines": 205,
+   "lines": 240,
    "exports": [
     "interface AcessoSuspeitoRow",
     "function AcessosSuspeitosPanel"
+   ],
+   "errors": [
+    " className="
    ],
    "status_values": [
     {
@@ -182717,6 +182755,21 @@
     }
    ],
    "doc": "Deep-link parsers/serializers para PerformanceAlertsWeeklyTrend. Extraídos para permitir testes unitários sem montar o componente."
+  },
+  "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx": {
+   "path": "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+   "lines": 86,
+   "is_test": true,
+   "rule_comments": [
+    "o visto verde nao pode aparecer"
+   ],
+   "doc": "O painel estava pronto e SEM nenhum import na aplicacao -- nenhuma rota, nenhuma pagina. Ao liga-lo em /admin/telemetria, o estado de erro passou a importar: a versao original caia no ramo de lista vazia e exibia \"✅ Nenhum acesso entre empresas ou uso administrativo anomalo\" quando a RPC falhava, da …",
+   "tests": [
+    "AcessosSuspeitosPanel",
+    "consulta get_acessos_suspeitos com os parametros canonicos",
+    "falha na consulta NAO vira auditoria limpa",
+    "achado critico aparece na tabela"
+   ]
   },
   "src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx": {
    "path": "src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx",
@@ -223076,7 +223129,7 @@
   },
   "src/pages/AdminTelemetria.tsx": {
    "path": "src/pages/AdminTelemetria.tsx",
-   "lines": 362,
+   "lines": 378,
    "exports": [
     "function AdminTelemetriaPage"
    ],
@@ -225464,6 +225517,17 @@
     "Row ordering",
     "rows sorted by created_at desc",
     "top offenders sorted by count desc"
+   ]
+  },
+  "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts": {
+   "path": "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
+   "lines": 43,
+   "is_test": true,
+   "doc": "Guarda contra orfao: 4 paineis de telemetria estavam prontos no disco (AcessosSuspeitos, CatalogosTributariosHealth, CatalogosTributariosHistory, CoberturaFiscalUF — 36 KB, 5 RPCs ja em producao) e NENHUM arquivo da aplicacao os importava. Nao havia rota, aba ou link: trabalho terminado e inalcancav …",
+   "tests": [
+    "AdminTelemetria — paineis ligados na pagina",
+    "%s esta importado",
+    "%s esta renderizado no JSX"
    ]
   },
   "src/pages/__tests__/admin-telemetria-test-utils.ts": {
@@ -246268,10 +246332,22 @@
   }
  },
  "git": {
-  "sha": "d97021a274c65818b6aeb998e8f97c5901f2cdce",
+  "sha": "9871bfbd5ba063528310b25866ef859f540c5025",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9871bfb",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)",
+    "files": [
+     "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
+     "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+     "src/pages/AdminTelemetria.tsx",
+     "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts"
+    ]
+   },
    {
     "sha": "d97021a",
     "date": "2026-11-17",
@@ -246640,38 +246716,6 @@
     "files": [
      "src/lib/__tests__/edge-functions.security.test.ts"
     ]
-   },
-   {
-    "sha": "9782d38",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)",
-    "files": [
-     "scripts/security/test_gates_shell.py",
-     "scripts/security/zod-coverage.sh",
-     "supabase/functions/_shared/validation.ts",
-     "supabase/functions/_shared/validation_test.ts",
-     "supabase/functions/analyze-document/index.ts",
-     "supabase/functions/asaas-proxy/index.ts",
-     "supabase/functions/benchmarking-setorial/index.ts",
-     "supabase/functions/bitrix24-sync/index.ts",
-     "supabase/functions/bling-proxy/index.ts",
-     "supabase/functions/enviar-alerta-email/index.ts",
-     "supabase/functions/gerar-sped-ecd/index.ts",
-     "supabase/functions/gerar-sped-ecf/index.ts",
-     "supabase/functions/log-sped-bitrix24/index.ts",
-     "supabase/functions/n8n-dispatch/index.ts",
-     "supabase/functions/nfe-upload-certificado/index.ts",
-     "supabase/functions/notify-saved-filter/index.ts",
-     "supabase/functions/processar-solicitacao-lgpd/index.ts",
-     "supabase/functions/projecao-reforma/index.ts",
-     "supabase/functions/send-device-alert/index.ts",
-     "supabase/functions/send-push-notification/index.ts",
-     "supabase/functions/simular-presumido/index.ts",
-     "supabase/functions/simular-real/index.ts",
-     "supabase/functions/simular-simples/index.ts",
-     "supabase/functions/whatsapp-ia-proativo/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -246686,10 +246730,6 @@
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
     3
-   ],
-   [
-    "scripts/security/test_gates_shell.py",
-    2
    ],
    [
     "supabase/migrations/20260825250000_recreate_6_constraints.sql",
@@ -246708,16 +246748,28 @@
     2
    ],
    [
-    "supabase/functions/bitrix24-sync/index.ts",
-    2
-   ],
-   [
     "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
     2
    ],
    [
     "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
     2
+   ],
+   [
+    "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
+    1
+   ],
+   [
+    "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
+    1
+   ],
+   [
+    "src/pages/AdminTelemetria.tsx",
+    1
+   ],
+   [
+    "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
+    1
    ],
    [
     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
@@ -246745,14 +246797,6 @@
    ],
    [
     "src/hooks/useAprovacoes.ts",
-    1
-   ],
-   [
-    "src/hooks/useContasPagarLogic.ts",
-    1
-   ],
-   [
-    "src/pages/ContasPagar.tsx",
     1
    ]
   ]

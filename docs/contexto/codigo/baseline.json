@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d97021a274c65818b6aeb998e8f97c5901f2cdce",
+  "commit": "9871bfbd5ba063528310b25866ef859f540c5025",
   "branch": "main",
-  "data_commit": "2026-11-17T00:52:51-03:00",
+  "data_commit": "2026-11-17T00:54:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9871bfb",
+    "data": "2026-11-17",
+    "assunto": "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)"
+   },
    {
     "sha": "d97021a",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "40876f4",
     "data": "2026-11-16",
     "assunto": "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)"
-   },
-   {
-    "sha": "e314002",
-    "data": "2026-11-16",
-    "assunto": "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)"
    }
   ],
-  "arquivos_mudados_7d": 804,
+  "arquivos_mudados_7d": 808,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -172,15 +172,15 @@
     "mudancas": 17
    },
    {
+    "pasta": "src/components/admin",
+    "mudancas": 16
+   },
+   {
     "pasta": "src/hooks/__tests__",
     "mudancas": 16
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 14
-   },
-   {
-    "pasta": "src/components/admin",
     "mudancas": 14
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 158
+    "commits": 159
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3880,
-  "arquivos_codigo": 2442,
-  "linhas_codigo": 435480,
+  "arquivos_total": 3882,
+  "arquivos_codigo": 2444,
+  "linhas_codigo": 435658,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 454,
+  "testes": 456,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 982,
-   "linhas": 161331
+   "arquivos": 983,
+   "linhas": 161451
   },
   "src/config": {
    "arquivos": 1,
@@ -667,8 +667,8 @@
    "linhas": 76
   },
   "src/pages": {
-   "arquivos": 272,
-   "linhas": 46776
+   "arquivos": 273,
+   "linhas": 46834
   },
   "src/routes": {
    "arquivos": 16,
@@ -1114,10 +1114,6 @@
   ],
   "componentes_orfaos": [
    "src/components/admin/FiscalHealthBadge.tsx",
-   "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
-   "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
-   "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx",
-   "src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx",
    "src/components/charts/RechartsExample.tsx",
    "src/components/cobranca/PrevisaoInadimplencia.tsx",
    "src/components/contabilidade/SpedEcdDownloadStep.tsx",

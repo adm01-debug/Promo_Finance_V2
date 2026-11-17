@@ -8301,6 +8301,10 @@
    "src/lib/logger.ts"
   ],
   "src/pages/AdminTelemetria.tsx": [
+   "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
+   "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+   "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx",
+   "src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx",
    "src/components/admin/telemetry/IntegrityAlertsPanel.tsx",
    "src/components/admin/telemetry/PerformanceAlertsPanel.tsx",
    "src/components/admin/telemetry/PerformanceAlertsWeeklyTrend.tsx",

@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 1994,
- "arestas": 8439,
+ "arestas": 8443,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -228,10 +228,6 @@
   "public/sw-push.js",
   "public/sw.js",
   "src/components/admin/FiscalHealthBadge.tsx",
-  "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
-  "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
-  "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx",
-  "src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx",
   "src/components/auth/PermissionGate.hoc.tsx",
   "src/components/charts/RechartsExample.tsx",
   "src/components/cobranca/PrevisaoInadimplencia.tsx",

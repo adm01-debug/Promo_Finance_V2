@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d97021a274` · branch `main` · 2026-11-17 03:54 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9871bfbd5b` · branch `main` · 2026-11-17 03:55 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4935,6 +4935,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Máximo ${BULK_MAX_USERS} usuários por lote | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
 | Nenhum usuário para simular | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
 | Erro ao remover | `src/components/admin/sso/sandbox/SandboxHistory.tsx` |
+|  className= | `src/components/admin/telemetry/AcessosSuspeitosPanel.tsx` |
 | Falha ao resolver: ${e.message} | `src/components/admin/telemetry/IntegrityAlertsPanel.tsx` |
 | ⚠️ Novo aviso de performance | `src/components/admin/telemetry/PerformanceAlertsPanel.tsx` |
 | 🚨 Regressão crítica detectada | `src/components/admin/telemetry/PerformanceAlertsPanel.tsx` |
@@ -5045,8 +5046,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
 | Sem dados para exportar. | `src/components/contabilidade/dre-balanco/exporters.ts` |
-| ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
-| … +782 linhas — lista completa em `context.json` | |
+| … +783 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5104,7 +5104,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3437 testes em 295 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3444 testes em 297 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5336,6 +5336,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/n8n-callback/index.test.ts` | 5 | n8n-callback: OPTIONS responde 200 sem tocar body ou DB · n8n-callback: 405 para método inválido · n8n-callback: 503 quando o segredo não está configurado · n8n-callback: 401 com segredo incorreto … |
 | `supabase/functions/notify-performance-alert/index.test.ts` | 5 | notify-performance-alert: OPTIONS responde 200 sem guard nem I/O · notify-performance-alert: 405 em método inválido · notify-performance-alert: preserva falha de misconfig do guard e não toca body/fetch/DB · notify-performance-alert: 401 do guard bloqueia efeitos antes do body … |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
+| `src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx` | 4 | AcessosSuspeitosPanel · consulta get_acessos_suspeitos com os parametros canonicos · falha na consulta NAO vira auditoria limpa · achado critico aparece na tabela |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/hooks/useBoletos.validation.test.ts` | 4 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
@@ -5373,6 +5374,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/offline/__tests__/fiscal-cache.test.ts` | 3 | fiscal-cache · gera chave determinística e independente da ordem das propriedades · degrada com segurança quando IndexedDB não está disponível (jsdom) |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.test.ts` | 3 | analisarOportunidadesElisao · deve consolidar e ranquear as oportunidades detectadas · deve retornar zero economia aplicável para uma empresa recém-aberta sem dados |
 | `src/pages/AsaasQueueHistoryDialog.test.ts` | 3 | formatarTimestampFila · não deixa um timestamp ausente ou inválido interromper o histórico · mantém a formatação para timestamp ISO válido |
+| `src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts` | 3 | AdminTelemetria — paineis ligados na pagina · %s esta importado · %s esta renderizado no JSX |
 | `src/test/a11y/indices-tab.test.tsx` | 3 | A11y — aba Índices contábeis · grade de indicadores não possui violações · toolbar de filtros não possui violações |
 | `src/test/scenarios/__tests__/nfe-puxador-faults.spec.ts` | 3 | scenarios/nfe :: novos faults do puxador SEFAZ · 1000 cenários NFe × 3 faults do puxador ⇒ 0 violações · cada fault kind produz cenários que executam sem violar invariantes |
 | `supabase/functions/asaas-proxy/credit-risk.test.ts` | 3 | extrai resposta JSON mesmo dentro de bloco markdown · rejeita score inventado, fora da faixa ou resposta incompleta · classifica as fronteiras de risco |
