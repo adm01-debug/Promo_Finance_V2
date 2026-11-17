@@ -21,7 +21,7 @@ export interface BenchmarkResult {
   posicao: 'abaixo_p25' | 'mediana' | 'acima_p75' | null;
   percentil: number | null;
   diferenca_mediana: number | null;
-  motivo?: 'sem_faturamento_12m';
+  motivo?: 'sem_faturamento_12m' | 'regime_nao_registrado';
   insights: string[];
   atualizado_em: string;
 }
