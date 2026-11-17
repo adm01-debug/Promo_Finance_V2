@@ -171,7 +171,7 @@ export function ContaBancariaCard({
       </Card>
 
       <Dialog open={showMapping} onOpenChange={setShowMapping}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Mapeamento de Campos CSV</DialogTitle>
           </DialogHeader>

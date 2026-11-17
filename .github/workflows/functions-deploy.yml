@@ -72,6 +72,7 @@ on:
           - insights-relatorio
           - log-sped-bitrix24
           - mcp-query
+          - monitor-health
           - monitorar-erros-frontend
           - n8n-callback
           - n8n-dispatch

@@ -55,20 +55,25 @@ export function useFluxoCaixaPage() {
         pessimista: [],
       };
     }
-    return calcularProjecoesReais(fluxoProjetado, saldoInicial);
-  }, [fluxoProjetado, saldoInicial]);
+    return calcularProjecoesReais(fluxoProjetado, saldoInicial, chaveEmpresa);
+  }, [fluxoProjetado, saldoInicial, chaveEmpresa]);
 
   // Calcular métricas dos cenários
   const metricasCenarios = useMemo(() => {
+    // Periodo sem movimento projetado NAO zera o caixa: o saldo de partida
+    // continua valendo, aqui e na funcao pura (achado F07). Antes este
+    // curto-circuito devolvia zeros fixos e a tela anunciava saldo zero.
     if (!projecoes.realista.length) {
-      return {
-        otimista: { saldoMinimo: 0, saldoFinal: 0, diasCriticos: 0, diasRisco: 0 },
-        realista: { saldoMinimo: 0, saldoFinal: 0, diasCriticos: 0, diasRisco: 0 },
-        pessimista: { saldoMinimo: 0, saldoFinal: 0, diasCriticos: 0, diasRisco: 0 },
+      const vazio = {
+        saldoMinimo: saldoInicial,
+        saldoFinal: saldoInicial,
+        diasCriticos: 0,
+        diasRisco: 0,
       };
+      return { otimista: { ...vazio }, realista: { ...vazio }, pessimista: { ...vazio } };
     }
-    return calcularMetricasCenarios(projecoes);
-  }, [projecoes]);
+    return calcularMetricasCenarios(projecoes, saldoInicial);
+  }, [projecoes, saldoInicial]);
 
   // Detectar alertas de ruptura
   const alertas = useMemo(() => {
@@ -85,7 +90,10 @@ export function useFluxoCaixaPage() {
   // Calcular totais do cenário ativo
   const totalReceitas = dadosCenarioAtivo.reduce((sum, f) => sum + f.receitas, 0);
   const totalDespesas = dadosCenarioAtivo.reduce((sum, f) => sum + f.despesas, 0);
-  const saldoFinal = metricaAtiva?.saldoFinal || saldoInicial;
+  // `?? saldoInicial`, nao `|| saldoInicial`: saldo final legitimamente ZERO
+  // era substituido pelo saldo inicial e a tela mostrava dinheiro que o
+  // cenario tinha consumido (achado F07, item 3).
+  const saldoFinal = metricaAtiva?.saldoFinal ?? saldoInicial;
   const variacao = saldoFinal - saldoInicial;
 
   // Dados para gráfico de barras

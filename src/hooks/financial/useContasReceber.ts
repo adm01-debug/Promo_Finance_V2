@@ -1,27 +1,61 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { STALE_TIMES } from '@/lib/queryClient';
+import { logger } from '@/lib/logger';
 import type { StatusPagamento } from './types';
 import type { ContasReceberPainelRow } from './views.types';
 import { parseContasReceberRows } from './views.schemas';
+
+/** Tamanho de cada página lida da view. */
+const PAGINA_CONTAS_RECEBER = 1000;
+/** Teto de segurança: além disso o agregado para de crescer e registra o corte. */
+const TETO_CONTAS_RECEBER = 20_000;
 
 export function useContasReceber(empresaId?: string) {
   return useQuery<ContasReceberPainelRow[]>({
     queryKey: ['contas-receber', empresaId],
     queryFn: async () => {
-      let query = supabase
-        .from('vw_contas_receber_painel')
-        .select('*')
-        .order('data_vencimento', { ascending: true })
-        .limit(1000);
+      // Mesmo defeito corrigido em useContasPagar: este hook é consumido como
+      // agregado (KPIs do painel de receber, BI, dashboards, demonstrativos,
+      // tesouraria, conciliação) e não como lista paginada — a tabela usa
+      // useContasReceberPaginated. Com `.limit(1000)` fixo, acima de mil
+      // títulos os totais encolhiam sem aviso. Agora lê em páginas até o fim,
+      // ordenando também por id para que o corte entre páginas seja estável
+      // quando houver vencimentos iguais.
+      const linhas: unknown[] = [];
+      let truncado = true;
 
-      if (empresaId && empresaId !== 'all') {
-        query = query.eq('empresa_id', empresaId);
+      for (let inicio = 0; inicio < TETO_CONTAS_RECEBER; inicio += PAGINA_CONTAS_RECEBER) {
+        let query = supabase
+          .from('vw_contas_receber_painel')
+          .select('*')
+          .order('data_vencimento', { ascending: true })
+          .order('id', { ascending: true })
+          .range(inicio, inicio + PAGINA_CONTAS_RECEBER - 1);
+
+        if (empresaId && empresaId !== 'all') {
+          query = query.eq('empresa_id', empresaId);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const pagina = (data ?? []) as unknown[];
+        linhas.push(...pagina);
+        if (pagina.length < PAGINA_CONTAS_RECEBER) {
+          truncado = false;
+          break;
+        }
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return parseContasReceberRows((data ?? []) as unknown[]);
+      if (truncado) {
+        logger.warn('useContasReceber: teto de linhas atingido, totais podem estar parciais', {
+          empresaId,
+          teto: TETO_CONTAS_RECEBER,
+        });
+      }
+
+      return parseContasReceberRows(linhas);
     },
     staleTime: STALE_TIMES.financial,
   });

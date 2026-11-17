@@ -101,11 +101,21 @@ export const OpenFinancePanel = () => {
             Open Finance Brasil
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Conecte suas contas bancárias para sincronização automática de saldos e transações
+            Compartilhamento de saldos e extrato com o banco. A integração ainda não foi homologada:
+            conectar banco fica indisponível até lá.
           </p>
         </div>
 
-        <Button className="gap-2" onClick={() => setDialogOpen(true)}>
+        {/* Não há provedor de Open Finance homologado: a edge function recusa
+            criar consentimento, ler saldo e importar extrato (503). Antes o
+            botão abria um fluxo que terminava em dado inventado gravado na
+            conciliação, então ele fica desabilitado com o motivo à mostra. */}
+        <Button
+          className="gap-2"
+          onClick={() => setDialogOpen(true)}
+          disabled
+          title="Integração Open Finance ainda não homologada: nenhuma instituição pode ser conectada."
+        >
           <Link2 className="h-4 w-4" />
           Conectar Banco
         </Button>
@@ -157,7 +167,11 @@ export const OpenFinancePanel = () => {
             <p className="text-sm text-muted-foreground">
               O Open Finance é regulado pelo Banco Central do Brasil e permite o compartilhamento
               seguro de dados financeiros entre instituições autorizadas. Você tem controle total
-              sobre quais dados compartilhar e pode revogar o acesso a qualquer momento.
+              sobre quais dados compartilhar e pode revogar o acesso a qualquer momento.{' '}
+              <strong>
+                Neste sistema a integração ainda não está homologada: nenhuma conta é lida e nenhum
+                lançamento é importado para a conciliação.
+              </strong>
             </p>
             <a
               href="https://openbankingbrasil.org.br/"

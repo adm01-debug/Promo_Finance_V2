@@ -27,7 +27,7 @@ export function AuditDetailDialog({ open, onOpenChange, registro }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent aria-describedby={undefined} className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Detalhes do registro</DialogTitle>
         </DialogHeader>

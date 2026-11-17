@@ -27,10 +27,8 @@ import {
   Hash,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
-import { registrarEvento } from '@/lib/sefaz-event-logger';
+import type { SefazResponse } from '@/lib/sefaz-simulator';
 import { useEmpresas } from '@/hooks/useFinancialData';
-import { secureRandomInt } from '@/lib/secure-random';
 
 interface InutilizacaoFormData {
   empresa: string;
@@ -73,96 +71,22 @@ export function InutilizacaoNFe() {
       ? Math.max(0, parseInt(formData.numeroFinal) - parseInt(formData.numeroInicial) + 1)
       : 0;
 
+  // A inutilizacao NAO e transmitida: o caminho antigo chamava `processarSefaz`
+  // do SIMULADOR (src/lib/sefaz-simulator/handlers.ts), que devolvia sempre
+  // `cStat: '102'` com protocolo gerado localmente, e a tela anunciava
+  // "Numeracao inutilizada! Protocolo: ..." -- numero fiscal fabricado, da
+  // mesma familia que a PR #408 tirou dos boletos. Enquanto a integracao SEFAZ
+  // nao estiver homologada, a tela RECUSA em vez de inventar protocolo.
+  // Emissao (NovaNFeForm) e consulta (NotasFiscaisAbas) ja foram desligadas
+  // assim; esta aba era a que continuava alcancavel (achado F12, P0).
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.empresa) {
-      toast.error('Selecione uma empresa');
-      return;
-    }
-
-    if (!formData.numeroInicial || !formData.numeroFinal) {
-      toast.error('Informe a faixa de numeração');
-      return;
-    }
-
-    const numInicio = parseInt(formData.numeroInicial);
-    const numFim = parseInt(formData.numeroFinal);
-
-    if (numInicio > numFim) {
-      toast.error('O número inicial deve ser menor ou igual ao número final');
-      return;
-    }
-
-    if (numFim - numInicio > 999) {
-      toast.error('A faixa máxima permitida é de 1000 números');
-      return;
-    }
-
-    if (formData.justificativa.length < 15) {
-      toast.error('A justificativa deve ter no mínimo 15 caracteres');
-      return;
-    }
-
-    setIsProcessing(true);
+    setCurrentStep('idle');
     setSefazResponse(null);
-
-    const empresa = empresas.find((c) => c.id === formData.empresa);
-    const tempoInicio = Date.now();
-
-    // Simula os passos de processamento
-    for (const step of steps.slice(0, -1)) {
-      setCurrentStep(step.id);
-      await new Promise((resolve) => setTimeout(resolve, secureRandomInt(600, 1000)));
-    }
-
-    // Processa com o simulador
-    const response = await processarSefaz({
-      tipo: 'inutilizacao',
-      justificativa: formData.justificativa,
-      inutilizacao: {
-        cnpj: empresa?.cnpj || '',
-        serie: formData.serie,
-        numeroInicial: numInicio,
-        numeroFinal: numFim,
-        justificativa: formData.justificativa,
-        ano: formData.ano,
-      },
-    });
-
-    const tempoTotal = Date.now() - tempoInicio;
-    // Registra evento no histórico
-    registrarEvento({
-      tipo: 'INUTILIZACAO',
-      numeroNfe: `${formData.numeroInicial.padStart(9, '0')} - ${formData.numeroFinal.padStart(9, '0')}`,
-      cStat: response.cStat,
-      xMotivo: response.xMotivo,
-      protocolo: response.protocolo,
-      ambiente: 'homologacao',
-      tempoResposta: tempoTotal,
-      detalhes: response.success
-        ? `Inutilização da faixa ${formData.numeroInicial} a ${formData.numeroFinal} (Série ${formData.serie}) - ${formData.justificativa}`
-        : `Falha na inutilização: ${response.errors?.join(', ') || response.xMotivo}`,
-    });
-
-    setCurrentStep('done');
-    setSefazResponse(response);
     setIsProcessing(false);
-
-    if (response.success) {
-      toast.success(`Numeração inutilizada! Protocolo: ${response.protocolo}`);
-      // Limpa o formulário após sucesso
-      setFormData({
-        empresa: formData.empresa,
-        serie: '1',
-        numeroInicial: '',
-        numeroFinal: '',
-        justificativa: '',
-        ano: new Date().getFullYear().toString(),
-      });
-    } else {
-      toast.error(response.xMotivo || 'Erro ao inutilizar numeração');
-    }
+    toast.error(
+      'Inutilização indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real.'
+    );
   };
 
   const handleReset = () => {
@@ -184,6 +108,12 @@ export function InutilizacaoNFe() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex gap-2 rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-muted-foreground">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-warning" />
+              Esta tela não transmite inutilização até que a integração SEFAZ esteja homologada.
+              Nenhum protocolo será simulado.
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="empresa">Empresa Emitente *</Label>
@@ -375,28 +305,8 @@ export function InutilizacaoNFe() {
             )}
 
             <div className="flex gap-3">
-              <Button
-                type="submit"
-                disabled={
-                  isProcessing ||
-                  !formData.empresa ||
-                  !formData.numeroInicial ||
-                  !formData.numeroFinal ||
-                  formData.justificativa.length < 15
-                }
-                className="gap-2"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <FileX className="h-4 w-4" />
-                    Inutilizar Numeração
-                  </>
-                )}
+              <Button type="submit" disabled className="gap-2">
+                <AlertTriangle className="h-4 w-4" /> Inutilização indisponível
               </Button>
               {sefazResponse && (
                 <Button type="button" variant="outline" onClick={handleReset}>

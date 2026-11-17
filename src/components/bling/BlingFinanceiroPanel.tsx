@@ -312,7 +312,7 @@ export function BlingFinanceiroPanel() {
       )}
 
       <Dialog open={!!showBaixa} onOpenChange={() => setShowBaixa(null)}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>
               Dar Baixa — Conta a {showBaixa?.tipo === 'receber' ? 'Receber' : 'Pagar'}

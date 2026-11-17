@@ -50,7 +50,7 @@ export function SavePresetDialog({
 }: SavePresetDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Salvar preset de filtros</DialogTitle>
         </DialogHeader>

@@ -266,7 +266,10 @@ export default function Boletos() {
                                       <Eye className="h-4 w-4" />
                                     </Button>
                                   </DialogTrigger>
-                                  <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                                  <DialogContent
+                                    aria-describedby={undefined}
+                                    className="max-w-3xl max-h-[90vh] overflow-y-auto"
+                                  >
                                     <DialogHeader>
                                       <DialogTitle>Boleto #{boleto.numero}</DialogTitle>
                                     </DialogHeader>

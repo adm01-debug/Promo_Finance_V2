@@ -1,0 +1,16 @@
+-- Libera a RPC de reprocessamento da fila de webhooks para a aplicacao.
+--
+-- `public.reprocess_dlq(uuid, text)` existia em producao desde a criacao da DLQ
+-- e NAO tinha EXECUTE para `authenticated`:
+--   has_function_privilege('authenticated','public.reprocess_dlq(uuid,text)','EXECUTE') = false
+-- Ou seja: o painel da fila (PR #406) mostrava a falha e nao tinha como
+-- reprocessar. A propria funcao valida o papel internamente
+-- (`IF NOT public.has_role(auth.uid(), 'admin') THEN RAISE EXCEPTION`), entao o
+-- GRANT nao afrouxa nada: quem nao e admin continua recebendo excecao.
+--
+-- `anon` segue sem EXECUTE. Reversivel com REVOKE.
+--
+-- Aplicado em producao (bwwbeyolnnzppeuhgkcd) antes deste arquivo, por
+-- supabase_db_query, como manda o AGENTS.md secao 4. Verificado depois:
+--   authenticated = true | anon = false
+GRANT EXECUTE ON FUNCTION public.reprocess_dlq(uuid, text) TO authenticated;

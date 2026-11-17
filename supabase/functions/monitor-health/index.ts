@@ -5,15 +5,11 @@
 //  1. Verifica se algum job falhou nas 2 execuções consecutivas mais recentes.
 //  2. Verifica se a taxa de erro de webhooks nas últimas 2 h supera 20%.
 //  3. Em caso de problema: insere na tabela `alertas` e loga no console.
+//  4. Notifica fora do app (Slack e/ou e-mail), só quando o alerta é novo —
+//     o cooldown de `existeAlertaRecente` também segura a notificação.
 //
-// TODO(canal-alerta): conectar ao canal WhatsApp/e-mail preferido após inserir o
-// alerta. Exemplo para e-mail:
-//   await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/enviar-alerta-email`, {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json',
-//                Authorization: `******'SUPABASE_SERVICE_ROLE_KEY')}` },
-//     body: JSON.stringify({ to: ADMIN_EMAIL, subject: titulo, body: mensagem }),
-//   });
+// Mesmo padrão de canais de `notify-performance-alert`: cada canal atrás do seu
+// próprio segredo, para a função seguir útil quando um deles não está no vault.
 
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
@@ -39,6 +35,7 @@ interface StatusMonitor {
   total_webhooks_2h: number;
   total_erros_2h: number;
   alertas_inseridos: number;
+  notificacoes: Record<string, unknown>[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -112,8 +109,123 @@ async function verificarWebhooks(
   return { taxa, total, erros };
 }
 
+// ─── Notificação fora do app ─────────────────────────────────────────────────
+
+function escaparHtml(txt: string): string {
+  return txt
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Teto por requisição: sem isso um canal que aceita a conexão e não responde
+// deixa o `fetch` pendurado — o `catch` não dispara, e como o handler aguarda
+// esta função dentro do laço de cron, os demais jobs e a checagem de webhooks
+// não rodariam naquela execução. Com AbortSignal.timeout o `catch` assume.
+const TIMEOUT_CANAL_MS = 5000;
+
+// Chamada apenas quando `inserirAlerta` devolve `deveNotificar`: alerta novo E
+// nenhuma notificação do mesmo problema nas últimas 2 h, independente de `lido`.
+async function notificarAlerta(titulo: string, mensagem: string): Promise<Record<string, unknown>> {
+  const canais: Record<string, unknown> = { titulo };
+  const slackUrl = Deno.env.get('SLACK_WEBHOOK_URL');
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  const emailTo = Deno.env.get('ALERTS_EMAIL_TO');
+  // ALERTS_EMAIL_FROM segue o nome usado por notify-performance-alert; RESEND_FROM
+  // é o remetente verificado do projeto e vale mais que o domínio de teste.
+  const emailFrom =
+    Deno.env.get('ALERTS_EMAIL_FROM') ?? Deno.env.get('RESEND_FROM') ?? 'alerts@resend.dev';
+
+  if (slackUrl) {
+    try {
+      const r = await fetch(slackUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: `${titulo}\n\n${mensagem}` }),
+        signal: AbortSignal.timeout(TIMEOUT_CANAL_MS),
+      });
+      canais.slack = { status: r.status, ok: r.ok };
+    } catch (err) {
+      canais.slack = { ok: false, error: err instanceof Error ? err.message : 'falha no envio' };
+    }
+  }
+
+  if (resendKey && emailTo) {
+    try {
+      const html =
+        `<h2 style="font-family:system-ui;color:#dc2626">${escaparHtml(titulo)}</h2>` +
+        `<pre style="font-family:ui-monospace,monospace;font-size:13px;background:#f5f5f5;` +
+        `padding:12px;border-radius:6px;white-space:pre-wrap">${escaparHtml(mensagem)}</pre>` +
+        `<p style="font-family:system-ui;font-size:12px;color:#666;margin-top:16px">` +
+        `Alerta automático do monitor de saúde. Veja os detalhes no painel de alertas do sistema.</p>`;
+
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: emailFrom,
+          to: emailTo
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+          subject: titulo.slice(0, 120),
+          html,
+        }),
+        signal: AbortSignal.timeout(TIMEOUT_CANAL_MS),
+      });
+      canais.email = { status: r.status, ok: r.ok };
+    } catch (err) {
+      canais.email = { ok: false, error: err instanceof Error ? err.message : 'falha no envio' };
+    }
+  }
+
+  if (!slackUrl && !(resendKey && emailTo)) {
+    canais.nenhum_canal = true;
+    log.warn('Alerta gravado sem canal de notificação configurado no vault', {
+      context: { titulo },
+    });
+  }
+
+  log.info('Notificação de alerta processada', { context: { canais } });
+  return canais;
+}
+
 // Janela de cooldown: não reabrir um alerta do mesmo tipo/título recém-criado.
 const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;
+
+// Marca, no `metadata` do alerta, que a notificação externa foi tentada para ele.
+// Sem isso o cooldown externo seria renovado pelas linhas recriadas que NÃO enviaram
+// nada: quem lê os alertas a cada rodada manteria o lembrete bloqueado para sempre.
+export const CHAVE_NOTIFICADO = 'notificado_em';
+
+// Gate da notificação externa. Duas diferenças em relação a `existeAlertaRecente`:
+// não filtra por `lido` (marcar como lido reabre o alerta na tela por política
+// existente, mas não deve liberar e-mail novo a cada 30 min) e conta apenas os
+// alertas que de fato geraram uma tentativa de envio.
+export async function existeNotificacaoRecente(
+  db: SupabaseClient,
+  titulo: string
+): Promise<boolean> {
+  const { data, error } = await db
+    .from('alertas')
+    .select('id')
+    .eq('tipo', 'monitor_health')
+    .eq('titulo', titulo)
+    .not(`metadata->${CHAVE_NOTIFICADO}`, 'is', null)
+    .gte('created_at', new Date(Date.now() - COOLDOWN_ALERTA_MS).toISOString())
+    .limit(1);
+
+  if (error) {
+    // Na dúvida, não notifica: repetir e-mail é pior que atrasar um aviso.
+    log.error('Falha ao checar notificação recente; tratando como já notificado', {
+      context: { error, titulo },
+    });
+    return true;
+  }
+
+  return (data?.length ?? 0) > 0;
+}
 
 async function existeAlertaRecente(db: SupabaseClient, titulo: string): Promise<boolean> {
   const { data, error } = await db
@@ -132,14 +244,23 @@ async function existeAlertaRecente(db: SupabaseClient, titulo: string): Promise<
   return (data?.length ?? 0) > 0;
 }
 
-async function inserirAlerta(
+export interface ResultadoAlerta {
+  inserido: boolean;
+  deveNotificar: boolean;
+}
+
+export async function inserirAlerta(
   db: SupabaseClient,
   titulo: string,
   mensagem: string
-): Promise<boolean> {
+): Promise<ResultadoAlerta> {
+  // Antes de gravar: já saiu notificação deste mesmo problema nas últimas 2h?
+  // Checado aqui porque depois do insert a própria linha nova casaria na consulta.
+  const jaNotificado = await existeNotificacaoRecente(db, titulo);
+
   if (await existeAlertaRecente(db, titulo)) {
     log.info('Alerta já existente nas últimas 2h, pulando duplicata', { context: { titulo } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
   // alertas.user_id é NOT NULL DEFAULT uid(); insert com service_role manda
@@ -154,13 +275,15 @@ async function inserirAlerta(
 
   if (errAdmin) {
     log.error('Falha ao buscar admin destinatário do alerta', { context: { error: errAdmin } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
   if (!admin?.id) {
     log.error('Nenhum admin global encontrado; alerta não inserido', { context: { titulo } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
+
+  const deveNotificar = !jaNotificado;
 
   const { error } = await db.from('alertas').insert({
     user_id: admin.id,
@@ -169,96 +292,107 @@ async function inserirAlerta(
     mensagem,
     prioridade: 'alta',
     lido: false,
+    // Marcador do envio: só na linha que vai notificar, para a recriação sem
+    // envio não renovar o cooldown externo.
+    metadata: deveNotificar ? { [CHAVE_NOTIFICADO]: new Date().toISOString() } : null,
   });
 
   if (error) {
     log.error('Falha ao inserir alerta na tabela alertas', { context: { error, titulo } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
-  return true;
+  return { inserido: true, deveNotificar };
 }
 
 // ─── Handler principal ───────────────────────────────────────────────────────
 
-serve(
-  withEdgeObservability('monitor-health', async (req) => {
-    const corsHeaders = corsHeadersPara(req);
+// Guarda igual a notify-performance-alert:201 — permite importar o módulo no teste
+// sem subir servidor.
+if (!Deno.env.get('DENO_TESTING')) {
+  serve(
+    withEdgeObservability('monitor-health', async (req) => {
+      const corsHeaders = corsHeadersPara(req);
 
-    if (req.method === 'OPTIONS') {
-      return new Response('ok', { headers: corsHeaders });
-    }
-
-    // GET é apenas health-check: não executa monitoramento nem insere nada.
-    if (req.method === 'GET') {
-      return new Response(JSON.stringify({ ok: true }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Apenas pg_cron ou chamada interna com segredo rotacionável.
-    const auth = await exigirChamadaInterna(req, 'monitor_health_cron');
-    if (!auth.ok) return auth.resposta;
-
-    try {
-      const db = clientDeServico();
-      const status: StatusMonitor = {
-        cron_falhos: [],
-        webhook_taxa_erro: 0,
-        total_webhooks_2h: 0,
-        total_erros_2h: 0,
-        alertas_inseridos: 0,
-      };
-
-      // 1. Cron jobs com 2 falhas consecutivas nas últimas 2h
-      status.cron_falhos = await verificarCronFalhos(db);
-
-      for (const job of status.cron_falhos) {
-        const titulo = `[MONITOR] Cron "${job.jobname}" falhou 2× consecutivas`;
-        const mensagem =
-          `Job: ${job.jobname}\n` +
-          `Falhas consecutivas: ${job.falhas_consecutivas}\n` +
-          `Última execução: ${job.ultima_execucao}\n` +
-          `Erro: ${job.ultimo_erro ?? 'sem detalhe'}`;
-
-        log.warn(titulo, { context: { job } });
-        if (await inserirAlerta(db, titulo, mensagem)) {
-          status.alertas_inseridos++;
-        }
+      if (req.method === 'OPTIONS') {
+        return new Response('ok', { headers: corsHeaders });
       }
 
-      // 2. Taxa de erro de webhooks nas últimas 2h
-      const { taxa, total, erros } = await verificarWebhooks(db);
-      status.webhook_taxa_erro = taxa;
-      status.total_webhooks_2h = total;
-      status.total_erros_2h = erros;
-
-      if (total > 0 && taxa > 0.2) {
-        const titulo = `[MONITOR] Webhooks com ${(taxa * 100).toFixed(1)}% de erro nas últimas 2h`;
-        const mensagem =
-          `Total de webhooks: ${total}\n` +
-          `Com erro: ${erros}\n` +
-          `Taxa: ${(taxa * 100).toFixed(1)}%\n` +
-          `Limiar: 20%`;
-
-        log.warn(titulo, { context: { taxa, total, erros } });
-        if (await inserirAlerta(db, titulo, mensagem)) {
-          status.alertas_inseridos++;
-        }
+      // GET é apenas health-check: não executa monitoramento nem insere nada.
+      if (req.method === 'GET') {
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
 
-      log.info('monitor-health concluído', { context: { status } });
+      // Apenas pg_cron ou chamada interna com segredo rotacionável.
+      const auth = await exigirChamadaInterna(req, 'monitor_health_cron');
+      if (!auth.ok) return auth.resposta;
 
-      return new Response(JSON.stringify({ ok: true, status }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (err) {
-      const mensagem = err instanceof Error ? err.message : 'erro desconhecido no monitor-health';
-      log.error('Erro inesperado no monitor-health', { context: { error: mensagem } });
-      return new Response(JSON.stringify({ ok: false, error: 'falha interna' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-  })
-);
+      try {
+        const db = clientDeServico();
+        const status: StatusMonitor = {
+          cron_falhos: [],
+          webhook_taxa_erro: 0,
+          total_webhooks_2h: 0,
+          total_erros_2h: 0,
+          alertas_inseridos: 0,
+          notificacoes: [],
+        };
+
+        // 1. Cron jobs com 2 falhas consecutivas nas últimas 2h
+        status.cron_falhos = await verificarCronFalhos(db);
+
+        for (const job of status.cron_falhos) {
+          const titulo = `[MONITOR] Cron "${job.jobname}" falhou 2× consecutivas`;
+          const mensagem =
+            `Job: ${job.jobname}\n` +
+            `Falhas consecutivas: ${job.falhas_consecutivas}\n` +
+            `Última execução: ${job.ultima_execucao}\n` +
+            `Erro: ${job.ultimo_erro ?? 'sem detalhe'}`;
+
+          log.warn(titulo, { context: { job } });
+          const r = await inserirAlerta(db, titulo, mensagem);
+          if (r.inserido) status.alertas_inseridos++;
+          if (r.deveNotificar) status.notificacoes.push(await notificarAlerta(titulo, mensagem));
+        }
+
+        // 2. Taxa de erro de webhooks nas últimas 2h
+        const { taxa, total, erros } = await verificarWebhooks(db);
+        status.webhook_taxa_erro = taxa;
+        status.total_webhooks_2h = total;
+        status.total_erros_2h = erros;
+
+        if (total > 0 && taxa > 0.2) {
+          // Título sem a taxa: `existeAlertaRecente` casa por título exato, e a
+          // porcentagem muda a cada rodada — com ela no título o cooldown de 2 h
+          // nunca pegava e o alerta reabria a cada 30 min. A taxa segue na mensagem.
+          const titulo = '[MONITOR] Webhooks acima do limiar de erro nas últimas 2h';
+          const mensagem =
+            `Total de webhooks: ${total}\n` +
+            `Com erro: ${erros}\n` +
+            `Taxa: ${(taxa * 100).toFixed(1)}%\n` +
+            `Limiar: 20%`;
+
+          log.warn(titulo, { context: { taxa, total, erros } });
+          const r = await inserirAlerta(db, titulo, mensagem);
+          if (r.inserido) status.alertas_inseridos++;
+          if (r.deveNotificar) status.notificacoes.push(await notificarAlerta(titulo, mensagem));
+        }
+
+        log.info('monitor-health concluído', { context: { status } });
+
+        return new Response(JSON.stringify({ ok: true, status }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        const mensagem = err instanceof Error ? err.message : 'erro desconhecido no monitor-health';
+        log.error('Erro inesperado no monitor-health', { context: { error: mensagem } });
+        return new Response(JSON.stringify({ ok: false, error: 'falha interna' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    })
+  );
+}

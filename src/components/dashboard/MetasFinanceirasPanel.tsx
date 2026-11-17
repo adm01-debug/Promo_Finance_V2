@@ -150,7 +150,7 @@ export function MetasFinanceirasPanel(_props: { defaultExpanded?: boolean }) {
                   Meta
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-xl p-6 max-w-sm">
+              <DialogContent aria-describedby={undefined} className="rounded-xl p-6 max-w-sm">
                 <DialogHeader className="mb-4">
                   <DialogTitle className="text-xl font-bold">Nova Meta</DialogTitle>
                 </DialogHeader>

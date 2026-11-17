@@ -114,6 +114,19 @@ export function BalanceteTable({ rows, totais, onSelectConta }: Props) {
               </TableCell>
             </TableRow>
           )}
+          {/* Valor não finito (NaN/Infinity) virava zero e o balancete podia
+              fechar sobre número que não existe (achado F09). Agora a linha é
+              deixada fora da soma, impede o fechamento e aparece aqui. */}
+          {totais.linhasInvalidas > 0 && (
+            <TableRow className="bg-destructive/10">
+              <TableCell colSpan={7} className="text-center text-xs font-bold text-destructive">
+                {totais.linhasInvalidas === 1
+                  ? '1 conta com valor inválido ficou fora da soma'
+                  : `${totais.linhasInvalidas} contas com valor inválido ficaram fora da soma`}{' '}
+                — o balancete não fecha enquanto o dado de origem não for corrigido.
+              </TableCell>
+            </TableRow>
+          )}
         </tfoot>
       </Table>
     </div>

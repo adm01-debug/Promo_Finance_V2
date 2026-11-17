@@ -139,7 +139,10 @@ export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle>{editing ? 'Editar provedor SSO' : 'Novo provedor SSO'}</DialogTitle>
         </DialogHeader>

@@ -156,13 +156,25 @@ Deno.serve(
       const inicio = `${body.ano}-${String(body.mes).padStart(2, '0')}-01`;
       const fimDate = new Date(body.ano, body.mes, 0);
       const fim = `${body.ano}-${String(body.mes).padStart(2, '0')}-${String(fimDate.getDate()).padStart(2, '0')}`;
-      const { count: pendentes } = await admin
+      // transacoes_bancarias não tem empresa_id: o escopo por empresa passa por
+      // conta_bancaria_id. Com o filtro antigo a consulta falhava (42703), e
+      // `count` vinha nulo — o `?? 0` fazia este controle passar como ok sem ter
+      // medido transação nenhuma.
+      const { data: contasDaEmpresa, error: erroContas } = await admin
+        .from('contas_bancarias')
+        .select('id')
+        .eq('empresa_id', body.empresa_id);
+      if (erroContas) throw erroContas;
+      const idsContas = (contasDaEmpresa ?? []).map((c) => c.id);
+
+      const { count: pendentes, error: erroPendentes } = await admin
         .from('transacoes_bancarias')
         .select('*', { count: 'exact', head: true })
-        .eq('empresa_id', body.empresa_id)
+        .in('conta_bancaria_id', idsContas)
         .gte('data', inicio)
         .lte('data', fim)
         .eq('conciliada', false);
+      if (erroPendentes) throw erroPendentes;
       checks.push({
         id: 'conciliacao',
         label: 'Conciliação bancária do período',

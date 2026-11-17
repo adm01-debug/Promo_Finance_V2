@@ -13,12 +13,7 @@ interface Props {
   onTransmit: () => void;
 }
 
-export function ContingenciaPendingList({
-  pendingNFes,
-  isOnline,
-  isTransmitting,
-  onTransmit,
-}: Props) {
+export function ContingenciaPendingList({ pendingNFes, isOnline, onTransmit }: Props) {
   if (pendingNFes.length === 0) return null;
 
   return (
@@ -34,13 +29,21 @@ export function ContingenciaPendingList({
               NF-e emitidas em contingência pendentes de autorização
             </CardDescription>
           </div>
-          <Button onClick={onTransmit} disabled={!isOnline || isTransmitting} className="gap-2">
-            {isTransmitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
-            Transmitir Pendentes
+          {/* Transmissao desligada junto com emissao, consulta, inutilizacao e
+              cancelamento (achado F12): nao existe integracao SEFAZ homologada,
+              e o caminho antigo sorteava a autorizacao. */}
+          <Button
+            onClick={onTransmit}
+            disabled
+            className="gap-2"
+            title={
+              isOnline
+                ? 'Integração SEFAZ ainda não homologada'
+                : 'SEFAZ indisponível e integração não homologada'
+            }
+          >
+            <Upload className="h-4 w-4" />
+            Transmissão indisponível
           </Button>
         </CardHeader>
         <CardContent>

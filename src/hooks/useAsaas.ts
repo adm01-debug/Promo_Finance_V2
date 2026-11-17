@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { handleEdgeError } from '@/lib/edge-function-error';
 import type { AsaasCustomer, AsaasPayment, AsaasSyncQueueItem } from './useAsaas.types';
 import { invokeAsaas } from './useAsaas.helpers';
+import { exigirRegistroLocalDaCobranca } from './useBoletos.helpers';
 
 export function useAsaas(empresaId?: string) {
   const queryClient = useQueryClient();
@@ -79,7 +80,15 @@ export function useAsaas(empresaId?: string) {
   });
 
   const criarCobranca = useMutation({
-    mutationFn: (payload: Record<string, unknown>) => invokeAsaas('criar_cobranca', payload),
+    // A tela do Asaas ignorava `registro_local` e anunciava sucesso mesmo
+    // quando a cobrança não entrou em `asaas_payments` — cobrança invisível no
+    // financeiro, o mesmo defeito que esta PR corrige pelo lado do backend
+    // (achado do Devin na PR #424).
+    mutationFn: async (payload: Record<string, unknown>) => {
+      const resultado = await invokeAsaas('criar_cobranca', payload);
+      exigirRegistroLocalDaCobranca(resultado);
+      return resultado;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['asaas-payments'] });
       toast.success('Cobrança criada com sucesso!');

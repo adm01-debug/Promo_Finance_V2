@@ -29,7 +29,7 @@ export function WeekDetailDialog({ selectedWeek, onChange, weekKeys, data }: Pro
 
   return (
     <Dialog open={!!selectedWeek} onOpenChange={(o) => !o && onChange(null)}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent aria-describedby={undefined} className="max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between gap-3">
             <span>

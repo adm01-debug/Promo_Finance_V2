@@ -35,6 +35,45 @@ const OPEN_FINANCE_REDIRECT_URI = Deno.env.get('OPEN_FINANCE_REDIRECT_URI');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+/**
+ * Não existe provedor de Open Finance homologado neste sistema: a URL de
+ * autorização apontava para `openbanking.example.com` e nenhum trecho do
+ * código grava `status = 'authorized'` num consentimento. Ainda assim as
+ * leituras devolviam saldo e extrato inventados, e `import_transactions`
+ * GRAVAVA cinco lançamentos fabricados em `transacoes_bancarias` — com a
+ * coluna `saldo` recalculada sobre o `saldo_atual` verdadeiro da conta — e
+ * respondia `success: true`. Na Conciliação Bancária isso vira crédito que
+ * nunca entrou, pronto para baixar título real.
+ *
+ * Estas ações passam a ser recusadas antes de qualquer leitura ou escrita.
+ * `get_institutions` continua (lista de bancos é dado de referência, não
+ * afirma estado da conta de ninguém) e `revoke_consent` também, porque só
+ * atualiza o status local do consentimento.
+ */
+export const MENSAGEM_SEM_PROVEDOR =
+  'Open Finance não homologado: nenhuma instituição está conectada de verdade. ' +
+  'Nenhum saldo foi lido e nenhuma transação foi importada.';
+
+const ACOES_SEM_PROVEDOR = new Set([
+  'create_consent',
+  'get_accounts',
+  'get_balances',
+  'get_transactions',
+  'import_transactions',
+  'refresh_token',
+]);
+
+export function acaoExigeProvedorHomologado(action: string): boolean {
+  return ACOES_SEM_PROVEDOR.has(action);
+}
+
+export function respostaSemProvedor(corsHeaders: Record<string, string>): Response {
+  return new Response(JSON.stringify({ success: false, error: MENSAGEM_SEM_PROVEDOR }), {
+    status: 503,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
 serve(
   withEdgeObservability('open-finance', async (req) => {
     const _t0 = Date.now();
@@ -85,6 +124,17 @@ serve(
           if (inativa) return inativa;
         }
         log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
+
+        // Recusa antes de ler ou gravar qualquer coisa. Fica depois de auth e
+        // schema de propósito: o caminho de entrada real deste defeito era a
+        // invocação direta da função, não o clique na tela (o botão Importar só
+        // aparece com consentimento `authorized`, status que nada grava).
+        if (acaoExigeProvedorHomologado(action)) {
+          log.warn('[open-finance] acao recusada: integracao nao homologada', {
+            context: { action },
+          });
+          return respostaSemProvedor(corsHeaders);
+        }
 
         let result;
 
@@ -281,48 +331,12 @@ async function createConsent(
   // 3. Receive callback with authorization code
   // 4. Exchange code for access token
 
-  // Simulated consent creation
-  const consentId = `consent_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year
-
-  // Store consent in database
-  await supabase.from('open_finance_consents').insert({
-    id: consentId,
-    user_id: userId,
-    institution_id: institutionId,
-    permissions: permissions,
-    status: 'awaiting_authorization',
-    expires_at: expiresAt.toISOString(),
-  });
-
-  // Build authorization URL
-  const authUrl = buildAuthorizationUrl(institutionId, consentId, permissions);
-
-  return {
-    success: true,
-    consent_id: consentId,
-    authorization_url: authUrl,
-    expires_at: expiresAt.toISOString(),
-    message: 'Redirecione o usuário para a URL de autorização',
-  };
-}
-
-function buildAuthorizationUrl(
-  institutionId: string,
-  consentId: string,
-  permissions: string[]
-): string {
-  // This would be the actual bank's authorization URL
-  const baseUrl = `https://openbanking.example.com/authorize`;
-  const params = new URLSearchParams({
-    client_id: OPEN_FINANCE_CLIENT_ID || '',
-    redirect_uri: OPEN_FINANCE_REDIRECT_URI || '',
-    response_type: 'code',
-    scope: permissions.join(' '),
-    state: consentId,
-  });
-
-  return `${baseUrl}?${params.toString()}`;
+  // Sem provedor homologado não há consentimento a criar: a URL de autorização
+  // apontava para `openbanking.example.com` e o registro gravado aqui nascia
+  // em `awaiting_authorization` para sempre, porque nada neste código grava
+  // `authorized`. Mandar o usuário para aquela URL era prometer um fluxo de
+  // banco que não existe.
+  throw new Error(MENSAGEM_SEM_PROVEDOR);
 }
 
 // Get linked accounts
@@ -344,40 +358,9 @@ async function getAccounts(supabase: any, userId: string, consentId?: string): P
     }
   }
 
-  // In a real implementation, call the bank's accounts API
-  // For demo, return simulated accounts
-  const accounts = [
-    {
-      id: 'acc_001',
-      type: 'CONTA_CORRENTE',
-      subtype: 'INDIVIDUAL',
-      currency: 'BRL',
-      accountNumber: '****1234',
-      branch: '0001',
-      bank: {
-        code: '341',
-        name: 'Itaú Unibanco',
-      },
-    },
-    {
-      id: 'acc_002',
-      type: 'CONTA_POUPANCA',
-      subtype: 'INDIVIDUAL',
-      currency: 'BRL',
-      accountNumber: '****5678',
-      branch: '0001',
-      bank: {
-        code: '341',
-        name: 'Itaú Unibanco',
-      },
-    },
-  ];
-
-  return {
-    success: true,
-    accounts,
-    total: accounts.length,
-  };
+  // As duas contas devolvidas aqui ('****1234' e '****5678', Itaú) eram fixas
+  // no código, para qualquer usuário de qualquer empresa.
+  throw new Error(MENSAGEM_SEM_PROVEDOR);
 }
 
 // Get account balances
@@ -389,28 +372,8 @@ async function getBalances(
 ): Promise<any> {
   log.info(`[open-finance] Getting balances for account ${accountId}`);
 
-  // Simulated balances
-  const balances = {
-    account_id: accountId,
-    available: {
-      amount: '245890.50',
-      currency: 'BRL',
-    },
-    current: {
-      amount: '248500.00',
-      currency: 'BRL',
-    },
-    blocked: {
-      amount: '2609.50',
-      currency: 'BRL',
-    },
-    updated_at: new Date().toISOString(),
-  };
-
-  return {
-    success: true,
-    balances,
-  };
+  // Respondia R$ 245.890,50 disponível para qualquer conta de qualquer empresa.
+  throw new Error(MENSAGEM_SEM_PROVEDOR);
 }
 
 // Get account transactions
@@ -424,69 +387,10 @@ async function getTransactions(
 ): Promise<any> {
   log.info(`[open-finance] Getting transactions for account ${accountId}`);
 
-  const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const end = endDate || new Date().toISOString();
-
-  // Simulated transactions
-  const transactions = [
-    {
-      id: 'txn_001',
-      type: 'PIX',
-      amount: '-1500.00',
-      currency: 'BRL',
-      description: 'PIX Enviado - FORNECEDOR LTDA',
-      category: 'TRANSFER',
-      date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'COMPLETED',
-    },
-    {
-      id: 'txn_002',
-      type: 'PIX',
-      amount: '5000.00',
-      currency: 'BRL',
-      description: 'PIX Recebido - CLIENTE ABC',
-      category: 'TRANSFER',
-      date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'COMPLETED',
-    },
-    {
-      id: 'txn_003',
-      type: 'TED',
-      amount: '-8500.00',
-      currency: 'BRL',
-      description: 'TED - PAGTO FORNECEDOR',
-      category: 'TRANSFER',
-      date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'COMPLETED',
-    },
-    {
-      id: 'txn_004',
-      type: 'BOLETO',
-      amount: '-2350.00',
-      currency: 'BRL',
-      description: 'PGTO BOLETO - ENERGIA ELETRICA',
-      category: 'BILL_PAYMENT',
-      date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'COMPLETED',
-    },
-    {
-      id: 'txn_005',
-      type: 'CREDIT',
-      amount: '12500.00',
-      currency: 'BRL',
-      description: 'DEP BOLETO - FATURA 12345',
-      category: 'DEPOSIT',
-      date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'COMPLETED',
-    },
-  ];
-
-  return {
-    success: true,
-    transactions,
-    total: transactions.length,
-    period: { start, end },
-  };
+  // Devolvia cinco lançamentos fixos (PIX de R$ 5.000 de 'CLIENTE ABC', TED de
+  // R$ 8.500 para 'PAGTO FORNECEDOR'...) com datas relativas a agora. Era daqui
+  // que `importTransactionsToSystem` tirava o que gravava no extrato.
+  throw new Error(MENSAGEM_SEM_PROVEDOR);
 }
 
 // Import transactions to the system for reconciliation
@@ -605,14 +509,9 @@ async function importTransactionsToSystem(
 async function refreshAccessToken(supabase: any, userId: string, consentId?: string): Promise<any> {
   log.info(`[open-finance] Refreshing token for consent ${consentId}`);
 
-  // In real implementation, call token refresh endpoint
-  // Update stored tokens
-
-  return {
-    success: true,
-    message: 'Token atualizado com sucesso',
-    expires_in: 3600,
-  };
+  // Respondia 'Token atualizado com sucesso' sem chamar endpoint algum nem
+  // tocar em token nenhum.
+  throw new Error(MENSAGEM_SEM_PROVEDOR);
 }
 
 // Revoke consent

@@ -186,3 +186,42 @@ describe('useConciliacaoPage — importação de extrato', () => {
     expect(result.current.importReport?.pendentesRevisao).toBeGreaterThanOrEqual(0);
   });
 });
+
+describe('useConciliacaoPage — o relatório só conta o que foi salvo', () => {
+  it('gravação que falha reporta 0 salvas, não o total do arquivo', async () => {
+    vi.mocked(mocks.mutations.salvarExtratoBanco.mutateAsync).mockRejectedValue(
+      new Error('violação de RLS')
+    );
+    const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
+    act(() => result.current.setSelectedBanco('bank-1'));
+    await act(async () => result.current.handleImportSuccess(makeExtrato()));
+
+    // O relatório continua aparecendo (o usuário precisa ver os matches e a
+    // falha já vem no toast do onError de salvarExtratoBanco), mas o número de
+    // salvas não pode mentir.
+    expect(result.current.showReportDialog).toBe(true);
+    expect(result.current.importReport?.totalSalvas).toBe(0);
+    expect(result.current.importReport?.totalImportadas).toBeGreaterThan(0);
+  });
+
+  it('sem conta bancária selecionada nada é gravado e o relatório mostra 0 salvas', async () => {
+    const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
+    await act(async () => result.current.handleImportSuccess(makeExtrato()));
+
+    expect(mocks.mutations.salvarExtratoBanco.mutateAsync).not.toHaveBeenCalled();
+    expect(result.current.importReport?.totalSalvas).toBe(0);
+  });
+
+  it('sucesso reporta exatamente o que o banco confirmou', async () => {
+    vi.mocked(mocks.mutations.salvarExtratoBanco.mutateAsync).mockResolvedValue({
+      saved: 1,
+      duplicates: 1,
+    });
+    const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
+    act(() => result.current.setSelectedBanco('bank-1'));
+    await act(async () => result.current.handleImportSuccess(makeExtrato()));
+
+    expect(result.current.importReport?.totalSalvas).toBe(1);
+    expect(result.current.importReport?.totalDuplicadas).toBe(1);
+  });
+});

@@ -90,7 +90,7 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           Nova Conta
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Adicionar Conta Bancária</DialogTitle>
         </DialogHeader>

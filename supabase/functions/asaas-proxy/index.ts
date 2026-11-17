@@ -17,7 +17,13 @@ import {
   withTimeout,
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
-import { exigirVinculoEmpresa, exigirPapel } from '../_shared/auth-guard.ts';
+import { exigirVinculoEmpresa, exigirPapel, empresasDoUsuario } from '../_shared/auth-guard.ts';
+import {
+  achatarInstrumentosBoleto,
+  lerConfigAsaas,
+  pareceIdClienteAsaas,
+  resolverEncargo,
+} from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -352,8 +358,33 @@ export const handler = async (req: Request) => {
           return err('empresa_id, asaas_customer_id, valor e data_vencimento são obrigatórios');
         const vinculoErrCriarCobranca = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrCriarCobranca) return vinculoErrCriarCobranca;
+        // `asaas_customer_id` que chega da tela é o id do provedor (`cus_...`,
+        // ver NovaCobrancaDialogVincularContaReceber.tsx:192 e
+        // AssinaturaDialog.tsx:104), e é o que o Asaas espera em `customer`.
+        // Mas `asaas_payments.asaas_customer_id` é uuid com FK para
+        // `asaas_customers.id`: gravar o `cus_...` ali derrubava o insert com
+        // 22P02 e o erro só ia para o log — a cobrança nascia no provedor e
+        // nunca no banco. Resolve-se o uuid local aqui, na mesma consulta que
+        // valida o vínculo de empresa, e recusa-se antes de criar cobrança que
+        // o banco não conseguiria registrar.
+        if (!pareceIdClienteAsaas(data.asaas_customer_id))
+          return err(
+            'asaas_customer_id deve ser o identificador do cliente no Asaas (cus_...). Cadastre ou selecione o cliente na tela do Asaas antes de cobrar.',
+            422
+          );
+        const { data: clienteLocalCobranca, error: erroClienteLocalCobranca } = await supabase
+          .from('asaas_customers')
+          .select('id, empresa_id')
+          .eq('asaas_id', data.asaas_customer_id)
+          .maybeSingle();
+        if (erroClienteLocalCobranca) return err('Falha ao consultar o cliente Asaas', 500);
+        if (!clienteLocalCobranca)
+          return err(
+            'Cliente não vinculado ao Asaas neste sistema. Nenhuma cobrança foi criada.',
+            422
+          );
         const vinculoErrClienteCriarCobranca = await exigirEmpresaDoRecurso(
-          await empresaDoClienteAsaas(data.asaas_customer_id)
+          clienteLocalCobranca.empresa_id
         );
         if (vinculoErrClienteCriarCobranca) return vinculoErrClienteCriarCobranca;
 
@@ -395,17 +426,22 @@ export const handler = async (req: Request) => {
           };
         }
 
-        const { data: config } = await supabase
+        const { data: configRow } = await supabase
           .from('asaas_config')
           .select('*')
           .eq('empresa_id', data.empresa_id)
           .maybeSingle();
+        const config = lerConfigAsaas(configRow);
 
-        if (data.juros || config?.default_interest_percent)
-          payload.interest = { value: data.juros || config?.default_interest_percent };
+        // Zero informado na cobrança é escolha explícita de não cobrar: a
+        // regra está em resolverEncargo (com teste), porque agora que o
+        // default da configuração é lido de verdade um `||` faria esse zero
+        // cair no percentual padrão.
+        const jurosAplicado = resolverEncargo(data.juros, config.default_interest_percent);
+        if (jurosAplicado !== undefined) payload.interest = { value: jurosAplicado };
 
-        if (data.multa || config?.default_fine_percent)
-          payload.fine = { value: data.multa || config?.default_fine_percent };
+        const multaAplicada = resolverEncargo(data.multa, config.default_fine_percent);
+        if (multaAplicada !== undefined) payload.fine = { value: multaAplicada };
 
         if (data.desconto_valor) {
           payload.discount = {
@@ -446,7 +482,7 @@ export const handler = async (req: Request) => {
 
           const { error: dbError } = await supabase.from('asaas_payments').insert({
             asaas_id: result.id,
-            asaas_customer_id: data.asaas_customer_id,
+            asaas_customer_id: clienteLocalCobranca.id,
             empresa_id: data.empresa_id,
             conta_receber_id: data.conta_receber_id || null,
             tipo: data.tipo || 'boleto',
@@ -468,8 +504,19 @@ export const handler = async (req: Request) => {
               context: contextoErro(dbError),
             });
 
+          // A cobrança já existe no provedor; falhar a resposta perderia os
+          // identificadores. Em vez disso o resultado diz se ela foi registrada,
+          // para o chamador não tratar como sucesso uma cobrança que o
+          // financeiro não vê (antes isso só aparecia no log da função).
+          result.registro_local = dbError
+            ? { ok: false, erro: mensagemErro(dbError) }
+            : { ok: true };
+
           result.pixData = pixData;
           result.boletoData = boletoData;
+          // Linha digitável e código de barras também na raiz: é onde o front
+          // valida a emissão (useBoletos.helpers.ts:17-18).
+          Object.assign(result, achatarInstrumentosBoleto(boletoData));
         }
         break;
       }
@@ -726,7 +773,6 @@ export const handler = async (req: Request) => {
             });
 
           await supabase.from('asaas_audit_trail').insert({
-            payment_id: null,
             action: 'PIX_CASHOUT_CREATED',
             details: { asaas_id: result.id, valor: data.valor, chave: data.chave_pix },
             user_id: user.id,
@@ -1021,11 +1067,11 @@ export const handler = async (req: Request) => {
         await supabase
           .from('asaas_sync_queue')
           .update({ status: 'completed' })
-          .eq('payment_id', data.payment_id);
+          .eq('asaas_payment_id', data.payment_id);
 
         if (data?.reason) {
           await supabase.from('asaas_audit_trail').insert({
-            payment_id: data.payment_id,
+            asaas_payment_id: data.payment_id,
             action: 'MANUAL_SYNC',
             user_id: user.id,
             details: { reason: data.reason, manual: true },
@@ -1037,17 +1083,24 @@ export const handler = async (req: Request) => {
       }
 
       case 'processar_fila_sincronizacao': {
-        const { data: config } = await supabase
+        // Uma configuração por empresa: ler `.limit(1)` fazia a primeira linha
+        // encontrada governar o backoff da fila inteira — com os campos agora
+        // sendo lidos de verdade, a empresa A passaria a ditar o intervalo de
+        // retentativa dos pagamentos da empresa B. A fila não tem empresa_id;
+        // ela vem do pagamento (asaas_payments.empresa_id).
+        const { data: configRows } = await supabase
           .from('asaas_config')
-          .select('*')
-          .limit(1)
-          .maybeSingle();
-        const baseInterval = config?.retry_interval_minutes || 30;
-        const multiplier = config?.backoff_multiplier || 2.0;
+          .select('empresa_id, configuracoes');
+        const configPorEmpresa = new Map(
+          (configRows ?? []).map((linha) => [
+            (linha as { empresa_id: string }).empresa_id,
+            lerConfigAsaas(linha),
+          ])
+        );
 
         const { data: queueItems, error: queueError } = await supabase
           .from('asaas_sync_queue')
-          .select('*, asaas_payments(asaas_id, id)')
+          .select('*, asaas_payments(asaas_id, id, empresa_id)')
           .eq('status', 'PENDING')
           .lte('next_retry_at', new Date().toISOString())
           .limit(10);
@@ -1082,12 +1135,16 @@ export const handler = async (req: Request) => {
 
             results.push({ id: item.id, status: 'COMPLETED' });
           } catch (e: any) {
+            const empresaDoItem = (item.asaas_payments as any)?.empresa_id as string | undefined;
+            const cfgItem = empresaDoItem ? (configPorEmpresa.get(empresaDoItem) ?? {}) : {};
             const nextRetry = new Date();
-            const minutesToAdd = baseInterval * Math.pow(multiplier, item.attempts);
+            const minutesToAdd =
+              (cfgItem.retry_interval_minutes || 30) *
+              Math.pow(cfgItem.backoff_multiplier || 2.0, item.attempts);
             nextRetry.setMinutes(nextRetry.getMinutes() + minutesToAdd);
 
             const newAttempts = item.attempts + 1;
-            const maxAttempts = item.max_attempts || config?.retry_limit || 5;
+            const maxAttempts = item.max_attempts || cfgItem.retry_limit || 5;
 
             const newError = {
               timestamp: new Date().toISOString(),
@@ -1111,32 +1168,61 @@ export const handler = async (req: Request) => {
             results.push({ id: item.id, status: 'FAILED' });
           }
         }
-        const { count: failureCount } = await supabase
-          .from('asaas_sync_queue')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'FAILED')
-          .gte('updated_at', new Date(Date.now() - 3600000).toISOString());
+        // Alerta por empresa (AGENTS.md §4): a contagem de falhas é escopada
+        // pela empresa do pagamento — a fila não tem empresa_id, ele vem de
+        // asaas_payments pela FK — e cada empresa usa o próprio limite e o
+        // próprio destinatário. Uma leitura global faria o destinatário de uma
+        // empresa receber alerta disparado pelas falhas das outras.
+        //
+        // E só as empresas do chamador: esta ação é alcançável por usuário
+        // autenticado (nenhum cron a chama), e `configPorEmpresa` vem com
+        // service_role, então sem o recorte um usuário financeiro provocaria
+        // e-mail de alerta para cliente que ele não acessa (achado do Codex na
+        // PR #421).
+        const empresasDoChamador = new Set((await empresasDoUsuario(user.id)) ?? []);
+        const desdeUmaHora = new Date(Date.now() - 3600000).toISOString();
+        for (const [empresaId, cfg] of configPorEmpresa) {
+          if (!empresasDoChamador.has(empresaId)) continue;
+          const temEmail = Boolean(cfg.alert_email_enabled && cfg.alert_email_address);
+          const temWhatsapp = Boolean(cfg.alert_whatsapp_enabled && cfg.alert_whatsapp_number);
+          if (!temEmail && !temWhatsapp) continue;
 
-        const threshold = config?.failure_threshold || 5;
-        if (failureCount && failureCount >= threshold) {
-          if (config?.alert_email_enabled && config?.alert_email_address) {
+          const { count: failureCount } = await supabase
+            .from('asaas_sync_queue')
+            .select('id, asaas_payments!inner(empresa_id)', { count: 'exact', head: true })
+            .eq('asaas_payments.empresa_id', empresaId)
+            .eq('status', 'FAILED')
+            .gte('updated_at', desdeUmaHora);
+
+          const threshold = cfg.failure_threshold || 5;
+          if (!failureCount || failureCount < threshold) continue;
+
+          if (temEmail) {
             await supabase.functions.invoke('enviar-alerta-email', {
               body: {
                 tipo: 'asaas_failure',
-                destinatario: config.alert_email_address,
+                destinatario: cfg.alert_email_address,
                 dados: {
                   titulo: 'Limite de falhas na sincronização Asaas atingido',
-                  mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. O limite configurado é de ${threshold}.`,
+                  mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas da sua empresa na última hora. O limite configurado é de ${threshold}.`,
                   urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/asaas`,
                 },
               },
             });
           }
 
-          if (config?.alert_whatsapp_enabled && config?.alert_whatsapp_number) {
+          if (temWhatsapp) {
+            // NÃO entrega a mensagem: a ação `enviar-mensagem` de
+            // whatsapp-ia-proativo apenas monta um link wa.me e o devolve
+            // (index.ts:673-679), e aqui ninguém abre esse link. Fica
+            // registrado em log para não parecer alerta entregue; integrar um
+            // provedor de envio é decisão de custo, fora desta correção.
+            log.warn(
+              'Alerta Asaas por WhatsApp habilitado, mas o canal só gera link wa.me — nenhuma mensagem é entregue'
+            );
             await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
-                phone: config.alert_whatsapp_number,
+                phone: cfg.alert_whatsapp_number,
                 message: `⚠️ *ALERTA ASAAS:* Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. Acesse o painel para verificar.`,
               },
             });
@@ -1148,13 +1234,28 @@ export const handler = async (req: Request) => {
       }
 
       case 'simular_backoff': {
-        const { data: config } = await supabase
-          .from('asaas_config')
-          .select('*')
-          .limit(1)
-          .maybeSingle();
-        const baseInterval = config?.retry_interval_minutes || 30;
-        const multiplier = config?.backoff_multiplier || 2.0;
+        // Simula com a configuração da empresa informada; sem empresa, mostra
+        // os padrões, em vez de exibir a configuração de uma empresa qualquer.
+        //
+        // O vínculo é exigido antes da consulta: este client é service_role e
+        // ignora RLS, então sem o guard um usuário com papel financeiro
+        // descobriria a política de retentativa de qualquer empresa só passando
+        // o id dela (achado de segurança do Devin e do Codex na PR #421).
+        const empresaSimulacao = data?.empresa_id as string | undefined;
+        if (empresaSimulacao) {
+          const vinculoErrSimular = await exigirEmpresaDoRecurso(empresaSimulacao);
+          if (vinculoErrSimular) return vinculoErrSimular;
+        }
+        const { data: configRow } = empresaSimulacao
+          ? await supabase
+              .from('asaas_config')
+              .select('empresa_id, configuracoes')
+              .eq('empresa_id', empresaSimulacao)
+              .maybeSingle()
+          : { data: null };
+        const config = lerConfigAsaas(configRow);
+        const baseInterval = config.retry_interval_minutes || 30;
+        const multiplier = config.backoff_multiplier || 2.0;
 
         const simulationResults = [];
         for (let i = 1; i <= 5; i++) {

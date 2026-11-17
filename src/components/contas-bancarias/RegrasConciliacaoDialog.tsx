@@ -10,7 +10,10 @@ interface RegrasConciliacaoDialogProps {
 export function RegrasConciliacaoDialog({ open, onOpenChange }: RegrasConciliacaoDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl"
+      >
         <DialogHeader className="p-8 pb-4">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-warning/10 flex items-center justify-center">

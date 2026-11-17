@@ -55,7 +55,12 @@ serve(
           if (escopo) return escopo;
         }
 
-        let q = supabase.from('empresas').select('id, razao_social').eq('ativa', true);
+        let q = supabase
+          .from('empresas')
+          .select('id, razao_social')
+          // a coluna é `ativo`; com 'ativa' a consulta falhava e nenhuma empresa
+          // era selecionada, então esta rotina não produzia nada
+          .eq('ativo', true);
         if (empresaIdFilter) q = q.eq('id', empresaIdFilter);
         const { data: empresas, error: errE } = await q;
         if (errE) throw errE;

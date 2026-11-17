@@ -47,7 +47,6 @@ export function useCreateMeta() {
     }) => {
       const { data, error } = await supabase
         .from('metas_financeiras')
-        // TODO(2026-08-14): created_by→user_id (nome canônico em metas_financeiras)
         .insert({ ...input, user_id: user?.id ?? null })
         .select()
         .single();

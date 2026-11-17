@@ -104,3 +104,74 @@ INSERT INTO public.benchmarks_setoriais (cnae_prefix, setor, regime, carga_media
 ALTER TABLE public.benchmarks_setoriais
   ADD COLUMN IF NOT EXISTS vigencia_inicio date NOT NULL DEFAULT CURRENT_DATE,
   ADD COLUMN IF NOT EXISTS vigencia_fim date;
+
+-- Continuacao da reconciliacao. O schema de PRODUCAO desta tabela nasceu fora
+-- das migrations (era o par indicador/valor/percentis da era Lovable), entao
+-- tem colunas que nenhum arquivo versionado cria -- `indicador` (NOT NULL),
+-- `carga_p25_pct`, `carga_p75_pct`, `mediana` -- e NAO tem `margem_media_pct`
+-- nem `ano_referencia`. O CHECK de regime da linha 40 usa o vocabulario curto, e
+-- o ADD CONSTRAINT canonico de 20260825220000:146 cai em `duplicate_object`
+-- (mesmo nome) sem corrigir nada.
+-- Sem este bloco, o replay do historico quebra no seed de 20261117052200 com
+--   ERROR: column "indicador" of relation "benchmarks_setoriais" does not exist
+-- e, passando dali, com violacao do CHECK de regime.
+-- Em producao e no-op: o arquivo ja foi aplicado e cada passo e condicional.
+ALTER TABLE public.benchmarks_setoriais
+  ADD COLUMN IF NOT EXISTS indicador text,
+  ADD COLUMN IF NOT EXISTS carga_p25_pct numeric,
+  ADD COLUMN IF NOT EXISTS carga_p75_pct numeric,
+  ADD COLUMN IF NOT EXISTS mediana numeric;
+
+DO $reconcilia_benchmarks$
+BEGIN
+  -- Vocabulario de regime: solta o CHECK antigo, converte o dado legado e so
+  -- entao grava o CHECK canonico (converter antes de soltar viola o CHECK).
+  IF EXISTS (
+    SELECT 1 FROM pg_constraint
+     WHERE conrelid = 'public.benchmarks_setoriais'::regclass
+       AND conname = 'benchmarks_setoriais_regime_check'
+       AND pg_get_constraintdef(oid) NOT LIKE '%simples_nacional%'
+  ) THEN
+    ALTER TABLE public.benchmarks_setoriais
+      DROP CONSTRAINT benchmarks_setoriais_regime_check;
+    UPDATE public.benchmarks_setoriais
+       SET regime = CASE regime
+                      WHEN 'simples' THEN 'simples_nacional'
+                      WHEN 'presumido' THEN 'lucro_presumido'
+                      WHEN 'real' THEN 'lucro_real'
+                      ELSE regime
+                    END;
+    ALTER TABLE public.benchmarks_setoriais
+      ADD CONSTRAINT benchmarks_setoriais_regime_check
+      CHECK (regime IN ('mei', 'simples_nacional', 'lucro_presumido', 'lucro_real', 'arbitrado'));
+  END IF;
+
+  -- `indicador` e NOT NULL em producao; as linhas do seed acima medem carga total.
+  UPDATE public.benchmarks_setoriais
+     SET indicador = 'carga_tributaria_total'
+   WHERE indicador IS NULL;
+  ALTER TABLE public.benchmarks_setoriais ALTER COLUMN indicador SET NOT NULL;
+
+  -- `margem_media_pct` nao existe em producao; onde existir (replay) nao pode
+  -- bloquear um INSERT que a tabela de producao aceita.
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = 'benchmarks_setoriais'
+       AND column_name = 'margem_media_pct'
+  ) THEN
+    EXECUTE 'ALTER TABLE public.benchmarks_setoriais ALTER COLUMN margem_media_pct DROP NOT NULL';
+  END IF;
+
+  -- As 8 linhas do seed acima sao do ano_referencia 2025. Sem isto ficariam com
+  -- vigencia_inicio = CURRENT_DATE e competiriam com o catalogo de 2026.
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = 'benchmarks_setoriais'
+       AND column_name = 'ano_referencia'
+  ) THEN
+    EXECUTE 'UPDATE public.benchmarks_setoriais
+                SET vigencia_inicio = make_date(ano_referencia, 1, 1)
+              WHERE vigencia_inicio <> make_date(ano_referencia, 1, 1)';
+  END IF;
+END
+$reconcilia_benchmarks$;

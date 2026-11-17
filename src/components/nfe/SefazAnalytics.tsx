@@ -74,6 +74,7 @@ export const SefazAnalytics = () => {
       cancelamentos,
       erros,
       tempoMedio,
+      temposMedidos: tempos.length,
       taxaSucesso: total > 0 ? (autorizadas / total) * 100 : 0,
       taxaRejeicao: total > 0 ? (rejeitadas / total) * 100 : 0,
     };
@@ -177,6 +178,15 @@ export const SefazAnalytics = () => {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Os gráficos abaixo derivam de eventosFiltrados: sem evento algum eles
+          desenham eixos vazios, que leem como "zero rejeições" em vez de "nada medido". */}
+      {stats.total === 0 && (
+        <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+          Nenhum evento da SEFAZ registrado no período. Os indicadores e gráficos passam a ter valor
+          quando a comunicação com a SEFAZ for homologada e registrar eventos reais.
+        </div>
+      )}
 
       <SefazAnalyticsKPIs {...stats} />
 

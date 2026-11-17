@@ -117,7 +117,7 @@ export function BoletosHeader({
               Novo Boleto
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent aria-describedby={undefined} className="max-w-2xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Barcode className="h-5 w-5" />
