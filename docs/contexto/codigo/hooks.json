@@ -1559,7 +1559,7 @@
     "useUpdateFluxoNivel",
     "useVerificarAprovacaoNecessaria"
    ],
-   "linhas": 522,
+   "linhas": 521,
    "dominio": "hooks",
    "tabelas": [
     "aprovacao_comentarios",
@@ -4623,7 +4623,7 @@
     "useRecomendacoesIA",
     "useUpdateMeta"
    ],
-   "linhas": 135,
+   "linhas": 134,
    "dominio": "hooks",
    "tabelas": [
     "historico_score_saude",
@@ -5637,7 +5637,7 @@
     "useRegimesEspeciaisEmpresa",
     "useUpdateRegimeEspecial"
    ],
-   "linhas": 50,
+   "linhas": 49,
    "dominio": "hooks",
    "tabelas": [
     "regimes_especiais_empresa"

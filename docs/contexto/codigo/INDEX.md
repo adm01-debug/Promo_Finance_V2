@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `900fcbd1bb01f7533c5e907d921e003e768f63f5` (2026-11-17T13:38:00-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `6c4a75cc302887f395c9a8b08f382b04197126e2` (2026-11-17T13:53:29-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3914 |
 | arquivos_codigo | 2469 |
-| linhas_codigo | 440074 |
+| linhas_codigo | 440071 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `6c4a75c` chore: remove 3 TODOs de rename ja concluidos no banco (#432)
 - 2026-11-17 `900fcbd` feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)
 - 2026-11-17 `710f7a8` chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)
 - 2026-11-17 `ab257ab` chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `2627e95` fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)
 - 2026-11-17 `c772d63` fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)
 - 2026-11-17 `685b65c` fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)
-- 2026-11-17 `a8d124b` fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

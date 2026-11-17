@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: remove 3 TODOs de rename ja concluidos no banco (#432)",
    "feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)",
    "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)",
    "chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)",
-   "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)",
-   "fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)"
+   "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

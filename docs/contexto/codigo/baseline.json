@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "900fcbd1bb01f7533c5e907d921e003e768f63f5",
+  "commit": "6c4a75cc302887f395c9a8b08f382b04197126e2",
   "branch": "main",
-  "data_commit": "2026-11-17T13:38:00-03:00",
+  "data_commit": "2026-11-17T13:53:29-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6c4a75c",
+    "data": "2026-11-17",
+    "assunto": "chore: remove 3 TODOs de rename ja concluidos no banco (#432)"
+   },
    {
     "sha": "900fcbd",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "2698b5b",
     "data": "2026-11-17",
     "assunto": "fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)"
-   },
-   {
-    "sha": "61d2a4b",
-    "data": "2026-11-17",
-    "assunto": "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)"
    }
   ],
-  "arquivos_mudados_7d": 912,
+  "arquivos_mudados_7d": 914,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 184
+    "commits": 185
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3914,
   "arquivos_codigo": 2469,
-  "linhas_codigo": 440074,
+  "linhas_codigo": 440071,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -648,7 +648,7 @@
   },
   "src/hooks": {
    "arquivos": 319,
-   "linhas": 46780
+   "linhas": 46777
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -810,7 +810,7 @@
   "console_log": 226,
   "ts_ignore": 2,
   "eslint_disable": 1,
-  "todos": 13,
+  "todos": 10,
   "arquivos_acima_500_linhas": 28
  },
  "todos": [
@@ -839,12 +839,6 @@
    "texto": "\"coluna não"
   },
   {
-   "arquivo": "src/hooks/useAprovacoes.ts",
-   "linha": 325,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): usuario_id→user_id e texto→comentario (nomes canônicos em aprovacao_comentarios)"
-  },
-  {
    "arquivo": "src/hooks/useBulkActions.ts",
    "linha": 266,
    "tipo": "TODO",
@@ -857,22 +851,10 @@
    "texto": "o"
   },
   {
-   "arquivo": "src/hooks/useMetasFinanceiras.ts",
-   "linha": 50,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): created_by→user_id (nome canônico em metas_financeiras)"
-  },
-  {
    "arquivo": "src/hooks/useOrganizacoes.ts",
    "linha": 259,
    "tipo": "TODO",
    "texto": "(2026-08-14): patch tipado com colunas canônicas de organizacao_membros (types.ts)"
-  },
-  {
-   "arquivo": "src/hooks/useRegimesEspeciais.ts",
-   "linha": 35,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): reducao_aliquota→reducao_cbs/reducao_ibs (renomeada no schema canônico)"
   },
   {
    "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",

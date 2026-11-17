@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "900fcbd1bb01f7533c5e907d921e003e768f63f5",
+  "sha": "6c4a75cc302887f395c9a8b08f382b04197126e2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 16:39 UTC",
+  "generated_at": "2026-11-17 16:54 UTC",
   "files_total": 3953,
   "code_files": 3574,
-  "code_lines": 508946
+  "code_lines": 508943
  },
  "version": "1.3.2",
- "facts_hash": "b2dc2ca04924c84e",
+ "facts_hash": "400788f17d19af7a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -71715,7 +71715,7 @@
   {
    "module": "src/hooks",
    "files": 319,
-   "lines": 47099,
+   "lines": 47096,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -73189,7 +73189,7 @@
     "select": [
      "src/hooks/useAprovacoes.ts"
     ],
-    "ref": [
+    "insert": [
      "src/hooks/useAprovacoes.ts"
     ]
    },
@@ -74323,7 +74323,7 @@
      "supabase/functions/executar-analise-preditiva/index.ts",
      "supabase/functions/gerar-alertas/index.ts"
     ],
-    "ref": [
+    "insert": [
      "src/hooks/useMetasFinanceiras.ts"
     ],
     "update": [
@@ -74748,7 +74748,7 @@
     "select": [
      "src/hooks/useRegimesEspeciais.ts"
     ],
-    "ref": [
+    "update": [
      "src/hooks/useRegimesEspeciais.ts"
     ]
    },
@@ -76336,6 +76336,9 @@
     "expires_at",
     "mes",
     "regime_recomendado"
+   ],
+   "regimes_especiais_empresa": [
+    "id"
    ],
    "regimes_simulados": [
     "cenarios",
@@ -200874,7 +200877,7 @@
   },
   "src/hooks/useAprovacoes.ts": {
    "path": "src/hooks/useAprovacoes.ts",
-   "lines": 523,
+   "lines": 522,
    "exports": [
     "interface ConfiguracaoAprovacao",
     "interface SolicitacaoAprovacao",
@@ -200925,7 +200928,7 @@
     },
     {
      "table": "aprovacao_comentarios",
-     "op": "ref"
+     "op": "insert,select"
     },
     {
      "table": "solicitacoes_aprovacao",
@@ -206443,7 +206446,7 @@
   },
   "src/hooks/useMetasFinanceiras.ts": {
    "path": "src/hooks/useMetasFinanceiras.ts",
-   "lines": 136,
+   "lines": 135,
    "exports": [
     "interface MetaFinanceira",
     "function useMetasFinanceiras",
@@ -206460,7 +206463,7 @@
     },
     {
      "table": "metas_financeiras",
-     "op": "ref"
+     "op": "insert,select"
     },
     {
      "table": "metas_financeiras",
@@ -208131,7 +208134,7 @@
   },
   "src/hooks/useRegimesEspeciais.ts": {
    "path": "src/hooks/useRegimesEspeciais.ts",
-   "lines": 51,
+   "lines": 50,
    "exports": [
     "function useRegimesEspeciaisEmpresa",
     "function useUpdateRegimeEspecial"
@@ -208143,9 +208146,14 @@
     },
     {
      "table": "regimes_especiais_empresa",
-     "op": "ref"
+     "op": "update"
     }
    ],
+   "table_cols": {
+    "regimes_especiais_empresa": [
+     "id"
+    ]
+   },
    "errors": [
     "Erro: ${e.message}"
    ],
@@ -247492,10 +247500,21 @@
   }
  },
  "git": {
-  "sha": "900fcbd1bb01f7533c5e907d921e003e768f63f5",
+  "sha": "6c4a75cc302887f395c9a8b08f382b04197126e2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "6c4a75c",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore: remove 3 TODOs de rename ja concluidos no banco (#432)",
+    "files": [
+     "src/hooks/useAprovacoes.ts",
+     "src/hooks/useMetasFinanceiras.ts",
+     "src/hooks/useRegimesEspeciais.ts"
+    ]
+   },
    {
     "sha": "900fcbd",
     "date": "2026-11-17",
@@ -247898,26 +247917,16 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "66fc736",
-    "date": "2026-11-17",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    5
+    4
    ],
    [
     "bun.lock",
-    4
+    3
    ],
    [
     "src/components/nfe/AlertasRejeicao.tsx",
@@ -247968,6 +247977,18 @@
     2
    ],
    [
+    "src/hooks/useAprovacoes.ts",
+    1
+   ],
+   [
+    "src/hooks/useMetasFinanceiras.ts",
+    1
+   ],
+   [
+    "src/hooks/useRegimesEspeciais.ts",
+    1
+   ],
+   [
     "supabase/functions/monitor-health/index.test.ts",
     1
    ],
@@ -247977,18 +247998,6 @@
    ],
    [
     ".prettierignore",
-    1
-   ],
-   [
-    "docs/ci/MATRIZ_EDGE_TABELA.md",
-    1
-   ],
-   [
-    "docs/ci/README.md",
-    1
-   ],
-   [
-    "docs/ci/kpi.json",
     1
    ]
   ]
