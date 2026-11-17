@@ -18,6 +18,7 @@ import {
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa, exigirPapel } from '../_shared/auth-guard.ts';
+import { lerConfigAsaas } from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -395,17 +396,18 @@ export const handler = async (req: Request) => {
           };
         }
 
-        const { data: config } = await supabase
+        const { data: configRow } = await supabase
           .from('asaas_config')
           .select('*')
           .eq('empresa_id', data.empresa_id)
           .maybeSingle();
+        const config = lerConfigAsaas(configRow);
 
-        if (data.juros || config?.default_interest_percent)
-          payload.interest = { value: data.juros || config?.default_interest_percent };
+        if (data.juros || config.default_interest_percent)
+          payload.interest = { value: data.juros || config.default_interest_percent };
 
-        if (data.multa || config?.default_fine_percent)
-          payload.fine = { value: data.multa || config?.default_fine_percent };
+        if (data.multa || config.default_fine_percent)
+          payload.fine = { value: data.multa || config.default_fine_percent };
 
         if (data.desconto_valor) {
           payload.discount = {
@@ -1037,13 +1039,14 @@ export const handler = async (req: Request) => {
       }
 
       case 'processar_fila_sincronizacao': {
-        const { data: config } = await supabase
+        const { data: configRow } = await supabase
           .from('asaas_config')
           .select('*')
           .limit(1)
           .maybeSingle();
-        const baseInterval = config?.retry_interval_minutes || 30;
-        const multiplier = config?.backoff_multiplier || 2.0;
+        const config = lerConfigAsaas(configRow);
+        const baseInterval = config.retry_interval_minutes || 30;
+        const multiplier = config.backoff_multiplier || 2.0;
 
         const { data: queueItems, error: queueError } = await supabase
           .from('asaas_sync_queue')
@@ -1087,7 +1090,7 @@ export const handler = async (req: Request) => {
             nextRetry.setMinutes(nextRetry.getMinutes() + minutesToAdd);
 
             const newAttempts = item.attempts + 1;
-            const maxAttempts = item.max_attempts || config?.retry_limit || 5;
+            const maxAttempts = item.max_attempts || config.retry_limit || 5;
 
             const newError = {
               timestamp: new Date().toISOString(),
@@ -1117,9 +1120,9 @@ export const handler = async (req: Request) => {
           .eq('status', 'FAILED')
           .gte('updated_at', new Date(Date.now() - 3600000).toISOString());
 
-        const threshold = config?.failure_threshold || 5;
+        const threshold = config.failure_threshold || 5;
         if (failureCount && failureCount >= threshold) {
-          if (config?.alert_email_enabled && config?.alert_email_address) {
+          if (config.alert_email_enabled && config.alert_email_address) {
             await supabase.functions.invoke('enviar-alerta-email', {
               body: {
                 tipo: 'asaas_failure',
@@ -1133,7 +1136,7 @@ export const handler = async (req: Request) => {
             });
           }
 
-          if (config?.alert_whatsapp_enabled && config?.alert_whatsapp_number) {
+          if (config.alert_whatsapp_enabled && config.alert_whatsapp_number) {
             await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
                 phone: config.alert_whatsapp_number,
@@ -1148,13 +1151,14 @@ export const handler = async (req: Request) => {
       }
 
       case 'simular_backoff': {
-        const { data: config } = await supabase
+        const { data: configRow } = await supabase
           .from('asaas_config')
           .select('*')
           .limit(1)
           .maybeSingle();
-        const baseInterval = config?.retry_interval_minutes || 30;
-        const multiplier = config?.backoff_multiplier || 2.0;
+        const config = lerConfigAsaas(configRow);
+        const baseInterval = config.retry_interval_minutes || 30;
+        const multiplier = config.backoff_multiplier || 2.0;
 
         const simulationResults = [];
         for (let i = 1; i <= 5; i++) {

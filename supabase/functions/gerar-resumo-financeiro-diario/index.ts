@@ -1,4 +1,5 @@
 import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
+import { lerConfigAsaas } from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -28,13 +29,14 @@ export const handler = async (req: Request) => {
     const { data: empresas } = await supabase.from('empresas').select('id, razao_social');
 
     for (const empresa of empresas || []) {
-      const { data: config } = await supabase
+      const { data: configRow } = await supabase
         .from('asaas_config')
-        .select('alert_email_address')
+        .select('configuracoes')
         .eq('empresa_id', empresa.id)
         .maybeSingle();
+      const config = lerConfigAsaas(configRow);
 
-      if (!config?.alert_email_address) continue;
+      if (!config.alert_email_address) continue;
 
       // 2. Coletar estatísticas das últimas 24h
       const ontem = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
