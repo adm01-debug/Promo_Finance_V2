@@ -35,6 +35,11 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
   const getCelula = (mes: number, tributo: string) =>
     data?.celulas.find((c) => c.mes === mes && c.tributo === tributo);
 
+  // `meses_com_lancamento` e o que separa ausencia de zero. Resposta antiga, sem
+  // a chave, cai na ausencia da propria celula.
+  const temListaDeMeses = Array.isArray(data?.meses_com_lancamento);
+  const mesesComDado = new Set(data?.meses_com_lancamento ?? []);
+
   const exportarPNG = async () => {
     if (!gridRef.current) return;
     const html2canvas = (await import('html2canvas')).default;
@@ -123,9 +128,15 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                     {MESES.map((_, i) => {
                       const mes = i + 1;
                       const c = getCelula(mes, trib.key);
+                      // Mes sem lancamento NAO e tributo zero. A funcao deixou de
+                      // inventar receita para esses meses, mas o painel convertia a
+                      // celula ausente em `R$ 0` no tooltip -- a mesma mentira, uma
+                      // camada acima (achado P2 do Codex na PR #403).
+                      const semLancamento = temListaDeMeses ? !mesesComDado.has(mes) : !c;
                       const intensidade = c?.intensidade ?? 0;
-                      const opacity =
-                        modo === 'relativo'
+                      const opacity = semLancamento
+                        ? 0
+                        : modo === 'relativo'
                           ? Math.max(0.08, intensidade)
                           : Math.min(1, (c?.valor ?? 0) / Math.max(1, data.max_valor));
                       return (
@@ -134,10 +145,16 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: i * 0.02 }}
-                          title={`${trib.label} ${MESES[i]}/${ano}\nValor: ${fmtBRL(c?.valor ?? 0)}${c?.variacao_mom != null ? `\nMoM: ${c.variacao_mom.toFixed(1)}%` : ''}`}
-                          className="rounded text-center font-mono cursor-help transition-transform hover:scale-110"
+                          title={
+                            semLancamento
+                              ? `${trib.label} ${MESES[i]}/${ano}\nSem lançamento de faturamento neste mês`
+                              : `${trib.label} ${MESES[i]}/${ano}\nValor: ${fmtBRL(c?.valor ?? 0)}${c?.variacao_mom != null ? `\nMoM: ${c.variacao_mom.toFixed(1)}%` : ''}`
+                          }
+                          className={`rounded text-center font-mono cursor-help transition-transform hover:scale-110${semLancamento ? ' border border-dashed border-border/60' : ''}`}
                           style={{
-                            backgroundColor: `hsl(var(--${trib.token}) / ${opacity})`,
+                            backgroundColor: semLancamento
+                              ? 'transparent'
+                              : `hsl(var(--${trib.token}) / ${opacity})`,
                             padding: '8px 4px',
                             minWidth: 40,
                             color:

@@ -19,7 +19,13 @@ vi.mock('@/integrations/supabase/client', () => ({
   supabase: { functions: { invoke: mockInvoke } },
 }));
 vi.mock('framer-motion', () => ({
-  motion: { div: (p: Record<string, unknown>) => <div {...p} /> },
+  motion: {
+    div: (p: Record<string, unknown>) => <div {...p} />,
+    // o grid do heatmap usa motion.td; sem o stub, a celula vira `undefined`
+    td: ({ children, ...p }: Record<string, unknown> & { children?: ReactNode }) => (
+      <td {...p}>{children}</td>
+    ),
+  },
 }));
 
 import { HeatmapTributarioAnual } from '../HeatmapTributarioAnual';
@@ -79,6 +85,43 @@ describe('heatmap tributario — ano sem faturamento', () => {
     );
     expect(await screen.findByText(/Nao ha faturamento lancado/)).toBeInTheDocument();
     expect(screen.queryByText(/Pico:/)).not.toBeInTheDocument();
+  });
+});
+
+describe('heatmap tributario — ano parcial', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('mes sem lancamento nao aparece como tributo zero', async () => {
+    // Revisao da PR #403 (Codex P2): a funcao deixou de emitir celula para mes
+    // sem lancamento, mas o painel usava `c?.valor ?? 0` e o tooltip dizia
+    // "Valor: R$ 0" -- indistinguivel de um mes lancado com zero.
+    mockInvoke.mockResolvedValue({
+      data: {
+        ...heatmapVazio,
+        celulas: [{ mes: 1, tributo: 'icms', valor: 100000, intensidade: 1, variacao_mom: null }],
+        meses_com_lancamento: [1],
+        total_por_mes: [100000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        total_ano: 100000,
+        max_valor: 100000,
+        motivo: undefined,
+        detalhe: undefined,
+      },
+      error: null,
+    });
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <HeatmapTributarioAnual empresaId="e1" ano={2025} />
+      </Wrapper>
+    );
+
+    // o ano vem do seletor interno do componente, nao de prop: casar sem o ano
+    const icmsJan = await screen.findByTitle(/^ICMS Jan\//);
+    expect(icmsJan.getAttribute('title')).toMatch(/Valor: /);
+    // fevereiro nao foi lancado: nao pode receber valor monetario nenhum
+    const icmsFev = screen.getByTitle(/^ICMS Fev\//);
+    expect(icmsFev.getAttribute('title')).toMatch(/Sem lançamento de faturamento/);
+    expect(icmsFev.getAttribute('title')).not.toMatch(/Valor: /);
   });
 });
 
