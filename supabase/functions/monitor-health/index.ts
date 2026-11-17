@@ -194,9 +194,15 @@ async function notificarAlerta(titulo: string, mensagem: string): Promise<Record
 // Janela de cooldown: não reabrir um alerta do mesmo tipo/título recém-criado.
 const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;
 
-// Gate da notificação externa: diferente de `existeAlertaRecente`, NÃO filtra por
-// `lido`. Marcar o alerta como lido no app (useAlertas) reabre o alerta na tela por
-// política existente, mas não deve liberar um novo e-mail/Slack a cada 30 min.
+// Marca, no `metadata` do alerta, que a notificação externa foi tentada para ele.
+// Sem isso o cooldown externo seria renovado pelas linhas recriadas que NÃO enviaram
+// nada: quem lê os alertas a cada rodada manteria o lembrete bloqueado para sempre.
+export const CHAVE_NOTIFICADO = 'notificado_em';
+
+// Gate da notificação externa. Duas diferenças em relação a `existeAlertaRecente`:
+// não filtra por `lido` (marcar como lido reabre o alerta na tela por política
+// existente, mas não deve liberar e-mail novo a cada 30 min) e conta apenas os
+// alertas que de fato geraram uma tentativa de envio.
 export async function existeNotificacaoRecente(
   db: SupabaseClient,
   titulo: string
@@ -206,6 +212,7 @@ export async function existeNotificacaoRecente(
     .select('id')
     .eq('tipo', 'monitor_health')
     .eq('titulo', titulo)
+    .not(`metadata->${CHAVE_NOTIFICADO}`, 'is', null)
     .gte('created_at', new Date(Date.now() - COOLDOWN_ALERTA_MS).toISOString())
     .limit(1);
 
@@ -276,6 +283,8 @@ export async function inserirAlerta(
     return { inserido: false, deveNotificar: false };
   }
 
+  const deveNotificar = !jaNotificado;
+
   const { error } = await db.from('alertas').insert({
     user_id: admin.id,
     tipo: 'monitor_health',
@@ -283,6 +292,9 @@ export async function inserirAlerta(
     mensagem,
     prioridade: 'alta',
     lido: false,
+    // Marcador do envio: só na linha que vai notificar, para a recriação sem
+    // envio não renovar o cooldown externo.
+    metadata: deveNotificar ? { [CHAVE_NOTIFICADO]: new Date().toISOString() } : null,
   });
 
   if (error) {
@@ -290,7 +302,7 @@ export async function inserirAlerta(
     return { inserido: false, deveNotificar: false };
   }
 
-  return { inserido: true, deveNotificar: !jaNotificado };
+  return { inserido: true, deveNotificar };
 }
 
 // ─── Handler principal ───────────────────────────────────────────────────────
