@@ -1,5 +1,5 @@
 import { assertEquals } from 'https://deno.land/std@0.190.0/testing/asserts.ts';
-import { lerConfigAsaas } from './asaas-config.ts';
+import { lerConfigAsaas, resolverEncargo } from './asaas-config.ts';
 
 Deno.test('lerConfigAsaas: le os campos de dentro de configuracoes (onde a UI grava)', () => {
   const linha = {
@@ -46,4 +46,27 @@ Deno.test('lerConfigAsaas: sem alerta configurado os campos ficam undefined (nad
   assertEquals(cfg.alert_email_enabled, undefined);
   assertEquals(cfg.alert_email_address, undefined);
   assertEquals(cfg.alert_whatsapp_number, undefined);
+});
+
+Deno.test('resolverEncargo: zero informado na cobranca nao cai no percentual padrao', () => {
+  assertEquals(resolverEncargo(0, 2), undefined);
+  assertEquals(resolverEncargo(0, undefined), undefined);
+});
+
+Deno.test('resolverEncargo: ausencia usa o padrao da configuracao', () => {
+  assertEquals(resolverEncargo(undefined, 2), 2);
+  assertEquals(resolverEncargo(null, 1.5), 1.5);
+  assertEquals(resolverEncargo(undefined, undefined), undefined);
+  assertEquals(resolverEncargo(undefined, 0), undefined);
+});
+
+Deno.test('resolverEncargo: valor informado manda sobre o padrao', () => {
+  assertEquals(resolverEncargo(5, 2), 5);
+  assertEquals(resolverEncargo(0.5, 2), 0.5);
+});
+
+Deno.test('resolverEncargo: valor invalido nao vira encargo', () => {
+  assertEquals(resolverEncargo(Number.NaN, 2), undefined);
+  assertEquals(resolverEncargo(-1, 2), undefined);
+  assertEquals(resolverEncargo(undefined, Number.POSITIVE_INFINITY), undefined);
 });

@@ -56,10 +56,16 @@ export const handler = async (req: Request) => {
 
       const totalPago = pagos?.reduce((sum, p) => sum + Number(p.valor), 0) || 0;
 
+      // Escopo por empresa: a fila não tem empresa_id, ela vem do pagamento.
+      // Sem o filtro, o resumo de uma empresa sairia com a contagem de falhas
+      // de todas — vazamento operacional entre empresas assim que alguém
+      // configura o destinatário. O status gravado é 'FAILED' (maiúsculo, ver
+      // asaas-proxy/index.ts:1107); com 'failed' a contagem era sempre zero.
       const { count: falhasFila } = await supabase
         .from('asaas_sync_queue')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'failed')
+        .select('id, asaas_payments!inner(empresa_id)', { count: 'exact', head: true })
+        .eq('asaas_payments.empresa_id', empresa.id)
+        .eq('status', 'FAILED')
         .gte('updated_at', ontem);
 
       // 3. Enviar e-mail de resumo

@@ -40,3 +40,23 @@ export function lerConfigAsaas(linha: unknown): ConfiguracoesAsaas {
   if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return {};
   return bruto as ConfiguracoesAsaas;
 }
+
+/**
+ * Resolve juros/multa de uma cobrança: o valor informado manda, inclusive
+ * zero; só na ausência vale o percentual padrão da configuração.
+ *
+ * Devolve `undefined` quando nada deve ser enviado ao Asaas — ausência de
+ * valor ou encargo zerado. Com `||` no lugar de `??`, um zero informado pelo
+ * formulário cairia no padrão e a cobrança sairia com encargo que o usuário
+ * desligou (achado do Devin na PR #421).
+ */
+export function resolverEncargo(
+  informado?: number | null,
+  padrao?: number | null
+): number | undefined {
+  const escolhido = informado ?? padrao;
+  if (typeof escolhido !== 'number' || !Number.isFinite(escolhido) || escolhido <= 0) {
+    return undefined;
+  }
+  return escolhido;
+}

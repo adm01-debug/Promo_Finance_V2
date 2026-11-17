@@ -18,7 +18,7 @@ import {
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa, exigirPapel } from '../_shared/auth-guard.ts';
-import { lerConfigAsaas } from '../_shared/asaas-config.ts';
+import { lerConfigAsaas, resolverEncargo } from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -403,11 +403,15 @@ export const handler = async (req: Request) => {
           .maybeSingle();
         const config = lerConfigAsaas(configRow);
 
-        if (data.juros || config.default_interest_percent)
-          payload.interest = { value: data.juros || config.default_interest_percent };
+        // Zero informado na cobrança é escolha explícita de não cobrar: a
+        // regra está em resolverEncargo (com teste), porque agora que o
+        // default da configuração é lido de verdade um `||` faria esse zero
+        // cair no percentual padrão.
+        const jurosAplicado = resolverEncargo(data.juros, config.default_interest_percent);
+        if (jurosAplicado !== undefined) payload.interest = { value: jurosAplicado };
 
-        if (data.multa || config.default_fine_percent)
-          payload.fine = { value: data.multa || config.default_fine_percent };
+        const multaAplicada = resolverEncargo(data.multa, config.default_fine_percent);
+        if (multaAplicada !== undefined) payload.fine = { value: multaAplicada };
 
         if (data.desconto_valor) {
           payload.discount = {
@@ -1039,18 +1043,24 @@ export const handler = async (req: Request) => {
       }
 
       case 'processar_fila_sincronizacao': {
-        const { data: configRow } = await supabase
+        // Uma configuração por empresa: ler `.limit(1)` fazia a primeira linha
+        // encontrada governar o backoff da fila inteira — com os campos agora
+        // sendo lidos de verdade, a empresa A passaria a ditar o intervalo de
+        // retentativa dos pagamentos da empresa B. A fila não tem empresa_id;
+        // ela vem do pagamento (asaas_payments.empresa_id).
+        const { data: configRows } = await supabase
           .from('asaas_config')
-          .select('*')
-          .limit(1)
-          .maybeSingle();
-        const config = lerConfigAsaas(configRow);
-        const baseInterval = config.retry_interval_minutes || 30;
-        const multiplier = config.backoff_multiplier || 2.0;
+          .select('empresa_id, configuracoes');
+        const configPorEmpresa = new Map(
+          (configRows ?? []).map((linha) => [
+            (linha as { empresa_id: string }).empresa_id,
+            lerConfigAsaas(linha),
+          ])
+        );
 
         const { data: queueItems, error: queueError } = await supabase
           .from('asaas_sync_queue')
-          .select('*, asaas_payments(asaas_id, id)')
+          .select('*, asaas_payments(asaas_id, id, empresa_id)')
           .eq('status', 'PENDING')
           .lte('next_retry_at', new Date().toISOString())
           .limit(10);
@@ -1085,12 +1095,16 @@ export const handler = async (req: Request) => {
 
             results.push({ id: item.id, status: 'COMPLETED' });
           } catch (e: any) {
+            const empresaDoItem = (item.asaas_payments as any)?.empresa_id as string | undefined;
+            const cfgItem = empresaDoItem ? (configPorEmpresa.get(empresaDoItem) ?? {}) : {};
             const nextRetry = new Date();
-            const minutesToAdd = baseInterval * Math.pow(multiplier, item.attempts);
+            const minutesToAdd =
+              (cfgItem.retry_interval_minutes || 30) *
+              Math.pow(cfgItem.backoff_multiplier || 2.0, item.attempts);
             nextRetry.setMinutes(nextRetry.getMinutes() + minutesToAdd);
 
             const newAttempts = item.attempts + 1;
-            const maxAttempts = item.max_attempts || config.retry_limit || 5;
+            const maxAttempts = item.max_attempts || cfgItem.retry_limit || 5;
 
             const newError = {
               timestamp: new Date().toISOString(),
@@ -1120,13 +1134,25 @@ export const handler = async (req: Request) => {
           .eq('status', 'FAILED')
           .gte('updated_at', new Date(Date.now() - 3600000).toISOString());
 
-        const threshold = config.failure_threshold || 5;
+        // A contagem de falhas é da fila inteira (a tabela não tem empresa_id),
+        // então o alerta é operacional e sai uma vez por execução: usa a
+        // configuração de alerta de quem a tiver habilitado, sem repetir por
+        // empresa, e a mensagem não nomeia empresa nenhuma.
+        const cfgAlerta =
+          [...configPorEmpresa.values()].find(
+            (cfg) => cfg.alert_email_enabled && cfg.alert_email_address
+          ) ??
+          [...configPorEmpresa.values()].find(
+            (cfg) => cfg.alert_whatsapp_enabled && cfg.alert_whatsapp_number
+          ) ??
+          {};
+        const threshold = cfgAlerta.failure_threshold || 5;
         if (failureCount && failureCount >= threshold) {
-          if (config.alert_email_enabled && config.alert_email_address) {
+          if (cfgAlerta.alert_email_enabled && cfgAlerta.alert_email_address) {
             await supabase.functions.invoke('enviar-alerta-email', {
               body: {
                 tipo: 'asaas_failure',
-                destinatario: config.alert_email_address,
+                destinatario: cfgAlerta.alert_email_address,
                 dados: {
                   titulo: 'Limite de falhas na sincronização Asaas atingido',
                   mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. O limite configurado é de ${threshold}.`,
@@ -1136,10 +1162,18 @@ export const handler = async (req: Request) => {
             });
           }
 
-          if (config.alert_whatsapp_enabled && config.alert_whatsapp_number) {
+          if (cfgAlerta.alert_whatsapp_enabled && cfgAlerta.alert_whatsapp_number) {
+            // NÃO entrega a mensagem: a ação `enviar-mensagem` de
+            // whatsapp-ia-proativo apenas monta um link wa.me e o devolve
+            // (index.ts:673-679), e aqui ninguém abre esse link. Fica
+            // registrado em log para não parecer alerta entregue; integrar um
+            // provedor de envio é decisão de custo, fora desta correção.
+            log.warn(
+              'Alerta Asaas por WhatsApp habilitado, mas o canal só gera link wa.me — nenhuma mensagem é entregue'
+            );
             await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
-                phone: config.alert_whatsapp_number,
+                phone: cfgAlerta.alert_whatsapp_number,
                 message: `⚠️ *ALERTA ASAAS:* Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. Acesse o painel para verificar.`,
               },
             });
@@ -1151,11 +1185,16 @@ export const handler = async (req: Request) => {
       }
 
       case 'simular_backoff': {
-        const { data: configRow } = await supabase
-          .from('asaas_config')
-          .select('*')
-          .limit(1)
-          .maybeSingle();
+        // Simula com a configuração da empresa informada; sem empresa, mostra
+        // os padrões, em vez de exibir a configuração de uma empresa qualquer.
+        const empresaSimulacao = data?.empresa_id as string | undefined;
+        const { data: configRow } = empresaSimulacao
+          ? await supabase
+              .from('asaas_config')
+              .select('empresa_id, configuracoes')
+              .eq('empresa_id', empresaSimulacao)
+              .maybeSingle()
+          : { data: null };
         const config = lerConfigAsaas(configRow);
         const baseInterval = config.retry_interval_minutes || 30;
         const multiplier = config.backoff_multiplier || 2.0;
