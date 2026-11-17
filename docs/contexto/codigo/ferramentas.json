@@ -3,12 +3,12 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2323)",
+   "TypeScript (2324)",
    "SQL (1099)",
-   "Markdown (192)",
-   "JavaScript (68)",
+   "Markdown (196)",
+   "JavaScript (71)",
    "Python (45)",
-   "JSON (38)",
+   "JSON (41)",
    "Shell (26)",
    "YAML (25)"
   ],
@@ -961,6 +961,11 @@
    "linhas": 387
   },
   {
+   "arquivo": "docs/AUDITORIA_FINANCEIRA_EVIDENCIAS_2026-09-10.md",
+   "titulo": "Auditoria financeiro-funcional — evidências de 10/09/2026",
+   "linhas": 156
+  },
+  {
    "arquivo": "docs/AUDITORIA_PLANEJADO_X_EXECUTADO_2026-10-12.md",
    "titulo": "Auditoria exaustiva — Planejado × Executado (Promo Finance V2)",
    "linhas": 1365
@@ -1091,6 +1096,11 @@
    "linhas": 315
   },
   {
+   "arquivo": "docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md",
+   "titulo": "Auditoria funcional e financeira — plano de melhorias em 100 etapas",
+   "linhas": 160
+  },
+  {
    "arquivo": "docs/PLANO_EXCELENCIA_10_10.md",
    "titulo": "Plano de Excelência 10/10 — Promo Finance",
    "linhas": 72
@@ -1201,6 +1211,10 @@
   {
    "pasta": "docs/runbooks",
    "arquivos_md": 5
+  },
+  {
+   "pasta": "docs/auditoria-financeira-20260910",
+   "arquivos_md": 2
   },
   {
    "pasta": "docs/ci",
@@ -1991,12 +2005,12 @@
     "ocorrencias": 19
    },
    {
-    "papel": "alert",
+    "papel": "admin",
     "ocorrencias": 15
    },
    {
-    "papel": "admin",
-    "ocorrencias": 14
+    "papel": "alert",
+    "ocorrencias": 15
    },
    {
     "papel": "status",
@@ -2055,6 +2069,10 @@
     "ocorrencias": 2
    },
    {
+    "papel": "authenticated",
+    "ocorrencias": 2
+   },
+   {
     "papel": "combobox",
     "ocorrencias": 2
    },
@@ -2080,10 +2098,6 @@
    },
    {
     "papel": "agent",
-    "ocorrencias": 1
-   },
-   {
-    "papel": "authenticated",
     "ocorrencias": 1
    },
    {

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5bc41a5fd3e18a144d3ac2650663ae17ea99fc76",
+  "commit": "90e96caf8f98907555607f0bee9d801500fa864d",
   "branch": "main",
-  "data_commit": "2026-11-16T23:09:50-03:00",
+  "data_commit": "2026-11-16T23:40:10-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "90e96ca",
+    "data": "2026-11-16",
+    "assunto": "chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)"
+   },
    {
     "sha": "5bc41a5",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "9782d38",
     "data": "2026-11-16",
     "assunto": "fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)"
-   },
-   {
-    "sha": "cf94b6b",
-    "data": "2026-11-16",
-    "assunto": "fix(db): refresh_mv_benchmark_setorial sai de PUBLIC e para de engolir erro em WHEN OTHERS (#370)"
    }
   ],
-  "arquivos_mudados_7d": 774,
+  "arquivos_mudados_7d": 789,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 155
+    "commits": 156
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3861,
-  "arquivos_codigo": 2434,
-  "linhas_codigo": 433939,
+  "arquivos_total": 3876,
+  "arquivos_codigo": 2438,
+  "linhas_codigo": 434208,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -334,8 +334,8 @@
   "cron_jobs": 22,
   "testes": 450,
   "workflows": 19,
-  "scripts": 107,
-  "docs_md": 192
+  "scripts": 111,
+  "docs_md": 196
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
@@ -485,6 +485,10 @@
   "scripts/ai-context": {
    "arquivos": 3,
    "linhas": 1899
+  },
+  "scripts/auditoria-financeira": {
+   "arquivos": 4,
+   "linhas": 269
   },
   "scripts/automation.mjs": {
    "arquivos": 1,
@@ -802,11 +806,11 @@
   }
  ],
  "qualidade": {
-  "any": 342,
-  "console_log": 220,
-  "ts_ignore": 1,
+  "any": 349,
+  "console_log": 226,
+  "ts_ignore": 2,
   "eslint_disable": 1,
-  "todos": 14,
+  "todos": 15,
   "arquivos_acima_500_linhas": 27
  },
  "todos": [
@@ -821,6 +825,12 @@
    "linha": 282,
    "tipo": "TODO",
    "texto": "|FIXME|HACK|XXX)\\b[:\\s-]*([^\\n]{0,100})/.exec(l); return m ? { linha: i + 1, tipo: m[1], texto: m[2]"
+  },
+  {
+   "arquivo": "scripts/auditoria-financeira/inventario.mjs",
+   "linha": 43,
+   "tipo": "TODO",
+   "texto": "|FIXME|HACK|em breve/,tipagem:/@ts-nocheck/,simulacao:/mock|simulad/i,limite:/\\.limit\\(/}))"
   },
   {
    "arquivo": "src/hooks/__tests__/colunasReligadas.test.tsx",

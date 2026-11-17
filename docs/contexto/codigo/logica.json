@@ -1104,7 +1104,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "usado_por_modulos": [
     "components/contas-pagar"
    ],
@@ -1375,7 +1375,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 6,
+   "usado_por": 7,
    "usado_por_modulos": [
     "components/fluxo-caixa",
     "hooks"
@@ -1571,7 +1571,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 6,
    "usado_por_modulos": [
     "components/contabilidade",
     "hooks"
@@ -1811,7 +1811,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 9,
+   "usado_por": 10,
    "usado_por_modulos": [
     "components/asaas",
     "components/ui",
@@ -2784,7 +2784,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "lib/ofx-parser"
    ],
@@ -2887,7 +2887,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 4,
    "usado_por_modulos": [
     "lib/ofx-parser"
    ],
@@ -4704,7 +4704,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "lib/transaction-matcher"
    ],

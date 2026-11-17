@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 107,
+ "total": 111,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -50,6 +50,42 @@
    "workflows": [
     "contexto.yml"
    ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/auditoria-financeira/cenarios.ts",
+   "descricao": "Sonda de auditoria isolada. Reprova invariantes; não corrige o domínio nem acessa rede.",
+   "linhas": 65,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/auditoria-financeira/consolidar.mjs",
+   "descricao": "Consolidação mecânica dos resultados da auditoria; não muda o produto.",
+   "linhas": 56,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/auditoria-financeira/inventario.mjs",
+   "descricao": "Inventário estático: ocorrência de controle não equivale a botão validado.",
+   "linhas": 53,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/auditoria-financeira/navegacao.mjs",
+   "descricao": "Smoke de interface com backend inteiramente sintético; não certifica RLS/persistência.",
+   "linhas": 95,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
    "orfao": false
   },
   {

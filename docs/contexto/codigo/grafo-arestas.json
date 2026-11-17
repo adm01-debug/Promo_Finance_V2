@@ -8,6 +8,15 @@
   "playwright.financeiro.config.ts": [
    "e2e/fixtures/sessao.ts"
   ],
+  "scripts/auditoria-financeira/cenarios.ts": [
+   "src/lib/barcode-parser.ts",
+   "src/lib/cashflow-scenarios.ts",
+   "src/lib/contabil/balancete-utils.ts",
+   "src/lib/currency.ts",
+   "src/lib/ofx-parser/csv.ts",
+   "src/lib/ofx-parser/utils.ts",
+   "src/lib/transaction-matcher/converters.ts"
+  ],
   "scripts/ci/audit-env.ts": [
    "env.manifest.json"
   ],

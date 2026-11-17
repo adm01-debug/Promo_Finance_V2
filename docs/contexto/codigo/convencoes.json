@@ -33,7 +33,7 @@
    "scripts/ci (13)"
   ],
   "docs": [
-   "docs (50)",
+   "docs (52)",
    "(raiz) (19)",
    ".github (2)"
   ]
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)",
    "fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)",
    "fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)",
    "feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)",
-   "fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)",
-   "feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)"
+   "fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

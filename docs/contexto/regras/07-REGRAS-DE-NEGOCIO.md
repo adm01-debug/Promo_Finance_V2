@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5bc41a5fd3` · branch `main` · 2026-11-17 02:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `90e96caf8f` · branch `main` · 2026-11-17 03:18 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4752,6 +4752,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ${raiz} não é a raiz do repositório (src/lib/arquitetura/modulos.ts ausente) | `scripts/gerar-grafo-arquitetura.ts` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
 | esperado um objeto JSON | `scripts/ai-context/gerar.mjs` |
+| Plano não contém exatamente as etapas 001–100 na ordem. | `scripts/auditoria-financeira/consolidar.mjs` |
+| Fixture de autenticação inválida; navegação protegida não validada. | `scripts/auditoria-financeira/navegacao.mjs` |
 | ${metodo} ${caminho} -> ${r.status} | `scripts/ci/actions-kpi.mjs` |
 | ${metodo} ${caminho} -> falha de rede (${erro.name}: ${erro.message}) | `scripts/ci/actions-kpi.mjs` |
 | fetch failed | `scripts/ci/actions-kpi.unit.mjs` |
@@ -5043,9 +5045,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
 | Sem dados para exportar. | `src/components/contabilidade/dre-balanco/exporters.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
-| ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx` |
-| ; import { downloadLancamentosCsvTemplate } from  | `src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx` |
-| … +777 linhas — lista completa em `context.json` | |
+| … +779 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

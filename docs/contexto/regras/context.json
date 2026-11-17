@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5bc41a5fd3e18a144d3ac2650663ae17ea99fc76",
+  "sha": "90e96caf8f98907555607f0bee9d801500fa864d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 02:10 UTC",
-  "files_total": 3903,
-  "code_files": 3534,
-  "code_lines": 502412
+  "generated_at": "2026-11-17 03:18 UTC",
+  "files_total": 3915,
+  "code_files": 3538,
+  "code_lines": 502685
  },
  "version": "1.3.2",
- "facts_hash": "bdf6b621703be8db",
+ "facts_hash": "3405491d39609b3b",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,10 +332,10 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1227,
+   ".ts": 1228,
    ".sql": 1099,
    ".tsx": 1096,
-   ".mjs": 60,
+   ".mjs": 63,
    ".py": 45,
    ".js": 8
   },
@@ -71075,8 +71075,8 @@
   },
   {
    "module": "scripts",
-   "files": 142,
-   "lines": 48646,
+   "files": 146,
+   "lines": 48919,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -71191,6 +71191,7 @@
    "deps": [
     "#",
     "@lib/y",
+    "@playwright/test",
     "@supabase/supabase-js",
     "@tanstack/react-query",
     "\\.\\.\\",
@@ -71212,8 +71213,7 @@
     "node:os",
     "node:path",
     "node:string_decoder",
-    "node:test",
-    "node:url"
+    "node:test"
    ],
    "imports_modules": [
     "(raiz)",
@@ -71261,6 +71261,10 @@
     "scripts/ai-context/cenarios.mjs",
     "scripts/ai-context/gerar.mjs",
     "scripts/ai-context/gerar.unit.mjs",
+    "scripts/auditoria-financeira/cenarios.ts",
+    "scripts/auditoria-financeira/consolidar.mjs",
+    "scripts/auditoria-financeira/inventario.mjs",
+    "scripts/auditoria-financeira/navegacao.mjs",
     "scripts/ci/actions-kpi.mjs",
     "scripts/ci/actions-kpi.unit.mjs",
     "scripts/ci/audit-env.ts",
@@ -71306,11 +71310,7 @@
     "scripts/graphify/graph_quality.py",
     "scripts/graphify/run.py",
     "scripts/graphify/sql_inventory.py",
-    "scripts/graphify/test_benchmark.py",
-    "scripts/graphify/test_code_references.py",
-    "scripts/graphify/test_edge_inventory.py",
-    "scripts/graphify/test_graph_quality.py",
-    "scripts/graphify/test_profiles.py"
+    "scripts/graphify/test_benchmark.py"
    ]
   },
   {
@@ -80639,6 +80639,14 @@
    {
     "file": "scripts/ai-context/gerar.mjs",
     "msg": "esperado um objeto JSON"
+   },
+   {
+    "file": "scripts/auditoria-financeira/consolidar.mjs",
+    "msg": "Plano não contém exatamente as etapas 001–100 na ordem."
+   },
+   {
+    "file": "scripts/auditoria-financeira/navegacao.mjs",
+    "msg": "Fixture de autenticação inválida; navegação protegida não validada."
    },
    {
     "file": "scripts/ci/actions-kpi.mjs",
@@ -177749,6 +177757,47 @@
    ],
    "uses_service_role": true
   },
+  "scripts/auditoria-financeira/cenarios.ts": {
+   "path": "scripts/auditoria-financeira/cenarios.ts",
+   "lines": 66,
+   "rule_comments": [
+    "Extrair somente helpers puros privados evita inicializar hooks/cliente Supabase."
+   ],
+   "doc": "Sonda de auditoria isolada. Reprova invariantes; não corrige o domínio nem acessa rede."
+  },
+  "scripts/auditoria-financeira/consolidar.mjs": {
+   "path": "scripts/auditoria-financeira/consolidar.mjs",
+   "lines": 57,
+   "errors": [
+    "Plano não contém exatamente as etapas 001–100 na ordem."
+   ],
+   "rule_comments": [
+    "Preservar somente linhas de resultado, não payloads/saídas arbitrárias dos testes.",
+    "required/.test(line))};"
+   ],
+   "doc": "Consolidação mecânica dos resultados da auditoria; não muda o produto."
+  },
+  "scripts/auditoria-financeira/inventario.mjs": {
+   "path": "scripts/auditoria-financeira/inventario.mjs",
+   "lines": 54,
+   "doc": "Inventário estático: ocorrência de controle não equivale a botão validado."
+  },
+  "scripts/auditoria-financeira/navegacao.mjs": {
+   "path": "scripts/auditoria-financeira/navegacao.mjs",
+   "lines": 96,
+   "errors": [
+    "Fixture de autenticação inválida; navegação protegida não validada."
+   ],
+   "doc": "Smoke de interface com backend inteiramente sintético; não certifica RLS/persistência.",
+   "temporal": [
+    "await page.getByRole('dialog').first().waitFor({state:'visible',timeout:3000});",
+    "await page.getByText('Consulta SEFAZ finalizada!',{exact:true}).waitFor({timeout:6000});",
+    "await page.goto(base+path.replace(/:id|:token/g,'11111111-1111-4111-8111-111111111111').replace(':tab','dashboard'),{waitUntil:'domcontentloaded',timeout:15000} …",
+    "await page.waitForFunction(()=>document.querySelector('h1,h2,#login-email')||document.body.innerText.includes('Algo deu errado'),{},{timeout:7000}).catch(()=>{} …",
+    "const btn=page.getByRole('button',{name:new RegExp(name,'i')}).last();await btn.click({timeout:7000});",
+    "const session={access_token:`${Buffer.from('{\"alg\":\"HS256\",\"typ\":\"JWT\"}').toString('base64url')}.${Buffer.from(JSON.stringify({sub:user.id,exp:Math.floor(Date.n …"
+   ]
+  },
   "scripts/ci/actions-kpi.mjs": {
    "path": "scripts/ci/actions-kpi.mjs",
    "lines": 313,
@@ -245892,10 +245941,34 @@
   }
  },
  "git": {
-  "sha": "5bc41a5fd3e18a144d3ac2650663ae17ea99fc76",
+  "sha": "90e96caf8f98907555607f0bee9d801500fa864d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "90e96ca",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)",
+    "files": [
+     "docs/AUDITORIA_FINANCEIRA_EVIDENCIAS_2026-09-10.md",
+     "docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md",
+     "docs/auditoria-financeira-20260910/INTERFACE_E_INVENTARIO.md",
+     "docs/auditoria-financeira-20260910/SHA256SUMS",
+     "docs/auditoria-financeira-20260910/STATUS_2026-11-17.md",
+     "docs/auditoria-financeira-20260910/VERIFICACOES.json",
+     "docs/auditoria-financeira-20260910/cenarios.json",
+     "docs/auditoria-financeira-20260910/inventario.json.gz",
+     "docs/auditoria-financeira-20260910/navegacao.json.gz",
+     "docs/auditoria-financeira-20260910/nfe-simulada.png",
+     "docs/auditoria-financeira-20260910/resumo.json",
+     "scripts/auditoria-financeira/cenarios.ts",
+     "scripts/auditoria-financeira/consolidar.mjs",
+     "scripts/auditoria-financeira/inventario.mjs",
+     "scripts/auditoria-financeira/navegacao.mjs",
+     "scripts/automation.config.json"
+    ]
+   },
    {
     "sha": "5bc41a5",
     "date": "2026-11-16",
@@ -246259,15 +246332,6 @@
      "docs/ci/README.md",
      "docs/ci/kpi.json"
     ]
-   },
-   {
-    "sha": "18bc738",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "infra(ci): quarentena E2E sai do gatilho de pull_request (#361)",
-    "files": [
-     ".github/workflows/ci.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -246316,39 +246380,39 @@
     2
    ],
    [
-    "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "docs/AUDITORIA_FINANCEIRA_EVIDENCIAS_2026-09-10.md",
     1
    ],
    [
-    "src/lib/ofx-parser/csv.ts",
+    "docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md",
     1
    ],
    [
-    "src/lib/ofx-parser/utils.ts",
+    "docs/auditoria-financeira-20260910/INTERFACE_E_INVENTARIO.md",
     1
    ],
    [
-    "src/lib/ofx-parser/xlsx.ts",
+    "docs/auditoria-financeira-20260910/SHA256SUMS",
     1
    ],
    [
-    "scripts/security/test-migration-replay-safety.sh",
+    "docs/auditoria-financeira-20260910/STATUS_2026-11-17.md",
     1
    ],
    [
-    "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql",
+    "docs/auditoria-financeira-20260910/VERIFICACOES.json",
     1
    ],
    [
-    "src/pages/tributario/OportunidadesElisao.tsx",
+    "docs/auditoria-financeira-20260910/cenarios.json",
     1
    ],
    [
-    "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx",
+    "docs/auditoria-financeira-20260910/inventario.json.gz",
     1
    ],
    [
-    "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
+    "docs/auditoria-financeira-20260910/navegacao.json.gz",
     1
    ]
   ]
