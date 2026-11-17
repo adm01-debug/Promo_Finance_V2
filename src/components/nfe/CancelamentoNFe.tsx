@@ -16,10 +16,8 @@ import {
   ShieldCheck,
   FileText,
 } from 'lucide-react';
-import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
-import { registrarEvento } from '@/lib/sefaz-event-logger';
+import type { SefazResponse } from '@/lib/sefaz-simulator';
 import { toast } from 'sonner';
-import { secureRandomInt } from '@/lib/secure-random';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 
 // COMPONENTE: MODAL DE CANCELAMENTO DE NF-E
@@ -48,7 +46,7 @@ interface CancelamentoNFeProps {
   onSuccess: (notaId: string, justificativa: string) => void;
 }
 
-export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFeProps) {
+export function CancelamentoNFe({ nota, onClose }: CancelamentoNFeProps) {
   const [justificativa, setJustificativa] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
@@ -68,65 +66,19 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
   const currentIndex = steps.findIndex((s) => s.id === currentStep);
   const progress = currentStep ? ((currentIndex + 1) / steps.length) * 100 : 0;
 
+  // Mesmo defeito da aba de inutilizacao (achado F12, P0): o caminho antigo
+  // chamava `processarSefaz` do SIMULADOR e anunciava "NF-e #... cancelada com
+  // sucesso!" com protocolo gerado localmente. Hoje este dialogo so e
+  // alcancavel quando a lista de notas tem item -- e ela nasce vazia porque a
+  // emissao esta desligada --, mas deixar o caminho fabricando protocolo era
+  // esperar que alguem religasse a lista para a tela voltar a mentir.
   const handleCancelar = async () => {
-    if (justificativa.length < caracteresMinimos) {
-      toast.error(`A justificativa deve ter no mínimo ${caracteresMinimos} caracteres`);
-      return;
-    }
-
-    setIsProcessing(true);
+    setCurrentStep('');
     setSefazResponse(null);
-    const tempoInicio = Date.now();
-
-    registrarEvento({
-      tipo: 'ENVIO_LOTE',
-      chaveAcesso: nota.chaveAcesso,
-      numeroNfe: nota.numero,
-      cStat: '103',
-      xMotivo: 'Solicitação de cancelamento enviada',
-      ambiente: 'homologacao',
-      tempoResposta: 0,
-      detalhes: `Justificativa: ${justificativa}`,
-    });
-
-    for (const step of steps.slice(0, -1)) {
-      setCurrentStep(step.id);
-      await new Promise((resolve) => setTimeout(resolve, secureRandomInt(600, 1000)));
-    }
-
-    const response = await processarSefaz({
-      tipo: 'cancelamento',
-      chaveAcesso: nota.chaveAcesso,
-      protocolo: nota.protocolo,
-      justificativa,
-    });
-
-    const tempoTotal = Date.now() - tempoInicio;
-
-    registrarEvento({
-      tipo: 'CANCELAMENTO',
-      chaveAcesso: nota.chaveAcesso,
-      numeroNfe: nota.numero,
-      cStat: response.cStat,
-      xMotivo: response.xMotivo,
-      protocolo: response.protocolo,
-      ambiente: 'homologacao',
-      tempoResposta: tempoTotal,
-      detalhes: response.success
-        ? `Cancelamento homologado. Justificativa: ${justificativa}`
-        : `Falha no cancelamento: ${response.errors?.join(', ') || response.xMotivo}`,
-    });
-
-    setCurrentStep('done');
-    setSefazResponse(response);
     setIsProcessing(false);
-
-    if (response.success) {
-      toast.success(`NF-e #${nota.numero} cancelada com sucesso!`);
-      setTimeout(() => onSuccess(nota.id, justificativa), 1500);
-    } else {
-      toast.error(`Erro no cancelamento: ${response.xMotivo}`);
-    }
+    toast.error(
+      'Cancelamento indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real.'
+    );
   };
 
   const podeSerCancelada = nota.status === 'autorizada';
@@ -302,20 +254,16 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
           <Button
             variant="destructive"
             onClick={handleCancelar}
-            disabled={isProcessing || justificativa.length < caracteresMinimos || !podeSerCancelada}
+            disabled
             className="gap-2"
+            title={
+              podeSerCancelada
+                ? 'Integração SEFAZ ainda não homologada'
+                : 'Esta NF-e não está autorizada, então não pode ser cancelada'
+            }
           >
-            {isProcessing ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Cancelando...
-              </>
-            ) : (
-              <>
-                <XCircle className="h-4 w-4" />
-                Confirmar Cancelamento
-              </>
-            )}
+            <AlertTriangle className="h-4 w-4" />
+            Cancelamento indisponível
           </Button>
         )}
       </div>
