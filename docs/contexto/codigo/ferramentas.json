@@ -3,7 +3,7 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2354)",
+   "TypeScript (2355)",
    "SQL (1104)",
    "Markdown (198)",
    "JavaScript (71)",
@@ -1305,6 +1305,8 @@
    "VITE_VAPID_PUBLIC_KEY"
   ],
   "usadas_nas_edges": [
+   "ALERTS_EMAIL_FROM",
+   "ALERTS_EMAIL_TO",
    "ALLOWED_ORIGINS",
    "APP_BASE_URL",
    "APP_PUBLIC_URL",
@@ -1471,7 +1473,7 @@
    },
    {
     "host": "api.resend.com",
-    "arquivos": 13
+    "arquivos": 14
    },
    {
     "host": "www.portalfiscal.inf.br",

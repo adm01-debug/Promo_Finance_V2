@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `710f7a8639` · branch `main` · 2026-11-17 16:18 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `900fcbd1bb` · branch `main` · 2026-11-17 16:39 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4306,7 +4306,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `STATEMENT_TIMEOUT_MS` | `5000` | `supabase/functions/mcp-query/index.ts` |
 | `LOCK_TIMEOUT_MS` | `1000` | `supabase/functions/mcp-query/index.ts` |
 | `ADMIN_TIMEOUT_MS` | `5000` | `supabase/functions/mcp-query/index.ts` |
+| `TIMEOUT_CANAL_MS` | `5000` | `supabase/functions/monitor-health/index.ts` |
 | `COOLDOWN_ALERTA_MS` | `2` | `supabase/functions/monitor-health/index.ts` |
+| `CHAVE_NOTIFICADO` | `'notificado_em'` | `supabase/functions/monitor-health/index.ts` |
 | `UUID_A` | `'11111111-1111-4111-8111-111111111111'` | `supabase/functions/nfe-vinculo-proxy/index_test.ts` |
 | `UUID_B` | `'22222222-2222-4222-8222-222222222222'` | `supabase/functions/nfe-vinculo-proxy/index_test.ts` |
 | `ENTERPRISE_URN` | `'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user'` | `supabase/functions/scim-server/index.ts` |
@@ -5027,7 +5029,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +788 linhas — lista completa em `context.json` | |
+| … +789 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5086,7 +5088,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3581 testes em 312 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3586 testes em 313 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5326,6 +5328,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/restauracao-snapshot.test.ts` | 5 | restauração reprodutível de snapshots · remove campos opcionais ausentes no snapshot · preserva os campos presentes no snapshot · não muta o objeto de parâmetros correntes … |
 | `src/types/__tests__/tipo-cobranca-vocabulario.test.ts` | 5 | vocabulário de tipo_cobranca · as opções de Contas a Receber são todas valores do enum do banco · nenhuma opção oferece o valor inexistente  · cartão aparece dividido em crédito e débito, como no banco … |
 | `supabase/functions/ci-security-gate-log/index.test.ts` | 5 | ci-security-gate-log: OPTIONS responde 200 sem efeitos colaterais · ci-security-gate-log: 405 em método diferente de POST · ci-security-gate-log: 503 quando o segredo não está configurado · ci-security-gate-log: 401 com segredo incorreto e zero efeitos antes do guard … |
+| `supabase/functions/monitor-health/index.test.ts` | 5 | problema novo: grava alerta e notifica · alerta não lido das últimas 2h: não grava e não notifica · alerta já marcado como lido e incidente persistindo: grava de novo, mas NÃO notifica · recriações sem envio não renovam o cooldown: passadas 2h do envio, o lembrete volta … |
 | `supabase/functions/n8n-callback/index.test.ts` | 5 | n8n-callback: OPTIONS responde 200 sem tocar body ou DB · n8n-callback: 405 para método inválido · n8n-callback: 503 quando o segredo não está configurado · n8n-callback: 401 com segredo incorreto … |
 | `supabase/functions/notify-performance-alert/index.test.ts` | 5 | notify-performance-alert: OPTIONS responde 200 sem guard nem I/O · notify-performance-alert: 405 em método inválido · notify-performance-alert: preserva falha de misconfig do guard e não toca body/fetch/DB · notify-performance-alert: 401 do guard bloqueia efeitos antes do body … |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
@@ -5389,8 +5392,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/usePixTemplates.test.ts` | 2 | useCreatePixTemplate · preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade |
 | `src/hooks/useUserEmpresas.test.tsx` | 2 | useUserEmpresas · mantém erro de consulta distinto de usuário sem vínculo |
 | `src/hooks/useWebAuthn.safety.test.tsx` | 2 | WebAuthn sem verificação no servidor · não registra credencial e não aceita login local |
-| `src/hooks/__tests__/useQueuedMessage.test.tsx` | 2 | useQueuedMessage · entrega todas as mensagens na ordem quando a operação atual termina |
-| … +12 linhas — lista completa em `context.json` | | |
+| … +13 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5573,6 +5575,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/functions/gerar-resumo-financeiro-diario/index.ts` |
 | `invoke(` | `supabase/functions/gerar-resumo-financeiro-diario/index.ts` |
 | `asaas` | `supabase/functions/health/index.ts` |
+| `notify` | `supabase/functions/monitor-health/index.ts` |
 | `notify` | `supabase/functions/notify-performance-alert/index.ts` |
 | `notify` | `supabase/functions/notify-saved-filter/index.ts` |
 | `invoke(` | `supabase/functions/processar-fila-cobrancas/index.ts` |
@@ -5976,4 +5979,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +422 linhas — lista completa em `context.json` | |
+| … +424 linhas — lista completa em `context.json` | |

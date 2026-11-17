@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "710f7a86391b86cf5be7b4cac07bd620f1d81697",
+  "commit": "900fcbd1bb01f7533c5e907d921e003e768f63f5",
   "branch": "main",
-  "data_commit": "2026-11-17T12:56:03-03:00",
+  "data_commit": "2026-11-17T13:38:00-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "900fcbd",
+    "data": "2026-11-17",
+    "assunto": "feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)"
+   },
    {
     "sha": "710f7a8",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "61d2a4b",
     "data": "2026-11-17",
     "assunto": "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)"
-   },
-   {
-    "sha": "6139096",
-    "data": "2026-11-17",
-    "assunto": "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)"
    }
   ],
-  "arquivos_mudados_7d": 910,
+  "arquivos_mudados_7d": 912,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -188,12 +188,12 @@
     "mudancas": 16
    },
    {
-    "pasta": ".github/workflows/ci.yml",
+    "pasta": "src/components/layout",
     "mudancas": 14
    },
    {
-    "pasta": "src/components/layout",
-    "mudancas": 14
+    "pasta": ".github/workflows/ci.yml",
+    "mudancas": 13
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 183
+    "commits": 184
    },
    {
     "autor": "dependabot[bot]",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 12
+    "commits": 11
    },
    {
     "autor": "Joaquim Ataides",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3913,
-  "arquivos_codigo": 2468,
-  "linhas_codigo": 439803,
+  "arquivos_total": 3914,
+  "arquivos_codigo": 2469,
+  "linhas_codigo": 440074,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1034,
   "cron_jobs": 22,
-  "testes": 474,
+  "testes": 475,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 198
@@ -683,8 +683,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 230,
-   "linhas": 50660
+   "arquivos": 231,
+   "linhas": 50931
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -806,11 +806,11 @@
   }
  ],
  "qualidade": {
-  "any": 349,
+  "any": 350,
   "console_log": 226,
   "ts_ignore": 2,
   "eslint_disable": 1,
-  "todos": 14,
+  "todos": 13,
   "arquivos_acima_500_linhas": 28
  },
  "todos": [
@@ -873,12 +873,6 @@
    "linha": 35,
    "tipo": "TODO",
    "texto": "(2026-08-14): reducao_aliquota→reducao_cbs/reducao_ibs (renomeada no schema canônico)"
-  },
-  {
-   "arquivo": "supabase/functions/monitor-health/index.ts",
-   "linha": 9,
-   "tipo": "TODO",
-   "texto": "(canal-alerta): conectar ao canal WhatsApp/e-mail preferido após inserir o"
   },
   {
    "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",

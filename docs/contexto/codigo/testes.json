@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 474,
+ "total": 475,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 398
+  "unit": 399
  },
  "onde_ficam": [
   {
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 43
+   "arquivos": 44
   },
   {
    "padrao": "e2e/",
@@ -4008,6 +4008,15 @@
    "casos": 5
   },
   {
+   "arquivo": "supabase/functions/monitor-health/index.test.ts",
+   "tipo": "unit",
+   "linhas": 137,
+   "testa": [
+    "supabase/functions/monitor-health/index.ts"
+   ],
+   "casos": 5
+  },
+  {
    "arquivo": "supabase/functions/n8n-callback/index.test.ts",
    "tipo": "unit",
    "linhas": 127,
@@ -4581,6 +4590,7 @@
   "supabase/functions/insights-relatorio/index.ts": 1,
   "supabase/functions/mcp-query/index.ts": 1,
   "supabase/functions/mcp-query/sql-policy.ts": 1,
+  "supabase/functions/monitor-health/index.ts": 1,
   "supabase/functions/n8n-callback/index.ts": 1,
   "supabase/functions/nfe-vinculo-proxy/index.ts": 1,
   "supabase/functions/notify-performance-alert/index.ts": 1,
@@ -4989,7 +4999,6 @@
    "health",
    "insights-relatorio",
    "log-sped-bitrix24",
-   "monitor-health",
    "monitorar-erros-frontend",
    "n8n-dispatch",
    "nfe-upload-certificado",

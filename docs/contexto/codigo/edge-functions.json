@@ -2709,7 +2709,7 @@
    "nome": "monitor-health",
    "entrada": "supabase/functions/monitor-health/index.ts",
    "arquivos": 1,
-   "linhas": 264,
+   "linhas": 398,
    "verify_jwt": false,
    "metodos": [
     "GET",
@@ -2723,10 +2723,19 @@
    "rpcs": [
     "exec_sql"
    ],
-   "env": [],
+   "env": [
+    "ALERTS_EMAIL_FROM",
+    "ALERTS_EMAIL_TO",
+    "DENO_TESTING",
+    "RESEND_API_KEY",
+    "RESEND_FROM",
+    "SLACK_WEBHOOK_URL"
+   ],
    "buckets": [],
    "chama_edges": [],
-   "hosts_externos": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
    "usa_shared": [
     "auth-guard.ts",
     "cors.ts",
@@ -2737,7 +2746,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": true,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "monitorar-erros-frontend",
