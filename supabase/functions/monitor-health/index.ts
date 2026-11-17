@@ -119,6 +119,12 @@ function escaparHtml(txt: string): string {
     .replace(/"/g, '&quot;');
 }
 
+// Teto por requisição: sem isso um canal que aceita a conexão e não responde
+// deixa o `fetch` pendurado — o `catch` não dispara, e como o handler aguarda
+// esta função dentro do laço de cron, os demais jobs e a checagem de webhooks
+// não rodariam naquela execução. Com AbortSignal.timeout o `catch` assume.
+const TIMEOUT_CANAL_MS = 5000;
+
 // Chamada apenas quando `inserirAlerta` devolve `deveNotificar`: alerta novo E
 // nenhuma notificação do mesmo problema nas últimas 2 h, independente de `lido`.
 async function notificarAlerta(titulo: string, mensagem: string): Promise<Record<string, unknown>> {
@@ -137,6 +143,7 @@ async function notificarAlerta(titulo: string, mensagem: string): Promise<Record
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: `${titulo}\n\n${mensagem}` }),
+        signal: AbortSignal.timeout(TIMEOUT_CANAL_MS),
       });
       canais.slack = { status: r.status, ok: r.ok };
     } catch (err) {
@@ -165,6 +172,7 @@ async function notificarAlerta(titulo: string, mensagem: string): Promise<Record
           subject: titulo.slice(0, 120),
           html,
         }),
+        signal: AbortSignal.timeout(TIMEOUT_CANAL_MS),
       });
       canais.email = { status: r.status, ok: r.ok };
     } catch (err) {
