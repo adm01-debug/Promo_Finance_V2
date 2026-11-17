@@ -7,6 +7,7 @@ import {
   calcularMetricasCenarios,
   formatarDadosGrafico,
   type ProjecaoDiaria,
+  fatorAtrasoDeterministico,
 } from '../cashflow-scenarios';
 
 describe('Cashflow Scenarios Engine', () => {
@@ -172,5 +173,73 @@ describe('Cashflow Scenarios Engine', () => {
       expect(grafico[0]).toHaveProperty('realista');
       expect(grafico[0]).toHaveProperty('pessimista');
     });
+  });
+});
+
+/**
+ * F06: o jitter de atraso vinha de `Math.random()`, entao a MESMA projecao
+ * devolvia numeros diferentes a cada execucao (900 ou 765 no exemplo do
+ * achado) e nenhum teste podia travar o contrato.
+ * F07: periodo sem movimento devolvia saldo 0 -- dizia que a empresa zerou o
+ * caixa quando nao havia nada projetado.
+ */
+describe('projeção determinística e saldo inicial preservado (F06 e F07)', () => {
+  const base = [
+    { data: '2026-01-01', receitas: 10000, despesas: 4000, saldo: 0 },
+    { data: '2026-01-02', receitas: 8000, despesas: 3000, saldo: 0 },
+    { data: '2026-01-03', receitas: 0, despesas: 2000, saldo: 0 },
+  ];
+
+  it('duas chamadas identicas dao exatamente o mesmo resultado', () => {
+    const a = gerarProjecaoCenario(base, 'realista', 100000);
+    const b = gerarProjecaoCenario(base, 'realista', 100000);
+    expect(a.map((d) => d.saldo)).toEqual(b.map((d) => d.saldo));
+    expect(a.map((d) => d.receitas)).toEqual(b.map((d) => d.receitas));
+  });
+
+  it('semente diferente muda o fator, e a mesma semente repete', () => {
+    const semA = gerarProjecaoCenario(base, 'realista', 100000, { semente: 'empresa-A' });
+    const semB = gerarProjecaoCenario(base, 'realista', 100000, { semente: 'empresa-B' });
+    const semA2 = gerarProjecaoCenario(base, 'realista', 100000, { semente: 'empresa-A' });
+    expect(semA.map((d) => d.receitas)).toEqual(semA2.map((d) => d.receitas));
+    expect(semA.map((d) => d.receitas)).not.toEqual(semB.map((d) => d.receitas));
+  });
+
+  it('o fator fica no intervalo [0,1) e varia entre dias e cenarios', () => {
+    const f1 = fatorAtrasoDeterministico('2026-01-01', 'realista');
+    const f2 = fatorAtrasoDeterministico('2026-01-02', 'realista');
+    const f3 = fatorAtrasoDeterministico('2026-01-01', 'pessimista');
+    for (const f of [f1, f2, f3]) {
+      expect(f).toBeGreaterThanOrEqual(0);
+      expect(f).toBeLessThan(1);
+    }
+    expect(f1).not.toBe(f2);
+    expect(f1).not.toBe(f3);
+  });
+
+  it('projecao vazia preserva o saldo inicial em vez de zerar o caixa', () => {
+    const vazias = { otimista: [], realista: [], pessimista: [] };
+    const m = calcularMetricasCenarios(vazias, 250000);
+    expect(m.realista.saldoFinal).toBe(250000);
+    expect(m.realista.saldoMinimo).toBe(250000);
+    expect(Number.isFinite(m.realista.saldoMinimo)).toBe(true);
+    expect(m.realista.diasCriticos).toBe(0);
+  });
+
+  it('saldo final legitimamente zero continua zero', () => {
+    const projecoes = {
+      otimista: [
+        { data: '2026-01-01', receitas: 0, despesas: 0, saldo: 0, cenario: 'otimista' as const },
+      ],
+      realista: [
+        { data: '2026-01-01', receitas: 0, despesas: 0, saldo: 0, cenario: 'realista' as const },
+      ],
+      pessimista: [
+        { data: '2026-01-01', receitas: 0, despesas: 0, saldo: 0, cenario: 'pessimista' as const },
+      ],
+    };
+    const m = calcularMetricasCenarios(projecoes, 999);
+    expect(m.realista.saldoFinal).toBe(0);
+    expect(m.realista.saldoMinimo).toBe(0);
   });
 });

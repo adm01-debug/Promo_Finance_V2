@@ -66,24 +66,64 @@ export const CENARIOS_CONFIG: Record<CenarioTipo, CenarioConfig> = {
   },
 };
 
+/**
+ * PRNG puro (mulberry32) semeado por string.
+ *
+ * O jitter de atraso vinha de `Math.random()`: a MESMA consulta devolvia 900 ou
+ * 765 em execucoes diferentes, sem rastro de como o numero saiu, e nenhum teste
+ * podia travar o contrato (achado F06). Agora o fator e derivado de
+ * `data | cenario | semente`: igual para a mesma projecao, diferente entre dias
+ * e cenarios, e reproduzivel por quem auditar o numero.
+ */
+function hashSemente(texto: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < texto.length; i++) {
+    h ^= texto.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** Fator deterministico em [0, 1) para um dia/cenario/semente. */
+export function fatorAtrasoDeterministico(
+  data: string,
+  cenario: CenarioTipo,
+  semente = ''
+): number {
+  let a = hashSemente(`${data}|${cenario}|${semente}`);
+  a = (a + 0x6d2b79f5) >>> 0;
+  let t = a;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+export interface OpcoesProjecao {
+  /**
+   * Entra no hash do fator de atraso. Use o id da empresa + periodo para que
+   * duas empresas no mesmo dia nao recebam o mesmo jitter, mantendo cada uma
+   * reproduzivel.
+   */
+  semente?: string;
+}
+
 // Gerar projeções para um cenário específico
 export function gerarProjecaoCenario(
   dadosBase: ProjecaoDiaria[],
   cenario: CenarioTipo,
-  saldoInicial: number
+  saldoInicial: number,
+  opcoes: OpcoesProjecao = {}
 ): ProjecaoCenario[] {
   const config = CENARIOS_CONFIG[cenario];
   let saldoAcumulado = saldoInicial;
 
   return dadosBase.map((dia) => {
-    // Aplicar multiplicadores e simular atrasos
+    // Aplicar multiplicadores e o fator de atraso DETERMINISTICO do dia
     const receitasAjustadas =
       dia.receitas *
       config.multiplicadorReceitas *
-      // Simulação financeira não-criptográfica: CodeQL veta aritmética
-      // sobre CSPRNG e Math.random é adequado para jitter de cenário
-      // (não gera tokens nem segredos) — por isso o NOSONAR abaixo.
-      (1 - config.probabilidadeAtraso * Math.random()); // NOSONAR
+      (1 -
+        config.probabilidadeAtraso * fatorAtrasoDeterministico(dia.data, cenario, opcoes.semente));
     const despesasAjustadas = dia.despesas * config.multiplicadorDespesas;
 
     saldoAcumulado = saldoAcumulado + receitasAjustadas - despesasAjustadas;
@@ -101,12 +141,13 @@ export function gerarProjecaoCenario(
 // Gerar projeções para todos os cenários
 export function gerarTodasProjecoes(
   dadosBase: ProjecaoDiaria[],
-  saldoInicial: number
+  saldoInicial: number,
+  opcoes: OpcoesProjecao = {}
 ): Record<CenarioTipo, ProjecaoCenario[]> {
   return {
-    otimista: gerarProjecaoCenario(dadosBase, 'otimista', saldoInicial),
-    realista: gerarProjecaoCenario(dadosBase, 'realista', saldoInicial),
-    pessimista: gerarProjecaoCenario(dadosBase, 'pessimista', saldoInicial),
+    otimista: gerarProjecaoCenario(dadosBase, 'otimista', saldoInicial, opcoes),
+    realista: gerarProjecaoCenario(dadosBase, 'realista', saldoInicial, opcoes),
+    pessimista: gerarProjecaoCenario(dadosBase, 'pessimista', saldoInicial, opcoes),
   };
 }
 
@@ -187,15 +228,25 @@ interface MetricaCenario {
 }
 
 export function calcularMetricasCenarios(
-  projecoes: Record<CenarioTipo, ProjecaoCenario[]>
+  projecoes: Record<CenarioTipo, ProjecaoCenario[]>,
+  /**
+   * Saldo de onde a projecao parte. Sem ele, periodo sem movimento devolvia
+   * `saldoFinal: 0` e `saldoMinimo: 0` -- ou seja, dizia que a empresa zerou o
+   * caixa quando na verdade nao houve nada projetado (achado F07). Com ele, a
+   * ausencia de movimento preserva o saldo atual.
+   */
+  saldoInicial = 0
 ): Record<CenarioTipo, MetricaCenario> {
   const resultado = {} as Record<CenarioTipo, MetricaCenario>;
 
   Object.entries(projecoes).forEach(([cenario, dados]) => {
     const saldos = dados.map((d) => d.saldo);
+    const vazio = saldos.length === 0;
     resultado[cenario as CenarioTipo] = {
-      saldoFinal: saldos[saldos.length - 1] || 0,
-      saldoMinimo: saldos.length > 0 ? Math.min(...saldos) : 0,
+      // `?? saldoInicial` em vez de `|| 0`: saldo final legitimamente zero
+      // continua zero, e projecao vazia volta para o saldo de partida.
+      saldoFinal: vazio ? saldoInicial : (saldos[saldos.length - 1] ?? saldoInicial),
+      saldoMinimo: vazio ? saldoInicial : Math.min(...saldos),
       diasCriticos: saldos.filter((s) => s < 100000).length,
     };
   });
