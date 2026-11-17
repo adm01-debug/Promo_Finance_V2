@@ -259,6 +259,17 @@ export default function ContasPagar() {
             }
             open={logic.pagamentoDialogOpen}
             onOpenChange={logic.setPagamentoDialogOpen}
+            /*
+             * Empresa do TITULO, nao do filtro global. O listener de `storage`
+             * em useGlobalFinancialFilter atualiza `empresaIdAtual` quando o
+             * usuario troca de empresa em outra aba, mas `selectedConta` e o
+             * dialogo seguem no titulo da empresa anterior: a alcada consultada
+             * passava a ser de outra empresa. Com alcada de 5.000 em A e 50.000
+             * em B, um titulo de 10.000 de A seria pago sem aprovacao
+             * (achado P2 do Codex na PR #400). Cai no filtro global so quando a
+             * linha nao tem empresa_id -- registro legado.
+             */
+            empresaId={logic.selectedConta?.empresa_id ?? logic.empresaIdAtual}
           />
 
           <SolicitarAprovacaoDialog

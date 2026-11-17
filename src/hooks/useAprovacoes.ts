@@ -6,6 +6,7 @@ import { mustSucceed } from '@/lib/supabase-write';
 
 export interface ConfiguracaoAprovacao {
   id: string;
+  empresa_id: string | null;
   valor_minimo_aprovacao: number;
   aprovadores_obrigatorios: number;
   ativo: boolean;
@@ -63,19 +64,75 @@ export interface ComentarioAprovacao {
   created_at: string;
 }
 
-export const useConfiguracaoAprovacao = () => {
+export const useConfiguracaoAprovacao = (empresaId?: string) => {
   return useQuery({
-    queryKey: ['configuracao-aprovacao'],
+    queryKey: ['configuracao-aprovacao', empresaId ?? 'all'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // `maybeSingle()` devolve erro quando o filtro casa mais de uma linha, e
+      // producao tem 6 linhas com ativo=true na mesma empresa (tres faixas --
+      // 5.000 / 50.000 / 999.999 -- semeadas duas vezes em 2026-07-28). O erro
+      // caia no `throw` abaixo, a configuracao nunca carregava, e os tres
+      // consumidores decidem por `!config?.ativo` -> requerAprovacao = false:
+      // a alcada configurada pelo dono nunca era exigida de pagamento nenhum.
+      // Escolha conservadora e deterministica: a MENOR faixa ativa, que e a que
+      // mais protege. Escopo por empresa quando o chamador souber qual e.
+      let q = supabase
         .from('configuracoes_aprovacao')
         .select('*')
         .eq('ativo', true)
-        .maybeSingle();
+        .order('valor_minimo_aprovacao', { ascending: true })
+        .limit(1);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
+
+      const { data, error } = await q;
 
       if (error) throw error;
-      return data as ConfiguracaoAprovacao | null;
+      return (data?.[0] ?? null) as ConfiguracaoAprovacao | null;
     },
+    // Opt-out do `placeholderData: previousData` global (queryClient.ts:27):
+    // ao trocar de empresa sem cache, o hook entregava a alcada da empresa
+    // ANTERIOR por alguns instantes. Com 50.000 em B e 5.000 em A, um titulo de
+    // 10.000 de A podia ser pago sem aprovacao nesse intervalo, porque
+    // RegistrarPagamentoDialog decide com a config recebida e `isLoading` e
+    // false enquanto o placeholder esta em uso (achado P1 do Codex, PR #400).
+    placeholderData: undefined,
+  });
+};
+
+/**
+ * Configuracao que o PAINEL edita. Diferente da efetiva: nao descarta as faixas
+ * inativas. Com a leitura efetiva, desativar o workflow zerava a lista de faixas
+ * ativas, o painel ficava sem registro e `handleSave` saia no `if (!config)` --
+ * nao havia como reativar pela tela, mesmo com as linhas intactas no banco.
+ *
+ * A ordem e `ativo` primeiro, depois valor: o painel tem que mostrar a MESMA
+ * faixa que decide o pagamento. Ordenando so por valor, com a faixa de 50.000
+ * inativa e a de 5.000 reativada em 100.000, o painel lia a de 50.000 (inativa)
+ * e anunciava "Workflow desativado. Todos os pagamentos serao liberados
+ * automaticamente" enquanto RegistrarPagamentoDialog lia a de 100.000 e seguia
+ * exigindo aprovacao -- achado P2 do Codex na revisao da PR #400. `nullslast`
+ * porque `ativo` e nullable (default true) e DESC traria NULL na frente.
+ */
+export const useConfiguracaoAprovacaoEditavel = (empresaId?: string) => {
+  return useQuery({
+    queryKey: ['configuracao-aprovacao-editavel', empresaId ?? 'all'],
+    queryFn: async () => {
+      let q = supabase
+        .from('configuracoes_aprovacao')
+        .select('*')
+        .order('ativo', { ascending: false, nullsFirst: false })
+        .order('valor_minimo_aprovacao', { ascending: true })
+        .limit(1);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
+
+      const { data, error } = await q;
+
+      if (error) throw error;
+      return (data?.[0] ?? null) as ConfiguracaoAprovacao | null;
+    },
+    // Mesmo opt-out: com o placeholder, o painel editava a faixa da empresa
+    // anterior enquanto a nova carregava.
+    placeholderData: undefined,
   });
 };
 
@@ -84,23 +141,107 @@ export const useUpdateConfiguracaoAprovacao = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (config: Partial<ConfiguracaoAprovacao> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('configuracoes_aprovacao')
-        .update({
-          valor_minimo_aprovacao: config.valor_minimo_aprovacao,
-          aprovadores_obrigatorios: config.aprovadores_obrigatorios,
-          ativo: config.ativo,
-        })
-        .eq('id', config.id)
-        .select()
-        .single();
+    mutationFn: async (
+      config: Partial<ConfiguracaoAprovacao> & { id: string; valor_minimo_original?: number }
+    ) => {
+      // UM unico update, na FAIXA editada (empresa + valor que o painel carregou).
+      //
+      // As rodadas anteriores desta PR tentaram cinco escopos diferentes e cada
+      // um quebrava outro lado, porque o painel apresenta UM "Alcada Minima
+      // Global" enquanto a tabela guarda tres faixas (5.000 / 50.000 / 999.999)
+      // para a mesma empresa. Com tres faixas, nenhuma gravacao desta tela pode
+      // estar certa:
+      //   - so o id        -> a duplicata de mesmo valor segue a menor e o
+      //                       limite salvo nao faz efeito;
+      //   - a empresa toda -> apaga os patamares de 50.000 e 999.999;
+      //   - a faixa + um
+      //     segundo update
+      //     para `ativo`   -> dois requests sem transacao: falhando o segundo, o
+      //                       limite fica gravado, o erro aparece, e a nova
+      //                       tentativa acusa conflito contra um valor que nao
+      //                       existe mais.
+      //
+      // Entao em vez de adivinhar, a gravacao RECUSA o que nao pode virar o
+      // limite efetivo, e diz qual faixa esta no caminho. Nao perde dado, nao
+      // precisa de transacao, e nunca anuncia sucesso para algo sem efeito.
+      const porFaixa = config.empresa_id != null && config.valor_minimo_original != null;
+
+      if (porFaixa) {
+        const { data: outras, error: erroOutras } = await supabase
+          .from('configuracoes_aprovacao')
+          .select('valor_minimo_aprovacao')
+          .eq('empresa_id', config.empresa_id as string)
+          .eq('ativo', true)
+          .neq('valor_minimo_aprovacao', config.valor_minimo_original as number)
+          .order('valor_minimo_aprovacao', { ascending: true })
+          .limit(1);
+        if (erroOutras) throw erroOutras;
+
+        const menorOutra = outras?.[0]?.valor_minimo_aprovacao as number | undefined;
+        const fmt = (v: number) =>
+          v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        if (menorOutra != null) {
+          // Desligar aqui nao desliga o workflow: a outra faixa ativa continua
+          // exigindo aprovacao, e o card anuncia liberacao total.
+          if (config.ativo === false) {
+            throw new Error(
+              `Existe outra faixa ativa em ${fmt(menorOutra)} para esta empresa. ` +
+                'Desativar aqui nao desliga o workflow: pagamentos acima desse valor ' +
+                'continuariam exigindo aprovacao. Remova a duplicidade de faixas antes.'
+            );
+          }
+          // Subir o limite ACIMA de outra faixa ativa nao muda o limite efetivo.
+          // IGUAL tambem nao serve: o update so alcanca as linhas que estavam no
+          // valor original, entao sobrariam duas faixas ativas no mesmo valor com
+          // quoruns diferentes, e a leitura (que ordena por ativo e valor) podia
+          // devolver a antiga -- o painel substituiria o quorum recem-salvo
+          // (achado P2 do Codex na 8a rodada da PR #400).
+          const novo = config.valor_minimo_aprovacao;
+          if (novo != null && novo >= menorOutra) {
+            const porque =
+              novo === menorOutra
+                ? 'no mesmo valor informado. Ficariam duas faixas ativas no mesmo limite com quoruns diferentes, e a tela poderia mostrar a outra.'
+                : 'menor que o valor informado. O limite efetivo continuaria sendo o dela, entao a alteracao nao teria efeito.';
+            throw new Error(
+              `Existe outra faixa ativa em ${fmt(menorOutra)}, ${porque} Remova a duplicidade de faixas antes.`
+            );
+          }
+        }
+      }
+
+      const patch = {
+        valor_minimo_aprovacao: config.valor_minimo_aprovacao,
+        aprovadores_obrigatorios: config.aprovadores_obrigatorios,
+        ativo: config.ativo,
+      };
+
+      const base = supabase.from('configuracoes_aprovacao').update(patch);
+      const { data, error } = porFaixa
+        ? await base
+            .eq('empresa_id', config.empresa_id as string)
+            .eq('valor_minimo_aprovacao', config.valor_minimo_original as number)
+            .select()
+        : await base.eq('id', config.id).select();
 
       if (error) throw error;
+
+      // `data: []` com `error: null` acontece quando o filtro nao casa linha
+      // nenhuma: outro administrador mudou a faixa entre o carregamento e o
+      // salvamento. Sem esta checagem, o toast anunciava sucesso e nada tinha
+      // sido gravado.
+      if (porFaixa && (!data || data.length === 0)) {
+        throw new Error(
+          'A faixa foi alterada por outra pessoa desde que esta tela carregou. ' +
+            'Recarregue a configuracao e tente de novo.'
+        );
+      }
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['configuracao-aprovacao'] });
+      queryClient.invalidateQueries({ queryKey: ['configuracao-aprovacao-editavel'] });
       toast({
         title: 'Configuração atualizada',
         description: 'As configurações de aprovação foram salvas.',

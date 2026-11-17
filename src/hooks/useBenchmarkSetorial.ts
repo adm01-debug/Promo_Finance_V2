@@ -3,18 +3,25 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface BenchmarkResult {
   empresa: { id: string; razao_social: string; regime: string };
-  carga_empresa_12m: number;
+  /** `null` quando a empresa nao tem faturamento nos ultimos 12 meses. */
+  carga_empresa_12m: number | null;
   benchmark: {
     regime: string;
-    amostra: number;
     p25: number;
     mediana: number;
     p75: number;
     media: number;
+    /** `tabela` = benchmark vigente de public.benchmarks_setoriais.
+     *  `referencia_interna` = faixa de referencia do codigo, porque a tabela
+     *  nao tem linha para o regime. Nao existe amostra de empresas: o campo
+     *  `amostra: 1247` que havia aqui era inventado. */
+    origem: 'tabela' | 'referencia_interna';
+    fonte: string;
   } | null;
-  posicao: 'abaixo_p25' | 'mediana' | 'acima_p75';
-  percentil: number;
-  diferenca_mediana: number;
+  posicao: 'abaixo_p25' | 'mediana' | 'acima_p75' | null;
+  percentil: number | null;
+  diferenca_mediana: number | null;
+  motivo?: 'sem_faturamento_12m';
   insights: string[];
   atualizado_em: string;
 }
