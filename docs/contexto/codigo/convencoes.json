@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)",
    "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)",
    "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)",
    "fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)",
-   "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)",
-   "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)"
+   "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

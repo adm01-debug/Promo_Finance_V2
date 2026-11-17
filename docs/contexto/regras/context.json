@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "b2929c43ab3908edb82ff5cba27a6790c6beaaff",
+  "sha": "ece50dc4bd01830e27c157117eaf675601e81003",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 10:40 UTC",
+  "generated_at": "2026-11-17 10:54 UTC",
   "files_total": 3948,
   "code_files": 3570,
-  "code_lines": 508305
+  "code_lines": 508553
  },
  "version": "1.3.2",
- "facts_hash": "5427af9ed4310952",
+ "facts_hash": "f863ee829cfaf7b2",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -62355,6 +62355,7 @@
      "aliquotas_iss_municipal",
      "anomalia_toast_eventos",
      "anomalias_detectadas",
+     "asaas_customers",
      "bloqueios_duplicidade",
      "boletos",
      "budgets",
@@ -62469,6 +62470,7 @@
      "asaas_payments",
      "asaas_reconciliation_suggestions",
      "asaas_transfers",
+     "boletos",
      "centros_custo",
      "conciliacoes",
      "contas_pagar",
@@ -62492,7 +62494,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 140
+    "deps_count": 141
    },
    {
     "path": "/audit-logs",
@@ -62623,6 +62625,7 @@
      "alertas",
      "anomalia_toast_eventos",
      "anomalias_detectadas",
+     "asaas_customers",
      "boletos",
      "centros_custo",
      "contas_bancarias",
@@ -63233,6 +63236,7 @@
      "alertas",
      "anomalia_toast_eventos",
      "anomalias_detectadas",
+     "asaas_customers",
      "boletos",
      "centros_custo",
      "contas_bancarias",
@@ -63521,7 +63525,7 @@
      "aprovar_solicitacao_pagamento",
      "registrar_auditoria_config"
     ],
-    "deps_count": 123
+    "deps_count": 125
    },
    {
     "path": "/reforma-tributaria, /reforma-tributaria/:tab",
@@ -71701,7 +71705,7 @@
   {
    "module": "src/hooks",
    "files": 319,
-   "lines": 46971,
+   "lines": 47099,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -72596,7 +72600,7 @@
   {
    "module": "supabase/functions",
    "files": 229,
-   "lines": 50825,
+   "lines": 50945,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72711,7 +72715,7 @@
    ],
    "exports": [
     "app-url.ts: getAppBaseUrl",
-    "asaas-config.ts: ConfiguracoesAsaas, lerConfigAsaas, resolverEncargo",
+    "asaas-config.ts: ConfiguracoesAsaas, lerConfigAsaas, resolverEncargo, pareceIdClienteAsaas, achatarInstrumentosBoleto",
     "auth-guard.ts: corsHeadersComSegredoPara, corsHeadersComSegredo, segredosIguais, UsuarioAutenticado, ResultadoGuard, exigirUsuario",
     "cnae.ts: prefixosCnaeCandidatos, porPrefixoMaisEspecifico, REGIMES_CANONICOS, RegimeCanonico, regimeParaBenchmark, chaveReferenciaInterna",
     "concurrency-limiter.ts: ConcurrencyLimiter",
@@ -73236,6 +73240,7 @@
    "asaas_customers": {
     "select": [
      "src/hooks/useAsaas.ts",
+     "src/hooks/useBoletos.ts",
      "supabase/functions/asaas-proxy/index.ts"
     ],
     "insert": [
@@ -75587,6 +75592,7 @@
    "asaas_customers": [
     "asaas_id",
     "cliente_id",
+    "cpf_cnpj",
     "empresa_id",
     "id"
    ],
@@ -82839,6 +82845,10 @@
    },
    {
     "file": "src/hooks/useBoletos.helpers.ts",
+    "msg": "A cobrança foi criada no Asaas, mas não pôde ser registrada no sistema.${detalhe} "
+   },
+   {
+    "file": "src/hooks/useBoletos.helpers.ts",
     "msg": "ASAAS não retornou confirmação da emissão."
    },
    {
@@ -82864,6 +82874,10 @@
    {
     "file": "src/hooks/useBoletos.ts",
     "msg": "Erro ao gerar boleto"
+   },
+   {
+    "file": "src/hooks/useBoletos.ts",
+    "msg": "Sacado não cadastrado no Asaas. Cadastre o cliente na tela do Asaas antes de emitir o boleto."
    },
    {
     "file": "src/hooks/useBoletos.ts",
@@ -85764,10 +85778,6 @@
    {
     "file": "src/hooks/useBoletos.helpers.ts",
     "text": "validação de dígitos bancários: essa responsabilidade é do emissor, que"
-   },
-   {
-    "file": "src/hooks/useBoletos.ts",
-    "text": "Simplificação: assume que já existe ou deve ser criado"
    },
    {
     "file": "src/hooks/useBoletos.ts",
@@ -125174,6 +125184,46 @@
     "name": "impede criar boleto sem instrumentos de pagamento"
    },
    {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "exigirRegistroLocalDaCobranca"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "passa quando o proxy confirma o registro no banco"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "impede dar emissão por concluída quando a cobrança não foi registrada"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "inclui o motivo devolvido pelo proxy na mensagem"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "não trata resposta sem o campo como falha"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "variacoesDocumento"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "aceita o documento com a pontuação sugerida pelo próprio formulário"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "não duplica quando o documento já vem só com dígitos"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "cobre CPF com e sem pontuação"
+   },
+   {
+    "file": "src/hooks/useBoletos.validation.test.ts",
+    "name": "documento vazio ou ausente não gera filtro"
+   },
+   {
     "file": "src/hooks/usePerDcomp.safety.test.ts",
     "name": "transmissão PER/DCOMP"
    },
@@ -137252,6 +137302,10 @@
    {
     "file": "src/hooks/useBlingNFe.ts",
     "call": "invoke("
+   },
+   {
+    "file": "src/hooks/useBoletos.helpers.ts",
+    "call": "asaas"
    },
    {
     "file": "src/hooks/useBoletos.ts",
@@ -154386,6 +154440,10 @@
    },
    {
     "file": "src/hooks/useBoletos.helpers.ts",
+    "limit": "1"
+   },
+   {
+    "file": "src/hooks/useBoletos.ts",
     "limit": "1"
    },
    {
@@ -201143,7 +201201,7 @@
   },
   "src/hooks/useAsaas.ts": {
    "path": "src/hooks/useAsaas.ts",
-   "lines": 398,
+   "lines": 407,
    "exports": [
     "function useAsaas"
    ],
@@ -201787,9 +201845,11 @@
   },
   "src/hooks/useBoletos.helpers.ts": {
    "path": "src/hooks/useBoletos.helpers.ts",
-   "lines": 53,
+   "lines": 91,
    "exports": [
     "function validarEmissaoBoletoConfirmada",
+    "function variacoesDocumento",
+    "function exigirRegistroLocalDaCobranca",
     "function getNextBoletoNumber"
    ],
    "tables": [
@@ -201804,6 +201864,7 @@
     ]
    },
    "errors": [
+    "A cobrança foi criada no Asaas, mas não pôde ser registrada no sistema.${detalhe} ",
     "ASAAS não retornou confirmação da emissão."
    ],
    "rule_comments": [
@@ -201817,13 +201878,16 @@
      "body": "if (!resposta || typeof resposta !== 'object') { throw new Error('ASAAS não retornou confirmação da emissão.'); } const dados = resposta as Record<string, unknown>; const id = dados.id; const linhaDigitavel = dados.identificationField; const codigoBarras = dados.barCode; if (typeof id !== 'string' || id.trim() === '') { const mensagem = typeof dados.error === 'string' && dados.error.trim() ? dados.error : 'ASAAS não retornou identificador'; throw new Error(mensagem); } if ( typeof linhaDigitavel …"
     }
    ],
+   "side_effects": [
+    "asaas"
+   ],
    "pagination": [
     "1"
    ]
   },
   "src/hooks/useBoletos.ts": {
    "path": "src/hooks/useBoletos.ts",
-   "lines": 377,
+   "lines": 402,
    "exports": [
     "function useBoletos"
    ],
@@ -201838,6 +201902,10 @@
     },
     {
      "table": "contas_bancarias",
+     "op": "select"
+    },
+    {
+     "table": "asaas_customers",
      "op": "select"
     },
     {
@@ -201880,6 +201948,11 @@
      "empresa_id",
      "id"
     ],
+    "asaas_customers": [
+     "asaas_id",
+     "cpf_cnpj",
+     "empresa_id"
+    ],
     "boletos": [
      "eventos_pagamento",
      "id",
@@ -201897,6 +201970,7 @@
     "Erro ao atualizar status",
     "Erro ao cancelar boleto",
     "Erro ao gerar boleto",
+    "Sacado não cadastrado no Asaas. Cadastre o cliente na tela do Asaas antes de emitir o boleto.",
     "Selecione um provedor de cobrança homologado para emitir boleto.",
     "Usuário não autenticado"
    ],
@@ -201963,7 +202037,6 @@
     }
    ],
    "rule_comments": [
-    "Simplificação: assume que já existe ou deve ser criado",
     "VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta",
     "validação o boleto nasceria sem vínculo ASAAS silenciosamente."
    ],
@@ -201973,6 +202046,9 @@
    "side_effects": [
     "asaas",
     "invoke("
+   ],
+   "pagination": [
+    "1"
    ]
   },
   "src/hooks/useBoletos.types.ts": {
@@ -201999,13 +202075,23 @@
   },
   "src/hooks/useBoletos.validation.test.ts": {
    "path": "src/hooks/useBoletos.validation.test.ts",
-   "lines": 29,
+   "lines": 85,
    "is_test": true,
    "tests": [
     "validarEmissaoBoletoConfirmada",
     "aceita uma confirmação completa do provedor",
     "impede criar boleto sem identificador externo",
-    "impede criar boleto sem instrumentos de pagamento"
+    "impede criar boleto sem instrumentos de pagamento",
+    "exigirRegistroLocalDaCobranca",
+    "passa quando o proxy confirma o registro no banco",
+    "impede dar emissão por concluída quando a cobrança não foi registrada",
+    "inclui o motivo devolvido pelo proxy na mensagem",
+    "não trata resposta sem o campo como falha",
+    "variacoesDocumento",
+    "aceita o documento com a pontuação sugerida pelo próprio formulário",
+    "não duplica quando o documento já vem só com dígitos",
+    "cobre CPF com e sem pontuação",
+    "documento vazio ou ausente não gera filtro"
    ]
   },
   "src/hooks/useBudget.ts": {
@@ -230748,11 +230834,13 @@
   },
   "supabase/functions/_shared/asaas-config.ts": {
    "path": "supabase/functions/_shared/asaas-config.ts",
-   "lines": 63,
+   "lines": 103,
    "exports": [
     "interface ConfiguracoesAsaas",
     "function lerConfigAsaas",
-    "function resolverEncargo"
+    "function resolverEncargo",
+    "function pareceIdClienteAsaas",
+    "function achatarInstrumentosBoleto"
    ],
    "rule_comments": [
     "* Resolve juros/multa de uma cobrança: o valor informado manda, inclusive",
@@ -230765,7 +230853,7 @@
   },
   "supabase/functions/_shared/asaas-config_test.ts": {
    "path": "supabase/functions/_shared/asaas-config_test.ts",
-   "lines": 73,
+   "lines": 112,
    "side_effects": [
     "asaas"
    ]
@@ -233258,7 +233346,7 @@
   },
   "supabase/functions/asaas-proxy/index.ts": {
    "path": "supabase/functions/asaas-proxy/index.ts",
-   "lines": 1397,
+   "lines": 1438,
    "exports": [
     "const handler"
    ],
@@ -233294,6 +233382,10 @@
     {
      "table": "asaas_customers",
      "op": "delete"
+    },
+    {
+     "table": "asaas_customers",
+     "op": "select"
     },
     {
      "table": "asaas_customers",
@@ -247459,10 +247551,25 @@
   }
  },
  "git": {
-  "sha": "b2929c43ab3908edb82ff5cba27a6790c6beaaff",
+  "sha": "ece50dc4bd01830e27c157117eaf675601e81003",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ece50dc",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)",
+    "files": [
+     "src/hooks/useAsaas.ts",
+     "src/hooks/useBoletos.helpers.ts",
+     "src/hooks/useBoletos.ts",
+     "src/hooks/useBoletos.validation.test.ts",
+     "supabase/functions/_shared/asaas-config.ts",
+     "supabase/functions/_shared/asaas-config_test.ts",
+     "supabase/functions/asaas-proxy/index.ts"
+    ]
+   },
    {
     "sha": "b2929c4",
     "date": "2026-11-17",
@@ -247831,20 +247938,6 @@
      "src/lib/ofx-parser/utils.ts",
      "src/lib/ofx-parser/xlsx.ts"
     ]
-   },
-   {
-    "sha": "e93d744",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)",
-    "files": [
-     "scripts/security/test-migration-replay-safety.sh",
-     "scripts/security/test_gates_shell.py",
-     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-     "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-     "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
-     "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -247855,6 +247948,18 @@
    [
     "bun.lock",
     5
+   ],
+   [
+    "supabase/functions/_shared/asaas-config.ts",
+    2
+   ],
+   [
+    "supabase/functions/_shared/asaas-config_test.ts",
+    2
+   ],
+   [
+    "supabase/functions/asaas-proxy/index.ts",
+    2
    ],
    [
     "src/components/nfe/ContingenciaNFe.tsx",
@@ -247905,27 +248010,15 @@
     2
    ],
    [
-    "src/components/nfe/AlertasRejeicao.tsx",
+    "src/hooks/useAsaas.ts",
     1
    ],
    [
-    "src/components/nfe/EventosHistorico.tsx",
+    "src/hooks/useBoletos.helpers.ts",
     1
    ],
    [
-    "src/components/nfe/SefazAnalytics.tsx",
-    1
-   ],
-   [
-    "src/components/nfe/SefazMonitor.tsx",
-    1
-   ],
-   [
-    "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
-    1
-   ],
-   [
-    "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
+    "src/hooks/useBoletos.ts",
     1
    ]
   ]

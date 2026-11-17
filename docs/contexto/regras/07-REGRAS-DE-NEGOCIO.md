@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b2929c43ab` · branch `main` · 2026-11-17 10:40 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ece50dc4bd` · branch `main` · 2026-11-17 10:54 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4638,6 +4638,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 500 | `src/hooks/useAuditoriaIA.ts` |
 | 50 | `src/hooks/useBitrix24.ts` |
 | 1 | `src/hooks/useBoletos.helpers.ts` |
+| 1 | `src/hooks/useBoletos.ts` |
 | 20 | `src/hooks/useComplianceKpis.ts` |
 | 1 | `src/hooks/useConformidadeFiscal.ts` |
 | 20000 | `src/hooks/useDemonstrativosContabeis.ts` |
@@ -5035,7 +5036,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
-| … +785 linhas — lista completa em `context.json` | |
+| … +787 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5094,7 +5095,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3564 testes em 310 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3574 testes em 310 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5171,6 +5172,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/overlay-monofasico.test.ts` | 15 | aplicarOverlayMonofasico · não gera override quando o banco confirma o catálogo embarcado · registra inclusão de NCM não coberto pelo motor · registra exclusão de NCM classificado pelo motor … |
 | `src/lib/tributario/__tests__/robustness-consistency.test.ts` | 15 | Testes de Robustez e Casos de Borda Tributários · Valores Extremos e Arredondamentos · deve lidar com faturamento zero corretamente · deve lidar com margem de lucro de 100% corretamente … |
 | `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 15 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
+| `src/hooks/useBoletos.validation.test.ts` | 14 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 14 | registrarPagamento · grava data_pagamento e valor_pago na parcela · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  … |
 | `src/lib/__tests__/collection-engine.test.ts` | 14 | collection-engine :: calculateCollectionStage · retorna null para status pago ou cancelado · classifica como PREVENTIVA quando ainda não venceu · classifica como LEMBRETE entre 0 e 5 dias de atraso … |
 | `src/lib/__tests__/edge-function-error.test.ts` | 14 | EdgeFunctionError flags · classifica status em auth/forbidden/client/server · normalizeEdgeError · usa mensagem do body quando presente em FunctionsHttpError … |
@@ -5338,7 +5340,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
 | `src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx` | 4 | AcessosSuspeitosPanel · consulta get_acessos_suspeitos com os parametros canonicos · falha na consulta NAO vira auditoria limpa · achado critico aparece na tabela |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
-| `src/hooks/useBoletos.validation.test.ts` | 4 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
@@ -5478,6 +5479,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `invoke(` | `src/hooks/useAuthValidation.ts` |
 | `invoke(` | `src/hooks/useBenchmarkSetorial.ts` |
 | `invoke(` | `src/hooks/useBlingNFe.ts` |
+| `asaas` | `src/hooks/useBoletos.helpers.ts` |
 | `asaas` | `src/hooks/useBoletos.ts` |
 | `invoke(` | `src/hooks/useBoletos.ts` |
 | `asaas` | `src/hooks/useBoletos.types.ts` |
@@ -5812,7 +5814,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | If less than limit returned, we've reached the last page | `src/hooks/useBlingNFe.ts` |
 | * Aceita somente uma resposta que permita pagar o boleto de fato. Não é uma | `src/hooks/useBoletos.helpers.ts` |
 | validação de dígitos bancários: essa responsabilidade é do emissor, que | `src/hooks/useBoletos.helpers.ts` |
-| Simplificação: assume que já existe ou deve ser criado | `src/hooks/useBoletos.ts` |
 | VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta | `src/hooks/useBoletos.ts` |
 | validação o boleto nasceria sem vínculo ASAAS silenciosamente. | `src/hooks/useBoletos.ts` |
 | Somente valores já validados pelo overlay chegam aqui. | `src/hooks/useCatalogosFiscais.ts` |
@@ -5983,4 +5984,5 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
-| … +423 linhas — lista completa em `context.json` | |
+| // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
+| … +422 linhas — lista completa em `context.json` | |

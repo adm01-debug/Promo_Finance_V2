@@ -1673,7 +1673,7 @@
    "hooks_exportados": [
     "useAsaas"
    ],
-   "linhas": 397,
+   "linhas": 406,
    "dominio": "hooks",
    "tabelas": [
     "asaas_config",
@@ -2093,7 +2093,7 @@
   {
    "arquivo": "src/hooks/useBoletos.helpers.ts",
    "hooks_exportados": [],
-   "linhas": 52,
+   "linhas": 90,
    "dominio": "hooks",
    "tabelas": [
     "boletos"
@@ -2102,8 +2102,9 @@
    "edges": [],
    "hooks_internos": [],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
+    "src/hooks/useAsaas.ts",
     "src/hooks/useBoletos.ts"
    ],
    "coberto_por_testes": 1
@@ -2113,9 +2114,10 @@
    "hooks_exportados": [
     "useBoletos"
    ],
-   "linhas": 376,
+   "linhas": 401,
    "dominio": "hooks",
    "tabelas": [
+    "asaas_customers",
     "boletos",
     "contas_bancarias",
     "empresas",

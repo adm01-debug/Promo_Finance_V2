@@ -6675,6 +6675,7 @@
   "src/hooks/useAsaas.ts": [
    "src/hooks/useAsaas.helpers.ts",
    "src/hooks/useAsaas.types.ts",
+   "src/hooks/useBoletos.helpers.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/edge-function-error.ts"
   ],

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b2929c43ab3908edb82ff5cba27a6790c6beaaff` (2026-11-17T07:39:53-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ece50dc4bd01830e27c157117eaf675601e81003` (2026-11-17T07:53:53-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3909 |
 | arquivos_codigo | 2465 |
-| linhas_codigo | 439437 |
+| linhas_codigo | 439685 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -72,7 +72,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/admin | 0 | 0 | 101 | 69 | 10 | 39 |
 | components/analytics | 0 | 0 | 6 | 10 | 0 | 12 |
 | components/aprovacoes | 0 | 0 | 6 | 16 | 0 | 7 |
-| components/asaas | 0 | 0 | 26 | 6 | 2 | 13 |
+| components/asaas | 0 | 0 | 26 | 6 | 2 | 14 |
 | components/audit | 0 | 0 | 10 | 3 | 0 | 3 |
 | components/auth | 0 | 0 | 15 | 10 | 2 | 8 |
 | components/bi | 0 | 0 | 6 | 0 | 0 | 0 |
@@ -89,7 +89,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
 | components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
 | components/contas-receber | 0 | 0 | 36 | 32 | 3 | 26 |
-| components/dashboard | 0 | 0 | 26 | 93 | 8 | 40 |
+| components/dashboard | 0 | 0 | 26 | 93 | 8 | 41 |
 | components/demonstrativos | 0 | 0 | 9 | 22 | 1 | 16 |
 | components/empresas | 0 | 0 | 9 | 11 | 0 | 12 |
 | components/expert | 0 | 0 | 7 | 8 | 2 | 12 |
@@ -464,7 +464,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (38)
 - bun.lock (33)
 - .github/workflows/ci.yml (26)
-- supabase/functions/asaas-proxy/index.ts (16)
+- supabase/functions/asaas-proxy/index.ts (17)
 - .github/workflows/deno-tests.yml (14)
 - env.manifest.json (13)
 - supabase/config.toml (13)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `ece50dc` fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)
 - 2026-11-17 `b2929c4` fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)
 - 2026-11-17 `9cfb6b3` chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)
 - 2026-11-17 `e0aba34` fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `629b697` fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)
 - 2026-11-17 `1bbc484` fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)
 - 2026-11-17 `44c623c` chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)
-- 2026-11-17 `9224222` chore: declara o Node que o projeto ja exige (>=22.12) (#411)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

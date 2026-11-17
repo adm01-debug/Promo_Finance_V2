@@ -274,6 +274,7 @@
     "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "asaas_customers",
     "bling_sync_logs",
     "bling_webhook_events",
     "bloqueios_duplicidade",
@@ -3057,6 +3058,7 @@
     "asaas_payments",
     "asaas_reconciliation_suggestions",
     "asaas_transfers",
+    "boletos",
     "centros_custo",
     "conciliacoes",
     "contas_pagar",
@@ -3102,7 +3104,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 158
+   "arquivos_puxados": 159
   },
   {
    "protegida": true,
@@ -4368,6 +4370,7 @@
     "alertas",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "asaas_customers",
     "boletos",
     "centros_custo",
     "contas_bancarias",
@@ -8228,6 +8231,7 @@
     "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "asaas_customers",
     "bling_sync_logs",
     "bling_webhook_events",
     "bloqueios_duplicidade",
@@ -9280,6 +9284,7 @@
     "alertas",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "asaas_customers",
     "boletos",
     "centros_custo",
     "contas_bancarias",
@@ -11350,7 +11355,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 127
+   "arquivos_puxados": 129
   },
   {
    "protegida": true,

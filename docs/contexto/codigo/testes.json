@@ -1770,11 +1770,11 @@
   {
    "arquivo": "src/hooks/useBoletos.validation.test.ts",
    "tipo": "unit",
-   "linhas": 28,
+   "linhas": 84,
    "testa": [
     "src/hooks/useBoletos.helpers.ts"
    ],
-   "casos": 3
+   "casos": 11
   },
   {
    "arquivo": "src/hooks/usePerDcomp.safety.test.ts",
@@ -3589,11 +3589,11 @@
   {
    "arquivo": "supabase/functions/_shared/asaas-config_test.ts",
    "tipo": "unit",
-   "linhas": 72,
+   "linhas": 111,
    "testa": [
     "supabase/functions/_shared/asaas-config.ts"
    ],
-   "casos": 8
+   "casos": 12
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard_test.ts",
