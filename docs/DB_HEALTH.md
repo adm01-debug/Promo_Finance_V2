@@ -124,11 +124,11 @@ Proxy: contar versões na tabela de controle.
 SELECT count(*) AS migrations_aplicadas
 FROM supabase_migrations.schema_migrations;
 
--- Conferir se a última migration está registrada
--- (substituir pelo timestamp mais recente do diretório supabase/migrations/):
+-- Conferir se a última migration registrada é consistente com o diretório supabase/migrations/
+-- (usa o timestamp mais recente registrado, sem ajuste manual):
 SELECT version, statements IS NOT NULL AS tem_sql
 FROM supabase_migrations.schema_migrations
-WHERE version = '20261101200000';  -- ajustar para o timestamp mais recente
+WHERE version = (SELECT max(version) FROM supabase_migrations.schema_migrations);
 ```
 
 > **Nota:** a query de `EXCEPT` entre `fs_migrations` e `schema_migrations` requer
@@ -164,19 +164,10 @@ Edge Functions sem guard de autenticação expõem endpoints sem proteção.
 Esperado após Bloco D (Steps 33-48): **0** funções no terceiro balde.
 
 ```sql
--- Proxy via config.toml: lista funções sem entrada no config (verify_jwt não declarado).
--- Para auditoria real, comparar o diretório supabase/functions/ com supabase/config.toml.
-
--- Funções declaradas no config.toml com verify_jwt = false e sem guard interno documentado:
--- Consultar manualmente ou via script:
---   grep -L 'exigirUsuario\|exigirPapel\|exigirChamadaInterna\|verify_jwt.*true' \
---        supabase/functions/*/index.ts | wc -l
-
--- Proxy no banco: edge functions deployadas (requer pg_net ou log de deploy):
-SELECT
-  'Verificar manualmente supabase/functions/*/index.ts' AS instrucao,
-  'grep -rL exigirUsuario\|exigirPapel\|exigirChamadaInterna supabase/functions/' AS comando_shell,
-  '0 arquivos sem guard' AS valor_esperado;
+-- Auditoria real exige acesso ao filesystem — a fonte de verdade é o código,
+-- não o banco. Rodar na raiz do repositório:
+--   grep -rL 'exigirUsuario\|exigirPapel\|exigirChamadaInterna' supabase/functions/*/index.ts | wc -l
+-- Resultado esperado: 0 (nenhuma Edge Function sem guard de autenticação).
 ```
 
 ---
