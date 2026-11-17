@@ -125,36 +125,36 @@ export const useUpdateConfiguracaoAprovacao = () => {
     mutationFn: async (
       config: Partial<ConfiguracaoAprovacao> & { id: string; valor_minimo_original?: number }
     ) => {
-      const patch = {
+      // Escopo por CAMPO, porque o painel mistura duas coisas numa tela:
+      //
+      //  - `ativo` e o interruptor do workflow da empresa. O card anuncia
+      //    "Todos os pagamentos serao liberados automaticamente"
+      //    (ConfiguracaoAprovacaoCard.tsx:125), entao desligar tem de alcancar
+      //    TODAS as faixas. Atingindo so a faixa editada, a de 50.000 seguia
+      //    ativa e o dialogo continuava bloqueando pagamento acima disso --
+      //    a tela afirmando liberacao total enquanto o bloqueio continuava.
+      //
+      //  - limite e quorum pertencem a FAIXA editada: empresa + o valor que o
+      //    painel carregou. Aplicar na empresa inteira gravava o limite exibido
+      //    tambem nas faixas de 50.000 e 999.999, apagando patamares que a tela
+      //    nem mostra e nao sabe restaurar.
+      //
+      // Sem empresa ou sem valor original (linha legada), tudo cai no id.
+      const porFaixa = config.empresa_id != null && config.valor_minimo_original != null;
+
+      const patchFaixa = {
         valor_minimo_aprovacao: config.valor_minimo_aprovacao,
         aprovadores_obrigatorios: config.aprovadores_obrigatorios,
         ativo: config.ativo,
       };
 
-      // Escopo da gravacao: a FAIXA editada -- empresa + o valor que o painel
-      // carregou -- e nao a empresa inteira.
-      //
-      // Por que nao so o id: producao tem a mesma faixa duas vezes (tres faixas
-      // semeadas em duplicata em 2026-07-28). Gravando so o id, a duplicata
-      // seguia com o valor antigo e, por ser a menor, voltava a ser a escolhida
-      // pela leitura: o painel dizia "salvo" e o limite efetivo nao mudava.
-      //
-      // Por que nao a empresa inteira: isso gravaria o limite exibido tambem
-      // nas faixas de 50.000 e 999.999, apagando patamares que o painel nem
-      // mostra e nao sabe restaurar. Era perda de dado em producao.
-      //
-      // Com `valor_minimo_original`, as duplicatas da faixa editada andam
-      // juntas e as outras faixas ficam intactas. Sem ele, ou sem empresa,
-      // mantem o comportamento antigo por id.
-      const base = supabase.from('configuracoes_aprovacao').update(patch);
-      const porFaixa = config.empresa_id != null && config.valor_minimo_original != null;
-
+      const baseFaixa = supabase.from('configuracoes_aprovacao').update(patchFaixa);
       const { data, error } = porFaixa
-        ? await base
+        ? await baseFaixa
             .eq('empresa_id', config.empresa_id as string)
             .eq('valor_minimo_aprovacao', config.valor_minimo_original as number)
             .select()
-        : await base.eq('id', config.id).select();
+        : await baseFaixa.eq('id', config.id).select();
 
       if (error) throw error;
 
@@ -167,6 +167,17 @@ export const useUpdateConfiguracaoAprovacao = () => {
           'A faixa foi alterada por outra pessoa desde que esta tela carregou. ' +
             'Recarregue a configuracao e tente de novo.'
         );
+      }
+
+      // O interruptor alcanca as outras faixas da empresa SEM tocar nos limites
+      // delas: so a coluna `ativo` vai neste segundo update.
+      if (porFaixa && typeof config.ativo === 'boolean') {
+        const { error: erroAtivo } = await supabase
+          .from('configuracoes_aprovacao')
+          .update({ ativo: config.ativo })
+          .eq('empresa_id', config.empresa_id as string)
+          .neq('valor_minimo_aprovacao', config.valor_minimo_original as number);
+        if (erroAtivo) throw erroAtivo;
       }
 
       return data;

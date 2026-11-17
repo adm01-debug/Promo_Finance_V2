@@ -41,6 +41,7 @@ const buildChain = (resultado: { data: unknown; error: unknown } = { data: null,
     select: vi.fn(),
     limit: vi.fn(),
     update: vi.fn(),
+    neq: vi.fn(),
     maybeSingle: vi.fn(),
     single: vi.fn(),
     then: ((
@@ -57,6 +58,7 @@ const buildChain = (resultado: { data: unknown; error: unknown } = { data: null,
   builder.select.mockReturnValue(builder);
   builder.limit.mockReturnValue(builder);
   builder.update.mockReturnValue(builder);
+  builder.neq.mockReturnValue(builder);
   builder.maybeSingle.mockReturnValue(builder);
   builder.single.mockReturnValue(builder);
   return builder;
@@ -298,6 +300,65 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
     expect(chain.eq).toHaveBeenCalledWith('id', 'z');
     expect(chain.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
   });
+  it('desligar o workflow alcanca as OUTRAS faixas, sem tocar nos limites delas', async () => {
+    // Revisao da PR #400, round 5 (Codex): com faixas de 5.000/50.000/999.999,
+    // desligar o "Status do Workflow" atingia so as duplicatas de 5.000. O card
+    // anuncia "Todos os pagamentos serao liberados automaticamente"
+    // (ConfiguracaoAprovacaoCard.tsx:125), mas a leitura passava a escolher a
+    // faixa de 50.000 e o dialogo seguia bloqueando acima disso.
+    const chain = buildChain({ data: [{ id: 'a' }], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_original: 5000,
+      valor_minimo_aprovacao: 5000,
+      aprovadores_obrigatorios: 1,
+      ativo: false,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    // 1o update: a faixa editada, com limite e quorum
+    expect(chain.update).toHaveBeenCalledWith({
+      valor_minimo_aprovacao: 5000,
+      aprovadores_obrigatorios: 1,
+      ativo: false,
+    });
+    // 2o update: SO a coluna ativo, nas demais faixas da empresa
+    expect(chain.update).toHaveBeenCalledWith({ ativo: false });
+    expect(chain.neq).toHaveBeenCalledWith('valor_minimo_aprovacao', 5000);
+  });
+
+  it('o segundo update nao leva limite nem quorum, para nao apagar patamar', async () => {
+    const chain = buildChain({ data: [{ id: 'a' }], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_original: 5000,
+      valor_minimo_aprovacao: 10000,
+      aprovadores_obrigatorios: 2,
+      ativo: true,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    const chamadas = chain.update.mock.calls.map((c) => c[0]);
+    const soAtivo = chamadas.filter(
+      (p) => Object.keys(p as object).length === 1 && 'ativo' in (p as object)
+    );
+    expect(soAtivo).toHaveLength(1);
+    // nenhuma chamada grava 10000 fora do escopo da faixa editada
+    expect(chamadas.filter((p) => 'valor_minimo_aprovacao' in (p as object))).toHaveLength(1);
+  });
+
   it('conflito: zero linha atualizada NAO pode virar sucesso', async () => {
     // Revisao da PR #400, round 4 (Codex): dois administradores carregam a faixa
     // de 5.000; o primeiro muda para 10.000. O segundo salva, o filtro por
