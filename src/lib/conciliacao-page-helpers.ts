@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import type { TransacaoOFX } from '@/lib/ofx-parser';
+import type { ExtratoOFX, TransacaoOFX } from '@/lib/ofx-parser';
 import type { LancamentoSistema, MatchSugestao } from '@/lib/transaction-matcher';
 import {
   TOLERANCIA_CENTAVOS,
@@ -144,6 +144,35 @@ export async function carregarTransacoesBanco(
   } catch {
     toast.error('Erro ao carregar transações');
     return null;
+  }
+}
+
+/**
+ * Persiste o extrato importado e devolve o que o banco confirmou.
+ *
+ * Sem conta bancária selecionada nada é gravado (`saved: 0`), e falha na
+ * gravação também devolve zero: o relatório de importação não pode afirmar
+ * como salvo o que não entrou. A falha em si já é avisada ao usuário pelo
+ * `onError` da mutation `salvarExtratoBanco` (`useConciliacao.ts`), e o fluxo
+ * segue mostrando o relatório de matches — comportamento coberto por
+ * `useConciliacaoPage.importacao.test.tsx`.
+ */
+export async function persistirExtratoImportado(params: {
+  salvar: (vars: {
+    extrato: ExtratoOFX;
+    contaBancariaId: string;
+  }) => Promise<{ saved: number; duplicates: number }>;
+  extrato: ExtratoOFX;
+  contaBancariaId: string | null;
+}): Promise<{ saved: number; duplicates: number }> {
+  if (!params.contaBancariaId) return { saved: 0, duplicates: 0 };
+  try {
+    return await params.salvar({
+      extrato: params.extrato,
+      contaBancariaId: params.contaBancariaId,
+    });
+  } catch {
+    return { saved: 0, duplicates: 0 };
   }
 }
 

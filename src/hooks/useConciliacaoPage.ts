@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import {
   montarLancamentosSistema,
   buscarConfigConciliacao,
+  persistirExtratoImportado,
   aplicarConciliacoesAutomaticas,
   filtrarTransacoes,
   montarExportData,
@@ -157,24 +158,16 @@ export function useConciliacaoPage() {
         })
       );
 
-      let savedCount = extrato.transacoes.length;
-      let duplicateCount = 0;
-
-      if (selectedBanco) {
-        try {
-          // TODO(2026-08-14): sem registro de cabeçalho do arquivo — extratos_importacoes não existe
-          // em produção e extratos_bancarios_importados é VIEW (não aceita esse insert).
-
-          const result = await salvarExtratoBanco.mutateAsync({
-            extrato,
-            contaBancariaId: selectedBanco,
-          });
-          savedCount = result.saved;
-          duplicateCount = result.duplicates;
-        } catch (err) {
-          console.error('Failed to persist extrato:', err);
-        }
-      }
+      // `totalSalvas` só pode afirmar o que a persistência confirmou: antes
+      // partia do total do arquivo, então gravação que falhava (ou importação
+      // sem conta bancária) ainda anunciava tudo como salvo.
+      // Sem registro de cabeçalho do arquivo — `extratos_importacoes` não
+      // existe em produção e `extratos_bancarios_importados` é VIEW.
+      const { saved: savedCount, duplicates: duplicateCount } = await persistirExtratoImportado({
+        salvar: salvarExtratoBanco.mutateAsync,
+        extrato,
+        contaBancariaId: selectedBanco,
+      });
 
       const matches = encontrarTodosMatches(extrato.transacoes, lancamentosSistema);
       const estatisticas = calcularEstatisticasMatch(extrato.transacoes, matches);
