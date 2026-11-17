@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { secureRandomInt } from '@/lib/secure-random';
 import {
   ContingencyMode,
   ContingencyState,
@@ -32,8 +31,6 @@ import {
   deactivateContingency,
   checkSefazHealth,
   getContingencyStats,
-  updatePendingNFe,
-  removePendingNFe,
   getAutoContingencyConfig,
   runAutoContingencyCheck,
 } from '@/lib/sefaz-contingency';
@@ -149,40 +146,17 @@ export function ContingenciaNFe() {
     toast.success('Modo de contingência desativado');
   };
 
+  // Terceira ocorrencia do padrao do achado F12 na mesma pagina: o caminho
+  // antigo sorteava o resultado (`secureRandomInt(0, 10) !== 0`), registrava
+  // `cStat: '100'` e anunciava "NF-e ... autorizada com sucesso" -- autorizacao
+  // fiscal decidida por sorteio, sem nenhuma chamada a SEFAZ. Hoje a fila
+  // `pendingNFes` nasce vazia porque `addPendingNFe` nao tem chamador de
+  // producao, mas o risco era latente: bastava alguem popula-la.
   const handleTransmitPending = async () => {
-    if (!health.online) {
-      toast.error('SEFAZ ainda está indisponível');
-      return;
-    }
-    setIsTransmitting(true);
-    const pending = state.pendingNFes.filter((n) => n.status === 'pendente');
-    for (const nfe of pending) {
-      updatePendingNFe(nfe.id, { status: 'transmitindo', ultimaTentativa: new Date() });
-      setState(getContingencyState());
-      await new Promise((resolve) => setTimeout(resolve, secureRandomInt(1500, 2500)));
-      const success = secureRandomInt(0, 10) !== 0;
-      if (success) {
-        removePendingNFe(nfe.id);
-        registrarEvento({
-          tipo: 'AUTORIZACAO',
-          cStat: '100',
-          xMotivo: `NF-e ${nfe.numero} autorizada após contingência`,
-          chaveAcesso: nfe.chaveAcesso,
-          ambiente: 'homologacao',
-        });
-        toast.success(`NF-e ${nfe.numero} autorizada com sucesso`);
-      } else {
-        updatePendingNFe(nfe.id, {
-          status: 'rejeitada',
-          tentativas: nfe.tentativas + 1,
-          erro: 'Erro na transmissão - tentar novamente',
-        });
-        toast.error(`Erro ao transmitir NF-e ${nfe.numero}`);
-      }
-      setState(getContingencyState());
-    }
     setIsTransmitting(false);
-    toast.success('Transmissão de NF-e pendentes concluída');
+    toast.error(
+      'Transmissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar autorização real.'
+    );
   };
 
   const ModeIcon = modeConfig[state.mode].icon;
