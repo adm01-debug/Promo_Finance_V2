@@ -434,6 +434,9 @@ export function useContasPagarLogic() {
     countAprovacoesUrgentes,
     valorAprovacoesUrgentes,
     valorMinimoAprovacao: configuracao?.valor_minimo_aprovacao || 0,
+    // A pagina repassa ao RegistrarPagamentoDialog, para lista e dialogo
+    // decidirem a aprovacao pela MESMA empresa.
+    empresaIdAtual: currentEmpresaId || undefined,
 
     // Bulk actions
     ...bulkActionsHook,

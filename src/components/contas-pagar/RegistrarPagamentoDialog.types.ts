@@ -17,6 +17,13 @@ export interface RegistrarPagamentoDialogProps {
   conta: ContaPagar | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /**
+   * Empresa cuja alcada vale para este pagamento. Sem ela, a consulta devolve a
+   * MENOR faixa entre todas as empresas acessiveis, e um titulo dispensado pela
+   * alcada da propria empresa era bloqueado aqui -- divergindo da lista, que ja
+   * filtra por empresa.
+   */
+  empresaId?: string;
 }
 
 export type PagamentoFormData = z.infer<typeof pagamentoSchema>;

@@ -6,6 +6,7 @@ import { mustSucceed } from '@/lib/supabase-write';
 
 export interface ConfiguracaoAprovacao {
   id: string;
+  empresa_id: string | null;
   valor_minimo_aprovacao: number;
   aprovadores_obrigatorios: number;
   ativo: boolean;
@@ -97,16 +98,25 @@ export const useUpdateConfiguracaoAprovacao = () => {
 
   return useMutation({
     mutationFn: async (config: Partial<ConfiguracaoAprovacao> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('configuracoes_aprovacao')
-        .update({
-          valor_minimo_aprovacao: config.valor_minimo_aprovacao,
-          aprovadores_obrigatorios: config.aprovadores_obrigatorios,
-          ativo: config.ativo,
-        })
-        .eq('id', config.id)
-        .select()
-        .single();
+      const patch = {
+        valor_minimo_aprovacao: config.valor_minimo_aprovacao,
+        aprovadores_obrigatorios: config.aprovadores_obrigatorios,
+        ativo: config.ativo,
+      };
+
+      // O painel mostra UMA alcada por empresa e anuncia "as configuracoes de
+      // aprovacao foram salvas". Enquanto houver mais de uma linha para a mesma
+      // empresa (producao tem tres faixas semeadas duas vezes em 2026-07-28),
+      // gravar so o id editado nao muda nada do ponto de vista do dono: a
+      // leitura escolhe a menor faixa ativa e a outra duplicata de mesmo valor
+      // assume o lugar. Subir o limite de 5.000 para 10.000, ou desativar o
+      // workflow, exibia sucesso sem efeito nenhum. Por isso a gravacao cobre
+      // todas as linhas da empresa -- o mesmo escopo que o painel apresenta.
+      // Sem empresa_id (linha legada), cai no comportamento antigo, por id.
+      const base = supabase.from('configuracoes_aprovacao').update(patch);
+      const { data, error } = config.empresa_id
+        ? await base.eq('empresa_id', config.empresa_id).select()
+        : await base.eq('id', config.id).select();
 
       if (error) throw error;
       return data;

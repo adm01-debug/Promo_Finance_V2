@@ -259,6 +259,7 @@ export default function ContasPagar() {
             }
             open={logic.pagamentoDialogOpen}
             onOpenChange={logic.setPagamentoDialogOpen}
+            empresaId={logic.empresaIdAtual}
           />
 
           <SolicitarAprovacaoDialog

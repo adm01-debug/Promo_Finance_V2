@@ -50,11 +50,12 @@ export function RegistrarPagamentoDialog({
   conta,
   open,
   onOpenChange,
+  empresaId,
 }: RegistrarPagamentoDialogProps) {
   const queryClient = useQueryClient();
   const [tipoPagamento, setTipoPagamento] = useState<'total' | 'parcial'>('total');
   const { data: contasBancarias = [] } = useContasBancarias();
-  const { data: configAprovacao } = useConfiguracaoAprovacao();
+  const { data: configAprovacao } = useConfiguracaoAprovacao(empresaId);
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
 
   const saldoRestante = conta ? conta.valor - (conta.valor_pago || 0) : 0;

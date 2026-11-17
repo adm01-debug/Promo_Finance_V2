@@ -16,7 +16,11 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-import { useComentariosAprovacao, useConfiguracaoAprovacao } from '@/hooks/useAprovacoes';
+import {
+  useComentariosAprovacao,
+  useConfiguracaoAprovacao,
+  useUpdateConfiguracaoAprovacao,
+} from '@/hooks/useAprovacoes';
 
 const makeWrapper = () => {
   const qc = new QueryClient({
@@ -35,6 +39,7 @@ const buildChain = (resultado: { data: unknown; error: unknown } = { data: null,
     order: vi.fn(),
     select: vi.fn(),
     limit: vi.fn(),
+    update: vi.fn(),
     maybeSingle: vi.fn(),
     single: vi.fn(),
     then: ((
@@ -50,6 +55,7 @@ const buildChain = (resultado: { data: unknown; error: unknown } = { data: null,
   builder.order.mockReturnValue(builder);
   builder.select.mockReturnValue(builder);
   builder.limit.mockReturnValue(builder);
+  builder.update.mockReturnValue(builder);
   builder.maybeSingle.mockReturnValue(builder);
   builder.single.mockReturnValue(builder);
   return builder;
@@ -210,5 +216,81 @@ describe('useConfiguracaoAprovacao (alcada com varias faixas ativas)', () => {
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toBeNull();
+  });
+});
+
+describe('useUpdateConfiguracaoAprovacao (gravacao coerente com a leitura)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('grava em TODAS as linhas da empresa, nao so no id lido', async () => {
+    // Revisao da PR #400 (Devin e Codex): com duas faixas ativas de R$ 5.000,
+    // subir o limite para R$ 10.000 gravando so o id lido deixava a outra
+    // duplicata de 5.000 como a menor — a leitura voltava a escolher ela e o
+    // limite salvo nao fazia efeito, apesar do toast de sucesso.
+    const chain = buildChain({ data: [{ id: 'a' }], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 10000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockFrom).toHaveBeenCalledWith('configuracoes_aprovacao');
+    expect(chain.update).toHaveBeenCalledWith({
+      valor_minimo_aprovacao: 10000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    });
+    expect(chain.eq).toHaveBeenCalledWith('empresa_id', 'e1');
+    expect(chain.eq).not.toHaveBeenCalledWith('id', 'a');
+  });
+
+  it('desativar o workflow desativa a empresa inteira, nao uma faixa so', async () => {
+    const chain = buildChain({ data: [{ id: 'a' }], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_aprovacao: 5000,
+      aprovadores_obrigatorios: 1,
+      ativo: false,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(chain.update).toHaveBeenCalledWith(expect.objectContaining({ ativo: false }));
+    expect(chain.eq).toHaveBeenCalledWith('empresa_id', 'e1');
+  });
+
+  it('sem empresa_id (linha legada) mantem a gravacao por id', async () => {
+    const chain = buildChain({ data: [{ id: 'z' }], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'z',
+      empresa_id: null,
+      valor_minimo_aprovacao: 7000,
+      aprovadores_obrigatorios: 2,
+      ativo: true,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(chain.eq).toHaveBeenCalledWith('id', 'z');
+    expect(chain.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
   });
 });

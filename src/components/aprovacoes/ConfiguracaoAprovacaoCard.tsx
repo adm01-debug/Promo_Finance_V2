@@ -57,6 +57,9 @@ export const ConfiguracaoAprovacaoCard = () => {
     if (!config) return;
     updateMutation.mutate({
       id: config.id,
+      // Sem a empresa, a gravacao atinge so a linha lida e a duplicata de mesmo
+      // valor volta a ser a escolhida: o limite salvo nao faz efeito.
+      empresa_id: config.empresa_id,
       valor_minimo_aprovacao: parseFloat(valorMinimo) || 0,
       aprovadores_obrigatorios: parseInt(aprovadores) || 1,
       ativo,
