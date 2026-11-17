@@ -8,11 +8,18 @@
  * Com o código anterior a este arquivo, o teste abaixo falha com
  * "expected 5 to be less than or equal to 1" (medido nesta sessão).
  */
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-const { mockCheck } = vi.hoisted(() => ({ mockCheck: vi.fn() }));
+const { mockCheck, inicial } = vi.hoisted(() => ({
+  mockCheck: vi.fn(),
+  // Mutável de propósito: o status inicial do componente vem daqui, e o laço
+  // precisa ser testado também com status CONHECIDO — com `online: null` o
+  // efeito nem começa, então o teste passaria com zero chamadas e não veria o
+  // laço voltar (achado do Devin na PR #423).
+  inicial: { status: null as unknown as Record<string, unknown> },
+}));
 
 const DESCONHECIDO = {
   online: null,
@@ -20,6 +27,13 @@ const DESCONHECIDO = {
   lastCheck: null,
   consecutiveFailures: 0,
   averageResponseTime: 0,
+};
+const ONLINE = {
+  online: true,
+  latency: 180,
+  lastCheck: new Date('2026-11-17T10:00:00.000Z'),
+  consecutiveFailures: 0,
+  averageResponseTime: 180,
 };
 const ESTADO_NORMAL = {
   mode: 'normal',
@@ -35,7 +49,7 @@ const ESTADO_NORMAL = {
 
 vi.mock('@/lib/sefaz-contingency', () => ({
   checkSefazHealth: mockCheck,
-  getSefazHealthStatus: () => DESCONHECIDO,
+  getSefazHealthStatus: () => inicial.status,
   getContingencyState: () => ESTADO_NORMAL,
   getAutoContingencyConfig: () => ({ checkIntervalSeconds: 30, rules: [], enabled: true }),
 }));
@@ -60,19 +74,29 @@ vi.mock('sonner', () => ({
 import { SefazMonitor } from '../SefazMonitor';
 
 describe('monitor da SEFAZ não verifica em laço (regressão #423)', () => {
-  it('não reexecuta a verificação a cada render, mesmo devolvendo objeto novo', async () => {
-    // Objeto novo por chamada é o comportamento real de checkSefazHealth; com
-    // referência repetida o React descartaria o setState e o laço não apareceria.
+  beforeEach(() => {
+    mockCheck.mockReset();
+  });
+
+  it('com status CONHECIDO verifica uma vez e respeita o intervalo', async () => {
+    // Este é o caso que prova o fim do laço: aqui o monitoramento roda de fato
+    // (o efeito não é suspenso), e o intervalo configurado é de 30s — então
+    // mais de uma chamada em 50ms só pode vir da recriação do efeito.
+    inicial.status = ONLINE;
+    mockCheck.mockImplementation(async () => ({ ...ONLINE }));
+    render(<SefazMonitor />);
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(mockCheck).toHaveBeenCalledTimes(1);
+  });
+
+  it('com status desconhecido não verifica nada e o rodapé não promete monitoramento', async () => {
+    inicial.status = DESCONHECIDO;
     mockCheck.mockImplementation(async () => ({ ...DESCONHECIDO }));
     render(<SefazMonitor />);
     for (let i = 0; i < 20; i++) await Promise.resolve();
     await new Promise((resolve) => setTimeout(resolve, 50));
-    expect(mockCheck.mock.calls.length).toBeLessThanOrEqual(1);
-  });
-
-  it('com status desconhecido o rodapé não promete monitoramento', async () => {
-    mockCheck.mockImplementation(async () => ({ ...DESCONHECIDO }));
-    render(<SefazMonitor />);
+    expect(mockCheck).not.toHaveBeenCalled();
     expect(screen.getByText('Indisponível')).toBeInTheDocument();
     expect(screen.queryByText('Monitorando')).not.toBeInTheDocument();
   });
