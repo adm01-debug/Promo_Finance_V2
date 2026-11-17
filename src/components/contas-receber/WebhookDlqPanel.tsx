@@ -17,12 +17,15 @@
  * dono pelo AGENTS.md 6.6. Esta tela mostra a falha; o reprocessamento vem na
  * PR da migration.
  */
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, Clock, Inbox, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -53,23 +56,59 @@ function mensagemDeErro(erro: unknown): string {
   return 'Verifique se o seu usuário tem papel de administrador.';
 }
 
+const PAGINA_DLQ = 20;
+
 export function WebhookDlqPanel() {
-  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<DlqRow[]>({
-    queryKey: ['webhook-dlq-abertos'],
+  // Sem papel admin a politica de SELECT NAO da erro: ela filtra as linhas e
+  // devolve sucesso com `data: []` (o GRANT SELECT para `authenticated` esta em
+  // supabase/migrations/20260711153447_...sql:36 e a politica admin em
+  // 20260825230000_initplan_rls_e67.sql:886). Como /contas-receber e
+  // ProtectedRoute sem restricao de papel, um usuario comum veria
+  // "nenhum webhook em falha" com a fila cheia -- exatamente o silencio que
+  // este painel vem acabar (achado P2 do Codex na PR #406). Entao a autorizacao
+  // e verificada ANTES da consulta.
+  const { isAdmin } = useAuth();
+  const [limite, setLimite] = useState(PAGINA_DLQ);
+
+  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<{
+    linhas: DlqRow[];
+    total: number;
+  }>({
+    queryKey: ['webhook-dlq-abertos', limite],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // `count: 'exact'` para o contador nao mentir: `linhas.length` era o
+      // recorte, nao o total em aberto.
+      const { data, error, count } = await supabase
         .from('webhook_dlq')
         .select(
-          'id, source, event_type, external_id, error_message, attempts, first_failed_at, last_attempt_at, created_at'
+          'id, source, event_type, external_id, error_message, attempts, first_failed_at, last_attempt_at, created_at',
+          { count: 'exact' }
         )
         .is('resolved_at', null)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(limite);
       if (error) throw error;
-      return (data ?? []) as DlqRow[];
+      const linhas = (data ?? []) as DlqRow[];
+      return { linhas, total: count ?? linhas.length };
     },
+    enabled: isAdmin,
     staleTime: 60_000,
   });
+
+  const linhas = data?.linhas ?? [];
+  const total = data?.total ?? 0;
+
+  if (!isAdmin) {
+    return (
+      <div className="rounded-lg border border-border bg-muted/30 p-3">
+        <p className="text-xs font-medium">Fila de webhooks em falha: acesso restrito</p>
+        <p className="text-[11px] text-muted-foreground mt-1">
+          Só administradores leem esta fila. Esta tela não mostra &quot;nenhuma falha&quot; para
+          quem não pode ler: pergunte a um administrador.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -78,9 +117,9 @@ export function WebhookDlqPanel() {
           <p className="text-sm font-bold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-destructive" />
             Webhooks que falharam
-            {data && data.length > 0 ? (
+            {total > 0 ? (
               <Badge variant="destructive" className="text-[10px]">
-                {data.length} em aberto
+                {total} em aberto
               </Badge>
             ) : null}
           </p>
@@ -95,7 +134,7 @@ export function WebhookDlqPanel() {
           disabled={isRefetching}
           aria-label="Atualizar fila de falhas"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
+          <RefreshCw className={cn('h-3.5 w-3.5', isRefetching && 'animate-spin')} />
         </Button>
       </div>
 
@@ -113,14 +152,14 @@ export function WebhookDlqPanel() {
             Nada é exibido para não passar erro de leitura como fila vazia. {mensagemDeErro(error)}
           </p>
         </div>
-      ) : !data || data.length === 0 ? (
+      ) : linhas.length === 0 ? (
         <p className="text-xs text-muted-foreground flex items-center gap-2">
           <Inbox className="h-3.5 w-3.5" />
           Nenhum webhook em falha no momento.
         </p>
       ) : (
         <div className="space-y-2">
-          {data.map((row) => (
+          {linhas.map((row) => (
             <div
               key={row.id}
               className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 space-y-1"
@@ -146,6 +185,21 @@ export function WebhookDlqPanel() {
               </p>
             </div>
           ))}
+          {total > linhas.length ? (
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] text-muted-foreground">
+                {`Mostrando ${linhas.length} de ${total} falhas em aberto.`}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-[10px]"
+                onClick={() => setLimite((n) => n + PAGINA_DLQ)}
+              >
+                Carregar mais
+              </Button>
+            </div>
+          ) : null}
           <p className="text-[10px] text-muted-foreground">
             Reprocessar um evento exige liberar a função <code>reprocess_dlq</code> para a aplicação
             — alteração de banco pendente de aprovação.
