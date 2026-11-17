@@ -89,6 +89,13 @@ export const useConfiguracaoAprovacao = (empresaId?: string) => {
       if (error) throw error;
       return (data?.[0] ?? null) as ConfiguracaoAprovacao | null;
     },
+    // Opt-out do `placeholderData: previousData` global (queryClient.ts:27):
+    // ao trocar de empresa sem cache, o hook entregava a alcada da empresa
+    // ANTERIOR por alguns instantes. Com 50.000 em B e 5.000 em A, um titulo de
+    // 10.000 de A podia ser pago sem aprovacao nesse intervalo, porque
+    // RegistrarPagamentoDialog decide com a config recebida e `isLoading` e
+    // false enquanto o placeholder esta em uso (achado P1 do Codex, PR #400).
+    placeholderData: undefined,
   });
 };
 
@@ -123,6 +130,9 @@ export const useConfiguracaoAprovacaoEditavel = (empresaId?: string) => {
       if (error) throw error;
       return (data?.[0] ?? null) as ConfiguracaoAprovacao | null;
     },
+    // Mesmo opt-out: com o placeholder, o painel editava a faixa da empresa
+    // anterior enquanto a nova carregava.
+    placeholderData: undefined,
   });
 };
 
