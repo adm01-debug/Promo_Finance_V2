@@ -1,0 +1,317 @@
+{
+  "total": 26,
+  "aprovados": 7,
+  "reprovados": 19,
+  "results": [
+    {
+      "id": "S01",
+      "cenario": "CSV brasileiro com milhar",
+      "esperado": "1234.56",
+      "obtido": 1.234,
+      "passou": false
+    },
+    {
+      "id": "S02",
+      "cenario": "CSV débito brasileiro",
+      "esperado": "-1234.56",
+      "obtido": -1.234,
+      "passou": false
+    },
+    {
+      "id": "S03",
+      "cenario": "CSV valor não numérico",
+      "esperado": "Rejeitar ou não retornar sucesso",
+      "obtido": {
+        "sucesso": true,
+        "extrato": {
+          "conta": {
+            "banco": "Importado via CSV",
+            "agencia": "",
+            "conta": "",
+            "tipoConta": "checking",
+            "moeda": "BRL",
+            "dataInicio": "2026-09-10T03:00:00.000Z",
+            "dataFim": "2026-09-10T03:00:00.000Z"
+          },
+          "transacoes": [
+            {
+              "id": "csv-1-1789044025882",
+              "tipo": "debito",
+              "data": "2026-09-10T03:00:00.000Z",
+              "valor": "NaN",
+              "descricao": "Teste sintético"
+            }
+          ],
+          "dataImportacao": "2026-09-10T12:40:25.882Z",
+          "nomeArquivo": "sintetico.csv",
+          "formato": "CSV"
+        },
+        "avisos": []
+      },
+      "passou": false
+    },
+    {
+      "id": "S04",
+      "cenario": "Data 31/02/2026",
+      "esperado": "Rejeitar data inexistente",
+      "obtido": false,
+      "passou": false
+    },
+    {
+      "id": "S05",
+      "cenario": "Data OFX 20260231",
+      "esperado": "Rejeitar data inexistente",
+      "obtido": false,
+      "passou": false
+    },
+    {
+      "id": "S06",
+      "cenario": "Moeda com sufixo inválido",
+      "esperado": "Não aceitar 12abc como valor 12",
+      "obtido": 12,
+      "passou": false
+    },
+    {
+      "id": "S07",
+      "cenario": "Conversão decimal positiva",
+      "esperado": "1.005 com meia unidade afastada de zero resulta em 101 centavos",
+      "obtido": 100,
+      "passou": false
+    },
+    {
+      "id": "S08",
+      "cenario": "Conversão decimal negativa",
+      "esperado": "-1.005 com regra simétrica resulta em -101 centavos",
+      "obtido": -100,
+      "passou": false
+    },
+    {
+      "id": "S09",
+      "cenario": "Parcelamento com juros NaN",
+      "esperado": "Rejeitar taxa não finita",
+      "obtido": false,
+      "passou": false
+    },
+    {
+      "id": "S10",
+      "cenario": "Parcelamento com juros infinitos",
+      "esperado": "Rejeitar taxa infinita",
+      "obtido": false,
+      "passou": false
+    },
+    {
+      "id": "S11",
+      "cenario": "Parcelamento 100/3",
+      "esperado": "Conservar 10000 centavos, parcela final 33.34 e saldo final zero",
+      "obtido": {
+        "installmentValue": 33.33,
+        "totalWithInterest": 100,
+        "interestAmount": 0,
+        "installmentDetails": [
+          {
+            "number": 1,
+            "value": 33.33,
+            "balance": 66.67
+          },
+          {
+            "number": 2,
+            "value": 33.33,
+            "balance": 33.34
+          },
+          {
+            "number": 3,
+            "value": 33.34,
+            "balance": 0
+          }
+        ]
+      },
+      "passou": true
+    },
+    {
+      "id": "S12",
+      "cenario": "Soma 0.10+0.20",
+      "esperado": "0.30",
+      "obtido": 0.3,
+      "passou": true
+    },
+    {
+      "id": "S13",
+      "cenario": "Projeção realista repetida",
+      "esperado": "Mesmos dados e configuração devem permitir reprodução",
+      "obtido": {
+        "primeiro": 900,
+        "segundo": 765
+      },
+      "passou": false
+    },
+    {
+      "id": "S14",
+      "cenario": "Métrica de projeção vazia",
+      "esperado": "Saldo mínimo finito ou estado indisponível explícito",
+      "obtido": {
+        "otimista": {
+          "saldoFinal": 0,
+          "saldoMinimo": "Infinity",
+          "diasCriticos": 0
+        },
+        "realista": {
+          "saldoFinal": 0,
+          "saldoMinimo": "Infinity",
+          "diasCriticos": 0
+        },
+        "pessimista": {
+          "saldoFinal": 0,
+          "saldoMinimo": "Infinity",
+          "diasCriticos": 0
+        }
+      },
+      "passou": false
+    },
+    {
+      "id": "S15",
+      "cenario": "Alerta de risco médio",
+      "esperado": "Saldo 75000 deve produzir risco_medio quando limite é 100000",
+      "obtido": [],
+      "passou": false
+    },
+    {
+      "id": "S16",
+      "cenario": "Balancete balanceado",
+      "esperado": "Débitos=créditos",
+      "obtido": {
+        "debitos": 100,
+        "creditos": 100,
+        "diferenca": 0,
+        "balanceado": true,
+        "saldoDevedor": 0,
+        "saldoCredor": 0,
+        "contas": 1
+      },
+      "passou": true
+    },
+    {
+      "id": "S17",
+      "cenario": "Balancete com débito inválido",
+      "esperado": "Não certificar escrituração inválida como balanceada",
+      "obtido": {
+        "debitos": 0,
+        "creditos": 0,
+        "diferenca": 0,
+        "balanceado": true,
+        "saldoDevedor": 0,
+        "saldoCredor": 0,
+        "contas": 1
+      },
+      "passou": false
+    },
+    {
+      "id": "S18",
+      "cenario": "Balancete sintético+analítico",
+      "esperado": "Não duplicar débitos",
+      "obtido": {
+        "debitos": 100,
+        "creditos": 100,
+        "diferenca": 0,
+        "balanceado": true,
+        "saldoDevedor": 0,
+        "saldoCredor": 0,
+        "contas": 1
+      },
+      "passou": true
+    },
+    {
+      "id": "S19",
+      "cenario": "CSV simples com vírgula",
+      "esperado": "123.45",
+      "obtido": 123.45,
+      "passou": true
+    },
+    {
+      "id": "S20",
+      "cenario": "Ano bissexto válido",
+      "esperado": "Aceitar 29/02/2024",
+      "obtido": 29,
+      "passou": true
+    },
+    {
+      "id": "S21",
+      "cenario": "Parcelamento inválido",
+      "esperado": "Rejeitar zero parcelas",
+      "obtido": true,
+      "passou": true
+    },
+    {
+      "id": "S22",
+      "cenario": "CSV de data inexistente",
+      "esperado": "Não aceitar lançamento em data inexistente",
+      "obtido": {
+        "sucesso": true,
+        "extrato": {
+          "conta": {
+            "banco": "Importado via CSV",
+            "agencia": "",
+            "conta": "",
+            "tipoConta": "checking",
+            "moeda": "BRL",
+            "dataInicio": "2026-03-03T03:00:00.000Z",
+            "dataFim": "2026-03-03T03:00:00.000Z"
+          },
+          "transacoes": [
+            {
+              "id": "csv-1-1789044025884",
+              "tipo": "credito",
+              "data": "2026-03-03T03:00:00.000Z",
+              "valor": 100,
+              "descricao": "Teste sintético"
+            }
+          ],
+          "dataImportacao": "2026-09-10T12:40:25.884Z",
+          "nomeArquivo": "sintetico.csv",
+          "formato": "CSV"
+        },
+        "avisos": []
+      },
+      "passou": false
+    },
+    {
+      "id": "S23",
+      "cenario": "Código de barras gerado aceito pelo parser do próprio sistema",
+      "esperado": "Código válido",
+      "obtido": {
+        "digits": 40,
+        "valid": false,
+        "errors": [
+          "Código inválido: esperado 44, 47 ou 48 dígitos, recebido 40"
+        ]
+      },
+      "passou": false
+    },
+    {
+      "id": "S24",
+      "cenario": "Linha digitável gerada aceita pelo parser do próprio sistema",
+      "esperado": "Linha válida",
+      "obtido": {
+        "digits": 53,
+        "valid": false,
+        "errors": [
+          "Código inválido: esperado 44, 47 ou 48 dígitos, recebido 53"
+        ]
+      },
+      "passou": false
+    },
+    {
+      "id": "S25",
+      "cenario": "Conversor de conciliação de pagamento parcial",
+      "esperado": "Residual 600 de título 1000 com 400 pagos",
+      "obtido": 1000,
+      "passou": false
+    },
+    {
+      "id": "S26",
+      "cenario": "Conversor de conciliação de recebimento parcial",
+      "esperado": "Residual 600 de título 1000 com 400 recebidos",
+      "obtido": 1000,
+      "passou": false
+    }
+  ]
+}

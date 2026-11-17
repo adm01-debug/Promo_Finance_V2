@@ -1,0 +1,154 @@
+{
+  "base": "d84a692dd13914540f9bc9d43a5317d9a65c62d9",
+  "inventario": {
+    "commit": "d84a692dd13914540f9bc9d43a5317d9a65c62d9",
+    "sourceFiles": 1746,
+    "unitTestFiles": 205,
+    "routeDeclarations": 129,
+    "protectedRoutes": 118,
+    "controls": 2416,
+    "functionOccurrences": 14223,
+    "backendCalls": 1146,
+    "edgeDirectories": 102,
+    "e2eFiles": 26,
+    "migrations": 595,
+    "missingEdges": [
+      "api-keys-manage"
+    ],
+    "signals": {
+      "simulacao": 178,
+      "limite": 104,
+      "aleatoriedade": 69,
+      "pendencia": 47
+    },
+    "conditionalE2ESignals": 30
+  },
+  "cenarios": {
+    "total": 26,
+    "aprovados": 7,
+    "reprovados": 19
+  },
+  "cobertura": {
+    "padrao": {
+      "files": 339,
+      "total": {
+        "lines": {
+          "total": 10654,
+          "covered": 7850,
+          "skipped": 0,
+          "pct": 73.68
+        },
+        "statements": {
+          "total": 11964,
+          "covered": 8685,
+          "skipped": 0,
+          "pct": 72.59
+        },
+        "functions": {
+          "total": 2515,
+          "covered": 1616,
+          "skipped": 0,
+          "pct": 64.25
+        },
+        "branches": {
+          "total": 9098,
+          "covered": 6038,
+          "skipped": 0,
+          "pct": 66.36
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "global": {
+      "files": 1498,
+      "total": {
+        "lines": {
+          "total": 41778,
+          "covered": 7425,
+          "skipped": 0,
+          "pct": 17.77
+        },
+        "statements": {
+          "total": 47822,
+          "covered": 8226,
+          "skipped": 0,
+          "pct": 17.2
+        },
+        "functions": {
+          "total": 14123,
+          "covered": 1559,
+          "skipped": 0,
+          "pct": 11.03
+        },
+        "branches": {
+          "total": 40103,
+          "covered": 5749,
+          "skipped": 0,
+          "pct": 14.33
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "byGroup": {
+        "pages": {
+          "files": 196,
+          "lines": 5070,
+          "covered": 132
+        },
+        "hooks": {
+          "files": 241,
+          "lines": 10055,
+          "covered": 918
+        },
+        "components": {
+          "files": 815,
+          "lines": 18568,
+          "covered": 945
+        },
+        "lib": {
+          "files": 225,
+          "lines": 7830,
+          "covered": 5351
+        }
+      }
+    }
+  },
+  "interface": {
+    "anon": 118,
+    "redirecionadas": 118,
+    "sinteticas": 118,
+    "naoRedirecionadas": 118,
+    "comErro": 1,
+    "dialogosTentados": 8,
+    "dialogosAbertos": 7
+  },
+  "ci": [
+    {
+      "conclusion": "success",
+      "databaseId": 34473102972,
+      "name": "Supabase Linter (RLS/GRANT gate)",
+      "updatedAt": "2026-09-10T11:47:09Z"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 34473102962,
+      "name": "Deno Edge Function Tests",
+      "updatedAt": "2026-09-10T11:47:28Z"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 34473102973,
+      "name": "CI Pipeline",
+      "updatedAt": "2026-09-10T11:55:02Z"
+    }
+  ]
+}
