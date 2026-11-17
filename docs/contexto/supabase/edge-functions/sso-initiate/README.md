@@ -4,7 +4,7 @@
 |---|---|
 | nome | sso-initiate |
 | status | ACTIVE |
-| versão | 53 |
+| versão | 54 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/sso-initiate/index.ts |
 | import_map |  |

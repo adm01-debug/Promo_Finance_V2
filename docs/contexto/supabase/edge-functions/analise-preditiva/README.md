@@ -4,7 +4,7 @@
 |---|---|
 | nome | analise-preditiva |
 | status | ACTIVE |
-| versão | 50 |
+| versão | 51 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/analise-preditiva/index.ts |
 | import_map |  |

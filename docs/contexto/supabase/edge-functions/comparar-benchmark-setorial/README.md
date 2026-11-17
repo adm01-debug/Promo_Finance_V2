@@ -4,7 +4,7 @@
 |---|---|
 | nome | comparar-benchmark-setorial |
 | status | ACTIVE |
-| versão | 55 |
+| versão | 56 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/comparar-benchmark-setorial/index.ts |
 | import_map |  |

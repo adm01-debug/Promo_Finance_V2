@@ -2,6 +2,13 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-17 00:38 UTC
+
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** alterado (3): `public.ensure_monthly_partitions(p_table text, p_months_back integer, p_months_forward integer)`, `public.purge_old_rows(p_table regclass, p_column text, p_days integer, p_where text, p_batch integer, p_max_batches integer)`, `public.purge_old_rows(p_table text, p_column text, p_days integer)`
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_20`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_13`
+
 ## 2026-11-16 23:13 UTC
 
 - **cron jobs** adicionado (1): `49:marcar-contas-vencidas`

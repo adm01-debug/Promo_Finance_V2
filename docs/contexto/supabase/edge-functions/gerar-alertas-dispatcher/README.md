@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-alertas-dispatcher |
 | status | ACTIVE |
-| versão | 55 |
+| versão | 56 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/gerar-alertas-dispatcher/index.ts |
 | import_map |  |

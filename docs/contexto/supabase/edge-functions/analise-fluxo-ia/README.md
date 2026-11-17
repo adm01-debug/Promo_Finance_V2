@@ -4,7 +4,7 @@
 |---|---|
 | nome | analise-fluxo-ia |
 | status | ACTIVE |
-| versão | 58 |
+| versão | 59 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/analise-fluxo-ia/index.ts |
 | import_map |  |
