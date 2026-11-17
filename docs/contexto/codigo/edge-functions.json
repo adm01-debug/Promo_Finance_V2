@@ -3016,7 +3016,7 @@
    "nome": "open-finance",
    "entrada": "supabase/functions/open-finance/index.ts",
    "arquivos": 1,
-   "linhas": 637,
+   "linhas": 536,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3068,7 +3068,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "overlay-rejeicoes-auditoria",

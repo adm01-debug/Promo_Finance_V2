@@ -1765,8 +1765,8 @@
   {
    "modulo": "components/conciliacao",
    "arquivos": 30,
-   "testes": 1,
-   "linhas": 6149,
+   "testes": 2,
+   "linhas": 6094,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -3869,8 +3869,8 @@
   {
    "modulo": "components/integracoes",
    "arquivos": 6,
-   "testes": 0,
-   "linhas": 990,
+   "testes": 1,
+   "linhas": 1004,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

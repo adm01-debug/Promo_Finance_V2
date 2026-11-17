@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ece50dc4bd01830e27c157117eaf675601e81003` (2026-11-17T07:53:53-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c` (2026-11-17T07:57:37-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2351), SQL (1104), Markdown (197), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2354), SQL (1104), Markdown (197), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3909 |
-| arquivos_codigo | 2465 |
-| linhas_codigo | 439685 |
+| arquivos_total | 3912 |
+| arquivos_codigo | 2468 |
+| linhas_codigo | 439715 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1034 |
 | cron_jobs | 22 |
-| testes | 471 |
+| testes | 474 |
 | workflows | 19 |
 | scripts | 111 |
 | docs_md | 197 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (279), outro (109), co-localizado (*.test) (43)
+- testes: co-localizado (__tests__) (281), outro (110), co-localizado (*.test) (43)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `19a248a` fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)
 - 2026-11-17 `ece50dc` fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)
 - 2026-11-17 `b2929c4` fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)
 - 2026-11-17 `9cfb6b3` chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `00a7783` fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)
 - 2026-11-17 `629b697` fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)
 - 2026-11-17 `1bbc484` fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)
-- 2026-11-17 `44c623c` chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

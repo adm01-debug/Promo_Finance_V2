@@ -5,21 +5,21 @@
   "vitest",
   "playwright"
  ],
- "total": 471,
+ "total": 474,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 395
+  "unit": 398
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 279
+   "arquivos": 281
   },
   {
    "padrao": "outro",
-   "arquivos": 109
+   "arquivos": 110
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -905,6 +905,15 @@
    "casos": 2
   },
   {
+   "arquivo": "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+   "tipo": "unit",
+   "linhas": 55,
+   "testa": [
+    "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx"
+   ],
+   "casos": 2
+  },
+  {
    "arquivo": "src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx",
    "tipo": "unit",
    "linhas": 143,
@@ -1042,6 +1051,15 @@
     "src/components/fornecedores/FornecedorForm.tsx"
    ],
    "casos": 2
+  },
+  {
+   "arquivo": "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+   "tipo": "unit",
+   "linhas": 72,
+   "testa": [
+    "src/components/integracoes/OpenFinancePanel.tsx"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/components/layout/sidebar/sidebarNavState.test.ts",
@@ -4017,6 +4035,15 @@
    "casos": 5
   },
   {
+   "arquivo": "supabase/functions/open-finance/index_test.ts",
+   "tipo": "unit",
+   "linhas": 45,
+   "testa": [
+    "supabase/functions/open-finance/index.ts"
+   ],
+   "casos": 4
+  },
+  {
    "arquivo": "supabase/functions/sefaz-dfe-dispatcher/policy_test.ts",
    "tipo": "unit",
    "linhas": 176,
@@ -4227,6 +4254,7 @@
   "src/components/command-palette/commandPaletteManagement.ts": 1,
   "src/components/common/StartupDiagnostic.tsx": 1,
   "src/components/conciliacao/ConciliacaoManualDialog.tsx": 1,
+  "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx": 1,
   "src/components/contabilidade/ValidacoesPreSpedDialog.tsx": 1,
   "src/components/contabilidade/contabilizacao-automatica/types.ts": 1,
   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts": 1,
@@ -4248,6 +4276,7 @@
   "src/components/financeiro/AnexoList.tsx": 1,
   "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx": 1,
   "src/components/fornecedores/FornecedorForm.tsx": 1,
+  "src/components/integracoes/OpenFinancePanel.tsx": 1,
   "src/components/layout/PageHeader.tsx": 1,
   "src/components/layout/sidebar/sidebarNavState.ts": 1,
   "src/components/layout/transitions/presets.ts": 1,
@@ -4555,6 +4584,7 @@
   "supabase/functions/n8n-callback/index.ts": 1,
   "supabase/functions/nfe-vinculo-proxy/index.ts": 1,
   "supabase/functions/notify-performance-alert/index.ts": 1,
+  "supabase/functions/open-finance/index.ts": 1,
   "supabase/functions/sefaz-dfe-dispatcher/policy.ts": 1,
   "supabase/functions/sefaz-dfe-puxar/index.ts": 3,
   "supabase/functions/sefaz-manifestar/index.ts": 1,
@@ -4964,7 +4994,6 @@
    "n8n-dispatch",
    "nfe-upload-certificado",
    "notify-saved-filter",
-   "open-finance",
    "overlay-rejeicoes-auditoria",
    "prever-carga-tributaria",
    "processar-fila-cobrancas",

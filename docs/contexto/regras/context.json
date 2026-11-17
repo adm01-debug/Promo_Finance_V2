@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ece50dc4bd01830e27c157117eaf675601e81003",
+  "sha": "19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 10:54 UTC",
-  "files_total": 3948,
-  "code_files": 3570,
-  "code_lines": 508553
+  "generated_at": "2026-11-17 10:58 UTC",
+  "files_total": 3951,
+  "code_files": 3573,
+  "code_lines": 508586
  },
  "version": "1.3.2",
- "facts_hash": "f863ee829cfaf7b2",
+ "facts_hash": "cb7af7596a75aa47",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,8 +332,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1239,
-   ".tsx": 1112,
+   ".ts": 1240,
+   ".tsx": 1114,
    ".sql": 1104,
    ".mjs": 63,
    ".py": 45,
@@ -68416,7 +68416,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 997,
+  "components_count": 999,
   "hooks": [
    {
     "name": "useContacts",
@@ -71435,8 +71435,8 @@
   },
   {
    "module": "src/components",
-   "files": 995,
-   "lines": 164658,
+   "files": 997,
+   "lines": 164746,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72599,8 +72599,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 229,
-   "lines": 50945,
+   "files": 230,
+   "lines": 50890,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -74405,9 +74405,6 @@
    "open_finance_consents": {
     "select": [
      "src/hooks/useOpenFinance.ts",
-     "supabase/functions/open-finance/index.ts"
-    ],
-    "insert": [
      "supabase/functions/open-finance/index.ts"
     ],
     "update": [
@@ -81758,6 +81755,10 @@
    {
     "file": "src/components/conciliacao/ConfiguracaoConciliacaoPanel.tsx",
     "msg": "Erro ao salvar configurações"
+   },
+   {
+    "file": "src/components/conciliacao/ImportarExtratoDialog.tsx",
+    "msg": "Open Finance não homologado"
    },
    {
     "file": "src/components/conciliacao/RegrasConciliacaoPanel.tsx",
@@ -105061,24 +105062,6 @@
    },
    {
     "file": "src/components/conciliacao/ImportarExtratoDialog.tsx",
-    "field": "tipo",
-    "value": "credito",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/conciliacao/ImportarExtratoDialog.tsx",
-    "field": "tipo",
-    "value": "debito",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/conciliacao/ImportarExtratoDialog.tsx",
-    "field": "tipo",
-    "value": "debito",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/conciliacao/ImportarExtratoDialog.tsx",
     "field": "type",
     "value": "dragenter",
     "kind": "compara"
@@ -116870,84 +116853,6 @@
    {
     "file": "supabase/functions/open-finance/index.ts",
     "field": "status",
-    "value": "awaiting_authorization",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "CONTA_CORRENTE",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "CONTA_POUPANCA",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "PIX",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "status",
-    "value": "COMPLETED",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "PIX",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "status",
-    "value": "COMPLETED",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "TED",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "status",
-    "value": "COMPLETED",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "BOLETO",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "status",
-    "value": "COMPLETED",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "type",
-    "value": "CREDIT",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "status",
-    "value": "COMPLETED",
-    "kind": "escreve"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "field": "status",
     "value": "revoked",
     "kind": "escreve"
    },
@@ -119860,10 +119765,6 @@
     "line": "staleTime: 5 * 60 * 1000,"
    },
    {
-    "file": "src/components/conciliacao/ImportarExtratoDialog.tsx",
-    "line": "await new Promise((resolve) => setTimeout(resolve, 3000));"
-   },
-   {
     "file": "src/components/contabilidade/LancamentosTab.tsx",
     "line": "ini = startOfDay(subDays(hoje, 29));"
    },
@@ -120506,38 +120407,6 @@
    {
     "file": "supabase/functions/monitor-health/index.ts",
     "line": "const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),"
-   },
-   {
-    "file": "supabase/functions/open-finance/index.ts",
-    "line": "expires_in: 3600,"
    },
    {
     "file": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
@@ -123340,6 +123209,18 @@
     "name": "não invoca onSuccess quando mutateAsync rejeita"
    },
    {
+    "file": "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+    "name": "importar extrato não oferece Open Finance fabricado (#425)"
+   },
+   {
+    "file": "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+    "name": "o botão Conectar via Open Finance fica desabilitado com o motivo à mostra"
+   },
+   {
+    "file": "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+    "name": "o texto não promete sincronização em tempo real nem gateway inexistente"
+   },
+   {
     "file": "src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx",
     "name": "ValidacoesPreSpedDialog — bloqueio de download por erros"
    },
@@ -124110,6 +123991,22 @@
    {
     "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
     "name": "envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita"
+   },
+   {
+    "file": "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+    "name": "painel do Open Finance não promete integração que não existe"
+   },
+   {
+    "file": "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+    "name": "o botão Conectar Banco fica desabilitado com o motivo à mostra"
+   },
+   {
+    "file": "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+    "name": "o texto não anuncia sincronização automática de saldos"
+   },
+   {
+    "file": "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+    "name": "avisa que nada é importado para a conciliação"
    },
    {
     "file": "src/components/layout/sidebar/sidebarNavState.test.ts",
@@ -156299,24 +156196,6 @@
      "uint8array": [
       "escreve:supabase/functions/gerar-pacote-evidencias/index.ts"
      ],
-     "CONTA_CORRENTE": [
-      "escreve:supabase/functions/open-finance/index.ts"
-     ],
-     "CONTA_POUPANCA": [
-      "escreve:supabase/functions/open-finance/index.ts"
-     ],
-     "PIX": [
-      "escreve:supabase/functions/open-finance/index.ts"
-     ],
-     "TED": [
-      "escreve:supabase/functions/open-finance/index.ts"
-     ],
-     "BOLETO": [
-      "escreve:supabase/functions/open-finance/index.ts"
-     ],
-     "CREDIT": [
-      "escreve:supabase/functions/open-finance/index.ts"
-     ],
      "User": [
       "escreve:supabase/functions/scim-server/index.ts"
      ],
@@ -157058,8 +156937,7 @@
       "filtra:supabase/functions/open-finance/index.ts"
      ],
      "awaiting_authorization": [
-      "compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx",
-      "escreve:supabase/functions/open-finance/index.ts"
+      "compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx"
      ],
      "revoked": [
       "compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx",
@@ -157352,8 +157230,7 @@
       "escreve:supabase/functions/asaas-proxy/index.ts"
      ],
      "COMPLETED": [
-      "escreve:supabase/functions/asaas-proxy/index.ts",
-      "escreve:supabase/functions/open-finance/index.ts"
+      "escreve:supabase/functions/asaas-proxy/index.ts"
      ],
      "ACCEPTED": [
       "escreve:supabase/functions/asaas-proxy/index.ts"
@@ -157642,7 +157519,6 @@
       "compara:src/pages/ConciliacaoPendentesConteudo.tsx",
       "escreve:src/components/conciliacao/ConciliacaoManualDialog.tsx",
       "escreve:src/components/conciliacao/ConciliacaoSplitDialog.tsx",
-      "escreve:src/components/conciliacao/ImportarExtratoDialog.tsx",
       "escreve:src/components/conciliacao/RegrasConciliacaoPanel.tsx",
       "escreve:src/hooks/conciliacaoPage.types.ts",
       "escreve:src/hooks/saved-filter-alerts/types.ts",
@@ -157655,7 +157531,6 @@
      ],
      "debito": [
       "compara:src/components/conciliacao/ExtratoPreviewStep.tsx",
-      "escreve:src/components/conciliacao/ImportarExtratoDialog.tsx",
       "escreve:src/components/conciliacao/RegrasConciliacaoPanel.tsx",
       "escreve:supabase/functions/contabilizar-evento/index.ts"
      ],
@@ -175976,8 +175851,7 @@
     "kind": "status",
     "msg": "valor `awaiting_authorization` para `status` usado no código não existe em nenhum enum do banco/TS",
     "where": [
-     "compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx",
-     "escreve:supabase/functions/open-finance/index.ts"
+     "compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx"
     ]
    },
    {
@@ -187307,7 +187181,7 @@
   },
   "src/components/conciliacao/ImportarExtratoDialog.tsx": {
    "path": "src/components/conciliacao/ImportarExtratoDialog.tsx",
-   "lines": 372,
+   "lines": 315,
    "exports": [
     "function ImportarExtratoDialog"
    ],
@@ -187323,22 +187197,10 @@
      "id"
     ]
    },
+   "errors": [
+    "Open Finance não homologado"
+   ],
    "status_values": [
-    {
-     "field": "tipo",
-     "value": "credito",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "debito",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "debito",
-     "kind": "escreve"
-    },
     {
      "field": "type",
      "value": "dragenter",
@@ -187419,9 +187281,6 @@
      "value": "preview",
      "kind": "compara"
     }
-   ],
-   "temporal": [
-    "await new Promise((resolve) => setTimeout(resolve, 3000));"
    ]
   },
   "src/components/conciliacao/ImportarExtratoDialog.types.ts": {
@@ -187440,7 +187299,7 @@
   },
   "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx": {
    "path": "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
-   "lines": 160,
+   "lines": 162,
    "exports": [
     "function ImportarExtratoDialogArquivoLocal"
    ],
@@ -187578,6 +187437,17 @@
     "ConciliacaoManualDialog — fluxo de confirmação",
     "chama mutateAsync antes de invocar onSuccess no caminho feliz",
     "não invoca onSuccess quando mutateAsync rejeita"
+   ]
+  },
+  "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx": {
+   "path": "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+   "lines": 56,
+   "is_test": true,
+   "doc": "Achado do Devin na PR #425: além da edge function, a própria tela tinha um caminho de extrato fabricado — Conciliação → Importar Extrato → Open Finance fingia uma conexão de 3s e inventava três transações ('SYNC: RECEBIMENTO PIX CLIENTE A', 'SYNC: PAGAMENTO FORNECEDOR B', 'SYNC: TARIFA BANCARIA') ma …",
+   "tests": [
+    "importar extrato não oferece Open Finance fabricado (#425)",
+    "o botão Conectar via Open Finance fica desabilitado com o motivo à mostra",
+    "o texto não promete sincronização em tempo real nem gateway inexistente"
    ]
   },
   "src/components/conciliacao/ia/AprovarTodosDialog.tsx": {
@@ -193664,7 +193534,7 @@
   },
   "src/components/integracoes/OpenFinancePanel.tsx": {
    "path": "src/components/integracoes/OpenFinancePanel.tsx",
-   "lines": 176,
+   "lines": 190,
    "exports": [
     "const OpenFinancePanel"
    ],
@@ -193702,6 +193572,18 @@
    ],
    "side_effects": [
     "invoke("
+   ]
+  },
+  "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx": {
+   "path": "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+   "lines": 73,
+   "is_test": true,
+   "doc": "Achado: `open-finance/index.ts` devolvia saldo e extrato inventados e, em `import_transactions`, GRAVAVA cinco lançamentos fabricados em `transacoes_bancarias` — com a coluna `saldo` recalculada sobre o saldo verdadeiro da conta — respondendo `success: true`. Na Conciliação Bancária isso virava créd …",
+   "tests": [
+    "painel do Open Finance não promete integração que não existe",
+    "o botão Conectar Banco fica desabilitado com o motivo à mostra",
+    "o texto não anuncia sincronização automática de saldos",
+    "avisa que nada é importado para a conciliação"
    ]
   },
   "src/components/integracoes/open-finance/OpenFinanceConnectDialog.tsx": {
@@ -239433,15 +239315,16 @@
   },
   "supabase/functions/open-finance/index.ts": {
    "path": "supabase/functions/open-finance/index.ts",
-   "lines": 638,
+   "lines": 537,
+   "exports": [
+    "const MENSAGEM_SEM_PROVEDOR",
+    "function acaoExigeProvedorHomologado",
+    "function respostaSemProvedor"
+   ],
    "tables": [
     {
      "table": "contas_bancarias",
      "op": "select"
-    },
-    {
-     "table": "open_finance_consents",
-     "op": "insert"
     },
     {
      "table": "open_finance_consents",
@@ -239511,71 +239394,6 @@
     },
     {
      "field": "status",
-     "value": "awaiting_authorization",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "CONTA_CORRENTE",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "CONTA_POUPANCA",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "PIX",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "COMPLETED",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "PIX",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "COMPLETED",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "TED",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "COMPLETED",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "BOLETO",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "COMPLETED",
-     "kind": "escreve"
-    },
-    {
-     "field": "type",
-     "value": "CREDIT",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "COMPLETED",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
      "value": "revoked",
      "kind": "escreve"
     },
@@ -239585,17 +239403,11 @@
      "kind": "filtra"
     }
    ],
-   "temporal": [
-    "const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year",
-    "const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();",
-    "date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),",
-    "date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),",
-    "date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),",
-    "date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),",
-    "date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),",
-    "expires_in: 3600,"
-   ],
    "uses_service_role": true
+  },
+  "supabase/functions/open-finance/index_test.ts": {
+   "path": "supabase/functions/open-finance/index_test.ts",
+   "lines": 46
   },
   "supabase/functions/overlay-rejeicoes-auditoria/index.ts": {
    "path": "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
@@ -247551,10 +247363,25 @@
   }
  },
  "git": {
-  "sha": "ece50dc4bd01830e27c157117eaf675601e81003",
+  "sha": "19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "19a248a",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)",
+    "files": [
+     "src/components/conciliacao/ImportarExtratoDialog.tsx",
+     "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
+     "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+     "src/components/integracoes/OpenFinancePanel.tsx",
+     "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
+     "supabase/functions/open-finance/index.ts",
+     "supabase/functions/open-finance/index_test.ts"
+    ]
+   },
    {
     "sha": "ece50dc",
     "date": "2026-11-17",
@@ -247926,18 +247753,6 @@
      "scripts/auditoria-financeira/navegacao.mjs",
      "scripts/automation.config.json"
     ]
-   },
-   {
-    "sha": "5bc41a5",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)",
-    "files": [
-     "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
-     "src/lib/ofx-parser/csv.ts",
-     "src/lib/ofx-parser/utils.ts",
-     "src/lib/ofx-parser/xlsx.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -247982,14 +247797,6 @@
     2
    ],
    [
-    "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
-    2
-   ],
-   [
-    "src/lib/ofx-parser/csv.ts",
-    2
-   ],
-   [
     "src/components/contas-receber/WebhookDlqPanel.tsx",
     2
    ],
@@ -248010,15 +247817,23 @@
     2
    ],
    [
-    "src/hooks/useAsaas.ts",
+    "src/components/conciliacao/ImportarExtratoDialog.tsx",
     1
    ],
    [
-    "src/hooks/useBoletos.helpers.ts",
+    "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
     1
    ],
    [
-    "src/hooks/useBoletos.ts",
+    "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
+    1
+   ],
+   [
+    "src/components/integracoes/OpenFinancePanel.tsx",
+    1
+   ],
+   [
+    "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
     1
    ]
   ]

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ece50dc4bd01830e27c157117eaf675601e81003",
+  "commit": "19a248ad618914e5cb3f6a6d4eb00bf7c32f3a0c",
   "branch": "main",
-  "data_commit": "2026-11-17T07:53:53-03:00",
+  "data_commit": "2026-11-17T07:57:37-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "19a248a",
+    "data": "2026-11-17",
+    "assunto": "fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)"
+   },
    {
     "sha": "ece50dc",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "d97021a",
     "data": "2026-11-17",
     "assunto": "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)"
-   },
-   {
-    "sha": "66fc736",
-    "data": "2026-11-17",
-    "assunto": "chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)"
    }
   ],
-  "arquivos_mudados_7d": 867,
+  "arquivos_mudados_7d": 872,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -188,12 +188,12 @@
     "mudancas": 14
    },
    {
-    "pasta": "src/components/layout",
-    "mudancas": 13
+    "pasta": "src/components/conciliacao",
+    "mudancas": 14
    },
    {
-    "pasta": "src/lib/__tests__",
-    "mudancas": 12
+    "pasta": "src/components/layout",
+    "mudancas": 13
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 179
+    "commits": 180
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3909,
-  "arquivos_codigo": 2465,
-  "linhas_codigo": 439685,
+  "arquivos_total": 3912,
+  "arquivos_codigo": 2468,
+  "linhas_codigo": 439715,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1034,
   "cron_jobs": 22,
-  "testes": 471,
+  "testes": 474,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 197
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 995,
-   "linhas": 163663
+   "arquivos": 997,
+   "linhas": 163749
   },
   "src/config": {
    "arquivos": 1,
@@ -683,8 +683,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 229,
-   "linhas": 50716
+   "arquivos": 230,
+   "linhas": 50660
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -785,10 +785,6 @@
    "linhas": 697
   },
   {
-   "arquivo": "supabase/functions/open-finance/index.ts",
-   "linhas": 637
-  },
-  {
    "arquivo": "supabase/functions/executar-relatorios/index.ts",
    "linhas": 582
   },
@@ -803,6 +799,10 @@
   {
    "arquivo": "supabase/functions/mcp-query/index.ts",
    "linhas": 552
+  },
+  {
+   "arquivo": "scripts/inventario/gerar-rotas.mjs",
+   "linhas": 536
   }
  ],
  "qualidade": {

@@ -3804,7 +3804,7 @@
     "ImportarExtratoDialog"
    ],
    "export_default": null,
-   "linhas": 371,
+   "linhas": 314,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3820,7 +3820,7 @@
     "ImportarExtratoDialogArquivoLocal"
    ],
    "export_default": null,
-   "linhas": 159,
+   "linhas": 161,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -7635,7 +7635,7 @@
     "OpenFinancePanel"
    ],
    "export_default": null,
-   "linhas": 175,
+   "linhas": 189,
    "dominio": "components/integracoes",
    "hooks_locais": [
     "useOpenFinance"

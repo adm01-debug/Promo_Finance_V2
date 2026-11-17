@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ece50dc4bd` · branch `main` · 2026-11-17 10:54 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `19a248ad61` · branch `main` · 2026-11-17 10:58 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1204,10 +1204,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Campo | Valor | Uso | Onde |
 |---|---|---|---|
 | `type` | `AwaitExpression` | compara | `eslint-rules/no-floating-supabase-write.js` |
-| `type` | `BOLETO` | escreve | `supabase/functions/open-finance/index.ts` |
-| `type` | `CONTA_CORRENTE` | escreve | `supabase/functions/open-finance/index.ts` |
-| `type` | `CONTA_POUPANCA` | escreve | `supabase/functions/open-finance/index.ts` |
-| `type` | `CREDIT` | escreve | `supabase/functions/open-finance/index.ts` |
 | `type` | `CallExpression` | compara | `eslint-rules/no-floating-supabase-write.js` |
 | `type` | `ChainExpression` | compara | `eslint-rules/no-floating-supabase-write.js` |
 | `type` | `INVALID_UUID` | escreve | `supabase/functions/webhook-simulator/index.ts` |
@@ -1221,11 +1217,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `type` | `PAYMENT_OVERDUE` | escreve | `supabase/functions/webhook-simulator/index.ts` |
 | `type` | `PAYMENT_RECEIVED` | escreve | `supabase/functions/webhook-simulator/index.ts` |
 | `type` | `PAYMENT_REFUNDED` | escreve | `supabase/functions/webhook-simulator/index.ts` |
-| `type` | `PIX` | escreve | `supabase/functions/open-finance/index.ts` |
 | `type` | `POP` | compara, escreve | `src/lib/navigation.ts` |
 | `type` | `REPLACE` | compara | `src/lib/navigation.ts` |
 | `type` | `SQL_INJECTION` | escreve | `supabase/functions/webhook-simulator/index.ts` |
-| `type` | `TED` | escreve | `supabase/functions/open-finance/index.ts` |
 | `type` | `TRANSFER_DONE` | escreve | `supabase/functions/webhook-simulator/index.ts` |
 | `type` | `TRANSFER_FAILED` | escreve | `supabase/functions/webhook-simulator/index.ts` |
 | `type` | `TSAsExpression` | compara | `eslint-rules/no-floating-supabase-write.js` |
@@ -1329,7 +1323,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `ACTIVE` | compara | `src/components/asaas/AssinaturasListPanel.tsx` |
 | `status` | `CANCELLED` | escreve | `supabase/functions/asaas-proxy/index.ts` |
 | `status` | `CLOSED` | escreve | `supabase/functions/_shared/resilience.ts` |
-| `status` | `COMPLETED` | escreve | `supabase/functions/asaas-proxy/index.ts`<br>`supabase/functions/open-finance/index.ts` |
+| `status` | `COMPLETED` | escreve | `supabase/functions/asaas-proxy/index.ts` |
 | `status` | `CONFIRMED` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`src/components/asaas/tabs/CobrancasTabConteudo.tsx`<br>`src/components/pix-hub/PixRecebimento.tsx`<br>`src/pages/Asaas.parts.tsx` |
 | `status` | `Conciliado` | compara | `src/components/relatorios/RelatoriosDetalhado.tsx` |
 | `status` | `DONE` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
@@ -1361,7 +1355,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `ausente` | compara, escreve | `src/components/compliance/verificar-integridade/LinhaResultado.tsx`<br>`src/components/compliance/verificar-integridade/types.ts`<br>`src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts` |
 | `status` | `authorized` | compara, filtra | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`supabase/functions/open-finance/index.ts` |
 | `status` | `autorizada` | compara, escreve | `src/components/nfe/CancelamentoNFe.tsx`<br>`src/components/nfe/DANFEGenerator.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/hooks/useImportacaoXMLNFe.ts`<br>… +2 |
-| `status` | `awaiting_authorization` | compara, escreve | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`supabase/functions/open-finance/index.ts` |
+| `status` | `awaiting_authorization` | compara | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx` |
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
 | `status` | `cancelada` | compara, escreve | `src/components/nfe/NFePreview.tsx`<br>`src/pages/NotasFiscais.tsx` |
@@ -1503,7 +1497,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
 | `tipo` | `AUTORIZACAO` | compara | `src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
-| … +230 linhas — lista completa em `context.json` | | | |
+| `tipo` | `C001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`src/lib/sped-generator/efd-ibs-cbs.ts` |
+| `tipo` | `C100` | escreve | `src/lib/sped-generator/efd-ibs-cbs.ts` |
+| `tipo` | `C190` | escreve | `src/lib/sped-generator/efd-ibs-cbs.ts` |
+| `tipo` | `C990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`src/lib/sped-generator/efd-ibs-cbs.ts` |
+| `tipo` | `CANCELAMENTO` | compara | `src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx` |
+| `tipo` | `CONSULTA` | compara | `src/components/nfe/EventosHistorico.helpers.ts` |
+| … +224 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
@@ -4373,7 +4373,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `staleTime: 5 * 60 * 1000,` | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
 | `staleTime: 5 * 60 * 1000,` | `src/components/compliance/TrilhaTable.tsx` |
 | `staleTime: 5 * 60 * 1000,` | `src/components/conciliacao/ConciliacaoDashboard.tsx` |
-| `await new Promise((resolve) => setTimeout(resolve, 3000));` | `src/components/conciliacao/ImportarExtratoDialog.tsx` |
 | `ini = startOfDay(subDays(hoje, 29));` | `src/components/contabilidade/LancamentosTab.tsx` |
 | `ini = startOfDay(subDays(hoje, 6));` | `src/components/contabilidade/LancamentosTab.tsx` |
 | `ini = toIsoDate(startOfDay(subDays(hoje, 29)));` | `src/components/contabilidade/RazaoDiarioTab.tsx` |
@@ -4535,14 +4534,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `idle_timeout: 20,` | `supabase/functions/mcp-query/index.ts` |
 | `.gte('created_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());` | `supabase/functions/monitor-health/index.ts` |
 | `const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;` | `supabase/functions/monitor-health/index.ts` |
-| `const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year` | `supabase/functions/open-finance/index.ts` |
-| `const start = startDate \|\| new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();` | `supabase/functions/open-finance/index.ts` |
-| `date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),` | `supabase/functions/open-finance/index.ts` |
-| `date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),` | `supabase/functions/open-finance/index.ts` |
-| `date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),` | `supabase/functions/open-finance/index.ts` |
-| `date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),` | `supabase/functions/open-finance/index.ts` |
-| `date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),` | `supabase/functions/open-finance/index.ts` |
-| `expires_in: 3600,` | `supabase/functions/open-finance/index.ts` |
 | `const IDEMPOTENCY_WINDOW_MS = 5 * 60 * 1000; // pula CNPJ consultado nos últimos 5min` | `supabase/functions/sefaz-dfe-dispatcher/index.ts` |
 | `export const BASE_INTERVAL_MS = 15 * 60 * 1000;` | `supabase/functions/sefaz-dfe-dispatcher/policy.ts` |
 | `export const MAX_BACKOFF_MS = 4 * 60 * 60 * 1000;` | `supabase/functions/sefaz-dfe-dispatcher/policy.ts` |
@@ -5000,6 +4991,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Erro ao salvar conciliação parcial | `src/components/conciliacao/ConciliacaoSplitDialog.tsx` |
 | Falha ao atualizar a transação e ao reverter os vínculos parciais | `src/components/conciliacao/ConciliacaoSplitDialog.tsx` |
 | Erro ao salvar configurações | `src/components/conciliacao/ConfiguracaoConciliacaoPanel.tsx` |
+| Open Finance não homologado | `src/components/conciliacao/ImportarExtratoDialog.tsx` |
 | Erro ao criar regra | `src/components/conciliacao/RegrasConciliacaoPanel.tsx` |
 | Erro ao registrar rejeição | `src/components/conciliacao/SugestoesMatchIA.tsx` |
 | Erro ao atualizar job | `src/components/configuracoes/CronJobsPanel.tsx` |
@@ -5035,8 +5027,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
-| … +787 linhas — lista completa em `context.json` | |
+| … +788 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5095,7 +5086,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3574 testes em 310 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3581 testes em 312 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5340,6 +5331,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
 | `src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx` | 4 | AcessosSuspeitosPanel · consulta get_acessos_suspeitos com os parametros canonicos · falha na consulta NAO vira auditoria limpa · achado critico aparece na tabela |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
+| `src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx` | 4 | painel do Open Finance não promete integração que não existe · o botão Conectar Banco fica desabilitado com o motivo à mostra · o texto não anuncia sincronização automática de saldos · avisa que nada é importado para a conciliação |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
@@ -5363,6 +5355,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/cobranca/__tests__/MetricasPorCanal.test.tsx` | 3 | MetricasPorCanal · não projeta métricas financeiras quando não há registros reais por canal · apresenta apenas os números fornecidos por uma fonte de dados |
 | `src/components/common/StartupDiagnostic.test.tsx` | 3 | StartupDiagnostic · não bloqueia a rota pública quando a checagem falha · mantém a tela da aplicação disponível durante a verificação |
 | `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
+| `src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx` | 3 | importar extrato não oferece Open Finance fabricado (#425) · o botão Conectar via Open Finance fica desabilitado com o motivo à mostra · o texto não promete sincronização em tempo real nem gateway inexistente |
 | `src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx` | 3 | RegistrarPagamentoDialog — empresa da alcada · consulta a alcada da empresa do titulo, nao a do filtro global · registro legado sem empresa_id cai no filtro global |
 | `src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx` | 3 | WhatsAppHistoryIA — envio sem provedor · por padrao nao oferece campo de envio, e explica por que · com permitirEnvio o campo volta (para quando houver provedor) |
 | `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
@@ -5397,9 +5390,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/useUserEmpresas.test.tsx` | 2 | useUserEmpresas · mantém erro de consulta distinto de usuário sem vínculo |
 | `src/hooks/useWebAuthn.safety.test.tsx` | 2 | WebAuthn sem verificação no servidor · não registra credencial e não aceita login local |
 | `src/hooks/__tests__/useQueuedMessage.test.tsx` | 2 | useQueuedMessage · entrega todas as mensagens na ordem quando a operação atual termina |
-| `src/hooks/expert-actions/financial-actions.test.ts` | 2 | gerarBoleto · falha fechada sem consultar conta nem fabricar linha digitável |
-| `src/lib/navigation-intent.test.ts` | 2 | intenção de navegação para novo registro · aceita somente a intenção explícita |
-| … +10 linhas — lista completa em `context.json` | | |
+| … +12 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

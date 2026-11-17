@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ece50dc4bd` · branch `main` · 2026-11-17 10:54 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `19a248ad61` · branch `main` · 2026-11-17 10:58 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -354,7 +354,7 @@
 | status | valor `realizado` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:src/components/financeiro/TransferenciaDialog.tsx`<br>`escreve:src/hooks/useFinancialOperations.ts` |
 | status | valor `active` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConnectDialog.tsx`<br>`escreve:supabase/functions/open-finance/index.ts` |
 | status | valor `authorized` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`filtra:supabase/functions/open-finance/index.ts` |
-| status | valor `awaiting_authorization` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`escreve:supabase/functions/open-finance/index.ts` |
+| status | valor `awaiting_authorization` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx` |
 | status | valor `revoked` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`escreve:supabase/functions/open-finance/index.ts` |
 | status | valor `transmitindo` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx` |
 | status | valor `estouro` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/orcamento/OrcamentoCardsView.tsx`<br>`compara:src/pages/OrcamentoEvento.tsx` |
