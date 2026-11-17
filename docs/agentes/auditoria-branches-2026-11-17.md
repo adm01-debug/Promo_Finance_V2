@@ -207,3 +207,26 @@ automaticamente pelo GitHub no squash-merge — confirmado por `git fetch` devol
 `couldn't find remote ref`, com o conteúdo presente na `main`
 (`supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql`,
 `src/.../__tests__/faturamento-grava-impostos.test.tsx`, `useHistoricoFinanceiro.ts:21`).
+
+### 5.2 Conferência por hash de blob, refeita depois dos merges da sessão
+
+Repetida contra a `main` já com #452/#456 dentro, pelo mesmo método da seção 4.4:
+
+| branch                   | exclusivos que são código-fonte | blobs de código divergentes |
+| ------------------------ | ------------------------------- | --------------------------- |
+| `contexto`               | **0**                           | **0**                       |
+| `inventario`             | **0**                           | **0**                       |
+| `automation/estado-real` | **0**                           | 2                           |
+| `computador_local`       | **0**                           | 2                           |
+
+Os 2 blobs são os mesmos nas duas branches — `src/components/tributario/historico/FaturamentoTab.tsx`
+e `src/hooks/useHistoricoFinanceiro.ts` — e são **byte-idênticos à versão que a `main`
+tinha antes da #456**:
+
+```
+FaturamentoTab.tsx        main hoje d8ee29aa | main antes da #456 8210940e | ambas as branches 8210940e
+useHistoricoFinanceiro.ts main hoje 87f672e9 | main antes da #456 cfc773f3 | ambas as branches cfc773f3
+```
+
+Ou seja: cópia da versão anterior, não variante com trabalho próprio. **Zero byte de
+código-fonte exclusivo em qualquer branch de bot.**
