@@ -18,7 +18,12 @@ import {
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa, exigirPapel, empresasDoUsuario } from '../_shared/auth-guard.ts';
-import { lerConfigAsaas, resolverEncargo } from '../_shared/asaas-config.ts';
+import {
+  achatarInstrumentosBoleto,
+  lerConfigAsaas,
+  pareceIdClienteAsaas,
+  resolverEncargo,
+} from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -353,8 +358,33 @@ export const handler = async (req: Request) => {
           return err('empresa_id, asaas_customer_id, valor e data_vencimento são obrigatórios');
         const vinculoErrCriarCobranca = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrCriarCobranca) return vinculoErrCriarCobranca;
+        // `asaas_customer_id` que chega da tela é o id do provedor (`cus_...`,
+        // ver NovaCobrancaDialogVincularContaReceber.tsx:192 e
+        // AssinaturaDialog.tsx:104), e é o que o Asaas espera em `customer`.
+        // Mas `asaas_payments.asaas_customer_id` é uuid com FK para
+        // `asaas_customers.id`: gravar o `cus_...` ali derrubava o insert com
+        // 22P02 e o erro só ia para o log — a cobrança nascia no provedor e
+        // nunca no banco. Resolve-se o uuid local aqui, na mesma consulta que
+        // valida o vínculo de empresa, e recusa-se antes de criar cobrança que
+        // o banco não conseguiria registrar.
+        if (!pareceIdClienteAsaas(data.asaas_customer_id))
+          return err(
+            'asaas_customer_id deve ser o identificador do cliente no Asaas (cus_...). Cadastre ou selecione o cliente na tela do Asaas antes de cobrar.',
+            422
+          );
+        const { data: clienteLocalCobranca, error: erroClienteLocalCobranca } = await supabase
+          .from('asaas_customers')
+          .select('id, empresa_id')
+          .eq('asaas_id', data.asaas_customer_id)
+          .maybeSingle();
+        if (erroClienteLocalCobranca) return err('Falha ao consultar o cliente Asaas', 500);
+        if (!clienteLocalCobranca)
+          return err(
+            'Cliente não vinculado ao Asaas neste sistema. Nenhuma cobrança foi criada.',
+            422
+          );
         const vinculoErrClienteCriarCobranca = await exigirEmpresaDoRecurso(
-          await empresaDoClienteAsaas(data.asaas_customer_id)
+          clienteLocalCobranca.empresa_id
         );
         if (vinculoErrClienteCriarCobranca) return vinculoErrClienteCriarCobranca;
 
@@ -452,7 +482,7 @@ export const handler = async (req: Request) => {
 
           const { error: dbError } = await supabase.from('asaas_payments').insert({
             asaas_id: result.id,
-            asaas_customer_id: data.asaas_customer_id,
+            asaas_customer_id: clienteLocalCobranca.id,
             empresa_id: data.empresa_id,
             conta_receber_id: data.conta_receber_id || null,
             tipo: data.tipo || 'boleto',
@@ -474,8 +504,19 @@ export const handler = async (req: Request) => {
               context: contextoErro(dbError),
             });
 
+          // A cobrança já existe no provedor; falhar a resposta perderia os
+          // identificadores. Em vez disso o resultado diz se ela foi registrada,
+          // para o chamador não tratar como sucesso uma cobrança que o
+          // financeiro não vê (antes isso só aparecia no log da função).
+          result.registro_local = dbError
+            ? { ok: false, erro: mensagemErro(dbError) }
+            : { ok: true };
+
           result.pixData = pixData;
           result.boletoData = boletoData;
+          // Linha digitável e código de barras também na raiz: é onde o front
+          // valida a emissão (useBoletos.helpers.ts:17-18).
+          Object.assign(result, achatarInstrumentosBoleto(boletoData));
         }
         break;
       }

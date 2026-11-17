@@ -10,7 +10,11 @@ import type {
   EventoPagamento,
   BoletosUpdate,
 } from './useBoletos.types';
-import { getNextBoletoNumber, validarEmissaoBoletoConfirmada } from './useBoletos.helpers';
+import {
+  exigirRegistroLocalDaCobranca,
+  getNextBoletoNumber,
+  validarEmissaoBoletoConfirmada,
+} from './useBoletos.helpers';
 
 export function useBoletos() {
   const { toast } = useToast();
@@ -124,6 +128,25 @@ export function useBoletos() {
       }
 
       {
+        // O proxy (e o Asaas) esperam o id do cliente no provedor (`cus_...`).
+        // Aqui ia o CPF/CNPJ do sacado, que o Asaas recusa e o banco não
+        // consegue relacionar — a emissão nunca completava. O vínculo mora em
+        // asaas_customers; sem ele não há cobrança a criar.
+        const { data: clienteAsaas, error: erroClienteAsaas } = await supabase
+          .from('asaas_customers')
+          .select('asaas_id')
+          .eq('empresa_id', data.empresa_id)
+          .eq('cpf_cnpj', data.sacado_cpf_cnpj)
+          .not('asaas_id', 'is', null)
+          .limit(1)
+          .maybeSingle();
+        if (erroClienteAsaas) throw erroClienteAsaas;
+        if (!clienteAsaas?.asaas_id) {
+          throw new Error(
+            'Sacado não cadastrado no Asaas. Cadastre o cliente na tela do Asaas antes de emitir o boleto.'
+          );
+        }
+
         const { data: asaasResult, error: asaasError } = await supabase.functions.invoke(
           'asaas-proxy',
           {
@@ -131,7 +154,7 @@ export function useBoletos() {
               action: 'criar_cobranca',
               data: {
                 empresa_id: data.empresa_id,
-                asaas_customer_id: data.sacado_cpf_cnpj, // Simplificação: assume que já existe ou deve ser criado
+                asaas_customer_id: clienteAsaas.asaas_id,
                 valor: data.valor,
                 data_vencimento: data.vencimento,
                 tipo: 'boleto',
@@ -147,6 +170,7 @@ export function useBoletos() {
         // VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta
         // validação o boleto nasceria sem vínculo ASAAS silenciosamente.
         const emissao = validarEmissaoBoletoConfirmada(asaasResult);
+        exigirRegistroLocalDaCobranca(asaasResult);
 
         boletoData = {
           ...boletoData,

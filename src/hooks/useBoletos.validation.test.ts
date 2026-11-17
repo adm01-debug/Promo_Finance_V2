@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { validarEmissaoBoletoConfirmada } from './useBoletos.helpers';
+import {
+  exigirRegistroLocalDaCobranca,
+  validarEmissaoBoletoConfirmada,
+} from './useBoletos.helpers';
 
 describe('validarEmissaoBoletoConfirmada', () => {
   const confirmacao = {
@@ -24,5 +27,33 @@ describe('validarEmissaoBoletoConfirmada', () => {
 
   it('impede criar boleto sem instrumentos de pagamento', () => {
     expect(() => validarEmissaoBoletoConfirmada({ id: 'pay_123' })).toThrow(/código de barras/i);
+  });
+});
+
+describe('exigirRegistroLocalDaCobranca', () => {
+  it('passa quando o proxy confirma o registro no banco', () => {
+    expect(() =>
+      exigirRegistroLocalDaCobranca({ id: 'pay_1', registro_local: { ok: true } })
+    ).not.toThrow();
+  });
+
+  it('impede dar emissão por concluída quando a cobrança não foi registrada', () => {
+    expect(() =>
+      exigirRegistroLocalDaCobranca({
+        id: 'pay_1',
+        registro_local: { ok: false, erro: 'invalid input syntax for type uuid' },
+      })
+    ).toThrow(/não pôde ser registrada no sistema/i);
+  });
+
+  it('inclui o motivo devolvido pelo proxy na mensagem', () => {
+    expect(() =>
+      exigirRegistroLocalDaCobranca({ registro_local: { ok: false, erro: 'FK violada' } })
+    ).toThrow(/FK violada/);
+  });
+
+  it('não trata resposta sem o campo como falha', () => {
+    expect(() => exigirRegistroLocalDaCobranca({ id: 'pay_1' })).not.toThrow();
+    expect(() => exigirRegistroLocalDaCobranca(null)).not.toThrow();
   });
 });
