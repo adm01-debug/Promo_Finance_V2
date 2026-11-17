@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `6c4a75cc302887f395c9a8b08f382b04197126e2` (2026-11-17T13:53:29-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8c7012488ce1775634e9ea628ca41e758ff35a73` (2026-11-17T14:25:42-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -473,9 +473,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
+- .github/workflows/functions-deploy.yml (10)
 - src/hooks/useConciliacaoPage.ts (10)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
-- .github/workflows/functions-deploy.yml (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `8c70124` infra: monitor-health entra na lista de funcoes implantaveis (#426)
 - 2026-11-17 `6c4a75c` chore: remove 3 TODOs de rename ja concluidos no banco (#432)
 - 2026-11-17 `900fcbd` feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)
 - 2026-11-17 `710f7a8` chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `e4c5fa9` infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)
 - 2026-11-17 `2627e95` fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)
 - 2026-11-17 `c772d63` fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)
-- 2026-11-17 `685b65c` fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

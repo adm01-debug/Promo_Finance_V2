@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "6c4a75cc302887f395c9a8b08f382b04197126e2",
+  "sha": "8c7012488ce1775634e9ea628ca41e758ff35a73",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 16:54 UTC",
+  "generated_at": "2026-11-17 17:27 UTC",
   "files_total": 3953,
   "code_files": 3574,
   "code_lines": 508943
@@ -247500,10 +247500,19 @@
   }
  },
  "git": {
-  "sha": "6c4a75cc302887f395c9a8b08f382b04197126e2",
+  "sha": "8c7012488ce1775634e9ea628ca41e758ff35a73",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8c70124",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "infra: monitor-health entra na lista de funcoes implantaveis (#426)",
+    "files": [
+     ".github/workflows/functions-deploy.yml"
+    ]
+   },
    {
     "sha": "6c4a75c",
     "date": "2026-11-17",
@@ -247907,25 +247916,11 @@
      "src/pages/AdminTelemetria.tsx",
      "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts"
     ]
-   },
-   {
-    "sha": "d97021a",
-    "date": "2026-11-17",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    4
-   ],
-   [
-    "bun.lock",
     3
    ],
    [
@@ -247969,12 +247964,20 @@
     2
    ],
    [
+    "bun.lock",
+    2
+   ],
+   [
     "src/components/contas-receber/WebhookDlqPanel.tsx",
     2
    ],
    [
     "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
     2
+   ],
+   [
+    ".github/workflows/functions-deploy.yml",
+    1
    ],
    [
     "src/hooks/useAprovacoes.ts",
@@ -247994,10 +247997,6 @@
    ],
    [
     "supabase/functions/monitor-health/index.ts",
-    1
-   ],
-   [
-    ".prettierignore",
     1
    ]
   ]
