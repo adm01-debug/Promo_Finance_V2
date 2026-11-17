@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9fe3277252` · branch `main` · 2026-11-17 09:23 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e0aba347b8` · branch `main` · 2026-11-17 09:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -412,7 +412,6 @@
 | coluna | coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca` |  |
 | coluna | coluna `centro_custo_id` usada no código não existe no schema de `movimentacoes` |  |
 | coluna | coluna `started_at` usada no código não existe no schema de `anomalia_detection_runs` |  |
-| coluna | coluna `alert_email_address` usada no código não existe no schema de `asaas_config` |  |
 | coluna | coluna `count` usada no código não existe no schema de `asaas_config` |  |
 | coluna | coluna `total_tributos` usada no código não existe no schema de `faturamento_mensal` |  |
 | coluna | coluna `payment_id` usada no código não existe no schema de `asaas_sync_queue` |  |

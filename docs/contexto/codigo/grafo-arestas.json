@@ -11006,6 +11006,7 @@
    "supabase/functions/_shared/zod.ts"
   ],
   "supabase/functions/asaas-proxy/index.ts": [
+   "supabase/functions/_shared/asaas-config.ts",
    "supabase/functions/_shared/auth-guard.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
@@ -11393,6 +11394,7 @@
    "supabase/functions/_shared/observability.ts"
   ],
   "supabase/functions/gerar-resumo-financeiro-diario/index.ts": [
+   "supabase/functions/_shared/asaas-config.ts",
    "supabase/functions/_shared/auth-guard.ts",
    "supabase/functions/_shared/correlation.ts",
    "supabase/functions/_shared/cors.ts",

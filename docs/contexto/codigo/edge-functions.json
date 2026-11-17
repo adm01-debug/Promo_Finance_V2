@@ -59,6 +59,8 @@
  ],
  "shared": [
   "supabase/functions/_shared/app-url.ts",
+  "supabase/functions/_shared/asaas-config.ts",
+  "supabase/functions/_shared/asaas-config_test.ts",
   "supabase/functions/_shared/auth-guard.ts",
   "supabase/functions/_shared/auth-guard_test.ts",
   "supabase/functions/_shared/cnae.ts",
@@ -326,7 +328,7 @@
    "nome": "asaas-proxy",
    "entrada": "supabase/functions/asaas-proxy/index.ts",
    "arquivos": 3,
-   "linhas": 1378,
+   "linhas": 1439,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -365,6 +367,7 @@
     "api.asaas.com"
    ],
    "usa_shared": [
+    "asaas-config.ts",
     "auth-guard.ts",
     "cors.ts",
     "edge-observability.ts",
@@ -2336,7 +2339,7 @@
    "nome": "gerar-resumo-financeiro-diario",
    "entrada": "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
    "arquivos": 1,
-   "linhas": 110,
+   "linhas": 140,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2357,6 +2360,7 @@
    ],
    "hosts_externos": [],
    "usa_shared": [
+    "asaas-config.ts",
     "auth-guard.ts",
     "correlation.ts",
     "cors.ts",

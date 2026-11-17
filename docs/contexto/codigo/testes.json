@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 467,
+ "total": 468,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 391
+  "unit": 392
  },
  "onde_ficam": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 108
+   "arquivos": 109
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -3554,6 +3554,15 @@
    "casos": 4
   },
   {
+   "arquivo": "supabase/functions/_shared/asaas-config_test.ts",
+   "tipo": "unit",
+   "linhas": 72,
+   "testa": [
+    "supabase/functions/_shared/asaas-config.ts"
+   ],
+   "casos": 8
+  },
+  {
    "arquivo": "supabase/functions/_shared/auth-guard_test.ts",
    "tipo": "unit",
    "linhas": 98,
@@ -4449,6 +4458,7 @@
   "src/pages/tributario/oportunidades-elisao/AnaliseTab.tsx": 1,
   "src/types/reforma-tributaria.ts": 1,
   "src/types/tipo-cobranca-rotulo.ts": 1,
+  "supabase/functions/_shared/asaas-config.ts": 1,
   "supabase/functions/_shared/auth-guard.ts": 1,
   "supabase/functions/_shared/cnae.ts": 1,
   "supabase/functions/_shared/contract-response.ts": 1,

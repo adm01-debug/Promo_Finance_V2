@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9fe32772524a29a11e1e0a7810684c2fda3d7578",
+  "sha": "e0aba347b8acde1a87b958fdb11a581d81c22bcf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 09:23 UTC",
-  "files_total": 3942,
-  "code_files": 3565,
-  "code_lines": 507459
+  "generated_at": "2026-11-17 09:33 UTC",
+  "files_total": 3944,
+  "code_files": 3567,
+  "code_lines": 507686
  },
  "version": "1.3.2",
- "facts_hash": "f6c7a05fa61685ca",
+ "facts_hash": "656a07a99b810f4a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1236,
+   ".ts": 1238,
    ".tsx": 1110,
    ".sql": 1104,
    ".mjs": 63,
@@ -72595,8 +72595,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 227,
-   "lines": 50598,
+   "files": 229,
+   "lines": 50825,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72711,6 +72711,7 @@
    ],
    "exports": [
     "app-url.ts: getAppBaseUrl",
+    "asaas-config.ts: ConfiguracoesAsaas, lerConfigAsaas, resolverEncargo",
     "auth-guard.ts: corsHeadersComSegredoPara, corsHeadersComSegredo, segredosIguais, UsuarioAutenticado, ResultadoGuard, exigirUsuario",
     "cnae.ts: prefixosCnaeCandidatos, porPrefixoMaisEspecifico, REGIMES_CANONICOS, RegimeCanonico, regimeParaBenchmark, chaveReferenciaInterna",
     "concurrency-limiter.ts: ConcurrencyLimiter",
@@ -72748,16 +72749,15 @@
     "endpoints.ts: Ambiente, DistDFeEndpoint, distDFeEndpoint, UF_IBGE, cUFAutor, ambienteToTpAmb",
     "gunzip.ts: gzipBase64, gunzipBase64, corruptedGzipBase64",
     "manifestacao.ts: ManifTipo, MANIF_DESCRICAO, EventoInput, recepcaoEventoEndpoint, RECEPCAO_EVENTO_SOAP_ACTION, buildInfEvento",
-    "parser.ts: SchemaTipo, ParsedNFe, ParsedEvento, ParsedDoc, detectSchema, parseDoc",
-    "pfx.ts: CertificadoRow, CertificadoPem, makeAdminClient, pfxToPem, loadCertificado"
+    "parser.ts: SchemaTipo, ParsedNFe, ParsedEvento, ParsedDoc, detectSchema, parseDoc"
    ],
    "docs": [
+    "asaas-config.ts: Leitura das configurações do Asaas. A tela de configuração (src/hooks/useAsaas.ts) grava tudo dentro da coluna JSONB `asaas_config.configuracoes` — a tabela não tem colunas planas para esses parâmetros. As edge functions, porém, liam `config?.retry_limit`, `config?.alert_email_address` e companhia d …",
     "concurrency-limiter.ts: Concurrency Limiter Utility Limits the number of concurrent asynchronous operations.",
     "correlation.ts: Correlation ID helper para Edge Functions (Sprint 3.2 — auditoria sênior). Lê o header `x-request-id` propagado pelo client Supabase e o expõe para uso em logs estruturados e/ou `SET LOCAL app.request_id` em queries SQL. Gera um id efêmero quando ausente (webhooks externos, chamadas curl).",
     "edge-observability.ts: Observabilidade de borda das edge functions: um wrapper em volta do handler do Deno.serve que emite métricas RED (Rate, Errors, Duration) para edge_function_logs e captura exceções não tratadas no Sentry — tudo sem SDK, via a API pública de envelopes. Uso: Deno.serve(withEdgeObservability('minha-fn' …",
     "erros.ts: Normalizacao de erros capturados. Em `catch (e)` o TypeScript tipa `e` como `unknown` (comportamento correto: JavaScript permite lancar qualquer valor, nao so `Error`). Acessar `e.message` direto quebra o type-check e, em runtime, produz `undefined` quando o que foi lancado e uma string, um objeto d …",
-    "load-tester.ts: Simple Load Tester for Edge Functions. Measures latency, throughput, and error rates.",
-    "magic-bytes.ts: Validação de magic bytes no servidor — espelho de `src/lib/magic-bytes.ts`. O cliente valida por UX, mas quem chama o Storage/HTTP direto pula o front: a conferência precisa acontecer de novo dentro da Edge Function antes de gravar o objeto. Recebe bytes já lidos (sem FileReader) para não depender d …"
+    "load-tester.ts: Simple Load Tester for Edge Functions. Measures latency, throughput, and error rates."
    ],
    "deps": [
     "https:",
@@ -72776,6 +72776,8 @@
     "supabase/functions/fuzz_test.ts",
     "supabase/functions/stress_test.ts",
     "supabase/functions/_shared/app-url.ts",
+    "supabase/functions/_shared/asaas-config.ts",
+    "supabase/functions/_shared/asaas-config_test.ts",
     "supabase/functions/_shared/auth-guard.ts",
     "supabase/functions/_shared/auth-guard_test.ts",
     "supabase/functions/_shared/cnae.ts",
@@ -72850,9 +72852,7 @@
     "supabase/functions/asaas-proxy/index.test.ts",
     "supabase/functions/asaas-proxy/index.ts",
     "supabase/functions/asaas-proxy/test_plan.ts",
-    "supabase/functions/asaas-webhook/index.test.ts",
-    "supabase/functions/asaas-webhook/index.ts",
-    "supabase/functions/benchmarking-setorial/index.ts"
+    "supabase/functions/asaas-webhook/index.test.ts"
    ]
   },
   {
@@ -75580,7 +75580,6 @@
     "total_geral"
    ],
    "asaas_config": [
-    "alert_email_address",
     "configuracoes",
     "count",
     "empresa_id"
@@ -78017,10 +78016,6 @@
    {
     "table": "anomalia_detection_runs",
     "column": "started_at"
-   },
-   {
-    "table": "asaas_config",
-    "column": "alert_email_address"
    },
    {
     "table": "asaas_config",
@@ -87251,6 +87246,14 @@
     "text": "This ensures that the validation logic correctly identifies and rejects"
    },
    {
+    "file": "supabase/functions/_shared/asaas-config.ts",
+    "text": "* Resolve juros/multa de uma cobrança: o valor informado manda, inclusive"
+   },
+   {
+    "file": "supabase/functions/_shared/asaas-config.ts",
+    "text": "* Devolve `undefined` quando nada deve ser enviado ao Asaas — ausência de"
+   },
+   {
     "file": "supabase/functions/_shared/auth-guard.ts",
     "text": "* Importante: validamos o token contra o serviço de Auth em vez de apenas"
    },
@@ -87601,6 +87604,22 @@
    {
     "file": "supabase/functions/asaas-proxy/index.ts",
     "text": "Step 36 — Rate limit uniforme: 30 req/min por IP (mesmo padrão de categorizar-despesa)"
+   },
+   {
+    "file": "supabase/functions/asaas-proxy/index.ts",
+    "text": "regra está em resolverEncargo (com teste), porque agora que o"
+   },
+   {
+    "file": "supabase/functions/asaas-proxy/index.ts",
+    "text": "Uma configuração por empresa: ler `.limit(1)` fazia a primeira linha"
+   },
+   {
+    "file": "supabase/functions/asaas-proxy/index.ts",
+    "text": "asaas_payments pela FK — e cada empresa usa o próprio limite e o"
+   },
+   {
+    "file": "supabase/functions/asaas-proxy/index.ts",
+    "text": "whatsapp-ia-proativo apenas monta um link wa.me e o devolve"
    },
    {
     "file": "supabase/functions/asaas-proxy/test_plan.ts",
@@ -116432,7 +116451,7 @@
    {
     "file": "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
     "field": "status",
-    "value": "failed",
+    "value": "FAILED",
     "kind": "filtra"
    },
    {
@@ -137478,6 +137497,14 @@
     "call": "asaas"
    },
    {
+    "file": "supabase/functions/_shared/asaas-config.ts",
+    "call": "asaas"
+   },
+   {
+    "file": "supabase/functions/_shared/asaas-config_test.ts",
+    "call": "asaas"
+   },
+   {
     "file": "supabase/functions/_shared/cors.ts",
     "call": "asaas"
    },
@@ -156299,8 +156326,7 @@
       "compara:src/pages/configuracoes/HistoricoNotificacoes.tsx",
       "compara:supabase/functions/calcular-slo-metrics-diario/index.ts",
       "compara:supabase/functions/monitor-health/index.ts",
-      "escreve:supabase/functions/detectar-anomalias-financeiras/index.ts",
-      "filtra:supabase/functions/gerar-resumo-financeiro-diario/index.ts"
+      "escreve:supabase/functions/detectar-anomalias-financeiras/index.ts"
      ],
      "running": [
       "compara:src/components/admin/DetectionRunProgress.tsx",
@@ -156580,7 +156606,8 @@
      "FAILED": [
       "compara:src/components/asaas/TransferenciaPixHistoryPanel.tsx",
       "escreve:supabase/functions/asaas-proxy/index.ts",
-      "filtra:supabase/functions/asaas-proxy/index.ts"
+      "filtra:supabase/functions/asaas-proxy/index.ts",
+      "filtra:supabase/functions/gerar-resumo-financeiro-diario/index.ts"
      ],
      "PENDING": [
       "compara:src/components/asaas/TransferenciaPixHistoryPanel.tsx",
@@ -163218,6 +163245,7 @@
    "supabase/functions/gerar-pdf-tributario/index.ts",
    "supabase/functions/gerar-relatorio-anual/index.ts",
    "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+   "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
    "supabase/functions/gerar-snapshots-conformidade/index.ts",
    "supabase/functions/gerar-sped-ecd/index.ts",
    "supabase/functions/gerar-sped-ecf/index.ts",
@@ -176232,11 +176260,6 @@
    {
     "kind": "coluna",
     "msg": "coluna `started_at` usada no código não existe no schema de `anomalia_detection_runs`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `alert_email_address` usada no código não existe no schema de `asaas_config`",
     "where": []
    },
    {
@@ -230646,6 +230669,30 @@
     "[app-url] Nenhuma URL base configurada. Defina APP_BASE_URL."
    ]
   },
+  "supabase/functions/_shared/asaas-config.ts": {
+   "path": "supabase/functions/_shared/asaas-config.ts",
+   "lines": 63,
+   "exports": [
+    "interface ConfiguracoesAsaas",
+    "function lerConfigAsaas",
+    "function resolverEncargo"
+   ],
+   "rule_comments": [
+    "* Resolve juros/multa de uma cobrança: o valor informado manda, inclusive",
+    "* Devolve `undefined` quando nada deve ser enviado ao Asaas — ausência de"
+   ],
+   "doc": "Leitura das configurações do Asaas. A tela de configuração (src/hooks/useAsaas.ts) grava tudo dentro da coluna JSONB `asaas_config.configuracoes` — a tabela não tem colunas planas para esses parâmetros. As edge functions, porém, liam `config?.retry_limit`, `config?.alert_email_address` e companhia d …",
+   "side_effects": [
+    "asaas"
+   ]
+  },
+  "supabase/functions/_shared/asaas-config_test.ts": {
+   "path": "supabase/functions/_shared/asaas-config_test.ts",
+   "lines": 73,
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "supabase/functions/_shared/auth-guard.ts": {
    "path": "supabase/functions/_shared/auth-guard.ts",
    "lines": 572,
@@ -233134,7 +233181,7 @@
   },
   "supabase/functions/asaas-proxy/index.ts": {
    "path": "supabase/functions/asaas-proxy/index.ts",
-   "lines": 1336,
+   "lines": 1397,
    "exports": [
     "const handler"
    ],
@@ -233348,13 +233395,15 @@
      "empresa_id"
     ],
     "asaas_config": [
+     "configuracoes",
      "empresa_id"
     ],
     "asaas_sync_queue": [
      "id",
      "next_retry_at",
      "payment_id",
-     "status"
+     "status",
+     "updated_at"
     ],
     "clientes": [
      "empresa_id",
@@ -233487,7 +233536,11 @@
     "admin"
    ],
    "rule_comments": [
-    "Step 36 — Rate limit uniforme: 30 req/min por IP (mesmo padrão de categorizar-despesa)"
+    "Step 36 — Rate limit uniforme: 30 req/min por IP (mesmo padrão de categorizar-despesa)",
+    "regra está em resolverEncargo (com teste), porque agora que o",
+    "Uma configuração por empresa: ler `.limit(1)` fazia a primeira linha",
+    "asaas_payments pela FK — e cada empresa usa o próprio limite e o",
+    "whatsapp-ia-proativo apenas monta um link wa.me e o devolve"
    ],
    "doc": "============================================ EDGE FUNCTION: ASAAS PROXY Proxy seguro para API ASAAS - Full Feature Set ============================================",
    "side_effects": [
@@ -237789,7 +237842,7 @@
   },
   "supabase/functions/gerar-resumo-financeiro-diario/index.ts": {
    "path": "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
-   "lines": 111,
+   "lines": 141,
    "exports": [
     "const handler"
    ],
@@ -237821,7 +237874,7 @@
      "razao_social"
     ],
     "asaas_config": [
-     "alert_email_address",
+     "configuracoes",
      "empresa_id"
     ],
     "asaas_payments": [
@@ -237832,6 +237885,7 @@
      "valor"
     ],
     "asaas_sync_queue": [
+     "id",
      "status",
      "updated_at"
     ]
@@ -237855,7 +237909,7 @@
     },
     {
      "field": "status",
-     "value": "failed",
+     "value": "FAILED",
      "kind": "filtra"
     }
    ],
@@ -237865,7 +237919,8 @@
    "side_effects": [
     "asaas",
     "invoke("
-   ]
+   ],
+   "uses_service_role": true
   },
   "supabase/functions/gerar-snapshots-conformidade/index.ts": {
    "path": "supabase/functions/gerar-snapshots-conformidade/index.ts",
@@ -247327,10 +247382,22 @@
   }
  },
  "git": {
-  "sha": "9fe32772524a29a11e1e0a7810684c2fda3d7578",
+  "sha": "e0aba347b8acde1a87b958fdb11a581d81c22bcf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e0aba34",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)",
+    "files": [
+     "supabase/functions/_shared/asaas-config.ts",
+     "supabase/functions/_shared/asaas-config_test.ts",
+     "supabase/functions/asaas-proxy/index.ts",
+     "supabase/functions/gerar-resumo-financeiro-diario/index.ts"
+    ]
+   },
    {
     "sha": "9fe3277",
     "date": "2026-11-17",
@@ -247695,15 +247762,6 @@
      "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
      "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql"
     ]
-   },
-   {
-    "sha": "8f1767c",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)",
-    "files": [
-     "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -247768,23 +247826,23 @@
     2
    ],
    [
+    "supabase/functions/_shared/asaas-config.ts",
+    1
+   ],
+   [
+    "supabase/functions/_shared/asaas-config_test.ts",
+    1
+   ],
+   [
+    "supabase/functions/asaas-proxy/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
+    1
+   ],
+   [
     "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
     1
    ]
   ]

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9fe3277252` · branch `main` · 2026-11-17 09:23 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e0aba347b8` · branch `main` · 2026-11-17 09:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1334,7 +1334,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `Conciliado` | compara | `src/components/relatorios/RelatoriosDetalhado.tsx` |
 | `status` | `DONE` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
 | `status` | `EXPIRADO` | compara | `src/lib/organizacoes/convites.ts` |
-| `status` | `FAILED` | compara, escreve, filtra | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`supabase/functions/asaas-proxy/index.ts` |
+| `status` | `FAILED` | compara, escreve, filtra | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`supabase/functions/asaas-proxy/index.ts`<br>`supabase/functions/gerar-resumo-financeiro-diario/index.ts` |
 | `status` | `OPEN` | compara | `supabase/functions/_shared/resilience.ts` |
 | `status` | `OVERDUE` | compara | `src/components/asaas/tabs/CobrancasTabConteudo.tsx`<br>`src/hooks/useAsaas.ts`<br>`src/pages/Asaas.parts.tsx` |
 | `status` | `PENDENTE` | compara | `src/pages/organizacoes/Organizacoes.parts.tsx` |
@@ -1401,7 +1401,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `excluido` | escreve | `src/components/cobranca/NegativacoesProtestosPanel.tsx` |
 | `status` | `expirado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
 | `status` | `extra` | compara, escreve | `src/components/compliance/verificar-integridade/LinhaResultado.tsx`<br>`src/components/compliance/verificar-integridade/types.ts`<br>`src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts` |
-| `status` | `failed` | compara, escreve, filtra | `src/components/admin/CronJobsStatus.tsx`<br>`src/components/admin/WebhookSimulator.tsx`<br>`src/components/asaas/tabs/FilaTab.tsx`<br>`src/hooks/useAnomaliaDetectionRun.ts`<br>`src/pages/configuracoes/HistoricoNotificacoes.tsx`<br>… +4 |
+| `status` | `failed` | compara, escreve | `src/components/admin/CronJobsStatus.tsx`<br>`src/components/admin/WebhookSimulator.tsx`<br>`src/components/asaas/tabs/FilaTab.tsx`<br>`src/hooks/useAnomaliaDetectionRun.ts`<br>`src/pages/configuracoes/HistoricoNotificacoes.tsx`<br>… +3 |
 | `status` | `falha` | compara | `src/hooks/useFinancialAlerts.tsx` |
 | `status` | `falhou` | escreve | `supabase/functions/processar-fila-cobrancas/index.ts` |
 | `status` | `falso_positivo` | compara, escreve | `src/components/admin/AnomaliasList.tsx`<br>`src/components/admin/anomalias-review-queue/useReviewQueue.ts`<br>`src/components/insights-ia/anomalia/AnomaliaHeader.tsx`<br>`src/hooks/useAnomaliasDetectadas.ts`<br>`supabase/functions/relatorio-diario-anomalias/index.ts` |
@@ -5554,6 +5554,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `notify_push` | `src/pages/configuracoes/SinoNotificacoesFiltros.tsx` |
 | `asaas` | `src/routes/financeiroRoutes.tsx` |
 | `asaas` | `supabase/functions/stress_test.ts` |
+| `asaas` | `supabase/functions/_shared/asaas-config.ts` |
+| `asaas` | `supabase/functions/_shared/asaas-config_test.ts` |
 | `asaas` | `supabase/functions/_shared/cors.ts` |
 | `enqueue(` | `supabase/functions/_shared/edge-observability.ts` |
 | `enqueue(` | `supabase/functions/_shared/edge-observability_test.ts` |
@@ -5981,4 +5983,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
-| … +416 linhas — lista completa em `context.json` | |
+| … +422 linhas — lista completa em `context.json` | |
