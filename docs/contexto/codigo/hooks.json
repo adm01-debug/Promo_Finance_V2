@@ -3848,7 +3848,7 @@
     "useFluxoCaixaKPIs",
     "useFluxoCaixaProjetado"
    ],
-   "linhas": 246,
+   "linhas": 252,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias",
@@ -3867,14 +3867,14 @@
    "usado_por_arquivos": [
     "src/hooks/useFluxoCaixaPage.ts"
    ],
-   "coberto_por_testes": 2
+   "coberto_por_testes": 3
   },
   {
    "arquivo": "src/hooks/useFluxoCaixaPage.ts",
    "hooks_exportados": [
     "useFluxoCaixaPage"
    ],
-   "linhas": 158,
+   "linhas": 166,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3893,7 +3893,7 @@
    "usado_por_arquivos": [
     "src/pages/FluxoCaixa.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useFrontendErrorLogs.ts",

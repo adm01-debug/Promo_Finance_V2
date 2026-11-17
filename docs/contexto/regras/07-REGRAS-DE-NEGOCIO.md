@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `629b697fcc` · branch `main` · 2026-11-17 06:48 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `00a778332e` · branch `main` · 2026-11-17 07:04 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2770,10 +2770,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   
   ```
-- **calcularProjecoesReais(fluxoBase: ProjecaoDiaria[], saldoInicial: number)** — `src/hooks/useFluxoCaixa.ts`
-  ```
-  return gerarTodasProjecoesLib(fluxoBase, saldoInicial);
-  ```
 - **calcularPeriodoApuracao(tipo: 'trimestral' | 'anual' | 'estimativa', ano: number, trimestre?: number, mes?: number)** — `src/hooks/useIRPJCSLL.ts`
   ```
   periodo_inicio: string; periodo_fim: string
@@ -2862,17 +2858,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const limpo = limparCodigo(codigo); return limpo.length === 44 || limpo.length === 47 || limpo.length === 48;
   ```
-- **gerarProjecaoCenario(dadosBase: ProjecaoDiaria[], cenario: CenarioTipo, saldoInicial: number)** — `src/lib/cashflow-scenarios.ts`
+- **gerarProjecaoCenario(dadosBase: ProjecaoDiaria[], cenario: CenarioTipo, saldoInicial: number, opcoes: OpcoesProjecao = {})** — `src/lib/cashflow-scenarios.ts`
   ```
-  const config = CENARIOS_CONFIG[cenario]; let saldoAcumulado = saldoInicial; return dadosBase.map((dia) => { // Aplicar multiplicadores e simular atrasos const receitasAjustadas = dia.receitas * config.multiplicadorReceitas * // Simulação financeira não-criptográfica: CodeQL veta aritmética // sobre CSPRNG e Math.random é adequado para jitter de cenário // (não gera tokens nem segredos) — por isso o NOSONAR abaixo. (1 - config.probabilidadeAtraso * Math.random()); // NOSONAR const despesasAjustad …
+  const config = CENARIOS_CONFIG[cenario]; let saldoAcumulado = saldoInicial; return dadosBase.map((dia) => { // Aplicar multiplicadores e o fator de atraso DETERMINISTICO do dia const receitasAjustadas = dia.receitas * config.multiplicadorReceitas * (1 - config.probabilidadeAtraso * fatorAtrasoDeterministico(dia.data, cenario, opcoes.semente)); const despesasAjustadas = dia.despesas * config.multiplicadorDespesas; saldoAcumulado = saldoAcumulado + receitasAjustadas - despesasAjustadas; return { d …
   ```
-- **gerarTodasProjecoes(dadosBase: ProjecaoDiaria[], saldoInicial: number)** — `src/lib/cashflow-scenarios.ts`
+- **gerarTodasProjecoes(dadosBase: ProjecaoDiaria[], saldoInicial: number, opcoes: OpcoesProjecao = {})** — `src/lib/cashflow-scenarios.ts`
   ```
-  return { otimista: gerarProjecaoCenario(dadosBase, 'otimista', saldoInicial), realista: gerarProjecaoCenario(dadosBase, 'realista', saldoInicial), pessimista: gerarProjecaoCenario(dadosBase, 'pessimista', saldoInicial), };
-  ```
-- **calcularMetricasCenarios(projecoes: Record<CenarioTipo, ProjecaoCenario[]>)** — `src/lib/cashflow-scenarios.ts`
-  ```
-  const resultado = {} as Record<CenarioTipo, MetricaCenario>; Object.entries(projecoes).forEach(([cenario, dados]) => { const saldos = dados.map((d) => d.saldo); resultado[cenario as CenarioTipo] = { saldoFinal: saldos[saldos.length - 1] || 0, saldoMinimo: saldos.length > 0 ? Math.min(...saldos) : 0, diasCriticos: saldos.filter((s) => s < 100000).length, }; }); return resultado;
+  return { otimista: gerarProjecaoCenario(dadosBase, 'otimista', saldoInicial, opcoes), realista: gerarProjecaoCenario(dadosBase, 'realista', saldoInicial, opcoes), pessimista: gerarProjecaoCenario(dadosBase, 'pessimista', saldoInicial, opcoes), };
   ```
 - **validarFormatoCFC(codigo: string | null | undefined)** — `src/lib/cfc-validator.ts`
   ```
@@ -5097,7 +5089,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3510 testes em 305 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3519 testes em 306 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5111,6 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 47 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
+| `src/lib/__tests__/cashflow-scenarios.test.ts` | 31 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
 | `src/lib/tributario/__tests__/monofasico.test.ts` | 31 | normalizarNcm · remove pontuação e limita a 8 dígitos · classificarNcmMonofasico · classifica cerveja em BEBIDAS_FRIAS … |
 | `src/lib/tributario/__tests__/obrigacoes-acessorias.test.ts` | 31 | obrigações acessórias — dias úteis · postergarDiaUtil pula fim de semana e feriado · enesimoDiaUtil retorna sempre um dia útil dentro do mês · enesimoDiaUtil é monotônico crescente … |
 | `supabase/functions/sso-callback/claims.test.ts` | 31 | OIDC: extrai picture como avatar_url quando claim padrão presente · OIDC: extrai phone_number como telefone quando claim padrão presente · OIDC: avatar_url vazio retorna null (não sobrescreve valor existente) · OIDC: phone_number só com espaços retorna null … |
@@ -5127,7 +5120,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/supabase-write.test.ts` | 26 | mustSucceed · devolve data quando não há erro · aceita o builder thenable do PostgREST, não só Promise · lança SupabaseWriteError com o contexto de negócio na mensagem … |
 | `src/lib/tributario/__tests__/iss-overlay.test.ts` | 26 | normalização · aceita fração, percentual e string com vírgula · rejeita valores não numéricos ou negativos · normaliza nomes de município para busca tolerante … |
 | `scripts/security/test-canonical-db-gates.test.mjs` | 25 | evaluateRequiredMigrations falha quando uma migration obrigatória some · evaluateRequiredMigrations tolera migration introduzida pelo próprio PR · evaluateRequiredMigrations ainda falha para migration ausente que o PR não introduziu · pendingPrMigrations extrai versões dos arquivos adicionados pelo PR … |
-| `src/lib/__tests__/cashflow-scenarios.test.ts` | 25 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
 | `src/lib/__tests__/import-checkpoint.test.ts` | 25 | import-checkpoint · createImportCheckpoint · confirma refs e persiste após microtask · ignora refs vazias e duplicadas … |
 | `src/lib/organizacoes/__tests__/convites.test.ts` | 25 | convites: token e validade · gera token hexadecimal de 64 caracteres · gera tokens distintos em 500 execuções (sem colisão) · respeita gerador determinístico injetado … |
 | `src/lib/sso/__tests__/consistency.test.ts` | 25 | validateSSOConfig — happy path · configuração consistente: nenhum issue · summarizeIssues: hasBlocker=false quando sem erros · claim_mapping … |
@@ -5368,6 +5360,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
+| `src/hooks/__tests__/useFluxoCaixaPage.saldo.test.tsx` | 3 | useFluxoCaixaPage — saldo final zero e projeção vazia (F07) · saldo final legitimamente ZERO nao e trocado pelo saldo inicial · projecao vazia preserva o saldo inicial e variacao zero |
 | `src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts` | 3 | relatórios do EXPERT com contas vencidas · o fluxo de caixa pede contas a pagar vencidas, não só pendentes · o relatório de contas a pagar pede as vencidas e as soma no total |
 | `src/lib/__tests__/brazilian-validators.regression.test.ts` | 3 | brazilian-validators — regressão de API pública · preserva exports históricos · validateCPF/CNPJ geram e validam consistentes |
 | `src/lib/__tests__/sped-generator.regression.test.ts` | 3 | sped-generator — regressão de API pública · preserva exports históricos após modularização · validarArquivoSPED rejeita conteúdo inválido |
@@ -5400,8 +5393,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/relatorio-pdf.regression.test.ts` | 2 | relatorio-pdf — regressão de API pública · preserva exports históricos |
 | `src/lib/__tests__/sefaz-simulator.regression.test.ts` | 2 | sefaz-simulator — regressão de API pública · preserva exports históricos |
 | `src/lib/__tests__/transaction-matcher.regression.test.ts` | 2 | transaction-matcher — regressão de API pública · expõe símbolos históricos após modularização |
-| `src/lib/tributario/calculadora/__tests__/harness-cenarios.test.ts` | 2 | Harness — 200 cenários aleatórios da Calculadora · cenário #%i respeita invariantes |
-| … +5 linhas — lista completa em `context.json` | | |
+| … +6 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
