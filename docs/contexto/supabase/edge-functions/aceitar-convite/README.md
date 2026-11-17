@@ -4,9 +4,9 @@
 |---|---|
 | nome | aceitar-convite |
 | status | ACTIVE |
-| versão | 86 |
+| versão | 87 |
 | verify_jwt | sim |
-| entrypoint | file:///app/supabase/functions/aceitar-convite/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/aceitar-convite/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/aceitar-convite |
 | fonte no repo | `supabase/functions/aceitar-convite/` |

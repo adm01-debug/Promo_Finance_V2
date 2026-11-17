@@ -309,15 +309,15 @@
     "edge_functions": [
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/aceitar-convite/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/aceitar-convite/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "aceitar-convite",
         "slug": "aceitar-convite",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925860379,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -537,15 +537,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/compare-schemas/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/compare-schemas/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "compare-schemas",
         "slug": "compare-schemas",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794927443452,
         "verify_jwt": false,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
@@ -597,27 +597,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/convidar-contador/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-contador/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "convidar-contador",
         "slug": "convidar-contador",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925990917,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1789217313886,
-        "entrypoint_path": "file:///app/supabase/functions/convidar-usuario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-usuario/index.ts",
         "import_map": null,
         "import_map_path": null,
         "name": "convidar-usuario",
         "slug": "convidar-usuario",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925757970,
         "verify_jwt": false,
-        "version": 75
+        "version": 76
       },
       {
         "created_at": 1787655368587,
@@ -681,15 +681,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/enviar-alerta-email/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/enviar-alerta-email/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "enviar-alerta-email",
         "slug": "enviar-alerta-email",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794926396815,
         "verify_jwt": false,
-        "version": 89
+        "version": 90
       },
       {
         "created_at": 1787655368587,
@@ -705,15 +705,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/enviar-convite-organizacao/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/enviar-convite-organizacao/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "enviar-convite-organizacao",
         "slug": "enviar-convite-organizacao",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794926263324,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -825,15 +825,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-acoes-recomendadas/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-acoes-recomendadas/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-acoes-recomendadas",
         "slug": "gerar-acoes-recomendadas",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925614920,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
@@ -921,27 +921,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-relatorio-anual/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-relatorio-anual/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-relatorio-anual",
         "slug": "gerar-relatorio-anual",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925175886,
         "verify_jwt": true,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-resumo-executivo-semanal/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-resumo-executivo-semanal",
         "slug": "gerar-resumo-executivo-semanal",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925452045,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -993,51 +993,51 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/get-mapbox-token/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/get-mapbox-token/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "get-mapbox-token",
         "slug": "get-mapbox-token",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794927007314,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/get-vapid-key/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/get-vapid-key/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "get-vapid-key",
         "slug": "get-vapid-key",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794926833184,
         "verify_jwt": false,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/health/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/health/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "health",
         "slug": "health",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794926677656,
         "verify_jwt": false,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/insights-relatorio/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/insights-relatorio/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "insights-relatorio",
         "slug": "insights-relatorio",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794925310047,
         "verify_jwt": false,
-        "version": 87
+        "version": 88
       },
       {
         "created_at": 1787655368587,
@@ -1257,15 +1257,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/scim-server/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/scim-server/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "scim-server",
         "slug": "scim-server",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794928396902,
         "verify_jwt": false,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
@@ -1377,87 +1377,87 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sso-callback/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sso-callback/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sso-callback",
         "slug": "sso-callback",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794927798772,
         "verify_jwt": false,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sso-generate-metadata/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sso-generate-metadata/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sso-generate-metadata",
         "slug": "sso-generate-metadata",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
-        "verify_jwt": true,
-        "version": 86
-      },
-      {
-        "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sso-initiate/index.ts",
-        "import_map": false,
-        "import_map_path": null,
-        "name": "sso-initiate",
-        "slug": "sso-initiate",
-        "status": "ACTIVE",
-        "updated_at": 1794913206549,
-        "verify_jwt": false,
-        "version": 85
-      },
-      {
-        "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sso-logout/index.ts",
-        "import_map": false,
-        "import_map_path": null,
-        "name": "sso-logout",
-        "slug": "sso-logout",
-        "status": "ACTIVE",
-        "updated_at": 1794913206549,
-        "verify_jwt": false,
-        "version": 81
-      },
-      {
-        "created_at": 1787418259817,
-        "entrypoint_path": "file:///app/supabase/functions/sso-test-login/index.ts",
-        "import_map": false,
-        "import_map_path": null,
-        "name": "sso-test-login",
-        "slug": "sso-test-login",
-        "status": "ACTIVE",
-        "updated_at": 1794913206549,
-        "verify_jwt": true,
-        "version": 86
-      },
-      {
-        "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sso-validate-config/index.ts",
-        "import_map": false,
-        "import_map_path": null,
-        "name": "sso-validate-config",
-        "slug": "sso-validate-config",
-        "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794928285606,
         "verify_jwt": true,
         "version": 87
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sync-profile-to-bitrix/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sso-initiate/index.ts",
+        "import_map": false,
+        "import_map_path": null,
+        "name": "sso-initiate",
+        "slug": "sso-initiate",
+        "status": "ACTIVE",
+        "updated_at": 1794927730456,
+        "verify_jwt": false,
+        "version": 86
+      },
+      {
+        "created_at": 1787655368587,
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sso-logout/index.ts",
+        "import_map": false,
+        "import_map_path": null,
+        "name": "sso-logout",
+        "slug": "sso-logout",
+        "status": "ACTIVE",
+        "updated_at": 1794928028957,
+        "verify_jwt": false,
+        "version": 82
+      },
+      {
+        "created_at": 1787418259817,
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sso-test-login/index.ts",
+        "import_map": false,
+        "import_map_path": null,
+        "name": "sso-test-login",
+        "slug": "sso-test-login",
+        "status": "ACTIVE",
+        "updated_at": 1794928208136,
+        "verify_jwt": true,
+        "version": 87
+      },
+      {
+        "created_at": 1787655368587,
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sso-validate-config/index.ts",
+        "import_map": false,
+        "import_map_path": null,
+        "name": "sso-validate-config",
+        "slug": "sso-validate-config",
+        "status": "ACTIVE",
+        "updated_at": 1794928100032,
+        "verify_jwt": true,
+        "version": 88
+      },
+      {
+        "created_at": 1787655368587,
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sync-profile-to-bitrix/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sync-profile-to-bitrix",
         "slug": "sync-profile-to-bitrix",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794926528250,
         "verify_jwt": true,
-        "version": 89
+        "version": 90
       },
       {
         "created_at": 1791907976432,
@@ -1473,27 +1473,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/validar-token-contador/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/validar-token-contador/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "validar-token-contador",
         "slug": "validar-token-contador",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794926124330,
         "verify_jwt": false,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/validate-ip-geo/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/validate-ip-geo/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "validate-ip-geo",
         "slug": "validate-ip-geo",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794927079257,
         "verify_jwt": false,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -1533,15 +1533,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/webhook-simulator/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/webhook-simulator/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "webhook-simulator",
         "slug": "webhook-simulator",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794927210101,
         "verify_jwt": true,
-        "version": 85
+        "version": 86
       },
       {
         "created_at": 1787655368587,

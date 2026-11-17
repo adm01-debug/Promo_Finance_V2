@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-17 15:17 UTC
+
+- **edge functions** alterado (24): `aceitar-convite`, `compare-schemas`, `convidar-contador`, `convidar-usuario`, `enviar-alerta-email`, `enviar-convite-organizacao`, `gerar-acoes-recomendadas`, `gerar-relatorio-anual`, `gerar-resumo-executivo-semanal`, `get-mapbox-token`, `get-vapid-key`, `health`, `insights-relatorio`, `scim-server`, `sso-callback`, `sso-generate-metadata`, `sso-initiate`, `sso-logout`, `sso-test-login`, `sso-validate-config`, `sync-profile-to-bitrix`, `validar-token-contador`, `validate-ip-geo`, `webhook-simulator`
+
 ## 2026-11-17 14:18 UTC
 
 - **edge functions** alterado (34): `analyze-document`, `api-keys-manage`, `benchmarking-setorial`, `cnpja-lookup`, `copilot-tributario`, `decidir-regime`, `digest-silenciamentos-erro`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-relatorios`, `expert-agent`, `exportar-sped-contribuicoes`, `external-data`, `gerar-pacote-evidencias`, `gerar-pdf-tributario`, `gerar-snapshots-conformidade`, `log-sped-bitrix24`, `monitorar-erros-frontend`, `n8n-callback`, `n8n-dispatch`, `notify-performance-alert`, `notify-saved-filter`, `prever-carga-tributaria`, `processar-solicitacao-lgpd`, `projecao-reforma`, `send-device-alert`, `send-push-notification`, `simular-presumido`, `simular-real`, `simular-simples`, `upload-anexo`, `whatsapp-ai-analyzer`, `whatsapp-ia-proativo`, `whatsapp-webhook`
