@@ -10,7 +10,7 @@
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
-| usada por views | public.vw_auditoria_tributaria_recente, public.vw_fluxo_caixa_diario, public.vw_saldos_contas, public.vw_transferencias_painel, public.vw_tributario_dashboard |
+| usada por views | public.vw_auditoria_tributaria_recente, public.vw_fluxo_caixa, public.vw_fluxo_caixa_diario, public.vw_saldos_contas, public.vw_transferencias_painel, public.vw_tributario_dashboard |
 
 
 ## Colunas
@@ -41,6 +41,7 @@
 | 22 | `codigo_fpas` | `text` | sim |  |  |  |
 | 23 | `is_padrao` | `boolean` | não | `false` |  |  |
 | 24 | `regime_tributario` | `text` | sim |  |  |  |
+| 25 | `inscricao_municipal` | `text` | sim |  |  |  |
 
 
 ## Constraints

@@ -4,7 +4,7 @@
 |---|---|
 | nome | sso-test-login |
 | status | ACTIVE |
-| versão | 98 |
+| versão | 103 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/sso-test-login/index.ts |
 | import_map |  |

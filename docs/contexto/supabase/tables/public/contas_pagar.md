@@ -10,7 +10,7 @@
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
-| usada por views | public.vw_contas_pagar_painel, public.vw_gastos_centro_custo |
+| usada por views | public.vw_contas_pagar_painel, public.vw_fluxo_caixa, public.vw_gastos_centro_custo |
 
 
 ## Colunas
@@ -87,15 +87,28 @@
 |---|---|---|---|---|---|---|
 | contas_pagar_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX contas_pagar_pkey ON public.contas_pagar USING btree (id)` |
 | idx_contas_pagar_aprovado_por_fk | btree | aprovado_por | não | sim |  | `CREATE INDEX idx_contas_pagar_aprovado_por_fk ON public.contas_pagar USING btree (aprovado_por)` |
+| idx_contas_pagar_categoria | btree | categoria | não | sim |  | `CREATE INDEX idx_contas_pagar_categoria ON public.contas_pagar USING btree (categoria)` |
 | idx_contas_pagar_categoria_id_fk | btree | categoria_id | não | sim |  | `CREATE INDEX idx_contas_pagar_categoria_id_fk ON public.contas_pagar USING btree (categoria_id)` |
 | idx_contas_pagar_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_contas_pagar_centro_custo_id ON public.contas_pagar USING btree (centro_custo_id)` |
 | idx_contas_pagar_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_contas_pagar_conta_bancaria_id ON public.contas_pagar USING btree (conta_bancaria_id)` |
 | idx_contas_pagar_data_pagamento | btree | data_pagamento | não | sim | `(data_pagamento IS NOT NULL)` | `CREATE INDEX idx_contas_pagar_data_pagamento ON public.contas_pagar USING btree (data_pagamento) WHERE (data_pagamento IS NOT NULL)` |
+| idx_contas_pagar_data_vencimento | btree | data_vencimento | não | sim |  | `CREATE INDEX idx_contas_pagar_data_vencimento ON public.contas_pagar USING btree (data_vencimento)` |
 | idx_contas_pagar_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_contas_pagar_empresa_id ON public.contas_pagar USING btree (empresa_id)` |
 | idx_contas_pagar_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  | `CREATE INDEX idx_contas_pagar_empresa_status_venc ON public.contas_pagar USING btree (empresa_id, status, data_vencimento)` |
+| idx_contas_pagar_fornecedor | btree | fornecedor_id | não | sim |  | `CREATE INDEX idx_contas_pagar_fornecedor ON public.contas_pagar USING btree (fornecedor_id)` |
+| idx_contas_pagar_fornecedor_id | btree | fornecedor_id | não | sim |  | `CREATE INDEX idx_contas_pagar_fornecedor_id ON public.contas_pagar USING btree (fornecedor_id)` |
 | idx_contas_pagar_fornecedor_id_fk | btree | fornecedor_id | não | sim |  | `CREATE INDEX idx_contas_pagar_fornecedor_id_fk ON public.contas_pagar USING btree (fornecedor_id)` |
 | idx_contas_pagar_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` | `CREATE INDEX idx_contas_pagar_pendentes_venc ON public.contas_pagar USING btree (empresa_id, data_vencimento) WHERE ((status)::text = 'pendente'::text)` |
+| idx_contas_pagar_prevent_duplicates | btree | fornecedor_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (fornecedor_id IS NOT NULL) AND (numero_documento IS NOT NULL))` | `CREATE UNIQUE INDEX idx_contas_pagar_prevent_duplicates ON public.contas_pagar USING btree (fornecedor_id, valor, data_vencimento, numero_documento) WHERE (((status)::text <> 'cancelado'::text) AND (fornecedor_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
+| idx_contas_pagar_status | btree | status | não | sim |  | `CREATE INDEX idx_contas_pagar_status ON public.contas_pagar USING btree (status)` |
 | idx_contas_pagar_user_created | btree | user_id, created_at | não | sim |  | `CREATE INDEX idx_contas_pagar_user_created ON public.contas_pagar USING btree (user_id, created_at DESC)` |
+| idx_contas_pagar_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_contas_pagar_user_id ON public.contas_pagar USING btree (user_id)` |
+| idx_contas_pagar_vencimento | btree | data_vencimento | não | sim |  | `CREATE INDEX idx_contas_pagar_vencimento ON public.contas_pagar USING btree (data_vencimento)` |
+| idx_cp_descricao_gin | gin |  | não | sim |  | `CREATE INDEX idx_cp_descricao_gin ON public.contas_pagar USING gin (to_tsvector('portuguese'::regconfig, (descricao)::text))` |
+| idx_cp_fornecedor_status | btree | fornecedor_id, status | não | sim |  | `CREATE INDEX idx_cp_fornecedor_status ON public.contas_pagar USING btree (fornecedor_id, status)` |
+| idx_cp_pendentes | btree | data_vencimento | não | sim | `((status)::text = ANY (ARRAY[('pendente'::character varying)::text, ('vencida'::character varying)::text]))` | `CREATE INDEX idx_cp_pendentes ON public.contas_pagar USING btree (data_vencimento) WHERE ((status)::text = ANY (ARRAY[('pendente'::character varying)::text, ('vencida'::character varying)::text]))` |
+| idx_cp_status_data_vencimento | btree | status, data_vencimento | não | sim |  | `CREATE INDEX idx_cp_status_data_vencimento ON public.contas_pagar USING btree (status, data_vencimento)` |
+| idx_cp_status_vencimento | btree | status, data_vencimento | não | sim |  | `CREATE INDEX idx_cp_status_vencimento ON public.contas_pagar USING btree (status, data_vencimento)` |
 
 
 ## Policies (RLS)

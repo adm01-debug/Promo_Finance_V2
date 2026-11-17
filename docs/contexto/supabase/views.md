@@ -430,20 +430,32 @@ SELECT function_name,
 |---|---|
 | owner | postgres |
 | security_invoker | sim |
-| opções | security_invoker=true |
-| depende de | public.movimentacoes |
+| opções | security_invoker=on |
+| depende de | public.contas_pagar, public.contas_receber, public.empresas |
 | populada | n/a |
 | comentário |  |
 
 
 ```sql
-SELECT empresa_id,
-    date(data_movimentacao) AS data,
-    sum(valor) FILTER (WHERE tipo = 'credito'::text) AS total_creditos,
-    sum(valor) FILTER (WHERE tipo = 'debito'::text) AS total_debitos,
-    sum(valor) AS saldo_dia
-   FROM movimentacoes m
-  GROUP BY empresa_id, (date(data_movimentacao));
+SELECT e.id AS empresa_id,
+    d.dia::date AS dia,
+    COALESCE(r.valor, 0::numeric) AS receitas_previstas,
+    COALESCE(p.valor, 0::numeric) AS despesas_previstas,
+    COALESCE(r.valor, 0::numeric) - COALESCE(p.valor, 0::numeric) AS saldo_dia
+   FROM empresas e
+     CROSS JOIN generate_series(CURRENT_DATE::timestamp without time zone, (CURRENT_DATE + 90)::timestamp without time zone, '1 day'::interval) d(dia)
+     LEFT JOIN ( SELECT contas_receber.empresa_id,
+            contas_receber.data_vencimento AS dia,
+            sum(contas_receber.valor - COALESCE(contas_receber.valor_recebido, 0::numeric)) AS valor
+           FROM contas_receber
+          WHERE (contas_receber.status::text = ANY (ARRAY['pendente'::character varying, 'parcial'::character varying]::text[])) AND contas_receber.deleted_at IS NULL
+          GROUP BY contas_receber.empresa_id, contas_receber.data_vencimento) r ON r.empresa_id = e.id AND r.dia = d.dia::date
+     LEFT JOIN ( SELECT contas_pagar.empresa_id,
+            contas_pagar.data_vencimento AS dia,
+            sum(contas_pagar.valor - COALESCE(contas_pagar.valor_pago, 0::numeric)) AS valor
+           FROM contas_pagar
+          WHERE (contas_pagar.status::text = ANY (ARRAY['pendente'::character varying, 'parcial'::character varying]::text[])) AND contas_pagar.deleted_at IS NULL
+          GROUP BY contas_pagar.empresa_id, contas_pagar.data_vencimento) p ON p.empresa_id = e.id AND p.dia = d.dia::date;
 ```
 
 ## public.vw_fluxo_caixa_diario (view)

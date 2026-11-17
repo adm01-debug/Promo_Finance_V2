@@ -10,7 +10,6 @@
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
-| usada por views | public.vw_fluxo_caixa |
 
 
 ## Colunas
@@ -33,6 +32,7 @@
 | 14 | `conta_receber_id` | `uuid` | sim |  |  |  |
 | 15 | `categoria_id` | `uuid` | sim |  |  |  |
 | 16 | `observacoes` | `text` | sim |  |  |  |
+| 17 | `centro_custo_id` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
@@ -40,6 +40,7 @@
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
 | movimentacoes_categoria_id_fkey | FOREIGN KEY | `FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
+| movimentacoes_centro_custo_id_fkey | FOREIGN KEY | `FOREIGN KEY (centro_custo_id) REFERENCES centros_custo(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | movimentacoes_conta_bancaria_id_fkey | FOREIGN KEY | `FOREIGN KEY (conta_bancaria_id) REFERENCES contas_bancarias(id)` | NO ACTION | NO ACTION | sim |
 | movimentacoes_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 | movimentacoes_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
@@ -51,9 +52,15 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_movimentacoes_categoria_id | btree | categoria_id | não | sim |  | `CREATE INDEX idx_movimentacoes_categoria_id ON public.movimentacoes USING btree (categoria_id)` |
+| idx_movimentacoes_centro_custo_id | btree | centro_custo_id | não | sim | `(centro_custo_id IS NOT NULL)` | `CREATE INDEX idx_movimentacoes_centro_custo_id ON public.movimentacoes USING btree (centro_custo_id) WHERE (centro_custo_id IS NOT NULL)` |
+| idx_movimentacoes_centro_custo_id_fk | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_movimentacoes_centro_custo_id_fk ON public.movimentacoes USING btree (centro_custo_id)` |
 | idx_movimentacoes_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_movimentacoes_conta_bancaria_id ON public.movimentacoes USING btree (conta_bancaria_id)` |
+| idx_movimentacoes_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_movimentacoes_conta_bancaria_id_fk ON public.movimentacoes USING btree (conta_bancaria_id)` |
+| idx_movimentacoes_conta_pagar_id_fk | btree | conta_pagar_id | não | sim |  | `CREATE INDEX idx_movimentacoes_conta_pagar_id_fk ON public.movimentacoes USING btree (conta_pagar_id)` |
+| idx_movimentacoes_conta_receber_id_fk | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_movimentacoes_conta_receber_id_fk ON public.movimentacoes USING btree (conta_receber_id)` |
 | idx_movimentacoes_empresa_data | btree | empresa_id, data_movimentacao | não | sim | `(deleted_at IS NULL)` | `CREATE INDEX idx_movimentacoes_empresa_data ON public.movimentacoes USING btree (empresa_id, data_movimentacao) WHERE (deleted_at IS NULL)` |
 | idx_movimentacoes_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_movimentacoes_empresa_id ON public.movimentacoes USING btree (empresa_id)` |
+| idx_movimentacoes_empresa_id_fk | btree | empresa_id | não | sim |  | `CREATE INDEX idx_movimentacoes_empresa_id_fk ON public.movimentacoes USING btree (empresa_id)` |
 | movimentacoes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX movimentacoes_pkey ON public.movimentacoes USING btree (id)` |
 
 

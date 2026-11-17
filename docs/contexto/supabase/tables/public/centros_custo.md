@@ -50,6 +50,7 @@
 | public.centros_custo | centros_custo_parent_id_fkey | parent_id | SET NULL |
 | public.contas_pagar | contas_pagar_centro_custo_id_fkey | centro_custo_id | SET NULL |
 | public.contas_receber | contas_receber_centro_custo_id_fkey | centro_custo_id | SET NULL |
+| public.movimentacoes | movimentacoes_centro_custo_id_fkey | centro_custo_id | SET NULL |
 | public.pedidos_compra | pedidos_compra_centro_custo_id_fkey | centro_custo_id | SET NULL |
 
 

@@ -54,7 +54,12 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_nfe_data_emissao | btree | data_emissao | não | sim |  | `CREATE INDEX idx_nfe_data_emissao ON public.notas_fiscais USING btree (data_emissao)` |
+| idx_nfe_numero | btree | numero | não | sim |  | `CREATE INDEX idx_nfe_numero ON public.notas_fiscais USING btree (numero)` |
+| idx_notas_fiscais_data | btree | data_emissao | não | sim |  | `CREATE INDEX idx_notas_fiscais_data ON public.notas_fiscais USING btree (data_emissao)` |
 | idx_notas_fiscais_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_notas_fiscais_empresa_id ON public.notas_fiscais USING btree (empresa_id)` |
+| idx_notas_fiscais_empresa_id_fk | btree | empresa_id | não | sim |  | `CREATE INDEX idx_notas_fiscais_empresa_id_fk ON public.notas_fiscais USING btree (empresa_id)` |
+| idx_notas_fiscais_status | btree | status | não | sim |  | `CREATE INDEX idx_notas_fiscais_status ON public.notas_fiscais USING btree (status)` |
 | notas_fiscais_chave_acesso_key | btree | chave_acesso | sim | sim |  | `CREATE UNIQUE INDEX notas_fiscais_chave_acesso_key ON public.notas_fiscais USING btree (chave_acesso)` |
 | notas_fiscais_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX notas_fiscais_pkey ON public.notas_fiscais USING btree (id)` |
 

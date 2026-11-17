@@ -22,6 +22,7 @@
 | public.regime_tributario_enum | enum | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO | public.simulacao_tributos_detalhados.regime, public.simulacoes.regime_recomendado |
 | public.sefaz_ambiente | enum | homologacao, producao | public.empresas_certificados.ambiente, public.nfe_recebidas.ambiente, public.sefaz_dfe_cursor.ambiente, public.v_sefaz_observability.ambiente |
 | public.status_workflow | enum | IDENTIFICADO, EM_ANALISE, APROVADO, EM_EXECUCAO, CONCLUIDO, CANCELADO |  |
+| public.subscription_frequencia | enum | imediata, horaria, diaria | public.saved_filter_subscriptions.frequencia |
 | public.tipo_alerta_tributario | enum | vencimento_apuracao, vencimento_darf, vencimento_obrigacao, prazo_credito, limite_compensacao, pendencia_conciliacao, inconsistencia_fiscal, atualizacao_legislacao, split_payment, retencao_pendente, nfe_rejeitada, saldo_negativo |  |
 | public.tipo_cobranca | enum | transferencia, pix, boleto, debito_automatico, cartao_credito, cartao_debito, cheque, dinheiro | public.pagamentos_recorrentes.tipo_cobranca |
 | public.tipo_destinatario | enum | CONTRIBUINTE_REVENDA, CONTRIBUINTE_USO_CONSUMO, NAO_CONTRIBUINTE, EXTERIOR | public.operacoes_icms.tipo_destinatario |

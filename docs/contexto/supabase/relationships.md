@@ -146,6 +146,7 @@
 | public.metas_financeiras | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.metas_financeiras | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.movimentacoes | categoria_id | public.categorias | id | SET NULL | NO ACTION |
+| public.movimentacoes | centro_custo_id | public.centros_custo | id | SET NULL | NO ACTION |
 | public.movimentacoes | conta_bancaria_id | public.contas_bancarias | id | NO ACTION | NO ACTION |
 | public.movimentacoes | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.n8n_dispatch_logs | config_id | public.n8n_workflow_configs | id | SET NULL | NO ACTION |

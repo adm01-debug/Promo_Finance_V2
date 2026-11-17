@@ -28,6 +28,7 @@
 | 10 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
 | 11 | `empresa_id` | `uuid` | sim |  |  |  |
 | 12 | `updated_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 13 | `atendida_por` | `uuid` | sim |  |  |  |
 
 
 ## Constraints

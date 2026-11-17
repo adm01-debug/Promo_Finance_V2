@@ -10,7 +10,7 @@
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
-| usada por views | public.vw_contas_receber_painel, public.vw_dso_aging, public.vw_metricas_cobranca |
+| usada por views | public.vw_contas_receber_painel, public.vw_dso_aging, public.vw_fluxo_caixa, public.vw_metricas_cobranca |
 
 
 ## Colunas
@@ -100,13 +100,25 @@
 | contas_receber_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX contas_receber_pkey ON public.contas_receber USING btree (id)` |
 | idx_contas_receber_categoria_id | btree | categoria_id | não | sim |  | `CREATE INDEX idx_contas_receber_categoria_id ON public.contas_receber USING btree (categoria_id)` |
 | idx_contas_receber_centro_custo_id | btree | centro_custo_id | não | sim |  | `CREATE INDEX idx_contas_receber_centro_custo_id ON public.contas_receber USING btree (centro_custo_id)` |
+| idx_contas_receber_cliente | btree | cliente_id | não | sim |  | `CREATE INDEX idx_contas_receber_cliente ON public.contas_receber USING btree (cliente_id)` |
 | idx_contas_receber_cliente_id | btree | cliente_id | não | sim |  | `CREATE INDEX idx_contas_receber_cliente_id ON public.contas_receber USING btree (cliente_id)` |
 | idx_contas_receber_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_contas_receber_conta_bancaria_id ON public.contas_receber USING btree (conta_bancaria_id)` |
 | idx_contas_receber_data_recebimento | btree | data_recebimento | não | sim | `(data_recebimento IS NOT NULL)` | `CREATE INDEX idx_contas_receber_data_recebimento ON public.contas_receber USING btree (data_recebimento) WHERE (data_recebimento IS NOT NULL)` |
+| idx_contas_receber_data_vencimento | btree | data_vencimento | não | sim |  | `CREATE INDEX idx_contas_receber_data_vencimento ON public.contas_receber USING btree (data_vencimento)` |
 | idx_contas_receber_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_contas_receber_empresa_id ON public.contas_receber USING btree (empresa_id)` |
 | idx_contas_receber_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  | `CREATE INDEX idx_contas_receber_empresa_status_venc ON public.contas_receber USING btree (empresa_id, status, data_vencimento)` |
 | idx_contas_receber_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` | `CREATE INDEX idx_contas_receber_pendentes_venc ON public.contas_receber USING btree (empresa_id, data_vencimento) WHERE ((status)::text = 'pendente'::text)` |
+| idx_contas_receber_prevent_duplicates | btree | cliente_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (cliente_id IS NOT NULL) AND (numero_documento IS NOT NULL))` | `CREATE UNIQUE INDEX idx_contas_receber_prevent_duplicates ON public.contas_receber USING btree (cliente_id, valor, data_vencimento, numero_documento) WHERE (((status)::text <> 'cancelado'::text) AND (cliente_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
+| idx_contas_receber_status | btree | status | não | sim |  | `CREATE INDEX idx_contas_receber_status ON public.contas_receber USING btree (status)` |
+| idx_contas_receber_transacao_conciliada_id_fk | btree | transacao_conciliada_id | não | sim |  | `CREATE INDEX idx_contas_receber_transacao_conciliada_id_fk ON public.contas_receber USING btree (transacao_conciliada_id)` |
 | idx_contas_receber_user_created | btree | user_id, created_at | não | sim |  | `CREATE INDEX idx_contas_receber_user_created ON public.contas_receber USING btree (user_id, created_at DESC)` |
+| idx_contas_receber_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_contas_receber_user_id ON public.contas_receber USING btree (user_id)` |
+| idx_contas_receber_vencimento | btree | data_vencimento | não | sim |  | `CREATE INDEX idx_contas_receber_vencimento ON public.contas_receber USING btree (data_vencimento)` |
+| idx_contas_receber_vendedor_id | btree | vendedor_id | não | sim |  | `CREATE INDEX idx_contas_receber_vendedor_id ON public.contas_receber USING btree (vendedor_id)` |
+| idx_cr_cliente_status | btree | cliente_id, status | não | sim |  | `CREATE INDEX idx_cr_cliente_status ON public.contas_receber USING btree (cliente_id, status)` |
+| idx_cr_descricao_gin | gin |  | não | sim |  | `CREATE INDEX idx_cr_descricao_gin ON public.contas_receber USING gin (to_tsvector('portuguese'::regconfig, (descricao)::text))` |
+| idx_cr_pendentes | btree | data_vencimento | não | sim | `((status)::text = ANY (ARRAY[('pendente'::character varying)::text, ('vencida'::character varying)::text]))` | `CREATE INDEX idx_cr_pendentes ON public.contas_receber USING btree (data_vencimento) WHERE ((status)::text = ANY (ARRAY[('pendente'::character varying)::text, ('vencida'::character varying)::text]))` |
+| idx_cr_status_vencimento | btree | status, data_vencimento | não | sim |  | `CREATE INDEX idx_cr_status_vencimento ON public.contas_receber USING btree (status, data_vencimento)` |
 
 
 ## Policies (RLS)

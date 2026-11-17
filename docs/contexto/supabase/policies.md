@@ -168,6 +168,7 @@ Visão consolidada (inclui `storage.objects` e `realtime.messages`); detalhes po
 | public.cnaes | cnaes_select_authenticated | SELECT | PERMISSIVE | authenticated | `true` |  |
 | public.cnaes | cnaes_write_admin | ALL | PERMISSIVE | authenticated | `has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role)` | `has_role(( SELECT ( SELECT auth.uid() AS uid) AS uid), 'admin'::app_role)` |
 | public.cnpja_cache | cnpja_cache_service_role_only | ALL | PERMISSIVE | service_role | `true` | `true` |
+| public.cnpja_rate_limit | Usuário vê próprio uso CNPJá | SELECT | PERMISSIVE | authenticated | `((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))` |  |
 | public.conciliacoes | Fin users can manage conciliacoes | ALL | PERMISSIVE | authenticated | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 | public.conciliacoes | Fin users can read conciliacoes | SELECT | PERMISSIVE | authenticated | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_acessivel(empresa_id))` |  |
 | public.conciliacoes | conciliacoes_owner_all | ALL | PERMISSIVE | authenticated | `(( SELECT auth.uid() AS uid) = user_id)` | `(( SELECT auth.uid() AS uid) = user_id)` |

@@ -66,7 +66,12 @@
 |---|---|---|---|---|---|---|
 | fornecedores_cnpj_key | btree | cnpj | sim | sim |  | `CREATE UNIQUE INDEX fornecedores_cnpj_key ON public.fornecedores USING btree (cnpj)` |
 | fornecedores_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX fornecedores_pkey ON public.fornecedores USING btree (id)` |
+| idx_fornecedores_ativo | btree | ativo | não | sim |  | `CREATE INDEX idx_fornecedores_ativo ON public.fornecedores USING btree (ativo)` |
+| idx_fornecedores_cnpj | btree | cnpj | não | sim |  | `CREATE INDEX idx_fornecedores_cnpj ON public.fornecedores USING btree (cnpj)` |
 | idx_fornecedores_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_fornecedores_empresa_id ON public.fornecedores USING btree (empresa_id)` |
+| idx_fornecedores_empresa_id_fk | btree | empresa_id | não | sim |  | `CREATE INDEX idx_fornecedores_empresa_id_fk ON public.fornecedores USING btree (empresa_id)` |
+| idx_fornecedores_razao_social | btree | razao_social | não | sim |  | `CREATE INDEX idx_fornecedores_razao_social ON public.fornecedores USING btree (razao_social)` |
+| idx_fornecedores_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_fornecedores_user_id ON public.fornecedores USING btree (user_id)` |
 | idx_fornecedores_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_fornecedores_user_id_fk ON public.fornecedores USING btree (user_id)` |
 
 

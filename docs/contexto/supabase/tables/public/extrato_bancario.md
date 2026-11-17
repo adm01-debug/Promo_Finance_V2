@@ -53,6 +53,7 @@
 | extrato_bancario_hash_transacao_key | btree | hash_transacao | sim | sim |  | `CREATE UNIQUE INDEX extrato_bancario_hash_transacao_key ON public.extrato_bancario USING btree (hash_transacao)` |
 | extrato_bancario_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX extrato_bancario_pkey ON public.extrato_bancario USING btree (id)` |
 | idx_extrato_bancario_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_extrato_bancario_conta_bancaria_id_fk ON public.extrato_bancario USING btree (conta_bancaria_id)` |
+| idx_extrato_bancario_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_extrato_bancario_user_id_fk ON public.extrato_bancario USING btree (user_id)` |
 
 
 ## Policies (RLS)

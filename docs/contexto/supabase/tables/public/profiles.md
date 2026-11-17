@@ -26,6 +26,7 @@
 | 7 | `email` | `text` | sim |  |  |  |
 | 8 | `user_id` | `uuid` | sim |  |  |  |
 | 9 | `empresa_id` | `uuid` | sim |  |  |  |
+| 10 | `telefone` | `text` | sim |  |  |  |
 
 
 ## Constraints

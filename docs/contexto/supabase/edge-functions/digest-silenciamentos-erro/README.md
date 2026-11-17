@@ -4,7 +4,7 @@
 |---|---|
 | nome | digest-silenciamentos-erro |
 | status | ACTIVE |
-| versão | 97 |
+| versão | 103 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/digest-silenciamentos-erro/index.ts |
 | import_map |  |

@@ -31,6 +31,7 @@
 | 13 | `user_id` | `uuid` | sim |  |  |  |
 | 14 | `created_by` | `uuid` | sim |  |  |  |
 | 15 | `entidade_id` | `uuid` | sim |  |  |  |
+| 16 | `categoria` | `text` | sim |  |  |  |
 
 
 ## Constraints

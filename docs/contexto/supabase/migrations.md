@@ -1039,3 +1039,10 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261117053000 | [reprocess_dlq_reagenda_original](migrations/20261117053000_reprocess_dlq_reagenda_original.sql) | 2 |
 | 20261117074000 | [webhook_replay_resolve_dlq](migrations/20261117074000_webhook_replay_resolve_dlq.sql) | 3 |
 | 20261117190000 | [drop_tabelas_residuo_lovable](migrations/20261117190000_drop_tabelas_residuo_lovable.sql) | 25 |
+| 20261117193000 | [colunas_nunca_aplicadas](migrations/20261117193000_colunas_nunca_aplicadas.sql) | 27 |
+| 20261117195500 | [restaura_cnpja_rate_limit](migrations/20261117195500_restaura_cnpja_rate_limit.sql) | 7 |
+| 20261117201000 | [sso_login_attempts_state](migrations/20261117201000_sso_login_attempts_state.sql) | 3 |
+| 20261117220000 | [colunas_declaradas_classe_select](migrations/20261117220000_colunas_declaradas_classe_select.sql) | 0 |
+| 20261117223000 | [converge_saved_filter_subscriptions](migrations/20261117223000_converge_saved_filter_subscriptions.sql) | 0 |
+| 20261117224000 | [vw_fluxo_caixa_por_empresa](migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql) | 0 |
+| 20261117225000 | [indices_recuperados_da_445](migrations/20261117225000_indices_recuperados_da_445.sql) | 0 |

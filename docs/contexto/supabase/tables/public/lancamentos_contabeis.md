@@ -50,7 +50,11 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_lanc_emp_data | btree | empresa_id, data_lancamento | não | sim |  | `CREATE INDEX idx_lanc_emp_data ON public.lancamentos_contabeis USING btree (empresa_id, data_lancamento DESC)` |
+| idx_lanc_origem | btree | origem, origem_id | não | sim |  | `CREATE INDEX idx_lanc_origem ON public.lancamentos_contabeis USING btree (origem, origem_id)` |
 | idx_lancamentos_contabeis_empresa_user | btree | empresa_id, user_id | não | sim |  | `CREATE INDEX idx_lancamentos_contabeis_empresa_user ON public.lancamentos_contabeis USING btree (empresa_id, user_id)` |
+| idx_lancamentos_contabeis_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_lancamentos_contabeis_user_id_fk ON public.lancamentos_contabeis USING btree (user_id)` |
+| lancamentos_contabeis_empresa_comp_idx | btree | empresa_id, competencia | não | sim |  | `CREATE INDEX lancamentos_contabeis_empresa_comp_idx ON public.lancamentos_contabeis USING btree (empresa_id, competencia)` |
 | lancamentos_contabeis_empresa_data_idx | btree | empresa_id, data_lancamento | não | sim |  | `CREATE INDEX lancamentos_contabeis_empresa_data_idx ON public.lancamentos_contabeis USING btree (empresa_id, data_lancamento)` |
 | lancamentos_contabeis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX lancamentos_contabeis_pkey ON public.lancamentos_contabeis USING btree (id)` |
 

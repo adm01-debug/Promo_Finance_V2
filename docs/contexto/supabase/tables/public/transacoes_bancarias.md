@@ -65,7 +65,15 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_transacoes_bancarias_confirmado_por_fk | btree | confirmado_por | não | sim |  | `CREATE INDEX idx_transacoes_bancarias_confirmado_por_fk ON public.transacoes_bancarias USING btree (confirmado_por)` |
+| idx_transacoes_bancarias_created_at | btree | created_at | não | sim |  | `CREATE INDEX idx_transacoes_bancarias_created_at ON public.transacoes_bancarias USING btree (created_at DESC)` |
+| idx_transacoes_bancarias_empresa_data | btree | conta_bancaria_id, data | não | sim |  | `CREATE INDEX idx_transacoes_bancarias_empresa_data ON public.transacoes_bancarias USING btree (conta_bancaria_id, data DESC)` |
 | idx_transacoes_bancarias_regra_id_fk | btree | regra_id | não | sim |  | `CREATE INDEX idx_transacoes_bancarias_regra_id_fk ON public.transacoes_bancarias USING btree (regra_id)` |
+| idx_transacoes_compensacao_aceita_em | btree | compensacao_aceita_em | não | sim |  | `CREATE INDEX idx_transacoes_compensacao_aceita_em ON public.transacoes_bancarias USING btree (compensacao_aceita_em)` |
+| idx_transacoes_compensacao_aceita_por | btree | compensacao_aceita_por | não | sim |  | `CREATE INDEX idx_transacoes_compensacao_aceita_por ON public.transacoes_bancarias USING btree (compensacao_aceita_por)` |
+| idx_transacoes_compensacao_classificacao | btree | compensacao_classificacao | não | sim |  | `CREATE INDEX idx_transacoes_compensacao_classificacao ON public.transacoes_bancarias USING btree (compensacao_classificacao)` |
+| idx_transacoes_conta | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_transacoes_conta ON public.transacoes_bancarias USING btree (conta_bancaria_id)` |
+| idx_transacoes_data | btree | data | não | sim |  | `CREATE INDEX idx_transacoes_data ON public.transacoes_bancarias USING btree (data)` |
+| idx_transacoes_pendentes | btree | conta_bancaria_id, data | não | sim | `(status = 'pendente'::text)` | `CREATE INDEX idx_transacoes_pendentes ON public.transacoes_bancarias USING btree (conta_bancaria_id, data DESC) WHERE (status = 'pendente'::text)` |
 | transacoes_bancarias_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX transacoes_bancarias_pkey ON public.transacoes_bancarias USING btree (id)` |
 
 

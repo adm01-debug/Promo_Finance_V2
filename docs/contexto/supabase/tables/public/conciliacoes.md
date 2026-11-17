@@ -41,6 +41,8 @@
 |---|---|---|---|---|---|---|
 | conciliacoes_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX conciliacoes_pkey ON public.conciliacoes USING btree (id)` |
 | idx_conciliacoes_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_conciliacoes_conta_bancaria_id_fk ON public.conciliacoes USING btree (conta_bancaria_id)` |
+| idx_conciliacoes_empresa_id_fk | btree | empresa_id | não | sim |  | `CREATE INDEX idx_conciliacoes_empresa_id_fk ON public.conciliacoes USING btree (empresa_id)` |
+| idx_conciliacoes_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_conciliacoes_user_id_fk ON public.conciliacoes USING btree (user_id)` |
 
 
 ## Policies (RLS)

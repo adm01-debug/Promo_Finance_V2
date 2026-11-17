@@ -75,8 +75,12 @@
 | boletos_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX boletos_pkey ON public.boletos USING btree (id)` |
 | idx_boletos_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  | `CREATE INDEX idx_boletos_conta_bancaria_id ON public.boletos USING btree (conta_bancaria_id)` |
 | idx_boletos_conta_pagar_id | btree | conta_pagar_id | não | sim |  | `CREATE INDEX idx_boletos_conta_pagar_id ON public.boletos USING btree (conta_pagar_id)` |
+| idx_boletos_conta_receber_id | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_boletos_conta_receber_id ON public.boletos USING btree (conta_receber_id)` |
 | idx_boletos_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_boletos_created_by_fk ON public.boletos USING btree (created_by)` |
 | idx_boletos_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_boletos_empresa_id ON public.boletos USING btree (empresa_id)` |
+| idx_boletos_status | btree | status | não | sim |  | `CREATE INDEX idx_boletos_status ON public.boletos USING btree (status)` |
+| idx_boletos_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_boletos_user_id_fk ON public.boletos USING btree (user_id)` |
+| idx_boletos_vencimento | btree | vencimento | não | sim |  | `CREATE INDEX idx_boletos_vencimento ON public.boletos USING btree (vencimento)` |
 
 
 ## Policies (RLS)

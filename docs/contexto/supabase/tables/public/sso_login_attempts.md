@@ -29,6 +29,8 @@
 | 11 | `code_verifier_hash` | `text` | sim |  |  |  |
 | 12 | `duration_ms` | `integer` | sim |  |  |  |
 | 13 | `empresa_id` | `uuid` | sim |  |  |  |
+| 14 | `state` | `text` | sim |  |  |  |
+| 15 | `expires_at` | `timestamp with time zone` | sim |  |  |  |
 
 
 ## Constraints
@@ -43,6 +45,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| idx_sso_attempts_state | btree | state | não | sim | `(state IS NOT NULL)` | `CREATE INDEX idx_sso_attempts_state ON public.sso_login_attempts USING btree (state) WHERE (state IS NOT NULL)` |
 | sso_login_attempts_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sso_login_attempts_pkey ON public.sso_login_attempts USING btree (id)` |
 
 
