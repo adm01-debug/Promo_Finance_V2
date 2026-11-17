@@ -103,7 +103,10 @@ export function useBitrix24() {
       const { data, error } = await supabase
         .from('clientes')
         .select('*')
-        .not('bitrix_id', 'is', null)
+        // o vínculo é por bitrix_contact_id (contato) ou bitrix_company_id
+        // (empresa); `bitrix_id` não existe em clientes e fazia esta lista
+        // falhar, então a aba de sincronizados vinha sempre vazia
+        .or('bitrix_contact_id.not.is.null,bitrix_company_id.not.is.null')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
