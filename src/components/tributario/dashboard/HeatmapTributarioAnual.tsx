@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useHeatmapTributario } from '@/hooks/useHeatmapTributario';
 import { Download, Flame, TrendingUp, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 const TRIBUTOS = [
@@ -150,7 +151,10 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                               ? `${trib.label} ${MESES[i]}/${ano}\nSem lançamento de faturamento neste mês`
                               : `${trib.label} ${MESES[i]}/${ano}\nValor: ${fmtBRL(c?.valor ?? 0)}${c?.variacao_mom != null ? `\nMoM: ${c.variacao_mom.toFixed(1)}%` : ''}`
                           }
-                          className={`rounded text-center font-mono cursor-help transition-transform hover:scale-110${semLancamento ? ' border border-dashed border-border/60' : ''}`}
+                          className={cn(
+                            'rounded text-center font-mono cursor-help transition-transform hover:scale-110',
+                            semLancamento && 'border border-dashed border-border/60'
+                          )}
                           style={{
                             backgroundColor: semLancamento
                               ? 'transparent'
