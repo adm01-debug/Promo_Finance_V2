@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "00a778332e85b84813e8a7275e8e91190a62e0f8",
+  "commit": "c19b86c63f5b7c6e8d61db0bb715e6ca218ff432",
   "branch": "main",
-  "data_commit": "2026-11-17T04:03:37-03:00",
+  "data_commit": "2026-11-17T04:15:34-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "c19b86c",
+    "data": "2026-11-17",
+    "assunto": "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)"
+   },
    {
     "sha": "00a7783",
     "data": "2026-11-17",
@@ -126,11 +131,6 @@
     "sha": "f48e9c1",
     "data": "2026-11-16",
     "assunto": "fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)"
-   },
-   {
-    "sha": "c7bd81b",
-    "data": "2026-11-16",
-    "assunto": "fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)"
    }
   ],
   "arquivos_mudados_7d": 840,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 168
+    "commits": 169
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3897,
   "arquivos_codigo": 2459,
-  "linhas_codigo": 438048,
+  "linhas_codigo": 438159,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -660,7 +660,7 @@
   },
   "src/lib": {
    "arquivos": 413,
-   "linhas": 54619
+   "linhas": 54730
   },
   "src/main.tsx": {
    "arquivos": 1,

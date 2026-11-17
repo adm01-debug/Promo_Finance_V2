@@ -2068,11 +2068,11 @@
   {
    "arquivo": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
    "tipo": "unit",
-   "linhas": 85,
+   "linhas": 156,
    "testa": [
     "src/lib/ofx-parser.ts"
    ],
-   "casos": 7
+   "casos": 15
   },
   {
    "arquivo": "src/lib/__tests__/ofx-parser.test.ts",

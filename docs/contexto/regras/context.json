@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "00a778332e85b84813e8a7275e8e91190a62e0f8",
+  "sha": "c19b86c63f5b7c6e8d61db0bb715e6ca218ff432",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 07:04 UTC",
+  "generated_at": "2026-11-17 07:16 UTC",
   "files_total": 3936,
   "code_files": 3559,
-  "code_lines": 506546
+  "code_lines": 506657
  },
  "version": "1.3.2",
- "facts_hash": "dd4dc8183fc42669",
+ "facts_hash": "83c44936f8a5f5ae",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -71988,7 +71988,7 @@
   {
    "module": "src/lib",
    "files": 413,
-   "lines": 55032,
+   "lines": 55143,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -86383,6 +86383,18 @@
    {
     "file": "src/lib/financeiro/valor-recebido-efetivo.ts",
     "text": "de fato\" (cota zero do rateio de acordo com 100% de desconto ou"
+   },
+   {
+    "file": "src/lib/ofx-parser/csv.ts",
+    "text": "// A deteccao NAO pode ser so \"tem uma coluna a mais\": virgula sobrando no"
+   },
+   {
+    "file": "src/lib/ofx-parser/csv.ts",
+    "text": "2) o valor nao pode ja ter virgula -- se tem, os centavos estao la;"
+   },
+   {
+    "file": "src/lib/ofx-parser/csv.ts",
+    "text": "Coluna a mais que o cabecalho tem origem AMBIGUA e nao ha regra que a"
    },
    {
     "file": "src/lib/ofx-parser/utils.ts",
@@ -129212,6 +129224,42 @@
    {
     "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
     "name": "CSV e XLSX dao o mesmo numero para a mesma entrada"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "CSV com coluna a mais: avisa em vez de perder centavos calado (F01)"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "valor BRL sem aspas: le a parte inteira MAS avisa que pode faltar centavos"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "com aspas continua certo e sem aviso"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "ponto e virgula com valor BRL segue intacto e sem aviso"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "coluna extra declarada no cabecalho: nada muda, nenhum aviso"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "virgula final com parcela: valor e parcela preservados, com aviso"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "virgula na DESCRICAO nao desloca o valor nem a descricao"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "valor internacional valido com coluna extra: valor intacto e aviso presente"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "ultima coluna declarada vazia com valor partido: le inteiro e avisa"
    },
    {
     "file": "src/lib/__tests__/ofx-parser.test.ts",
@@ -215118,7 +215166,7 @@
   },
   "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts": {
    "path": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
-   "lines": 86,
+   "lines": 157,
    "is_test": true,
    "tests": [
     "parseExcel — valor monetario BRL",
@@ -215128,7 +215176,16 @@
     "nao deixa NaN entrar junto com linha boa",
     "aceita R$ e formato internacional, como o CSV",
     "celula numerica do Excel continua passando direto",
-    "CSV e XLSX dao o mesmo numero para a mesma entrada"
+    "CSV e XLSX dao o mesmo numero para a mesma entrada",
+    "CSV com coluna a mais: avisa em vez de perder centavos calado (F01)",
+    "valor BRL sem aspas: le a parte inteira MAS avisa que pode faltar centavos",
+    "com aspas continua certo e sem aviso",
+    "ponto e virgula com valor BRL segue intacto e sem aviso",
+    "coluna extra declarada no cabecalho: nada muda, nenhum aviso",
+    "virgula final com parcela: valor e parcela preservados, com aviso",
+    "virgula na DESCRICAO nao desloca o valor nem a descricao",
+    "valor internacional valido com coluna extra: valor intacto e aviso presente",
+    "ultima coluna declarada vazia com valor partido: le inteiro e avisa"
    ]
   },
   "src/lib/__tests__/ofx-parser.test.ts": {
@@ -216564,7 +216621,7 @@
   },
   "src/lib/ofx-parser/csv.ts": {
    "path": "src/lib/ofx-parser/csv.ts",
-   "lines": 144,
+   "lines": 184,
    "exports": [
     "function parseCSV"
    ],
@@ -216574,6 +216631,11 @@
      "value": "credito",
      "kind": "escreve"
     }
+   ],
+   "rule_comments": [
+    "// A deteccao NAO pode ser so \"tem uma coluna a mais\": virgula sobrando no",
+    "2) o valor nao pode ja ter virgula -- se tem, os centavos estao la;",
+    "Coluna a mais que o cabecalho tem origem AMBIGUA e nao ha regra que a"
    ],
    "doc": "CSV bank statement parser"
   },
@@ -246993,10 +247055,20 @@
   }
  },
  "git": {
-  "sha": "00a778332e85b84813e8a7275e8e91190a62e0f8",
+  "sha": "c19b86c63f5b7c6e8d61db0bb715e6ca218ff432",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "c19b86c",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)",
+    "files": [
+     "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+     "src/lib/ofx-parser/csv.ts"
+    ]
+   },
    {
     "sha": "00a7783",
     "date": "2026-11-17",
@@ -247362,29 +247434,6 @@
     "files": [
      "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql"
     ]
-   },
-   {
-    "sha": "0cdf2a7",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)",
-    "files": [
-     "supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
-     "supabase/migrations/20251214203338_8ba6f383-577f-4aaa-93f9-c11cf2ed9f60.sql",
-     "supabase/migrations/20251220014622_3bf7d2d0-fbb2-4814-972b-1a2d7d18b1d4.sql",
-     "supabase/migrations/20251220131549_438366a4-7d67-4db1-b4c1-d1e23032db41.sql",
-     "supabase/migrations/20251231024248_d10755f4-69dc-4236-a95d-6e006762381c.sql",
-     "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
-     "supabase/migrations/20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
-     "supabase/migrations/20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
-     "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
-     "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
-     "supabase/migrations/20260508174109_1869af74-cad5-4c86-91e2-e3ede3924eb7.sql",
-     "supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql",
-     "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql",
-     "supabase/migrations/20260518190304_430602f1-8324-46d3-b373-04cac640714d.sql",
-     "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -247399,6 +247448,14 @@
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
     3
+   ],
+   [
+    "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    2
+   ],
+   [
+    "src/lib/ofx-parser/csv.ts",
+    2
    ],
    [
     "src/components/contas-receber/WebhookDlqPanel.tsx",
@@ -247458,14 +247515,6 @@
    ],
    [
     "src/lib/__tests__/cashflow-scenarios.test.ts",
-    1
-   ],
-   [
-    "src/lib/cashflow-scenarios.ts",
-    1
-   ],
-   [
-    "src/components/contabilidade/balancete/BalanceteTable.tsx",
     1
    ]
   ]
