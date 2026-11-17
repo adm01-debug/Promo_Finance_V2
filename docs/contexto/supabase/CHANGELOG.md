@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-17 13:18 UTC
+
+- **edge functions** alterado (24): `analise-fluxo-ia`, `analise-preditiva`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `consulta-tributaria`, `enviar-bitrix24-tributario`, `executar-analise-preditiva`, `gerar-alertas`, `gerar-alertas-dispatcher`, `nfe-upload-certificado`, `overlay-rejeicoes-auditoria`, `processar-nf-ocr`, `relatorio-diario-anomalias`, `sefaz-dfe-dispatcher`, `sefaz-dfe-puxar`, `sincronizar-anomalia-bitrix24`, `verificar-conformidade-fiscal`, `webhook-replay`, `webhook-retry-worker`
+
 ## 2026-11-17 12:22 UTC
 
 - **edge functions** alterado (21): `asaas-webhook`, `bling-webhook`, `ci-security-gate-log`, `comparar-benchmark-setorial`, `conciliacao-ia`, `conciliacao-proxy`, `contabilizar-evento`, `copilot-global`, `detectar-anomalias-financeiras`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `gerar-alertas-tributarios`, `gerar-dre-tributaria`, `gerar-heatmap-tributario`, `gerar-resumo-financeiro-diario`, `gerar-sped-ecd`, `gerar-sped-ecf`, `mcp-query`, `nfe-vinculo-proxy`, `processar-fila-cobrancas`, `sefaz-manifestar`

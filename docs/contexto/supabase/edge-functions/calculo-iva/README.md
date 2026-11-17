@@ -4,9 +4,9 @@
 |---|---|
 | nome | calculo-iva |
 | status | ACTIVE |
-| versão | 86 |
+| versão | 87 |
 | verify_jwt | sim |
-| entrypoint | file:///app/supabase/functions/calculo-iva/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/calculo-iva/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/calculo-iva |
 | fonte no repo | `supabase/functions/calculo-iva/` |

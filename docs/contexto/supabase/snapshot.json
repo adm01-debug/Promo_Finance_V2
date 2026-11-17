@@ -321,27 +321,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/analise-fluxo-ia/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/analise-fluxo-ia/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "analise-fluxo-ia",
         "slug": "analise-fluxo-ia",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920146953,
         "verify_jwt": false,
-        "version": 89
+        "version": 90
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/analise-preditiva/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/analise-preditiva/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "analise-preditiva",
         "slug": "analise-preditiva",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920288830,
         "verify_jwt": true,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
@@ -405,39 +405,39 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/bitrix24-sync/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bitrix24-sync/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "bitrix24-sync",
         "slug": "bitrix24-sync",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918522821,
         "verify_jwt": true,
-        "version": 89
+        "version": 90
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/bitrix24-webhook/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bitrix24-webhook/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "bitrix24-webhook",
         "slug": "bitrix24-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918383268,
         "verify_jwt": false,
-        "version": 90
+        "version": 91
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/bling-proxy/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bling-proxy/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "bling-proxy",
         "slug": "bling-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918251111,
         "verify_jwt": false,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
@@ -453,51 +453,51 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/calcular-health-score-operacional/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/calcular-health-score-operacional/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "calcular-health-score-operacional",
         "slug": "calcular-health-score-operacional",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920565254,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/calcular-slo-metrics-diario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/calcular-slo-metrics-diario/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "calcular-slo-metrics-diario",
         "slug": "calcular-slo-metrics-diario",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920683157,
         "verify_jwt": true,
-        "version": 84
+        "version": 85
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/calculo-iva/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/calculo-iva/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "calculo-iva",
         "slug": "calculo-iva",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919592299,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/categorizar-despesa/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/categorizar-despesa/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "categorizar-despesa",
         "slug": "categorizar-despesa",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919454917,
         "verify_jwt": false,
-        "version": 88
+        "version": 89
       },
       {
         "created_at": 1787655368587,
@@ -573,15 +573,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/consulta-tributaria/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/consulta-tributaria/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "consulta-tributaria",
         "slug": "consulta-tributaria",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919769807,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
@@ -693,15 +693,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/enviar-bitrix24-tributario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/enviar-bitrix24-tributario/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "enviar-bitrix24-tributario",
         "slug": "enviar-bitrix24-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794921404942,
         "verify_jwt": false,
-        "version": 81
+        "version": 82
       },
       {
         "created_at": 1787655368587,
@@ -741,15 +741,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/executar-analise-preditiva/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/executar-analise-preditiva/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "executar-analise-preditiva",
         "slug": "executar-analise-preditiva",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920411881,
         "verify_jwt": false,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -837,27 +837,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-alertas/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-alertas/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-alertas",
         "slug": "gerar-alertas",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920027279,
         "verify_jwt": false,
-        "version": 87
+        "version": 88
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-alertas-dispatcher/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-alertas-dispatcher/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-alertas-dispatcher",
         "slug": "gerar-alertas-dispatcher",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919887580,
         "verify_jwt": false,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -1113,15 +1113,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/nfe-upload-certificado/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/nfe-upload-certificado/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "nfe-upload-certificado",
         "slug": "nfe-upload-certificado",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919213268,
         "verify_jwt": true,
-        "version": 87
+        "version": 88
       },
       {
         "created_at": 1787655368587,
@@ -1173,15 +1173,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/overlay-rejeicoes-auditoria/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/overlay-rejeicoes-auditoria/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "overlay-rejeicoes-auditoria",
         "slug": "overlay-rejeicoes-auditoria",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920955773,
         "verify_jwt": true,
-        "version": 85
+        "version": 86
       },
       {
         "created_at": 1785348804189,
@@ -1209,15 +1209,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/processar-nf-ocr/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/processar-nf-ocr/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "processar-nf-ocr",
         "slug": "processar-nf-ocr",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919323720,
         "verify_jwt": true,
-        "version": 84
+        "version": 85
       },
       {
         "created_at": 1787655426108,
@@ -1245,15 +1245,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/relatorio-diario-anomalias/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/relatorio-diario-anomalias/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "relatorio-diario-anomalias",
         "slug": "relatorio-diario-anomalias",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794921114462,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -1269,27 +1269,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sefaz-dfe-dispatcher/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-dispatcher/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sefaz-dfe-dispatcher",
         "slug": "sefaz-dfe-dispatcher",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794919068603,
         "verify_jwt": false,
-        "version": 87
+        "version": 88
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sefaz-dfe-puxar/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-puxar/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sefaz-dfe-puxar",
         "slug": "sefaz-dfe-puxar",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918918266,
         "verify_jwt": false,
-        "version": 88
+        "version": 89
       },
       {
         "created_at": 1787655368587,
@@ -1365,15 +1365,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sincronizar-anomalia-bitrix24/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sincronizar-anomalia-bitrix24/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sincronizar-anomalia-bitrix24",
         "slug": "sincronizar-anomalia-bitrix24",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794921255246,
         "verify_jwt": true,
-        "version": 80
+        "version": 81
       },
       {
         "created_at": 1787655368587,
@@ -1497,39 +1497,39 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/verificar-conformidade-fiscal/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/verificar-conformidade-fiscal/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "verificar-conformidade-fiscal",
         "slug": "verificar-conformidade-fiscal",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794920824173,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/webhook-replay/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/webhook-replay/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "webhook-replay",
         "slug": "webhook-replay",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918784155,
         "verify_jwt": false,
-        "version": 88
+        "version": 89
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/webhook-retry-worker/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/webhook-retry-worker/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "webhook-retry-worker",
         "slug": "webhook-retry-worker",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918642897,
         "verify_jwt": false,
-        "version": 84
+        "version": 85
       },
       {
         "created_at": 1787655368587,
