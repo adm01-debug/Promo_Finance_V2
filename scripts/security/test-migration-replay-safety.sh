@@ -64,12 +64,15 @@ check_absent() {
 # seguintes a referenciem.
 check_present() {
   local pattern="$1"
-  local status
+  local status=0
   shift
-  if grep -qERi -- "$pattern" "$@"; then
+  # $? tem de ser capturado na mesma linha do grep: depois de `fi` ele ja vale
+  # o do proprio `if` (0 quando a condicao e falsa), e o guarda saia com
+  # exit 0 -- ou seja, padrao obrigatorio ausente passava no CI.
+  grep -qERi -- "$pattern" "$@" || status=$?
+  if [[ "$status" -eq 0 ]]; then
     return 0
   fi
-  status=$?
   if [[ "$status" -ne 1 ]]; then
     echo "Falha: não foi possível verificar o padrão obrigatório '$pattern'." >&2
     exit "$status"
@@ -127,6 +130,53 @@ check_absent '^[[:space:]]*DROP[[:space:]]+POLICY.*ON[[:space:]]+public\.(workfl
 # que precisa continuar sendo criada aqui.
 check_present 'CREATE[[:space:]]+TABLE[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS[[:space:]]+public\.plano_contas' \
   supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql
+
+# ── Bloqueios do replay completo fechados pela PR #399 ───────────────────
+# Cada um destes abortou a cadeia inteira uma vez, deixando o schema pela
+# metade. O replay completo precisa de um Postgres descartavel e nao roda
+# neste script; os guardas abaixo travam a reincidencia na forma exata que
+# quebrou, no arquivo exato.
+
+# CREATE OR REPLACE nao renomeia parametro de entrada: a cadeia cria
+# faixa_simples_reparticao_valida(_rep jsonb) antes (20260728124719:42,
+# 20260825110000) e a producao usa p_reparticao. Sem o DROP da funcao -- e do
+# CHECK que depende dela -- o arquivo morre em "cannot change name of input
+# parameter".
+check_present 'DROP[[:space:]]+FUNCTION[[:space:]]+IF[[:space:]]+EXISTS[[:space:]]+public\.faixa_simples_reparticao_valida\([[:space:]]*jsonb[[:space:]]*\)' \
+  supabase/migrations/20260825250000_recreate_6_constraints.sql
+
+# Com o arquivo acima chegando ao fim, C3 e C5 passaram a ser alcancados e
+# quebravam em "constraint ... already exists": ADD CONSTRAINT sem DROP antes.
+check_present 'DROP[[:space:]]+CONSTRAINT[[:space:]]+IF[[:space:]]+EXISTS[[:space:]]+protocolos_st_ncms_mva_range_chk' \
+  supabase/migrations/20260825250000_recreate_6_constraints.sql
+
+check_present 'DROP[[:space:]]+CONSTRAINT[[:space:]]+IF[[:space:]]+EXISTS[[:space:]]+elisao_regras_creditos_aliquota_check' \
+  supabase/migrations/20260825250000_recreate_6_constraints.sql
+
+# REVOKE sobre funcao inexistente aborta o arquivo todo. A producao tem os dois
+# overloads de watch_cron_failures; a cadeia so cria (integer, integer), entao o
+# overload sem argumentos depende da guarda de existencia.
+check_present "to_regprocedure\('public\.watch_cron_failures\(\)'\)" \
+  supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql
+
+# cron_job_logs sem success/created_at derruba o preflight de 20260831153000 --
+# e a tabela nesse formato rejeitaria o INSERT que a Edge Function
+# sefaz-dfe-dispatcher realmente faz (executed_at/duration_ms/success/result).
+check_present 'ADD[[:space:]]+COLUMN[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS[[:space:]]+success[[:space:]]+boolean' \
+  supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql
+
+check_present 'ADD[[:space:]]+COLUMN[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS[[:space:]]+created_at[[:space:]]+timestamp' \
+  supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql
+
+# O CHECK de C5 referencia elisao_regras_creditos.aliquota, que a cadeia nao
+# criava: la a tabela nasce com aliquota_pis_reducao/fundamentacao_legal.
+check_present 'ADD[[:space:]]+COLUMN[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS[[:space:]]+aliquota[[:space:]]+numeric' \
+  supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql
+
+# O DROP de 6 argumentos nao alcanca o overload legado de 4 -- e e por ele que
+# 20261102000000 acusava "confirmar_conciliacao ainda existe".
+check_present 'DROP[[:space:]]+FUNCTION[[:space:]]+IF[[:space:]]+EXISTS[[:space:]]+public\.confirmar_conciliacao\([[:space:]]*uuid,[[:space:]]*uuid,[[:space:]]*uuid,[[:space:]]*numeric[[:space:]]*\)' \
+  supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql
 
 if [[ "$fail" -ne 0 ]]; then
   echo "Falha: replay safety violado nas migrations críticas." >&2

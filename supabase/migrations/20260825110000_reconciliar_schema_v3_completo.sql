@@ -4779,6 +4779,19 @@ CREATE OR REPLACE TRIGGER trg_elisao_alertas_updated_at BEFORE UPDATE ON public.
 
 CREATE OR REPLACE TRIGGER trg_cred_aud_updated_at BEFORE UPDATE ON public.elisao_creditos_auditoria FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
+-- A cadeia cria elisao_regras_creditos com aliquota_pis_reducao/
+-- aliquota_cofins_reducao/fundamentacao_legal (20260508140632), formato que a
+-- producao nao tem: la as colunas sao codigo/nome/cst_csosn/metodologia/
+-- fundamento_legal/aliquota. Sem aliquota, o CHECK de 20260825250000 (C5)
+-- aborta a cadeia. As colunas antigas ficam -- 20260508140632 ainda as usa.
+ALTER TABLE public.elisao_regras_creditos
+    ADD COLUMN IF NOT EXISTS codigo text,
+    ADD COLUMN IF NOT EXISTS nome text,
+    ADD COLUMN IF NOT EXISTS cst_csosn text,
+    ADD COLUMN IF NOT EXISTS metodologia text,
+    ADD COLUMN IF NOT EXISTS fundamento_legal text,
+    ADD COLUMN IF NOT EXISTS aliquota numeric;
+
 CREATE OR REPLACE TRIGGER trg_regras_creditos_updated_at BEFORE UPDATE ON public.elisao_regras_creditos FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE OR REPLACE TRIGGER trg_elisao_sim_updated_at BEFORE UPDATE ON public.elisao_simulacoes_regime FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -5628,15 +5641,33 @@ CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios TO authentic
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
+-- Formato da producao (9 colunas): e nele que sefaz-dfe-dispatcher/index.ts:198
+-- grava executed_at/completed_at/duration_ms/success/result. As colunas
+-- status/started_at/finished_at ficam porque a cadeia ainda le
+-- cron_job_logs.status. Sem success e created_at o preflight de
+-- 20260831153000 aborta a cadeia.
 CREATE TABLE IF NOT EXISTS public.cron_job_logs (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     job_name text,
     status text,
     started_at timestamp with time zone NOT NULL DEFAULT now(),
     finished_at timestamp with time zone,
+    executed_at timestamp with time zone,
+    completed_at timestamp with time zone,
+    duration_ms integer,
+    result jsonb,
+    success boolean,
     error_message text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
     CONSTRAINT cron_job_logs_pkey PRIMARY KEY (id)
 );
+ALTER TABLE public.cron_job_logs
+    ADD COLUMN IF NOT EXISTS executed_at timestamp with time zone,
+    ADD COLUMN IF NOT EXISTS completed_at timestamp with time zone,
+    ADD COLUMN IF NOT EXISTS duration_ms integer,
+    ADD COLUMN IF NOT EXISTS result jsonb,
+    ADD COLUMN IF NOT EXISTS success boolean,
+    ADD COLUMN IF NOT EXISTS created_at timestamp with time zone NOT NULL DEFAULT now();
 ALTER TABLE public.cron_job_logs ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs;
