@@ -149,7 +149,11 @@ function gerarFatoresRisco(
   if (proximoVencimento && differenceInDays(proximoVencimento, new Date()) <= 7) {
     fatores.push('Vencimento próximo');
   }
-  return fatores.length > 0 ? fatores : ['Nenhum fator de risco identificado'];
+  // Sem fallback aqui: quem chama ainda acrescenta setor e cadastro, e aplicar
+  // "nenhum fator" antes disso punha as duas coisas no mesmo cartao -- "Nenhum
+  // fator de risco identificado" ao lado de "Setor de alto risco" (achado P2 do
+  // Codex na PR #404). O fallback entra em `comFallback()`, no fim.
+  return fatores;
 }
 
 function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]): string {
@@ -163,6 +167,47 @@ function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: stri
     return 'Enviar lembrete amigável antes do vencimento';
   }
   return 'Manter acompanhamento padrão';
+}
+
+const PAGINA = 1000;
+/** Teto de seguranca: 50 paginas = 50 mil titulos no periodo. */
+const MAX_PAGINAS = 50;
+
+/**
+ * Le TODAS as linhas de uma consulta, usando a CONTAGEM EXATA como criterio de
+ * parada.
+ *
+ * O PostgREST corta a resposta no seu limite de linhas e nao sinaliza o corte,
+ * entao `await` direto num conjunto maior entrega resultado parcial sem erro --
+ * era o achado P1 do Codex nesta PR. Comparar `pagina.length` com um tamanho
+ * assumido tambem nao serve: se o servidor cortar ABAIXO da janela pedida, a
+ * leitura para calada do mesmo jeito. `count: 'exact'` vem do servidor, entao a
+ * parada e sobre o total real.
+ *
+ * Se o teto de paginas for atingido, LANCA em vez de devolver parcial: a tela
+ * tem estado de erro, e numero errado seria pior que erro visivel.
+ */
+async function paginarTudo<T>(consulta: {
+  range: (
+    de: number,
+    ate: number
+  ) => PromiseLike<{ data: T[] | null; error: unknown; count?: number | null }>;
+}): Promise<T[]> {
+  const tudo: T[] = [];
+  for (let p = 0; p < MAX_PAGINAS; p++) {
+    const de = p * PAGINA;
+    const { data, error, count } = await consulta.range(de, de + PAGINA - 1);
+    if (error) throw error;
+    const pagina = data ?? [];
+    tudo.push(...pagina);
+    const total = typeof count === 'number' ? count : null;
+    if (pagina.length === 0) return tudo;
+    if (total != null ? tudo.length >= total : pagina.length < PAGINA) return tudo;
+  }
+  throw new Error(
+    `Mais de ${MAX_PAGINAS * PAGINA} títulos no período: a previsão não calcula somatório parcial. ` +
+      'Reduza o intervalo ou peça a agregação no banco.'
+  );
 }
 
 function useAnaliseInadimplencia(empresaId?: string) {
@@ -183,7 +228,8 @@ function useAnaliseInadimplencia(empresaId?: string) {
           `
           id, valor, valor_recebido, data_vencimento, status, cliente_id, cliente_nome,
           clientes(id, razao_social, nome_fantasia, score, limite_credito, ramo_atividade)
-        `
+        `,
+          { count: 'exact' }
         )
         .in('status', ['pendente', 'parcial'])
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
@@ -193,8 +239,14 @@ function useAnaliseInadimplencia(empresaId?: string) {
 
       // Erro de consulta NAO pode virar "nenhum cliente em risco": a tela
       // mostrava zeros como analise concluida (achado do Devin na PR #404).
-      const { data: contasPendentes, error: erroPendentes } = await qPendentes;
-      if (erroPendentes) throw erroPendentes;
+      //
+      // E nao basta um await: o PostgREST corta em 1.000 linhas SEM erro, entao
+      // empresa com mais titulos no periodo publicava analise parcial como
+      // concluida -- clientes, contagens e `valorTotalRisco` sao somados aqui,
+      // no cliente (achado P1 do Codex; o proprio
+      // docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md:48 registra
+      // somatorio local limitado a 1.000 como P1).
+      const contasPendentes = await paginarTudo(qPendentes);
 
       if (!contasPendentes || contasPendentes.length === 0) {
         return {
@@ -271,14 +323,14 @@ function useAnaliseInadimplencia(empresaId?: string) {
           // isso, atraso do mesmo cliente em OUTRA empresa elevaria o risco aqui.
           let qHistorico = supabase
             .from('contas_receber')
-            .select('status, data_vencimento, data_recebimento')
+            .select('status, data_vencimento, data_recebimento', { count: 'exact' })
             .eq('cliente_id', clienteIdReal)
             .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
           if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
 
-          const { data, error: erroHistorico } = await qHistorico;
-          if (erroHistorico) throw erroHistorico;
-          historico = data;
+          // Mesma razao: cliente antigo pode ter mais de 1.000 titulos vencidos,
+          // e taxa de atraso sobre pagina parcial e numero errado.
+          historico = await paginarTudo(qHistorico);
         }
 
         const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
@@ -297,6 +349,11 @@ function useAnaliseInadimplencia(empresaId?: string) {
         // Refinamento por Ramo de Atividade (Engine 10/10)
         if (cliente.ramo_atividade && ['Construção', 'Varejo'].includes(cliente.ramo_atividade)) {
           fatoresRisco.push(`Setor de alto risco: ${cliente.ramo_atividade}`);
+        }
+
+        // Fallback DEPOIS de todos os fatores.
+        if (fatoresRisco.length === 0) {
+          fatoresRisco.push('Nenhum fator de risco identificado');
         }
 
         interface ContaReceberData {

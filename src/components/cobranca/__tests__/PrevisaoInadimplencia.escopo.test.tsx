@@ -24,7 +24,12 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn(), info: vi.f
 
 import { PrevisaoInadimplencia } from '../PrevisaoInadimplencia';
 
-/** Builder thenable que registra cada filtro aplicado. */
+/**
+ * Builder que registra cada filtro e PAGINA de verdade: `range(de, ate)` devolve
+ * a fatia correspondente e a contagem exata, como o PostgREST com
+ * `count: 'exact'`. Sem isso o teste nao distingue leitura completa de leitura
+ * truncada na primeira pagina.
+ */
 function builder(resultado: { data: unknown; error: unknown }) {
   const b: Record<string, unknown> = {};
   for (const m of ['select', 'in', 'gte', 'lte', 'lt', 'eq', 'order']) {
@@ -33,6 +38,16 @@ function builder(resultado: { data: unknown; error: unknown }) {
       return b;
     });
   }
+  const linhas = Array.isArray(resultado.data) ? (resultado.data as unknown[]) : null;
+  b.range = vi.fn((de: number, ate: number) => {
+    filtros.push({ metodo: 'range', coluna: String(de), valor: ate });
+    if (resultado.error) return Promise.resolve({ data: null, error: resultado.error });
+    return Promise.resolve({
+      data: linhas ? linhas.slice(de, ate + 1) : resultado.data,
+      error: null,
+      count: linhas ? linhas.length : null,
+    });
+  });
   b.then = ((ok?: (v: typeof resultado) => unknown, err?: (r: unknown) => unknown) =>
     Promise.resolve(resultado).then(ok as never, err as never)) as never;
   return b;
@@ -267,6 +282,102 @@ describe('PrevisaoInadimplencia — escala do score e atraso no historico', () =
     expect(
       filtros.filter((f) => f.coluna === 'cliente_id' && f.valor === 'cli-1').length
     ).toBeGreaterThan(0);
+  });
+
+  it('paginacao: titulo depois da 1a pagina entra na analise', async () => {
+    // Revisao da PR #404 (Codex P1): o PostgREST corta na sua janela de linhas
+    // SEM erro, e clientes/contagens/valorTotalRisco sao somados no cliente --
+    // a analise parcial era publicada como concluida. Aqui sao 1.001 titulos: o
+    // cliente do titulo 1.001 so aparece se a 2a pagina for lida.
+    const muitos = [
+      ...Array.from({ length: 1000 }, (_, i) => ({ ...PENDENTE, id: `t${i}` })),
+      {
+        ...PENDENTE,
+        id: 't1000',
+        cliente_id: 'cli-2',
+        cliente_nome: 'Cliente Dois',
+        clientes: { ...PENDENTE.clientes, id: 'cli-2', razao_social: 'Cliente Dois' },
+      },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() =>
+      builder(chamada++ === 0 ? { data: muitos, error: null } : { data: [], error: null })
+    );
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByText(/Cliente Dois/i)).toBeInTheDocument();
+    // duas janelas pedidas: 0-999 e 1000-1999
+    const janelas = filtros.filter((f) => f.metodo === 'range').map((f) => f.coluna);
+    expect(janelas).toEqual(expect.arrayContaining(['0', '1000']));
+  });
+
+  it('setor de alto risco NAO conviva com "nenhum fator de risco"', async () => {
+    // Revisao da PR #404 (Codex P2): `gerarFatoresRisco` aplicava o fallback
+    // antes de quem chama acrescentar setor e cadastro, entao o cartao exibia
+    // "Nenhum fator de risco identificado" ao lado de "Setor de alto risco".
+    const respostas = [
+      {
+        data: [
+          {
+            ...PENDENTE,
+            clientes: {
+              ...PENDENTE.clientes,
+              score: 900,
+              limite_credito: 1_000_000,
+              ramo_atividade: 'Construção',
+            },
+          },
+        ],
+        error: null,
+      },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByText(/Setor de alto risco: Construção/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Nenhum fator de risco identificado/i)).not.toBeInTheDocument();
+  });
+
+  it('cliente sem fator nenhum continua dizendo que nao ha fator', async () => {
+    const respostas = [
+      {
+        data: [
+          {
+            ...PENDENTE,
+            clientes: {
+              ...PENDENTE.clientes,
+              score: 900,
+              limite_credito: 1_000_000,
+              ramo_atividade: 'Serviços',
+            },
+          },
+        ],
+        error: null,
+      },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByText(/Nenhum fator de risco identificado/i)).toBeInTheDocument();
   });
 
   it('titulo pago com atraso conta como atraso no historico', async () => {
