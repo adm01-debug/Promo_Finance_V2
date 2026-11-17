@@ -35,9 +35,34 @@ BEGIN
 END $$;
 
 -- 2) Destrava as colunas do desenho antigo em vez de apagá-las.
-ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN filter_id DROP NOT NULL;
-ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN canal DROP NOT NULL;
-ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN canal DROP DEFAULT;
+--
+--    Sob guarda de existência de propósito: `filter_id` e `canal` são do
+--    formato de produção e NÃO existem num banco recriado pelas migrations —
+--    o CREATE TABLE original (20260422120756_9ff79b5f-4781-4825-9569-dffd8d06df9f.sql)
+--    declara `saved_filter_id`, sem `filter_id` nem `canal`, e nenhuma
+--    migration posterior as acrescenta. ALTER COLUMN incondicional abortaria o
+--    replay com undefined_column e travaria todo ambiente novo.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'saved_filter_subscriptions'
+      AND column_name = 'filter_id'
+  ) THEN
+    ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN filter_id DROP NOT NULL;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'saved_filter_subscriptions'
+      AND column_name = 'canal'
+  ) THEN
+    ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN canal DROP NOT NULL;
+    ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN canal DROP DEFAULT;
+  END IF;
+END $$;
 
 -- 3) O CHECK de frequencia sai: o enum declarado inclui 'imediata', que ele
 --    recusa. É o único objeto que esta migration remove.
@@ -49,12 +74,15 @@ ALTER TABLE public.saved_filter_subscriptions
 --    falharia com "invalid input value for enum".
 DO $$
 BEGIN
+  -- a guarda cobre dois casos: coluna ainda text (formato de produção) e
+  -- coluna ausente ou já convertida (replay e segunda passagem)
   IF EXISTS (
     SELECT 1
     FROM pg_attribute a
     JOIN pg_type t ON t.oid = a.atttypid
     WHERE a.attrelid = 'public.saved_filter_subscriptions'::regclass
       AND a.attname = 'frequencia'
+      AND NOT a.attisdropped
       AND t.typname = 'text'
   ) THEN
     ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN frequencia DROP DEFAULT;
