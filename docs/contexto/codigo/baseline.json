@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a",
+  "commit": "9fe32772524a29a11e1e0a7810684c2fda3d7578",
   "branch": "main",
-  "data_commit": "2026-11-17T06:09:31-03:00",
+  "data_commit": "2026-11-17T06:22:35-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9fe3277",
+    "data": "2026-11-17",
+    "assunto": "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)"
+   },
    {
     "sha": "e4c5fa9",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "90e96ca",
     "data": "2026-11-16",
     "assunto": "chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)"
-   },
-   {
-    "sha": "5bc41a5",
-    "data": "2026-11-16",
-    "assunto": "fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)"
    }
   ],
-  "arquivos_mudados_7d": 850,
+  "arquivos_mudados_7d": 851,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 174
+    "commits": 175
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3902,
+  "arquivos_total": 3903,
   "arquivos_codigo": 2460,
   "linhas_codigo": 438596,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1033,
+  "migrations": 1034,
   "cron_jobs": 22,
   "testes": 467,
   "workflows": 19,

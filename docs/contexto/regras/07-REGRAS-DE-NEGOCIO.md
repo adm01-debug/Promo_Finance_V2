@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e4c5fa96ae` · branch `main` · 2026-11-17 09:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9fe3277252` · branch `main` · 2026-11-17 09:23 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1009,8 +1009,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `toggle_cron_job` | Tarefa agendada % não encontrada | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `webhook_claim` | source is required | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `webhook_mark_failure` | webhook % not found | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
-| `webhook_replay` | unauthorized: admin role required to replay webhooks | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
-| `webhook_replay` | webhook % not found | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `sync_integration_secret_identifier` | integration_secrets exige chave ou nome não vazio | `supabase/migrations/20260827090000_reconciliar_integration_secrets_sem_drop.sql` |
 | `sefaz_process_batch` | sefaz_process_batch: kind desconhecido "%" | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
 | `claim_frontend_error_alerts` | acesso negado | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
@@ -1075,6 +1073,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `reprocess_dlq` | Acesso negado: apenas administradores podem reprocessar DLQ. | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
 | `reprocess_dlq` | DLQ item não encontrado ou já resolvido | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
 | `reprocess_dlq` | Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual. | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
+| `webhook_replay` | unauthorized: admin role required to replay webhooks | `supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql` |
+| `webhook_replay` | webhook % not found | `supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql` |
 
 ## E. Estados, máquinas de estado e transições
 

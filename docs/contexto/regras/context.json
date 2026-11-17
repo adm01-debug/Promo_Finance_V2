@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a",
+  "sha": "9fe32772524a29a11e1e0a7810684c2fda3d7578",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 09:10 UTC",
-  "files_total": 3941,
-  "code_files": 3564,
-  "code_lines": 507377
+  "generated_at": "2026-11-17 09:23 UTC",
+  "files_total": 3942,
+  "code_files": 3565,
+  "code_lines": 507459
  },
  "version": "1.3.2",
- "facts_hash": "35a9ab2e9b998388",
+ "facts_hash": "f6c7a05fa61685ca",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1236,
    ".tsx": 1110,
-   ".sql": 1103,
+   ".sql": 1104,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -43970,17 +43970,18 @@
    },
    "webhook_replay": {
     "args": "p_id uuid",
-    "returns": "public.webhooks_log",
+    "returns": "webhooks_log",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_row public.webhooks_log%ROWTYPE; BEGIN IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN RAISE EXCEPTION 'unauthorized: admin role required to replay webhooks'; END IF; UPDATE public.webhooks_log SET status = 'pending', next_retry_at = now(), attempts = LEAST(attempts, max_attempts - 1), error_message = NULL, last_error_at = NULL, dlq_id = NULL WHERE id = p_id RETURNING * INTO v_row; IF NOT FOUND THEN RAISE EXCEPTION 'webhook % not found', p_id; END IF; IF v_row.dlq_id IS NOT NULL THEN UPDATE public.webhook_dlq SET resolved_at = now(), notes = COALESCE(notes,'') || E'\\nRe-enfileirado via webhook_replay em ' || now()::text WHERE id = v_row.dlq_id; …",
+    "body": "DECLARE v_row public.webhooks_log%ROWTYPE; v_dlq_id uuid; BEGIN IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN RAISE EXCEPTION 'unauthorized: admin role required to replay webhooks'; END IF; SELECT dlq_id INTO v_dlq_id FROM public.webhooks_log WHERE id = p_id FOR UPDATE; UPDATE public.webhooks_log SET status = 'pending', next_retry_at = now(), attempts = LEAST(attempts, max_attempts - 1), error_message = NULL, last_error_at = NULL, dlq_id = NULL WHERE id = p_id RETURNING * INTO v_row; IF NOT FOUND THEN RAISE EXCEPTION 'webhook % not found', p_id; END IF; IF v_dlq_id IS NOT NULL THEN UPDATE public.webhook_dlq SET resolved_at = now(), resolved_by = COALES …",
     "raises": [
      "unauthorized: admin role required to replay webhooks",
      "webhook % not found"
     ],
     "tables": [
+     "v_dlq_id",
      "v_row",
      "webhook_dlq",
      "webhooks_log"
@@ -52407,6 +52408,7 @@
    "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
    "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
    "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
+   "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -60551,6 +60553,22 @@
     "objkind": "function",
     "roles": "authenticated",
     "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "execute",
+    "object": "webhook_replay",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "webhook_replay",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
    }
   ],
   "raises": [
@@ -60955,16 +60973,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "function": "webhook_replay",
-    "msg": "unauthorized: admin role required to replay webhooks",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "function": "webhook_replay",
-    "msg": "webhook % not found",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "function": "sync_integration_secret_identifier",
     "msg": "integration_secrets exige chave ou nome não vazio",
     "src": "supabase/migrations/20260827090000_reconciliar_integration_secrets_sem_drop.sql"
@@ -61283,6 +61291,16 @@
     "function": "reprocess_dlq",
     "msg": "Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual.",
     "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "function": "webhook_replay",
+    "msg": "unauthorized: admin role required to replay webhooks",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "function": "webhook_replay",
+    "msg": "webhook % not found",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
    }
   ],
   "seed": [
@@ -72839,8 +72857,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1033,
-   "lines": 79669,
+   "files": 1034,
+   "lines": 79751,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -151105,17 +151123,18 @@
    },
    "webhook_replay": {
     "args": "p_id uuid",
-    "returns": "public.webhooks_log",
+    "returns": "webhooks_log",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_row public.webhooks_log%ROWTYPE; BEGIN IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN RAISE EXCEPTION 'unauthorized: admin role required to replay webhooks'; END IF; UPDATE public.webhooks_log SET status = 'pending', next_retry_at = now(), attempts = LEAST(attempts, max_attempts - 1), error_message = NULL, last_error_at = NULL, dlq_id = NULL WHERE id = p_id RETURNING * INTO v_row; IF NOT FOUND THEN RAISE EXCEPTION 'webhook % not found', p_id; END IF; IF v_row.dlq_id IS NOT NULL THEN UPDATE public.webhook_dlq SET resolved_at = now(), notes = COALESCE(notes,'') || E'\\nRe-enfileirado via webhook_replay em ' || now()::text WHERE id = v_row.dlq_id; …",
+    "body": "DECLARE v_row public.webhooks_log%ROWTYPE; v_dlq_id uuid; BEGIN IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN RAISE EXCEPTION 'unauthorized: admin role required to replay webhooks'; END IF; SELECT dlq_id INTO v_dlq_id FROM public.webhooks_log WHERE id = p_id FOR UPDATE; UPDATE public.webhooks_log SET status = 'pending', next_retry_at = now(), attempts = LEAST(attempts, max_attempts - 1), error_message = NULL, last_error_at = NULL, dlq_id = NULL WHERE id = p_id RETURNING * INTO v_row; IF NOT FOUND THEN RAISE EXCEPTION 'webhook % not found', p_id; END IF; IF v_dlq_id IS NOT NULL THEN UPDATE public.webhook_dlq SET resolved_at = now(), resolved_by = COALES …",
     "raises": [
      "unauthorized: admin role required to replay webhooks",
      "webhook % not found"
     ],
     "tables": [
+     "v_dlq_id",
      "v_row",
      "webhook_dlq",
      "webhooks_log"
@@ -153724,16 +153743,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "function": "webhook_replay",
-    "msg": "unauthorized: admin role required to replay webhooks",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "function": "webhook_replay",
-    "msg": "webhook % not found",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "function": "sync_integration_secret_identifier",
     "msg": "integration_secrets exige chave ou nome não vazio",
     "src": "supabase/migrations/20260827090000_reconciliar_integration_secrets_sem_drop.sql"
@@ -154052,6 +154061,16 @@
     "function": "reprocess_dlq",
     "msg": "Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual.",
     "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "function": "webhook_replay",
+    "msg": "unauthorized: admin role required to replay webhooks",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "function": "webhook_replay",
+    "msg": "webhook % not found",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
    }
   ],
   "db_generated": [
@@ -163432,6 +163451,7 @@
    "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
    "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
    "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
+   "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -171552,6 +171572,22 @@
     "objkind": "function",
     "roles": "authenticated",
     "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "execute",
+    "object": "webhook_replay",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "webhook_replay",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
    }
   ],
   "guards": [
@@ -247178,6 +247214,11 @@
    "path": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
    "lines": 124
   },
+  "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql": {
+   "path": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
+   "lines": 82,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -247286,10 +247327,19 @@
   }
  },
  "git": {
-  "sha": "e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a",
+  "sha": "9fe32772524a29a11e1e0a7810684c2fda3d7578",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9fe3277",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)",
+    "files": [
+     "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+    ]
+   },
    {
     "sha": "e4c5fa9",
     "date": "2026-11-17",
@@ -247654,17 +247704,6 @@
     "files": [
      "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
     ]
-   },
-   {
-    "sha": "f48e9c1",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)",
-    "files": [
-     "src/components/expert/ProactiveSuggestions.tsx",
-     "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
-     "src/hooks/useExpertContext.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -247729,6 +247768,10 @@
     2
    ],
    [
+    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
+    1
+   ],
+   [
     "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
     1
    ],
@@ -247742,10 +247785,6 @@
    ],
    [
     "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
     1
    ]
   ]
