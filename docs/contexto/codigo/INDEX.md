@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a45b5d8458594b5e95d02d13cd0887604e47ac69` (2026-11-17T15:31:21-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `6c6dec83e20721789480b0247c7fab69e97390f2` (2026-11-17T16:00:39-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2355), SQL (1104), Markdown (198), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2355), SQL (1106), Markdown (199), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3914 |
+| arquivos_total | 3918 |
 | arquivos_codigo | 2469 |
 | linhas_codigo | 440071 |
 | rotas | 130 |
@@ -45,13 +45,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 992 |
 | hooks | 273 |
 | edge_functions | 106 |
-| tabelas | 340 |
-| migrations | 1034 |
+| tabelas | 320 |
+| migrations | 1035 |
 | cron_jobs | 22 |
 | testes | 475 |
 | workflows | 19 |
-| scripts | 111 |
-| docs_md | 198 |
+| scripts | 113 |
+| docs_md | 199 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -63,7 +63,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
 - docs: docs (52), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (80%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
@@ -449,7 +449,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
 - tabelas_com_drift_migration_vs_types: 155 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
-- rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
+- rpcs_sem_definicao: 4 — ex.: cnpja_check_rate_limit, exec_sql, get_cron_run_history
 - componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
 - scripts_orfaos: 0
@@ -465,9 +465,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - bun.lock (34)
 - .github/workflows/ci.yml (27)
 - supabase/functions/asaas-proxy/index.ts (17)
-- .github/workflows/deno-tests.yml (13)
 - env.manifest.json (13)
-- supabase/config.toml (13)
+- .github/workflows/deno-tests.yml (12)
+- supabase/config.toml (12)
 - .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
@@ -625,10 +625,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/agentes (10), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (11), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `6c6dec8` chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)
+- 2026-11-17 `17a5777` chore(db): harness de replay das migrations num Postgres local efêmero (#433)
 - 2026-11-17 `a45b5d8` fix(ci): destrava o bun audit do advisory novo do picomatch (#434)
 - 2026-11-17 `512c1e7` chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)
 - 2026-11-17 `8c70124` infra: monitor-health entra na lista de funcoes implantaveis (#426)
@@ -642,8 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `b2929c4` fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)
 - 2026-11-17 `9cfb6b3` chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)
 - 2026-11-17 `e0aba34` fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)
-- 2026-11-17 `9fe3277` fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)
-- 2026-11-17 `e4c5fa9` infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

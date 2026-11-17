@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "a45b5d8458594b5e95d02d13cd0887604e47ac69",
+  "sha": "6c6dec83e20721789480b0247c7fab69e97390f2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 18:31 UTC",
-  "files_total": 3953,
-  "code_files": 3574,
-  "code_lines": 508943
+  "generated_at": "2026-11-17 19:01 UTC",
+  "files_total": 3957,
+  "code_files": 3576,
+  "code_lines": 509103
  },
  "version": "1.3.2",
- "facts_hash": "7c42251c1e738569",
+ "facts_hash": "0ef0bccdfe212e4f",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1241,
    ".tsx": 1114,
-   ".sql": 1104,
+   ".sql": 1106,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -1388,136 +1388,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "user_preferences": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-     },
-     {
-      "name": "user_id",
-      "type": "UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE",
-      "fk": "users.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-     },
-     {
-      "name": "key",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-     },
-     {
-      "name": "payload",
-      "type": "JSONB NOT NULL DEFAULT '{}'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-     }
-    ],
-    "constraints": [
-     "UNIQUE(user_id, key)"
-    ],
-    "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "audit_log": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT uuid_generate_v4()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "user_id",
-      "type": "UUID REFERENCES auth.users(id) ON DELETE SET NULL",
-      "fk": "users.id ON DELETE SET NULL",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "action",
-      "type": "VARCHAR(50) NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "table_name",
-      "type": "VARCHAR(100) NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "record_id",
-      "type": "UUID",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "old_data",
-      "type": "JSONB",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "new_data",
-      "type": "JSONB",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "ip_address",
-      "type": "INET",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "user_agent",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMPTZ DEFAULT NOW()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/001_create_tables.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/001_create_tables.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "saved_filters": {
     "columns": [
      {
@@ -1611,72 +1481,6 @@
     ],
     "src": "supabase/migrations/20260728161110_af990465-73e6-46a7-ba8e-016cb87e3705.sql",
     "comment": "Filtros salvos por usuários para diferentes entidades",
-    "origin": "migration"
-   },
-   "entity_versions": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "entity_type",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "entity_id",
-      "type": "UUID NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "version_number",
-      "type": "INT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "data",
-      "type": "JSONB NOT NULL DEFAULT '{}'::jsonb",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "changed_by",
-      "type": "UUID REFERENCES auth.users(id)",
-      "fk": "users.id",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "changed_at",
-      "type": "TIMESTAMPTZ NOT NULL DEFAULT NOW()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     },
-     {
-      "name": "change_summary",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20241231000001_entity_versions.sql"
-     }
-    ],
-    "constraints": [
-     "CONSTRAINT unique_entity_version UNIQUE (entity_type, entity_id, version_number)"
-    ],
-    "src": "supabase/migrations/20241231000001_entity_versions.sql",
-    "comment": "",
     "origin": "migration"
    },
    "profiles": {
@@ -6363,162 +6167,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "account_lockouts": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "user_email",
-      "type": "text NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "failed_attempts",
-      "type": "integer DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "locked_until",
-      "type": "timestamp with time zone",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "last_failed_attempt",
-      "type": "timestamp with time zone",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "timestamp with time zone DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "timestamp with time zone DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-     },
-     {
-      "name": "lockout_count",
-      "type": "integer DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231132349_f9fa919b-7d16-4717-8bd7-0bc2ab0bb848.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "known_devices": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "user_id",
-      "type": "UUID NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "device_fingerprint",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "ip_address",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "user_agent",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "browser",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "os",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "device_type",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "first_seen_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "last_seen_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "is_trusted",
-      "type": "BOOLEAN DEFAULT false",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "new_device_alerts": {
     "columns": [
      {
@@ -8277,119 +7925,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "lalur_lancamentos": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE",
-      "fk": "empresas.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "apuracao_id",
-      "type": "UUID REFERENCES public.apuracoes_irpj_csll(id) ON DELETE CASCADE",
-      "fk": "apuracoes_irpj_csll.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "tipo",
-      "type": "VARCHAR(10) NOT NULL CHECK (tipo IN ('adicao', 'exclusao'))",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "natureza",
-      "type": "VARCHAR(15) NOT NULL CHECK (natureza IN ('permanente', 'temporaria'))",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "codigo_lancamento",
-      "type": "VARCHAR(20)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "descricao",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "valor",
-      "type": "NUMERIC(15,2) NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "saldo_parte_b",
-      "type": "NUMERIC(15,2) DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "data_realizacao",
-      "type": "DATE",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "conta_contabil",
-      "type": "VARCHAR(20)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "historico",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "documento_suporte",
-      "type": "VARCHAR(100)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "incentivos_fiscais": {
     "columns": [
      {
@@ -10068,224 +9603,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "contatos_financeiros": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "nome",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "email",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "telefone",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "whatsapp",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "cpf_cnpj",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "tipo",
-      "type": "TEXT DEFAULT 'cliente' CHECK (tipo IN ('cliente', 'fornecedor', 'ambos', 'outro'))",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "cargo",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "departamento",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "empresa",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "endereco",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "cidade",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "estado",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "cep",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "observacoes",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "ativo",
-      "type": "BOOLEAN NOT NULL DEFAULT true",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID REFERENCES public.empresas(id)",
-      "fk": "empresas.id",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "origem",
-      "type": "TEXT DEFAULT 'manual'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMPTZ NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "TIMESTAMPTZ NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
-     },
-     {
-      "name": "razao_social",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "banco",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "agencia",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "conta",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "pix_chave",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "pix_tipo",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "bitrix_contact_id",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "bitrix_company_id",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "asaas_customer_id",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     },
-     {
-      "name": "asaas_subconta_wallet_id",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317124844_96993a1e-2350-4a46-8a81-21125e50deef.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "formas_pagamento": {
     "columns": [
      {
@@ -11656,486 +10973,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "ponto_departamentos": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "serial PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "nome",
-      "type": "varchar(200)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "cargo",
-      "type": "varchar(200)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "responsavel",
-      "type": "varchar(200)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "codigo_firebird",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "ponto_funcionarios": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "serial PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "nome",
-      "type": "varchar(100)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "cpf",
-      "type": "varchar(15)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "rg",
-      "type": "varchar(15)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "pis",
-      "type": "varchar(15)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "matricula",
-      "type": "varchar(20)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "cracha",
-      "type": "varchar(20)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "funcao",
-      "type": "varchar(100)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "email",
-      "type": "varchar(100)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "telefone",
-      "type": "varchar(20)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "celular",
-      "type": "varchar(20)",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "data_nascimento",
-      "type": "date",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "data_admissao",
-      "type": "date",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "data_desligamento",
-      "type": "date",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "situacao",
-      "type": "varchar(20) DEFAULT 'ATIVO'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "empresa_codigo",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "departamento_id",
-      "type": "integer REFERENCES public.ponto_departamentos(id)",
-      "fk": "ponto_departamentos.id",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "codigo_firebird",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "ponto_registros": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "serial PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "funcionario_id",
-      "type": "integer REFERENCES public.ponto_funcionarios(id)",
-      "fk": "ponto_funcionarios.id",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "data_batida",
-      "type": "date",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "entrada_1",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "saida_1",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "entrada_2",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "saida_2",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "entrada_3",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "saida_3",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "entrada_4",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "saida_4",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "entrada_5",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "saida_5",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "entrada_6",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "saida_6",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "abono",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "abono_negativo",
-      "type": "time",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "justificativa_abono",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "folga",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "neutro",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "horario_codigo",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "dados_brutos",
-      "type": "jsonb",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "observacoes",
-      "type": "jsonb",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "codigo_firebird",
-      "type": "integer",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "sincronizado_em",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "ponto_sync_log": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "serial PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "status",
-      "type": "varchar(20) DEFAULT 'running'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "inicio",
-      "type": "timestamptz",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "fim",
-      "type": "timestamptz",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "departamentos_sincronizados",
-      "type": "integer DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "funcionarios_sincronizados",
-      "type": "integer DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "registros_novos",
-      "type": "integer DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "registros_atualizados",
-      "type": "integer DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "erro",
-      "type": "text",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "timestamptz DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "pix_templates": {
     "columns": [
      {
@@ -13120,37 +11957,6 @@
      "constraint cnpja_cache_validade CHECK ((expires_at > fetched_at)) NOT VALID"
     ],
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "cnpja_rate_limit": {
-    "columns": [
-     {
-      "name": "user_id",
-      "type": "UUID NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
-     },
-     {
-      "name": "window_start",
-      "type": "TIMESTAMPTZ NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
-     },
-     {
-      "name": "request_count",
-      "type": "INTEGER NOT NULL DEFAULT 0",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
-     }
-    ],
-    "constraints": [
-     "PRIMARY KEY (user_id, window_start)"
-    ],
-    "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql",
     "comment": "",
     "origin": "migration"
    },
@@ -16804,63 +15610,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "configuracoes_receber": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID NOT NULL REFERENCES public.empresas(id) UNIQUE",
-      "fk": "empresas.id",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     },
-     {
-      "name": "regua_ativa",
-      "type": "BOOLEAN DEFAULT false",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     },
-     {
-      "name": "regua_config",
-      "type": "JSONB DEFAULT '{ \"lembrete_preventivo\": {\"dias\": -2, \"ativo\": true, \"canal\": \"email\"}, \"vencimento_hoje\": {\"dias\": 0, \"ativo\": true, \"canal\": \"whatsapp\"}, \"cobranca_nivel_1\": {\"dias\": 3, \"ativo\": true …",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     },
-     {
-      "name": "baixa_automatica_ativa",
-      "type": "BOOLEAN DEFAULT true",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMPTZ DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "TIMESTAMPTZ DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "execucoes_regua_cobranca": {
     "columns": [
      {
@@ -17800,77 +16549,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "elisao_analise_gap": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE",
-      "fk": "empresas.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "periodo_referencia",
-      "type": "DATE NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "valor_pago_efetivo",
-      "type": "DECIMAL(15,2) NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "valor_otimizado_projetado",
-      "type": "DECIMAL(15,2) NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "economia_identificada",
-      "type": "DECIMAL(15,2) GENERATED ALWAYS AS (valor_pago_efetivo - valor_otimizado_projetado) STORED",
-      "fk": "",
-      "generated": "valor_pago_efetivo - valor_otimizado_projetado",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "detalhes_oportunidades",
-      "type": "JSONB NOT NULL DEFAULT '[]'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "status",
-      "type": "TEXT DEFAULT 'oportunidade_detectada'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508140632_8a698a68-29ed-4cc0-ac7e-737c9bcfc6c4.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "elisao_creditos_auditoria": {
     "columns": [
      {
@@ -18289,70 +16967,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "auditoria_configuracoes": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "user_id",
-      "type": "UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE",
-      "fk": "users.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE",
-      "fk": "empresas.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "tipo_acao",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "detalhes",
-      "type": "JSONB NOT NULL DEFAULT '{}'::jsonb",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "ip_address",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "user_agent",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "regua_cobranca_status": {
     "columns": [
      {
@@ -18442,127 +17056,6 @@
     ],
     "constraints": [],
     "src": "supabase/migrations/20260519122302_d3d9c350-53db-4133-97dd-93132f818bce.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "conciliacao_sugestoes": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     },
-     {
-      "name": "transacao_id",
-      "type": "UUID NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     },
-     {
-      "name": "sugestoes",
-      "type": "JSONB NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     },
-     {
-      "name": "status",
-      "type": "TEXT DEFAULT 'pendente'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     },
-     {
-      "name": "analisado_em",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "boleto_events": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "boleto_id",
-      "type": "UUID REFERENCES public.boletos(id) ON DELETE CASCADE",
-      "fk": "boletos.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "event_type",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "status_before",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "status_after",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "description",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "metadata",
-      "type": "JSONB",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql",
     "comment": "",
     "origin": "migration"
    },
@@ -18959,84 +17452,6 @@
     "comment": "",
     "origin": "migration"
    },
-   "asaas_scheduled_transfers": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID REFERENCES public.empresas(id)",
-      "fk": "empresas.id",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "valor",
-      "type": "NUMERIC NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "chave_pix",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "tipo_chave",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "descricao",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "agendado_para",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "status",
-      "type": "TEXT NOT NULL DEFAULT 'PENDING'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "processed_at",
-      "type": "TIMESTAMP WITH TIME ZONE",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508182729_2ec579f3-cc14-484a-8bab-77615672187e.sql",
-    "comment": "",
-    "origin": "migration"
-   },
    "asaas_credit_risk_analysis": {
     "columns": [
      {
@@ -19095,56 +17510,6 @@
     ],
     "src": "supabase/migrations/20260822120000_reconciliar_risco_credito_asaas.sql",
     "comment": "",
-    "origin": "migration"
-   },
-   "registro_duplicidade": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
-     },
-     {
-      "name": "hash_identificador",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
-     },
-     {
-      "name": "entidade_id",
-      "type": "UUID",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
-     },
-     {
-      "name": "tipo_entidade",
-      "type": "TEXT DEFAULT 'conta_pagar'",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
-     },
-     {
-      "name": "usuario_id",
-      "type": "UUID REFERENCES auth.users(id)",
-      "fk": "users.id",
-      "generated": "",
-      "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql",
-    "comment": "Log de auditoria para tentativas de inserção de pagamentos duplicados e rastreio de integridade.",
     "origin": "migration"
    },
    "bloqueios_duplicidade": {
@@ -20298,112 +18663,6 @@
     ],
     "constraints": [],
     "src": "supabase/migrations/20260519120718_ee2af21a-48fa-48f5-b5de-9fcbdb85bbcb.sql",
-    "comment": "",
-    "origin": "migration"
-   },
-   "obrigacoes_acessorias": {
-    "columns": [
-     {
-      "name": "id",
-      "type": "UUID PRIMARY KEY DEFAULT gen_random_uuid()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "empresa_id",
-      "type": "UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE",
-      "fk": "empresas.id ON DELETE CASCADE",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "codigo",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "nome",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "esfera",
-      "type": "TEXT NOT NULL CHECK (esfera IN ('federal', 'estadual', 'municipal'))",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "periodicidade",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "competencia",
-      "type": "TEXT NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "vencimento",
-      "type": "DATE NOT NULL",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "status",
-      "type": "TEXT NOT NULL DEFAULT 'pendente' CHECK (status IN ('pendente', 'em_andamento', 'transmitida', 'atrasada', 'nao_aplicavel'))",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "transmitida_em",
-      "type": "TIMESTAMP WITH TIME ZONE",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "protocolo",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "observacoes",
-      "type": "TEXT",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "created_at",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     },
-     {
-      "name": "updated_at",
-      "type": "TIMESTAMP WITH TIME ZONE DEFAULT now()",
-      "fk": "",
-      "generated": "",
-      "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-     }
-    ],
-    "constraints": [],
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql",
     "comment": "",
     "origin": "migration"
    },
@@ -31015,76 +29274,6 @@
     "src": "supabase/migrations/002_rls_policies.sql"
    },
    {
-    "name": "Users can view own preferences",
-    "table": "user_preferences",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can insert own preferences",
-    "table": "user_preferences",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can update own preferences",
-    "table": "user_preferences",
-    "cmd": "UPDATE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can delete own preferences",
-    "table": "user_preferences",
-    "cmd": "DELETE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can view own audit_log",
-    "table": "audit_log",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can view versions",
-    "table": "entity_versions",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "true",
-    "check": "",
-    "src": "supabase/migrations/20241231000001_entity_versions.sql"
-   },
-   {
-    "name": "Users can insert versions",
-    "table": "entity_versions",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = changed_by OR changed_by IS NULL",
-    "src": "supabase/migrations/20241231000001_entity_versions.sql"
-   },
-   {
     "name": "Financeiro+ can manage transacoes",
     "table": "transacoes_bancarias",
     "cmd": "ALL",
@@ -31425,46 +29614,6 @@
     "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
    },
    {
-    "name": "Users can view their own devices",
-    "table": "known_devices",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
-    "name": "Users can insert their own devices",
-    "table": "known_devices",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
-    "name": "Users can update their own devices",
-    "table": "known_devices",
-    "cmd": "UPDATE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
-    "name": "Users can delete their own devices",
-    "table": "known_devices",
-    "cmd": "DELETE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
     "name": "Users can view their own alerts",
     "table": "new_device_alerts",
     "cmd": "SELECT",
@@ -31567,36 +29716,6 @@
    {
     "name": "Admins can delete security settings",
     "table": "security_settings",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "",
-    "src": "supabase/migrations/20260314205440_9f6dee9b-7373-4d99-a698-61fd45aa6429.sql"
-   },
-   {
-    "name": "Admins can view account lockouts",
-    "table": "account_lockouts",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "",
-    "src": "supabase/migrations/20260314205440_9f6dee9b-7373-4d99-a698-61fd45aa6429.sql"
-   },
-   {
-    "name": "Admins can update account lockouts",
-    "table": "account_lockouts",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "public.has_role(auth.uid(), 'admin')",
-    "src": "supabase/migrations/20260314205440_9f6dee9b-7373-4d99-a698-61fd45aa6429.sql"
-   },
-   {
-    "name": "Admins can delete account lockouts",
-    "table": "account_lockouts",
     "cmd": "DELETE",
     "roles": "authenticated",
     "mode": "permissive",
@@ -31895,46 +30014,6 @@
     "src": "supabase/migrations/20260317001902_56d52bf4-e277-42a1-b10a-d8b3507ad413.sql"
    },
    {
-    "name": "Admins manage ponto_departamentos",
-    "table": "ponto_departamentos",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "Admins manage ponto_registros",
-    "table": "ponto_registros",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "Admins manage ponto_sync_log",
-    "table": "ponto_sync_log",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "Admin/financeiro can view ponto_registros",
-    "table": "ponto_registros",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])",
-    "check": "",
-    "src": "supabase/migrations/20260317193707_315e0bd5-56b2-465d-abfd-ce762bf1bbc7.sql"
-   },
-   {
     "name": "Authenticated users can insert pix_templates",
     "table": "pix_templates",
     "cmd": "INSERT",
@@ -31953,46 +30032,6 @@
     "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
     "check": "",
     "src": "supabase/migrations/20260317222159_4b1da752-96b9-47b0-87ee-53a83a4ba2a2.sql"
-   },
-   {
-    "name": "Admin financeiro can view ponto_departamentos",
-    "table": "ponto_departamentos",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "",
-    "src": "supabase/migrations/20260317222159_4b1da752-96b9-47b0-87ee-53a83a4ba2a2.sql"
-   },
-   {
-    "name": "Admin financeiro can view ponto_sync_log",
-    "table": "ponto_sync_log",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "",
-    "src": "supabase/migrations/20260317222622_3a3403eb-fa57-47d4-85d4-61e1cd9b3df9.sql"
-   },
-   {
-    "name": "Admin can view ponto_funcionarios",
-    "table": "ponto_funcionarios",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin'::app_role)",
-    "check": "",
-    "src": "supabase/migrations/20260323224505_5c964c27-f120-458b-8382-3488b3a8e2a3.sql"
-   },
-   {
-    "name": "Admin can manage ponto_funcionarios",
-    "table": "ponto_funcionarios",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin'::app_role)",
-    "check": "public.has_role(auth.uid(), 'admin'::app_role)",
-    "src": "supabase/migrations/20260323224505_5c964c27-f120-458b-8382-3488b3a8e2a3.sql"
    },
    {
     "name": "Benchmarks visíveis para autenticados",
@@ -32061,16 +30100,6 @@
     "roles": "authenticated",
     "mode": "permissive",
     "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "",
-    "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
-   },
-   {
-    "name": "Usuário vê próprio uso CNPJá",
-    "table": "cnpja_rate_limit",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')",
     "check": "",
     "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
    },
@@ -32635,16 +30664,6 @@
     "src": "supabase/migrations/20260508113713_1c3c6436-179b-49c2-803c-5f89c17435e3.sql"
    },
    {
-    "name": "Users can manage their company settings",
-    "table": "configuracoes_receber",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "true",
-    "check": "",
-    "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-   },
-   {
     "name": "Users can view their billing executions",
     "table": "execucoes_regua_cobranca",
     "cmd": "SELECT",
@@ -32663,16 +30682,6 @@
     "using": "true",
     "check": "",
     "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-   },
-   {
-    "name": "Users can manage their own preferences",
-    "table": "user_preferences",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
    },
    {
     "name": "Users can manage their own filter presets",
@@ -32745,26 +30754,6 @@
     "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql"
    },
    {
-    "name": "Usuários podem ver auditoria das suas empresas",
-    "table": "auditoria_configuracoes",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "EXISTS ( SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (role = 'admin' OR role = 'financeiro') )",
-    "check": "",
-    "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-   },
-   {
-    "name": "Usuários podem inserir auditoria",
-    "table": "auditoria_configuracoes",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-   },
-   {
     "name": "Usuários podem ver status da régua de sua empresa",
     "table": "regua_cobranca_status",
     "cmd": "SELECT",
@@ -32773,26 +30762,6 @@
     "using": "auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = regua_cobranca_status.empresa_id)",
     "check": "",
     "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-   },
-   {
-    "name": "Usuários podem ver sugestões de sua empresa",
-    "table": "conciliacao_sugestoes",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = conciliacao_sugestoes.empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-   },
-   {
-    "name": "Users can view events of their companies' boletos",
-    "table": "boleto_events",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "EXISTS ( SELECT 1 FROM public.boletos b JOIN public.user_roles ur ON ur.user_id = auth.uid() WHERE b.id = boleto_events.boleto_id )",
-    "check": "",
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
    },
    {
     "name": "Permitir leitura da fila para autenticados",
@@ -33133,26 +31102,6 @@
     "using": "",
     "check": "auth.uid() = usuario_id",
     "src": "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql"
-   },
-   {
-    "name": "Users can view their company obligations",
-    "table": "obrigacoes_acessorias",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro', 'visualizador') )",
-    "check": "",
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-   },
-   {
-    "name": "Users can manage their company obligations",
-    "table": "obrigacoes_acessorias",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )",
-    "check": "",
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
    },
    {
     "name": "Anyone can view glossary",
@@ -33523,16 +31472,6 @@
     "using": "auth.role() = 'authenticated'",
     "check": "",
     "src": "supabase/migrations/20260522142711_a38cc086-ae93-4fd5-a53b-dcfe1e359450.sql"
-   },
-   {
-    "name": "System and auth users can insert audit_log",
-    "table": "audit_log",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() IS NOT NULL AND (user_id = auth.uid() OR user_id IS NULL)",
-    "src": "supabase/migrations/20260527125840_4c2450b3-29f0-46f6-8f8e-e19c9f0061c3.sql"
    },
    {
     "name": "nfe_xml_service_write",
@@ -38245,26 +36184,6 @@
     "src": "supabase/migrations/20260902210000_fix_rls_cross_tenant_leak_grupo_b1.sql"
    },
    {
-    "name": "Fin users can manage contatos_financeiros",
-    "table": "contatos_financeiros",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-    "src": "supabase/migrations/20260902210000_fix_rls_cross_tenant_leak_grupo_b1.sql"
-   },
-   {
-    "name": "Admin/financeiro can read contatos_financeiros",
-    "table": "contatos_financeiros",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902210000_fix_rls_cross_tenant_leak_grupo_b1.sql"
-   },
-   {
     "name": "eventos_contab_insert",
     "table": "eventos_contabilizacao_log",
     "cmd": "INSERT",
@@ -38775,16 +36694,6 @@
     "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
    },
    {
-    "name": "Users can manage their company scheduled transfers",
-    "table": "asaas_scheduled_transfers",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
-   },
-   {
     "name": "Users can view credit risk analysis of their customers",
     "table": "asaas_credit_risk_analysis",
     "cmd": "SELECT",
@@ -38798,16 +36707,6 @@
     "name": "Users can manage their company simulations",
     "table": "elisao_simulacoes_regime",
     "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
-   },
-   {
-    "name": "Users can view their company gap analysis",
-    "table": "elisao_analise_gap",
-    "cmd": "SELECT",
     "roles": "public",
     "mode": "permissive",
     "using": "empresa_acessivel(empresa_id)",
@@ -39343,15 +37242,6 @@
     "src": "supabase/migrations/001_create_tables.sql"
    },
    {
-    "name": "update_user_preferences_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "user_preferences",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/001_create_tables.sql"
-   },
-   {
     "name": "update_contas_pagar_status",
     "when": "BEFORE INSERT OR UPDATE",
     "table": "contas_pagar",
@@ -39595,15 +37485,6 @@
     "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
    },
    {
-    "name": "update_lalur_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "lalur_lancamentos",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-   },
-   {
     "name": "update_incentivos_updated_at",
     "when": "BEFORE UPDATE",
     "table": "incentivos_fiscais",
@@ -39683,15 +37564,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260315210216_8a2ae26e-a254-45a0-9695-852ece9410e5.sql"
-   },
-   {
-    "name": "update_contatos_financeiros_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "contatos_financeiros",
-    "function": "update_updated_at",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
    },
    {
     "name": "update_categorias_updated_at",
@@ -39856,15 +37728,6 @@
     "src": "supabase/migrations/20260317000928_196c5fd2-d3a0-4ea5-8042-5aa6ba14e479.sql"
    },
    {
-    "name": "trg_auditoria_contatos_financeiros",
-    "when": "AFTER INSERT OR UPDATE OR DELETE",
-    "table": "contatos_financeiros",
-    "function": "fn_auditoria_financeira",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317000928_196c5fd2-d3a0-4ea5-8042-5aa6ba14e479.sql"
-   },
-   {
     "name": "trg_auditoria_movimentacoes",
     "when": "AFTER INSERT OR UPDATE OR DELETE",
     "table": "movimentacoes",
@@ -39881,33 +37744,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260317000928_196c5fd2-d3a0-4ea5-8042-5aa6ba14e479.sql"
-   },
-   {
-    "name": "update_ponto_departamentos_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "ponto_departamentos",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "update_ponto_funcionarios_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "ponto_funcionarios",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "update_ponto_registros_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "ponto_registros",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
    },
    {
     "name": "update_pix_templates_updated_at",
@@ -40243,15 +38079,6 @@
     "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
    },
    {
-    "name": "tr_user_preferences_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "user_preferences",
-    "function": "handle_updated_at",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-   },
-   {
     "name": "tr_user_filter_presets_updated_at",
     "when": "BEFORE UPDATE",
     "table": "user_filter_presets",
@@ -40295,15 +38122,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql"
-   },
-   {
-    "name": "on_boleto_status_change",
-    "when": "AFTER UPDATE",
-    "table": "boletos",
-    "function": "handle_boleto_payment_sync",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
    },
    {
     "name": "update_asaas_sync_queue_updated_at",
@@ -40538,15 +38356,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql"
-   },
-   {
-    "name": "update_obrigacoes_acessorias_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "obrigacoes_acessorias",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
    },
    {
     "name": "set_updated_at_d9c737e24ed42de7266f",
@@ -42097,19 +39906,6 @@
     "raises": [],
     "tables": []
    },
-   "audit_trigger_func": {
-    "args": "",
-    "returns": "TRIGGER",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/001_create_tables.sql",
-    "security_definer": false,
-    "search_path": false,
-    "body": "BEGIN IF TG_OP = 'INSERT' THEN INSERT INTO audit_log (user_id, action, table_name, record_id, new_data) VALUES (NEW.user_id, 'INSERT', TG_TABLE_NAME, NEW.id, row_to_json(NEW)); RETURN NEW; ELSIF TG_OP = 'UPDATE' THEN INSERT INTO audit_log (user_id, action, table_name, record_id, old_data, new_data) VALUES (NEW.user_id, 'UPDATE', TG_TABLE_NAME, NEW.id, row_to_json(OLD), row_to_json(NEW)); RETURN NEW; ELSIF TG_OP = 'DELETE' THEN INSERT INTO audit_log (user_id, action, table_name, record_id, old_data) VALUES (OLD.user_id, 'DELETE', TG_TABLE_NAME, OLD.id, row_to_json(OLD)); RETURN OLD; END IF; RETURN NULL; END;",
-    "raises": [],
-    "tables": [
-     "audit_log"
-    ]
-   },
    "update_saved_filters_updated_at": {
     "args": "",
     "returns": "TRIGGER",
@@ -42211,19 +40007,6 @@
     "body": "BEGIN RETURN 'AC-' || to_char(now(), 'YYYYMMDD') || '-' || upper(substr(md5(random()::text), 1, 6)); END;",
     "raises": [],
     "tables": []
-   },
-   "check_account_lockout": {
-    "args": "_email text",
-    "returns": "boolean",
-    "lang": "sql",
-    "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "SELECT EXISTS ( SELECT 1 FROM public.account_lockouts WHERE user_email = _email AND locked_until > now() )",
-    "raises": [],
-    "tables": [
-     "account_lockouts"
-    ]
    },
    "increment_failed_attempts": {
     "args": "_email text",
@@ -42430,22 +40213,6 @@
     "tables": [
      "contas_pagar",
      "contas_receber"
-    ]
-   },
-   "cnpja_check_rate_limit": {
-    "args": "_user_id UUID, _max INTEGER DEFAULT 10, _window_minutes INTEGER DEFAULT 60",
-    "returns": "BOOLEAN",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "DECLARE v_window TIMESTAMPTZ; v_count INTEGER; BEGIN v_window := date_trunc('minute', now()) - (EXTRACT(MINUTE FROM now())::INTEGER % _window_minutes) * INTERVAL '1 minute'; INSERT INTO public.cnpja_rate_limit (user_id, window_start, request_count) VALUES (_user_id, v_window, 1) ON CONFLICT (user_id, window_start) DO UPDATE SET request_count = cnpja_rate_limit.request_count + 1 RETURNING request_count INTO v_count; DELETE FROM public.cnpja_rate_limit WHERE window_start < now() - INTERVAL '1 day'; RETURN v_count <= _max; END;",
-    "raises": [],
-    "tables": [
-     "SET",
-     "cnpja_rate_limit",
-     "now",
-     "v_count"
     ]
    },
    "fn_invalidar_regime_cache": {
@@ -42724,23 +40491,6 @@
     "body": "BEGIN IF (TG_OP = 'UPDATE') AND (NEW.status_aprovacao <> OLD.status_aprovacao) THEN NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object( 'status', NEW.status_aprovacao, 'usuario_id', auth.uid(), 'data', now(), 'comentario', NEW.motivo_rejeicao ); END IF; RETURN NEW; END;",
     "raises": [],
     "tables": []
-   },
-   "handle_boleto_payment_sync": {
-    "args": "",
-    "returns": "TRIGGER",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql",
-    "security_definer": true,
-    "search_path": false,
-    "body": "BEGIN IF NEW.status = 'pago' AND OLD.status != 'pago' THEN IF NEW.conta_receber_id IS NOT NULL THEN UPDATE public.contas_receber SET status = 'pago', data_recebimento = COALESCE(NEW.updated_at, now())::date, updated_at = now() WHERE id = NEW.conta_receber_id; INSERT INTO public.contas_receber_eventos (conta_id, tipo, mensagem, metadata) VALUES (NEW.conta_receber_id, 'pagamento_confirmado', 'Pagamento confirmado via boleto #' || NEW.numero, jsonb_build_object('boleto_id', NEW.id)); END IF; IF NEW.conta_pagar_id IS NOT NULL THEN UPDATE public.contas_pagar SET status = 'pago', data_pagamento = COALESCE(NEW.updated_at, now())::date, updated_at = now() WHERE id = NEW.conta_pagar_id; INSERT INTO p …",
-    "raises": [],
-    "tables": [
-     "boleto_events",
-     "contas_pagar",
-     "contas_pagar_eventos",
-     "contas_receber",
-     "contas_receber_eventos"
-    ]
    },
    "check_asaas_queue_failures": {
     "args": "",
@@ -46358,38 +44108,6 @@
     "src": "supabase/migrations/001_create_tables.sql"
    },
    {
-    "name": "idx_user_preferences_user_id",
-    "table": "user_preferences",
-    "columns": "user_id",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/001_create_tables.sql"
-   },
-   {
-    "name": "idx_audit_log_user_id",
-    "table": "audit_log",
-    "columns": "user_id",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/001_create_tables.sql"
-   },
-   {
-    "name": "idx_audit_log_table_name",
-    "table": "audit_log",
-    "columns": "table_name",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/001_create_tables.sql"
-   },
-   {
-    "name": "idx_audit_log_created_at",
-    "table": "audit_log",
-    "columns": "created_at",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/001_create_tables.sql"
-   },
-   {
     "name": "idx_saved_filters_user_id",
     "table": "saved_filters",
     "columns": "user_id",
@@ -46420,22 +44138,6 @@
     "unique": false,
     "where": "WHERE is_default = true",
     "src": "supabase/migrations/20241231000000_saved_filters.sql"
-   },
-   {
-    "name": "idx_versions_entity",
-    "table": "entity_versions",
-    "columns": "entity_type, entity_id",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20241231000001_entity_versions.sql"
-   },
-   {
-    "name": "idx_versions_date",
-    "table": "entity_versions",
-    "columns": "changed_at DESC",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20241231000001_entity_versions.sql"
    },
    {
     "name": "idx_contas_pagar_vencimento",
@@ -47014,22 +44716,6 @@
     "src": "supabase/migrations/20251231000100_add_performance_indexes.sql"
    },
    {
-    "name": "idx_account_lockouts_email",
-    "table": "account_lockouts",
-    "columns": "user_email",
-    "unique": true,
-    "where": "",
-    "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
-   },
-   {
-    "name": "idx_known_devices_user_fingerprint",
-    "table": "known_devices",
-    "columns": "user_id, device_fingerprint",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
     "name": "idx_webauthn_credentials_user_id",
     "table": "webauthn_credentials",
     "columns": "user_id",
@@ -47137,14 +44823,6 @@
     "name": "idx_prejuizos_empresa_tipo",
     "table": "prejuizos_fiscais",
     "columns": "empresa_id, tipo, status",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-   },
-   {
-    "name": "idx_lalur_apuracao",
-    "table": "lalur_lancamentos",
-    "columns": "apuracao_id",
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
@@ -47425,14 +45103,6 @@
     "name": "idx_cnpja_cache_expires_at",
     "table": "cnpja_cache",
     "columns": "expires_at",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
-   },
-   {
-    "name": "idx_cnpja_rate_limit_window",
-    "table": "cnpja_rate_limit",
-    "columns": "window_start",
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
@@ -48148,14 +45818,6 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20260508184223_493814c4-d44d-4ef5-954f-da399cf47c21.sql"
-   },
-   {
-    "name": "idx_registro_duplicidade_hash",
-    "table": "registro_duplicidade",
-    "columns": "hash_identificador",
-    "unique": false,
-    "where": "",
-    "src": "supabase/migrations/20260508195736_b880b70f-497f-491d-888a-57851d990304.sql"
    },
    {
     "name": "idx_contas_pagar_prevent_duplicates",
@@ -52409,6 +50071,7 @@
    "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
    "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
+   "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -52423,10 +50086,7 @@
    "contas_pagar": "enabled",
    "contas_receber": "enabled",
    "categorias": "enabled",
-   "user_preferences": "enabled",
-   "audit_log": "enabled",
    "saved_filters": "enabled",
-   "entity_versions": "enabled",
    "profiles": "enabled",
    "user_roles": "enabled",
    "empresas": "enabled",
@@ -52474,8 +50134,6 @@
    "permissions": "enabled",
    "role_permissions": "enabled",
    "security_alerts": "enabled",
-   "account_lockouts": "enabled",
-   "known_devices": "enabled",
    "new_device_alerts": "enabled",
    "webauthn_credentials": "enabled",
    "allowed_countries": "enabled",
@@ -52486,7 +50144,6 @@
    "regimes_especiais_empresa": "enabled",
    "apuracoes_irpj_csll": "enabled",
    "prejuizos_fiscais": "enabled",
-   "lalur_lancamentos": "enabled",
    "incentivos_fiscais": "enabled",
    "retencoes_fonte": "enabled",
    "darfs": "enabled",
@@ -52499,7 +50156,6 @@
    "bling_tokens": "enabled",
    "bling_sync_logs": "enabled",
    "bling_webhook_events": "enabled",
-   "contatos_financeiros": "enabled",
    "formas_pagamento": "enabled",
    "movimentacoes": "enabled",
    "transferencias": "enabled",
@@ -52513,10 +50169,6 @@
    "execucoes_cobranca": "enabled",
    "negativacoes": "enabled",
    "protestos": "enabled",
-   "ponto_departamentos": "enabled",
-   "ponto_funcionarios": "enabled",
-   "ponto_registros": "enabled",
-   "ponto_sync_log": "enabled",
    "pix_templates": "enabled",
    "query_telemetry": "enabled",
    "faturamento_mensal": "enabled",
@@ -52525,7 +50177,6 @@
    "benchmarks_setoriais": "enabled",
    "edge_function_logs": "enabled",
    "cnpja_cache": "enabled",
-   "cnpja_rate_limit": "enabled",
    "convites_contador": "enabled",
    "regime_decision_cache": "enabled",
    "relatorios_tributarios_agendados": "enabled",
@@ -52560,7 +50211,6 @@
    "anomalia_toast_eventos": "enabled",
    "notification_history": "enabled",
    "user_demonstrativo_preferences": "enabled",
-   "configuracoes_receber": "enabled",
    "execucoes_regua_cobranca": "enabled",
    "logs_baixa_automatica": "enabled",
    "user_filter_presets": "enabled",
@@ -52571,20 +50221,15 @@
    "eventos_contabilizacao_log": "enabled",
    "elisao_simulacoes_regime": "enabled",
    "elisao_regras_creditos": "enabled",
-   "elisao_analise_gap": "enabled",
    "elisao_creditos_auditoria": "enabled",
    "elisao_tarefas_acionaveis": "enabled",
    "elisao_alertas": "enabled",
-   "auditoria_configuracoes": "enabled",
    "regua_cobranca_status": "enabled",
-   "conciliacao_sugestoes": "enabled",
-   "boleto_events": "enabled",
    "asaas_sync_queue": "enabled",
    "asaas_audit_trail": "enabled",
    "asaas_config": "enabled",
    "asaas_transfers": "enabled",
    "asaas_reconciliation_suggestions": "enabled",
-   "asaas_scheduled_transfers": "enabled",
    "asaas_credit_risk_analysis": "enabled",
    "bloqueios_duplicidade": "enabled",
    "configuracoes_duplicidade": "enabled",
@@ -52599,7 +50244,6 @@
    "whatsapp_conversas": "enabled",
    "fluxos_aprovacao_niveis": "enabled",
    "aprovacao_comentarios": "enabled",
-   "obrigacoes_acessorias": "enabled",
    "glossario_tributario": "enabled",
    "tax_audit_trail": "enabled",
    "regua_cobranca_etapas": "enabled",
@@ -52685,7 +50329,6 @@
    "user_devices": "enabled",
    "user_passkeys": "enabled",
    "webauthn_challenges": "enabled",
-   "registro_duplicidade": "enabled",
    "asaas_payment_links": "enabled",
    "estrategias_elisao_catalogo": "enabled"
   },
@@ -71148,8 +68791,8 @@
   },
   {
    "module": "scripts",
-   "files": 146,
-   "lines": 48919,
+   "files": 147,
+   "lines": 49021,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -71361,6 +69004,7 @@
     "scripts/data/pg_efemero.py",
     "scripts/data/test_data_migrate_pg_scenarios.py",
     "scripts/data/test_verify_scenarios.py",
+    "scripts/db/replay-bootstrap.sql",
     "scripts/edge-deploy/deployment-record.mjs",
     "scripts/edge-deploy/deployment-record.unit.mjs",
     "scripts/edge-deploy/health-check.mjs",
@@ -71382,8 +69026,7 @@
     "scripts/graphify/edge_inventory.py",
     "scripts/graphify/graph_quality.py",
     "scripts/graphify/run.py",
-    "scripts/graphify/sql_inventory.py",
-    "scripts/graphify/test_benchmark.py"
+    "scripts/graphify/sql_inventory.py"
    ]
   },
   {
@@ -72871,8 +70514,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1034,
-   "lines": 79751,
+   "files": 1035,
+   "lines": 79809,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -77762,7 +75405,6 @@
     "contas_receber",
     "execucoes_regua_cobranca",
     "asaas_reconciliation_suggestions",
-    "user_preferences",
     "profiles",
     "user_roles",
     "password_reset_requests",
@@ -77770,7 +75412,6 @@
     "user_empresas",
     "user_anomalia_preferences",
     "user_demonstrativo_preferences",
-    "auditoria_configuracoes",
     "user_digest_preferences"
    ],
    "empresas": [
@@ -77789,7 +75430,6 @@
     "creditos_tributarios",
     "split_payment_transacoes",
     "regimes_especiais_empresa",
-    "lalur_lancamentos",
     "incentivos_fiscais",
     "retencoes_fonte",
     "darfs",
@@ -77808,12 +75448,9 @@
     "scim_tokens",
     "user_filter_presets",
     "elisao_simulacoes_regime",
-    "elisao_analise_gap",
     "elisao_creditos_auditoria",
     "elisao_tarefas_acionaveis",
     "elisao_alertas",
-    "auditoria_configuracoes",
-    "obrigacoes_acessorias",
     "tax_audit_trail",
     "custom_field_definitions",
     "custom_field_values",
@@ -77840,9 +75477,6 @@
    "known_devices": [
     "new_device_alerts"
    ],
-   "apuracoes_irpj_csll": [
-    "lalur_lancamentos"
-   ],
    "contas_bancarias": [
     "extrato_bancario",
     "logs_conciliacao_retroativa"
@@ -77864,9 +75498,6 @@
    "contas_receber": [
     "execucoes_regua_cobranca",
     "asaas_reconciliation_suggestions"
-   ],
-   "boletos": [
-    "boleto_events"
    ],
    "asaas_payments": [
     "asaas_sync_queue",
@@ -77913,13 +75544,10 @@
   ],
   "tables_only_in_schema": [
    "_rep",
-   "account_lockouts",
    "acessos_suspeitos",
    "alert_configurations",
    "alerts",
    "alerts_sent",
-   "asaas_scheduled_transfers",
-   "audit_log",
    "audit_logs_2026_01",
    "audit_logs_2026_02",
    "audit_logs_2026_03",
@@ -77931,24 +75559,16 @@
    "audit_logs_2026_09",
    "audit_logs_2026_10",
    "audit_logs_default",
-   "auditoria_configuracoes",
    "bitrix24_activities",
    "bitrix24_stage_mappings",
    "bitrix24_tokens",
    "bloat_snapshots",
-   "boleto_events",
    "catalogos_fiscais_cargas",
    "catalogos_tributarios_health_history",
-   "cnpja_rate_limit",
-   "conciliacao_sugestoes",
-   "configuracoes_receber",
-   "contatos_financeiros",
    "custom_field_values",
    "drivers",
-   "elisao_analise_gap",
    "elisao_regras_creditos",
    "email_verifications",
-   "entity_versions",
    "estrategias_elisao",
    "formas_pagamento",
    "frontend_error_logs_2026_01",
@@ -77970,22 +75590,14 @@
    "ip_whitelist",
    "job",
    "job_run_details",
-   "known_devices",
-   "lalur_lancamentos",
    "mfa_sessions",
-   "obrigacoes_acessorias",
    "operacoes_icms",
    "password_reset_tokens",
    "performance_alerts",
    "pg_stat_statements_baseline",
-   "ponto_departamentos",
-   "ponto_funcionarios",
-   "ponto_registros",
-   "ponto_sync_log",
    "projecoes_reforma",
    "protocolos_st",
    "regimes_tributarios",
-   "registro_duplicidade",
    "regras_duplicidade",
    "regras_roteamento_financeiro",
    "regua_cobranca_etapas",
@@ -78002,7 +75614,6 @@
    "user_devices",
    "user_onboarding_progress",
    "user_passkeys",
-   "user_preferences",
    "webauthn_challenges",
    "webhook_events"
   ],
@@ -88560,66 +86171,6 @@
     "rule": "constraint categorias_tipo_check CHECK ((tipo = ANY (ARRAY['receita'::text, 'despesa'::text]))) NOT VALID"
    },
    {
-    "table": "user_preferences",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "user_preferences",
-    "column": "user_id",
-    "rule": "obrigatório; FK → users.id ON DELETE CASCADE"
-   },
-   {
-    "table": "user_preferences",
-    "column": "key",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "user_preferences",
-    "column": "payload",
-    "rule": "default '{}'"
-   },
-   {
-    "table": "user_preferences",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "user_preferences",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "user_preferences",
-    "column": "(tabela)",
-    "rule": "UNIQUE(user_id, key)"
-   },
-   {
-    "table": "audit_log",
-    "column": "id",
-    "rule": "PK; default uuid_generate_v4()"
-   },
-   {
-    "table": "audit_log",
-    "column": "user_id",
-    "rule": "FK → users.id ON DELETE SET NULL"
-   },
-   {
-    "table": "audit_log",
-    "column": "action",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "audit_log",
-    "column": "table_name",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "audit_log",
-    "column": "created_at",
-    "rule": "default NOW()"
-   },
-   {
     "table": "saved_filters",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -88678,46 +86229,6 @@
     "table": "saved_filters",
     "column": "(tabela)",
     "rule": "constraint saved_filters_shared_requires_empresa CHECK (((NOT is_shared) OR (empresa_id IS NOT NULL))) NOT VALID"
-   },
-   {
-    "table": "entity_versions",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "entity_versions",
-    "column": "entity_type",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "entity_versions",
-    "column": "entity_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "entity_versions",
-    "column": "version_number",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "entity_versions",
-    "column": "data",
-    "rule": "default '{}'::jsonb"
-   },
-   {
-    "table": "entity_versions",
-    "column": "changed_by",
-    "rule": "FK → users.id"
-   },
-   {
-    "table": "entity_versions",
-    "column": "changed_at",
-    "rule": "default NOW()"
-   },
-   {
-    "table": "entity_versions",
-    "column": "(tabela)",
-    "rule": "CONSTRAINT unique_entity_version UNIQUE (entity_type, entity_id, version_number)"
    },
    {
     "table": "profiles",
@@ -90585,71 +88096,6 @@
     "rule": "constraint security_alerts_severity_check CHECK ((severity = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text, 'critical'::text]))) NOT VALID"
    },
    {
-    "table": "account_lockouts",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "account_lockouts",
-    "column": "user_email",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "account_lockouts",
-    "column": "failed_attempts",
-    "rule": "default 0"
-   },
-   {
-    "table": "account_lockouts",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "account_lockouts",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "account_lockouts",
-    "column": "lockout_count",
-    "rule": "default 0"
-   },
-   {
-    "table": "known_devices",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "known_devices",
-    "column": "user_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "known_devices",
-    "column": "device_fingerprint",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "known_devices",
-    "column": "first_seen_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "known_devices",
-    "column": "last_seen_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "known_devices",
-    "column": "is_trusted",
-    "rule": "default false"
-   },
-   {
-    "table": "known_devices",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
     "table": "new_device_alerts",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -91480,56 +88926,6 @@
     "rule": "constraint prejuizos_fiscais_trimestre_origem_check CHECK (((trimestre_origem IS NULL) OR ((trimestre_origem >= 1) AND (trimestre_origem <= 4)))) NOT VALID"
    },
    {
-    "table": "lalur_lancamentos",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "empresa_id",
-    "rule": "obrigatório; FK → empresas.id ON DELETE CASCADE"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "apuracao_id",
-    "rule": "FK → apuracoes_irpj_csll.id ON DELETE CASCADE"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "tipo",
-    "rule": "obrigatório; CHECK tipo IN ('adicao', 'exclusao')"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "natureza",
-    "rule": "obrigatório; CHECK natureza IN ('permanente', 'temporaria')"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "descricao",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "valor",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "saldo_parte_b",
-    "rule": "default 0"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "lalur_lancamentos",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
     "table": "incentivos_fiscais",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -92210,46 +89606,6 @@
     "rule": "constraint plano_contas_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.plano_contas(id) ON DELETE SET NULL"
    },
    {
-    "table": "contatos_financeiros",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "nome",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "tipo",
-    "rule": "default 'cliente'; CHECK tipo IN ('cliente', 'fornecedor', 'ambos', 'outro')"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "ativo",
-    "rule": "default true"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "empresa_id",
-    "rule": "FK → empresas.id"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "origem",
-    "rule": "default 'manual'"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "contatos_financeiros",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
     "table": "formas_pagamento",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -92745,106 +90101,6 @@
     "rule": "default auth.uid(); FK → users.id ON DELETE SET NULL"
    },
    {
-    "table": "ponto_departamentos",
-    "column": "id",
-    "rule": "PK"
-   },
-   {
-    "table": "ponto_departamentos",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_departamentos",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_funcionarios",
-    "column": "id",
-    "rule": "PK"
-   },
-   {
-    "table": "ponto_funcionarios",
-    "column": "situacao",
-    "rule": "default 'ATIVO'"
-   },
-   {
-    "table": "ponto_funcionarios",
-    "column": "departamento_id",
-    "rule": "FK → ponto_departamentos.id"
-   },
-   {
-    "table": "ponto_funcionarios",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_funcionarios",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_registros",
-    "column": "id",
-    "rule": "PK"
-   },
-   {
-    "table": "ponto_registros",
-    "column": "funcionario_id",
-    "rule": "FK → ponto_funcionarios.id"
-   },
-   {
-    "table": "ponto_registros",
-    "column": "sincronizado_em",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_registros",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_registros",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "id",
-    "rule": "PK"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "status",
-    "rule": "default 'running'"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "departamentos_sincronizados",
-    "rule": "default 0"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "funcionarios_sincronizados",
-    "rule": "default 0"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "registros_novos",
-    "rule": "default 0"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "registros_atualizados",
-    "rule": "default 0"
-   },
-   {
-    "table": "ponto_sync_log",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
     "table": "pix_templates",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -93293,26 +90549,6 @@
     "table": "cnpja_cache",
     "column": "(tabela)",
     "rule": "constraint cnpja_cache_validade CHECK ((expires_at > fetched_at)) NOT VALID"
-   },
-   {
-    "table": "cnpja_rate_limit",
-    "column": "user_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "cnpja_rate_limit",
-    "column": "window_start",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "cnpja_rate_limit",
-    "column": "request_count",
-    "rule": "default 0"
-   },
-   {
-    "table": "cnpja_rate_limit",
-    "column": "(tabela)",
-    "rule": "PRIMARY KEY (user_id, window_start)"
    },
    {
     "table": "convites_contador",
@@ -95120,41 +92356,6 @@
     "rule": "constraint user_demonstrativo_preferences_modo_padrao_check CHECK ((modo_padrao = ANY (ARRAY['dre'::text, 'balanco'::text]))) NOT VALID"
    },
    {
-    "table": "configuracoes_receber",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "configuracoes_receber",
-    "column": "empresa_id",
-    "rule": "obrigatório; único; FK → empresas.id"
-   },
-   {
-    "table": "configuracoes_receber",
-    "column": "regua_ativa",
-    "rule": "default false"
-   },
-   {
-    "table": "configuracoes_receber",
-    "column": "regua_config",
-    "rule": "default '{"
-   },
-   {
-    "table": "configuracoes_receber",
-    "column": "baixa_automatica_ativa",
-    "rule": "default true"
-   },
-   {
-    "table": "configuracoes_receber",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "configuracoes_receber",
-    "column": "updated_at",
-    "rule": "default now()"
-   },
-   {
     "table": "execucoes_regua_cobranca",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -95665,51 +92866,6 @@
     "rule": "constraint elisao_regras_creditos_aliquota_check CHECK (aliquota IS NULL OR (aliquota >= 0 AND aliquota <= 100))"
    },
    {
-    "table": "elisao_analise_gap",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "empresa_id",
-    "rule": "obrigatório; FK → empresas.id ON DELETE CASCADE"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "periodo_referencia",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "valor_pago_efetivo",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "valor_otimizado_projetado",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "economia_identificada",
-    "rule": "CALCULADA = valor_pago_efetivo - valor_otimizado_projetado"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "detalhes_oportunidades",
-    "rule": "default '[]'"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "status",
-    "rule": "default 'oportunidade_detectada'"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
     "table": "elisao_creditos_auditoria",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -95905,36 +93061,6 @@
     "rule": "constraint elisao_alertas_severidade_check CHECK ((severidade = ANY (ARRAY['baixa'::text, 'media'::text, 'alta'::text, 'critica'::text]))) NOT VALID"
    },
    {
-    "table": "auditoria_configuracoes",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "auditoria_configuracoes",
-    "column": "user_id",
-    "rule": "obrigatório; FK → users.id ON DELETE CASCADE"
-   },
-   {
-    "table": "auditoria_configuracoes",
-    "column": "empresa_id",
-    "rule": "obrigatório; FK → empresas.id ON DELETE CASCADE"
-   },
-   {
-    "table": "auditoria_configuracoes",
-    "column": "tipo_acao",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "auditoria_configuracoes",
-    "column": "detalhes",
-    "rule": "default '{}'::jsonb"
-   },
-   {
-    "table": "auditoria_configuracoes",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
     "table": "regua_cobranca_status",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -95978,61 +93104,6 @@
     "table": "regua_cobranca_status",
     "column": "status",
     "rule": "default 'pendente'"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "transacao_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "empresa_id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "sugestoes",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "status",
-    "rule": "default 'pendente'"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "analisado_em",
-    "rule": "default now()"
-   },
-   {
-    "table": "conciliacao_sugestoes",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "boleto_events",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "boleto_events",
-    "column": "boleto_id",
-    "rule": "FK → boletos.id ON DELETE CASCADE"
-   },
-   {
-    "table": "boleto_events",
-    "column": "event_type",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "boleto_events",
-    "column": "created_at",
-    "rule": "default now()"
    },
    {
     "table": "asaas_sync_queue",
@@ -96220,46 +93291,6 @@
     "rule": "constraint asaas_reconciliation_suggestions_contas_pagar_id_fkey FOREIGN KEY (contas_pagar_id) REFERENCES public.contas_pagar(id)"
    },
    {
-    "table": "asaas_scheduled_transfers",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "empresa_id",
-    "rule": "FK → empresas.id"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "valor",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "chave_pix",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "tipo_chave",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "agendado_para",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "status",
-    "rule": "default 'PENDING'"
-   },
-   {
-    "table": "asaas_scheduled_transfers",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
     "table": "asaas_credit_risk_analysis",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -96298,31 +93329,6 @@
     "table": "asaas_credit_risk_analysis",
     "column": "(tabela)",
     "rule": "constraint asaas_credit_risk_analysis_score_risco_check CHECK (((score_risco >= 0) AND (score_risco <= 1000))) NOT VALID"
-   },
-   {
-    "table": "registro_duplicidade",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "registro_duplicidade",
-    "column": "hash_identificador",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "registro_duplicidade",
-    "column": "tipo_entidade",
-    "rule": "default 'conta_pagar'"
-   },
-   {
-    "table": "registro_duplicidade",
-    "column": "usuario_id",
-    "rule": "FK → users.id"
-   },
-   {
-    "table": "registro_duplicidade",
-    "column": "created_at",
-    "rule": "default now()"
    },
    {
     "table": "bloqueios_duplicidade",
@@ -96812,61 +93818,6 @@
    {
     "table": "aprovacao_comentarios",
     "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "id",
-    "rule": "PK; default gen_random_uuid()"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "empresa_id",
-    "rule": "obrigatório; FK → empresas.id ON DELETE CASCADE"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "codigo",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "nome",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "esfera",
-    "rule": "obrigatório; CHECK esfera IN ('federal', 'estadual', 'municipal')"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "periodicidade",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "competencia",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "vencimento",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "status",
-    "rule": "default 'pendente'; CHECK status IN ('pendente', 'em_andamento', 'transmitida', 'atrasada', 'nao_aplicavel')"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "created_at",
-    "rule": "default now()"
-   },
-   {
-    "table": "obrigacoes_acessorias",
-    "column": "updated_at",
     "rule": "default now()"
    },
    {
@@ -138078,6 +135029,10 @@
    {
     "file": "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql",
     "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
+    "call": "asaas"
    }
   ],
   "db_policies": [
@@ -138280,76 +135235,6 @@
     "using": "auth.uid() = user_id",
     "check": "",
     "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can view own preferences",
-    "table": "user_preferences",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can insert own preferences",
-    "table": "user_preferences",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can update own preferences",
-    "table": "user_preferences",
-    "cmd": "UPDATE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can delete own preferences",
-    "table": "user_preferences",
-    "cmd": "DELETE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can view own audit_log",
-    "table": "audit_log",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/002_rls_policies.sql"
-   },
-   {
-    "name": "Users can view versions",
-    "table": "entity_versions",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "true",
-    "check": "",
-    "src": "supabase/migrations/20241231000001_entity_versions.sql"
-   },
-   {
-    "name": "Users can insert versions",
-    "table": "entity_versions",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = changed_by OR changed_by IS NULL",
-    "src": "supabase/migrations/20241231000001_entity_versions.sql"
    },
    {
     "name": "Financeiro+ can manage transacoes",
@@ -138692,46 +135577,6 @@
     "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql"
    },
    {
-    "name": "Users can view their own devices",
-    "table": "known_devices",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
-    "name": "Users can insert their own devices",
-    "table": "known_devices",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
-    "name": "Users can update their own devices",
-    "table": "known_devices",
-    "cmd": "UPDATE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
-    "name": "Users can delete their own devices",
-    "table": "known_devices",
-    "cmd": "DELETE",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20251231122310_00ee16f7-8b97-4b05-a9c2-2778e7c02c28.sql"
-   },
-   {
     "name": "Users can view their own alerts",
     "table": "new_device_alerts",
     "cmd": "SELECT",
@@ -138834,36 +135679,6 @@
    {
     "name": "Admins can delete security settings",
     "table": "security_settings",
-    "cmd": "DELETE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "",
-    "src": "supabase/migrations/20260314205440_9f6dee9b-7373-4d99-a698-61fd45aa6429.sql"
-   },
-   {
-    "name": "Admins can view account lockouts",
-    "table": "account_lockouts",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "",
-    "src": "supabase/migrations/20260314205440_9f6dee9b-7373-4d99-a698-61fd45aa6429.sql"
-   },
-   {
-    "name": "Admins can update account lockouts",
-    "table": "account_lockouts",
-    "cmd": "UPDATE",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "public.has_role(auth.uid(), 'admin')",
-    "src": "supabase/migrations/20260314205440_9f6dee9b-7373-4d99-a698-61fd45aa6429.sql"
-   },
-   {
-    "name": "Admins can delete account lockouts",
-    "table": "account_lockouts",
     "cmd": "DELETE",
     "roles": "authenticated",
     "mode": "permissive",
@@ -139162,46 +135977,6 @@
     "src": "supabase/migrations/20260317001902_56d52bf4-e277-42a1-b10a-d8b3507ad413.sql"
    },
    {
-    "name": "Admins manage ponto_departamentos",
-    "table": "ponto_departamentos",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "Admins manage ponto_registros",
-    "table": "ponto_registros",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "Admins manage ponto_sync_log",
-    "table": "ponto_sync_log",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "Admin/financeiro can view ponto_registros",
-    "table": "ponto_registros",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])",
-    "check": "",
-    "src": "supabase/migrations/20260317193707_315e0bd5-56b2-465d-abfd-ce762bf1bbc7.sql"
-   },
-   {
     "name": "Authenticated users can insert pix_templates",
     "table": "pix_templates",
     "cmd": "INSERT",
@@ -139220,46 +135995,6 @@
     "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
     "check": "",
     "src": "supabase/migrations/20260317222159_4b1da752-96b9-47b0-87ee-53a83a4ba2a2.sql"
-   },
-   {
-    "name": "Admin financeiro can view ponto_departamentos",
-    "table": "ponto_departamentos",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "",
-    "src": "supabase/migrations/20260317222159_4b1da752-96b9-47b0-87ee-53a83a4ba2a2.sql"
-   },
-   {
-    "name": "Admin financeiro can view ponto_sync_log",
-    "table": "ponto_sync_log",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-    "check": "",
-    "src": "supabase/migrations/20260317222622_3a3403eb-fa57-47d4-85d4-61e1cd9b3df9.sql"
-   },
-   {
-    "name": "Admin can view ponto_funcionarios",
-    "table": "ponto_funcionarios",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin'::app_role)",
-    "check": "",
-    "src": "supabase/migrations/20260323224505_5c964c27-f120-458b-8382-3488b3a8e2a3.sql"
-   },
-   {
-    "name": "Admin can manage ponto_funcionarios",
-    "table": "ponto_funcionarios",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_role(auth.uid(), 'admin'::app_role)",
-    "check": "public.has_role(auth.uid(), 'admin'::app_role)",
-    "src": "supabase/migrations/20260323224505_5c964c27-f120-458b-8382-3488b3a8e2a3.sql"
    },
    {
     "name": "Benchmarks visíveis para autenticados",
@@ -139328,16 +136063,6 @@
     "roles": "authenticated",
     "mode": "permissive",
     "using": "public.has_role(auth.uid(), 'admin')",
-    "check": "",
-    "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
-   },
-   {
-    "name": "Usuário vê próprio uso CNPJá",
-    "table": "cnpja_rate_limit",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')",
     "check": "",
     "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql"
    },
@@ -139902,16 +136627,6 @@
     "src": "supabase/migrations/20260508113713_1c3c6436-179b-49c2-803c-5f89c17435e3.sql"
    },
    {
-    "name": "Users can manage their company settings",
-    "table": "configuracoes_receber",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "true",
-    "check": "",
-    "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-   },
-   {
     "name": "Users can view their billing executions",
     "table": "execucoes_regua_cobranca",
     "cmd": "SELECT",
@@ -139930,16 +136645,6 @@
     "using": "true",
     "check": "",
     "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
-   },
-   {
-    "name": "Users can manage their own preferences",
-    "table": "user_preferences",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() = user_id",
-    "check": "",
-    "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
    },
    {
     "name": "Users can manage their own filter presets",
@@ -140012,26 +136717,6 @@
     "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql"
    },
    {
-    "name": "Usuários podem ver auditoria das suas empresas",
-    "table": "auditoria_configuracoes",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "EXISTS ( SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (role = 'admin' OR role = 'financeiro') )",
-    "check": "",
-    "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-   },
-   {
-    "name": "Usuários podem inserir auditoria",
-    "table": "auditoria_configuracoes",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() = user_id",
-    "src": "supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql"
-   },
-   {
     "name": "Usuários podem ver status da régua de sua empresa",
     "table": "regua_cobranca_status",
     "cmd": "SELECT",
@@ -140040,26 +136725,6 @@
     "using": "auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = regua_cobranca_status.empresa_id)",
     "check": "",
     "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-   },
-   {
-    "name": "Usuários podem ver sugestões de sua empresa",
-    "table": "conciliacao_sugestoes",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = conciliacao_sugestoes.empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260508172800_ea6782c5-97bc-432e-adbd-5a1ba4e5c949.sql"
-   },
-   {
-    "name": "Users can view events of their companies' boletos",
-    "table": "boleto_events",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "EXISTS ( SELECT 1 FROM public.boletos b JOIN public.user_roles ur ON ur.user_id = auth.uid() WHERE b.id = boleto_events.boleto_id )",
-    "check": "",
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
    },
    {
     "name": "Permitir leitura da fila para autenticados",
@@ -140400,26 +137065,6 @@
     "using": "",
     "check": "auth.uid() = usuario_id",
     "src": "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql"
-   },
-   {
-    "name": "Users can view their company obligations",
-    "table": "obrigacoes_acessorias",
-    "cmd": "SELECT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro', 'visualizador') )",
-    "check": "",
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
-   },
-   {
-    "name": "Users can manage their company obligations",
-    "table": "obrigacoes_acessorias",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )",
-    "check": "",
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
    },
    {
     "name": "Anyone can view glossary",
@@ -140790,16 +137435,6 @@
     "using": "auth.role() = 'authenticated'",
     "check": "",
     "src": "supabase/migrations/20260522142711_a38cc086-ae93-4fd5-a53b-dcfe1e359450.sql"
-   },
-   {
-    "name": "System and auth users can insert audit_log",
-    "table": "audit_log",
-    "cmd": "INSERT",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "",
-    "check": "auth.uid() IS NOT NULL AND (user_id = auth.uid() OR user_id IS NULL)",
-    "src": "supabase/migrations/20260527125840_4c2450b3-29f0-46f6-8f8e-e19c9f0061c3.sql"
    },
    {
     "name": "nfe_xml_service_write",
@@ -145512,26 +142147,6 @@
     "src": "supabase/migrations/20260902210000_fix_rls_cross_tenant_leak_grupo_b1.sql"
    },
    {
-    "name": "Fin users can manage contatos_financeiros",
-    "table": "contatos_financeiros",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-    "check": "public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-    "src": "supabase/migrations/20260902210000_fix_rls_cross_tenant_leak_grupo_b1.sql"
-   },
-   {
-    "name": "Admin/financeiro can read contatos_financeiros",
-    "table": "contatos_financeiros",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902210000_fix_rls_cross_tenant_leak_grupo_b1.sql"
-   },
-   {
     "name": "eventos_contab_insert",
     "table": "eventos_contabilizacao_log",
     "cmd": "INSERT",
@@ -146042,16 +142657,6 @@
     "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
    },
    {
-    "name": "Users can manage their company scheduled transfers",
-    "table": "asaas_scheduled_transfers",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
-   },
-   {
     "name": "Users can view credit risk analysis of their customers",
     "table": "asaas_credit_risk_analysis",
     "cmd": "SELECT",
@@ -146065,16 +142670,6 @@
     "name": "Users can manage their company simulations",
     "table": "elisao_simulacoes_regime",
     "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
-   },
-   {
-    "name": "Users can view their company gap analysis",
-    "table": "elisao_analise_gap",
-    "cmd": "SELECT",
     "roles": "public",
     "mode": "permissive",
     "using": "empresa_acessivel(empresa_id)",
@@ -146610,15 +143205,6 @@
     "src": "supabase/migrations/001_create_tables.sql"
    },
    {
-    "name": "update_user_preferences_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "user_preferences",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/001_create_tables.sql"
-   },
-   {
     "name": "update_contas_pagar_status",
     "when": "BEFORE INSERT OR UPDATE",
     "table": "contas_pagar",
@@ -146862,15 +143448,6 @@
     "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
    },
    {
-    "name": "update_lalur_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "lalur_lancamentos",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260106111021_e12c5a2d-10ce-45df-8954-d067c93b7ccc.sql"
-   },
-   {
     "name": "update_incentivos_updated_at",
     "when": "BEFORE UPDATE",
     "table": "incentivos_fiscais",
@@ -146950,15 +143527,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260315210216_8a2ae26e-a254-45a0-9695-852ece9410e5.sql"
-   },
-   {
-    "name": "update_contatos_financeiros_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "contatos_financeiros",
-    "function": "update_updated_at",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql"
    },
    {
     "name": "update_categorias_updated_at",
@@ -147123,15 +143691,6 @@
     "src": "supabase/migrations/20260317000928_196c5fd2-d3a0-4ea5-8042-5aa6ba14e479.sql"
    },
    {
-    "name": "trg_auditoria_contatos_financeiros",
-    "when": "AFTER INSERT OR UPDATE OR DELETE",
-    "table": "contatos_financeiros",
-    "function": "fn_auditoria_financeira",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317000928_196c5fd2-d3a0-4ea5-8042-5aa6ba14e479.sql"
-   },
-   {
     "name": "trg_auditoria_movimentacoes",
     "when": "AFTER INSERT OR UPDATE OR DELETE",
     "table": "movimentacoes",
@@ -147148,33 +143707,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260317000928_196c5fd2-d3a0-4ea5-8042-5aa6ba14e479.sql"
-   },
-   {
-    "name": "update_ponto_departamentos_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "ponto_departamentos",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "update_ponto_funcionarios_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "ponto_funcionarios",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
-   },
-   {
-    "name": "update_ponto_registros_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "ponto_registros",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260317122901_4b6d174c-307b-4e54-b5cf-d1c100af37bf.sql"
    },
    {
     "name": "update_pix_templates_updated_at",
@@ -147510,15 +144042,6 @@
     "src": "supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql"
    },
    {
-    "name": "tr_user_preferences_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "user_preferences",
-    "function": "handle_updated_at",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260508114653_1e05ff9e-2921-4f82-9d0f-c169c5309f43.sql"
-   },
-   {
     "name": "tr_user_filter_presets_updated_at",
     "when": "BEFORE UPDATE",
     "table": "user_filter_presets",
@@ -147562,15 +144085,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql"
-   },
-   {
-    "name": "on_boleto_status_change",
-    "when": "AFTER UPDATE",
-    "table": "boletos",
-    "function": "handle_boleto_payment_sync",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
    },
    {
     "name": "update_asaas_sync_queue_updated_at",
@@ -147805,15 +144319,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260509163954_a42bcd0a-1b48-423e-be5e-ba67d42a6422.sql"
-   },
-   {
-    "name": "update_obrigacoes_acessorias_updated_at",
-    "when": "BEFORE UPDATE",
-    "table": "obrigacoes_acessorias",
-    "function": "update_updated_at_column",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260509180437_16c294be-c9f1-4308-895d-c1548d7491ff.sql"
    },
    {
     "name": "set_updated_at_d9c737e24ed42de7266f",
@@ -149364,19 +145869,6 @@
     "raises": [],
     "tables": []
    },
-   "audit_trigger_func": {
-    "args": "",
-    "returns": "TRIGGER",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/001_create_tables.sql",
-    "security_definer": false,
-    "search_path": false,
-    "body": "BEGIN IF TG_OP = 'INSERT' THEN INSERT INTO audit_log (user_id, action, table_name, record_id, new_data) VALUES (NEW.user_id, 'INSERT', TG_TABLE_NAME, NEW.id, row_to_json(NEW)); RETURN NEW; ELSIF TG_OP = 'UPDATE' THEN INSERT INTO audit_log (user_id, action, table_name, record_id, old_data, new_data) VALUES (NEW.user_id, 'UPDATE', TG_TABLE_NAME, NEW.id, row_to_json(OLD), row_to_json(NEW)); RETURN NEW; ELSIF TG_OP = 'DELETE' THEN INSERT INTO audit_log (user_id, action, table_name, record_id, old_data) VALUES (OLD.user_id, 'DELETE', TG_TABLE_NAME, OLD.id, row_to_json(OLD)); RETURN OLD; END IF; RETURN NULL; END;",
-    "raises": [],
-    "tables": [
-     "audit_log"
-    ]
-   },
    "update_saved_filters_updated_at": {
     "args": "",
     "returns": "TRIGGER",
@@ -149478,19 +145970,6 @@
     "body": "BEGIN RETURN 'AC-' || to_char(now(), 'YYYYMMDD') || '-' || upper(substr(md5(random()::text), 1, 6)); END;",
     "raises": [],
     "tables": []
-   },
-   "check_account_lockout": {
-    "args": "_email text",
-    "returns": "boolean",
-    "lang": "sql",
-    "src": "supabase/migrations/20251231115833_5d49d028-21a9-4193-ac9c-564570171cb4.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "SELECT EXISTS ( SELECT 1 FROM public.account_lockouts WHERE user_email = _email AND locked_until > now() )",
-    "raises": [],
-    "tables": [
-     "account_lockouts"
-    ]
    },
    "increment_failed_attempts": {
     "args": "_email text",
@@ -149697,22 +146176,6 @@
     "tables": [
      "contas_pagar",
      "contas_receber"
-    ]
-   },
-   "cnpja_check_rate_limit": {
-    "args": "_user_id UUID, _max INTEGER DEFAULT 10, _window_minutes INTEGER DEFAULT 60",
-    "returns": "BOOLEAN",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260418121937_7350e81b-f116-41a4-bb9b-af83af63c745.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "DECLARE v_window TIMESTAMPTZ; v_count INTEGER; BEGIN v_window := date_trunc('minute', now()) - (EXTRACT(MINUTE FROM now())::INTEGER % _window_minutes) * INTERVAL '1 minute'; INSERT INTO public.cnpja_rate_limit (user_id, window_start, request_count) VALUES (_user_id, v_window, 1) ON CONFLICT (user_id, window_start) DO UPDATE SET request_count = cnpja_rate_limit.request_count + 1 RETURNING request_count INTO v_count; DELETE FROM public.cnpja_rate_limit WHERE window_start < now() - INTERVAL '1 day'; RETURN v_count <= _max; END;",
-    "raises": [],
-    "tables": [
-     "SET",
-     "cnpja_rate_limit",
-     "now",
-     "v_count"
     ]
    },
    "fn_invalidar_regime_cache": {
@@ -149991,23 +146454,6 @@
     "body": "BEGIN IF (TG_OP = 'UPDATE') AND (NEW.status_aprovacao <> OLD.status_aprovacao) THEN NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object( 'status', NEW.status_aprovacao, 'usuario_id', auth.uid(), 'data', now(), 'comentario', NEW.motivo_rejeicao ); END IF; RETURN NEW; END;",
     "raises": [],
     "tables": []
-   },
-   "handle_boleto_payment_sync": {
-    "args": "",
-    "returns": "TRIGGER",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql",
-    "security_definer": true,
-    "search_path": false,
-    "body": "BEGIN IF NEW.status = 'pago' AND OLD.status != 'pago' THEN IF NEW.conta_receber_id IS NOT NULL THEN UPDATE public.contas_receber SET status = 'pago', data_recebimento = COALESCE(NEW.updated_at, now())::date, updated_at = now() WHERE id = NEW.conta_receber_id; INSERT INTO public.contas_receber_eventos (conta_id, tipo, mensagem, metadata) VALUES (NEW.conta_receber_id, 'pagamento_confirmado', 'Pagamento confirmado via boleto #' || NEW.numero, jsonb_build_object('boleto_id', NEW.id)); END IF; IF NEW.conta_pagar_id IS NOT NULL THEN UPDATE public.contas_pagar SET status = 'pago', data_pagamento = COALESCE(NEW.updated_at, now())::date, updated_at = now() WHERE id = NEW.conta_pagar_id; INSERT INTO p …",
-    "raises": [],
-    "tables": [
-     "boleto_events",
-     "contas_pagar",
-     "contas_pagar_eventos",
-     "contas_receber",
-     "contas_receber_eventos"
-    ]
    },
    "check_asaas_queue_failures": {
     "args": "",
@@ -154192,11 +150638,6 @@
     "table": "contas_bancarias",
     "column": "saldo_disponivel",
     "expr": "saldo_atual"
-   },
-   {
-    "table": "elisao_analise_gap",
-    "column": "economia_identificada",
-    "expr": "valor_pago_efetivo - valor_otimizado_projetado"
    }
   ],
   "db_views": {
@@ -155155,14 +151596,6 @@
      "type": "text DEFAULT 'pendente'::text NOT NULL"
     },
     {
-     "table": "contatos_financeiros",
-     "column": "estado",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "TEXT"
-    },
-    {
      "table": "transferencias",
      "column": "status",
      "enum": "",
@@ -155261,22 +151694,6 @@
      "allowed": [],
      "default": "",
      "type": "TEXT"
-    },
-    {
-     "table": "ponto_funcionarios",
-     "column": "situacao",
-     "enum": "",
-     "allowed": [],
-     "default": "ATIVO",
-     "type": "varchar(20) DEFAULT 'ATIVO'"
-    },
-    {
-     "table": "ponto_sync_log",
-     "column": "status",
-     "enum": "",
-     "allowed": [],
-     "default": "running",
-     "type": "varchar(20) DEFAULT 'running'"
     },
     {
      "table": "cnpja_cache",
@@ -155491,14 +151908,6 @@
      "type": "text NOT NULL"
     },
     {
-     "table": "elisao_analise_gap",
-     "column": "status",
-     "enum": "",
-     "allowed": [],
-     "default": "oportunidade_detectada",
-     "type": "TEXT DEFAULT 'oportunidade_detectada'"
-    },
-    {
      "table": "elisao_creditos_auditoria",
      "column": "status_aprovacao",
      "enum": "",
@@ -155553,30 +151962,6 @@
      "type": "TEXT DEFAULT 'pendente'"
     },
     {
-     "table": "conciliacao_sugestoes",
-     "column": "status",
-     "enum": "",
-     "allowed": [],
-     "default": "pendente",
-     "type": "TEXT DEFAULT 'pendente'"
-    },
-    {
-     "table": "boleto_events",
-     "column": "status_before",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "TEXT"
-    },
-    {
-     "table": "boleto_events",
-     "column": "status_after",
-     "enum": "",
-     "allowed": [],
-     "default": "",
-     "type": "TEXT"
-    },
-    {
      "table": "asaas_sync_queue",
      "column": "status",
      "enum": "",
@@ -155599,14 +151984,6 @@
      "allowed": [],
      "default": "PENDING",
      "type": "text DEFAULT 'PENDING'"
-    },
-    {
-     "table": "asaas_scheduled_transfers",
-     "column": "status",
-     "enum": "",
-     "allowed": [],
-     "default": "PENDING",
-     "type": "TEXT NOT NULL DEFAULT 'PENDING'"
     },
     {
      "table": "bloqueios_duplicidade",
@@ -155644,20 +152021,6 @@
      "allowed": [],
      "default": "enviado",
      "type": "TEXT DEFAULT 'enviado'"
-    },
-    {
-     "table": "obrigacoes_acessorias",
-     "column": "status",
-     "enum": "",
-     "allowed": [
-      "atrasada",
-      "em_andamento",
-      "nao_aplicavel",
-      "pendente",
-      "transmitida"
-     ],
-     "default": "pendente",
-     "type": "TEXT NOT NULL DEFAULT 'pendente' CHECK (status IN ('pendente', 'em_andamento', 'transmitida', 'atrasada', 'nao_aplicavel'))"
     },
     {
      "table": "sessoes_conciliacao",
@@ -158607,19 +154970,6 @@
     "UPDATE": [],
     "DELETE": []
    },
-   "account_lockouts": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: public.has_role(auth.uid(), 'admin')"
-    ],
-    "INSERT": [],
-    "UPDATE": [
-     "authenticated: public.has_role(auth.uid(), 'admin')"
-    ],
-    "DELETE": [
-     "authenticated: public.has_role(auth.uid(), 'admin')"
-    ]
-   },
    "acessos_suspeitos": {
     "rls": "enabled",
     "SELECT": [
@@ -159105,21 +155455,6 @@
      "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
    },
-   "asaas_scheduled_transfers": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: empresa_acessivel(empresa_id)"
-    ],
-    "INSERT": [
-     "public: empresa_acessivel(empresa_id)"
-    ],
-    "UPDATE": [
-     "public: empresa_acessivel(empresa_id)"
-    ],
-    "DELETE": [
-     "public: empresa_acessivel(empresa_id)"
-    ]
-   },
    "asaas_sync_queue": {
     "rls": "enabled",
     "SELECT": [
@@ -159157,17 +155492,6 @@
     "DELETE": [
      "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
-   },
-   "audit_log": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: auth.uid() = user_id"
-    ],
-    "INSERT": [
-     "public: auth.uid() IS NOT NULL AND (user_id = auth.uid() OR user_id IS NULL)"
-    ],
-    "UPDATE": [],
-    "DELETE": []
    },
    "audit_logs": {
     "rls": "enabled",
@@ -159264,17 +155588,6 @@
     "DELETE": [
      "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
     ]
-   },
-   "auditoria_configuracoes": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: EXISTS ( SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (role = 'admin' OR role = 'financeiro') )"
-    ],
-    "INSERT": [
-     "public: auth.uid() = user_id"
-    ],
-    "UPDATE": [],
-    "DELETE": []
    },
    "auditoria_financeira": {
     "rls": "enabled",
@@ -159552,15 +155865,6 @@
      "authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …"
     ]
    },
-   "boleto_events": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: EXISTS ( SELECT 1 FROM public.boletos b JOIN public.user_roles ur ON ur.user_id = auth.uid() WHERE b.id = boleto_events.boleto_id )"
-    ],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
    "boletos": {
     "rls": "enabled",
     "SELECT": [
@@ -159730,24 +156034,6 @@
      "service_role: true"
     ]
    },
-   "cnpja_rate_limit": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')"
-    ],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
-   "conciliacao_sugestoes": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = conciliacao_sugestoes.empresa_id)"
-    ],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
    "conciliacoes": {
     "rls": "enabled",
     "SELECT": [
@@ -159829,21 +156115,6 @@
      "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
    },
-   "configuracoes_receber": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: true"
-    ],
-    "INSERT": [
-     "public: true"
-    ],
-    "UPDATE": [
-     "public: true"
-    ],
-    "DELETE": [
-     "public: true"
-    ]
-   },
    "conformidade_snapshots": {
     "rls": "enabled",
     "SELECT": [
@@ -159916,22 +156187,6 @@
     "DELETE": [
      "public: auth.uid() = user_id",
      "authenticated: ((has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'financ …"
-    ]
-   },
-   "contatos_financeiros": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)",
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[]) AND empresa_acessivel(empresa_id)"
-    ],
-    "INSERT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)"
-    ],
-    "UPDATE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)"
-    ],
-    "DELETE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)"
     ]
    },
    "contratos": {
@@ -160149,15 +156404,6 @@
      "authenticated: public.empresa_acessivel(empresa_id)"
     ]
    },
-   "elisao_analise_gap": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: empresa_acessivel(empresa_id)"
-    ],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
-   },
    "elisao_creditos_auditoria": {
     "rls": "enabled",
     "SELECT": [
@@ -160285,17 +156531,6 @@
     "DELETE": [
      "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
-   },
-   "entity_versions": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: true"
-    ],
-    "INSERT": [
-     "public: auth.uid() = changed_by OR changed_by IS NULL"
-    ],
-    "UPDATE": [],
-    "DELETE": []
    },
    "entregas_obrigacoes": {
     "rls": "enabled",
@@ -161039,21 +157274,6 @@
     "UPDATE": [],
     "DELETE": []
    },
-   "known_devices": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: auth.uid() = user_id"
-    ],
-    "INSERT": [
-     "public: auth.uid() = user_id"
-    ],
-    "UPDATE": [
-     "public: auth.uid() = user_id"
-    ],
-    "DELETE": [
-     "public: auth.uid() = user_id"
-    ]
-   },
    "kpis_operacionais": {
     "rls": "enabled",
     "SELECT": [
@@ -161072,13 +157292,6 @@
      "public: auth.uid() = user_id",
      "authenticated: (user_id = auth.uid())"
     ]
-   },
-   "lalur_lancamentos": {
-    "rls": "enabled",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
    },
    "lancamentos_contabeis": {
     "rls": "enabled",
@@ -161352,22 +157565,6 @@
     ],
     "DELETE": [
      "authenticated: (user_id = (SELECT auth.uid()))"
-    ]
-   },
-   "obrigacoes_acessorias": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro', 'visualizador') )",
-     "public: auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )"
-    ],
-    "INSERT": [
-     "public: auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )"
-    ],
-    "UPDATE": [
-     "public: auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )"
-    ],
-    "DELETE": [
-     "public: auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )"
     ]
    },
    "open_finance_consents": {
@@ -161692,70 +157889,6 @@
      "authenticated: (user_id = (SELECT auth.uid()))"
     ]
    },
-   "ponto_departamentos": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-     "authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "INSERT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "UPDATE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "DELETE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ]
-   },
-   "ponto_funcionarios": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: public.has_role(auth.uid(), 'admin'::app_role)",
-     "authenticated: public.has_role(auth.uid(), 'admin'::app_role)"
-    ],
-    "INSERT": [
-     "authenticated: public.has_role(auth.uid(), 'admin'::app_role)"
-    ],
-    "UPDATE": [
-     "authenticated: public.has_role(auth.uid(), 'admin'::app_role)"
-    ],
-    "DELETE": [
-     "authenticated: public.has_role(auth.uid(), 'admin'::app_role)"
-    ]
-   },
-   "ponto_registros": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])"
-    ],
-    "INSERT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "UPDATE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "DELETE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ]
-   },
-   "ponto_sync_log": {
-    "rls": "enabled",
-    "SELECT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
-     "authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "INSERT": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "UPDATE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ],
-    "DELETE": [
-     "authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
-    ]
-   },
    "portal_cliente_acessos": {
     "rls": "enabled",
     "SELECT": [
@@ -162028,13 +158161,6 @@
      "authenticated: true",
      "authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …"
     ]
-   },
-   "registro_duplicidade": {
-    "rls": "enabled",
-    "SELECT": [],
-    "INSERT": [],
-    "UPDATE": [],
-    "DELETE": []
    },
    "regras_conciliacao": {
     "rls": "enabled",
@@ -162969,25 +159095,6 @@
      "authenticated: (((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role))"
     ]
    },
-   "user_preferences": {
-    "rls": "enabled",
-    "SELECT": [
-     "public: auth.uid() = user_id",
-     "public: auth.uid() = user_id"
-    ],
-    "INSERT": [
-     "public: auth.uid() = user_id",
-     "public: auth.uid() = user_id"
-    ],
-    "UPDATE": [
-     "public: auth.uid() = user_id",
-     "public: auth.uid() = user_id"
-    ],
-    "DELETE": [
-     "public: auth.uid() = user_id",
-     "public: auth.uid() = user_id"
-    ]
-   },
    "user_roles": {
     "rls": "enabled",
     "SELECT": [
@@ -163205,6 +159312,7 @@
    "scripts/ai-context/gerar.unit.mjs",
    "scripts/data/checkpoint.sql",
    "scripts/data/test_data_migrate_pg_scenarios.py",
+   "scripts/db/replay-bootstrap.sql",
    "scripts/edge-deploy/redigir-log.mjs",
    "scripts/edge-deploy/redigir-log.unit.mjs",
    "scripts/generate-env-manifest.mjs",
@@ -163562,7 +159670,6 @@
    "certificado_get_password",
    "certificado_upsert",
    "chave_anon_vault",
-   "check_account_lockout",
    "check_asaas_queue_failures",
    "check_catalogos_tributarios_invariants",
    "check_integrity_invariants",
@@ -163576,7 +159683,6 @@
    "cleanup_rpc_observability_metrics",
    "clear_login_attempts",
    "close_stale_integrity_alerts",
-   "cnpja_check_rate_limit",
    "compare_pg_stat_baseline",
    "confirmar_conciliacao_manual",
    "confirmar_envio_cobranca",
@@ -163655,7 +159761,6 @@
    "get_user_roles",
    "get_webauthn_credential_by_email",
    "handle_asaas_payment_settlement",
-   "handle_boleto_payment_sync",
    "handle_conciliacao_retroativa_error",
    "handle_new_user",
    "has_any_role",
@@ -173171,7 +169276,6 @@
    "regimes_especiais_empresa",
    "apuracoes_irpj_csll",
    "prejuizos_fiscais",
-   "lalur_lancamentos",
    "incentivos_fiscais",
    "retencoes_fonte",
    "darfs",
@@ -173184,7 +169288,6 @@
    "bling_sync_logs",
    "bling_webhook_events",
    "plano_contas",
-   "contatos_financeiros",
    "formas_pagamento",
    "movimentacoes",
    "transferencias",
@@ -173221,7 +169324,6 @@
    "user_empresas",
    "scim_tokens",
    "scim_operations_log",
-   "configuracoes_receber",
    "execucoes_regua_cobranca",
    "user_filter_presets",
    "logs_conciliacao_retroativa",
@@ -173229,17 +169331,13 @@
    "regras_contabilizacao_automatica",
    "eventos_contabilizacao_log",
    "elisao_simulacoes_regime",
-   "elisao_analise_gap",
    "elisao_creditos_auditoria",
    "elisao_tarefas_acionaveis",
    "elisao_alertas",
-   "auditoria_configuracoes",
    "regua_cobranca_status",
-   "conciliacao_sugestoes",
    "asaas_config",
    "asaas_transfers",
    "asaas_reconciliation_suggestions",
-   "asaas_scheduled_transfers",
    "bloqueios_duplicidade",
    "configuracoes_duplicidade",
    "regras_roteamento_financeiro",
@@ -173248,7 +169346,6 @@
    "pedidos_compra",
    "whatsapp_conversas",
    "fluxos_aprovacao_niveis",
-   "obrigacoes_acessorias",
    "tax_audit_trail",
    "sessoes_conciliacao",
    "contratos",
@@ -173274,7 +169371,7 @@
    "asaas_payment_links"
   ],
   "tenant_missing": [],
-  "tenant_cov": 0.46,
+  "tenant_cov": 0.47,
   "soft_delete": [
    [
     "clientes",
@@ -173378,10 +169475,6 @@
    ],
    [
     "plano_contas",
-    "ativo"
-   ],
-   [
-    "contatos_financeiros",
     "ativo"
    ],
    [
@@ -173518,19 +169611,11 @@
     "created_at",
     "updated_at"
    ],
-   "user_preferences": [
-    "created_at",
-    "updated_at"
-   ],
-   "audit_log": [
-    "created_at"
-   ],
    "saved_filters": [
     "created_at",
     "created_by",
     "updated_at"
    ],
-   "entity_versions": [],
    "profiles": [
     "created_at",
     "updated_at"
@@ -173698,13 +169783,6 @@
    "security_alerts": [
     "created_at"
    ],
-   "account_lockouts": [
-    "created_at",
-    "updated_at"
-   ],
-   "known_devices": [
-    "created_at"
-   ],
    "new_device_alerts": [
     "created_at"
    ],
@@ -173741,10 +169819,6 @@
    "prejuizos_fiscais": [
     "created_at",
     "created_by"
-   ],
-   "lalur_lancamentos": [
-    "created_at",
-    "updated_at"
    ],
    "incentivos_fiscais": [
     "created_at",
@@ -173798,10 +169872,6 @@
     "created_at",
     "updated_at"
    ],
-   "contatos_financeiros": [
-    "created_at",
-    "updated_at"
-   ],
    "formas_pagamento": [
     "created_at"
    ],
@@ -173846,21 +169916,6 @@
     "created_at",
     "created_by"
    ],
-   "ponto_departamentos": [
-    "created_at",
-    "updated_at"
-   ],
-   "ponto_funcionarios": [
-    "created_at",
-    "updated_at"
-   ],
-   "ponto_registros": [
-    "created_at",
-    "updated_at"
-   ],
-   "ponto_sync_log": [
-    "created_at"
-   ],
    "pix_templates": [
     "created_at",
     "created_by",
@@ -173892,7 +169947,6 @@
     "created_at",
     "updated_at"
    ],
-   "cnpja_rate_limit": [],
    "convites_contador": [
     "created_at",
     "created_by",
@@ -174022,10 +170076,6 @@
     "created_at",
     "updated_at"
    ],
-   "configuracoes_receber": [
-    "created_at",
-    "updated_at"
-   ],
    "execucoes_regua_cobranca": [
     "created_at"
    ],
@@ -174063,9 +170113,6 @@
     "created_at",
     "updated_at"
    ],
-   "elisao_analise_gap": [
-    "created_at"
-   ],
    "elisao_creditos_auditoria": [
     "created_at",
     "updated_at"
@@ -174078,18 +170125,9 @@
     "created_at",
     "updated_at"
    ],
-   "auditoria_configuracoes": [
-    "created_at"
-   ],
    "regua_cobranca_status": [
     "created_at",
     "updated_at"
-   ],
-   "conciliacao_sugestoes": [
-    "created_at"
-   ],
-   "boleto_events": [
-    "created_at"
    ],
    "asaas_sync_queue": [
     "created_at",
@@ -174110,13 +170148,7 @@
     "created_at",
     "updated_at"
    ],
-   "asaas_scheduled_transfers": [
-    "created_at"
-   ],
    "asaas_credit_risk_analysis": [
-    "created_at"
-   ],
-   "registro_duplicidade": [
     "created_at"
    ],
    "bloqueios_duplicidade": [
@@ -174164,10 +170196,6 @@
    ],
    "aprovacao_comentarios": [
     "created_at"
-   ],
-   "obrigacoes_acessorias": [
-    "created_at",
-    "updated_at"
    ],
    "glossario_tributario": [
     "created_at",
@@ -174575,10 +170603,6 @@
     "endereco"
    ],
    [
-    "audit_log",
-    "ip_address"
-   ],
-   [
     "profiles",
     "email"
    ],
@@ -174647,10 +170671,6 @@
     "ip_address"
    ],
    [
-    "known_devices",
-    "ip_address"
-   ],
-   [
     "new_device_alerts",
     "ip_address"
    ],
@@ -174667,46 +170687,6 @@
     "endereco"
    ],
    [
-    "contatos_financeiros",
-    "email"
-   ],
-   [
-    "contatos_financeiros",
-    "telefone"
-   ],
-   [
-    "contatos_financeiros",
-    "whatsapp"
-   ],
-   [
-    "contatos_financeiros",
-    "endereco"
-   ],
-   [
-    "contatos_financeiros",
-    "cep"
-   ],
-   [
-    "ponto_funcionarios",
-    "cpf"
-   ],
-   [
-    "ponto_funcionarios",
-    "rg"
-   ],
-   [
-    "ponto_funcionarios",
-    "email"
-   ],
-   [
-    "ponto_funcionarios",
-    "telefone"
-   ],
-   [
-    "ponto_funcionarios",
-    "celular"
-   ],
-   [
     "cnpja_cache",
     "cnpj"
    ],
@@ -174717,10 +170697,6 @@
    [
     "sso_login_attempts",
     "email"
-   ],
-   [
-    "auditoria_configuracoes",
-    "ip_address"
    ],
    [
     "security_audit_logs",
@@ -175196,16 +171172,6 @@
     "NUMERIC"
    ],
    [
-    "lalur_lancamentos",
-    "valor",
-    "NUMERIC(15,2)"
-   ],
-   [
-    "lalur_lancamentos",
-    "saldo_parte_b",
-    "NUMERIC(15,2)"
-   ],
-   [
     "incentivos_fiscais",
     "valor_utilizado_ano",
     "NUMERIC(15,2)"
@@ -175456,16 +171422,6 @@
     "NUMERIC"
    ],
    [
-    "elisao_analise_gap",
-    "valor_pago_efetivo",
-    "DECIMAL(15,2)"
-   ],
-   [
-    "elisao_analise_gap",
-    "valor_otimizado_projetado",
-    "DECIMAL(15,2)"
-   ],
-   [
     "elisao_creditos_auditoria",
     "valor_base",
     "NUMERIC(15,2)"
@@ -175497,11 +171453,6 @@
    ],
    [
     "asaas_reconciliation_suggestions",
-    "valor",
-    "NUMERIC"
-   ],
-   [
-    "asaas_scheduled_transfers",
     "valor",
     "NUMERIC"
    ],
@@ -176382,6 +172333,13 @@
    },
    {
     "kind": "rpc",
+    "msg": "RPC `cnpja_check_rate_limit` chamada mas não definida nas migrations/types",
+    "where": [
+     "supabase/functions/cnpja-lookup/index.ts"
+    ]
+   },
+   {
+    "kind": "rpc",
     "msg": "RPC `pg_try_advisory_lock` chamada mas não definida nas migrations/types",
     "where": [
      "supabase/functions/detectar-anomalias-financeiras/index.ts"
@@ -176469,13 +172427,6 @@
     "msg": "função `handle_conciliacao_retroativa_error` é SECURITY DEFINER sem `set search_path` (risco de escalação)",
     "where": [
      "supabase/migrations/20260508130002_cfb2c801-331a-4fbe-b9e8-cdf17f93277a.sql"
-    ]
-   },
-   {
-    "kind": "segurança",
-    "msg": "função `handle_boleto_payment_sync` é SECURITY DEFINER sem `set search_path` (risco de escalação)",
-    "where": [
-     "supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql"
     ]
    },
    {
@@ -176587,7 +172538,6 @@
    "`per_dcomp.status` tem valores ['aguardando_transmissao', 'cancelado', 'deferido', 'em_analise', 'indeferido', 'rascunho', 'transmitido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`asaas_payments.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`bling_sync_logs.status` tem valores ['erro', 'executando', 'parcial', 'pendente', 'sucesso'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
-   "`contatos_financeiros.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`transferencias.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`conciliacoes.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`webhooks_log.status` tem valores ['dead', 'failed', 'pending', 'processing', 'retrying', 'success'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
@@ -176599,8 +172549,6 @@
    "`negativacoes.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`protestos.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`protestos.estado_cartorio` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`ponto_funcionarios.situacao` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`ponto_sync_log.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cnpja_cache.situacao_cadastral` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`verificacoes_conformidade.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`fechamentos_tributarios.status` tem valores ['aberto', 'em_revisao', 'fechado', 'reaberto'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
@@ -176619,23 +172567,17 @@
    "`logs_conciliacao_retroativa.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`divergencias_conciliacao.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`eventos_contabilizacao_log.status` tem valores ['duplicado', 'erro', 'sem_regra', 'simulado', 'sucesso'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
-   "`elisao_analise_gap.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`elisao_creditos_auditoria.status_aprovacao` tem valores ['aprovado', 'pendente', 'rejeitado'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`elisao_tarefas_acionaveis.status` tem valores ['cancelada', 'concluida', 'em_andamento', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`elisao_tarefas_acionaveis.bitrix_sync_status` tem valores ['erro', 'nao_sincronizado', 'sincronizado', 'sincronizando'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`regua_cobranca_status.status_cobranca` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`regua_cobranca_status.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`conciliacao_sugestoes.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`boleto_events.status_before` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`boleto_events.status_after` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`asaas_sync_queue.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`asaas_transfers.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`asaas_reconciliation_suggestions.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`asaas_scheduled_transfers.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`planos_acao.status` tem valores ['cancelado', 'concluido', 'em_andamento', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`pedidos_compra.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`whatsapp_conversas.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "`obrigacoes_acessorias.status` tem valores ['atrasada', 'em_andamento', 'nao_aplicavel', 'pendente', 'transmitida'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`sessoes_conciliacao.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`contratos.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`webhook_simulation_runs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
@@ -176652,7 +172594,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "290/297 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `audit_log`, `entity_versions`, `profiles`, `user_roles`, `empresas`, `contas_bancarias` …",
+   "271/277 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -179373,6 +175315,11 @@
     "capture_output=True, text=True, env=env, timeout=15",
     "capture_output=True, text=True, timeout=10)"
    ]
+  },
+  "scripts/db/replay-bootstrap.sql": {
+   "path": "scripts/db/replay-bootstrap.sql",
+   "lines": 102,
+   "uses_service_role": true
   },
   "scripts/edge-deploy/deployment-record.mjs": {
    "path": "scripts/edge-deploy/deployment-record.mjs",
@@ -247392,6 +243339,13 @@
    "lines": 82,
    "uses_service_role": true
   },
+  "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql": {
+   "path": "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
+   "lines": 58,
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -247500,10 +243454,31 @@
   }
  },
  "git": {
-  "sha": "a45b5d8458594b5e95d02d13cd0887604e47ac69",
+  "sha": "6c6dec83e20721789480b0247c7fab69e97390f2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "6c6dec8",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)",
+    "files": [
+     "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql"
+    ]
+   },
+   {
+    "sha": "17a5777",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(db): harness de replay das migrations num Postgres local efêmero (#433)",
+    "files": [
+     "docs/agentes/replay-migrations-2026-11-17.md",
+     "scripts/automation.config.json",
+     "scripts/db/replay-bootstrap.sql",
+     "scripts/db/replay-migrations.sh"
+    ]
+   },
    {
     "sha": "a45b5d8",
     "date": "2026-11-17",
@@ -247887,32 +243862,6 @@
      "src/components/boletos/BoletoPreviewPanel.tsx",
      "src/components/boletos/__tests__/BoletoBarcode.test.tsx"
     ]
-   },
-   {
-    "sha": "61d2a4b",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)",
-    "files": [
-     "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
-     "src/hooks/useBenchmarkSetorial.ts",
-     "src/lib/arquitetura/grafo-observado.json",
-     "supabase/functions/_shared/cnae.ts",
-     "supabase/functions/_shared/cnae_test.ts",
-     "supabase/functions/comparar-benchmark-setorial/index.ts",
-     "supabase/functions/gerar-alertas-tributarios/index.ts"
-    ]
-   },
-   {
-    "sha": "6139096",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)",
-    "files": [
-     "src/components/contas-receber/WebhookConfigDialog.tsx",
-     "src/components/contas-receber/WebhookDlqPanel.tsx",
-     "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -247949,28 +243898,28 @@
     2
    ],
    [
-    "supabase/functions/_shared/cnae.ts",
-    2
-   ],
-   [
-    "supabase/functions/_shared/cnae_test.ts",
-    2
-   ],
-   [
-    "supabase/functions/gerar-alertas-tributarios/index.ts",
-    2
-   ],
-   [
     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
     2
    ],
    [
-    "src/components/contas-receber/WebhookDlqPanel.tsx",
-    2
+    "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
+    1
    ],
    [
-    "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
-    2
+    "docs/agentes/replay-migrations-2026-11-17.md",
+    1
+   ],
+   [
+    "scripts/automation.config.json",
+    1
+   ],
+   [
+    "scripts/db/replay-bootstrap.sql",
+    1
+   ],
+   [
+    "scripts/db/replay-migrations.sh",
+    1
    ],
    [
     ".github/workflows/ci.yml",

@@ -43,7 +43,7 @@
   "hooks": "use + PascalCase",
   "servicos": "camelCase (52%)",
   "edge_functions": "kebab-case (99%)",
-  "tabelas": "snake_case (80%)"
+  "tabelas": "snake_case (79%)"
  },
  "barrels_index": 29,
  "extensao_componentes": [
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)",
+   "chore(db): harness de replay das migrations num Postgres local efêmero (#433)",
    "fix(ci): destrava o bun audit do advisory novo do picomatch (#434)",
    "chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)",
-   "infra: monitor-health entra na lista de funcoes implantaveis (#426)",
-   "chore: remove 3 TODOs de rename ja concluidos no banco (#432)",
-   "feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)"
+   "infra: monitor-health entra na lista de funcoes implantaveis (#426)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

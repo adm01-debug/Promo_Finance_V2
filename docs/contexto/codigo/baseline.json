@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "a45b5d8458594b5e95d02d13cd0887604e47ac69",
+  "commit": "6c6dec83e20721789480b0247c7fab69e97390f2",
   "branch": "main",
-  "data_commit": "2026-11-17T15:31:21-03:00",
+  "data_commit": "2026-11-17T16:00:39-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6c6dec8",
+    "data": "2026-11-17",
+    "assunto": "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)"
+   },
+   {
+    "sha": "17a5777",
+    "data": "2026-11-17",
+    "assunto": "chore(db): harness de replay das migrations num Postgres local efêmero (#433)"
+   },
    {
     "sha": "a45b5d8",
     "data": "2026-11-17",
@@ -121,19 +131,9 @@
     "sha": "1bbc484",
     "data": "2026-11-17",
     "assunto": "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)"
-   },
-   {
-    "sha": "44c623c",
-    "data": "2026-11-17",
-    "assunto": "chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)"
-   },
-   {
-    "sha": "9224222",
-    "data": "2026-11-17",
-    "assunto": "chore: declara o Node que o projeto ja exige (>=22.12) (#411)"
    }
   ],
-  "arquivos_mudados_7d": 908,
+  "arquivos_mudados_7d": 910,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -161,11 +161,11 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 26
+    "mudancas": 24
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 24
+    "mudancas": 22
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -214,16 +214,16 @@
     "mudancas": 17
    },
    {
-    "arquivo": ".github/workflows/deno-tests.yml",
-    "mudancas": 13
-   },
-   {
     "arquivo": "env.manifest.json",
     "mudancas": 13
    },
    {
+    "arquivo": ".github/workflows/deno-tests.yml",
+    "mudancas": 12
+   },
+   {
     "arquivo": "supabase/config.toml",
-    "mudancas": 13
+    "mudancas": 12
    },
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
@@ -270,10 +270,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/convidar-contador/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/enviar-alerta-email/index.ts",
     "mudancas": 9
    },
@@ -286,26 +282,30 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/gerar-sped-ecd/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/gerar-sped-ecf/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/mcp-query/index.ts",
     "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": ".github/workflows/graphify.yml",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 187
+    "commits": 189
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 17
+    "commits": 14
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3914,
+  "arquivos_total": 3918,
   "arquivos_codigo": 2469,
   "linhas_codigo": 440071,
   "rotas": 130,
@@ -329,13 +329,13 @@
   "componentes": 992,
   "hooks": 273,
   "edge_functions": 106,
-  "tabelas": 340,
-  "migrations": 1034,
+  "tabelas": 320,
+  "migrations": 1035,
   "cron_jobs": 22,
   "testes": 475,
   "workflows": 19,
-  "scripts": 111,
-  "docs_md": 198
+  "scripts": 113,
+  "docs_md": 199
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
@@ -1078,6 +1078,7 @@
    "whatsapp_conversas"
   ],
   "rpcs_sem_definicao": [
+   "cnpja_check_rate_limit",
    "exec_sql",
    "get_cron_run_history",
    "pg_try_advisory_lock"

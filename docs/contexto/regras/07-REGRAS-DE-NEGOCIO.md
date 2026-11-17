@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a45b5d8458` · branch `main` · 2026-11-17 18:31 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6c6dec83e2` · branch `main` · 2026-11-17 19:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -31,13 +31,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `categorias` | Users can insert own categorias | INSERT | public | permissive |  | `auth.uid() = user_id` |
 | `categorias` | Users can update own categorias | UPDATE | public | permissive | `auth.uid() = user_id` | `auth.uid() = user_id` |
 | `categorias` | Users can delete own categorias | DELETE | public | permissive | `auth.uid() = user_id` |  |
-| `user_preferences` | Users can view own preferences | SELECT | public | permissive | `auth.uid() = user_id` |  |
-| `user_preferences` | Users can insert own preferences | INSERT | public | permissive |  | `auth.uid() = user_id` |
-| `user_preferences` | Users can update own preferences | UPDATE | public | permissive | `auth.uid() = user_id` | `auth.uid() = user_id` |
-| `user_preferences` | Users can delete own preferences | DELETE | public | permissive | `auth.uid() = user_id` |  |
-| `audit_log` | Users can view own audit_log | SELECT | public | permissive | `auth.uid() = user_id` |  |
-| `entity_versions` | Users can view versions | SELECT | public | permissive | `true` |  |
-| `entity_versions` | Users can insert versions | INSERT | public | permissive |  | `auth.uid() = changed_by OR changed_by IS NULL` |
 | `transacoes_bancarias` | Financeiro+ can manage transacoes | ALL | public | permissive | `public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])` |  |
 | `solicitacoes_aprovacao` | Operacional+ can insert solicitacoes_aprovacao | INSERT | public | permissive |  | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role])` |
 | `solicitacoes_aprovacao` | Financeiro+ can update solicitacoes_aprovacao | UPDATE | public | permissive | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |  |
@@ -72,10 +65,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `role_permissions` | Authenticated can view role_permissions | SELECT | public | permissive | `auth.uid() IS NOT NULL` |  |
 | `security_alerts` | Admins can view security alerts | SELECT | public | permissive | `has_role(auth.uid(), 'admin')` |  |
 | `security_alerts` | Admins can update security alerts | UPDATE | public | permissive | `has_role(auth.uid(), 'admin')` |  |
-| `known_devices` | Users can view their own devices | SELECT | public | permissive | `auth.uid() = user_id` |  |
-| `known_devices` | Users can insert their own devices | INSERT | public | permissive |  | `auth.uid() = user_id` |
-| `known_devices` | Users can update their own devices | UPDATE | public | permissive | `auth.uid() = user_id` |  |
-| `known_devices` | Users can delete their own devices | DELETE | public | permissive | `auth.uid() = user_id` |  |
 | `new_device_alerts` | Users can view their own alerts | SELECT | public | permissive | `auth.uid() = user_id` |  |
 | `new_device_alerts` | Users can insert their own alerts | INSERT | public | permissive |  | `auth.uid() = user_id` |
 | `new_device_alerts` | Users can update their own alerts | UPDATE | public | permissive | `auth.uid() = user_id` |  |
@@ -87,9 +76,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `recomendacoes_metas_ia` | Sistema pode inserir recomendações | INSERT | public | permissive |  | `auth.uid() IS NOT NULL` |
 | `security_settings` | Admins can insert security settings | INSERT | authenticated | permissive |  | `public.has_role(auth.uid(), 'admin')` |
 | `security_settings` | Admins can delete security settings | DELETE | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
-| `account_lockouts` | Admins can view account lockouts | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
-| `account_lockouts` | Admins can update account lockouts | UPDATE | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` | `public.has_role(auth.uid(), 'admin')` |
-| `account_lockouts` | Admins can delete account lockouts | DELETE | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
 | `user_sessions` | Users can insert own sessions | INSERT | authenticated | permissive |  | `auth.uid() = user_id` |
 | `user_sessions` | Users can update own sessions | UPDATE | authenticated | permissive | `auth.uid() = user_id` | `auth.uid() = user_id` |
 | `password_reset_requests` | Qualquer um pode criar solicitação de reset | INSERT | public | permissive |  | `status = 'pendente' AND user_email IS NOT NULL AND length(trim(user_email)) >= 5 AND position('@' in user_email) > 1` |
@@ -119,16 +105,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `bling_webhook_events` | Admins can view bling webhook events | SELECT | authenticated | permissive | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |  |
 | `formas_pagamento` | Auth users can read formas_pagamento | SELECT | authenticated | permissive | `true` |  |
 | `categorias` | Auth users can read categorias | SELECT | authenticated | permissive | `auth.uid() IS NOT NULL` |  |
-| `ponto_departamentos` | Admins manage ponto_departamentos | ALL | authenticated | permissive | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |
-| `ponto_registros` | Admins manage ponto_registros | ALL | authenticated | permissive | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |
-| `ponto_sync_log` | Admins manage ponto_sync_log | ALL | authenticated | permissive | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` | `public.has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |
-| `ponto_registros` | Admin/financeiro can view ponto_registros | SELECT | authenticated | permissive | `public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])` |  |
 | `pix_templates` | Authenticated users can insert pix_templates | INSERT | authenticated | permissive |  | `auth.uid() = created_by` |
 | `webhooks_log` | Admin financeiro can read webhooks_log | SELECT | authenticated | permissive | `has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |  |
-| `ponto_departamentos` | Admin financeiro can view ponto_departamentos | SELECT | authenticated | permissive | `has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |  |
-| `ponto_sync_log` | Admin financeiro can view ponto_sync_log | SELECT | authenticated | permissive | `has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |  |
-| `ponto_funcionarios` | Admin can view ponto_funcionarios | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin'::app_role)` |  |
-| `ponto_funcionarios` | Admin can manage ponto_funcionarios | ALL | authenticated | permissive | `public.has_role(auth.uid(), 'admin'::app_role)` | `public.has_role(auth.uid(), 'admin'::app_role)` |
 | `benchmarks_setoriais` | Benchmarks visíveis para autenticados | SELECT | authenticated | permissive | `true` |  |
 | `benchmarks_setoriais` | Admins gerenciam benchmarks | ALL | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` | `public.has_role(auth.uid(), 'admin')` |
 | `rate_limit_logs` | Authenticated users can insert rate limit logs | INSERT | authenticated | permissive |  | `auth.uid() IS NOT NULL` |
@@ -136,7 +114,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `edge_function_logs` | Admins podem visualizar logs de edge functions | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
 | `edge_function_logs` | Service role pode inserir logs | INSERT | service_role | permissive |  | `true` |
 | `cnpja_cache` | Admins podem ver cache CNPJá | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
-| `cnpja_rate_limit` | Usuário vê próprio uso CNPJá | SELECT | authenticated | permissive | `user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')` |  |
 | `convites_contador` | Usuario cria proprio convite | INSERT | authenticated | permissive |  | `created_by = auth.uid()` |
 | `verificacoes_conformidade` | Service role pode inserir verificacoes | INSERT | service_role | permissive |  | `true` |
 | `verificacoes_conformidade` | Service role pode atualizar verificacoes | UPDATE | service_role | permissive | `true` | `true` |
@@ -193,10 +170,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `user_demonstrativo_preferences` | Users can view their own demonstrativo preferences | SELECT | public | permissive | `auth.uid() = user_id` |  |
 | `user_demonstrativo_preferences` | Users can insert their own demonstrativo preferences | INSERT | public | permissive |  | `auth.uid() = user_id` |
 | `user_demonstrativo_preferences` | Users can update their own demonstrativo preferences | UPDATE | public | permissive | `auth.uid() = user_id` |  |
-| `configuracoes_receber` | Users can manage their company settings | ALL | public | permissive | `true` |  |
 | `execucoes_regua_cobranca` | Users can view their billing executions | SELECT | public | permissive | `true` |  |
 | `logs_baixa_automatica` | Users can view their write-off logs | SELECT | public | permissive | `true` |  |
-| `user_preferences` | Users can manage their own preferences | ALL | public | permissive | `auth.uid() = user_id` |  |
 | `user_filter_presets` | Users can manage their own filter presets | ALL | public | permissive | `auth.uid() = user_id` |  |
 | `logs_conciliacao_retroativa` | Users can view logs | SELECT | public | permissive | `true` |  |
 | `logs_conciliacao_retroativa` | Users can insert logs | INSERT | public | permissive |  | `auth.uid() IS NOT NULL` |
@@ -204,11 +179,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `divergencias_conciliacao` | Users can update divergencias | UPDATE | public | permissive | `true` |  |
 | `elisao_regras_creditos` | Everyone can view tax rules | SELECT | public | permissive | `true` |  |
 | `elisao_alertas` | Users can view alerts for their companies | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE empresa_id = elisao_alertas.empresa_id AND user_id = auth.uid() )` |  |
-| `auditoria_configuracoes` | Usuários podem ver auditoria das suas empresas | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (role = 'admin' OR role = 'financeiro') )` |  |
-| `auditoria_configuracoes` | Usuários podem inserir auditoria | INSERT | public | permissive |  | `auth.uid() = user_id` |
 | `regua_cobranca_status` | Usuários podem ver status da régua de sua empresa | SELECT | public | permissive | `auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = regua_cobranca_status.empresa_id)` |  |
-| `conciliacao_sugestoes` | Usuários podem ver sugestões de sua empresa | SELECT | public | permissive | `auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = conciliacao_sugestoes.empresa_id)` |  |
-| `boleto_events` | Users can view events of their companies' boletos | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.boletos b JOIN public.user_roles ur ON ur.user_id = auth.uid() WHERE b.id = boleto_events.boleto_id )` |  |
 | `asaas_sync_queue` | Permitir leitura da fila para autenticados | SELECT | authenticated | permissive | `true` |  |
 | `bloqueios_duplicidade` | Empresas podem ver seus bloqueios | SELECT | public | permissive | `empresa_id IN (SELECT id FROM public.empresas WHERE ativo = true)` |  |
 | `configuracoes_duplicidade` | Empresas podem gerenciar suas configuracoes de duplicidade | ALL | public | permissive | `empresa_id IN (SELECT id FROM public.empresas WHERE ativo = true)` |  |
@@ -243,8 +214,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `fluxos_aprovacao_niveis` | Admins can manage workflow levels | ALL | public | permissive | `auth.uid() = empresa_id` |  |
 | `aprovacao_comentarios` | Users can view comments on their requests or if they are approvers | SELECT | public | permissive | `true` |  |
 | `aprovacao_comentarios` | Users can post comments | INSERT | public | permissive |  | `auth.uid() = usuario_id` |
-| `obrigacoes_acessorias` | Users can view their company obligations | SELECT | public | permissive | `auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro', 'visualizador') )` |  |
-| `obrigacoes_acessorias` | Users can manage their company obligations | ALL | public | permissive | `auth.uid() IN ( SELECT user_id FROM public.user_roles WHERE role IN ('admin', 'financeiro') )` |  |
 | `glossario_tributario` | Anyone can view glossary | SELECT | public | permissive | `true` |  |
 | `tax_audit_trail` | Users can view audit trail of their companies | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = tax_audit_trail.empresa_id AND user_empresas.user_id = auth.uid() )` |  |
 | `tax_audit_trail` | Users can insert audit trail entries | INSERT | public | permissive |  | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = tax_audit_trail.empresa_id AND user_empresas.user_id = auth.uid() )` |
@@ -282,7 +251,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `resumos_executivos_semanais` | Permitir acesso total resumos_executivos_semanais | ALL | public | permissive | `true` | `true` |
 | `metas_financeiras` | Users can view metas | SELECT | public | permissive | `true` |  |
 | `aprovacao_comentarios` | Users can view comments on requests they can see | SELECT | public | permissive | `auth.role() = 'authenticated'` |  |
-| `audit_log` | System and auth users can insert audit_log | INSERT | public | permissive |  | `auth.uid() IS NOT NULL AND (user_id = auth.uid() OR user_id IS NULL)` |
 | `storage.objects` | nfe_xml_service_write | INSERT | service_role | permissive |  | `bucket_id = 'nfe-xml'` |
 | `storage.objects` | nfe_xml_service_update | UPDATE | service_role | permissive | `bucket_id = 'nfe-xml'` |  |
 | `storage.objects` | nfe_xml_service_delete | DELETE | service_role | permissive | `bucket_id = 'nfe-xml'` |  |
@@ -311,7 +279,39 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `cnaes` | cnaes_select_authenticated | SELECT | authenticated | permissive | `true` |  |
 | `cnpja_cache` | cnpja_cache_service_role_only | ALL | service_role | permissive | `true` | `true` |
 | `elisao_alertas` | elisao_alertas_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
-| … +549 linhas — lista completa em `context.json` | | | | | | |
+| `elisao_creditos_auditoria` | creditos_auditoria_insert | INSERT | authenticated | permissive |  | `public.empresa_acessivel(empresa_id)` |
+| `elisao_creditos_auditoria` | creditos_auditoria_select | SELECT | authenticated | permissive | `public.empresa_acessivel(empresa_id)` |  |
+| `elisao_regras_creditos` | regras_creditos_leitura | SELECT | authenticated | permissive | `true` |  |
+| `elisao_simulacoes_regime` | elisao_sim_regime_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `elisao_tarefas_acionaveis` | tarefas_elisao_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `estrategias_elisao` | estrategias_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `eventos_contabilizacao_log` | eventos_contab_select | SELECT | authenticated | permissive | `public.empresa_acessivel(empresa_id)` |  |
+| `execucoes_regua_cobranca` | execucoes_regua_select | SELECT | authenticated | permissive | `public.empresa_acessivel(empresa_id)` |  |
+| `faixas_simples_nacional` | faixas_simples_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `fechamentos_tributarios` | fechamentos_insert | INSERT | authenticated | permissive |  | `public.empresa_acessivel(empresa_id)` |
+| `fechamentos_tributarios` | fechamentos_select | SELECT | authenticated | permissive | `public.empresa_acessivel(empresa_id)` |  |
+| `fechamentos_tributarios` | fechamentos_update | UPDATE | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `glossario_tributario` | glossario_leitura | SELECT | authenticated | permissive | `ativo` |  |
+| `incentivos_fiscais` | incentivos_fiscais_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `integration_secrets` | integration_secrets_no_client_access | ALL | authenticated, anon | restrictive | `false` | `false` |
+| `integrity_alerts` | integrity_alerts_service_all | ALL | service_role | permissive | `true` | `true` |
+| `itens_lista_iss` | itens_iss_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `ncms` | ncms_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `notas_fiscais_ocr` | notas_fiscais_ocr_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `operacoes_icms` | operacoes_icms_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `oportunidades_elisao` | oportunidades_elisao_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `per_dcomp` | per_dcomp_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `projecoes_reforma` | projecoes_reforma_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `protocolos_st` | protocolos_st_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `protocolos_st_ncms` | protocolos_st_ncms_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `protocolos_st_ufs` | protocolos_st_ufs_select_authenticated | SELECT | authenticated | permissive | `true` |  |
+| `regime_decision_cache` | regime_cache_select | SELECT | authenticated | permissive | `public.empresa_acessivel(empresa_id)` |  |
+| `regras_contabilizacao_automatica` | regras_contab_select | SELECT | authenticated | permissive | `public.empresa_acessivel(empresa_id)` |  |
+| `relatorios_tributarios_agendados` | rel_trib_agend_all | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `simulacoes` | simulacoes_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
+| `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
+| `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
+| … +513 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -391,18 +391,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `categorias` | `plano_conta_id` | FK → plano_contas.id |
 | `categorias` | `(tabela)` | constraint categorias_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id) |
 | `categorias` | `(tabela)` | constraint categorias_tipo_check CHECK ((tipo = ANY (ARRAY['receita'::text, 'despesa'::text]))) NOT VALID |
-| `user_preferences` | `id` | PK; default gen_random_uuid() |
-| `user_preferences` | `user_id` | obrigatório; FK → users.id ON DELETE CASCADE |
-| `user_preferences` | `key` | obrigatório |
-| `user_preferences` | `payload` | default '{}' |
-| `user_preferences` | `created_at` | default now() |
-| `user_preferences` | `updated_at` | default now() |
-| `user_preferences` | `(tabela)` | UNIQUE(user_id, key) |
-| `audit_log` | `id` | PK; default uuid_generate_v4() |
-| `audit_log` | `user_id` | FK → users.id ON DELETE SET NULL |
-| `audit_log` | `action` | obrigatório |
-| `audit_log` | `table_name` | obrigatório |
-| `audit_log` | `created_at` | default NOW() |
 | `saved_filters` | `id` | PK; default gen_random_uuid() |
 | `saved_filters` | `user_id` | obrigatório |
 | `saved_filters` | `entity_type` | obrigatório |
@@ -415,14 +403,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `saved_filters` | `updated_at` | default now() |
 | `saved_filters` | `(tabela)` | constraint saved_filters_unique UNIQUE (user_id, entity_type, name) |
 | `saved_filters` | `(tabela)` | constraint saved_filters_shared_requires_empresa CHECK (((NOT is_shared) OR (empresa_id IS NOT NULL))) NOT VALID |
-| `entity_versions` | `id` | PK; default gen_random_uuid() |
-| `entity_versions` | `entity_type` | obrigatório |
-| `entity_versions` | `entity_id` | obrigatório |
-| `entity_versions` | `version_number` | obrigatório |
-| `entity_versions` | `data` | default '{}'::jsonb |
-| `entity_versions` | `changed_by` | FK → users.id |
-| `entity_versions` | `changed_at` | default NOW() |
-| `entity_versions` | `(tabela)` | CONSTRAINT unique_entity_version UNIQUE (entity_type, entity_id, version_number) |
 | `profiles` | `id` | PK; FK → users.id ON DELETE CASCADE |
 | `profiles` | `role` | default 'visualizador' |
 | `profiles` | `created_at` | default timezone('utc'::text |
@@ -617,7 +597,27 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `created_at` | default now() |
 | `feedback_conciliacao_ia` | `score_original` | default 0 |
 | `feedback_conciliacao_ia` | `created_by` | FK → users.id |
-| … +2409 linhas — lista completa em `context.json` | | |
+| `metas_financeiras` | `id` | PK; default gen_random_uuid() |
+| `metas_financeiras` | `empresa_id` | FK → empresas.id |
+| `metas_financeiras` | `titulo` | obrigatório |
+| `metas_financeiras` | `tipo` | obrigatório |
+| `metas_financeiras` | `valor_meta` | obrigatório |
+| `metas_financeiras` | `ano` | obrigatório |
+| `metas_financeiras` | `mes` | obrigatório |
+| `metas_financeiras` | `ativo` | default true |
+| `metas_financeiras` | `created_by` | FK → users.id |
+| `metas_financeiras` | `created_at` | default now() |
+| `metas_financeiras` | `updated_at` | default now() |
+| `historico_analises_preditivas` | `id` | PK; default gen_random_uuid() |
+| `historico_analises_preditivas` | `insights` | default '[]'::jsonb |
+| `historico_analises_preditivas` | `recomendacoes` | default '[]'::jsonb |
+| `historico_analises_preditivas` | `created_at` | default now() |
+| `historico_score_saude` | `id` | PK; default gen_random_uuid() |
+| `historico_score_saude` | `empresa_id` | FK → empresas.id |
+| `historico_score_saude` | `score` | obrigatório |
+| `historico_score_saude` | `data_calculo` | default now() |
+| `historico_score_saude` | `created_at` | default now() |
+| … +2277 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -627,7 +627,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | update_fornecedores_updated_at | BEFORE UPDATE | `fornecedores` | `update_updated_at_column` |  |
 | update_contas_pagar_updated_at | BEFORE UPDATE | `contas_pagar` | `update_updated_at_column` |  |
 | update_contas_receber_updated_at | BEFORE UPDATE | `contas_receber` | `update_updated_at_column` |  |
-| update_user_preferences_updated_at | BEFORE UPDATE | `user_preferences` | `update_updated_at_column` |  |
 | update_contas_pagar_status | BEFORE INSERT OR UPDATE | `contas_pagar` | `update_conta_status` |  |
 | update_contas_receber_status | BEFORE INSERT OR UPDATE | `contas_receber` | `update_conta_status` |  |
 | update_profiles_updated_at | BEFORE UPDATE | `profiles` | `update_updated_at_column` |  |
@@ -655,7 +654,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | update_regimes_especiais_empresa_updated_at | BEFORE UPDATE | `regimes_especiais_empresa` | `update_updated_at_column` |  |
 | update_apuracoes_irpj_updated_at | BEFORE UPDATE | `apuracoes_irpj_csll` | `update_updated_at_column` |  |
 | update_prejuizos_updated_at | BEFORE UPDATE | `prejuizos_fiscais` | `update_updated_at_column` |  |
-| update_lalur_updated_at | BEFORE UPDATE | `lalur_lancamentos` | `update_updated_at_column` |  |
 | update_incentivos_updated_at | BEFORE UPDATE | `incentivos_fiscais` | `update_updated_at_column` |  |
 | set_retencoes_updated_at | BEFORE UPDATE | `retencoes_fonte` | `update_updated_at` |  |
 | set_darfs_updated_at | BEFORE UPDATE | `darfs` | `update_updated_at` |  |
@@ -665,7 +663,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | update_asaas_customers_updated_at | BEFORE UPDATE | `asaas_customers` | `update_updated_at_column` |  |
 | update_asaas_payments_updated_at | BEFORE UPDATE | `asaas_payments` | `update_updated_at_column` |  |
 | set_bling_tokens_updated_at | BEFORE UPDATE | `bling_tokens` | `update_updated_at` |  |
-| update_contatos_financeiros_updated_at | BEFORE UPDATE | `contatos_financeiros` | `update_updated_at` |  |
 | update_categorias_updated_at | BEFORE UPDATE | `categorias` | `update_updated_at` |  |
 | update_formas_pagamento_updated_at | BEFORE UPDATE | `formas_pagamento` | `update_updated_at` |  |
 | update_movimentacoes_updated_at | BEFORE UPDATE | `movimentacoes` | `update_updated_at` |  |
@@ -684,12 +681,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_auditoria_contas_pagar | AFTER INSERT OR UPDATE OR DELETE | `contas_pagar` | `fn_auditoria_financeira` |  |
 | trg_auditoria_contas_receber | AFTER INSERT OR UPDATE OR DELETE | `contas_receber` | `fn_auditoria_financeira` |  |
 | trg_auditoria_contas_bancarias | AFTER INSERT OR UPDATE OR DELETE | `contas_bancarias` | `fn_auditoria_financeira` |  |
-| trg_auditoria_contatos_financeiros | AFTER INSERT OR UPDATE OR DELETE | `contatos_financeiros` | `fn_auditoria_financeira` |  |
 | trg_auditoria_movimentacoes | AFTER INSERT OR UPDATE OR DELETE | `movimentacoes` | `fn_auditoria_financeira` |  |
 | trg_auditoria_transferencias | AFTER INSERT OR UPDATE OR DELETE | `transferencias` | `fn_auditoria_financeira` |  |
-| update_ponto_departamentos_updated_at | BEFORE UPDATE | `ponto_departamentos` | `update_updated_at_column` |  |
-| update_ponto_funcionarios_updated_at | BEFORE UPDATE | `ponto_funcionarios` | `update_updated_at_column` |  |
-| update_ponto_registros_updated_at | BEFORE UPDATE | `ponto_registros` | `update_updated_at_column` |  |
 | update_pix_templates_updated_at | BEFORE UPDATE | `pix_templates` | `update_updated_at` |  |
 | update_faturamento_mensal_updated_at | BEFORE UPDATE | `faturamento_mensal` | `update_updated_at_column` |  |
 | update_folha_pagamento_updated_at | BEFORE UPDATE | `folha_pagamento` | `update_updated_at_column` |  |
@@ -727,13 +720,11 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_revoke_orphan_subs_on_saved_filter | AFTER UPDATE OR DELETE | `saved_filters` | `fn_revoke_orphan_saved_filter_subscriptions` |  |
 | trg_revoke_orphan_subs_on_user_empresas | AFTER UPDATE OR DELETE | `user_empresas` | `fn_revoke_orphan_saved_filter_subscriptions` |  |
 | trg_log_receber_status | AFTER INSERT OR UPDATE OF STATUS | `contas_receber` | `trigger_log_receber_status_change` |  |
-| tr_user_preferences_updated_at | BEFORE UPDATE | `user_preferences` | `handle_updated_at` |  |
 | tr_user_filter_presets_updated_at | BEFORE UPDATE | `user_filter_presets` | `handle_updated_at` |  |
 | trigger_conciliacao_retroativa_error | AFTER UPDATE | `logs_conciliacao_retroativa` | `handle_conciliacao_retroativa_error` |  |
 | update_elisao_simulacoes_updated_at | BEFORE UPDATE | `elisao_simulacoes_regime` | `update_updated_at_column` |  |
 | update_elisao_tarefas_updated_at | BEFORE UPDATE | `elisao_tarefas_acionaveis` | `update_updated_at_column` |  |
 | tr_registrar_decisao_elisao | BEFORE UPDATE | `elisao_creditos_auditoria` | `registrar_decisao_elisao` |  |
-| on_boleto_status_change | AFTER UPDATE | `boletos` | `handle_boleto_payment_sync` |  |
 | update_asaas_sync_queue_updated_at | BEFORE UPDATE | `asaas_sync_queue` | `update_updated_at_column` |  |
 | update_asaas_config_updated_at | BEFORE UPDATE | `asaas_config` | `update_updated_at_column` |  |
 | tr_check_asaas_queue_failures | AFTER UPDATE | `asaas_sync_queue` | `check_asaas_queue_failures` | `NEW.status = 'failed'` |
@@ -760,7 +751,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | tr_alerta_webhook_falha | AFTER INSERT OR UPDATE | `webhooks_log` | `gerar_alerta_falha_processamento` | `NEW.erro_mensagem IS NOT NULL` |
 | tr_alerta_regua_falha | AFTER INSERT | `execucoes_regua_cobranca` | `gerar_alerta_falha_regua` | `NEW.status = 'falha'` |
 | update_fluxos_aprovacao_niveis_updated_at | BEFORE UPDATE | `fluxos_aprovacao_niveis` | `update_updated_at_column` |  |
-| update_obrigacoes_acessorias_updated_at | BEFORE UPDATE | `obrigacoes_acessorias` | `update_updated_at_column` |  |
 | set_updated_at_d9c737e24ed42de7266f | BEFORE UPDATE | `acordos_parcelamento` | `update_updated_at_column` |  |
 | trg_alert_configurations_set_empresa | BEFORE INSERT | `alert_configurations` | `set_empresa_id_default` |  |
 | trg_audit_alert_configurations | AFTER INSERT OR DELETE OR UPDATE | `alert_configurations` | `audit_trigger_generic` |  |
@@ -923,7 +913,9 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_sync_valor_pago | AFTER INSERT OR DELETE OR UPDATE OF DELETED_AT, CONTA_PAGAR_ID, CONTA_RECEBER_ID | `movimentacoes` | `fn_sync_valor_pago_movimentacao` |  |
 | trg_movimentacao_origem_guard | BEFORE INSERT OR UPDATE OF ORIGEM, TRANSFERENCIA_ID | `movimentacoes` | `fn_movimentacao_origem_guard` |  |
 | trg_lancamento_estorno_marker | BEFORE UPDATE OF STATUS | `lancamentos_contabeis` | `fn_lancamento_estorno_marker` |  |
-| … +3 linhas — lista completa em `context.json` | | | | |
+| trg_validar_partidas_dobradas | AFTER INSERT OR UPDATE OR DELETE | `partidas_contabeis` | `validar_partidas_dobradas` |  |
+| trg_sincronizar_conta_partida | BEFORE INSERT OR UPDATE OF CONTA_ID, CONTA_CONTABIL_ID | `partidas_contabeis` | `sincronizar_conta_partida` |  |
+| trg_contabilizar_movimentacao | AFTER INSERT | `movimentacoes` | `contabilizar_movimentacao` |  |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -1121,7 +1113,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `per_dcomp` | `status` | `aguardando_transmissao`, `cancelado`, `deferido`, `em_analise`, `indeferido`, `rascunho`, `transmitido` | `rascunho` |
 | `asaas_payments` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `bling_sync_logs` | `status` | `erro`, `executando`, `parcial`, `pendente`, `sucesso` | `pendente` |
-| `contatos_financeiros` | `estado` | **livre (sem enum/CHECK)** |  |
 | `transferencias` | `status` | **livre (sem enum/CHECK)** | `concluido` |
 | `conciliacoes` | `status` | **livre (sem enum/CHECK)** | `em_andamento` |
 | `webhooks_log` | `status` | `dead`, `failed`, `pending`, `processing`, `retrying`, `success` | `received` |
@@ -1133,8 +1124,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `negativacoes` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `protestos` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `protestos` | `estado_cartorio` | **livre (sem enum/CHECK)** |  |
-| `ponto_funcionarios` | `situacao` | **livre (sem enum/CHECK)** | `ATIVO` |
-| `ponto_sync_log` | `status` | **livre (sem enum/CHECK)** | `running` |
 | `cnpja_cache` | `situacao_cadastral` | **livre (sem enum/CHECK)** |  |
 | `convites_contador` | `status` | **livre (sem enum/CHECK)** |  |
 | `verificacoes_conformidade` | `status` | **livre (sem enum/CHECK)** |  |
@@ -1157,24 +1146,18 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `logs_conciliacao_retroativa` | `status` | **livre (sem enum/CHECK)** | `processando` |
 | `divergencias_conciliacao` | `status` | **livre (sem enum/CHECK)** | `aberta` |
 | `eventos_contabilizacao_log` | `status` | `duplicado`, `erro`, `sem_regra`, `simulado`, `sucesso` |  |
-| `elisao_analise_gap` | `status` | **livre (sem enum/CHECK)** | `oportunidade_detectada` |
 | `elisao_creditos_auditoria` | `status_aprovacao` | `aprovado`, `pendente`, `rejeitado` | `pendente` |
 | `elisao_tarefas_acionaveis` | `status` | `cancelada`, `concluida`, `em_andamento`, `pendente` | `pendente` |
 | `elisao_tarefas_acionaveis` | `bitrix_sync_status` | `erro`, `nao_sincronizado`, `sincronizado`, `sincronizando` | `nao_sincronizado` |
 | `regua_cobranca_status` | `status_cobranca` | **livre (sem enum/CHECK)** |  |
 | `regua_cobranca_status` | `status` | **livre (sem enum/CHECK)** | `pendente` |
-| `conciliacao_sugestoes` | `status` | **livre (sem enum/CHECK)** | `pendente` |
-| `boleto_events` | `status_before` | **livre (sem enum/CHECK)** |  |
-| `boleto_events` | `status_after` | **livre (sem enum/CHECK)** |  |
 | `asaas_sync_queue` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `asaas_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `asaas_reconciliation_suggestions` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
-| `asaas_scheduled_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `bloqueios_duplicidade` | `status` | **livre (sem enum/CHECK)** |  |
 | `planos_acao` | `status` | `cancelado`, `concluido`, `em_andamento`, `pendente` | `pendente` |
 | `pedidos_compra` | `status` | **livre (sem enum/CHECK)** | `rascunho` |
 | `whatsapp_conversas` | `status` | **livre (sem enum/CHECK)** | `enviado` |
-| `obrigacoes_acessorias` | `status` | `atrasada`, `em_andamento`, `nao_aplicavel`, `pendente`, `transmitida` | `pendente` |
 | `sessoes_conciliacao` | `status` | **livre (sem enum/CHECK)** | `aberta` |
 | `contratos` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `webhook_simulation_runs` | `status` | **livre (sem enum/CHECK)** | `pending` |
@@ -2424,7 +2407,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Tabela | Coluna | Expressão |
 |---|---|---|
 | `contas_bancarias` | `saldo_disponivel` | `saldo_atual` |
-| `elisao_analise_gap` | `economia_identificada` | `valor_pago_efetivo - valor_otimizado_projetado` |
 
 ### G.2 Views (consultas derivadas)
 
@@ -5674,6 +5656,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql` |
 | `asaas` | `supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql` |
 | `asaas` | `supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql` |
+| `asaas` | `supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql` |
 
 ## N. Regras citadas em comentários do código
 

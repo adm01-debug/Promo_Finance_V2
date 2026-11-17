@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 111,
+ "total": 113,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -351,6 +351,24 @@
    "arquivo": "scripts/data/verify.sh",
    "descricao": "verify.sh — valida cópia por contagem + hash de amostra por tabela. Uso: ./scripts/data/verify.sh --run-id <uuid>",
    "linhas": 108,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/db/replay-bootstrap.sql",
+   "descricao": null,
+   "linhas": 101,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/db/replay-migrations.sh",
+   "descricao": "Replay das migrations do zero num Postgres local efêmero. Responde à issue #90: \"o replay do zero não completa\". Com este harness o",
+   "linhas": 105,
    "env": [],
    "npm_scripts": [],
    "workflows": [],

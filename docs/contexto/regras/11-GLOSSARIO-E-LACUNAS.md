@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a45b5d8458` · branch `main` · 2026-11-17 18:31 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6c6dec83e2` · branch `main` · 2026-11-17 19:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -8,7 +8,6 @@
 | Termo | Significado / valores | Tamanho | Origem |
 |---|---|---|---|
 | `_rep` | _(sem COMMENT ON TABLE — significado não documentado)_ | 3 colunas | migration |
-| `account_lockouts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `acessos_suspeitos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `acoes_recomendadas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `acordos_parcelamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 25 colunas | migration |
@@ -38,10 +37,8 @@
 | `asaas_payment_links` | Espelho local de paymentLinks criados via asaas-proxy, com empresa_id — permite a listar_links_pagamento filtrar por empresa, já que a API do Asaas não amarra paymentLinks a empresa. | 8 colunas | migration |
 | `asaas_payments` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
 | `asaas_reconciliation_suggestions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
-| `asaas_scheduled_transfers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `asaas_sync_queue` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `asaas_transfers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `audit_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `audit_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `audit_logs_2026_01` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_02` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
@@ -54,7 +51,6 @@
 | `audit_logs_2026_09` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_10` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_default` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `auditoria_configuracoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `auditoria_financeira` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `auditoria_tributaria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `auth_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -73,7 +69,6 @@
 | `bloat_snapshots` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `blocked_ips` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `bloqueios_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
-| `boleto_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `boletos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 38 colunas | migration |
 | `budgets` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `catalogos_fiscais_cargas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
@@ -84,18 +79,14 @@
 | `clientes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
 | `cnaes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `cnpja_cache` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `cnpja_rate_limit` | _(sem COMMENT ON TABLE — significado não documentado)_ | 3 colunas | migration |
-| `conciliacao_sugestoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `conciliacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `conciliacoes_parciais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `configuracoes_aprovacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `configuracoes_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `configuracoes_receber` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `conformidade_snapshots` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `contas_bancarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `contas_pagar` | _(sem COMMENT ON TABLE — significado não documentado)_ | 36 colunas | migration |
 | `contas_receber` | _(sem COMMENT ON TABLE — significado não documentado)_ | 43 colunas | migration |
-| `contatos_financeiros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 30 colunas | migration |
 | `contratos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `convites` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `convites_contador` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
@@ -112,7 +103,6 @@
 | `drivers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 0 colunas | migration |
 | `edge_function_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `elisao_alertas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
-| `elisao_analise_gap` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `elisao_creditos_auditoria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
 | `elisao_regras_creditos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `elisao_simulacoes_regime` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
@@ -120,7 +110,6 @@
 | `email_verifications` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `empresas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
 | `empresas_certificados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
-| `entity_versions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `entregas_obrigacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `estrategias_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `estrategias_elisao_catalogo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
@@ -174,9 +163,7 @@
 | `ip_whitelist` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `itens_lista_iss` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `itens_pedido_compra` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
-| `known_devices` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `kpis_operacionais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
-| `lalur_lancamentos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `lancamentos_contabeis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `logs_baixa_automatica` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
@@ -194,7 +181,6 @@
 | `notas_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `notas_fiscais_ocr` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 12 colunas | migration |
-| `obrigacoes_acessorias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `open_finance_consents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `operacoes_icms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `operacoes_tributaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 53 colunas | migration |
@@ -215,10 +201,6 @@
 | `pix_templates` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `plano_contas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `planos_acao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
-| `ponto_departamentos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
-| `ponto_funcionarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
-| `ponto_registros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 27 colunas | migration |
-| `ponto_sync_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `portal_cliente_acessos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `portal_cliente_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `prejuizos_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
@@ -236,7 +218,6 @@
 | `regimes_especiais_empresa` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `regimes_simulados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `regimes_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
-| `registro_duplicidade` | Log de auditoria para tentativas de inserção de pagamentos duplicados e rastreio de integridade. | 6 colunas | migration |
 | `regras_conciliacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `regras_contabilizacao_automatica` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `regras_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
@@ -291,7 +272,6 @@
 | `user_filter_presets` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `user_onboarding_progress` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `user_passkeys` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
-| `user_preferences` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `user_roles` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `user_sessions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `vendedores` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -307,7 +287,27 @@
 | `app_role` (enum) | admin, financeiro, operacional, visualizador, contador, viewer, manager, operator |  | banco |
 | `status_pagamento` (enum) | pago, pendente, vencido, parcial, cancelado, atrasado |  | banco |
 | `tipo_transacao` (enum) | receita, despesa |  | banco |
-| … +264 linhas — lista completa em `context.json` | | | |
+| `tipo_cobranca` (enum) | boleto, pix, transferencia, cartao, debito_automatico, dinheiro, cheque |  | banco |
+| `prioridade_alerta` (enum) | baixa, media, alta, critica |  | banco |
+| `etapa_cobranca` (enum) | preventiva, lembrete, cobranca, negociacao, juridico |  | banco |
+| `status_nfe` (enum) | autorizada, pendente, cancelada, denegada, inutilizada |  | banco |
+| `audit_action` (enum) | INSERT, UPDATE, DELETE, LOGIN, LOGOUT, EXPORT, APPROVE, REJECT, revoke_execute_anon |  | banco |
+| `frequencia_relatorio` (enum) | mensal, trimestral, anual |  | banco |
+| `acao_auditoria_tributaria` (enum) | insert, update, delete |  | banco |
+| `status_fechamento_tributario` (enum) | aberto, em_revisao, fechado, reaberto |  | banco |
+| `status_nf_ocr` (enum) | processando, sucesso, erro |  | banco |
+| `tipo_solicitacao_lgpd` (enum) | acesso, portabilidade, exclusao, retificacao, anonimizacao |  | banco |
+| `status_solicitacao_lgpd` (enum) | aberta, em_analise, atendida, rejeitada |  | banco |
+| `tipo_anomalia` (enum) | movimentacao_outlier, pagamento_duplicado, conta_pagar_alta, conciliacao_atrasada, mudanca_regime_brusca |  | banco |
+| `severidade_anomalia` (enum) | baixa, media, alta, critica |  | banco |
+| `status_anomalia` (enum) | nova, investigando, falso_positivo, confirmada |  | banco |
+| `sso_tipo` (enum) | oidc, saml |  | banco |
+| `subscription_frequencia` (enum) | imediata, horaria, diaria |  | banco |
+| `tipo_alerta_tributario` (enum) | vencimento_apuracao, vencimento_darf, vencimento_obrigacao, prazo_credito, limite_compensacao, pendencia_conciliacao, inconsistencia_fiscal, atualizacao_legislacao, split_payment, retencao_pendente, nfe_rejeitada, saldo_negativo |  | banco |
+| `alert_severity` (enum) | INFO, WARNING, CRITICAL |  | banco |
+| `alert_type` (enum) | DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED |  | banco |
+| `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
+| … +244 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -422,6 +422,7 @@
 | rls | `operacoes_tributaveis`: front faz INSERT mas nenhuma política RLS permite INSERT → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | rls | `operacoes_tributaveis`: front faz UPDATE mas nenhuma política RLS permite UPDATE → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | dinheiro | `pg_stat_statements_baseline.total_exec_time` guarda dinheiro em `DOUBLE PRECISION` (ponto flutuante) — arredondamento imprevisível; padrão é numeric |  |
+| rpc | RPC `cnpja_check_rate_limit` chamada mas não definida nas migrations/types | `supabase/functions/cnpja-lookup/index.ts` |
 | rpc | RPC `pg_try_advisory_lock` chamada mas não definida nas migrations/types | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | dinâmico | 2 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `eslint-rules/no-floating-supabase-write.js` |
 | dinâmico | 2 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `src/components/relatorios/RelatorioDrillDown.tsx` |
@@ -435,7 +436,6 @@
 | dinâmico | 1 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `supabase/functions/upload-anexo/index.ts` |
 | segurança | função `trigger_log_receber_status_change` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql` |
 | segurança | função `handle_conciliacao_retroativa_error` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508130002_cfb2c801-331a-4fbe-b9e8-cdf17f93277a.sql` |
-| segurança | função `handle_boleto_payment_sync` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql` |
 | segurança | função `check_asaas_queue_failures` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508180618_16cffdc0-06f0-436d-863d-2191485e652b.sql` |
 | segurança | função `validar_duplicidade_financeira` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508200043_a00525d1-736f-4bbc-96fd-0d7171d610fe.sql` |
 | segurança | função `validar_duplicidade_avancada` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508200327_cb379296-ba4d-4201-9f04-d175b2535749.sql` |
@@ -486,7 +486,6 @@
 - `per_dcomp.status` tem valores ['aguardando_transmissao', 'cancelado', 'deferido', 'em_analise', 'indeferido', 'rascunho', 'transmitido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `asaas_payments.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `bling_sync_logs.status` tem valores ['erro', 'executando', 'parcial', 'pendente', 'sucesso'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
-- `contatos_financeiros.estado` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `transferencias.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `conciliacoes.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `webhooks_log.status` tem valores ['dead', 'failed', 'pending', 'processing', 'retrying', 'success'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
@@ -498,8 +497,6 @@
 - `negativacoes.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `protestos.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `protestos.estado_cartorio` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `ponto_funcionarios.situacao` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `ponto_sync_log.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cnpja_cache.situacao_cadastral` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `verificacoes_conformidade.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `fechamentos_tributarios.status` tem valores ['aberto', 'em_revisao', 'fechado', 'reaberto'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
@@ -518,23 +515,17 @@
 - `logs_conciliacao_retroativa.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `divergencias_conciliacao.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `eventos_contabilizacao_log.status` tem valores ['duplicado', 'erro', 'sem_regra', 'simulado', 'sucesso'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
-- `elisao_analise_gap.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `elisao_creditos_auditoria.status_aprovacao` tem valores ['aprovado', 'pendente', 'rejeitado'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `elisao_tarefas_acionaveis.status` tem valores ['cancelada', 'concluida', 'em_andamento', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `elisao_tarefas_acionaveis.bitrix_sync_status` tem valores ['erro', 'nao_sincronizado', 'sincronizado', 'sincronizando'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `regua_cobranca_status.status_cobranca` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `regua_cobranca_status.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `conciliacao_sugestoes.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `boleto_events.status_before` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `boleto_events.status_after` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `asaas_sync_queue.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `asaas_transfers.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `asaas_reconciliation_suggestions.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `asaas_scheduled_transfers.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `planos_acao.status` tem valores ['cancelado', 'concluido', 'em_andamento', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `pedidos_compra.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `whatsapp_conversas.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- `obrigacoes_acessorias.status` tem valores ['atrasada', 'em_andamento', 'nao_aplicavel', 'pendente', 'transmitida'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `sessoes_conciliacao.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `contratos.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `webhook_simulation_runs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
@@ -551,7 +542,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 290/297 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `audit_log`, `entity_versions`, `profiles`, `user_roles`, `empresas`, `contas_bancarias` …
+- 271/277 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes
