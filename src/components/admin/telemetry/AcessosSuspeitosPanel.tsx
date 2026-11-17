@@ -61,6 +61,20 @@ function severityBadge(severidade: string) {
  * leituras/escritas em dados de empresas às quais o usuário não pertence e
  * comportamento administrativo anômalo (picos, madrugada, exclusões em massa).
  */
+/**
+ * `supabaseDyn.rpc` rejeita com `{ message: string }`, nao com `Error`
+ * (src/lib/supabase-dynamic.ts:74-77). Checar so `instanceof Error` jogava o
+ * motivo real na mensagem genérica (revisao da PR #405, Devin).
+ */
+function mensagemDeErro(erro: unknown): string {
+  if (erro instanceof Error && erro.message) return erro.message;
+  if (erro && typeof erro === 'object' && 'message' in erro) {
+    const m = (erro as { message?: unknown }).message;
+    if (typeof m === 'string' && m) return m;
+  }
+  return 'Erro ao consultar get_acessos_suspeitos.';
+}
+
 export function AcessosSuspeitosPanel() {
   const [hours, setHours] = useState(168);
   const [somenteAbertos, setSomenteAbertos] = useState(true);
@@ -68,6 +82,8 @@ export function AcessosSuspeitosPanel() {
   const {
     data = [],
     isLoading,
+    isError,
+    error,
     refetch,
     isRefetching,
   } = useQuery<AcessoSuspeitoRow[]>({
@@ -150,6 +166,25 @@ export function AcessosSuspeitosPanel() {
       <CardContent>
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando achados…</p>
+        ) : isError ? (
+          /*
+           * Auditoria que falha NAO e auditoria limpa. Sem este estado, erro na
+           * RPC caia no ramo `data.length === 0` e o painel exibia
+           * "✅ Nenhum acesso entre empresas ou uso administrativo anomalo" --
+           * visto verde para uma verificacao que nao rodou.
+           */
+          <div role="alert" className="space-y-2">
+            <p className="text-sm font-medium text-destructive">
+              Não foi possível verificar os acessos.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Nenhum resultado é exibido para não passar falha de consulta como auditoria limpa.{' '}
+              {mensagemDeErro(error)}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
+              Tentar de novo
+            </Button>
+          </div>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             ✅ Nenhum acesso entre empresas ou uso administrativo anômalo no período.
