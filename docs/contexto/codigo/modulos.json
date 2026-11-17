@@ -8690,7 +8690,7 @@
   {
    "modulo": "lib/__tests__",
    "arquivos": 0,
-   "testes": 52,
+   "testes": 53,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -8992,7 +8992,7 @@
    "modulo": "lib/ofx-parser",
    "arquivos": 6,
    "testes": 0,
-   "linhas": 607,
+   "linhas": 624,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

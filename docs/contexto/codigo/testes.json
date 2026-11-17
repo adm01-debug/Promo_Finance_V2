@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 449,
+ "total": 450,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 373
+  "unit": 374
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 260
+   "arquivos": 261
   },
   {
    "padrao": "outro",
@@ -1951,6 +1951,15 @@
     "src/lib/navigation.ts"
    ],
    "casos": 17
+  },
+  {
+   "arquivo": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+   "tipo": "unit",
+   "linhas": 85,
+   "testa": [
+    "src/lib/ofx-parser.ts"
+   ],
+   "casos": 7
   },
   {
    "arquivo": "src/lib/__tests__/ofx-parser.test.ts",
@@ -4157,7 +4166,7 @@
   "src/lib/navigation-intent.ts": 1,
   "src/lib/navigation.ts": 3,
   "src/lib/offline/fiscal-cache.ts": 1,
-  "src/lib/ofx-parser.ts": 6,
+  "src/lib/ofx-parser.ts": 7,
   "src/lib/ofx-parser/utils.ts": 1,
   "src/lib/optimistic-lock.ts": 1,
   "src/lib/organizacoes/convites.ts": 1,

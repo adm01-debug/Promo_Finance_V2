@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e93d744df6` · branch `main` · 2026-11-17 01:33 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5bc41a5fd3` · branch `main` · 2026-11-17 02:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3101,9 +3101,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   if (c.valor_recebido == null) return c.valor ?? 0; if (c.valor_recebido === 0) { const meta = c.metadata && typeof c.metadata === 'object' && !Array.isArray(c.metadata) ? (c.metadata as Record<string, unknown>) : null; if (meta?.acordo_rateio == null) return c.valor ?? 0; } return c.valor_recebido;
   ```
-- **parseValorCsv(valorRaw: string)** — `src/lib/ofx-parser/csv.ts`
+- **parseValorMonetario(valorRaw: string)** — `src/lib/ofx-parser/utils.ts`
   ```
-  const cleaned = valorRaw .trim() .replace(/^R\$\s*/i, '') .replace(/\s/g, ''); let normalized: string; if (/^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:,\d+)?$/.test(cleaned)) { normalized = cleaned.replace(/\./g, '').replace(',', '.'); } else if (/^-?\d+\.\d{1,2}$/.test(cleaned)) { // Extratos internacionais normalmente usam ponto decimal. Só aceite essa // forma quando ela não puder ser confundida com agrupamento BRL de milhar. normalized = cleaned; } else { throw new Error(`Valor inválido: ${valorRaw}`) …
+  const cleaned = valorRaw .trim() .replace(/^R\$\s*/i, '') .replace(/\s/g, ''); let normalized: string; if (/^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:,\d+)?$/.test(cleaned)) { normalized = cleaned.replace(/\./g, '').replace(',', '.'); } else if (/^-?\d+\.\d{1,2}$/.test(cleaned)) { // Extratos internacionais normalmente usam ponto decimal. So aceite essa // forma quando ela nao puder ser confundida com agrupamento BRL de milhar. normalized = cleaned; } else { throw new Error(`Valor inválido: ${valorRaw}`) …
   ```
 - **podeConcederPapel(papelConvidante: OrgPapel, papelProposto: OrgPapel)** — `src/lib/organizacoes/convites.ts`
   ```
@@ -5045,7 +5045,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx` |
 | ; import { downloadLancamentosCsvTemplate } from  | `src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx` |
-| … +776 linhas — lista completa em `context.json` | |
+| … +777 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3398 testes em 290 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3406 testes em 291 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5257,6 +5257,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useKeyboardShortcuts.test.ts` | 8 | useKeyboardShortcuts · registra o listener de keydown UMA única vez mesmo com re-renders · remove o listener de keydown no unmount · Alt+D navega para o dashboard … |
 | `src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts` | 8 | aprovarPagamento · aprova as duas tabelas numa transação só, sem escrita do cliente · usa o fornecedor lido dentro da transação, não o retrato anterior · não confirma ao usuário quando a função recusa a gravação … |
 | `src/lib/__tests__/ip-mask.test.ts` | 8 | ip-mask · retorna  · não mascara quando desabilitado · mascara os dois últimos octetos de IPv4 … |
+| `src/lib/__tests__/ofx-parser-xlsx-valor.test.ts` | 8 | parseExcel — valor monetario BRL · nao perde a grandeza de 1.234,56 (antes virava 1.234) · preserva a grandeza do negativo e o classifica como debito · rejeita celula nao numerica em vez de criar transacao NaN … |
 | `src/lib/__tests__/privacy-redact.test.ts` | 8 | redactPath · redige token de convite e contador no path · decodifica URL-encoding antes de redigir (?redirect=%2Fconvite%2F) · remove query e hash por completo (busca, CPF, magic link) … |
 | `src/lib/arquitetura/__tests__/edge-functions-imports.test.ts` | 8 | Edge Functions — conformidade de imports Deno · encontra arquivos de função para auditar · usa uma única versão canônica de @supabase/supabase-js · não importa @supabase/supabase-js sem versão fixada … |
 | `src/lib/tributario/__tests__/catalogos-alertas.test.ts` | 8 | alertas proativos de catálogos fiscais · não gera alerta quando todos os catálogos estão coerentes · aponta o item e o campo divergentes de uma UF adulterada · sinaliza catálogo vazio como divergência crítica … |
@@ -5946,6 +5947,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
+| MESMA regra: o parseCSV foi corrigido em 2026-09 e o parseExcel ficou com a | `src/lib/ofx-parser/utils.ts` |
+| regra do CSV (parseValorMonetario), que lanca em entrada invalida em | `src/lib/ofx-parser/xlsx.ts` |
 | * Toda a regra de negócio (validade, normalização, hierarquia de papéis) fica | `src/lib/organizacoes/convites.ts` |
 | ambiente um token de convite NÃO pode nascer de PRNG fraco — falha | `src/lib/organizacoes/convites.ts` |
 | - emails[work].value    (opcional, mas se presente deve ser e-mail válido) | `src/lib/scim/userTemplate.ts` |
@@ -5977,6 +5980,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 3. IRPFM (Imposto de Renda Pessoa Física Mínimo) — alíquota LINEAR de 0% a 10% para renda | `src/lib/tributario/pf-vinculada.ts` |
 | * Alíquota do IRRF sobre dividendos acima do limite mensal. */ | `src/lib/tributario/pf-vinculada.ts` |
 | * Limite superior do desconto redutor da isenção ampliada. */ | `src/lib/tributario/pf-vinculada.ts` |
-| IRRF 10% incide sobre o valor integral quando o pagamento mensal supera o limite. | `src/lib/tributario/pf-vinculada.ts` |
-| Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
-| … +376 linhas — lista completa em `context.json` | |
+| … +378 linhas — lista completa em `context.json` | |

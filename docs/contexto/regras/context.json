@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "e93d744df6329b4937422aef14c89f36fa94bc9d",
+  "sha": "5bc41a5fd3e18a144d3ac2650663ae17ea99fc76",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 01:33 UTC",
-  "files_total": 3902,
-  "code_files": 3533,
-  "code_lines": 502309
+  "generated_at": "2026-11-17 02:10 UTC",
+  "files_total": 3903,
+  "code_files": 3534,
+  "code_lines": 502412
  },
  "version": "1.3.2",
- "facts_hash": "ecc6c0f147662d0e",
+ "facts_hash": "bdf6b621703be8db",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1226,
+   ".ts": 1227,
    ".sql": 1099,
    ".tsx": 1096,
    ".mjs": 60,
@@ -71977,8 +71977,8 @@
   },
   {
    "module": "src/lib",
-   "files": 410,
-   "lines": 54549,
+   "files": 411,
+   "lines": 54652,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -83845,10 +83845,6 @@
     "msg": "Módulo desconhecido: ${id}"
    },
    {
-    "file": "src/lib/ofx-parser/csv.ts",
-    "msg": "Valor inválido: ${valorRaw}"
-   },
-   {
     "file": "src/lib/ofx-parser/utils.ts",
     "msg": "Data OFX inválida: ${dateStr}"
    },
@@ -83859,6 +83855,14 @@
    {
     "file": "src/lib/ofx-parser/utils.ts",
     "msg": "Formato de data não reconhecido: ${dateStr}"
+   },
+   {
+    "file": "src/lib/ofx-parser/utils.ts",
+    "msg": "Valor inválido: ${valorRaw}"
+   },
+   {
+    "file": "src/lib/ofx-parser/xlsx.ts",
+    "msg": "Valor inválido: ${String(bruto)}"
    },
    {
     "file": "src/lib/organizacoes/convites.ts",
@@ -86191,6 +86195,14 @@
    {
     "file": "src/lib/financeiro/valor-recebido-efetivo.ts",
     "text": "de fato\" (cota zero do rateio de acordo com 100% de desconto ou"
+   },
+   {
+    "file": "src/lib/ofx-parser/utils.ts",
+    "text": "MESMA regra: o parseCSV foi corrigido em 2026-09 e o parseExcel ficou com a"
+   },
+   {
+    "file": "src/lib/ofx-parser/xlsx.ts",
+    "text": "regra do CSV (parseValorMonetario), que lanca em entrada invalida em"
    },
    {
     "file": "src/lib/organizacoes/convites.ts",
@@ -118456,10 +118468,10 @@
     "body": "if (c.valor_recebido == null) return c.valor ?? 0; if (c.valor_recebido === 0) { const meta = c.metadata && typeof c.metadata === 'object' && !Array.isArray(c.metadata) ? (c.metadata as Record<string, unknown>) : null; if (meta?.acordo_rateio == null) return c.valor ?? 0; } return c.valor_recebido;"
    },
    {
-    "file": "src/lib/ofx-parser/csv.ts",
-    "name": "parseValorCsv",
+    "file": "src/lib/ofx-parser/utils.ts",
+    "name": "parseValorMonetario",
     "params": "valorRaw: string",
-    "body": "const cleaned = valorRaw .trim() .replace(/^R\\$\\s*/i, '') .replace(/\\s/g, ''); let normalized: string; if (/^-?(?:\\d+|\\d{1,3}(?:\\.\\d{3})+)(?:,\\d+)?$/.test(cleaned)) { normalized = cleaned.replace(/\\./g, '').replace(',', '.'); } else if (/^-?\\d+\\.\\d{1,2}$/.test(cleaned)) { // Extratos internacionais normalmente usam ponto decimal. Só aceite essa // forma quando ela não puder ser confundida com agrupamento BRL de milhar. normalized = cleaned; } else { throw new Error(`Valor inválido: ${valorRaw}`) …"
+    "body": "const cleaned = valorRaw .trim() .replace(/^R\\$\\s*/i, '') .replace(/\\s/g, ''); let normalized: string; if (/^-?(?:\\d+|\\d{1,3}(?:\\.\\d{3})+)(?:,\\d+)?$/.test(cleaned)) { normalized = cleaned.replace(/\\./g, '').replace(',', '.'); } else if (/^-?\\d+\\.\\d{1,2}$/.test(cleaned)) { // Extratos internacionais normalmente usam ponto decimal. So aceite essa // forma quando ela nao puder ser confundida com agrupamento BRL de milhar. normalized = cleaned; } else { throw new Error(`Valor inválido: ${valorRaw}`) …"
    },
    {
     "file": "src/lib/organizacoes/convites.ts",
@@ -128644,6 +128656,38 @@
    {
     "file": "src/lib/__tests__/navigation.test.ts",
     "name": "identifica rotas com token no path"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "parseExcel — valor monetario BRL"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "nao perde a grandeza de 1.234,56 (antes virava 1.234)"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "preserva a grandeza do negativo e o classifica como debito"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "rejeita celula nao numerica em vez de criar transacao NaN"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "nao deixa NaN entrar junto com linha boa"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "aceita R$ e formato internacional, como o CSV"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "celula numerica do Excel continua passando direto"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    "name": "CSV e XLSX dao o mesmo numero para a mesma entrada"
    },
    {
     "file": "src/lib/__tests__/ofx-parser.test.ts",
@@ -214066,6 +214110,21 @@
     "identifica rotas com token no path"
    ]
   },
+  "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts": {
+   "path": "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+   "lines": 86,
+   "is_test": true,
+   "tests": [
+    "parseExcel — valor monetario BRL",
+    "nao perde a grandeza de 1.234,56 (antes virava 1.234)",
+    "preserva a grandeza do negativo e o classifica como debito",
+    "rejeita celula nao numerica em vez de criar transacao NaN",
+    "nao deixa NaN entrar junto com linha boa",
+    "aceita R$ e formato internacional, como o CSV",
+    "celula numerica do Excel continua passando direto",
+    "CSV e XLSX dao o mesmo numero para a mesma entrada"
+   ]
+  },
   "src/lib/__tests__/ofx-parser.test.ts": {
    "path": "src/lib/__tests__/ofx-parser.test.ts",
    "lines": 212,
@@ -215476,12 +215535,9 @@
   },
   "src/lib/ofx-parser/csv.ts": {
    "path": "src/lib/ofx-parser/csv.ts",
-   "lines": 164,
+   "lines": 144,
    "exports": [
     "function parseCSV"
-   ],
-   "errors": [
-    "Valor inválido: ${valorRaw}"
    ],
    "status_values": [
     {
@@ -215490,14 +215546,7 @@
      "kind": "escreve"
     }
    ],
-   "doc": "CSV bank statement parser",
-   "calc_fns": [
-    {
-     "name": "parseValorCsv",
-     "params": "valorRaw: string",
-     "body": "const cleaned = valorRaw .trim() .replace(/^R\\$\\s*/i, '') .replace(/\\s/g, ''); let normalized: string; if (/^-?(?:\\d+|\\d{1,3}(?:\\.\\d{3})+)(?:,\\d+)?$/.test(cleaned)) { normalized = cleaned.replace(/\\./g, '').replace(',', '.'); } else if (/^-?\\d+\\.\\d{1,2}$/.test(cleaned)) { // Extratos internacionais normalmente usam ponto decimal. Só aceite essa // forma quando ela não puder ser confundida com agrupamento BRL de milhar. normalized = cleaned; } else { throw new Error(`Valor inválido: ${valorRaw}`) …"
-    }
-   ]
+   "doc": "CSV bank statement parser"
   },
   "src/lib/ofx-parser/index.ts": {
    "path": "src/lib/ofx-parser/index.ts",
@@ -215543,24 +215592,39 @@
   },
   "src/lib/ofx-parser/utils.ts": {
    "path": "src/lib/ofx-parser/utils.ts",
-   "lines": 96,
+   "lines": 129,
    "exports": [
     "function parseOFXDate",
     "function parseData",
+    "function parseValorMonetario",
     "function parseCSVLine"
    ],
    "errors": [
     "Data OFX inválida: ${dateStr}",
     "Data inválida: ${dateStr}",
-    "Formato de data não reconhecido: ${dateStr}"
+    "Formato de data não reconhecido: ${dateStr}",
+    "Valor inválido: ${valorRaw}"
    ],
-   "doc": "Shared parsing helpers for OFX/CSV bank statements"
+   "rule_comments": [
+    "MESMA regra: o parseCSV foi corrigido em 2026-09 e o parseExcel ficou com a"
+   ],
+   "doc": "Shared parsing helpers for OFX/CSV bank statements",
+   "calc_fns": [
+    {
+     "name": "parseValorMonetario",
+     "params": "valorRaw: string",
+     "body": "const cleaned = valorRaw .trim() .replace(/^R\\$\\s*/i, '') .replace(/\\s/g, ''); let normalized: string; if (/^-?(?:\\d+|\\d{1,3}(?:\\.\\d{3})+)(?:,\\d+)?$/.test(cleaned)) { normalized = cleaned.replace(/\\./g, '').replace(',', '.'); } else if (/^-?\\d+\\.\\d{1,2}$/.test(cleaned)) { // Extratos internacionais normalmente usam ponto decimal. So aceite essa // forma quando ela nao puder ser confundida com agrupamento BRL de milhar. normalized = cleaned; } else { throw new Error(`Valor inválido: ${valorRaw}`) …"
+    }
+   ]
   },
   "src/lib/ofx-parser/xlsx.ts": {
    "path": "src/lib/ofx-parser/xlsx.ts",
-   "lines": 99,
+   "lines": 103,
    "exports": [
     "function parseExcel"
+   ],
+   "errors": [
+    "Valor inválido: ${String(bruto)}"
    ],
    "status_values": [
     {
@@ -215573,6 +215637,9 @@
      "value": "credito",
      "kind": "escreve"
     }
+   ],
+   "rule_comments": [
+    "regra do CSV (parseValorMonetario), que lanca em entrada invalida em"
    ],
    "doc": "Excel (XLSX) bank statement parser"
   },
@@ -245825,10 +245892,22 @@
   }
  },
  "git": {
-  "sha": "e93d744df6329b4937422aef14c89f36fa94bc9d",
+  "sha": "5bc41a5fd3e18a144d3ac2650663ae17ea99fc76",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5bc41a5",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)",
+    "files": [
+     "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+     "src/lib/ofx-parser/csv.ts",
+     "src/lib/ofx-parser/utils.ts",
+     "src/lib/ofx-parser/xlsx.ts"
+    ]
+   },
    {
     "sha": "e93d744",
     "date": "2026-11-16",
@@ -246189,15 +246268,6 @@
     "files": [
      ".github/workflows/ci.yml"
     ]
-   },
-   {
-    "sha": "c1cd329",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(docs): inventário das 113 branches com SHA antes da limpeza (#360)",
-    "files": [
-     "docs/agentes/inventario-branches-2026-11-16.md"
-    ]
    }
   ],
   "hot_files": [
@@ -246246,6 +246316,22 @@
     2
    ],
    [
+    "src/lib/__tests__/ofx-parser-xlsx-valor.test.ts",
+    1
+   ],
+   [
+    "src/lib/ofx-parser/csv.ts",
+    1
+   ],
+   [
+    "src/lib/ofx-parser/utils.ts",
+    1
+   ],
+   [
+    "src/lib/ofx-parser/xlsx.ts",
+    1
+   ],
+   [
     "scripts/security/test-migration-replay-safety.sh",
     1
    ],
@@ -246263,22 +246349,6 @@
    ],
    [
     "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
-    1
-   ],
-   [
-    "src/pages/tributario/oportunidades-elisao/constants.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261101140000_drop_idle_indexes.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
     1
    ]
   ]

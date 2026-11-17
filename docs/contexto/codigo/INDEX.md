@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e93d744df6329b4937422aef14c89f36fa94bc9d` (2026-11-16T22:32:46-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5bc41a5fd3e18a144d3ac2650663ae17ea99fc76` (2026-11-16T23:09:50-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2322), SQL (1099), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
+- linguagens: TypeScript (2323), SQL (1099), Markdown (192), JavaScript (68), Python (45), JSON (38), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3860 |
-| arquivos_codigo | 2433 |
-| linhas_codigo | 433837 |
+| arquivos_total | 3861 |
+| arquivos_codigo | 2434 |
+| linhas_codigo | 433939 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1029 |
 | cron_jobs | 22 |
-| testes | 449 |
+| testes | 450 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 192 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (260), outro (107), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (261), outro (107), co-localizado (*.test) (42)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -473,8 +473,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
-- supabase/functions/mcp-query/index.ts (11)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
+- supabase/functions/mcp-query/index.ts (10)
 - .github/workflows/functions-deploy.yml (9)
 
 ## Workflows
@@ -627,6 +627,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `5bc41a5` fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)
 - 2026-11-16 `e93d744` fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)
 - 2026-11-16 `a133ea0` feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)
 - 2026-11-16 `3ea2086` fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)
@@ -641,7 +642,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `298cc49` fix(db): destrava o replay da cadeia de migrations — índice da FK no mesmo arquivo que cria a FK (#388)
 - 2026-11-16 `1d6ef94` chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)
 - 2026-11-16 `d9ff7e0` fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)
-- 2026-11-16 `38f4896` fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
