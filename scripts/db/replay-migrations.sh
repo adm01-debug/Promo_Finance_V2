@@ -9,7 +9,7 @@
 # Saída: lista de falhas (arquivo|erro) e o resumo aplicados/falharam/total.
 #
 # Requisitos (checados antes de rodar; o script aborta nomeando o que falta):
-#   - postgresql-16: initdb, pg_ctl, psql
+#   - postgresql-16: initdb, pg_ctl, psql, pg_config (todos tomados de PGBIN)
 #   - arquivos das extensões que as migrations instalam com CREATE EXTENSION sem
 #     tratamento de erro: pg_cron, pg_net, uuid-ossp, pgcrypto, pg_stat_statements.
 #     "postgresql-16" sozinho NÃO garante esses pacotes — em Debian/Ubuntu são
@@ -37,12 +37,27 @@ else
   as_pg() { bash -c "$1"; }
 fi
 
+# pg_config é dependência própria desta checagem, e tem de ser o do mesmo
+# PGBIN: um pg_config de outra versão no PATH apontaria para o sharedir errado.
+# Sem diagnóstico próprio, o $(...) vazio faria a checagem procurar em
+# "/extension/*.control" e acusar todas as extensões como ausentes.
+if [ ! -x "$PGBIN/pg_config" ]; then
+  echo "abortando: $PGBIN/pg_config não encontrado." >&2
+  echo "ajuste PGBIN para o diretório de binários do PostgreSQL 16." >&2
+  exit 2
+fi
+SHAREDIR="$("$PGBIN/pg_config" --sharedir)"
+if [ -z "$SHAREDIR" ] || [ ! -d "$SHAREDIR/extension" ]; then
+  echo "abortando: pg_config não devolveu um sharedir utilizável ('$SHAREDIR')." >&2
+  exit 2
+fi
+
 faltando=""
 for ext in pg_cron pg_net uuid-ossp pgcrypto pg_stat_statements; do
-  ls "$(pg_config --sharedir)/extension/$ext.control" >/dev/null 2>&1 || faltando="$faltando $ext"
+  [ -f "$SHAREDIR/extension/$ext.control" ] || faltando="$faltando $ext"
 done
 if [ -n "$faltando" ]; then
-  echo "abortando: faltam os arquivos destas extensões:$faltando" >&2
+  echo "abortando: faltam os arquivos destas extensões em $SHAREDIR/extension:$faltando" >&2
   echo "as migrations fazem CREATE EXTENSION delas sem tratamento de erro," >&2
   echo "logo o replay falharia. Instale-as e rode de novo." >&2
   exit 2
