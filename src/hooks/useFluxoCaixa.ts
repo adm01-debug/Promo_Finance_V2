@@ -240,7 +240,13 @@ export function useFluxoCaixaHistorico(dias: number = 30) {
 // Re-export the function from cashflow-scenarios to use with real data
 export function calcularProjecoesReais(
   fluxoBase: ProjecaoDiaria[],
-  saldoInicial: number
+  saldoInicial: number,
+  /**
+   * Semente do fator de atraso (achado F06). Passe o id da empresa para que
+   * duas empresas no mesmo dia nao recebam o mesmo jitter e cada uma continue
+   * reproduzivel entre recarregamentos.
+   */
+  semente?: string
 ): Record<CenarioTipo, ProjecaoCenario[]> {
-  return gerarTodasProjecoesLib(fluxoBase, saldoInicial);
+  return gerarTodasProjecoesLib(fluxoBase, saldoInicial, { semente });
 }
