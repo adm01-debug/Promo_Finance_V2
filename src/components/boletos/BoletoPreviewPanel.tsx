@@ -151,12 +151,15 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
           </div>
         </div>
         <Separator />
+        {/*
+          Valores DO PROVEDOR. Antes este componente recebia banco/valor/
+          vencimento/numero e fabricava codigo de barras e linha digitavel --
+          invalidos para o banco e rejeitados pelo parser do proprio projeto
+          (achado F10, P0).
+        */}
         <BoletoBarcode
-          banco={boleto.banco}
-          valor={boleto.valor}
-          vencimento={boleto.vencimento}
-          cedenteCnpj={boleto.cedente_cnpj || undefined}
-          numero={boleto.numero}
+          codigoBarras={boleto.codigo_barras}
+          linhaDigitavel={boleto.linha_digitavel}
         />
       </div>
 
