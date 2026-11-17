@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "2698b5b44efacd5f947cc6c74ce8845e24f4547d",
+  "sha": "58d7e40dc2f3d2c556aa8b8543df0b833fed22b3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 05:12 UTC",
-  "files_total": 3926,
-  "code_files": 3549,
-  "code_lines": 504938
+  "generated_at": "2026-11-17 05:35 UTC",
+  "files_total": 3933,
+  "code_files": 3556,
+  "code_lines": 506265
  },
  "version": "1.3.2",
- "facts_hash": "0dc1b2361c80af2f",
+ "facts_hash": "2d6c39750f03c2e1",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,8 +332,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1232,
-   ".tsx": 1103,
+   ".ts": 1236,
+   ".tsx": 1106,
    ".sql": 1099,
    ".mjs": 63,
    ".py": 45,
@@ -62711,7 +62711,8 @@
      "vw_fluxo_caixa_diario",
      "vw_gastos_centro_custo",
      "vw_metricas_cobranca",
-     "vw_saldos_contas"
+     "vw_saldos_contas",
+     "whatsapp_conversas"
     ],
     "invokes_transitive": [
      "expert-agent",
@@ -62724,7 +62725,7 @@
      "processar_regua_cobranca",
      "registrar_auditoria_config"
     ],
-    "deps_count": 126
+    "deps_count": 134
    },
    {
     "path": "/compras",
@@ -68361,7 +68362,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 988,
+  "components_count": 993,
   "hooks": [
    {
     "name": "useContacts",
@@ -71380,8 +71381,8 @@
   },
   {
    "module": "src/components",
-   "files": 986,
-   "lines": 163023,
+   "files": 991,
+   "lines": 164161,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71986,8 +71987,8 @@
   },
   {
    "module": "src/lib",
-   "files": 411,
-   "lines": 54652,
+   "files": 413,
+   "lines": 54826,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -72045,14 +72046,14 @@
     "navigation-intent.ts: NovoRegistroNavigationState, navegarParaNovoRegistro, deveAbrirNovoRegistro",
     "navigation.ts: RouteMeta, ROUTE_META, getRouteMeta, getRouteLabel, resolveParentRoute, NavEntry",
     "optimistic-lock.ts: ConflitoVersaoError, updateComLockOtimista",
+    "paginar-postgrest.ts: PAGINA, MAX_LINHAS, paginarTudo",
     "pdf-layout.ts: PDF_BRAND, PdfLayoutOptions, getContentStartY, getAutoTableMargins, applyPdfLayout",
     "persisted-ui-state.ts: usePersistedState",
     "plano-contas-csv-importer.ts: NATUREZAS, NaturezaConta, TIPOS_CONTA, TipoConta, ParsedConta, ContaInvalida",
     "queryClient.ts: queryClient, STALE_TIMES, GC_TIMES, DOMAIN_QUERY_CONFIG, QueryDomain, queryConfig",
     "secure-random.ts: secureRandomInt",
     "sefaz-event-logger.ts: EventoTipo, EventoSefaz, registrarEvento, getEventos, getEventosPorChave, getEventosPorNumero",
-    "sefaz-rejection-monitor.ts: AlertaRejeicao, adicionarListenerAlerta, verificarRejeicoesConsecutivas, registrarAlerta, getAlertas, getAlertasNaoLidos",
-    "sharedFiltersExport.ts: SHARED_FILTERS_BUNDLE_VERSION, SharedFilterBundleItem, SharedFilterBundle, buildBundle, SharedFilterBundleParseError, parseBundle"
+    "sefaz-rejection-monitor.ts: AlertaRejeicao, adicionarListenerAlerta, verificarRejeicoesConsecutivas, registrarAlerta, getAlertas, getAlertasNaoLidos"
    ],
    "docs": [
     "anomalia-routes.ts: Resolve a deep link to the underlying entity related to an anomaly. Used by the realtime drawer and inline drill-downs.",
@@ -72136,6 +72137,7 @@
     "src/lib/navigation.ts",
     "src/lib/ofx-parser.ts",
     "src/lib/optimistic-lock.ts",
+    "src/lib/paginar-postgrest.ts",
     "src/lib/pdf-generator.ts",
     "src/lib/pdf-layout.ts",
     "src/lib/persisted-ui-state.ts",
@@ -72177,14 +72179,13 @@
     "src/lib/__tests__/brazilian-validators.test.ts",
     "src/lib/__tests__/cashflow-scenarios.test.ts",
     "src/lib/__tests__/cfc-validator.test.ts",
-    "src/lib/__tests__/collection-engine.test.ts",
-    "src/lib/__tests__/conciliacao-complex-e2e.test.ts"
+    "src/lib/__tests__/collection-engine.test.ts"
    ]
   },
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47107,
+   "lines": 47122,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -81608,6 +81609,10 @@
     "msg": "Erro ao gerar propostas"
    },
    {
+    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "msg": "\n          className="
+   },
+   {
     "file": "src/components/cobranca/WhatsAppProativoPanel.tsx",
     "msg": "Erro ao analisar alertas"
    },
@@ -83860,6 +83865,18 @@
     "msg": "Sem permissão para alterar este registro, ou o registro não existe mais."
    },
    {
+    "file": "src/lib/paginar-postgrest.ts",
+    "msg": "${total} títulos no período: a previsão não calcula somatório parcial acima de "
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "msg": "A leitura dos títulos não terminou em ${MAX_REQUISICOES} requisições (${tudo.length} linhas "
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "msg": "Leitura incompleta dos títulos: ${tudo.length} de ${total}. A previsão não calcula "
+   },
+   {
     "file": "src/lib/plano-contas-csv-importer.ts",
     "msg": "Arquivo vazio."
    },
@@ -85364,6 +85381,46 @@
     "text": "Proposta 1: Desconto à vista"
    },
    {
+    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "text": "estourariam o limite de URI."
+   },
+   {
+    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "text": "varios titulos no mesmo vencimento, janelas diferentes podiam"
+   },
+   {
+    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "text": "Erro de consulta NAO pode virar \"nenhum cliente em risco\": a tela"
+   },
+   {
+    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "text": "-- passa do limite de URI do gateway e derruba a previsao inteira"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "text": "(o arquivo bateu no limite de 400 linhas do eslint), e util separado porque"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "text": "* Titulo em atraso: vencido, aberto depois do vencimento, ou recebido depois do"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "text": "vencimento."
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "text": "sem recebimento: aberto apos o vencimento (o historico ja filtra por isso)"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "text": "vez de limite excedido (achado P1 do Codex na PR #404)."
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "text": "Sem credito autorizado, qualquer pendencia excede o limite."
+   },
+   {
     "file": "src/components/conciliacao/ConciliacaoManualDialog.tsx",
     "text": "não pode ser apresentada como falha caso esse enriquecimento falhe."
    },
@@ -85450,6 +85507,10 @@
    {
     "file": "src/components/empresas/EmpresaForm.tsx",
     "text": "cobre apenas Terceiros). Só aplica quando o usuário editou o CNAE agora."
+   },
+   {
+    "file": "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
+    "text": "(useWhatsAppIA.ts:37-62) apenas INSERE em `whatsapp_conversas` com"
    },
    {
     "file": "src/components/fluxo-caixa/ResumosCenarios.tsx",
@@ -86134,6 +86195,14 @@
    {
     "file": "src/lib/optimistic-lock.ts",
     "text": "com o updated_at visto = ninguém escreveu → permissão/remoção; um"
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "text": "no limite de 400 linhas do eslint) e mantido aqui porque o problema nao e"
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "text": "* O PostgREST corta a resposta no seu limite de linhas e nao sinaliza o corte,"
    },
    {
     "file": "src/lib/pdf-layout.ts",
@@ -101556,6 +101625,26 @@
     "value": "'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'"
    },
    {
+    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "name": "IDS_POR_LOTE",
+    "value": "100"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "name": "SCORE_RISCO_ALTO",
+    "value": "300"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "name": "SCORE_RISCO_MEDIO",
+    "value": "500"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "name": "SCORE_RISCO_BAIXO",
+    "value": "700"
+   },
+   {
     "file": "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
     "name": "ALPHA",
     "value": "0.3"
@@ -101779,6 +101868,21 @@
     "file": "src/lib/import-checkpoint.ts",
     "name": "DEFAULT_TTL_MS",
     "value": "7"
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "name": "PAGINA",
+    "value": "1000"
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "name": "MAX_LINHAS",
+    "value": "50"
+   },
+   {
+    "file": "src/lib/paginar-postgrest.ts",
+    "name": "MAX_REQUISICOES",
+    "value": "500"
    },
    {
     "file": "src/lib/pdf-layout.ts",
@@ -104186,24 +104290,6 @@
    {
     "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
     "field": "status",
-    "value": "vencido",
-    "kind": "compara"
-   },
-   {
-    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
-    "field": "status",
-    "value": "vencido",
-    "kind": "compara"
-   },
-   {
-    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
-    "field": "status",
-    "value": "vencido",
-    "kind": "compara"
-   },
-   {
-    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
-    "field": "status",
     "value": "pendente",
     "kind": "filtra"
    },
@@ -104229,6 +104315,30 @@
     "file": "src/components/cobranca/WhatsAppProativoPanel.tsx",
     "field": "tipo",
     "value": "inadimplencia",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "field": "status",
+    "value": "cancelado",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "field": "status",
+    "value": "vencido",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "field": "status",
+    "value": "pendente",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/cobranca/previsao/risco.ts",
+    "field": "status",
+    "value": "parcial",
     "kind": "compara"
    },
    {
@@ -106947,6 +107057,12 @@
     "file": "src/components/financeiro/TransferenciaDialog.tsx",
     "field": "status",
     "value": "realizado",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
+    "field": "status",
+    "value": "enviado",
     "kind": "escreve"
    },
    {
@@ -117692,19 +117808,19 @@
     "body": "setIsLoading(true); const contexto = ` Cliente: ${clienteNome || 'Cliente'} Valor total em atraso: ${formatCurrency(valorTotal)} Número de títulos: ${contasVencidas.length} Dias médio de atraso: ${diasMedioAtraso} dias Títulos: ${contasVencidas.map((c) => `${c.cliente_nome} - ${formatCurrency(c.valor)} (${c.diasAtraso} dias)`).join(', ')} Você é um especialista em negociação de dívidas. Analise a situação e sugira propostas de acordo considerando: 1. Descontos progressivos baseados no tempo de a …"
    },
    {
-    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "file": "src/components/cobranca/previsao/risco.ts",
     "name": "calcularProbabilidadeAtraso",
-    "params": "cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]",
-    "body": "let score = 0; const scoreCliente = cliente.score || 100; if (scoreCliente < 50) score += 30; else if (scoreCliente < 70) score += 20; else if (scoreCliente < 85) score += 10; const contasVencidas = historicoContas.filter((c) => c.status === 'vencido'); const taxaAtraso = historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0; if (taxaAtraso > 30) score += 40; else if (taxaAtraso > 15) score += 25; else if (taxaAtraso > 5) score += 10; const totalPendente = conta …"
+    "params": "cliente: ClienteRiscoEntrada, contasPendentes: ContaPendenteEntrada[], historicoContas: HistoricoContaEntrada[]",
+    "body": "let score = 0; // `null` e desconhecido, nao bom: nao pontua, e `gerarFatoresRisco` avisa que // o score nao foi calculado. Zero e valor real e cai na pior faixa. const scoreCliente = cliente.score; if (scoreCliente != null) { if (scoreCliente < SCORE_RISCO_ALTO) score += 30; else if (scoreCliente < SCORE_RISCO_MEDIO) score += 20; else if (scoreCliente < SCORE_RISCO_BAIXO) score += 10; } const contasVencidas = historicoContas.filter(teveAtraso); const taxaAtraso = historicoContas.length > 0 ? (c …"
    },
    {
-    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "file": "src/components/cobranca/previsao/risco.ts",
     "name": "gerarFatoresRisco",
-    "params": "cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]",
-    "body": "const fatores: string[] = []; if ((cliente.score || 100) < 70) { fatores.push(`Score baixo (${cliente.score || 0})`); } const contasVencidas = historicoContas.filter((c) => c.status === 'vencido'); if (contasVencidas.length > 0) { fatores.push(`${contasVencidas.length} atraso(s) no histórico`); } const totalPendente = contasPendentes.reduce( (sum, c) => sum + c.valor - (c.valor_recebido || 0), 0 ); if (totalPendente > (cliente.limite_credito || 10000)) { fatores.push('Limite de crédito excedido' …"
+    "params": "cliente: ClienteRiscoEntrada, contasPendentes: ContaPendenteEntrada[], historicoContas: HistoricoContaEntrada[]",
+    "body": "const fatores: string[] = []; if (cliente.score == null) { fatores.push('Score não calculado para este cliente'); } else if (cliente.score < SCORE_RISCO_BAIXO) { fatores.push(`Score baixo (${cliente.score} de 1000)`); } const contasVencidas = historicoContas.filter(teveAtraso); if (contasVencidas.length > 0) { fatores.push(`${contasVencidas.length} atraso(s) no histórico`); } const totalPendente = contasPendentes.reduce( (sum, c) => sum + c.valor - (c.valor_recebido || 0), 0 ); const limite = cl …"
    },
    {
-    "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "file": "src/components/cobranca/previsao/risco.ts",
     "name": "gerarAcaoSugerida",
     "params": "nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]",
     "body": "if (nivelRisco === 'alto') { if (fatores.some((f) => f.includes('atraso'))) { return 'Entrar em contato imediatamente para negociação preventiva'; } return 'Monitorar de perto e preparar régua de cobrança preventiva'; } if (nivelRisco === 'medio') { return 'Enviar lembrete amigável antes do vencimento'; } return 'Manter acompanhamento padrão';"
@@ -123040,6 +123156,78 @@
     "name": "apresenta apenas os números fornecidos por uma fonte de dados"
    },
    {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "PrevisaoInadimplencia — escala do score e atraso no historico"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "score nulo e exibido como nao calculado, sem inventar 100"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "titulo sem cadastro de cliente NAO derruba a previsao dos demais"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "paginacao: titulo depois da 1a pagina entra na analise"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "setor de alto risco NAO conviva com "
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "cliente sem fator nenhum continua dizendo que nao ha fator"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "ordena por id nas DUAS consultas (paginacao por offset exige ordem unica)"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "servidor que devolve menos que a janela nao faz a leitura pular titulos"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "name": "titulo pago com atraso conta como atraso no historico"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "PrevisaoInadimplencia — escopo por empresa"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "filtra contas_receber pela empresa informada"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "SEM empresa a consulta nao roda: pede para selecionar"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "historico vem em LOTE, uma consulta para todos os clientes"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "filtra TAMBEM o historico pela empresa (com pendencia, a 2a consulta roda)"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "historico vai em LOTES de 100 ids, nao todos na mesma URL"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "erro na consulta NAO vira "
+   },
+   {
+    "file": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "name": "erro no HISTORICO tambem reprova a analise"
+   },
+   {
     "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
     "name": "ReguaCobrancaConfig"
    },
@@ -123078,6 +123266,38 @@
    {
     "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
     "name": "exibe switches Ativo para cada etapa"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "teveAtraso"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "titulo ABERTO e ja vencido conta como atraso"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "vencido conta, cancelado nao conta"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "pago depois do vencimento conta; pago antes, nao"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "limite de credito"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "limite ZERO nao vira 10.000: qualquer pendencia excede"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "limite nulo (nao informado) nao pontua nem inventa teto"
+   },
+   {
+    "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+    "name": "limite excedido de verdade continua pontuando"
    },
    {
     "file": "src/components/command-palette/commandPaletteManagement.test.ts",
@@ -123846,6 +124066,18 @@
    {
     "file": "src/components/financeiro/__tests__/AnexoList.storage.test.tsx",
     "name": "mostra erro quando a edge function recusa o arquivo"
+   },
+   {
+    "file": "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
+    "name": "WhatsAppHistoryIA — envio sem provedor"
+   },
+   {
+    "file": "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
+    "name": "por padrao nao oferece campo de envio, e explica por que"
+   },
+   {
+    "file": "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
+    "name": "com permitirEnvio o campo volta (para quando houver provedor)"
    },
    {
     "file": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
@@ -129126,6 +129358,42 @@
    {
     "file": "src/lib/__tests__/optimistic-lock.test.ts",
     "name": "race: primeiro commit vence, segundo com a mesma versão falha"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "paginarTudo"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "le tudo quando cabe numa pagina"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "le todas as paginas quando o total passa de uma"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "servidor que devolve menos que a janela: avanca pelo RECEBIDO"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "pagina vazia antes do total LANCA em vez de devolver parcial"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "25 mil linhas em paginas de 500 NAO falha (teto e de linhas, nao de requisicoes)"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "acima do teto de linhas, a mensagem diz o total REAL"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "erro de qualquer pagina e propagado"
+   },
+   {
+    "file": "src/lib/__tests__/paginar-postgrest.test.ts",
+    "name": "sem contagem do servidor, para quando a pagina vem incompleta"
    },
    {
     "file": "src/lib/__tests__/plano-contas-csv-importer.test.ts",
@@ -155893,7 +156161,7 @@
       "compara:src/components/analytics/BenchmarkingSetorial.tsx",
       "compara:src/components/bi/BIDrillDown.tsx",
       "compara:src/components/clientes/ClienteDetailDialog.tsx",
-      "compara:src/components/cobranca/PrevisaoInadimplencia.tsx",
+      "compara:src/components/cobranca/previsao/risco.ts",
       "compara:src/components/contas-pagar/ContasPagarTableRow.tsx",
       "compara:src/components/contas-receber/DrawerDetailsTab.tsx",
       "compara:src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
@@ -156004,6 +156272,7 @@
       "compara:src/components/aprovacoes/HistoricoAprovacoes.tsx",
       "compara:src/components/clientes/ClienteDetailDialog.tsx",
       "compara:src/components/cobranca/NegativacoesProtestosPanel.tsx",
+      "compara:src/components/cobranca/previsao/risco.ts",
       "compara:src/components/conciliacao/ConciliacaoAuditPanel.tsx",
       "compara:src/components/conciliacao/DivergenciasConciliacaoPanel.tsx",
       "compara:src/components/contas-pagar/ContasPagarTableRow.tsx",
@@ -156175,12 +156444,14 @@
       "compara:src/components/relatorios/RelatoriosAgendados.tsx",
       "compara:src/hooks/useBoletos.ts",
       "escreve:src/components/boletos/BoletoPreviewPanel.tsx",
+      "escreve:src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
       "escreve:src/hooks/useWhatsAppCobrancaHistory.ts",
       "escreve:src/hooks/useWhatsAppIA.ts",
       "escreve:src/types/financial.ts"
      ],
      "cancelado": [
       "compara:src/components/boletos/BoletoPreviewPanel.tsx",
+      "compara:src/components/cobranca/previsao/risco.ts",
       "compara:src/components/contas-receber/ContaReceberDetailDrawer.tsx",
       "compara:src/components/contas-receber/row/AcoesCell.tsx",
       "compara:src/components/contas-receber/row/VencimentoCell.tsx",
@@ -156214,6 +156485,7 @@
      ],
      "parcial": [
       "compara:src/components/clientes/ClienteDetailDialog.tsx",
+      "compara:src/components/cobranca/previsao/risco.ts",
       "compara:src/components/contas-pagar/ContasPagarTableRow.tsx",
       "compara:src/components/fornecedores/FornecedorDetailDialog.tsx",
       "compara:src/lib/transaction-matcher/converters.ts"
@@ -185231,7 +185503,7 @@
   },
   "src/components/cobranca/PrevisaoInadimplencia.tsx": {
    "path": "src/components/cobranca/PrevisaoInadimplencia.tsx",
-   "lines": 338,
+   "lines": 407,
    "exports": [
     "function PrevisaoInadimplencia"
    ],
@@ -185249,6 +185521,7 @@
     "contas_receber": [
      "cliente_id",
      "cliente_nome",
+     "data_recebimento",
      "data_vencimento",
      "id",
      "status",
@@ -185256,44 +185529,27 @@
      "valor_recebido"
     ]
    },
+   "errors": [
+    "\n          className="
+   ],
+   "params": [
+    {
+     "name": "IDS_POR_LOTE",
+     "value": "100"
+    }
+   ],
    "status_values": [
-    {
-     "field": "status",
-     "value": "vencido",
-     "kind": "compara"
-    },
-    {
-     "field": "status",
-     "value": "vencido",
-     "kind": "compara"
-    },
-    {
-     "field": "status",
-     "value": "vencido",
-     "kind": "compara"
-    },
     {
      "field": "status",
      "value": "pendente",
      "kind": "filtra"
     }
    ],
-   "calc_fns": [
-    {
-     "name": "calcularProbabilidadeAtraso",
-     "params": "cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]",
-     "body": "let score = 0; const scoreCliente = cliente.score || 100; if (scoreCliente < 50) score += 30; else if (scoreCliente < 70) score += 20; else if (scoreCliente < 85) score += 10; const contasVencidas = historicoContas.filter((c) => c.status === 'vencido'); const taxaAtraso = historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0; if (taxaAtraso > 30) score += 40; else if (taxaAtraso > 15) score += 25; else if (taxaAtraso > 5) score += 10; const totalPendente = conta …"
-    },
-    {
-     "name": "gerarFatoresRisco",
-     "params": "cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]",
-     "body": "const fatores: string[] = []; if ((cliente.score || 100) < 70) { fatores.push(`Score baixo (${cliente.score || 0})`); } const contasVencidas = historicoContas.filter((c) => c.status === 'vencido'); if (contasVencidas.length > 0) { fatores.push(`${contasVencidas.length} atraso(s) no histórico`); } const totalPendente = contasPendentes.reduce( (sum, c) => sum + c.valor - (c.valor_recebido || 0), 0 ); if (totalPendente > (cliente.limite_credito || 10000)) { fatores.push('Limite de crédito excedido' …"
-    },
-    {
-     "name": "gerarAcaoSugerida",
-     "params": "nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]",
-     "body": "if (nivelRisco === 'alto') { if (fatores.some((f) => f.includes('atraso'))) { return 'Entrar em contato imediatamente para negociação preventiva'; } return 'Monitorar de perto e preparar régua de cobrança preventiva'; } if (nivelRisco === 'medio') { return 'Enviar lembrete amigável antes do vencimento'; } return 'Manter acompanhamento padrão';"
-    }
+   "rule_comments": [
+    "estourariam o limite de URI.",
+    "varios titulos no mesmo vencimento, janelas diferentes podiam",
+    "Erro de consulta NAO pode virar \"nenhum cliente em risco\": a tela",
+    "-- passa do limite de URI do gateway e derruba a previsao inteira"
    ],
    "temporal": [
     "const em30Dias = addDays(hoje, 30);",
@@ -185391,6 +185647,58 @@
     "apresenta apenas os números fornecidos por uma fonte de dados"
    ]
   },
+  "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx": {
+   "path": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+   "lines": 394,
+   "is_test": true,
+   "errors": [
+    ")).not.toBeInTheDocument();\n    // o filtro por cliente_id nunca recebe o nome digitado (a coluna e uuid).\n    // "
+   ],
+   "rule_comments": [
+    "bateu no limite de 400 linhas do eslint (max-lines), que vale para teste.",
+    "* Vencimento sempre a 20 dias de HOJE: a probabilidade ganha +10 pontos quando o",
+    "proximo vencimento esta a 7 dias ou menos, e +10 a 3 dias ou menos",
+    "ao chegar perto do vencimento -- falha sem regressao no produto (revisao da",
+    "cadastro. Nao pode existir 3a consulta de historico pelo nome.",
+    "diferentes podiam devolver titulos de mesmo vencimento em ordens",
+    "pendencias: vencimento + id; historico: id",
+    "1 atraso (pago 20 dias depois); pago antes do vencimento e cancelado nao contam"
+   ],
+   "tests": [
+    "PrevisaoInadimplencia — escala do score e atraso no historico",
+    "score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom",
+    "score nulo e exibido como nao calculado, sem inventar 100",
+    "titulo sem cadastro de cliente NAO derruba a previsao dos demais",
+    "paginacao: titulo depois da 1a pagina entra na analise",
+    "setor de alto risco NAO conviva com ",
+    "cliente sem fator nenhum continua dizendo que nao ha fator",
+    "ordena por id nas DUAS consultas (paginacao por offset exige ordem unica)",
+    "servidor que devolve menos que a janela nao faz a leitura pular titulos",
+    "titulo pago com atraso conta como atraso no historico"
+   ]
+  },
+  "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx": {
+   "path": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+   "lines": 268,
+   "is_test": true,
+   "rule_comments": [
+    "* Vencimento sempre a 20 dias de HOJE: a probabilidade ganha +10 pontos quando o",
+    "proximo vencimento esta a 7 dias ou menos, e +10 a 3 dias ou menos",
+    "ao chegar perto do vencimento -- falha sem regressao no produto (revisao da",
+    "~39 KB e estouram o limite de URI do gateway, derrubando a previsao"
+   ],
+   "doc": "Regressao: 589 linhas em 4 arquivos (PrevisaoInadimplencia + previsao/*) estavam prontas e SEM nenhum caminho na UI -- nenhum import, nenhuma rota, nenhum lazy(). E docs/INVENTARIO_FUNCIONALIDADES.md:270 e docs/FUNCIONALIDADES_SISTEMA.md:111 listavam a funcionalidade como entregue. Ao ligar na tela, …",
+   "tests": [
+    "PrevisaoInadimplencia — escopo por empresa",
+    "filtra contas_receber pela empresa informada",
+    "SEM empresa a consulta nao roda: pede para selecionar",
+    "historico vem em LOTE, uma consulta para todos os clientes",
+    "filtra TAMBEM o historico pela empresa (com pendencia, a 2a consulta roda)",
+    "historico vai em LOTES de 100 ids, nao todos na mesma URL",
+    "erro na consulta NAO vira ",
+    "erro no HISTORICO tambem reprova a analise"
+   ]
+  },
   "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx": {
    "path": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
    "lines": 117,
@@ -185410,7 +185718,7 @@
   },
   "src/components/cobranca/previsao/PrevisaoClienteCard.tsx": {
    "path": "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
-   "lines": 121,
+   "lines": 158,
    "exports": [
     "interface ClienteRisco",
     "function PrevisaoClienteCard"
@@ -185428,6 +185736,101 @@
    "lines": 66,
    "exports": [
     "function PrevisaoKPIs"
+   ]
+  },
+  "src/components/cobranca/previsao/risco.ts": {
+   "path": "src/components/cobranca/previsao/risco.ts",
+   "lines": 168,
+   "exports": [
+    "interface ClienteRiscoEntrada",
+    "interface ContaPendenteEntrada",
+    "interface HistoricoContaEntrada",
+    "const SCORE_RISCO_ALTO",
+    "const SCORE_RISCO_MEDIO",
+    "const SCORE_RISCO_BAIXO",
+    "function teveAtraso",
+    "function calcularProbabilidadeAtraso",
+    "function determinarNivelRisco",
+    "function gerarFatoresRisco",
+    "function gerarAcaoSugerida"
+   ],
+   "params": [
+    {
+     "name": "SCORE_RISCO_ALTO",
+     "value": "300"
+    },
+    {
+     "name": "SCORE_RISCO_MEDIO",
+     "value": "500"
+    },
+    {
+     "name": "SCORE_RISCO_BAIXO",
+     "value": "700"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "status",
+     "value": "cancelado",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "vencido",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "pendente",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "parcial",
+     "kind": "compara"
+    }
+   ],
+   "rule_comments": [
+    "(o arquivo bateu no limite de 400 linhas do eslint), e util separado porque",
+    "* Titulo em atraso: vencido, aberto depois do vencimento, ou recebido depois do",
+    "vencimento.",
+    "sem recebimento: aberto apos o vencimento (o historico ja filtra por isso)",
+    "vez de limite excedido (achado P1 do Codex na PR #404).",
+    "Sem credito autorizado, qualquer pendencia excede o limite."
+   ],
+   "doc": "Regras de risco da previsao de inadimplencia: pontuacao, nivel, fatores e acao sugerida. Extraido de PrevisaoInadimplencia.tsx na revisao da PR #404 (o arquivo bateu no limite de 400 linhas do eslint), e util separado porque sao funcoes puras -- dao teste direto, sem renderizar a tela.",
+   "calc_fns": [
+    {
+     "name": "calcularProbabilidadeAtraso",
+     "params": "cliente: ClienteRiscoEntrada, contasPendentes: ContaPendenteEntrada[], historicoContas: HistoricoContaEntrada[]",
+     "body": "let score = 0; // `null` e desconhecido, nao bom: nao pontua, e `gerarFatoresRisco` avisa que // o score nao foi calculado. Zero e valor real e cai na pior faixa. const scoreCliente = cliente.score; if (scoreCliente != null) { if (scoreCliente < SCORE_RISCO_ALTO) score += 30; else if (scoreCliente < SCORE_RISCO_MEDIO) score += 20; else if (scoreCliente < SCORE_RISCO_BAIXO) score += 10; } const contasVencidas = historicoContas.filter(teveAtraso); const taxaAtraso = historicoContas.length > 0 ? (c …"
+    },
+    {
+     "name": "gerarFatoresRisco",
+     "params": "cliente: ClienteRiscoEntrada, contasPendentes: ContaPendenteEntrada[], historicoContas: HistoricoContaEntrada[]",
+     "body": "const fatores: string[] = []; if (cliente.score == null) { fatores.push('Score não calculado para este cliente'); } else if (cliente.score < SCORE_RISCO_BAIXO) { fatores.push(`Score baixo (${cliente.score} de 1000)`); } const contasVencidas = historicoContas.filter(teveAtraso); if (contasVencidas.length > 0) { fatores.push(`${contasVencidas.length} atraso(s) no histórico`); } const totalPendente = contasPendentes.reduce( (sum, c) => sum + c.valor - (c.valor_recebido || 0), 0 ); const limite = cl …"
+    },
+    {
+     "name": "gerarAcaoSugerida",
+     "params": "nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]",
+     "body": "if (nivelRisco === 'alto') { if (fatores.some((f) => f.includes('atraso'))) { return 'Entrar em contato imediatamente para negociação preventiva'; } return 'Monitorar de perto e preparar régua de cobrança preventiva'; } if (nivelRisco === 'medio') { return 'Enviar lembrete amigável antes do vencimento'; } return 'Manter acompanhamento padrão';"
+    }
+   ]
+  },
+  "src/components/cobranca/previsao/__tests__/risco.test.ts": {
+   "path": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+   "lines": 98,
+   "is_test": true,
+   "doc": "Regras de risco, testadas direto (funcoes puras). Cada caso aqui nasceu de um achado da revisao da PR #404.",
+   "tests": [
+    "teveAtraso",
+    "titulo ABERTO e ja vencido conta como atraso",
+    "vencido conta, cancelado nao conta",
+    "pago depois do vencimento conta; pago antes, nao",
+    "limite de credito",
+    "limite ZERO nao vira 10.000: qualquer pendencia excede",
+    "limite nulo (nao informado) nao pontua nem inventa teto",
+    "limite excedido de verdade continua pontuando"
    ]
   },
   "src/components/command-palette/CommandPalette.tsx": {
@@ -192327,9 +192730,33 @@
   },
   "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx": {
    "path": "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
-   "lines": 167,
+   "lines": 190,
    "exports": [
     "function WhatsAppHistoryIA"
+   ],
+   "status_values": [
+    {
+     "field": "status",
+     "value": "enviado",
+     "kind": "escreve"
+    }
+   ],
+   "rule_comments": [
+    "(useWhatsAppIA.ts:37-62) apenas INSERE em `whatsapp_conversas` com"
+   ]
+  },
+  "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx": {
+   "path": "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
+   "lines": 81,
+   "is_test": true,
+   "rule_comments": [
+    "* Revisao da PR #404 (Codex P1): `useSendMessage` (useWhatsAppIA.ts:37-62) apenas"
+   ],
+   "doc": "Revisao da PR #404 (Codex P1): `useSendMessage` (useWhatsAppIA.ts:37-62) apenas INSERE em `whatsapp_conversas` com `status: 'enviado'`. Nao existe chamada a provedor de WhatsApp em nenhuma das 3 edge functions do assunto, nem secret de provedor. Com o campo de envio liberado, o operador mandava uma …",
+   "tests": [
+    "WhatsAppHistoryIA — envio sem provedor",
+    "por padrao nao oferece campo de envio, e explica por que",
+    "com permitirEnvio o campo volta (para quando houver provedor)"
    ]
   },
   "src/components/fluxo-caixa/AlertasRuptura.tsx": {
@@ -212951,6 +213378,39 @@
    ],
    "doc": "Lock otimista para edições concorrentes. Duas pessoas editando a mesma conta hoje fazem last-write-wins silencioso: quem salva por último sobrescreve o trabalho da outra sem aviso. Como os triggers moddatetime atualizam `updated_at` em todo UPDATE, o timestamp que a tela viu serve de versão: o updat …"
   },
+  "src/lib/paginar-postgrest.ts": {
+   "path": "src/lib/paginar-postgrest.ts",
+   "lines": 87,
+   "exports": [
+    "const PAGINA",
+    "const MAX_LINHAS",
+    "function paginarTudo"
+   ],
+   "errors": [
+    "${total} títulos no período: a previsão não calcula somatório parcial acima de ",
+    "A leitura dos títulos não terminou em ${MAX_REQUISICOES} requisições (${tudo.length} linhas ",
+    "Leitura incompleta dos títulos: ${tudo.length} de ${total}. A previsão não calcula "
+   ],
+   "params": [
+    {
+     "name": "PAGINA",
+     "value": "1000"
+    },
+    {
+     "name": "MAX_LINHAS",
+     "value": "50"
+    },
+    {
+     "name": "MAX_REQUISICOES",
+     "value": "500"
+    }
+   ],
+   "rule_comments": [
+    "no limite de 400 linhas do eslint) e mantido aqui porque o problema nao e",
+    "* O PostgREST corta a resposta no seu limite de linhas e nao sinaliza o corte,"
+   ],
+   "doc": "Paginacao de leitura do PostgREST, com a contagem exata como criterio de parada. Extraido de PrevisaoInadimplencia.tsx na revisao da PR #404 (o arquivo bateu no limite de 400 linhas do eslint) e mantido aqui porque o problema nao e daquele painel: qualquer soma feita no cliente sobre `.select()` sem …"
+  },
   "src/lib/pdf-generator.ts": {
    "path": "src/lib/pdf-generator.ts",
    "lines": 20,
@@ -214765,6 +215225,23 @@
    ],
    "side_effects": [
     ".add('contas_pagar'"
+   ]
+  },
+  "src/lib/__tests__/paginar-postgrest.test.ts": {
+   "path": "src/lib/__tests__/paginar-postgrest.test.ts",
+   "lines": 87,
+   "is_test": true,
+   "doc": "Testes do criterio de parada da paginacao. Extraido na revisao da PR #404, onde a primeira versao da paginacao tinha dois defeitos apontados pela revisao: assumir que a pagina devolvida tem o tamanho pedido, e avancar o deslocamento pelo pedido em vez do recebido.",
+   "tests": [
+    "paginarTudo",
+    "le tudo quando cabe numa pagina",
+    "le todas as paginas quando o total passa de uma",
+    "servidor que devolve menos que a janela: avanca pelo RECEBIDO",
+    "pagina vazia antes do total LANCA em vez de devolver parcial",
+    "25 mil linhas em paginas de 500 NAO falha (teto e de linhas, nao de requisicoes)",
+    "acima do teto de linhas, a mensagem diz o total REAL",
+    "erro de qualquer pagina e propagado",
+    "sem contagem do servidor, para quando a pagina vem incompleta"
    ]
   },
   "src/lib/__tests__/plano-contas-csv-importer.test.ts": {
@@ -224128,7 +224605,7 @@
   },
   "src/pages/Cobrancas.tsx": {
    "path": "src/pages/Cobrancas.tsx",
-   "lines": 390,
+   "lines": 405,
    "exports": [
     "function Cobrancas"
    ],
@@ -246554,10 +247031,29 @@
   }
  },
  "git": {
-  "sha": "2698b5b44efacd5f947cc6c74ce8845e24f4547d",
+  "sha": "58d7e40dc2f3d2c556aa8b8543df0b833fed22b3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "58d7e40",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)",
+    "files": [
+     "src/components/cobranca/PrevisaoInadimplencia.tsx",
+     "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+     "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+     "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
+     "src/components/cobranca/previsao/__tests__/risco.test.ts",
+     "src/components/cobranca/previsao/risco.ts",
+     "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
+     "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
+     "src/lib/__tests__/paginar-postgrest.test.ts",
+     "src/lib/paginar-postgrest.ts",
+     "src/pages/Cobrancas.tsx"
+    ]
+   },
    {
     "sha": "2698b5b",
     "date": "2026-11-17",
@@ -246938,15 +247434,6 @@
      "src/hooks/useContasReceberLogic.calculos.ts",
      "src/pages/ContasReceberConteudo.types.ts"
     ]
-   },
-   {
-    "sha": "e314002",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)",
-    "files": [
-     "supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246999,35 +247486,35 @@
     2
    ],
    [
-    "src/components/boletos/BoletoBarcode.tsx",
+    "src/components/cobranca/PrevisaoInadimplencia.tsx",
     1
    ],
    [
-    "src/components/boletos/BoletoPreviewPanel.tsx",
+    "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
     1
    ],
    [
-    "src/components/boletos/__tests__/BoletoBarcode.test.tsx",
+    "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
     1
    ],
    [
-    "src/lib/arquitetura/grafo-observado.json",
+    "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
     1
    ],
    [
-    "supabase/functions/_shared/cnae.ts",
+    "src/components/cobranca/previsao/__tests__/risco.test.ts",
     1
    ],
    [
-    "supabase/functions/_shared/cnae_test.ts",
+    "src/components/cobranca/previsao/risco.ts",
     1
    ],
    [
-    "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
     1
    ],
    [
-    "src/components/contas-receber/WebhookConfigDialog.tsx",
+    "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
     1
    ]
   ]

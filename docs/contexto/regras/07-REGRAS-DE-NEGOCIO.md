@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2698b5b44e` · branch `main` · 2026-11-17 05:12 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `58d7e40dc2` · branch `main` · 2026-11-17 05:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1364,7 +1364,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
 | `status` | `cancelada` | compara, escreve | `src/components/nfe/NFePreview.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/pages/NotasFiscais.tsx` |
-| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>`src/components/contas-receber/row/VencimentoCell.tsx`<br>… +23 |
+| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>… +24 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
 | `status` | `complete` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
@@ -1392,7 +1392,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `em_revisao` | escreve | `src/hooks/useFechamentoTributario.ts`<br>`supabase/functions/executar-fechamento-tributario/index.ts` |
 | `status` | `empty` | compara, escreve | `src/pages/configuracoes/filtros-salvos/Badges.tsx`<br>`src/pages/configuracoes/filtros-salvos/helpers.ts` |
 | `status` | `entregue` | compara | `src/hooks/useEntregasObrigacoes.ts`<br>`src/lib/tributario/obrigacoes/conformidade.ts`<br>`src/pages/tributario/ObrigacoesAcessorias.tsx`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
-| `status` | `enviado` | compara, escreve | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/FilaCobrancasPanel.tsx`<br>`src/components/contas-receber/DrawerCobrancasTab.tsx`<br>`src/components/relatorios/RelatoriosAgendados.tsx`<br>`src/hooks/useBoletos.ts`<br>… +3 |
+| `status` | `enviado` | compara, escreve | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/FilaCobrancasPanel.tsx`<br>`src/components/contas-receber/DrawerCobrancasTab.tsx`<br>`src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx`<br>`src/components/relatorios/RelatoriosAgendados.tsx`<br>… +4 |
 | `status` | `erro` | compara, escreve | `src/components/bling/BlingWebhooksPanel.tsx`<br>`src/components/conciliacao/ConciliacaoRetroativaPanel.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/LogsTable.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/StatsCards.tsx`<br>`src/components/reforma-tributaria/ImportacaoXMLPanel.tsx`<br>… +10 |
 | `status` | `error` | compara, escreve | `src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step3DownloadParts.tsx`<br>… +13 |
 | `status` | `estornado` | compara, escreve | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx`<br>`src/hooks/useCreditosTributarios.ts` |
@@ -1428,9 +1428,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `operational` | compara, escreve | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
 | `status` | `outage` | compara | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
 | `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +46 |
-| `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
+| `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
 | `status` | `partial` | compara, escreve | `src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
-| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +60 |
+| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +61 |
 | `status` | `pendente_aprovacao` | compara, escreve | `src/components/compras/PedidoCompraForm.tsx`<br>`src/lib/compras/pedidos.ts`<br>`src/pages/Compras.tsx` |
 | `status` | `pending` | compara, escreve | `src/components/admin/WebhookSimulator.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>`src/components/ui/ux-validator/helpers.tsx`<br>… +2 |
 | `status` | `pior` | compara | `src/components/analytics/BenchmarkingSetorial.tsx` |
@@ -1472,7 +1472,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `unknown` | escreve | `supabase/functions/health/index.ts` |
 | `status` | `uploading` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx`<br>`src/components/ui/file-upload.tsx` |
 | `status` | `utilizado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
-| `status` | `vencido` | compara, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/PrevisaoInadimplencia.tsx`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>… +27 |
+| `status` | `vencido` | compara, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>… +27 |
 | `status` | `verified` | compara, escreve | `src/components/auth/MFASettings.tsx`<br>`src/hooks/useMFA.ts` |
 | `status` | `warn` | compara, escreve | `src/components/contabilidade/SpedChecklistRow.tsx`<br>`src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>`supabase/functions/gerar-sped-ecd/index.ts`<br>`supabase/functions/gerar-sped-ecf/index.ts` |
 | `estado` | `SP` | escreve | `supabase/functions/gerar-sped-ecd/__fixtures__/ecd-fixture.ts`<br>`supabase/functions/gerar-sped-ecf/__fixtures__/ecf-fixture.ts` |
@@ -2490,15 +2490,15 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   setIsLoading(true); const contexto = ` Cliente: ${clienteNome || 'Cliente'} Valor total em atraso: ${formatCurrency(valorTotal)} Número de títulos: ${contasVencidas.length} Dias médio de atraso: ${diasMedioAtraso} dias Títulos: ${contasVencidas.map((c) => `${c.cliente_nome} - ${formatCurrency(c.valor)} (${c.diasAtraso} dias)`).join(', ')} Você é um especialista em negociação de dívidas. Analise a situação e sugira propostas de acordo considerando: 1. Descontos progressivos baseados no tempo de a …
   ```
-- **calcularProbabilidadeAtraso(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[])** — `src/components/cobranca/PrevisaoInadimplencia.tsx`
+- **calcularProbabilidadeAtraso(cliente: ClienteRiscoEntrada, contasPendentes: ContaPendenteEntrada[], historicoContas: HistoricoContaEntrada[])** — `src/components/cobranca/previsao/risco.ts`
   ```
-  let score = 0; const scoreCliente = cliente.score || 100; if (scoreCliente < 50) score += 30; else if (scoreCliente < 70) score += 20; else if (scoreCliente < 85) score += 10; const contasVencidas = historicoContas.filter((c) => c.status === 'vencido'); const taxaAtraso = historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0; if (taxaAtraso > 30) score += 40; else if (taxaAtraso > 15) score += 25; else if (taxaAtraso > 5) score += 10; const totalPendente = conta …
+  let score = 0; // `null` e desconhecido, nao bom: nao pontua, e `gerarFatoresRisco` avisa que // o score nao foi calculado. Zero e valor real e cai na pior faixa. const scoreCliente = cliente.score; if (scoreCliente != null) { if (scoreCliente < SCORE_RISCO_ALTO) score += 30; else if (scoreCliente < SCORE_RISCO_MEDIO) score += 20; else if (scoreCliente < SCORE_RISCO_BAIXO) score += 10; } const contasVencidas = historicoContas.filter(teveAtraso); const taxaAtraso = historicoContas.length > 0 ? (c …
   ```
-- **gerarFatoresRisco(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[])** — `src/components/cobranca/PrevisaoInadimplencia.tsx`
+- **gerarFatoresRisco(cliente: ClienteRiscoEntrada, contasPendentes: ContaPendenteEntrada[], historicoContas: HistoricoContaEntrada[])** — `src/components/cobranca/previsao/risco.ts`
   ```
-  const fatores: string[] = []; if ((cliente.score || 100) < 70) { fatores.push(`Score baixo (${cliente.score || 0})`); } const contasVencidas = historicoContas.filter((c) => c.status === 'vencido'); if (contasVencidas.length > 0) { fatores.push(`${contasVencidas.length} atraso(s) no histórico`); } const totalPendente = contasPendentes.reduce( (sum, c) => sum + c.valor - (c.valor_recebido || 0), 0 ); if (totalPendente > (cliente.limite_credito || 10000)) { fatores.push('Limite de crédito excedido' …
+  const fatores: string[] = []; if (cliente.score == null) { fatores.push('Score não calculado para este cliente'); } else if (cliente.score < SCORE_RISCO_BAIXO) { fatores.push(`Score baixo (${cliente.score} de 1000)`); } const contasVencidas = historicoContas.filter(teveAtraso); if (contasVencidas.length > 0) { fatores.push(`${contasVencidas.length} atraso(s) no histórico`); } const totalPendente = contasPendentes.reduce( (sum, c) => sum + c.valor - (c.valor_recebido || 0), 0 ); const limite = cl …
   ```
-- **gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[])** — `src/components/cobranca/PrevisaoInadimplencia.tsx`
+- **gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[])** — `src/components/cobranca/previsao/risco.ts`
   ```
   if (nivelRisco === 'alto') { if (fatores.some((f) => f.includes('atraso'))) { return 'Entrar em contato imediatamente para negociação preventiva'; } return 'Monitorar de perto e preparar régua de cobrança preventiva'; } if (nivelRisco === 'medio') { return 'Enviar lembrete amigável antes do vencimento'; } return 'Manter acompanhamento padrão';
   ```
@@ -4078,6 +4078,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MIN_CONFIRMAR` | `10` | `src/components/admin/anomalias-review-queue/types.ts` |
 | `MIN_FALSO_POSITIVO` | `15` | `src/components/admin/anomalias-review-queue/types.ts` |
 | `SCIM_SP_CONFIG_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'` | `src/components/admin/sso/ScimSetupGuide.helpers.ts` |
+| `IDS_POR_LOTE` | `100` | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
+| `SCORE_RISCO_ALTO` | `300` | `src/components/cobranca/previsao/risco.ts` |
+| `SCORE_RISCO_MEDIO` | `500` | `src/components/cobranca/previsao/risco.ts` |
+| `SCORE_RISCO_BAIXO` | `700` | `src/components/cobranca/previsao/risco.ts` |
 | `ALPHA` | `0.3` | `src/components/contabilidade/ImportLancamentosCSVDialog.tsx` |
 | `TITULO` | `'ÍNDICES ECONÔMICO-FINANCEIROS'` | `src/components/contabilidade/indices/exporters.ts` |
 | `COOLDOWN` | `60000` | `src/components/contas-receber/ContasReceberKPIs.tsx` |
@@ -4123,6 +4127,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `BUFFER_MAX` | `100` | `src/lib/filterHydrationTelemetry.ts` |
 | `MAX_VALUE_LEN` | `32` | `src/lib/format-filter-value.ts` |
 | `DEFAULT_TTL_MS` | `7` | `src/lib/import-checkpoint.ts` |
+| `PAGINA` | `1000` | `src/lib/paginar-postgrest.ts` |
+| `MAX_LINHAS` | `50` | `src/lib/paginar-postgrest.ts` |
+| `MAX_REQUISICOES` | `500` | `src/lib/paginar-postgrest.ts` |
 | `HEADER_HEIGHT` | `22` | `src/lib/pdf-layout.ts` |
 | `FOOTER_HEIGHT` | `14` | `src/lib/pdf-layout.ts` |
 | `MARGIN_X` | `14` | `src/lib/pdf-layout.ts` |
@@ -4970,6 +4977,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Erro ao atualizar cliente | `src/components/clientes/ClienteForm.tsx` |
 | Erro ao cadastrar cliente | `src/components/clientes/ClienteForm.tsx` |
 | Erro ao gerar propostas | `src/components/cobranca/NegociacaoIA.tsx` |
+|            className= | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
 | Erro ao analisar alertas | `src/components/cobranca/WhatsAppProativoPanel.tsx` |
 | Erro ao enviar mensagem | `src/components/cobranca/WhatsAppProativoPanel.tsx` |
 | ; import { toast } from  | `src/components/compliance/EvidenciaStatusDialog.tsx` |
@@ -5030,8 +5038,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
-| Sem dados para exportar. | `src/components/contabilidade/dre-balanco/exporters.ts` |
-| … +784 linhas — lista completa em `context.json` | |
+| … +788 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5090,7 +5097,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3459 testes em 299 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3497 testes em 304 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5206,6 +5213,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/icms-st-difal.difal.test.ts` | 11 | icms — DIFAL (EC 87/2015 e LC 190/2022) · aplica base dupla para consumidor final não contribuinte · aplica base única para destinatário contribuinte · base dupla é sempre maior ou igual à base única … |
 | `src/lib/tributario/calculadora/__tests__/lucro-real.test.ts` | 11 | calcularLucroReal · calcula IRPJ com adicional 10% acima de R$ 240k anual · CSLL padrão 9% · CSLL 15% quando flag financeira … |
 | `src/__tests__/validators.test.ts` | 10 | Validators · validateCPF · should return true for valid CPF · should return false for invalid CPF … |
+| `src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx` | 10 | PrevisaoInadimplencia — escala do score e atraso no historico · score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom · score nulo e exibido como nao calculado, sem inventar 100 · titulo sem cadastro de cliente NAO derruba a previsao dos demais … |
 | `src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx` | 10 | ReguaCobrancaConfig · Renderização da régua · exibe título da configuração · exibe etapa Preventiva … |
 | `src/hooks/useSelectiveEmpresaInvalidation.test.tsx` | 10 | deveRemoverNaTrocaDeEmpresa · remove queries escopadas por empresa · remove chaves que a heurística antiga deixava passar · preserva identidade do usuário e catálogos nacionais … |
 | `src/hooks/__tests__/useConciliacaoPage.mutations.test.tsx` | 10 | useConciliacaoPage — confirmação e conciliação manual · persiste conta a pagar e só então altera o estado local · fluxo manual: o diálogo já persistiu — handleManualSuccess NÃO confirma de novo, só atualiza o estado · preserva estado não conciliado após rejeição da mutation … |
@@ -5230,6 +5238,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useCashbackSimulador.test.ts` | 9 | useCashbackSimulador · estado inicial: elegível, cesta padrão e alíquotas de 2026 · calcula cashback por categoria conforme LC 214/2025 · inelegível quando renda acima do limite (3 salários mínimos) … |
 | `src/hooks/__tests__/useConsultaTributaria.test.tsx` | 9 | consultarTributos · propaga erro de transporte da edge function · propaga erro lógico devolvido no corpo (status 200 com { error }) · encaminha os parâmetros no body da invocação … |
 | `src/hooks/__tests__/useDashboardMetrics.test.ts` | 9 | useDashboardMetrics · soma saldoTotal corretamente · repassa totalReceber calculado pela RPC totais_contas_receber · calcula inadimplência como percentual de vencidas sobre total a receber … |
+| `src/lib/__tests__/paginar-postgrest.test.ts` | 9 | paginarTudo · le tudo quando cabe numa pagina · le todas as paginas quando o total passa de uma · servidor que devolve menos que a janela: avanca pelo RECEBIDO … |
 | `src/lib/__tests__/sefaz-contingency-state.test.ts` | 9 | sefaz-contingency :: state · activateContingency salva modo, motivo e activatedAt · deactivateContingency reseta modo e contadores · registerCommunicationFailure ativa offline após 3 falhas … |
 | `src/lib/__tests__/sharedFiltersExport.test.ts` | 9 | sharedFiltersExport > buildBundle · constrói bundle limpo, ignorando papéis inválidos · sharedFiltersExport > parseBundle · aceita bundle válido e higieniza papéis … |
 | `src/lib/__tests__/storage-path.test.ts` | 9 | caminhoNoStorage · extrai o caminho de uma URL pública · extrai o caminho de uma URL assinada, descartando o token · decodifica nomes com espaço e acento … |
@@ -5240,6 +5249,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sefaz-manifestar/__tests__/payload_test.ts` | 9 | payload: envelope contém chave, CNPJ autor e tpEvento corretos · payload: 210240 injeta xJust e propaga justificativa ao RPC · payload: 210210 NÃO injeta xJust mesmo se fornecida · payload: ambiente produção → endpoint www1 e tpAmb=1 … |
 | `scripts/security/test-rpc-runtime.evaluate.test.ts` | 8 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx` | 8 | useReviewQueue — idempotência e concorrência · #1 [idempotência] dois handleAcao paralelos para o mesmo id disparam a mutation UMA vez · #2 [retry] erro transitório  · #3 [retry esgotado] 3 falhas transitórias → toast.error + fila e stats intactos … |
+| `src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx` | 8 | PrevisaoInadimplencia — escopo por empresa · filtra contas_receber pela empresa informada · SEM empresa a consulta nao roda: pede para selecionar · historico vem em LOTE, uma consulta para todos os clientes … |
+| `src/components/cobranca/previsao/__tests__/risco.test.ts` | 8 | teveAtraso · titulo ABERTO e ja vencido conta como atraso · vencido conta, cancelado nao conta · pago depois do vencimento conta; pago antes, nao … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
@@ -5351,6 +5362,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/common/StartupDiagnostic.test.tsx` | 3 | StartupDiagnostic · não bloqueia a rota pública quando a checagem falha · mantém a tela da aplicação disponível durante a verificação |
 | `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
 | `src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx` | 3 | RegistrarPagamentoDialog — empresa da alcada · consulta a alcada da empresa do titulo, nao a do filtro global · registro legado sem empresa_id cai no filtro global |
+| `src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx` | 3 | WhatsAppHistoryIA — envio sem provedor · por padrao nao oferece campo de envio, e explica por que · com permitirEnvio o campo volta (para quando houver provedor) |
 | `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
@@ -5389,10 +5401,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/transaction-matcher.regression.test.ts` | 2 | transaction-matcher — regressão de API pública · expõe símbolos históricos após modularização |
 | `src/lib/tributario/calculadora/__tests__/harness-cenarios.test.ts` | 2 | Harness — 200 cenários aleatórios da Calculadora · cenário #%i respeita invariantes |
 | `src/test/scenarios/__tests__/scenarios.spec.ts` | 2 | Scenario Harness · ${COUNT} cenários combinatórios: zero violações de invariantes |
-| `supabase/functions/gerar-heatmap-tributario/index.test.ts` | 2 | ano sem lancamento: contrato completo, sem numero inventado · total_por_mes tem 12 posicoes zeradas |
-| `supabase/functions/sefaz-dfe-puxar/__tests__/puller_test.ts` | 2 | runPuxador — resposta empty (cStat=137) não altera cursor · gzip round-trip preserva XML |
-| `src/hooks/__tests__/useAprovacoes.placeholder.test.tsx` | 1 | nao entrega a configuracao da empresa anterior enquanto a nova carrega |
-| `src/lib/__tests__/eslint-no-floating-supabase-write.test.ts` | 1 | no-floating-supabase-write |
+| … +4 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5716,6 +5725,16 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | vencimento FEBRABAN passou de 9999 em fev/2025: qualquer vencimento futuro | `src/components/boletos/BoletoBarcode.tsx` |
 | Limite de Crédito */} | `src/components/clientes/ClienteFormFields.tsx` |
 | Proposta 1: Desconto à vista | `src/components/cobranca/NegociacaoIA.tsx` |
+| estourariam o limite de URI. | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
+| varios titulos no mesmo vencimento, janelas diferentes podiam | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
+| Erro de consulta NAO pode virar "nenhum cliente em risco": a tela | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
+| -- passa do limite de URI do gateway e derruba a previsao inteira | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
+| (o arquivo bateu no limite de 400 linhas do eslint), e util separado porque | `src/components/cobranca/previsao/risco.ts` |
+| * Titulo em atraso: vencido, aberto depois do vencimento, ou recebido depois do | `src/components/cobranca/previsao/risco.ts` |
+| vencimento. | `src/components/cobranca/previsao/risco.ts` |
+| sem recebimento: aberto apos o vencimento (o historico ja filtra por isso) | `src/components/cobranca/previsao/risco.ts` |
+| vez de limite excedido (achado P1 do Codex na PR #404). | `src/components/cobranca/previsao/risco.ts` |
+| Sem credito autorizado, qualquer pendencia excede o limite. | `src/components/cobranca/previsao/risco.ts` |
 | não pode ser apresentada como falha caso esse enriquecimento falhe. | `src/components/conciliacao/ConciliacaoManualDialog.tsx` |
 | Permission Status */} | `src/components/configuracoes/NotificacoesConfig.tsx` |
 | Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF. | `src/components/contabilidade/PreValidacaoSpedPanel.tsx` |
@@ -5738,6 +5757,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente. | `src/components/empresas/EmpresaForm.tsx` |
 | Ensure required fields are present | `src/components/empresas/EmpresaForm.tsx` |
 | cobre apenas Terceiros). Só aplica quando o usuário editou o CNAE agora. | `src/components/empresas/EmpresaForm.tsx` |
+| (useWhatsAppIA.ts:37-62) apenas INSERE em `whatsapp_conversas` com | `src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx` |
 | Saldo Mínimo */} | `src/components/fluxo-caixa/ResumosCenarios.tsx` |
 | *Regra:** ${d.regra}`); | `src/components/insights-ia/anomalia/ExportarEvidenciasButton.tsx` |
 | Renderiza somente quando explicitamente solicitado para evitar contaminar a UI do app. | `src/components/layout/VisualCorrectionOverlay.tsx` |
@@ -5909,6 +5929,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | aos metadados segue a mesma regra ou /Usuarios perde label/parent. | `src/lib/navigation.ts` |
 | alcança o fluxo público igual a /convite/x e o token não pode vazar | `src/lib/navigation.ts` |
 | com o updated_at visto = ninguém escreveu → permissão/remoção; um | `src/lib/optimistic-lock.ts` |
+| no limite de 400 linhas do eslint) e mantido aqui porque o problema nao e | `src/lib/paginar-postgrest.ts` |
+| * O PostgREST corta a resposta no seu limite de linhas e nao sinaliza o corte, | `src/lib/paginar-postgrest.ts` |
 | * Y-coordinate (mm) onde o conteúdo da página deve começar, | `src/lib/pdf-layout.ts` |
 | Deve ser chamado APÓS todo o conteúdo ter sido escrito. | `src/lib/pdf-layout.ts` |
 | validação contábil seja integralmente testável em unidade. | `src/lib/plano-contas-csv-importer.ts` |
@@ -5962,17 +5984,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | - emails[work].value    (opcional, mas se presente deve ser e-mail válido) | `src/lib/scim/userTemplate.ts` |
 | Validação de consistência da configuração SSO | `src/lib/sso/consistency.ts` |
 | * Executa um lote de simulações com limite de concorrência. | `src/lib/sso/sandbox-bulk-runner.ts` |
-| * Limite máximo de receita bruta para o Simples Nacional. | `src/lib/tributario/aliquotas-simples.ts` |
-| Extraído de `shared-logic.ts` (modularização max-lines). Ciclo de tipo apenas. | `src/lib/tributario/apuracao.ts` |
-| "sobra" de limite entre trimestres, o que torna o adicional convexo em | `src/lib/tributario/apuracao.ts` |
-| CSLL de períodos anteriores podem ser compensados sem prazo, mas a redução | `src/lib/tributario/apuracao.ts` |
-| * Cada trimestre é um período de apuração autônomo: o adicional usa o limite de | `src/lib/tributario/apuracao.ts` |
-| * Somente aquisições vinculadas a saídas tributadas geram crédito, por isso, na | `src/lib/tributario/apuracao.ts` |
-| Ranqueia apenas os elegíveis | `src/lib/tributario/decidir-regime.ts` |
-| * Explicação em linguagem de negócio do porquê do ajuste. */ | `src/lib/tributario/diagnostico-parametros.ts` |
-| Extraído de `shared-logic.ts` (modularização max-lines). Ciclo de tipo apenas. | `src/lib/tributario/encargos-folha.ts` |
-| RAT (3%) multiplicado pelo FAP máximo (2,0), conforme Lei 8.212/1991 e | `src/lib/tributario/encargos-folha.ts` |
-| * Aplicável apenas para atividades de serviço listadas no §5º-M. | `src/lib/tributario/fator-r.ts` |
-| * Aceita apenas séries mensais bem-formadas; descarta a série inteira se corrompida. */ | `src/lib/tributario/historico-simulacao.ts` |
-| * Snapshot é utilizável apenas se trouxer, no mínimo, um faturamento anual | `src/lib/tributario/historico-simulacao.ts` |
-| … +393 linhas — lista completa em `context.json` | |
+| … +406 linhas — lista completa em `context.json` | |

@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "total": 991,
- "orfaos": 40,
+ "orfaos": 39,
  "nomes_duplicados": {
   "Accordion": [
    "src/components/ui/accordion.tsx",
@@ -3069,7 +3069,7 @@
     "PrevisaoClienteCard"
    ],
    "export_default": null,
-   "linhas": 120,
+   "linhas": 157,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -3111,15 +3111,15 @@
     "PrevisaoInadimplencia"
    ],
    "export_default": null,
-   "linhas": 337,
+   "linhas": 406,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [
     "contas_receber"
    ],
    "edges": [],
-   "usado_por": 0,
-   "orfao": true
+   "usado_por": 1,
+   "orfao": false
   },
   {
    "arquivo": "src/components/cobranca/ReguaCobrancaConfig.tsx",
@@ -7028,7 +7028,7 @@
     "WhatsAppHistoryIA"
    ],
    "export_default": null,
-   "linhas": 166,
+   "linhas": 189,
    "dominio": "components/financeiro",
    "hooks_locais": [
     "useSendMessage",
@@ -13431,7 +13431,7 @@
     "Cobrancas"
    ],
    "export_default": "Cobrancas",
-   "linhas": 389,
+   "linhas": 404,
    "dominio": "pages",
    "hooks_locais": [
     "useAgingData",

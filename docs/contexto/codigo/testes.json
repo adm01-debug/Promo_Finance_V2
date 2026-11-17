@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 459,
+ "total": 464,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 383
+  "unit": 388
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 268
+   "arquivos": 273
   },
   {
    "padrao": "outro",
@@ -841,6 +841,24 @@
    "casos": 2
   },
   {
+   "arquivo": "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+   "tipo": "unit",
+   "linhas": 393,
+   "testa": [
+    "src/components/cobranca/PrevisaoInadimplencia.tsx"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+   "tipo": "unit",
+   "linhas": 267,
+   "testa": [
+    "src/components/cobranca/PrevisaoInadimplencia.tsx"
+   ],
+   "casos": 7
+  },
+  {
    "arquivo": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
    "tipo": "unit",
    "linhas": 116,
@@ -848,6 +866,15 @@
     "src/components/cobranca/ReguaCobrancaConfig.tsx"
    ],
    "casos": 7
+  },
+  {
+   "arquivo": "src/components/cobranca/previsao/__tests__/risco.test.ts",
+   "tipo": "unit",
+   "linhas": 97,
+   "testa": [
+    "src/components/cobranca/previsao/risco.ts"
+   ],
+   "casos": 6
   },
   {
    "arquivo": "src/components/command-palette/commandPaletteManagement.test.ts",
@@ -997,6 +1024,15 @@
     "src/components/financeiro/AnexoList.tsx"
    ],
    "casos": 6
+  },
+  {
+   "arquivo": "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
+   "tipo": "unit",
+   "linhas": 80,
+   "testa": [
+    "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx"
+   ],
+   "casos": 2
   },
   {
    "arquivo": "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
@@ -2034,6 +2070,15 @@
     "src/lib/optimistic-lock.ts"
    ],
    "casos": 6
+  },
+  {
+   "arquivo": "src/lib/__tests__/paginar-postgrest.test.ts",
+   "tipo": "unit",
+   "linhas": 86,
+   "testa": [
+    "src/lib/paginar-postgrest.ts"
+   ],
+   "casos": 8
   },
   {
    "arquivo": "src/lib/__tests__/plano-contas-csv-importer.test.ts",
@@ -4103,7 +4148,9 @@
   "src/components/boletos/BoletoBarcode.tsx": 1,
   "src/components/cobranca/CustomerDeepScore.tsx": 1,
   "src/components/cobranca/MetricasPorCanal.tsx": 1,
+  "src/components/cobranca/PrevisaoInadimplencia.tsx": 2,
   "src/components/cobranca/ReguaCobrancaConfig.tsx": 1,
+  "src/components/cobranca/previsao/risco.ts": 1,
   "src/components/command-palette/commandPaletteManagement.ts": 1,
   "src/components/common/StartupDiagnostic.tsx": 1,
   "src/components/conciliacao/ConciliacaoManualDialog.tsx": 1,
@@ -4126,6 +4173,7 @@
   "src/components/dashboard/DashboardFiltersHeader.tsx": 1,
   "src/components/empresas/EmpresaHeroKPI.tsx": 1,
   "src/components/financeiro/AnexoList.tsx": 1,
+  "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx": 1,
   "src/components/fornecedores/FornecedorForm.tsx": 1,
   "src/components/layout/PageHeader.tsx": 1,
   "src/components/layout/sidebar/sidebarNavState.ts": 1,
@@ -4256,6 +4304,7 @@
   "src/lib/ofx-parser/utils.ts": 1,
   "src/lib/optimistic-lock.ts": 1,
   "src/lib/organizacoes/convites.ts": 1,
+  "src/lib/paginar-postgrest.ts": 1,
   "src/lib/pdf-generator/conciliacao.ts": 1,
   "src/lib/plano-contas-csv-importer.ts": 1,
   "src/lib/queryClient.ts": 1,

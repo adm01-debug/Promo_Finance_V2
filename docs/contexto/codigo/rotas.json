@@ -5253,6 +5253,7 @@
     "useAlertas",
     "useAlertasNaoLidos",
     "useAlertasTributariosCount",
+    "useAnaliseInadimplencia",
     "useAnomaliaPreferences",
     "useAprovacoesPendentesCount",
     "useAuth",
@@ -5313,6 +5314,7 @@
     "useReguaCobrancaStatus",
     "useResizableSheet",
     "useSaldosContas",
+    "useSendMessage",
     "useSmartBack",
     "useSoundFeedback",
     "useSpring",
@@ -5335,6 +5337,7 @@
     "useUserEmpresas",
     "useVendedores",
     "useWhatsAppCobrancaHistory",
+    "useWhatsAppConversas",
     "useWhatsAppUnreadCount"
    ],
    "hooks_locais": [
@@ -5387,6 +5390,7 @@
     "useReguaCobranca",
     "useReguaCobrancaStatus",
     "useSaldosContas",
+    "useSendMessage",
     "useSmartBack",
     "useSoundFeedback",
     "useSwipeBack",
@@ -5404,6 +5408,7 @@
     "useUserEmpresas",
     "useVendedores",
     "useWhatsAppCobrancaHistory",
+    "useWhatsAppConversas",
     "useWhatsAppUnreadCount"
    ],
    "tabelas": [
@@ -5440,7 +5445,8 @@
     "vw_gastos_centro_custo",
     "vw_metricas_cobranca",
     "vw_saldos_contas",
-    "vw_transferencias_painel"
+    "vw_transferencias_painel",
+    "whatsapp_conversas"
    ],
    "rpcs": [
     "confirmar_envio_cobranca",
@@ -5474,7 +5480,7 @@
     "system",
     "user"
    ],
-   "arquivos_puxados": 130
+   "arquivos_puxados": 138
   },
   {
    "protegida": true,

@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 279,
+ "total": 280,
  "por_camada": {
   "config": 1,
   "contexts": 1,
   "integrations": 3,
-  "lib": 260,
+  "lib": 261,
   "python": 14
  },
  "arquivos": [
@@ -2985,6 +2985,31 @@
    "usado_por_modulos": [
     "hooks",
     "pages/organizacoes"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/paginar-postgrest.ts",
+   "camada": "lib",
+   "exports": [
+    "MAX_LINHAS",
+    "PAGINA",
+    "paginarTudo"
+   ],
+   "export_default": null,
+   "linhas": 86,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/cobranca"
    ],
    "coberto_por_testes": 1,
    "orfao": false

@@ -1705,8 +1705,10 @@
    "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
    "src/components/cobranca/previsao/PrevisaoClientesList.tsx",
    "src/components/cobranca/previsao/PrevisaoKPIs.tsx",
+   "src/components/cobranca/previsao/risco.ts",
    "src/components/ui/button.tsx",
-   "src/integrations/supabase/client.ts"
+   "src/integrations/supabase/client.ts",
+   "src/lib/paginar-postgrest.ts"
   ],
   "src/components/cobranca/ReguaCobrancaConfig.tsx": [
    "src/components/ui/badge.tsx",
@@ -8669,6 +8671,7 @@
    "src/components/cobranca/MetricasPorCanal.tsx",
    "src/components/cobranca/NegativacoesProtestosPanel.tsx",
    "src/components/cobranca/NegociacaoIA.tsx",
+   "src/components/cobranca/PrevisaoInadimplencia.tsx",
    "src/components/cobranca/ReguaCobrancaConfig.tsx",
    "src/components/cobranca/ReguaCobrancaVisual.tsx",
    "src/components/cobranca/WhatsAppHistoryPanel.tsx",

@@ -16,12 +16,12 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (260)",
+   "src/lib (261)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (268)",
+   "co-localizado (__tests__) (273)",
    "outro (108)",
    "co-localizado (*.test) (43)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)",
    "fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)",
    "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)",
    "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)",
-   "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)",
-   "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)"
+   "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

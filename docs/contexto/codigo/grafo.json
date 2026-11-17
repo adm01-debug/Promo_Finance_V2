@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 1996,
- "arestas": 8452,
+ "nos": 1998,
+ "arestas": 8455,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -230,7 +230,6 @@
   "src/components/admin/FiscalHealthBadge.tsx",
   "src/components/auth/PermissionGate.hoc.tsx",
   "src/components/charts/RechartsExample.tsx",
-  "src/components/cobranca/PrevisaoInadimplencia.tsx",
   "src/components/contabilidade/SpedEcdDownloadStep.tsx",
   "src/components/empresa/EmpresaActionPicker.tsx",
   "src/components/integracoes/BitrixWebhookPanel.tsx",

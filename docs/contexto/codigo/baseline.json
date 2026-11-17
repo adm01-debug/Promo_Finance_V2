@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2698b5b44efacd5f947cc6c74ce8845e24f4547d",
+  "commit": "58d7e40dc2f3d2c556aa8b8543df0b833fed22b3",
   "branch": "main",
-  "data_commit": "2026-11-17T02:09:46-03:00",
+  "data_commit": "2026-11-17T02:34:57-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "58d7e40",
+    "data": "2026-11-17",
+    "assunto": "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)"
+   },
    {
     "sha": "2698b5b",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "298cc49",
     "data": "2026-11-16",
     "assunto": "fix(db): destrava o replay da cadeia de migrations — índice da FK no mesmo arquivo que cria a FK (#388)"
-   },
-   {
-    "sha": "1d6ef94",
-    "data": "2026-11-16",
-    "assunto": "chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)"
    }
   ],
-  "arquivos_mudados_7d": 816,
+  "arquivos_mudados_7d": 827,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 162
+    "commits": 163
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3887,
-  "arquivos_codigo": 2449,
-  "linhas_codigo": 436450,
+  "arquivos_total": 3894,
+  "arquivos_codigo": 2456,
+  "linhas_codigo": 437770,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 459,
+  "testes": 464,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 986,
-   "linhas": 162037
+   "arquivos": 991,
+   "linhas": 163170
   },
   "src/config": {
    "arquivos": 1,
@@ -659,8 +659,8 @@
    "linhas": 19436
   },
   "src/lib": {
-   "arquivos": 411,
-   "linhas": 54241
+   "arquivos": 413,
+   "linhas": 54413
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -668,7 +668,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46834
+   "linhas": 46849
   },
   "src/routes": {
    "arquivos": 16,
@@ -1115,7 +1115,6 @@
   "componentes_orfaos": [
    "src/components/admin/FiscalHealthBadge.tsx",
    "src/components/charts/RechartsExample.tsx",
-   "src/components/cobranca/PrevisaoInadimplencia.tsx",
    "src/components/contabilidade/SpedEcdDownloadStep.tsx",
    "src/components/empresa/EmpresaActionPicker.tsx",
    "src/components/integracoes/BitrixWebhookPanel.tsx",
