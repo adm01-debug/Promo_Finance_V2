@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5be2cfc7436f4bc4240ae678b82247346718fa47` (2026-11-17T17:29:17-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9aa7ea65eca1304792c685affdde683058282793` (2026-11-17T17:40:05-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3926 |
 | arquivos_codigo | 2471 |
-| linhas_codigo | 440284 |
+| linhas_codigo | 440296 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -461,21 +461,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (38)
-- bun.lock (33)
-- .github/workflows/ci.yml (26)
+- package.json (37)
+- bun.lock (32)
+- .github/workflows/ci.yml (25)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
-- .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
-- .github/workflows/deno-tests.yml (10)
 - .github/workflows/functions-deploy.yml (10)
+- .github/workflows/supabase-linter.yml (10)
 - src/hooks/useConciliacaoPage.ts (10)
 - supabase/config.toml (10)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
+- supabase/functions/n8n-callback/index.ts (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -587,7 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/COMPONENTS.md` — Documentação dos Componentes UI Aprimorados (456 linhas)
 - `docs/CSP_REVISAO.md` — Revisão CSP — Content Security Policy (46 linhas)
 - `docs/DATA_MIGRATION.md` — Runbook — Migração de Dados PROD → STAGING (170 linhas)
-- `docs/DB_HEALTH.md` — DB_HEALTH — Painel de Saúde do Banco (231 linhas)
+- `docs/DB_HEALTH.md` — DB_HEALTH — Painel de Saúde do Banco (256 linhas)
 - `docs/DEPLOYMENT.md` — Deployment Guide (60 linhas)
 - `docs/DIAGRAMA_ER.md` — Diagrama ER — núcleo financeiro (155 linhas)
 - `docs/EDGE_FUNCTIONS_CATALOG.md` — Catálogo de Edge Functions (98 linhas)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `9aa7ea6` chore: recupera e termina o trabalho da PR #442, de outro agente (#449)
 - 2026-11-17 `5be2cfc` feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)
 - 2026-11-17 `176877a` infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)
 - 2026-11-17 `4ba4b44` fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `6c6dec8` chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)
 - 2026-11-17 `17a5777` chore(db): harness de replay das migrations num Postgres local efêmero (#433)
 - 2026-11-17 `a45b5d8` fix(ci): destrava o bun audit do advisory novo do picomatch (#434)
-- 2026-11-17 `512c1e7` chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

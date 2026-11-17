@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5be2cfc743` · branch `main` · 2026-11-17 20:35 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9aa7ea65ec` · branch `main` · 2026-11-17 20:42 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5671,7 +5671,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Ao encostar em qualquer arquivo destes diretórios você DEVE tipar | `eslint.config.js` |
 | Revoga sessões do usuário de teste — deve rodar sozinho, após os shards. | `playwright.config.ts` |
 | Porta própria: o gate não pode reaproveitar um `vite` já rodando com as | `playwright.financeiro.config.ts` |
-| Ativo somente quando SENTRY_AUTH_TOKEN está presente — build local sem token passa normalmente. | `vite.config.ts` |
+| Ativo somente quando SENTRY_AUTH_TOKEN, SENTRY_ORG e SENTRY_PROJECT estão | `vite.config.ts` |
 | "Reached heap limit" em CI). | `vitest.config.ts` |
 | em memória. Mantemos apenas text/json/lcov para o gate e tooling. | `vitest.config.ts` |
 | heap em CI (FATAL ERROR: Reached heap limit) e travando o teardown | `vitest.config.ts` |

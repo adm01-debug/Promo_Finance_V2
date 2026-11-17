@@ -2799,7 +2799,7 @@
    "nome": "n8n-callback",
    "entrada": "supabase/functions/n8n-callback/index.ts",
    "arquivos": 1,
-   "linhas": 254,
+   "linhas": 258,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5be2cfc7436f4bc4240ae678b82247346718fa47",
+  "sha": "9aa7ea65eca1304792c685affdde683058282793",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:35 UTC",
+  "generated_at": "2026-11-17 20:42 UTC",
   "files_total": 3965,
   "code_files": 3583,
-  "code_lines": 509756
+  "code_lines": 509768
  },
  "version": "1.3.2",
- "facts_hash": "ef2cddc063855549",
+ "facts_hash": "ce39cb4bd2cf94b5",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -64213,7 +64213,7 @@
     "doc": "n8n-callback — recebe callbacks do n8n para materializar ações no banco. Autenticado por HMAC-SHA256 do body (x-n8n-signature: sha256=<hex>), com fallback transitório para segredo estático (x-n8n-secret) durante migração do N8N. Remover o fallback após migração concluída.",
     "errors": [
      ": {\n      const severity = (asString(payload.severity) ?? ",
-     "severity invalida: ${severity}"
+     "severity invalida"
     ],
     "side_effects": [],
     "webhook_events": [],
@@ -69429,7 +69429,7 @@
   {
    "module": "(raiz)",
    "files": 9,
-   "lines": 939,
+   "lines": 947,
    "tables": [],
    "exports": [
     "eslint.config.js: tseslint",
@@ -69451,6 +69451,7 @@
     "eslint-plugin-react-refresh",
     "globals",
     "lovable-tagger",
+    "node:module",
     "path",
     "rollup-plugin-visualizer",
     "tailwindcss",
@@ -71090,7 +71091,7 @@
   {
    "module": "supabase/functions",
    "files": 233,
-   "lines": 51377,
+   "lines": 51381,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -75368,6 +75369,12 @@
    ],
    "SENTRY_ENVIRONMENT": [
     "supabase/functions/_shared/sentry.ts"
+   ],
+   "SENTRY_ORG": [
+    "vite.config.ts"
+   ],
+   "SENTRY_PROJECT": [
+    "vite.config.ts"
    ],
    "SLACK_WEBHOOK_URL": [
     "supabase/functions/digest-silenciamentos-erro/index.ts",
@@ -83267,7 +83274,7 @@
    },
    {
     "file": "supabase/functions/n8n-callback/index.ts",
-    "msg": "severity invalida: ${severity}"
+    "msg": "severity invalida"
    },
    {
     "file": "supabase/functions/n8n-dispatch/index.ts",
@@ -83731,7 +83738,7 @@
    },
    {
     "file": "vite.config.ts",
-    "text": "Ativo somente quando SENTRY_AUTH_TOKEN está presente — build local sem token passa normalmente."
+    "text": "Ativo somente quando SENTRY_AUTH_TOKEN, SENTRY_ORG e SENTRY_PROJECT estão"
    },
    {
     "file": "vitest.config.ts",
@@ -173654,7 +173661,7 @@
   },
   "vite.config.ts": {
    "path": "vite.config.ts",
-   "lines": 134,
+   "lines": 142,
    "exports": [
     "default defineConfig"
    ],
@@ -173662,10 +173669,12 @@
     "ANALYZE",
     "COMMIT_SHA",
     "SENTRY_AUTH_TOKEN",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT",
     "VITE_APP_VERSION"
    ],
    "rule_comments": [
-    "Ativo somente quando SENTRY_AUTH_TOKEN está presente — build local sem token passa normalmente."
+    "Ativo somente quando SENTRY_AUTH_TOKEN, SENTRY_ORG e SENTRY_PROJECT estão"
    ]
   },
   "vitest.config.ts": {
@@ -236100,7 +236109,7 @@
   },
   "supabase/functions/n8n-callback/index.ts": {
    "path": "supabase/functions/n8n-callback/index.ts",
-   "lines": 255,
+   "lines": 259,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -236113,7 +236122,7 @@
    ],
    "errors": [
     ": {\n      const severity = (asString(payload.severity) ?? ",
-    "severity invalida: ${severity}"
+    "severity invalida"
    ],
    "zod": [
     {
@@ -244491,10 +244500,21 @@
   }
  },
  "git": {
-  "sha": "5be2cfc7436f4bc4240ae678b82247346718fa47",
+  "sha": "9aa7ea65eca1304792c685affdde683058282793",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9aa7ea6",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)",
+    "files": [
+     "docs/DB_HEALTH.md",
+     "supabase/functions/n8n-callback/index.ts",
+     "vite.config.ts"
+    ]
+   },
    {
     "sha": "5be2cfc",
     "date": "2026-11-17",
@@ -244867,16 +244887,6 @@
      "src/hooks/useConciliacaoPage.ts",
      "src/lib/conciliacao-page-helpers.ts"
     ]
-   },
-   {
-    "sha": "c772d63",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)",
-    "files": [
-     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
-     "src/hooks/financial/useContasReceber.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -244899,6 +244909,18 @@
    [
     "supabase/functions/_shared/asaas-config_test.ts",
     2
+   ],
+   [
+    "docs/DB_HEALTH.md",
+    1
+   ],
+   [
+    "supabase/functions/n8n-callback/index.ts",
+    1
+   ],
+   [
+    "vite.config.ts",
+    1
    ],
    [
     "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
@@ -244946,18 +244968,6 @@
    ],
    [
     "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
-    1
-   ],
-   [
-    "supabase/functions/asaas-webhook/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/processar-fila-cobrancas/index.ts",
     1
    ]
   ]

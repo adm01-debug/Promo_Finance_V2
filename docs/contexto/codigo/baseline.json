@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5be2cfc7436f4bc4240ae678b82247346718fa47",
+  "commit": "9aa7ea65eca1304792c685affdde683058282793",
   "branch": "main",
-  "data_commit": "2026-11-17T17:29:17-03:00",
+  "data_commit": "2026-11-17T17:40:05-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9aa7ea6",
+    "data": "2026-11-17",
+    "assunto": "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)"
+   },
    {
     "sha": "5be2cfc",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "b2929c4",
     "data": "2026-11-17",
     "assunto": "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)"
-   },
-   {
-    "sha": "9cfb6b3",
-    "data": "2026-11-17",
-    "assunto": "chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)"
    }
   ],
-  "arquivos_mudados_7d": 910,
+  "arquivos_mudados_7d": 912,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,15 +199,15 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 38
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 33
+    "mudancas": 32
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 26
+    "mudancas": 25
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -216,10 +216,6 @@
    {
     "arquivo": "env.manifest.json",
     "mudancas": 13
-   },
-   {
-    "arquivo": ".github/workflows/supabase-linter.yml",
-    "mudancas": 11
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -238,11 +234,11 @@
     "mudancas": 11
    },
    {
-    "arquivo": ".github/workflows/deno-tests.yml",
+    "arquivo": ".github/workflows/functions-deploy.yml",
     "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/functions-deploy.yml",
+    "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 10
    },
    {
@@ -258,6 +254,14 @@
     "mudancas": 10
    },
    {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": ".github/workflows/deno-tests.yml",
+    "mudancas": 9
+   },
+   {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 9
    },
@@ -270,23 +274,7 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/enviar-alerta-email/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/executar-analise-preditiva/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/gerar-alertas-tributarios/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 9
    },
    {
@@ -296,12 +284,24 @@
    {
     "arquivo": ".github/workflows/graphify.yml",
     "mudancas": 8
+   },
+   {
+    "arquivo": ".github/workflows/prod-migrate.yml",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "analise-prs/progresso.json",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "src/App.tsx",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 200
+    "commits": 201
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3926,
   "arquivos_codigo": 2471,
-  "linhas_codigo": 440284,
+  "linhas_codigo": 440296,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -684,7 +684,7 @@
   },
   "supabase/functions": {
    "arquivos": 233,
-   "linhas": 51144
+   "linhas": 51148
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -696,7 +696,7 @@
   },
   "vite.config.ts": {
    "arquivos": 1,
-   "linhas": 133
+   "linhas": 141
   },
   "vitest.config.ts": {
    "arquivos": 1,

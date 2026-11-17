@@ -11801,9 +11801,6 @@
    "supabase/functions/_shared/versioned-contract.ts",
    "supabase/functions/_shared/webhook-auth.ts",
    "supabase/functions/_shared/webhook-idempotency.ts"
-  ],
-  "vite.config.ts": [
-   "env.manifest.json"
   ]
  }
 }

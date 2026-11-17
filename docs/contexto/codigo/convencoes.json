@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)",
    "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)",
    "infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)",
    "fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)",
-   "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)",
-   "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)"
+   "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
