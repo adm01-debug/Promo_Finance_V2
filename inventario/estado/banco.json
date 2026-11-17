@@ -9,7 +9,7 @@
     },
     {
       "detalhe": [
-        "226644 linhas com mais de 7 dias"
+        "226674 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     }
@@ -21,10 +21,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 136224768,
-      "linhas": 241005,
+      "bytes": 136232960,
+      "linhas": 241022,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 226644
+      "mais_de_7_dias": 226674
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -1349,7 +1349,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-17T20:02:59Z",
+  "medido_em": "2026-11-17T20:15:16Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 272,
     "tabelas_em_types_ts": 272
@@ -1358,14 +1358,14 @@
     "cron_ativos": 33,
     "cron_jobs": 33,
     "funcoes_public": 213,
-    "ledger_registros": 1038,
-    "ledger_versao_max": "20261117201000",
+    "ledger_registros": 1039,
+    "ledger_versao_max": "20261117220000",
     "max_connections": 60,
     "policies": 616,
     "postgres": "17.6",
     "tabelas_public": 273,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 333491347,
+    "tamanho_bytes": 334122131,
     "triggers_public": 171,
     "views_public": 22
   },
@@ -2046,9 +2046,9 @@
       }
     },
     {
-      "bytes": 483328,
+      "bytes": 491520,
       "citada_no_banco": true,
-      "linhas": 1248,
+      "linhas": 1260,
       "linhas_exatas": true,
       "nome": "auth_logs",
       "policies": 3,
@@ -2633,7 +2633,7 @@
     {
       "bytes": 417792,
       "citada_no_banco": true,
-      "linhas": 634,
+      "linhas": 635,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2736,9 +2736,9 @@
       }
     },
     {
-      "bytes": 46333952,
+      "bytes": 46645248,
       "citada_no_banco": true,
-      "linhas": 158128,
+      "linhas": 159898,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -3366,9 +3366,9 @@
       }
     },
     {
-      "bytes": 35405824,
+      "bytes": 35577856,
       "citada_no_banco": true,
-      "linhas": 88483,
+      "linhas": 88680,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3593,7 +3593,7 @@
     {
       "bytes": 1843200,
       "citada_no_banco": true,
-      "linhas": 2020,
+      "linhas": 2021,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3683,7 +3683,7 @@
     {
       "bytes": 4251648,
       "citada_no_banco": true,
-      "linhas": 2314,
+      "linhas": 2319,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -3756,7 +3756,7 @@
       }
     },
     {
-      "bytes": 196608,
+      "bytes": 204800,
       "citada_no_banco": true,
       "linhas": 42,
       "linhas_exatas": true,
@@ -4388,7 +4388,7 @@
     {
       "bytes": 655360,
       "citada_no_banco": true,
-      "linhas": 1249,
+      "linhas": 1261,
       "linhas_exatas": true,
       "nome": "rate_limit_logs",
       "policies": 2,
