@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b75c138c4e` · branch `main` · 2026-11-17 21:35 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ec4122e05b` · branch `main` · 2026-11-17 21:39 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2441,7 +2441,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `vw_transferencias_painel` | `SELECT t.id, t.empresa_id, e.razao_social, t.asaas_id, t.valor, t.status, t.tipo_chave, CASE WHEN public.pode_ver_dado_sensivel() THEN t.chave_pix ELSE public.mascarar_chave_pix(t.chave_pix) END AS chave_pix, t.descricao, t.created_at, t.updated_at FROM (public.asaas_transfers t LEFT JOIN public.emp …` |
 | `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado'::text) AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, (0)::numeric) AS total_tributos, COALESCE(at_.total_tributos_novos, (0)::numeric) AS tributos_novos, COALESCE(at_.total_t …` |
 | `vw_webhooks_recentes` | `SELECT id, source, event_type, status, payload, response, error_message, created_at FROM public.webhooks_log ORDER BY created_at DESC LIMIT 100` |
-| `vw_fluxo_caixa` | `SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia) LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(v …` |
+| `vw_fluxo_caixa` | `SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, …` |
 
 ### G.3 Funções de cálculo/decisão no código
 

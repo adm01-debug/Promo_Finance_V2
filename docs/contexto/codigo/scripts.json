@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 113,
+ "total": 114,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -373,6 +373,15 @@
    "npm_scripts": [],
    "workflows": [],
    "orfao": false
+  },
+  {
+   "arquivo": "scripts/db/test-vw-fluxo-caixa.sql",
+   "descricao": null,
+   "linhas": 219,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
   },
   {
    "arquivo": "scripts/edge-deploy/deployment-record.mjs",

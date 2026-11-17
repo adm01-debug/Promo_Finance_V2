@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c",
+  "sha": "ec4122e05b616d7bf15c0d6a2c4792e721320064",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 21:35 UTC",
-  "files_total": 3971,
-  "code_files": 3589,
-  "code_lines": 510359
+  "generated_at": "2026-11-17 21:39 UTC",
+  "files_total": 3973,
+  "code_files": 3591,
+  "code_lines": 510646
  },
  "version": "1.3.2",
- "facts_hash": "9ee7f195393761cc",
+ "facts_hash": "ad458bd9039dec0f",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,8 +333,8 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1245,
+   ".sql": 1116,
    ".tsx": 1115,
-   ".sql": 1114,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -50296,8 +50296,8 @@
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
    "vw_fluxo_caixa": {
-    "body": "SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia) LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_recebido,0)) AS valor FROM contas_receber WHERE status IN ('pendente','parcial') GROUP BY 1) r ON r.dia=d.dia LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_pago,0)) AS valor FROM contas_pagar WHERE status IN ('pendente','parcial') GROUP BY 1) p ON p.dia=d.dia",
-    "src": "supabase/migrations/20260904000600_add_contas_pagar_valor_pago.sql"
+    "body": "SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, '1 day'::interval ) AS d(dia) LEFT JOIN ( SELECT empresa_id, data_vencimento AS dia, SUM(valor - COALESCE(valor_recebido, 0)) AS valor FROM public.contas_receber WHERE status IN ('pendente', 'parcial') AND deleted_at IS NULL GROUP BY 1, 2 ) r ON r.empresa_id = e.id AND r.dia = d.dia::date LEFT JOIN …",
+    "src": "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
    }
   },
   "sources": [
@@ -51351,6 +51351,7 @@
    "supabase/migrations/20261117211000_clientes_bitrix_ids.sql",
    "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
    "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
+   "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql",
    "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
@@ -70093,8 +70094,8 @@
   },
   {
    "module": "scripts",
-   "files": 147,
-   "lines": 49021,
+   "files": 148,
+   "lines": 49241,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -70307,6 +70308,7 @@
     "scripts/data/test_data_migrate_pg_scenarios.py",
     "scripts/data/test_verify_scenarios.py",
     "scripts/db/replay-bootstrap.sql",
+    "scripts/db/test-vw-fluxo-caixa.sql",
     "scripts/edge-deploy/deployment-record.mjs",
     "scripts/edge-deploy/deployment-record.unit.mjs",
     "scripts/edge-deploy/health-check.mjs",
@@ -70327,8 +70329,7 @@
     "scripts/graphify/code_references.py",
     "scripts/graphify/edge_inventory.py",
     "scripts/graphify/graph_quality.py",
-    "scripts/graphify/run.py",
-    "scripts/graphify/sql_inventory.py"
+    "scripts/graphify/run.py"
    ]
   },
   {
@@ -71816,8 +71817,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1043,
-   "lines": 80507,
+   "files": 1044,
+   "lines": 80574,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -152245,8 +152246,8 @@
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
    "vw_fluxo_caixa": {
-    "body": "SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia) LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_recebido,0)) AS valor FROM contas_receber WHERE status IN ('pendente','parcial') GROUP BY 1) r ON r.dia=d.dia LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(valor_pago,0)) AS valor FROM contas_pagar WHERE status IN ('pendente','parcial') GROUP BY 1) p ON p.dia=d.dia",
-    "src": "supabase/migrations/20260904000600_add_contas_pagar_valor_pago.sql"
+    "body": "SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, '1 day'::interval ) AS d(dia) LEFT JOIN ( SELECT empresa_id, data_vencimento AS dia, SUM(valor - COALESCE(valor_recebido, 0)) AS valor FROM public.contas_receber WHERE status IN ('pendente', 'parcial') AND deleted_at IS NULL GROUP BY 1, 2 ) r ON r.empresa_id = e.id AND r.dia = d.dia::date LEFT JOIN …",
+    "src": "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
    }
   },
   "pagination": [
@@ -176823,6 +176824,10 @@
    "path": "scripts/db/replay-bootstrap.sql",
    "lines": 102,
    "uses_service_role": true
+  },
+  "scripts/db/test-vw-fluxo-caixa.sql": {
+   "path": "scripts/db/test-vw-fluxo-caixa.sql",
+   "lines": 220
   },
   "scripts/edge-deploy/deployment-record.mjs": {
    "path": "scripts/edge-deploy/deployment-record.mjs",
@@ -245002,6 +245007,10 @@
     "notify_push"
    ]
   },
+  "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql": {
+   "path": "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql",
+   "lines": 67
+  },
   "supabase/migrations/20261117225000_indices_recuperados_da_445.sql": {
    "path": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
    "lines": 81
@@ -245114,10 +245123,20 @@
   }
  },
  "git": {
-  "sha": "b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c",
+  "sha": "ec4122e05b616d7bf15c0d6a2c4792e721320064",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ec4122e",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)",
+    "files": [
+     "scripts/db/test-vw-fluxo-caixa.sql",
+     "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
+    ]
+   },
    {
     "sha": "b75c138",
     "date": "2026-11-17",
@@ -245464,21 +245483,6 @@
      "src/pages/Vendedores.tsx",
      "src/pages/admin/ScimAudit.tsx"
     ]
-   },
-   {
-    "sha": "19a248a",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)",
-    "files": [
-     "src/components/conciliacao/ImportarExtratoDialog.tsx",
-     "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
-     "src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx",
-     "src/components/integracoes/OpenFinancePanel.tsx",
-     "src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx",
-     "supabase/functions/open-finance/index.ts",
-     "supabase/functions/open-finance/index_test.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -245497,6 +245501,14 @@
    [
     "supabase/functions/executar-fechamento-tributario/index.ts",
     2
+   ],
+   [
+    "scripts/db/test-vw-fluxo-caixa.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql",
+    1
    ],
    [
     "src/components/tributario/historico/FaturamentoTab.tsx",
@@ -245552,14 +245564,6 @@
    ],
    [
     "supabase/functions/detectar-anomalias-financeiras/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/gerar-dre-tributaria/index.ts",
-    1
-   ],
-   [
-    "docs/DB_HEALTH.md",
     1
    ]
   ]

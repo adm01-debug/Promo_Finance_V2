@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c` (2026-11-17T18:35:00-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ec4122e05b616d7bf15c0d6a2c4792e721320064` (2026-11-17T18:39:10-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1114), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2360), SQL (1116), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3932 |
+| arquivos_total | 3934 |
 | arquivos_codigo | 2474 |
 | linhas_codigo | 440624 |
 | rotas | 130 |
@@ -46,11 +46,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 321 |
-| migrations | 1043 |
+| migrations | 1044 |
 | cron_jobs | 22 |
 | testes | 478 |
 | workflows | 19 |
-| scripts | 113 |
+| scripts | 114 |
 | docs_md | 200 |
 
 ## Onde ficam as coisas
@@ -452,7 +452,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
-- scripts_orfaos: 0
+- scripts_orfaos: 1 — ex.: scripts/db/test-vw-fluxo-caixa.sql
 - env_usadas_nao_declaradas: 4 — ex.: DEV, MODE, NODE_ENV
 - ciclos_de_import: 7
 - possiveis_segredos_no_codigo: 0
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `ec4122e` fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)
 - 2026-11-17 `b75c138` feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)
 - 2026-11-17 `e1a239c` docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)
 - 2026-11-17 `f76fcd2` fix(bitrix): religa o sync e escopa busca e update por empresa (#447)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `a378486` infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)
 - 2026-11-17 `1ccd853` fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)
 - 2026-11-17 `e9cd145` fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)
-- 2026-11-17 `8215f7d` fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

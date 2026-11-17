@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c",
+  "commit": "ec4122e05b616d7bf15c0d6a2c4792e721320064",
   "branch": "main",
-  "data_commit": "2026-11-17T18:35:00-03:00",
+  "data_commit": "2026-11-17T18:39:10-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ec4122e",
+    "data": "2026-11-17",
+    "assunto": "fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)"
+   },
    {
     "sha": "b75c138",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "8c70124",
     "data": "2026-11-17",
     "assunto": "infra: monitor-health entra na lista de funcoes implantaveis (#426)"
-   },
-   {
-    "sha": "6c4a75c",
-    "data": "2026-11-17",
-    "assunto": "chore: remove 3 TODOs de rename ja concluidos no banco (#432)"
    }
   ],
-  "arquivos_mudados_7d": 922,
+  "arquivos_mudados_7d": 924,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 207
+    "commits": 208
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3932,
+  "arquivos_total": 3934,
   "arquivos_codigo": 2474,
   "linhas_codigo": 440624,
   "rotas": 130,
@@ -330,11 +330,11 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1043,
+  "migrations": 1044,
   "cron_jobs": 22,
   "testes": 478,
   "workflows": 19,
-  "scripts": 113,
+  "scripts": 114,
   "docs_md": 200
  },
  "por_pasta": {
@@ -1160,7 +1160,9 @@
    "StepPills",
    "TransferenciaDialog"
   ],
-  "scripts_orfaos": [],
+  "scripts_orfaos": [
+   "scripts/db/test-vw-fluxo-caixa.sql"
+  ],
   "env_usadas_nao_declaradas": [
    "DEV",
    "MODE",
