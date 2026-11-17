@@ -44,8 +44,15 @@ pode ser apagada, porque são a entrega de workflows ativos. O teste correto é
 
 ## 4. Fechamento da sessão de 17/11 à noite — `main` em `f9b3094ba`
 
-As seções 1-3 foram escritas com a `main` em `cf7bc77bf`. Desde então 9 PRs entraram e 1
-foi fechada por equivalência. Cada squash commit foi conferido com
+As seções 1-3 foram escritas com a `main` em `cf7bc77bf`. O intervalo
+`cf7bc77bf..origin/main` tem **26 PRs** incorporadas
+(`git log --first-parent ... | grep -cE '\(#[0-9]+\)'` = 26): #375, #377, #426, #428,
+#429, #431, #432, #433, #434, #435, #436, #437, #438, #439, #440, #441, #443, #444, #445,
+#446, #447, #448, #449, #450, #451, #453.
+
+A tabela abaixo é um **recorte**: as 9 que entraram depois das seções 1-3 serem escritas,
+mais a #442, fechada por equivalência. As outras 17 já estavam cobertas pelas seções
+anteriores e pelo inventário de 16/11. Cada um dos 9 squash commits foi conferido com
 `git merge-base --is-ancestor <sha> origin/main`: **9/9 ancestrais**, 0 fora.
 
 | PR   | squash    | o que incorporou                                                        |
@@ -89,10 +96,22 @@ candidatos à revisão: **70** sem os três guards → **40** sem nenhuma auth n
 **21** também sem `verify_jwt` no `supabase/config.toml`. O invariante deixou de ser "zero
 funções na lista" e passou a ser "nenhum candidato sem justificativa escrita".
 
-### 4.3 As 13 branches no fim da sessão
+### 4.3 As branches no fim da sessão
 
-Medido com `git rev-list --count origin/main..<branch>` e
-`comm -13` entre as árvores, após `git fetch --prune`.
+Duas medições, em momentos diferentes, porque a limpeza aconteceu durante a sessão:
+
+- **13 refs** no momento em que esta seção foi escrita (tabela abaixo: 9 branches + `main`
+  - 3 que ainda não tinham sido mergeadas-e-apagadas);
+- **9 refs** depois dos merges de #447, #448 e #449:
+  `automation/estado-real`, `claude/chore-auditoria-branches-261117-2300`,
+  `claude/fix-review-findings-20261117-1611`, `claude/fix-vw-fluxo-caixa-261117-2225`,
+  `computador_local`, `contexto`, `dependabot/bun/radix-ui-4a35e951ff`, `inventario`,
+  `main`.
+
+`comm -13` compara **nome** de arquivo, não conteúdo. A comparação de conteúdo está em
+4.4 e cobre as 4 branches sem PR. Para branch com PR aberta o conteúdo **não** está na
+`main` por definição — é o que a PR existe para levar — e a verificação dela é o merge,
+não esta tabela.
 
 | branch                                      | commits fora da `main` | arquivos exclusivos | veredito                                     |
 | ------------------------------------------- | ---------------------- | ------------------- | -------------------------------------------- |
@@ -110,7 +129,10 @@ Medido com `git rev-list --count origin/main..<branch>` e
 commit de `main` desta sessão (`1ccd853` e `4ba4b44`). Isso confirma a seção 2 — são
 entrega de workflow ativo, não trabalho abandonado.
 
-**Nenhuma das 13 contém código-fonte, migration, edge function ou UI ausente da `main`.**
+**Conclusão, limitada ao que foi medido:** nenhuma das **4 branches sem PR** contém
+código-fonte, migration, edge function ou UI ausente da `main` — provado por hash de blob
+em 4.4. As branches com PR carregam, por desenho, trabalho que ainda não está na `main`;
+o registro delas é a própria PR, e nenhuma foi apagada antes do merge.
 
 ### 4.4 Comparação byte a byte, não por contagem
 
