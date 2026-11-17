@@ -7,7 +7,6 @@ import {
   DollarSign,
   Calendar,
   TrendingDown,
-  ChevronRight,
   MessageSquare,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -121,9 +120,12 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
                   <MessageSquare className="h-4 w-4" />
                 </Button>
               ) : null}
-              <Button size="sm" variant="ghost">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              {/*
+                O botao de chevron nao tinha onClick, link nem dialogo: clique,
+                toque e teclado nao faziam nada, e a lista anunciava um
+                detalhamento inexistente (achado P2 do Codex na PR #404). Sai
+                até existir a tela de detalhe.
+              */}
             </div>
           </div>
         </div>
@@ -136,7 +138,13 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
         nome digitado) a consulta quebra; sem clienteId, ela varre
         whatsapp_conversas inteira.
       */}
-      {cliente.clienteIdReal ? (
+      {/*
+        `showWhatsApp` no gate: antes cada cartao montava o dialogo mesmo
+        fechado, e WhatsAppHistoryIA chama useWhatsAppConversas no corpo --
+        abrir a aba disparava uma consulta de conversa por cliente da lista, sem
+        ninguem abrir dialogo nenhum (achado P2 do Codex na PR #404).
+      */}
+      {showWhatsApp && cliente.clienteIdReal ? (
         <WhatsAppHistoryIA
           clienteId={cliente.clienteIdReal}
           clienteNome={cliente.nomeFantasia || cliente.nome}

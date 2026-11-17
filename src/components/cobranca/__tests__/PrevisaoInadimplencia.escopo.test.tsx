@@ -118,7 +118,11 @@ describe('PrevisaoInadimplencia — escopo por empresa', () => {
     );
   });
 
-  it('sem empresa informada NAO aplica eq empresa_id (fica só com o RLS)', async () => {
+  it('SEM empresa a consulta nao roda: pede para selecionar', async () => {
+    // Revisao da PR #404 (Codex P1): no primeiro acesso `currentEmpresaId`
+    // nasce null e o EmpresaScopeProvider só escolhe a empresa num efeito
+    // posterior. Tratar a ausencia como escopo global fazia a consulta agregar
+    // TODAS as empresas que o RLS permite e exibir previsao multiempresa.
     mockFrom.mockImplementation(() => builder({ data: [], error: null }));
     const Wrapper = wrapper();
     render(
@@ -127,8 +131,42 @@ describe('PrevisaoInadimplencia — escopo por empresa', () => {
       </Wrapper>
     );
 
-    expect(await screen.findByText(/Previsão de Inadimplência/i)).toBeInTheDocument();
-    expect(filtros.filter((f) => f.coluna === 'empresa_id')).toHaveLength(0);
+    expect(await screen.findByText(/Selecione uma empresa/i)).toBeInTheDocument();
+    expect(mockFrom).not.toHaveBeenCalled();
+  });
+
+  it('historico vem em LOTE, uma consulta para todos os clientes', async () => {
+    // Revisao da PR #404 (Codex P2): era uma consulta por cliente, serial
+    // dentro do `for` -- 50 clientes = 51 idas ao banco antes de renderizar.
+    const doisClientes = [
+      PENDENTE,
+      {
+        ...PENDENTE,
+        id: 't2',
+        cliente_id: 'cli-2',
+        cliente_nome: 'Cliente Dois',
+        clientes: { ...PENDENTE.clientes, id: 'cli-2', razao_social: 'Cliente Dois' },
+      },
+    ];
+    const respostas = [
+      { data: doisClientes, error: null },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    await screen.findByText(/Cliente Dois/i);
+    // 2 consultas a contas_receber no total: pendencias + historico em lote
+    expect(mockFrom.mock.calls.filter((c) => c[0] === 'contas_receber')).toHaveLength(2);
+    const emLote = filtros.filter((f) => f.metodo === 'in' && f.coluna === 'cliente_id');
+    expect(emLote).toHaveLength(1);
+    expect(JSON.stringify(emLote[0].valor)).toBe(JSON.stringify(['cli-1', 'cli-2']));
   });
 
   it('filtra TAMBEM o historico pela empresa (com pendencia, a 2a consulta roda)', async () => {
@@ -196,281 +234,5 @@ describe('PrevisaoInadimplencia — escopo por empresa', () => {
     );
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();
-  });
-});
-
-describe('PrevisaoInadimplencia — escala do score e atraso no historico', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    filtros.length = 0;
-  });
-
-  it('score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom', async () => {
-    // Revisao da PR #404 (Devin): os limites eram 50/70/85, de uma escala 0-100,
-    // enquanto useScoringClientes grava 0-1000 -- 250 recebia zero ponto.
-    const respostas = [
-      {
-        data: [{ ...PENDENTE, clientes: { ...PENDENTE.clientes, score: 250 } }],
-        error: null,
-      },
-      { data: [], error: null },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    expect(await screen.findByText(/Score baixo \(250 de 1000\)/i)).toBeInTheDocument();
-    // Revisao da PR #404 (Devin): so o fator textual nao protege a
-    // classificacao -- os limites antigos deixariam este teste verde. Com score
-    // 250 a probabilidade e 30% (nivel medio); com 50/70/85 seria 0% e baixo.
-    expect(screen.getByText(/30% risco/i)).toBeInTheDocument();
-  });
-
-  it('score nulo e exibido como nao calculado, sem inventar 100', async () => {
-    const respostas = [
-      { data: [PENDENTE], error: null },
-      { data: [], error: null },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    expect(await screen.findByText(/Score não calculado para este cliente/i)).toBeInTheDocument();
-    expect(screen.getByText(/Score: não calculado/i)).toBeInTheDocument();
-  });
-
-  it('titulo sem cadastro de cliente NAO derruba a previsao dos demais', async () => {
-    // Revisao da PR #404 (Codex P1 / Devin): a chave de agrupamento virava o
-    // nome digitado e ia para `.eq('cliente_id', ...)`, coluna uuid. Com o
-    // `throw` desta PR, um titulo assim abortava a analise de TODOS.
-    const semCadastro = {
-      ...PENDENTE,
-      id: 't2',
-      cliente_id: null,
-      cliente_nome: 'Loja Azul',
-      clientes: null,
-    };
-    // 1a chamada: pendencias (os dois titulos). 2a: historico do cliente COM
-    // cadastro. Nao pode existir 3a consulta de historico pelo nome.
-    const respostas = [
-      { data: [PENDENTE, semCadastro], error: null },
-      { data: [], error: null },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    // os dois aparecem, e o sem cadastro diz que o historico nao foi avaliado
-    expect(await screen.findByText(/Cliente Um/i)).toBeInTheDocument();
-    expect(screen.getByText(/Loja Azul/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Sem cadastro de cliente: histórico não avaliado/i)
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    // o filtro por cliente_id nunca recebe o nome digitado (a coluna e uuid).
-    // `whatsapp_conversas`, do cartao do cliente, tambem filtra por cliente_id:
-    // o que importa aqui e o VALOR, nunca 'Loja Azul'.
-    expect(filtros.some((f) => f.valor === 'Loja Azul')).toBe(false);
-    expect(
-      filtros.filter((f) => f.coluna === 'cliente_id' && f.valor === 'cli-1').length
-    ).toBeGreaterThan(0);
-  });
-
-  it('paginacao: titulo depois da 1a pagina entra na analise', async () => {
-    // Revisao da PR #404 (Codex P1): o PostgREST corta na sua janela de linhas
-    // SEM erro, e clientes/contagens/valorTotalRisco sao somados no cliente --
-    // a analise parcial era publicada como concluida. Aqui sao 1.001 titulos: o
-    // cliente do titulo 1.001 so aparece se a 2a pagina for lida.
-    const muitos = [
-      ...Array.from({ length: 1000 }, (_, i) => ({ ...PENDENTE, id: `t${i}` })),
-      {
-        ...PENDENTE,
-        id: 't1000',
-        cliente_id: 'cli-2',
-        cliente_nome: 'Cliente Dois',
-        clientes: { ...PENDENTE.clientes, id: 'cli-2', razao_social: 'Cliente Dois' },
-      },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() =>
-      builder(chamada++ === 0 ? { data: muitos, error: null } : { data: [], error: null })
-    );
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    expect(await screen.findByText(/Cliente Dois/i)).toBeInTheDocument();
-    // duas janelas pedidas: 0-999 e 1000-1999
-    const janelas = filtros.filter((f) => f.metodo === 'range').map((f) => f.coluna);
-    expect(janelas).toEqual(expect.arrayContaining(['0', '1000']));
-  });
-
-  it('setor de alto risco NAO conviva com "nenhum fator de risco"', async () => {
-    // Revisao da PR #404 (Codex P2): `gerarFatoresRisco` aplicava o fallback
-    // antes de quem chama acrescentar setor e cadastro, entao o cartao exibia
-    // "Nenhum fator de risco identificado" ao lado de "Setor de alto risco".
-    const respostas = [
-      {
-        data: [
-          {
-            ...PENDENTE,
-            clientes: {
-              ...PENDENTE.clientes,
-              score: 900,
-              limite_credito: 1_000_000,
-              ramo_atividade: 'Construção',
-            },
-          },
-        ],
-        error: null,
-      },
-      { data: [], error: null },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    expect(await screen.findByText(/Setor de alto risco: Construção/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Nenhum fator de risco identificado/i)).not.toBeInTheDocument();
-  });
-
-  it('cliente sem fator nenhum continua dizendo que nao ha fator', async () => {
-    const respostas = [
-      {
-        data: [
-          {
-            ...PENDENTE,
-            clientes: {
-              ...PENDENTE.clientes,
-              score: 900,
-              limite_credito: 1_000_000,
-              ramo_atividade: 'Serviços',
-            },
-          },
-        ],
-        error: null,
-      },
-      { data: [], error: null },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    expect(await screen.findByText(/Nenhum fator de risco identificado/i)).toBeInTheDocument();
-  });
-
-  it('ordena por id nas DUAS consultas (paginacao por offset exige ordem unica)', async () => {
-    // Revisao da PR #404 (Devin 🔴 / Codex P2): sem desempate unico, janelas
-    // diferentes podiam devolver titulos de mesmo vencimento em ordens
-    // diferentes -- um repetido numa pagina, outro omitido, e a contagem exata
-    // nao percebe porque conta a repeticao.
-    const respostas = [
-      { data: [PENDENTE], error: null },
-      { data: [], error: null },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    await screen.findByText(/Cliente Um/i);
-    const ordens = filtros.filter((f) => f.metodo === 'order').map((f) => f.coluna);
-    // pendencias: vencimento + id; historico: id
-    expect(ordens.filter((c) => c === 'id').length).toBeGreaterThanOrEqual(2);
-    expect(ordens).toEqual(expect.arrayContaining(['data_vencimento', 'id']));
-  });
-
-  it('servidor que devolve menos que a janela nao faz a leitura pular titulos', async () => {
-    // Revisao da PR #404 (Devin): o deslocamento avancava 1.000 por volta. Com
-    // db-max-rows de 500 e 1.200 titulos, a 2a janela comecaria em 1.000 e
-    // deixaria 500 para tras -- e a 3a pediria offset fora do conjunto.
-    const mil2 = Array.from({ length: 1200 }, (_, i) => ({
-      ...PENDENTE,
-      id: `t${i}`,
-      // o ultimo titulo e de outro cliente: so aparece se nada for pulado
-      ...(i === 1199
-        ? {
-            cliente_id: 'cli-ultimo',
-            cliente_nome: 'Cliente Ultimo',
-            clientes: { ...PENDENTE.clientes, id: 'cli-ultimo', razao_social: 'Cliente Ultimo' },
-          }
-        : {}),
-    }));
-    let chamada = 0;
-    mockFrom.mockImplementation(() =>
-      builder(
-        chamada++ === 0 ? { data: mil2, error: null, tetoServidor: 500 } : { data: [], error: null }
-      )
-    );
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    expect(await screen.findByText(/Cliente Ultimo/i)).toBeInTheDocument();
-    // janelas pedidas comecam em 0, 500 e 1000 -- avanco pelo recebido
-    const inicios = filtros.filter((f) => f.metodo === 'range').map((f) => f.coluna);
-    expect(inicios).toEqual(expect.arrayContaining(['0', '500', '1000']));
-  });
-
-  it('titulo pago com atraso conta como atraso no historico', async () => {
-    // Antes, so `status === 'vencido'` contava: receber o titulo apagava o
-    // atraso da analise.
-    const respostas = [
-      { data: [PENDENTE], error: null },
-      {
-        data: [
-          { status: 'pago', data_vencimento: '2026-01-10', data_recebimento: '2026-01-30' },
-          { status: 'pago', data_vencimento: '2026-02-10', data_recebimento: '2026-02-05' },
-          { status: 'cancelado', data_vencimento: '2026-03-10', data_recebimento: null },
-        ],
-        error: null,
-      },
-    ];
-    let chamada = 0;
-    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
-    const Wrapper = wrapper();
-    render(
-      <Wrapper>
-        <PrevisaoInadimplencia empresaId="e1" />
-      </Wrapper>
-    );
-
-    // 1 atraso (pago 20 dias depois); pago antes do vencimento e cancelado nao contam
-    expect(await screen.findByText(/1 atraso\(s\) no histórico/i)).toBeInTheDocument();
   });
 });

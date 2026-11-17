@@ -4,6 +4,13 @@ import { AlertTriangle, Brain, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { paginarTudo } from '@/lib/paginar-postgrest';
+import {
+  calcularProbabilidadeAtraso,
+  determinarNivelRisco,
+  gerarAcaoSugerida,
+  gerarFatoresRisco,
+  teveAtraso,
+} from './previsao/risco';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { PrevisaoKPIs } from './previsao/PrevisaoKPIs';
 import { PrevisaoClientesList } from './previsao/PrevisaoClientesList';
@@ -19,11 +26,6 @@ interface AnaliseInadimplencia {
     valorTotalRisco: number;
   };
   geradoEm: string;
-}
-
-interface ClienteData {
-  score: number | null;
-  limite_credito: number | null;
 }
 
 interface ContaData {
@@ -57,122 +59,15 @@ interface ClienteMapCliente {
  * As faixas abaixo sao as mesmas do produtor (useScoringClientes.ts:372-373):
  * >= 700 baixo, >= 500 medio, >= 300 alto, < 300 critico.
  */
-const SCORE_RISCO_ALTO = 300;
-const SCORE_RISCO_MEDIO = 500;
-const SCORE_RISCO_BAIXO = 700;
-
-/** Titulo em atraso: vencido em aberto OU recebido depois do vencimento. */
-function teveAtraso(c: HistoricoContaData): boolean {
-  if (c.status === 'cancelado') return false;
-  if (c.status === 'vencido') return true;
-  if (c.data_recebimento && c.data_vencimento) {
-    return c.data_recebimento > c.data_vencimento;
-  }
-  return false;
-}
-
-function calcularProbabilidadeAtraso(
-  cliente: ClienteData,
-  contasPendentes: ContaData[],
-  historicoContas: HistoricoContaData[]
-): number {
-  let score = 0;
-  // `null` e desconhecido, nao bom: nao pontua, e `gerarFatoresRisco` avisa que
-  // o score nao foi calculado. Zero e valor real e cai na pior faixa.
-  const scoreCliente = cliente.score;
-  if (scoreCliente != null) {
-    if (scoreCliente < SCORE_RISCO_ALTO) score += 30;
-    else if (scoreCliente < SCORE_RISCO_MEDIO) score += 20;
-    else if (scoreCliente < SCORE_RISCO_BAIXO) score += 10;
-  }
-
-  const contasVencidas = historicoContas.filter(teveAtraso);
-  const taxaAtraso =
-    historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0;
-  if (taxaAtraso > 30) score += 40;
-  else if (taxaAtraso > 15) score += 25;
-  else if (taxaAtraso > 5) score += 10;
-
-  const totalPendente = contasPendentes.reduce(
-    (sum, c) => sum + c.valor - (c.valor_recebido || 0),
-    0
-  );
-  const limiteCredito = cliente.limite_credito || 10000;
-  const utilizacao = (totalPendente / limiteCredito) * 100;
-  if (utilizacao > 100) score += 20;
-  else if (utilizacao > 80) score += 15;
-  else if (utilizacao > 50) score += 5;
-
-  const proximoVencimento = contasPendentes
-    .map((c) => new Date(c.data_vencimento))
-    .sort((a, b) => a.getTime() - b.getTime())[0];
-
-  if (proximoVencimento) {
-    const diasAteVencimento = differenceInDays(proximoVencimento, new Date());
-    if (diasAteVencimento <= 3) score += 10;
-    else if (diasAteVencimento <= 7) score += 5;
-  }
-
-  return Math.min(score, 100);
-}
-
-function determinarNivelRisco(probabilidade: number): 'alto' | 'medio' | 'baixo' {
-  if (probabilidade >= 60) return 'alto';
-  if (probabilidade >= 30) return 'medio';
-  return 'baixo';
-}
-
-function gerarFatoresRisco(
-  cliente: ClienteData,
-  contasPendentes: ContaData[],
-  historicoContas: HistoricoContaData[]
-): string[] {
-  const fatores: string[] = [];
-  if (cliente.score == null) {
-    fatores.push('Score não calculado para este cliente');
-  } else if (cliente.score < SCORE_RISCO_BAIXO) {
-    fatores.push(`Score baixo (${cliente.score} de 1000)`);
-  }
-  const contasVencidas = historicoContas.filter(teveAtraso);
-  if (contasVencidas.length > 0) {
-    fatores.push(`${contasVencidas.length} atraso(s) no histórico`);
-  }
-  const totalPendente = contasPendentes.reduce(
-    (sum, c) => sum + c.valor - (c.valor_recebido || 0),
-    0
-  );
-  if (totalPendente > (cliente.limite_credito || 10000)) {
-    fatores.push('Limite de crédito excedido');
-  }
-  const proximoVencimento = contasPendentes
-    .map((c) => new Date(c.data_vencimento))
-    .sort((a, b) => a.getTime() - b.getTime())[0];
-  if (proximoVencimento && differenceInDays(proximoVencimento, new Date()) <= 7) {
-    fatores.push('Vencimento próximo');
-  }
-  // Sem fallback aqui: quem chama ainda acrescenta setor e cadastro, e aplicar
-  // "nenhum fator" antes disso punha as duas coisas no mesmo cartao -- "Nenhum
-  // fator de risco identificado" ao lado de "Setor de alto risco" (achado P2 do
-  // Codex na PR #404). O fallback entra em `comFallback()`, no fim.
-  return fatores;
-}
-
-function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]): string {
-  if (nivelRisco === 'alto') {
-    if (fatores.some((f) => f.includes('atraso'))) {
-      return 'Entrar em contato imediatamente para negociação preventiva';
-    }
-    return 'Monitorar de perto e preparar régua de cobrança preventiva';
-  }
-  if (nivelRisco === 'medio') {
-    return 'Enviar lembrete amigável antes do vencimento';
-  }
-  return 'Manter acompanhamento padrão';
-}
-
 function useAnaliseInadimplencia(empresaId?: string) {
   return useQuery({
-    queryKey: ['analise-inadimplencia', empresaId ?? 'all'],
+    // `enabled` abaixo: sem empresa a consulta NAO roda. No primeiro acesso
+    // `currentEmpresaId` nasce null (AuthProvider) e o EmpresaScopeProvider só
+    // escolhe a empresa num efeito posterior -- nesse intervalo a consulta sem
+    // `empresa_id` agregava TODAS as empresas que o RLS permite, e a tela
+    // mostrava uma previsao multiempresa antes do refetch (achado P1 do Codex
+    // na PR #404). AGENTS.md secao 4: isolamento por empresa_id.
+    queryKey: ['analise-inadimplencia', empresaId ?? 'sem-empresa'],
     queryFn: async (): Promise<AnaliseInadimplencia> => {
       const hoje = new Date();
       const em30Dias = addDays(hoje, 30);
@@ -272,34 +167,54 @@ function useAnaliseInadimplencia(empresaId?: string) {
 
       const clientesAnalise: ClienteRisco[] = [];
 
-      for (const [clienteId, { clienteIdReal, cliente, contas }] of clientesMap.entries()) {
-        // Sem cadastro de cliente nao existe historico consultavel: a coluna e
-        // uuid. Pular a consulta, e dizer na tela que o historico nao foi
-        // avaliado -- em vez de derrubar a previsao inteira ou fingir zero
-        // atraso.
-        const historicoAvaliado = clienteIdReal != null;
-        let historico: Array<{
+      // Historico de TODOS os clientes numa consulta, antes do loop. Era uma
+      // consulta por cliente, serial dentro do `for`: com 50 clientes eram 51
+      // idas ao banco e a tela ficava em carregamento durante a sequencia
+      // inteira (achado P2 do Codex na PR #404).
+      const idsReais = [...clientesMap.values()]
+        .map((e) => e.clienteIdReal)
+        .filter((id): id is string => id != null);
+
+      const historicoPorCliente = new Map<string, HistoricoContaData[]>();
+      if (idsReais.length > 0) {
+        // O historico tambem fica na empresa: sem isso, atraso do mesmo cliente
+        // em OUTRA empresa elevaria o risco aqui.
+        let qHistorico = supabase
+          .from('contas_receber')
+          .select('cliente_id, status, data_vencimento, data_recebimento', { count: 'exact' })
+          .in('cliente_id', idsReais)
+          .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'))
+          // sem ordenacao unica, cada janela podia repetir e omitir linhas
+          .order('id');
+        if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
+
+        // Paginado: cliente antigo pode ter mais de 1.000 titulos vencidos, e
+        // taxa de atraso sobre pagina parcial e numero errado.
+        const todoHistorico = await paginarTudo<{
+          cliente_id: string | null;
           status: string | null;
           data_vencimento: string | null;
           data_recebimento: string | null;
-        }> | null = null;
+        }>(qHistorico);
 
-        if (historicoAvaliado) {
-          // O historico que alimenta a probabilidade tambem fica na empresa: sem
-          // isso, atraso do mesmo cliente em OUTRA empresa elevaria o risco aqui.
-          let qHistorico = supabase
-            .from('contas_receber')
-            .select('status, data_vencimento, data_recebimento', { count: 'exact' })
-            .eq('cliente_id', clienteIdReal)
-            .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'))
-            // sem ordenacao, cada janela podia trazer linhas em ordem diferente
-            .order('id');
-          if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
-
-          // Mesma razao: cliente antigo pode ter mais de 1.000 titulos vencidos,
-          // e taxa de atraso sobre pagina parcial e numero errado.
-          historico = await paginarTudo(qHistorico);
+        for (const h of todoHistorico) {
+          if (!h.cliente_id) continue;
+          const lista = historicoPorCliente.get(h.cliente_id) ?? [];
+          lista.push({
+            status: h.status ?? '',
+            data_vencimento: h.data_vencimento ?? null,
+            data_recebimento: h.data_recebimento ?? null,
+          });
+          historicoPorCliente.set(h.cliente_id, lista);
         }
+      }
+
+      for (const [clienteId, { clienteIdReal, cliente, contas }] of clientesMap.entries()) {
+        // Sem cadastro de cliente nao existe historico consultavel: a coluna e
+        // uuid. A tela diz que o historico nao foi avaliado -- em vez de
+        // derrubar a previsao inteira ou fingir zero atraso.
+        const historicoAvaliado = clienteIdReal != null;
+        const historico = clienteIdReal ? (historicoPorCliente.get(clienteIdReal) ?? []) : [];
 
         const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
           status: h.status ?? '',
@@ -374,6 +289,7 @@ function useAnaliseInadimplencia(empresaId?: string) {
         geradoEm: new Date().toISOString(),
       };
     },
+    enabled: !!empresaId,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -387,6 +303,7 @@ export function PrevisaoInadimplencia({ empresaId }: PrevisaoInadimplenciaProps)
   const [tabAtiva, setTabAtiva] = useState('todos');
   const { data, isLoading, isError, error, refetch, isFetching } =
     useAnaliseInadimplencia(empresaId);
+  const semEmpresa = !empresaId;
 
   const clientesFiltrados =
     data?.clientes.filter((c) => {
@@ -416,7 +333,14 @@ export function PrevisaoInadimplencia({ empresaId }: PrevisaoInadimplenciaProps)
         </Button>
       </div>
 
-      {isLoading ? (
+      {semEmpresa ? (
+        <div className="flex items-center justify-center h-64 rounded-lg border border-border bg-muted/30">
+          <p className="text-sm text-muted-foreground max-w-md text-center px-6">
+            Selecione uma empresa para calcular a previsão. Sem empresa, a análise somaria clientes
+            de todas as empresas acessíveis num único ranking de risco.
+          </p>
+        </div>
+      ) : isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
