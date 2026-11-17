@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `44c623c43071abbdb4a0efe2fdbc72e0006e0147` (2026-11-17T03:18:41-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1bbc48461e1df44255b860ae7d5ab997f240c7db` (2026-11-17T03:45:57-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2343), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2344), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3895 |
-| arquivos_codigo | 2457 |
-| linhas_codigo | 437985 |
+| arquivos_total | 3896 |
+| arquivos_codigo | 2458 |
+| linhas_codigo | 437753 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1029 |
 | cron_jobs | 22 |
-| testes | 464 |
+| testes | 465 |
 | workflows | 19 |
 | scripts | 111 |
 | docs_md | 196 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (273), outro (108), co-localizado (*.test) (43)
+- testes: co-localizado (__tests__) (274), outro (108), co-localizado (*.test) (43)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `1bbc484` fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)
 - 2026-11-17 `44c623c` chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)
 - 2026-11-17 `9224222` chore: declara o Node que o projeto ja exige (>=22.12) (#411)
 - 2026-11-17 `f62e08e` feat(webhooks): botao de reprocessar na fila de falhas (#410)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `2c931d5` chore(deps-dev): bump vite from 8.2.2 to 8.3.8 (#372)
 - 2026-11-17 `41310e8` fix(aprovações): a alçada configurada nunca era exigida de nenhum pagamento (#400)
 - 2026-11-17 `0b95e25` fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, "1247 empresas") 
-- 2026-11-16 `90e96ca` chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

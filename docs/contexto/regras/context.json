@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "44c623c43071abbdb4a0efe2fdbc72e0006e0147",
+  "sha": "1bbc48461e1df44255b860ae7d5ab997f240c7db",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 06:19 UTC",
-  "files_total": 3934,
-  "code_files": 3557,
-  "code_lines": 506481
+  "generated_at": "2026-11-17 06:46 UTC",
+  "files_total": 3935,
+  "code_files": 3558,
+  "code_lines": 506250
  },
  "version": "1.3.2",
- "facts_hash": "5ba3a2ac5a8d1e99",
+ "facts_hash": "3c504ab7e2d97c9f",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1236,
-   ".tsx": 1107,
+   ".tsx": 1108,
    ".sql": 1099,
    ".mjs": 63,
    ".py": 45,
@@ -62159,7 +62159,7 @@
      "bling-proxy"
     ],
     "rpc_transitive": [],
-    "deps_count": 80
+    "deps_count": 79
    },
    {
     "path": "",
@@ -63381,7 +63381,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 148
+    "deps_count": 147
    },
    {
     "path": "/orcamento-evento",
@@ -68362,7 +68362,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 994,
+  "components_count": 995,
   "hooks": [
    {
     "name": "useContacts",
@@ -71381,8 +71381,8 @@
   },
   {
    "module": "src/components",
-   "files": 992,
-   "lines": 164377,
+   "files": 993,
+   "lines": 164146,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -82250,19 +82250,11 @@
    },
    {
     "file": "src/components/nfe/CancelamentoNFe.tsx",
-    "msg": "A justificativa deve ter no mínimo ${caracteresMinimos} caracteres"
-   },
-   {
-    "file": "src/components/nfe/CancelamentoNFe.tsx",
-    "msg": "Erro no cancelamento: ${response.xMotivo}"
+    "msg": "Cancelamento indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real."
    },
    {
     "file": "src/components/nfe/ContingenciaNFe.tsx",
     "msg": "Contingência automática ativada: ${result.rule.name}"
-   },
-   {
-    "file": "src/components/nfe/ContingenciaNFe.tsx",
-    "msg": "Erro ao transmitir NF-e ${nfe.numero}"
    },
    {
     "file": "src/components/nfe/ContingenciaNFe.tsx",
@@ -82274,7 +82266,7 @@
    },
    {
     "file": "src/components/nfe/ContingenciaNFe.tsx",
-    "msg": "SEFAZ ainda está indisponível"
+    "msg": "Transmissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar autorização real."
    },
    {
     "file": "src/components/nfe/ContingenciaNFe.tsx",
@@ -82286,23 +82278,7 @@
    },
    {
     "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "msg": "A faixa máxima permitida é de 1000 números"
-   },
-   {
-    "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "msg": "A justificativa deve ter no mínimo 15 caracteres"
-   },
-   {
-    "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "msg": "Informe a faixa de numeração"
-   },
-   {
-    "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "msg": "O número inicial deve ser menor ou igual ao número final"
-   },
-   {
-    "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "msg": "Selecione uma empresa"
+    "msg": "Inutilização indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real."
    },
    {
     "file": "src/components/nfe/NovaNFeForm.tsx",
@@ -107407,24 +107383,6 @@
    },
    {
     "file": "src/components/nfe/CancelamentoNFe.tsx",
-    "field": "tipo",
-    "value": "ENVIO_LOTE",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/CancelamentoNFe.tsx",
-    "field": "tipo",
-    "value": "cancelamento",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/CancelamentoNFe.tsx",
-    "field": "tipo",
-    "value": "CANCELAMENTO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/CancelamentoNFe.tsx",
     "field": "status",
     "value": "autorizada",
     "kind": "compara"
@@ -107452,30 +107410,6 @@
     "field": "tipo",
     "value": "CONTINGENCIA",
     "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/ContingenciaNFe.tsx",
-    "field": "status",
-    "value": "transmitindo",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/ContingenciaNFe.tsx",
-    "field": "tipo",
-    "value": "AUTORIZACAO",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/ContingenciaNFe.tsx",
-    "field": "status",
-    "value": "rejeitada",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/ContingenciaNFe.tsx",
-    "field": "status",
-    "value": "pendente",
-    "kind": "compara"
    },
    {
     "file": "src/components/nfe/DANFEGenerator.tsx",
@@ -107548,18 +107482,6 @@
     "field": "tipo",
     "value": "INUTILIZACAO",
     "kind": "compara"
-   },
-   {
-    "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "field": "tipo",
-    "value": "inutilizacao",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/InutilizacaoNFe.tsx",
-    "field": "tipo",
-    "value": "INUTILIZACAO",
-    "kind": "escreve"
    },
    {
     "file": "src/components/nfe/NFePreview.tsx",
@@ -107649,30 +107571,6 @@
     "file": "src/components/nfe/nfe-types.ts",
     "field": "status",
     "value": "autorizada",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/nfe-types.ts",
-    "field": "status",
-    "value": "autorizada",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/nfe-types.ts",
-    "field": "status",
-    "value": "autorizada",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/nfe-types.ts",
-    "field": "status",
-    "value": "cancelada",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/nfe/nfe-types.ts",
-    "field": "status",
-    "value": "pendente",
     "kind": "escreve"
    },
    {
@@ -124230,6 +124128,26 @@
    {
     "file": "src/components/navigation/__tests__/BackButton.test.tsx",
     "name": "falls back to "
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+    "name": "NF-e nao anuncia ato fiscal que nao aconteceu (F12)"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+    "name": "inutilizacao: botao desabilitado, aviso na tela e simulador nunca chamado"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+    "name": "cancelamento: botao desabilitado e sem chamada ao simulador"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+    "name": "contingencia: transmissao de pendentes desabilitada"
+   },
+   {
+    "file": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+    "name": "o mock de notas fiscais nao e mais exportado"
    },
    {
     "file": "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
@@ -156308,7 +156226,6 @@
       "compara:src/components/documentos/AssinaturaDigital.tsx",
       "compara:src/components/expert/ProactiveSuggestions.tsx",
       "compara:src/components/fornecedores/FornecedorDetailDialog.tsx",
-      "compara:src/components/nfe/ContingenciaNFe.tsx",
       "compara:src/components/reforma-tributaria/AuditoriaCompliancePanel.tsx",
       "compara:src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
       "compara:src/components/reforma-tributaria/ObrigacoesAcessorias.tsx",
@@ -156331,7 +156248,6 @@
       "escreve:src/components/aprovacoes/AprovacoesPendentesConteudo.tsx",
       "escreve:src/components/contas-receber/ContaReceberForm.tsx",
       "escreve:src/components/documentos/AssinaturaDigital.tsx",
-      "escreve:src/components/nfe/nfe-types.ts",
       "escreve:src/components/reforma-tributaria/RetencoesFonte.tsx",
       "escreve:src/hooks/expert-actions/financial-actions.ts",
       "escreve:src/hooks/useAcordosParcelamento.ts",
@@ -156766,20 +156682,17 @@
       "escreve:src/components/nfe/nfe-types.ts",
       "escreve:src/hooks/useImportacaoXMLNFe.ts"
      ],
-     "transmitindo": [
-      "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-      "escreve:src/components/nfe/ContingenciaNFe.tsx"
-     ],
-     "rejeitada": [
-      "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-      "compara:src/pages/CentroPrivacidadeLGPD.tsx",
-      "escreve:src/components/nfe/ContingenciaNFe.tsx"
-     ],
      "cancelada": [
       "compara:src/components/nfe/NFePreview.tsx",
       "compara:src/pages/NotasFiscais.tsx",
-      "escreve:src/components/nfe/nfe-types.ts",
       "escreve:src/pages/NotasFiscais.tsx"
+     ],
+     "rejeitada": [
+      "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx",
+      "compara:src/pages/CentroPrivacidadeLGPD.tsx"
+     ],
+     "transmitindo": [
+      "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx"
      ],
      "estouro": [
       "compara:src/components/orcamento/OrcamentoCardsView.tsx",
@@ -157548,21 +157461,6 @@
      "critico": [
       "compara:src/components/nfe/AlertasRejeicao.tsx"
      ],
-     "ENVIO_LOTE": [
-      "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "escreve:src/components/nfe/CancelamentoNFe.tsx",
-      "escreve:src/lib/sefaz-event-logger.ts"
-     ],
-     "cancelamento": [
-      "compara:src/lib/sefaz-simulator/handlers.ts",
-      "escreve:src/components/nfe/CancelamentoNFe.tsx"
-     ],
-     "CANCELAMENTO": [
-      "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "compara:src/components/nfe/SefazAnalytics.tsx",
-      "escreve:src/components/nfe/CancelamentoNFe.tsx",
-      "escreve:src/lib/sefaz-event-logger.ts"
-     ],
      "CONTINGENCIA": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts",
       "escreve:src/components/nfe/ContingenciaNFe.tsx"
@@ -157572,7 +157470,6 @@
       "compara:src/components/nfe/SefazAnalytics.tsx",
       "compara:src/lib/sefaz-event-logger.ts",
       "compara:src/lib/sefaz-rejection-monitor.ts",
-      "escreve:src/components/nfe/ContingenciaNFe.tsx",
       "escreve:src/lib/sefaz-event-logger.ts"
      ],
      "REJEICAO": [
@@ -157582,7 +157479,16 @@
       "compara:src/lib/sefaz-rejection-monitor.ts",
       "escreve:src/lib/sefaz-event-logger.ts"
      ],
+     "CANCELAMENTO": [
+      "compara:src/components/nfe/EventosHistorico.helpers.ts",
+      "compara:src/components/nfe/SefazAnalytics.tsx",
+      "escreve:src/lib/sefaz-event-logger.ts"
+     ],
      "CONSULTA": [
+      "compara:src/components/nfe/EventosHistorico.helpers.ts",
+      "escreve:src/lib/sefaz-event-logger.ts"
+     ],
+     "ENVIO_LOTE": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts",
       "escreve:src/lib/sefaz-event-logger.ts"
      ],
@@ -157604,12 +157510,7 @@
       "escreve:src/lib/sefaz-event-logger.ts"
      ],
      "INUTILIZACAO": [
-      "compara:src/components/nfe/EventosHistorico.helpers.ts",
-      "escreve:src/components/nfe/InutilizacaoNFe.tsx"
-     ],
-     "inutilizacao": [
-      "compara:src/lib/sefaz-simulator/handlers.ts",
-      "escreve:src/components/nfe/InutilizacaoNFe.tsx"
+      "compara:src/components/nfe/EventosHistorico.helpers.ts"
      ],
      "trimestral": [
       "compara:src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
@@ -157812,6 +157713,12 @@
       "escreve:src/lib/sefaz-simulator/types.ts"
      ],
      "consulta": [
+      "compara:src/lib/sefaz-simulator/handlers.ts"
+     ],
+     "cancelamento": [
+      "compara:src/lib/sefaz-simulator/handlers.ts"
+     ],
+     "inutilizacao": [
       "compara:src/lib/sefaz-simulator/handlers.ts"
      ],
      "0000": [
@@ -175664,8 +175571,7 @@
     "kind": "status",
     "msg": "valor `transmitindo` para `status` usado no código não existe em nenhum enum do banco/TS",
     "where": [
-     "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-     "escreve:src/components/nfe/ContingenciaNFe.tsx"
+     "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx"
     ]
    },
    {
@@ -193960,33 +193866,17 @@
   },
   "src/components/nfe/CancelamentoNFe.tsx": {
    "path": "src/components/nfe/CancelamentoNFe.tsx",
-   "lines": 325,
+   "lines": 273,
    "exports": [
     "function CancelamentoNFe"
    ],
    "errors": [
-    "A justificativa deve ter no mínimo ${caracteresMinimos} caracteres",
-    "Erro no cancelamento: ${response.xMotivo}"
+    "Cancelamento indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real."
    ],
    "status_values": [
     {
      "field": "status",
      "value": "autorizada",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "ENVIO_LOTE",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "cancelamento",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "CANCELAMENTO",
      "kind": "escreve"
     },
     {
@@ -194007,16 +193897,15 @@
   },
   "src/components/nfe/ContingenciaNFe.tsx": {
    "path": "src/components/nfe/ContingenciaNFe.tsx",
-   "lines": 388,
+   "lines": 362,
    "exports": [
     "function ContingenciaNFe"
    ],
    "errors": [
     "Contingência automática ativada: ${result.rule.name}",
-    "Erro ao transmitir NF-e ${nfe.numero}",
     "Erro ao verificar status da SEFAZ",
     "Informe o motivo da contingência",
-    "SEFAZ ainda está indisponível",
+    "Transmissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar autorização real.",
     "Transmita todas as NF-e pendentes antes de desativar"
    ],
    "status_values": [
@@ -194039,26 +193928,6 @@
      "field": "tipo",
      "value": "CONTINGENCIA",
      "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "transmitindo",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "AUTORIZACAO",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "rejeitada",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "pendente",
-     "kind": "compara"
     }
    ],
    "side_effects": [
@@ -194182,16 +194051,12 @@
   },
   "src/components/nfe/InutilizacaoNFe.tsx": {
    "path": "src/components/nfe/InutilizacaoNFe.tsx",
-   "lines": 435,
+   "lines": 345,
    "exports": [
     "function InutilizacaoNFe"
    ],
    "errors": [
-    "A faixa máxima permitida é de 1000 números",
-    "A justificativa deve ter no mínimo 15 caracteres",
-    "Informe a faixa de numeração",
-    "O número inicial deve ser menor ou igual ao número final",
-    "Selecione uma empresa"
+    "Inutilização indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real."
    ],
    "html_constraints": [
     {
@@ -194201,18 +194066,6 @@
     {
      "field": "numeroFinal",
      "rules": "type=number"
-    }
-   ],
-   "status_values": [
-    {
-     "field": "tipo",
-     "value": "inutilizacao",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "INUTILIZACAO",
-     "kind": "escreve"
     }
    ],
    "rule_comments": [
@@ -194366,39 +194219,31 @@
   },
   "src/components/nfe/nfe-types.ts": {
    "path": "src/components/nfe/nfe-types.ts",
-   "lines": 257,
+   "lines": 67,
    "exports": [
     "interface ItemNFe",
     "interface NotaFiscal",
-    "const statusConfig",
-    "const mockNotasFiscais"
+    "const statusConfig"
    ],
    "status_values": [
     {
      "field": "status",
      "value": "autorizada",
      "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "autorizada",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "autorizada",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "cancelada",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "pendente",
-     "kind": "escreve"
     }
+   ]
+  },
+  "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx": {
+   "path": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+   "lines": 124,
+   "is_test": true,
+   "doc": "Achado F12 (P0): a pagina /notas-fiscais anunciava ato fiscal que nunca aconteceu. Emissao e consulta ja tinham sido desligadas; o que continuava alcancavel era a aba \"Inutilizacao\", que chamava o SIMULADOR (src/lib/sefaz-simulator) e exibia \"Numeracao inutilizada! Protocolo: ...\" com protocolo gera …",
+   "tests": [
+    "NF-e nao anuncia ato fiscal que nao aconteceu (F12)",
+    "inutilizacao: botao desabilitado, aviso na tela e simulador nunca chamado",
+    "cancelamento: botao desabilitado e sem chamada ao simulador",
+    "contingencia: transmissao de pendentes desabilitada",
+    "o mock de notas fiscais nao e mais exportado"
    ]
   },
   "src/components/nfe/auto-contingencia/ContingenciaGlobalSettings.tsx": {
@@ -194480,7 +194325,7 @@
   },
   "src/components/nfe/contingencia/ContingenciaPendingList.tsx": {
    "path": "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-   "lines": 113,
+   "lines": 116,
    "exports": [
     "function ContingenciaPendingList"
    ],
@@ -247079,10 +246924,24 @@
   }
  },
  "git": {
-  "sha": "44c623c43071abbdb4a0efe2fdbc72e0006e0147",
+  "sha": "1bbc48461e1df44255b860ae7d5ab997f240c7db",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1bbc484",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)",
+    "files": [
+     "src/components/nfe/CancelamentoNFe.tsx",
+     "src/components/nfe/ContingenciaNFe.tsx",
+     "src/components/nfe/InutilizacaoNFe.tsx",
+     "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+     "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
+     "src/components/nfe/nfe-types.ts"
+    ]
+   },
    {
     "sha": "44c623c",
     "date": "2026-11-17",
@@ -247451,32 +247310,6 @@
     "files": [
      "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql"
     ]
-   },
-   {
-    "sha": "d9ff7e0",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)",
-    "files": [
-     "src/components/contas-pagar/ContaPagarForm.helpers.ts",
-     "src/components/contas-pagar/ContaPagarForm.types.ts",
-     "src/components/contas-pagar/ContaPagarFormFields.tsx",
-     "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
-     "src/components/contas-pagar/ContasPagarTableRow.helpers.ts",
-     "src/components/contas-pagar/ContasPagarTableRow.tsx",
-     "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
-     "src/components/contas-receber/ContaReceberForm.tsx",
-     "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
-     "src/components/contas-receber/ContaReceberFormFields.types.ts",
-     "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
-     "src/components/contas-receber/ContasReceberFilters.tsx",
-     "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
-     "src/components/contas-receber/row/rowConfig.ts",
-     "src/components/ui/advanced-filters.tsx",
-     "src/types/__tests__/tipo-cobranca-vocabulario.test.ts",
-     "src/types/financial.ts",
-     "src/types/tipo-cobranca-rotulo.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -247537,27 +247370,27 @@
     2
    ],
    [
-    "README.md",
+    "src/components/nfe/CancelamentoNFe.tsx",
     1
    ],
    [
-    "src/components/contas-receber/WebhookDlqItem.tsx",
+    "src/components/nfe/ContingenciaNFe.tsx",
     1
    ],
    [
-    "src/components/cobranca/PrevisaoInadimplencia.tsx",
+    "src/components/nfe/InutilizacaoNFe.tsx",
     1
    ],
    [
-    "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
+    "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
     1
    ],
    [
-    "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
+    "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
     1
    ],
    [
-    "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
+    "src/components/nfe/nfe-types.ts",
     1
    ]
   ]

@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 464,
+ "total": 465,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 388
+  "unit": 389
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 273
+   "arquivos": 274
   },
   {
    "padrao": "outro",
@@ -1072,6 +1072,18 @@
     "src/lib/navigation.ts"
    ],
    "casos": 11
+  },
+  {
+   "arquivo": "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
+   "tipo": "unit",
+   "linhas": 123,
+   "testa": [
+    "src/components/nfe/CancelamentoNFe.tsx",
+    "src/components/nfe/InutilizacaoNFe.tsx",
+    "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
+    "src/components/nfe/nfe-types.ts"
+   ],
+   "casos": 4
   },
   {
    "arquivo": "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
@@ -4180,6 +4192,10 @@
   "src/components/layout/transitions/presets.ts": 1,
   "src/components/layout/transitions/types.ts": 1,
   "src/components/navigation/BackButton.tsx": 1,
+  "src/components/nfe/CancelamentoNFe.tsx": 1,
+  "src/components/nfe/InutilizacaoNFe.tsx": 1,
+  "src/components/nfe/contingencia/ContingenciaPendingList.tsx": 1,
+  "src/components/nfe/nfe-types.ts": 1,
   "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts": 1,
   "src/components/reforma-tributaria/AnimatedCounter.tsx": 1,
   "src/components/reforma-tributaria/EmptyStateTributario.tsx": 1,

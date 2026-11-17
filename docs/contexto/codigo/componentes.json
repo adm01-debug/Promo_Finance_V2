@@ -8071,7 +8071,7 @@
     "CancelamentoNFe"
    ],
    "export_default": null,
-   "linhas": 324,
+   "linhas": 272,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8100,7 +8100,7 @@
     "ContingenciaPendingList"
    ],
    "export_default": null,
-   "linhas": 112,
+   "linhas": 115,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8114,7 +8114,7 @@
     "ContingenciaNFe"
    ],
    "export_default": null,
-   "linhas": 387,
+   "linhas": 361,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8184,7 +8184,7 @@
     "InutilizacaoNFe"
    ],
    "export_default": null,
-   "linhas": 434,
+   "linhas": 344,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useEmpresas"

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `44c623c430` · branch `main` · 2026-11-17 06:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1bbc48461e` · branch `main` · 2026-11-17 06:46 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1363,7 +1363,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `awaiting_authorization` | compara, escreve | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`supabase/functions/open-finance/index.ts` |
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
-| `status` | `cancelada` | compara, escreve | `src/components/nfe/NFePreview.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/pages/NotasFiscais.tsx` |
+| `status` | `cancelada` | compara, escreve | `src/components/nfe/NFePreview.tsx`<br>`src/pages/NotasFiscais.tsx` |
 | `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>… +24 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
@@ -1430,7 +1430,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +46 |
 | `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
 | `status` | `partial` | compara, escreve | `src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
-| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +61 |
+| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +59 |
 | `status` | `pendente_aprovacao` | compara, escreve | `src/components/compras/PedidoCompraForm.tsx`<br>`src/lib/compras/pedidos.ts`<br>`src/pages/Compras.tsx` |
 | `status` | `pending` | compara, escreve | `src/components/admin/WebhookSimulator.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>`src/components/ui/ux-validator/helpers.tsx`<br>… +2 |
 | `status` | `pior` | compara | `src/components/analytics/BenchmarkingSetorial.tsx` |
@@ -1445,7 +1445,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `recebido` | compara, escreve, filtra | `src/components/contas-receber/row/AcoesCell.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useCalculadoraDadosReais.ts`<br>`src/hooks/useContasReceberLogic.calculos.ts`<br>`src/hooks/useContasReceberLogic.ts`<br>… +4 |
 | `status` | `recolhido` | compara | `src/components/reforma-tributaria/RetencoesFonte.tsx`<br>`src/hooks/useRetencoesFonte.ts` |
 | `status` | `rejected` | compara | `src/lib/adaptive-chunk.ts`<br>`supabase/functions/sefaz-dfe-dispatcher/index.ts` |
-| `status` | `rejeitada` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/pages/CentroPrivacidadeLGPD.tsx` |
+| `status` | `rejeitada` | compara | `src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/pages/CentroPrivacidadeLGPD.tsx` |
 | `status` | `rejeitado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/ValidacoesPreSpedDialog.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>… +7 |
 | `status` | `resolvido` | compara, escreve | `src/hooks/useAuditoriaCompliance.ts` |
 | `status` | `retificada` | compara | `src/lib/tributario/obrigacoes/conformidade.ts`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
@@ -1468,7 +1468,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `todos` | compara, escreve | `src/hooks/useNfeRecebidas.ts`<br>`src/pages/tributario/NfeRecebidas.tsx` |
 | `status` | `transmitida` | compara | `src/components/reforma-tributaria/ObrigacoesAcessorias.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | `status` | `transmitido` | compara, escreve | `src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>`src/components/contabilidade/sped-contabil/SpedKpiCards.tsx`<br>`src/components/contabilidade/sped-contabil/useSpedContabilState.ts`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>… +7 |
-| `status` | `transmitindo` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx` |
+| `status` | `transmitindo` | compara | `src/components/nfe/contingencia/ContingenciaPendingList.tsx` |
 | `status` | `unknown` | escreve | `supabase/functions/health/index.ts` |
 | `status` | `uploading` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx`<br>`src/components/ui/file-upload.tsx` |
 | `status` | `utilizado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
@@ -1501,7 +1501,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
-| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
+| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
 | … +230 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
@@ -5038,7 +5038,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
-| … +790 linhas — lista completa em `context.json` | |
+| … +784 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5097,7 +5097,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3500 testes em 304 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3505 testes em 305 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5319,6 +5319,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/admin/telemetry/__tests__/RetentionPoliciesPanel.test.tsx` | 5 | RetentionPoliciesPanel · sinaliza cobertura total quando todas as tabelas têm política · destaca tabelas sem política de retenção · filtra apenas as tabelas com registros vencidos … |
 | `src/components/boletos/__tests__/BoletoBarcode.test.tsx` | 5 | BoletoBarcode · mostra o codigo do PROVEDOR, sem fabricar nada · o tamanho exibido e o do codigo recebido, nao um rotulo fixo de 44 · sem codigo do provedor, diz que nao tem -- e nao oferece copia … |
 | `src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx` | 5 | ValidacoesPreSpedDialog — bloqueio de download por erros · desabilita .txt e .zip quando há erros em validacoes.erros · habilita .txt e .zip quando validacoes.erros está vazio (mesmo com avisos) · habilita downloads quando não há erros nem avisos … |
+| `src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx` | 5 | NF-e nao anuncia ato fiscal que nao aconteceu (F12) · inutilizacao: botao desabilitado, aviso na tela e simulador nunca chamado · cancelamento: botao desabilitado e sem chamada ao simulador · contingencia: transmissao de pendentes desabilitada … |
 | `src/hooks/__tests__/useAlertasTributariosCount.test.ts` | 5 | useAlertasTributariosCount · retorna count quando query bem-sucedida · retorna 0 quando count é null · filtra por tipos tributários e lido=false … |
 | `src/hooks/__tests__/useConciliacaoIA.test.ts` | 5 | useConciliacaoIA · deve retornar erro se não houver dados para análise · deve processar matches retornados pela Edge Function com sucesso · deve lidar com erros de rate limit (429) graciosamente … |
 | `src/hooks/__tests__/useDashboardConfig.test.tsx` | 5 | useDashboardConfig · ocultar/exibir e redimensionar persistem e sobrevivem ao recarregar · valores inválidos salvos voltam ao padrão · DashboardConfigDialog … |
@@ -5400,8 +5401,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sefaz-simulator.regression.test.ts` | 2 | sefaz-simulator — regressão de API pública · preserva exports históricos |
 | `src/lib/__tests__/transaction-matcher.regression.test.ts` | 2 | transaction-matcher — regressão de API pública · expõe símbolos históricos após modularização |
 | `src/lib/tributario/calculadora/__tests__/harness-cenarios.test.ts` | 2 | Harness — 200 cenários aleatórios da Calculadora · cenário #%i respeita invariantes |
-| `src/test/scenarios/__tests__/scenarios.spec.ts` | 2 | Scenario Harness · ${COUNT} cenários combinatórios: zero violações de invariantes |
-| … +4 linhas — lista completa em `context.json` | | |
+| … +5 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

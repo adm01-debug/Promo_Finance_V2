@@ -4534,8 +4534,6 @@
    "src/components/ui/progress.tsx",
    "src/components/ui/textarea.tsx",
    "src/lib/formatters.ts",
-   "src/lib/secure-random.ts",
-   "src/lib/sefaz-event-logger.ts",
    "src/lib/sefaz-simulator.ts"
   ],
   "src/components/nfe/ContingenciaNFe.helpers.ts": [
@@ -4552,7 +4550,6 @@
    "src/components/ui/switch.tsx",
    "src/components/ui/tabs.tsx",
    "src/lib/formatters.ts",
-   "src/lib/secure-random.ts",
    "src/lib/sefaz-contingency.ts",
    "src/lib/sefaz-event-logger.ts"
   ],
@@ -4597,8 +4594,6 @@
    "src/components/ui/select.tsx",
    "src/components/ui/textarea.tsx",
    "src/hooks/useFinancialData.ts",
-   "src/lib/secure-random.ts",
-   "src/lib/sefaz-event-logger.ts",
    "src/lib/sefaz-simulator.ts"
   ],
   "src/components/nfe/NFePreview.tsx": [

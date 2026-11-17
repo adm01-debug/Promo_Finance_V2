@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `44c623c430` · branch `main` · 2026-11-17 06:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1bbc48461e` · branch `main` · 2026-11-17 06:46 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -355,7 +355,7 @@
 | status | valor `authorized` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`filtra:supabase/functions/open-finance/index.ts` |
 | status | valor `awaiting_authorization` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`escreve:supabase/functions/open-finance/index.ts` |
 | status | valor `revoked` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`escreve:supabase/functions/open-finance/index.ts` |
-| status | valor `transmitindo` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`escreve:src/components/nfe/ContingenciaNFe.tsx` |
+| status | valor `transmitindo` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx` |
 | status | valor `estouro` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/orcamento/OrcamentoCardsView.tsx`<br>`compara:src/pages/OrcamentoEvento.tsx` |
 | status | valor `calculado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`escreve:src/hooks/useApuracoesTributarias.ts`<br>`escreve:src/hooks/useIRPJCSLL.ts` |
 | status | valor `revisado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/reforma-tributaria/ApuracaoMensal.tsx` |

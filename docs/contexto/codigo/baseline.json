@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "44c623c43071abbdb4a0efe2fdbc72e0006e0147",
+  "commit": "1bbc48461e1df44255b860ae7d5ab997f240c7db",
   "branch": "main",
-  "data_commit": "2026-11-17T03:18:41-03:00",
+  "data_commit": "2026-11-17T03:45:57-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1bbc484",
+    "data": "2026-11-17",
+    "assunto": "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)"
+   },
    {
     "sha": "44c623c",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "c4a6304",
     "data": "2026-11-16",
     "assunto": "fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)"
-   },
-   {
-    "sha": "442c34a",
-    "data": "2026-11-16",
-    "assunto": "fix(db): destrava as 2 raízes do replay e o bloqueio que a #390 introduziu (#391)"
    }
   ],
-  "arquivos_mudados_7d": 829,
+  "arquivos_mudados_7d": 834,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -168,6 +168,10 @@
     "mudancas": 21
    },
    {
+    "pasta": "src/components/nfe",
+    "mudancas": 20
+   },
+   {
     "pasta": "src/lib/tributario",
     "mudancas": 17
    },
@@ -181,10 +185,6 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 14
-   },
-   {
-    "pasta": "src/components/nfe",
     "mudancas": 14
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 165
+    "commits": 166
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3895,
-  "arquivos_codigo": 2457,
-  "linhas_codigo": 437985,
+  "arquivos_total": 3896,
+  "arquivos_codigo": 2458,
+  "linhas_codigo": 437753,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 464,
+  "testes": 465,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 992,
-   "linhas": 163385
+   "arquivos": 993,
+   "linhas": 163153
   },
   "src/config": {
    "arquivos": 1,
