@@ -2,14 +2,14 @@
   "alertas": [
     {
       "detalhe": [
-        "enviar-digest-conformidade-horario (42.3% em 7d)",
+        "enviar-digest-conformidade-horario (40.5% em 7d)",
         "processar-regua-cobranca-diario (57.1% em 7d)"
       ],
       "tipo": "cron_falhando"
     },
     {
       "detalhe": [
-        "226190 linhas com mais de 7 dias"
+        "226594 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     }
@@ -21,10 +21,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 136060928,
-      "linhas": 240747,
+      "bytes": 136208384,
+      "linhas": 240976,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 226190
+      "mais_de_7_dias": 226594
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -244,10 +244,10 @@
         "execucoes_24h": 24,
         "execucoes_7d": 168,
         "falhas_24h": 0,
-        "falhas_7d": 71,
+        "falhas_7d": 68,
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
-        "taxa_falha_7d_pct": 42.3,
+        "taxa_falha_7d_pct": 40.5,
         "ultima_falha": "2026-11-13T15:30:00Z"
       },
       {
@@ -370,7 +370,7 @@
         ],
         "duracao_max_s_7d": 0,
         "execucoes_24h": 48,
-        "execucoes_7d": 193,
+        "execucoes_7d": 199,
         "falhas_24h": 0,
         "falhas_7d": 1,
         "nome": "monitor-health-check",
@@ -561,746 +561,746 @@
     "no_repo_sem_deploy": [],
     "publicadas": [
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "aceitar-convite",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "analise-fluxo-ia",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "analise-preditiva",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "analyze-document",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "api-keys-manage",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 79
+        "versao": 90
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "asaas-proxy",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "asaas-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "benchmarking-setorial",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "bitrix24-sync",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "bitrix24-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 95
+        "versao": 107
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "bling-proxy",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "bling-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 89
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "calcular-health-score-operacional",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 86
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "calcular-slo-metrics-diario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "calculo-iva",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "categorizar-despesa",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 92
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "ci-security-gate-log",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "cnpja-lookup",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 87
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "comparar-benchmark-setorial",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "compare-schemas",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 87
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "conciliacao-ia",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "conciliacao-proxy",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 92
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "consulta-tributaria",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 86
+        "versao": 98
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "contabilizar-evento",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "convidar-contador",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "convidar-usuario",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 80
+        "versao": 91
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "copilot-global",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "copilot-tributario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "decidir-regime",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 92
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "detectar-anomalias-financeiras",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "digest-silenciamentos-erro",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "enviar-alerta-email",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 94
+        "versao": 106
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "enviar-bitrix24-tributario",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 86
+        "versao": 98
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "enviar-convite-organizacao",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "enviar-digest-conformidade",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "enviar-relatorios-tributarios-agendados",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "executar-analise-preditiva",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "executar-fechamento-tributario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 87
+        "versao": 98
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "executar-regua-cobranca",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "executar-relatorios",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "expert-agent",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "exportar-sped-contribuicoes",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "external-data",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 95
+        "versao": 106
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-acoes-recomendadas",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 86
+        "versao": 97
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-alertas",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-alertas-dispatcher",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 90
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-alertas-tributarios",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-dre-tributaria",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 94
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "gerar-heatmap-tributario",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 96
+        "versao": 107
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-pacote-evidencias",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 85
+        "versao": 97
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-pdf-tributario",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 90
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-relatorio-anual",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 87
+        "versao": 98
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-resumo-executivo-semanal",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-resumo-financeiro-diario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-snapshots-conformidade",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-sped-ecd",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 89
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "gerar-sped-ecf",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 87
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "get-mapbox-token",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 87
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "get-vapid-key",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 87
+        "versao": 98
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "health",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 87
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "insights-relatorio",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "log-sped-bitrix24",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "mcp-query",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "monitor-health",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 72
+        "versao": 85
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "monitorar-erros-frontend",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "n8n-callback",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 89
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "n8n-dispatch",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 89
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "nfe-upload-certificado",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "nfe-vinculo-proxy",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "notify-performance-alert",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 89
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "notify-saved-filter",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "open-finance",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 89
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "overlay-rejeicoes-auditoria",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 90
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "prever-carga-tributaria",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 92
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "processar-fila-cobrancas",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "processar-nf-ocr",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 89
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "processar-solicitacao-lgpd",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "projecao-reforma",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 92
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "relatorio-diario-anomalias",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "scim-server",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 86
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sefaz-dfe-dispatcher",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 92
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sefaz-dfe-puxar",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 92
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sefaz-manifestar",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "send-device-alert",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 86
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "send-push-notification",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 89
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "simular-presumido",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:39Z",
         "slug": "simular-real",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 88
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "simular-simples",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 89
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sincronizar-anomalia-bitrix24",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 84
+        "versao": 96
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sso-callback",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 88
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sso-generate-metadata",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sso-initiate",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 89
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sso-logout",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 86
+        "versao": 97
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sso-test-login",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sso-validate-config",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 92
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "sync-profile-to-bitrix",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 94
+        "versao": 106
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "upload-anexo",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 76
+        "versao": 88
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "validar-token-contador",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 102
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "validate-ip-geo",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 91
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "verificar-conformidade-fiscal",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 87
+        "versao": 99
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "webhook-replay",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "webhook-retry-worker",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 89
+        "versao": 100
       },
       {
-        "atualizada_em": "2026-11-17T15:58Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "webhook-simulator",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 89
+        "versao": 101
       },
       {
-        "atualizada_em": "2026-11-17T16:38Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "whatsapp-ai-analyzer",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 92
+        "versao": 103
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "whatsapp-ia-proativo",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 93
+        "versao": 104
       },
       {
-        "atualizada_em": "2026-11-17T16:39Z",
+        "atualizada_em": "2026-11-17T19:40Z",
         "slug": "whatsapp-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 92
+        "versao": 103
       }
     ],
     "publicadas_sem_codigo_no_repo": []
@@ -1349,7 +1349,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-17T16:39:37Z",
+  "medido_em": "2026-11-17T19:40:45Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 272,
     "tabelas_em_types_ts": 272
@@ -1357,15 +1357,15 @@
   "resumo": {
     "cron_ativos": 33,
     "cron_jobs": 33,
-    "funcoes_public": 212,
-    "ledger_registros": 1034,
-    "ledger_versao_max": "20261117074000",
+    "funcoes_public": 213,
+    "ledger_registros": 1038,
+    "ledger_versao_max": "20261117201000",
     "max_connections": 60,
-    "policies": 615,
+    "policies": 616,
     "postgres": "17.6",
-    "tabelas_public": 272,
+    "tabelas_public": 273,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 329976979,
+    "tamanho_bytes": 333368467,
     "triggers_public": 171,
     "views_public": 22
   },
@@ -2046,9 +2046,9 @@
       }
     },
     {
-      "bytes": 450560,
+      "bytes": 475136,
       "citada_no_banco": true,
-      "linhas": 1092,
+      "linhas": 1226,
       "linhas_exatas": true,
       "nome": "auth_logs",
       "policies": 3,
@@ -2286,7 +2286,7 @@
       }
     },
     {
-      "bytes": 98304,
+      "bytes": 163840,
       "citada_no_banco": true,
       "linhas": 6,
       "linhas_exatas": true,
@@ -2391,7 +2391,7 @@
       }
     },
     {
-      "bytes": 81920,
+      "bytes": 180224,
       "citada_no_banco": true,
       "linhas": 12,
       "linhas_exatas": true,
@@ -2436,7 +2436,22 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 40960,
+      "citada_no_banco": true,
+      "linhas": 0,
+      "linhas_exatas": true,
+      "nome": "cnpja_rate_limit",
+      "policies": 1,
+      "rls": true,
+      "rls_forcado": false,
+      "triggers": 0,
+      "uso_no_codigo": {
+        "edges": 0,
+        "src": 0
+      }
+    },
+    {
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 10,
       "linhas_exatas": true,
@@ -2521,12 +2536,12 @@
       "rls_forcado": false,
       "triggers": 1,
       "uso_no_codigo": {
-        "edges": 5,
+        "edges": 8,
         "src": 26
       }
     },
     {
-      "bytes": 245760,
+      "bytes": 425984,
       "citada_no_banco": true,
       "linhas": 20,
       "linhas_exatas": true,
@@ -2541,7 +2556,7 @@
       }
     },
     {
-      "bytes": 212992,
+      "bytes": 376832,
       "citada_no_banco": true,
       "linhas": 20,
       "linhas_exatas": true,
@@ -2616,9 +2631,9 @@
       }
     },
     {
-      "bytes": 401408,
+      "bytes": 417792,
       "citada_no_banco": true,
-      "linhas": 620,
+      "linhas": 632,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2721,9 +2736,9 @@
       }
     },
     {
-      "bytes": 45359104,
+      "bytes": 46301184,
       "citada_no_banco": true,
-      "linhas": 152545,
+      "linhas": 157985,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -2991,7 +3006,7 @@
       }
     },
     {
-      "bytes": 65536,
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 20,
       "linhas_exatas": true,
@@ -3126,7 +3141,7 @@
       }
     },
     {
-      "bytes": 81920,
+      "bytes": 163840,
       "citada_no_banco": true,
       "linhas": 5,
       "linhas_exatas": true,
@@ -3351,9 +3366,9 @@
       }
     },
     {
-      "bytes": 34750464,
+      "bytes": 35397632,
       "citada_no_banco": true,
-      "linhas": 87370,
+      "linhas": 88461,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3576,9 +3591,9 @@
       }
     },
     {
-      "bytes": 1835008,
+      "bytes": 1843200,
       "citada_no_banco": true,
-      "linhas": 2017,
+      "linhas": 2020,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3651,7 +3666,7 @@
       }
     },
     {
-      "bytes": 106496,
+      "bytes": 172032,
       "citada_no_banco": true,
       "linhas": 51,
       "linhas_exatas": true,
@@ -3668,7 +3683,7 @@
     {
       "bytes": 4251648,
       "citada_no_banco": true,
-      "linhas": 2240,
+      "linhas": 2303,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -3741,7 +3756,7 @@
       }
     },
     {
-      "bytes": 131072,
+      "bytes": 196608,
       "citada_no_banco": true,
       "linhas": 42,
       "linhas_exatas": true,
@@ -3861,7 +3876,7 @@
       }
     },
     {
-      "bytes": 65536,
+      "bytes": 147456,
       "citada_no_banco": true,
       "linhas": 5,
       "linhas_exatas": true,
@@ -4041,7 +4056,7 @@
       }
     },
     {
-      "bytes": 147456,
+      "bytes": 212992,
       "citada_no_banco": true,
       "linhas": 102,
       "linhas_exatas": true,
@@ -4118,7 +4133,7 @@
     {
       "bytes": 3801088,
       "citada_no_banco": true,
-      "linhas": 4329,
+      "linhas": 4326,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4358,7 +4373,7 @@
     {
       "bytes": 14319616,
       "citada_no_banco": true,
-      "linhas": 12974,
+      "linhas": 12992,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4371,9 +4386,9 @@
       }
     },
     {
-      "bytes": 598016,
+      "bytes": 638976,
       "citada_no_banco": true,
-      "linhas": 1093,
+      "linhas": 1227,
       "linhas_exatas": true,
       "nome": "rate_limit_logs",
       "policies": 2,
@@ -4596,7 +4611,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4898,7 +4913,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 15527,
+      "linhas": 15434,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
@@ -4971,7 +4986,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
@@ -5076,7 +5091,7 @@
       }
     },
     {
-      "bytes": 65536,
+      "bytes": 180224,
       "citada_no_banco": true,
       "linhas": 16,
       "linhas_exatas": true,
