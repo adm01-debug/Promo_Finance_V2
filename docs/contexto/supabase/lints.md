@@ -5,8 +5,12 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | severidade | código | objeto | detalhe |
 |---|---|---|---|
 | ALTA | secdef_mutable_search_path | public.gerar_lancamento_contabil_automatico() | SECURITY DEFINER sem `SET search_path`: vulnerável a sequestro de search_path. |
+| BAIXA | fk_without_index | public.asaas_audit_trail.asaas_audit_trail_user_id_fkey | FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
+| BAIXA | fk_without_index | public.asaas_transfers.asaas_transfers_user_id_fkey | FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
+| BAIXA | fk_without_index | public.execucoes_cobranca.execucoes_cobranca_cliente_id_fkey | FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.execucoes_regua_cobranca.execucoes_regua_cobranca_conta_receber_id_fkey | FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.n8n_workflow_configs.n8n_workflow_configs_created_by_fkey | FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
+| BAIXA | fk_without_index | public.sso_login_attempts.sso_login_attempts_empresa_id_fkey | FK sem índice nas colunas ['empresa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | policy_auth_fn_not_wrapped | public.alert_configurations.alert_configurations_tenant_delete | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.alert_configurations.alert_configurations_tenant_insert | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.alert_configurations.alert_configurations_tenant_update | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |

@@ -1038,3 +1038,4 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261117052200 | [seed_benchmarks_setoriais](migrations/20261117052200_seed_benchmarks_setoriais.sql) | 1 |
 | 20261117053000 | [reprocess_dlq_reagenda_original](migrations/20261117053000_reprocess_dlq_reagenda_original.sql) | 2 |
 | 20261117074000 | [webhook_replay_resolve_dlq](migrations/20261117074000_webhook_replay_resolve_dlq.sql) | 3 |
+| 20261117190000 | [drop_tabelas_residuo_lovable](migrations/20261117190000_drop_tabelas_residuo_lovable.sql) | 25 |

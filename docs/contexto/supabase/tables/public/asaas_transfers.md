@@ -29,6 +29,8 @@
 | 10 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  |  |
 | 11 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
 | 12 | `updated_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 13 | `transaction_receipt_url` | `text` | sim |  |  |  |
+| 14 | `user_id` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
@@ -37,6 +39,7 @@
 |---|---|---|---|---|---|
 | asaas_transfers_asaas_id_key | UNIQUE | `UNIQUE (asaas_id)` |  |  | sim |
 | asaas_transfers_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
+| asaas_transfers_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id)` | NO ACTION | NO ACTION | sim |
 
 
 ## Índices

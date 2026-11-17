@@ -139,6 +139,7 @@
 | public.solicitacoes_lgpd | solicitacoes_lgpd_empresa_id_fkey | empresa_id | CASCADE |
 | public.sped_contabil_arquivos | sped_contabil_arquivos_empresa_id_fkey | empresa_id | CASCADE |
 | public.split_payment_transacoes | split_payment_transacoes_empresa_id_fkey | empresa_id | CASCADE |
+| public.sso_login_attempts | sso_login_attempts_empresa_id_fkey | empresa_id | SET NULL |
 | public.sso_providers | sso_providers_empresa_id_fkey | empresa_id | SET NULL |
 | public.tax_audit_trail | tax_audit_trail_empresa_id_fkey | empresa_id | CASCADE |
 | public.transferencias | transferencias_empresa_id_fkey | empresa_id | NO ACTION |

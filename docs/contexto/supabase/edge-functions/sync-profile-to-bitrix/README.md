@@ -4,7 +4,7 @@
 |---|---|
 | nome | sync-profile-to-bitrix |
 | status | ACTIVE |
-| versão | 97 |
+| versão | 100 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/sync-profile-to-bitrix/index.ts |
 | import_map |  |

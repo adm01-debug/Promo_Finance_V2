@@ -22,6 +22,9 @@
 | 4 | `actor` | `uuid` | sim |  |  |  |
 | 5 | `details` | `jsonb` | sim | `'{}'::jsonb` |  |  |
 | 6 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 7 | `new_status` | `text` | sim |  |  |  |
+| 8 | `previous_status` | `text` | sim |  |  |  |
+| 9 | `user_id` | `uuid` | sim | `auth.uid()` |  |  |
 
 
 ## Constraints
@@ -30,6 +33,7 @@
 |---|---|---|---|---|---|
 | asaas_audit_trail_asaas_payment_id_fkey | FOREIGN KEY | `FOREIGN KEY (asaas_payment_id) REFERENCES asaas_payments(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 | asaas_audit_trail_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
+| asaas_audit_trail_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id)` | NO ACTION | NO ACTION | sim |
 
 
 ## Índices

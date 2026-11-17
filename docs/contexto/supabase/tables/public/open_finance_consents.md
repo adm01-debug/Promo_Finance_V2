@@ -24,6 +24,7 @@
 | 6 | `authorization_url` | `text` | sim |  |  |  |
 | 7 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
 | 8 | `updated_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 9 | `revoked_at` | `timestamp with time zone` | sim |  |  |  |
 
 
 ## Constraints

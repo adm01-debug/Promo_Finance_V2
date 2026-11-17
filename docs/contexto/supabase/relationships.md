@@ -27,6 +27,7 @@
 | public.apuracoes_tributarias | created_by | auth.users | id | SET NULL | NO ACTION |
 | public.apuracoes_tributarias | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.asaas_audit_trail | asaas_payment_id | public.asaas_payments | id | CASCADE | NO ACTION |
+| public.asaas_audit_trail | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.asaas_credit_risk_analysis | cliente_id | public.clientes | id | CASCADE | NO ACTION |
 | public.asaas_payment_links | created_by | auth.users | id | NO ACTION | NO ACTION |
 | public.asaas_payment_links | empresa_id | public.empresas | id | CASCADE | NO ACTION |
@@ -34,6 +35,7 @@
 | public.asaas_reconciliation_suggestions | contas_pagar_id | public.contas_pagar | id | NO ACTION | NO ACTION |
 | public.asaas_reconciliation_suggestions | contas_receber_id | public.contas_receber | id | NO ACTION | NO ACTION |
 | public.asaas_sync_queue | asaas_payment_id | public.asaas_payments | id | CASCADE | NO ACTION |
+| public.asaas_transfers | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.auditoria_tributaria | empresa_id | public.empresas | id | SET NULL | NO ACTION |
 | public.bitrix_field_mappings | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.bitrix_sync_logs | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
@@ -98,6 +100,7 @@
 | public.entregas_obrigacoes | registrado_por | public.profiles | id | SET NULL | NO ACTION |
 | public.eventos_contabilizacao_log | regra_id | public.regras_contabilizacao_automatica | id | SET NULL | NO ACTION |
 | public.evidencias_pacotes | verificacao_id | public.verificacoes_conformidade | id | NO ACTION | NO ACTION |
+| public.execucoes_cobranca | cliente_id | public.clientes | id | NO ACTION | NO ACTION |
 | public.execucoes_cobranca | empresa_id | public.empresas | id | NO ACTION | NO ACTION |
 | public.execucoes_regua_cobranca | conta_receber_id | public.contas_receber | id | CASCADE | NO ACTION |
 | public.execucoes_regua_cobranca | empresa_id | public.empresas | id | CASCADE | NO ACTION |
@@ -225,6 +228,7 @@
 | public.solicitacoes_lgpd | user_id | public.profiles | id | CASCADE | NO ACTION |
 | public.sped_contabil_arquivos | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.split_payment_transacoes | empresa_id | public.empresas | id | CASCADE | NO ACTION |
+| public.sso_login_attempts | empresa_id | public.empresas | id | SET NULL | NO ACTION |
 | public.sso_providers | empresa_id | public.empresas | id | SET NULL | NO ACTION |
 | public.sso_role_mappings | provider_id | public.sso_providers | id | CASCADE | NO ACTION |
 | public.sso_sandbox_runs | provider_id | public.sso_providers | id | SET NULL | NO ACTION |

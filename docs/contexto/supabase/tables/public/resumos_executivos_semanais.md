@@ -24,6 +24,8 @@
 | 6 | `kpis` | `jsonb` | sim | `'{}'::jsonb` |  |  |
 | 7 | `enviado_em` | `timestamp with time zone` | sim |  |  |  |
 | 8 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 9 | `destinatarios` | `text[]` | não | `ARRAY[]::text[]` |  |  |
+| 10 | `erro_envio` | `text` | sim |  |  |  |
 
 
 ## Constraints
@@ -31,6 +33,7 @@
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
 | resumos_executivos_semanais_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` | NO ACTION | NO ACTION | sim |
+| resumos_executivos_semanais_empresa_id_semana_inicio_key | UNIQUE | `UNIQUE (empresa_id, semana_inicio)` |  |  | sim |
 | resumos_executivos_semanais_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 
 
@@ -39,6 +42,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_resumos_executivos_semanais_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_resumos_executivos_semanais_empresa_id ON public.resumos_executivos_semanais USING btree (empresa_id)` |
+| resumos_executivos_semanais_empresa_id_semana_inicio_key | btree | empresa_id, semana_inicio | sim | sim |  | `CREATE UNIQUE INDEX resumos_executivos_semanais_empresa_id_semana_inicio_key ON public.resumos_executivos_semanais USING btree (empresa_id, semana_inicio)` |
 | resumos_executivos_semanais_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX resumos_executivos_semanais_pkey ON public.resumos_executivos_semanais USING btree (id)` |
 
 

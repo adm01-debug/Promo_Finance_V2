@@ -556,6 +556,7 @@ Uso e tamanho em `stats.md`.
 | public.relatorios_tributarios_agendados | idx_relatorios_tributarios_agendados_empresa | btree | empresa_id | não | sim |  |
 | public.relatorios_tributarios_agendados | relatorios_tributarios_agendados_pkey | btree | id | sim | sim |  |
 | public.resumos_executivos_semanais | idx_resumos_executivos_semanais_empresa_id | btree | empresa_id | não | sim |  |
+| public.resumos_executivos_semanais | resumos_executivos_semanais_empresa_id_semana_inicio_key | btree | empresa_id, semana_inicio | sim | sim |  |
 | public.resumos_executivos_semanais | resumos_executivos_semanais_pkey | btree | id | sim | sim |  |
 | public.retencao_politicas | retencao_politicas_pkey | btree | id | sim | sim |  |
 | public.retencao_politicas | retencao_politicas_tabela_key | btree | tabela | sim | sim |  |

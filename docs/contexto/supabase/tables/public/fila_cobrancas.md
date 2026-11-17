@@ -34,6 +34,7 @@
 | 16 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
 | 17 | `updated_at` | `timestamp with time zone` | sim | `now()` |  |  |
 | 18 | `provider` | `text` | sim |  |  |  |
+| 19 | `erro_mensagem` | `text` | sim |  |  |  |
 
 
 ## Constraints

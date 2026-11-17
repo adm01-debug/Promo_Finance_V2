@@ -25,6 +25,7 @@
 | 7 | `payload` | `jsonb` | sim | `'{}'::jsonb` |  |  |
 | 8 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
 | 9 | `updated_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 10 | `error_history` | `jsonb` | sim | `'[]'::jsonb` |  |  |
 
 
 ## Constraints

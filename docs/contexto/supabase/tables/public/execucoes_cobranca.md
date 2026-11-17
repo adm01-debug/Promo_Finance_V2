@@ -28,12 +28,16 @@
 | 10 | `cliente_nome` | `text` | sim |  |  |  |
 | 11 | `destinatario` | `text` | sim |  |  |  |
 | 12 | `provider` | `text` | sim |  |  |  |
+| 13 | `cliente_id` | `uuid` | sim |  |  |  |
+| 14 | `erro_mensagem` | `text` | sim |  |  |  |
+| 15 | `metadata` | `jsonb` | sim |  |  |  |
 
 
 ## Constraints
 
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
+| execucoes_cobranca_cliente_id_fkey | FOREIGN KEY | `FOREIGN KEY (cliente_id) REFERENCES clientes(id)` | NO ACTION | NO ACTION | sim |
 | execucoes_cobranca_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id)` | NO ACTION | NO ACTION | sim |
 | execucoes_cobranca_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 

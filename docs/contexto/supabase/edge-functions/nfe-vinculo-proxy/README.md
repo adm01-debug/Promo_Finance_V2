@@ -4,7 +4,7 @@
 |---|---|
 | nome | nfe-vinculo-proxy |
 | status | ACTIVE |
-| versão | 91 |
+| versão | 94 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/nfe-vinculo-proxy/index.ts |
 | import_map |  |

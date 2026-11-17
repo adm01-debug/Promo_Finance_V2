@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-alertas |
 | status | ACTIVE |
-| versão | 95 |
+| versão | 98 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/gerar-alertas/index.ts |
 | import_map |  |

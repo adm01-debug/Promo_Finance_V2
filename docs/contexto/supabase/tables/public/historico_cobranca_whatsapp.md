@@ -24,6 +24,10 @@
 | 6 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
 | 7 | `empresa_id` | `uuid` | sim |  |  |  |
 | 8 | `metadata` | `jsonb` | sim |  |  |  |
+| 9 | `created_by` | `uuid` | sim |  |  |  |
+| 10 | `enviado_em` | `timestamp with time zone` | sim |  |  |  |
+| 11 | `ia_proxima_acao` | `text` | sim |  |  |  |
+| 12 | `ia_resumo` | `text` | sim |  |  |  |
 
 
 ## Constraints

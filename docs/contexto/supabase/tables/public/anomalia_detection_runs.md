@@ -23,6 +23,10 @@
 | 5 | `inseridas` | `integer` | sim | `0` |  |  |
 | 6 | `error_message` | `text` | sim |  |  |  |
 | 7 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 8 | `current_step` | `text` | sim |  |  |  |
+| 9 | `finished_at` | `timestamp with time zone` | sim |  |  |  |
+| 10 | `started_at` | `timestamp with time zone` | sim |  |  |  |
+| 11 | `step_index` | `integer` | não | `0` |  |  |
 
 
 ## Constraints

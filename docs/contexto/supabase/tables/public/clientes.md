@@ -59,6 +59,7 @@
 | public.asaas_credit_risk_analysis | asaas_credit_risk_analysis_cliente_id_fkey | cliente_id | CASCADE |
 | public.contas_receber | contas_receber_cliente_id_fkey | cliente_id | SET NULL |
 | public.contratos | contratos_cliente_id_fkey | cliente_id | SET NULL |
+| public.execucoes_cobranca | execucoes_cobranca_cliente_id_fkey | cliente_id | NO ACTION |
 | public.fila_cobrancas | fila_cobrancas_cliente_id_fkey | cliente_id | NO ACTION |
 | public.historico_cobranca | historico_cobranca_cliente_id_fkey | cliente_id | NO ACTION |
 | public.historico_cobranca_whatsapp | historico_cobranca_whatsapp_cliente_id_fkey | cliente_id | NO ACTION |

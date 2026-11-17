@@ -25,12 +25,17 @@
 | 7 | `error_message` | `text` | sim |  |  |  |
 | 8 | `context` | `jsonb` | sim | `'{}'::jsonb` |  |  |
 | 9 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 10 | `app_redirect` | `text` | sim |  |  |  |
+| 11 | `code_verifier_hash` | `text` | sim |  |  |  |
+| 12 | `duration_ms` | `integer` | sim |  |  |  |
+| 13 | `empresa_id` | `uuid` | sim |  |  |  |
 
 
 ## Constraints
 
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
+| sso_login_attempts_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | sso_login_attempts_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 
 
