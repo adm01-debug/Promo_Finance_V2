@@ -3565,11 +3565,11 @@
   {
    "arquivo": "supabase/functions/_shared/cnae_test.ts",
    "tipo": "unit",
-   "linhas": 66,
+   "linhas": 93,
    "testa": [
     "supabase/functions/_shared/cnae.ts"
    ],
-   "casos": 7
+   "casos": 9
   },
   {
    "arquivo": "supabase/functions/_shared/contract-coverage_test.ts",

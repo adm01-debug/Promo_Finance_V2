@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2627e95b23` · branch `main` · 2026-11-17 08:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e4c5fa96ae` · branch `main` · 2026-11-17 09:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -316,6 +316,7 @@
 | `categorias` | `nome, tipo, cor, icone, user_id` | `('Aluguel', 'despesa', '#ef4444', 'home', p_user_id), ('Água', 'despesa', '#3b82f6', 'droplet', p_user_id), ('Luz', 'despesa', '#eab308', 'zap', p_user_id), ('Internet', 'despesa', '#8b5cf6', 'wifi', p_user_id), ('Telefone', 'despesa', '#06b6d4', 'phone', p_user_id), ('Salários', 'despesa', '#22c55e', 'users', p_user_id), ('Fornecedores', 'despesa', '#f97316', 'truck', p_user_id), ('Material de Es …` | `supabase/migrations/003_seed_data.sql` |
 | `categorias` | `nome, tipo, cor, icone, user_id` | `('Vendas', 'receita', '#22c55e', 'shopping-cart', p_user_id), ('Serviços', 'receita', '#3b82f6', 'briefcase', p_user_id), ('Consultoria', 'receita', '#8b5cf6', 'users', p_user_id), ('Comissões', 'receita', '#f97316', 'percent', p_user_id), ('Rendimentos', 'receita', '#06b6d4', 'trending-up', p_user_id), ('Reembolsos', 'receita', '#64748b', 'refresh-cw', p_user_id), ('Outras Receitas', 'receita', ' …` | `supabase/migrations/003_seed_data.sql` |
 | `user_preferences` | `user_id, theme, language, currency` | `(NEW.id, 'system', 'pt-BR', 'BRL') ON CONFLICT (user_id) DO NOTHING` | `supabase/migrations/003_seed_data.sql` |
+| `benchmarks_setoriais` | `indicador, cnae_prefix, setor, regime, carga_media_pct, fonte, vigencia_inicio` | `('carga_tributaria_total', '47', 'Comércio Varejista', 'simples_nacional', 6.5, 'IBPT 2024', '2026-01-01'), ('carga_tributaria_total', '47', 'Comércio Varejista', 'lucro_presumido', 11.3, 'IBPT 2024', '2026-01-01'), ('carga_tributaria_total', '47', 'Comércio Varejista', 'lucro_real', 14.8, 'IBPT 2024', '2026-01-01'), ('carga_tributaria_total', '10', 'Indústria de Alimentos', 'lucro_presumido', 13. …` | `supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql` |
 
 ## Auditoria de consistência (código × schema) — trate como NÃO VERIFICADO
 

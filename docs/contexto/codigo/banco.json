@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1029,
+ "migrations": 1033,
  "seeds": [],
  "avisos": [
-  "195 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "196 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -10688,9 +10688,23 @@
      "default": "gen_random_uuid()",
      "ref": null
     },
+    "indicador": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "margem_media_pct": {
      "tipo": "numeric",
-     "nn": true,
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "mediana": {
+     "tipo": "numeric",
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -10803,8 +10817,6 @@
     "so_no_types": [
      "ano",
      "cnae",
-     "indicador",
-     "mediana",
      "percentil_25",
      "percentil_75",
      "porte_empresa",

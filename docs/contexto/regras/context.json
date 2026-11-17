@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "2627e95b23495e252229da3f0330a03e960bb490",
+  "sha": "e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 08:45 UTC",
-  "files_total": 3937,
-  "code_files": 3560,
-  "code_lines": 507039
+  "generated_at": "2026-11-17 09:10 UTC",
+  "files_total": 3941,
+  "code_files": 3564,
+  "code_lines": 507377
  },
  "version": "1.3.2",
- "facts_hash": "64144243794b8d13",
+ "facts_hash": "35a9ab2e9b998388",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1236,
    ".tsx": 1110,
-   ".sql": 1099,
+   ".sql": 1103,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -43313,17 +43313,18 @@
     "args": "p_dlq_id uuid, p_notes text DEFAULT NULL::text",
     "returns": "uuid",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_dlq public.webhook_dlq%ROWTYPE; v_new_log_id UUID; BEGIN IF NOT public.has_role(auth.uid(), 'admin'::public.app_role) THEN RAISE EXCEPTION 'Acesso negado: apenas administradores podem reprocessar DLQ.'; END IF; SELECT * INTO v_dlq FROM public.webhook_dlq WHERE id = p_dlq_id AND resolved_at IS NULL; IF v_dlq IS NULL THEN RAISE EXCEPTION 'DLQ item não encontrado ou já resolvido'; END IF; INSERT INTO public.webhooks_log ( source, event_type, external_id, payload, status, attempts, next_retry_at ) VALUES ( v_dlq.source, v_dlq.event_type, v_dlq.external_id, v_dlq.payload, 'pending', 0, now() ) RETURNING id INTO v_new_log_id; UPDATE public.webhook_dlq SET resolved_at = now(), resolved_by …",
+    "body": "DECLARE v_dlq public.webhook_dlq%ROWTYPE; v_log_id UUID; v_log_status TEXT; BEGIN IF NOT public.has_role(auth.uid(), 'admin'::public.app_role) THEN RAISE EXCEPTION 'Acesso negado: apenas administradores podem reprocessar DLQ.'; END IF; SELECT * INTO v_dlq FROM public.webhook_dlq WHERE id = p_dlq_id AND resolved_at IS NULL FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'DLQ item não encontrado ou já resolvido'; END IF; SELECT id, status INTO v_log_id, v_log_status FROM public.webhooks_log WHERE dlq_id = p_dlq_id ORDER BY created_at DESC LIMIT 1 FOR UPDATE; IF v_log_id IS NULL AND v_dlq.external_id IS NOT NULL THEN SELECT id, status INTO v_log_id, v_log_status FROM public.webhooks_log WHERE sou …",
     "raises": [
      "Acesso negado: apenas administradores podem reprocessar DLQ.",
-     "DLQ item não encontrado ou já resolvido"
+     "DLQ item não encontrado ou já resolvido",
+     "Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual."
     ],
     "tables": [
      "v_dlq",
-     "v_new_log_id",
+     "v_log_id",
      "webhook_dlq",
      "webhooks_log"
     ]
@@ -52402,6 +52403,10 @@
    "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
    "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
    "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
+   "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql",
+   "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
+   "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
+   "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -60530,6 +60535,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "reprocess_dlq",
+    "objkind": "function",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "reprocess_dlq",
+    "objkind": "function",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
    }
   ],
   "raises": [
@@ -60899,16 +60920,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "function": "reprocess_dlq",
-    "msg": "Acesso negado: apenas administradores podem reprocessar DLQ.",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "function": "reprocess_dlq",
-    "msg": "DLQ item não encontrado ou já resolvido",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "function": "resolve_integrity_alert",
     "msg": "access denied: admin role required",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
@@ -61257,6 +61268,21 @@
     "function": "processar_regua_cobranca",
     "msg": "Sem permissão para esta empresa",
     "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+   },
+   {
+    "function": "reprocess_dlq",
+    "msg": "Acesso negado: apenas administradores podem reprocessar DLQ.",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "function": "reprocess_dlq",
+    "msg": "DLQ item não encontrado ou já resolvido",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "function": "reprocess_dlq",
+    "msg": "Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual.",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
    }
   ],
   "seed": [
@@ -61277,6 +61303,12 @@
     "columns": "user_id, theme, language, currency",
     "values": "(NEW.id, 'system', 'pt-BR', 'BRL') ON CONFLICT (user_id) DO NOTHING",
     "src": "supabase/migrations/003_seed_data.sql"
+   },
+   {
+    "table": "benchmarks_setoriais",
+    "columns": "indicador, cnae_prefix, setor, regime, carga_media_pct, fonte, vigencia_inicio",
+    "values": "('carga_tributaria_total', '47', 'Comércio Varejista', 'simples_nacional', 6.5, 'IBPT 2024', '2026-01-01'), ('carga_tributaria_total', '47', 'Comércio Varejista', 'lucro_presumido', 11.3, 'IBPT 2024', '2026-01-01'), ('carga_tributaria_total', '47', 'Comércio Varejista', 'lucro_real', 14.8, 'IBPT 2024', '2026-01-01'), ('carga_tributaria_total', '10', 'Indústria de Alimentos', 'lucro_presumido', 13. …",
+    "src": "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql"
    }
   ],
   "comments": {
@@ -72546,7 +72578,7 @@
   {
    "module": "supabase/functions",
    "files": 227,
-   "lines": 50542,
+   "lines": 50598,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72807,8 +72839,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1029,
-   "lines": 79387,
+   "files": 1033,
+   "lines": 79669,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -150416,17 +150448,18 @@
     "args": "p_dlq_id uuid, p_notes text DEFAULT NULL::text",
     "returns": "uuid",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_dlq public.webhook_dlq%ROWTYPE; v_new_log_id UUID; BEGIN IF NOT public.has_role(auth.uid(), 'admin'::public.app_role) THEN RAISE EXCEPTION 'Acesso negado: apenas administradores podem reprocessar DLQ.'; END IF; SELECT * INTO v_dlq FROM public.webhook_dlq WHERE id = p_dlq_id AND resolved_at IS NULL; IF v_dlq IS NULL THEN RAISE EXCEPTION 'DLQ item não encontrado ou já resolvido'; END IF; INSERT INTO public.webhooks_log ( source, event_type, external_id, payload, status, attempts, next_retry_at ) VALUES ( v_dlq.source, v_dlq.event_type, v_dlq.external_id, v_dlq.payload, 'pending', 0, now() ) RETURNING id INTO v_new_log_id; UPDATE public.webhook_dlq SET resolved_at = now(), resolved_by …",
+    "body": "DECLARE v_dlq public.webhook_dlq%ROWTYPE; v_log_id UUID; v_log_status TEXT; BEGIN IF NOT public.has_role(auth.uid(), 'admin'::public.app_role) THEN RAISE EXCEPTION 'Acesso negado: apenas administradores podem reprocessar DLQ.'; END IF; SELECT * INTO v_dlq FROM public.webhook_dlq WHERE id = p_dlq_id AND resolved_at IS NULL FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'DLQ item não encontrado ou já resolvido'; END IF; SELECT id, status INTO v_log_id, v_log_status FROM public.webhooks_log WHERE dlq_id = p_dlq_id ORDER BY created_at DESC LIMIT 1 FOR UPDATE; IF v_log_id IS NULL AND v_dlq.external_id IS NOT NULL THEN SELECT id, status INTO v_log_id, v_log_status FROM public.webhooks_log WHERE sou …",
     "raises": [
      "Acesso negado: apenas administradores podem reprocessar DLQ.",
-     "DLQ item não encontrado ou já resolvido"
+     "DLQ item não encontrado ou já resolvido",
+     "Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual."
     ],
     "tables": [
      "v_dlq",
-     "v_new_log_id",
+     "v_log_id",
      "webhook_dlq",
      "webhooks_log"
     ]
@@ -153656,16 +153689,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "function": "reprocess_dlq",
-    "msg": "Acesso negado: apenas administradores podem reprocessar DLQ.",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "function": "reprocess_dlq",
-    "msg": "DLQ item não encontrado ou já resolvido",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "function": "resolve_integrity_alert",
     "msg": "access denied: admin role required",
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
@@ -154014,6 +154037,21 @@
     "function": "processar_regua_cobranca",
     "msg": "Sem permissão para esta empresa",
     "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+   },
+   {
+    "function": "reprocess_dlq",
+    "msg": "Acesso negado: apenas administradores podem reprocessar DLQ.",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "function": "reprocess_dlq",
+    "msg": "DLQ item não encontrado ou já resolvido",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+   },
+   {
+    "function": "reprocess_dlq",
+    "msg": "Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual.",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
    }
   ],
   "db_generated": [
@@ -171498,6 +171536,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261117010000_marcar_contas_vencidas.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "reprocess_dlq",
+    "objkind": "function",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "reprocess_dlq",
+    "objkind": "function",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
    }
   ],
   "guards": [
@@ -230674,14 +230728,15 @@
   },
   "supabase/functions/_shared/cnae.ts": {
    "path": "supabase/functions/_shared/cnae.ts",
-   "lines": 86,
+   "lines": 110,
    "exports": [
     "function prefixosCnaeCandidatos",
     "function porPrefixoMaisEspecifico",
     "const REGIMES_CANONICOS",
     "type RegimeCanonico",
     "function regimeParaBenchmark",
-    "function chaveReferenciaInterna"
+    "function chaveReferenciaInterna",
+    "function cargaDoPeriodo"
    ],
    "enums": [
     {
@@ -230692,7 +230747,7 @@
   },
   "supabase/functions/_shared/cnae_test.ts": {
    "path": "supabase/functions/_shared/cnae_test.ts",
-   "lines": 67
+   "lines": 94
   },
   "supabase/functions/_shared/concurrency-limiter.ts": {
    "path": "supabase/functions/_shared/concurrency-limiter.ts",
@@ -237073,7 +237128,7 @@
   },
   "supabase/functions/gerar-alertas-tributarios/index.ts": {
    "path": "supabase/functions/gerar-alertas-tributarios/index.ts",
-   "lines": 400,
+   "lines": 405,
    "exports": [
     "const handler"
    ],
@@ -242680,7 +242735,7 @@
   },
   "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql": {
    "path": "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
-   "lines": 107
+   "lines": 178
   },
   "supabase/migrations/20260417194455_0e8846ae-e2ac-4758-9070-bc587ce37ed7.sql": {
    "path": "supabase/migrations/20260417194455_0e8846ae-e2ac-4758-9070-bc587ce37ed7.sql",
@@ -247107,6 +247162,22 @@
    "lines": 132,
    "uses_service_role": true
   },
+  "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql": {
+   "path": "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql",
+   "lines": 17
+  },
+  "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql": {
+   "path": "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
+   "lines": 32
+  },
+  "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql": {
+   "path": "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
+   "lines": 38
+  },
+  "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql": {
+   "path": "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
+   "lines": 124
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -247215,10 +247286,26 @@
   }
  },
  "git": {
-  "sha": "2627e95b23495e252229da3f0330a03e960bb490",
+  "sha": "e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e4c5fa9",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)",
+    "files": [
+     "supabase/functions/_shared/cnae.ts",
+     "supabase/functions/_shared/cnae_test.ts",
+     "supabase/functions/gerar-alertas-tributarios/index.ts",
+     "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
+     "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql",
+     "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
+     "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
+     "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql"
+    ]
+   },
    {
     "sha": "2627e95",
     "date": "2026-11-17",
@@ -247578,22 +247665,6 @@
      "src/hooks/__tests__/useExpertContext.inadimplencia.test.tsx",
      "src/hooks/useExpertContext.ts"
     ]
-   },
-   {
-    "sha": "c7bd81b",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)",
-    "files": [
-     "src/components/asaas/NovaCobrancaDialog.tsx",
-     "src/components/expert/ProactiveSuggestions.tsx",
-     "src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts",
-     "src/hooks/expert-actions/report-actions.ts",
-     "src/pages/Empresas.helpers.ts",
-     "src/pages/Empresas.tsx",
-     "supabase/functions/bitrix24-sync/index.ts",
-     "supabase/functions/executar-relatorios/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -247604,6 +247675,18 @@
    [
     "bun.lock",
     5
+   ],
+   [
+    "supabase/functions/_shared/cnae.ts",
+    2
+   ],
+   [
+    "supabase/functions/_shared/cnae_test.ts",
+    2
+   ],
+   [
+    "supabase/functions/gerar-alertas-tributarios/index.ts",
+    2
    ],
    [
     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
@@ -247646,35 +247729,23 @@
     2
    ],
    [
-    "src/components/expert/ProactiveSuggestions.tsx",
-    2
-   ],
-   [
-    "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
+    "supabase/migrations/20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
     1
    ],
    [
-    "src/hooks/useConciliacaoPage.ts",
+    "supabase/migrations/20261117052000_grant_reprocess_dlq_authenticated.sql",
     1
    ],
    [
-    "src/lib/conciliacao-page-helpers.ts",
+    "supabase/migrations/20261117052100_desduplica_faixas_alcada.sql",
     1
    ],
    [
-    "src/hooks/financial/useContasReceber.ts",
+    "supabase/migrations/20261117052200_seed_benchmarks_setoriais.sql",
     1
    ],
    [
-    "src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/useOportunidadesElisao.ts",
-    1
-   ],
-   [
-    "src/hooks/financial/useContasPagar.ts",
+    "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
     1
    ]
   ]

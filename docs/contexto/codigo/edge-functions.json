@@ -2041,7 +2041,7 @@
    "nome": "gerar-alertas-tributarios",
    "entrada": "supabase/functions/gerar-alertas-tributarios/index.ts",
    "arquivos": 1,
-   "linhas": 399,
+   "linhas": 404,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"

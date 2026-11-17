@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2627e95b23` · branch `main` · 2026-11-17 08:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e4c5fa96ae` · branch `main` · 2026-11-17 09:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -882,7 +882,7 @@ Middleware matcher (Next.js): nenhum
 | grant | anon, authenticated | execute | `log_sso_onboarding_event`, `log_sso_onboarding_event`, `gerar_numero_acordo`, `resolve_sso_providers_for_domain`, `get_lockout_details`, `is_user_locked` |
 | grant | anon, authenticated, service_role | execute | `resolve_sso_providers_for_domain`, `resolve_sso_providers_for_domain`, `resolve_sso_providers_for_domain` |
 | grant | authenticated | all | `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `public`, `public`, `public`, `anomalias_detectadas`, `anomalia_toast_eventos`, `centros_custo`, `contratos`, `metas_financeiras`, `partidas_contabeis` … +41 |
-| grant | authenticated | execute | `registrar_evento_receber`, `processar_regua_cobranca`, `confirmar_envio_cobranca`, `gerar_numero_acordo`, `registrar_auditoria_config`, `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `reprocess_dlq`, `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `compare_pg_stat_baseline` … +25 |
+| grant | authenticated | execute | `registrar_evento_receber`, `processar_regua_cobranca`, `confirmar_envio_cobranca`, `gerar_numero_acordo`, `registrar_auditoria_config`, `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `reprocess_dlq`, `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `compare_pg_stat_baseline` … +27 |
 | grant | authenticated | insert, update, delete | `ufs` |
 | grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +46 |
 | grant | authenticated | select, delete | `api_keys` |

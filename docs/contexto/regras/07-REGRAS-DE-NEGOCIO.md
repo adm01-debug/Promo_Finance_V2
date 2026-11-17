@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2627e95b23` · branch `main` · 2026-11-17 08:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e4c5fa96ae` · branch `main` · 2026-11-17 09:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1002,8 +1002,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `registrar_evento_receber` | Conta nao informada | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `registrar_evento_receber` | Conta a receber inexistente | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `registrar_evento_receber` | Acesso negado a empresa da conta informada | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
-| `reprocess_dlq` | Acesso negado: apenas administradores podem reprocessar DLQ. | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
-| `reprocess_dlq` | DLQ item não encontrado ou já resolvido | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `resolve_integrity_alert` | access denied: admin role required | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `run_observability_rpc` | not authorized | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `run_observability_rpc` | function % not allowed | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
@@ -1074,6 +1072,9 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `validar_partidas_dobradas` | Partidas não balanceadas no lançamento %: Débitos=% Créditos=% | `supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql` |
 | `drop_old_partitions` | retention_months deve ser >= 1 | `supabase/migrations/20261113114643_drop_old_partitions_alinha_repo.sql` |
 | `processar_regua_cobranca` | Sem permissão para esta empresa | `supabase/migrations/20261117010000_marcar_contas_vencidas.sql` |
+| `reprocess_dlq` | Acesso negado: apenas administradores podem reprocessar DLQ. | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
+| `reprocess_dlq` | DLQ item não encontrado ou já resolvido | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
+| `reprocess_dlq` | Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual. | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
 
 ## E. Estados, máquinas de estado e transições
 

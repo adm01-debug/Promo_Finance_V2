@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2627e95b23495e252229da3f0330a03e960bb490",
+  "commit": "e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a",
   "branch": "main",
-  "data_commit": "2026-11-17T05:44:27-03:00",
+  "data_commit": "2026-11-17T06:09:31-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e4c5fa9",
+    "data": "2026-11-17",
+    "assunto": "infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)"
+   },
    {
     "sha": "2627e95",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "5bc41a5",
     "data": "2026-11-16",
     "assunto": "fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)"
-   },
-   {
-    "sha": "e93d744",
-    "data": "2026-11-16",
-    "assunto": "fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)"
    }
   ],
-  "arquivos_mudados_7d": 846,
+  "arquivos_mudados_7d": 850,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -160,11 +160,11 @@
     "mudancas": 24
    },
    {
-    "pasta": "src/components/contas-pagar",
-    "mudancas": 21
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 23
    },
    {
-    "pasta": "supabase/functions/_shared",
+    "pasta": "src/components/contas-pagar",
     "mudancas": 21
    },
    {
@@ -254,10 +254,6 @@
     "mudancas": 10
    },
    {
-    "arquivo": "supabase/functions/mcp-query/index.ts",
-    "mudancas": 10
-   },
-   {
     "arquivo": ".github/workflows/functions-deploy.yml",
     "mudancas": 9
    },
@@ -294,6 +290,10 @@
     "mudancas": 9
    },
    {
+    "arquivo": "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "mudancas": 9
+   },
+   {
     "arquivo": "supabase/functions/gerar-sped-ecd/index.ts",
     "mudancas": 9
    }
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 173
+    "commits": 174
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3898,
+  "arquivos_total": 3902,
   "arquivos_codigo": 2460,
-  "linhas_codigo": 438540,
+  "linhas_codigo": 438596,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
-  "migrations": 1029,
+  "migrations": 1033,
   "cron_jobs": 22,
   "testes": 467,
   "workflows": 19,
@@ -684,7 +684,7 @@
   },
   "supabase/functions": {
    "arquivos": 227,
-   "linhas": 50315
+   "linhas": 50371
   },
   "supabase/tests": {
    "arquivos": 2,

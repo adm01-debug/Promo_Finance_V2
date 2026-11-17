@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2627e95b23495e252229da3f0330a03e960bb490` (2026-11-17T05:44:27-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e4c5fa96ae7cfb397ba07d4c0e2290286f37d26a` (2026-11-17T06:09:31-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2346), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2346), SQL (1103), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3898 |
+| arquivos_total | 3902 |
 | arquivos_codigo | 2460 |
-| linhas_codigo | 438540 |
+| linhas_codigo | 438596 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 340 |
-| migrations | 1029 |
+| migrations | 1033 |
 | cron_jobs | 22 |
 | testes | 467 |
 | workflows | 19 |
@@ -475,7 +475,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/bling-proxy/index.ts (11)
 - src/hooks/useConciliacaoPage.ts (10)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
-- supabase/functions/mcp-query/index.ts (10)
+- .github/workflows/functions-deploy.yml (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `e4c5fa9` infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)
 - 2026-11-17 `2627e95` fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)
 - 2026-11-17 `c772d63` fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)
 - 2026-11-17 `685b65c` fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `58d7e40` feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)
 - 2026-11-17 `2698b5b` fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)
 - 2026-11-17 `61d2a4b` fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)
-- 2026-11-17 `6139096` feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
