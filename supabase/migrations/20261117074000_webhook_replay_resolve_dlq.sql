@@ -68,5 +68,14 @@ BEGIN
 END;
 $function$;
 
-REVOKE EXECUTE ON FUNCTION public.webhook_replay(UUID) FROM PUBLIC, anon;
-GRANT  EXECUTE ON FUNCTION public.webhook_replay(UUID) TO authenticated, service_role;
+-- Privilégios: espelham o estado real de produção, não a definição original.
+-- `20260826050000_revoke_execute_authenticated_e09.sql:148` revogou `authenticated`
+-- de propósito, e a Edge Function `webhook-replay` chama a RPC com service_role
+-- (`webhook-replay/index.ts:43-85`), registrando quem pediu o replay. Repetir o
+-- GRANT antigo reabriria a chamada direta por administrador autenticado, sem esse
+-- registro (achado do Devin e do Codex na PR #418).
+--
+-- Conferido em produção: proacl de webhook_replay = {postgres=X, service_role=X}
+-- — `CREATE OR REPLACE FUNCTION` não altera privilégios, então nada muda lá.
+REVOKE EXECUTE ON FUNCTION public.webhook_replay(UUID) FROM PUBLIC, anon, authenticated;
+GRANT  EXECUTE ON FUNCTION public.webhook_replay(UUID) TO service_role;
