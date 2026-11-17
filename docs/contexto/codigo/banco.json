@@ -12,7 +12,7 @@
  "migrations": 1029,
  "seeds": [],
  "avisos": [
-  "191 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "195 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -1684,13 +1684,6 @@
    "evento": "insert or update or delete",
    "tabela": "movimentacoes",
    "funcao": "fn_saldo_movimentacao"
-  },
-  {
-   "nome": "trigger_gerar_contabilidade",
-   "quando": "after",
-   "evento": "insert",
-   "tabela": "movimentacoes",
-   "funcao": "gerar_lancamento_contabil_automatico"
   },
   {
    "nome": "update_movimentacoes_updated_at",
@@ -9804,14 +9797,7 @@
   "audit_logs_2026_01": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_01",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -9838,14 +9824,7 @@
   "audit_logs_2026_02": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_02",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -9872,14 +9851,7 @@
   "audit_logs_2026_03": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_03",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -9906,14 +9878,7 @@
   "audit_logs_2026_04": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_04",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -9940,14 +9905,7 @@
   "audit_logs_2026_05": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_05",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -9974,14 +9932,7 @@
   "audit_logs_2026_06": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_06",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -10008,14 +9959,7 @@
   "audit_logs_2026_07": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_07",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -10042,14 +9986,7 @@
   "audit_logs_2026_08": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_08",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -10076,14 +10013,7 @@
   "audit_logs_2026_09": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_09",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -10110,14 +10040,7 @@
   "audit_logs_2026_10": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_audit_logs_2026_10",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25194,14 +25117,7 @@
   "frontend_error_logs_2026_01": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_01",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25224,14 +25140,7 @@
   "frontend_error_logs_2026_02": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_02",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25254,14 +25163,7 @@
   "frontend_error_logs_2026_03": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_03",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25284,14 +25186,7 @@
   "frontend_error_logs_2026_04": {
    "colunas": {},
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_04",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25322,14 +25217,7 @@
     }
    },
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_05",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [
     {
      "nome": "frontend_error_logs_2026_05_severity_created_at_idx",
@@ -25380,14 +25268,7 @@
     }
    },
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_06",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25432,14 +25313,7 @@
     }
    },
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_07",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25484,14 +25358,7 @@
     }
    },
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_08",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25536,14 +25403,7 @@
     }
    },
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_09",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -25588,14 +25448,7 @@
     }
    },
    "rls": false,
-   "policies": [
-    {
-     "nome": "admin_only_frontend_error_logs_2026_10",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "policies": [],
    "indices": [],
    "fks": [],
    "criada_em": null,
@@ -30143,7 +29996,6 @@
     "trg_auditoria_movimentacoes",
     "trg_contabilizar_movimentacao",
     "trg_saldo_movimentacao",
-    "trigger_gerar_contabilidade",
     "update_movimentacoes_updated_at"
    ],
    "sem_rls": false,
@@ -39872,6 +39724,13 @@
   },
   "regras_contabilizacao_automatica": {
    "colunas": {
+    "acoes": {
+     "tipo": "jsonb",
+     "nn": true,
+     "pk": false,
+     "default": "'{}'::jsonb",
+     "ref": null
+    },
     "ativo": {
      "tipo": "boolean",
      "nn": true,
@@ -40023,9 +39882,7 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": [
-     "acoes"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 2,
    "usada_em_edges": [

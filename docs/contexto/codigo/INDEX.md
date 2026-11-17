@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8f1767c8f0ba94e3d8b0d35164282687b314206f` (2026-11-16T20:04:53-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `3ea2086067a19506edef05ac5be9424bf29eb8ff` (2026-11-16T21:33:30-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -448,7 +448,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
-- tabelas_com_drift_migration_vs_types: 156 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
+- tabelas_com_drift_migration_vs_types: 155 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 44 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/admin/telemetry/AcessosSuspeitosPanel.tsx, src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
@@ -461,21 +461,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (34)
-- bun.lock (29)
-- .github/workflows/ci.yml (27)
-- supabase/functions/asaas-proxy/index.ts (16)
-- .github/workflows/deno-tests.yml (15)
-- supabase/config.toml (14)
-- supabase/functions/mcp-query/index.ts (14)
+- package.json (33)
+- bun.lock (28)
+- .github/workflows/ci.yml (26)
+- supabase/functions/asaas-proxy/index.ts (15)
+- .github/workflows/deno-tests.yml (14)
 - env.manifest.json (13)
-- .github/workflows/supabase-linter.yml (12)
-- supabase/functions/bling-proxy/index.ts (12)
+- supabase/config.toml (13)
+- supabase/functions/mcp-query/index.ts (13)
+- .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
-- supabase/functions/gerar-pacote-evidencias/index.ts (11)
-- supabase/functions/n8n-callback/index.ts (11)
+- supabase/functions/bling-proxy/index.ts (11)
+- supabase/functions/gerar-pacote-evidencias/index.ts (10)
+- supabase/functions/n8n-callback/index.ts (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -627,6 +627,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `3ea2086` fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)
 - 2026-11-16 `8f1767c` feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)
 - 2026-11-16 `f48e9c1` fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)
 - 2026-11-16 `c7bd81b` fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)
@@ -641,7 +642,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `38f4896` fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)
 - 2026-11-16 `311bf35` fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)
 - 2026-11-16 `40876f4` fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)
-- 2026-11-16 `e314002` chore(db): versiona a DDL que está em produção e não existe no repositório (#380)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

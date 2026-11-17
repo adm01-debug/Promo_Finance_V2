@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)",
    "feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)",
    "fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)",
    "fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)",
-   "fix(db): catálogo de elisão volta a ser tabela na cadeia, como já é em produção (#393)",
-   "fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)"
+   "fix(db): catálogo de elisão volta a ser tabela na cadeia, como já é em produção (#393)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

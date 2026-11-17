@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8f1767c8f0ba94e3d8b0d35164282687b314206f",
+  "commit": "3ea2086067a19506edef05ac5be9424bf29eb8ff",
   "branch": "main",
-  "data_commit": "2026-11-16T20:04:53-03:00",
+  "data_commit": "2026-11-16T21:33:30-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "3ea2086",
+    "data": "2026-11-16",
+    "assunto": "fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)"
+   },
    {
     "sha": "8f1767c",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "c4b811d",
     "data": "2026-11-16",
     "assunto": "fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)"
-   },
-   {
-    "sha": "a6393dc",
-    "data": "2026-11-16",
-    "assunto": "chore(ci): resgata docs/ci/kpi.json — custo e taxa de falha por workflow (#363)"
    }
   ],
-  "arquivos_mudados_7d": 762,
+  "arquivos_mudados_7d": 765,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,30 +199,22 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 29
+    "mudancas": 28
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 27
+    "mudancas": 26
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 16
-   },
-   {
-    "arquivo": ".github/workflows/deno-tests.yml",
     "mudancas": 15
    },
    {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 14
-   },
-   {
-    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "arquivo": ".github/workflows/deno-tests.yml",
     "mudancas": 14
    },
    {
@@ -230,12 +222,16 @@
     "mudancas": 13
    },
    {
-    "arquivo": ".github/workflows/supabase-linter.yml",
-    "mudancas": 12
+    "arquivo": "supabase/config.toml",
+    "mudancas": 13
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 12
+    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "mudancas": 13
+   },
+   {
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 11
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -250,58 +246,62 @@
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 11
+   },
+   {
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "mudancas": 10
    },
    {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
-    "mudancas": 11
+    "mudancas": 10
+   },
+   {
+    "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 9
    },
    {
     "arquivo": "src/App.tsx",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/bling-webhook/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/convidar-contador/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/enviar-alerta-email/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/gerar-sped-ecd/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 151
+    "commits": 152
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -1064,7 +1064,6 @@
    "regimes_especiais_empresa",
    "regimes_simulados",
    "regras_conciliacao",
-   "regras_contabilizacao_automatica",
    "regras_roteamento_financeiro",
    "regua_cobranca",
    "regua_cobranca_status",

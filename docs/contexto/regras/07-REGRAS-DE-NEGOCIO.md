@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `8f1767c8f0` · branch `main` · 2026-11-16 23:06 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `3ea2086067` · branch `main` · 2026-11-17 00:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `cnaes` | cnaes_select_authenticated | SELECT | authenticated | permissive | `true` |  |
 | `cnpja_cache` | cnpja_cache_service_role_only | ALL | service_role | permissive | `true` | `true` |
 | `elisao_alertas` | elisao_alertas_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
-| … +569 linhas — lista completa em `context.json` | | | | | | |
+| … +549 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -756,7 +756,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | audit_asaas_payments | AFTER INSERT OR UPDATE OR DELETE | `asaas_payments` | `audit_trigger_function` |  |
 | audit_asaas_transfers | AFTER INSERT OR UPDATE OR DELETE | `asaas_transfers` | `audit_trigger_function` |  |
 | trigger_asaas_settlement | AFTER UPDATE | `asaas_payments` | `handle_asaas_payment_settlement` |  |
-| trigger_gerar_contabilidade | AFTER INSERT | `movimentacoes` | `gerar_lancamento_contabil_automatico` |  |
 | trigger_analisar_whatsapp | BEFORE INSERT | `whatsapp_conversas` | `analisar_sentimento_whatsapp` |  |
 | tr_alerta_webhook_falha | AFTER INSERT OR UPDATE | `webhooks_log` | `gerar_alerta_falha_processamento` | `NEW.erro_mensagem IS NOT NULL` |
 | tr_alerta_regua_falha | AFTER INSERT | `execucoes_regua_cobranca` | `gerar_alerta_falha_regua` | `NEW.status = 'falha'` |
@@ -923,7 +922,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_transferencia_movimentacao | AFTER INSERT OR UPDATE | `transferencias` | `fn_transferencia_movimentacao` |  |
 | trg_sync_valor_pago | AFTER INSERT OR DELETE OR UPDATE OF DELETED_AT, CONTA_PAGAR_ID, CONTA_RECEBER_ID | `movimentacoes` | `fn_sync_valor_pago_movimentacao` |  |
 | trg_movimentacao_origem_guard | BEFORE INSERT OR UPDATE OF ORIGEM, TRANSFERENCIA_ID | `movimentacoes` | `fn_movimentacao_origem_guard` |  |
-| … +4 linhas — lista completa em `context.json` | | | | |
+| trg_lancamento_estorno_marker | BEFORE UPDATE OF STATUS | `lancamentos_contabeis` | `fn_lancamento_estorno_marker` |  |
+| … +3 linhas — lista completa em `context.json` | | | | |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
