@@ -45,6 +45,25 @@ const wrapper = () => {
   );
 };
 
+/** Uma pendencia + um cliente, para a analise chegar na consulta do historico. */
+const PENDENTE = {
+  id: 't1',
+  valor: 10000,
+  valor_recebido: null,
+  data_vencimento: '2026-12-01',
+  status: 'pendente',
+  cliente_id: 'cli-1',
+  cliente_nome: 'Cliente Um',
+  clientes: {
+    id: 'cli-1',
+    razao_social: 'Cliente Um',
+    nome_fantasia: null,
+    score: null,
+    limite_credito: 50000,
+    ramo_atividade: null,
+  },
+};
+
 describe('PrevisaoInadimplencia — escopo por empresa', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -79,5 +98,146 @@ describe('PrevisaoInadimplencia — escopo por empresa', () => {
 
     expect(await screen.findByText(/Previsão de Inadimplência/i)).toBeInTheDocument();
     expect(filtros.filter((f) => f.coluna === 'empresa_id')).toHaveLength(0);
+  });
+
+  it('filtra TAMBEM o historico pela empresa (com pendencia, a 2a consulta roda)', async () => {
+    // Revisao da PR #404 (Devin): os dois testes acima devolvem pendencia vazia,
+    // entao a analise retorna antes da consulta do historico -- remover o filtro
+    // de empresa DELE mantinha os dois verdes. Aqui ha pendencia e cliente.
+    const respostas = [
+      { data: [PENDENTE], error: null },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    await screen.findByText(/Cliente Um/i);
+    // duas consultas a contas_receber (pendencias + historico), ambas com o
+    // filtro de empresa. A 3a chamada de `from` e de whatsapp_conversas, do
+    // cartao do cliente, fora do escopo desta analise.
+    expect(mockFrom.mock.calls.filter((c) => c[0] === 'contas_receber')).toHaveLength(2);
+    expect(filtros.filter((f) => f.coluna === 'empresa_id' && f.valor === 'e1')).toHaveLength(2);
+    // e o historico pede as datas, nao so o status
+    expect(
+      filtros.some(
+        (f) =>
+          f.metodo === 'select' &&
+          typeof f.coluna === 'string' &&
+          f.coluna.includes('data_recebimento')
+      )
+    ).toBe(true);
+  });
+
+  it('erro na consulta NAO vira "nenhum cliente em risco"', async () => {
+    // Antes: o erro era descartado, `data: null` virava analise vazia e a tela
+    // exibia KPI zerado como sucesso.
+    mockFrom.mockImplementation(() => builder({ data: null, error: { message: 'falha de rede' } }));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText(/Não foi possível calcular a previsão/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Clientes em Risco/i)).not.toBeInTheDocument();
+  });
+
+  it('erro no HISTORICO tambem reprova a analise', async () => {
+    const respostas = [
+      { data: [PENDENTE], error: null },
+      { data: null, error: { message: 'falha no historico' } },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+  });
+});
+
+describe('PrevisaoInadimplencia — escala do score e atraso no historico', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    filtros.length = 0;
+  });
+
+  it('score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom', async () => {
+    // Revisao da PR #404 (Devin): os limites eram 50/70/85, de uma escala 0-100,
+    // enquanto useScoringClientes grava 0-1000 -- 250 recebia zero ponto.
+    const respostas = [
+      {
+        data: [{ ...PENDENTE, clientes: { ...PENDENTE.clientes, score: 250 } }],
+        error: null,
+      },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByText(/Score baixo \(250 de 1000\)/i)).toBeInTheDocument();
+  });
+
+  it('score nulo e exibido como nao calculado, sem inventar 100', async () => {
+    const respostas = [
+      { data: [PENDENTE], error: null },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByText(/Score não calculado para este cliente/i)).toBeInTheDocument();
+    expect(screen.getByText(/Score: não calculado/i)).toBeInTheDocument();
+  });
+
+  it('titulo pago com atraso conta como atraso no historico', async () => {
+    // Antes, so `status === 'vencido'` contava: receber o titulo apagava o
+    // atraso da analise.
+    const respostas = [
+      { data: [PENDENTE], error: null },
+      {
+        data: [
+          { status: 'pago', data_vencimento: '2026-01-10', data_recebimento: '2026-01-30' },
+          { status: 'pago', data_vencimento: '2026-02-10', data_recebimento: '2026-02-05' },
+          { status: 'cancelado', data_vencimento: '2026-03-10', data_recebimento: null },
+        ],
+        error: null,
+      },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    // 1 atraso (pago 20 dias depois); pago antes do vencimento e cancelado nao contam
+    expect(await screen.findByText(/1 atraso\(s\) no histórico/i)).toBeInTheDocument();
   });
 });

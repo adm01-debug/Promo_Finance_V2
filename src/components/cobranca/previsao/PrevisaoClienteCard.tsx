@@ -21,7 +21,12 @@ export interface ClienteRisco {
   id: string;
   nome: string;
   nomeFantasia: string | null;
-  score: number;
+  /**
+   * Escala 0-1000, do unico produtor (useScoringClientes.ts:144). `null` =
+   * nunca calculado -- hoje e o caso de todos os 12 clientes em producao, e
+   * exibir "100" era numero inventado.
+   */
+  score: number | null;
   totalPendente: number;
   diasAteVencimento: number;
   historicoAtrasos: number;
@@ -80,7 +85,7 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
               </span>
               <span className="flex items-center gap-1">
                 <TrendingDown className="h-3 w-3" />
-                Score: {cliente.score}
+                Score: {cliente.score == null ? 'não calculado' : `${cliente.score}/1000`}
               </span>
             </div>
 

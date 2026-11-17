@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Brain, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Brain, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { format, differenceInDays, addDays } from 'date-fns';
@@ -34,6 +34,8 @@ interface ContaData {
 
 interface HistoricoContaData {
   status: string;
+  data_vencimento: string | null;
+  data_recebimento: string | null;
 }
 
 interface ClienteMapCliente {
@@ -44,18 +46,46 @@ interface ClienteMapCliente {
   nome_fantasia: string | null;
 }
 
+/**
+ * `clientes.score` esta na escala 0-1000: o unico produtor e
+ * useScoringClientes.ts:144 (`recalcularScoreMutation`), que grava o resultado
+ * de `Math.min(1000, ...)`. Este arquivo comparava com 50/70/85 -- limites de
+ * uma escala 0-100 -- entao um cliente recalculado com 250 (critico para o
+ * produtor) recebia ZERO ponto de risco, igual a um de 850.
+ *
+ * As faixas abaixo sao as mesmas do produtor (useScoringClientes.ts:372-373):
+ * >= 700 baixo, >= 500 medio, >= 300 alto, < 300 critico.
+ */
+const SCORE_RISCO_ALTO = 300;
+const SCORE_RISCO_MEDIO = 500;
+const SCORE_RISCO_BAIXO = 700;
+
+/** Titulo em atraso: vencido em aberto OU recebido depois do vencimento. */
+function teveAtraso(c: HistoricoContaData): boolean {
+  if (c.status === 'cancelado') return false;
+  if (c.status === 'vencido') return true;
+  if (c.data_recebimento && c.data_vencimento) {
+    return c.data_recebimento > c.data_vencimento;
+  }
+  return false;
+}
+
 function calcularProbabilidadeAtraso(
   cliente: ClienteData,
   contasPendentes: ContaData[],
   historicoContas: HistoricoContaData[]
 ): number {
   let score = 0;
-  const scoreCliente = cliente.score || 100;
-  if (scoreCliente < 50) score += 30;
-  else if (scoreCliente < 70) score += 20;
-  else if (scoreCliente < 85) score += 10;
+  // `null` e desconhecido, nao bom: nao pontua, e `gerarFatoresRisco` avisa que
+  // o score nao foi calculado. Zero e valor real e cai na pior faixa.
+  const scoreCliente = cliente.score;
+  if (scoreCliente != null) {
+    if (scoreCliente < SCORE_RISCO_ALTO) score += 30;
+    else if (scoreCliente < SCORE_RISCO_MEDIO) score += 20;
+    else if (scoreCliente < SCORE_RISCO_BAIXO) score += 10;
+  }
 
-  const contasVencidas = historicoContas.filter((c) => c.status === 'vencido');
+  const contasVencidas = historicoContas.filter(teveAtraso);
   const taxaAtraso =
     historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0;
   if (taxaAtraso > 30) score += 40;
@@ -97,10 +127,12 @@ function gerarFatoresRisco(
   historicoContas: HistoricoContaData[]
 ): string[] {
   const fatores: string[] = [];
-  if ((cliente.score || 100) < 70) {
-    fatores.push(`Score baixo (${cliente.score || 0})`);
+  if (cliente.score == null) {
+    fatores.push('Score não calculado para este cliente');
+  } else if (cliente.score < SCORE_RISCO_BAIXO) {
+    fatores.push(`Score baixo (${cliente.score} de 1000)`);
   }
-  const contasVencidas = historicoContas.filter((c) => c.status === 'vencido');
+  const contasVencidas = historicoContas.filter(teveAtraso);
   if (contasVencidas.length > 0) {
     fatores.push(`${contasVencidas.length} atraso(s) no histórico`);
   }
@@ -159,7 +191,10 @@ function useAnaliseInadimplencia(empresaId?: string) {
         .order('data_vencimento');
       if (empresaId) qPendentes = qPendentes.eq('empresa_id', empresaId);
 
-      const { data: contasPendentes } = await qPendentes;
+      // Erro de consulta NAO pode virar "nenhum cliente em risco": a tela
+      // mostrava zeros como analise concluida (achado do Devin na PR #404).
+      const { data: contasPendentes, error: erroPendentes } = await qPendentes;
+      if (erroPendentes) throw erroPendentes;
 
       if (!contasPendentes || contasPendentes.length === 0) {
         return {
@@ -214,15 +249,18 @@ function useAnaliseInadimplencia(empresaId?: string) {
         // isso, atraso do mesmo cliente em OUTRA empresa elevaria o risco aqui.
         let qHistorico = supabase
           .from('contas_receber')
-          .select('status')
+          .select('status, data_vencimento, data_recebimento')
           .eq('cliente_id', clienteId)
           .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
         if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
 
-        const { data: historico } = await qHistorico;
+        const { data: historico, error: erroHistorico } = await qHistorico;
+        if (erroHistorico) throw erroHistorico;
 
         const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
           status: h.status ?? '',
+          data_vencimento: h.data_vencimento ?? null,
+          data_recebimento: h.data_recebimento ?? null,
         }));
         const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historicoContas);
         const nivelRisco = determinarNivelRisco(probabilidade);
@@ -251,10 +289,10 @@ function useAnaliseInadimplencia(empresaId?: string) {
           id: clienteId,
           nome: cliente.razao_social || 'Cliente não identificado',
           nomeFantasia: cliente.nome_fantasia,
-          score: cliente.score || 100,
+          score: cliente.score,
           totalPendente,
           diasAteVencimento: proximoVencimento ? differenceInDays(proximoVencimento, hoje) : 0,
-          historicoAtrasos: historicoContas.filter((c) => c.status === 'vencido').length,
+          historicoAtrasos: historicoContas.filter(teveAtraso).length,
           probabilidadeAtraso: probabilidade,
           nivelRisco,
           fatoresRisco,
@@ -293,7 +331,8 @@ interface PrevisaoInadimplenciaProps {
 
 export function PrevisaoInadimplencia({ empresaId }: PrevisaoInadimplenciaProps) {
   const [tabAtiva, setTabAtiva] = useState('todos');
-  const { data, isLoading, refetch, isFetching } = useAnaliseInadimplencia(empresaId);
+  const { data, isLoading, isError, error, refetch, isFetching } =
+    useAnaliseInadimplencia(empresaId);
 
   const clientesFiltrados =
     data?.clientes.filter((c) => {
@@ -328,6 +367,28 @@ export function PrevisaoInadimplencia({ empresaId }: PrevisaoInadimplenciaProps)
           <div className="text-center space-y-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
             <p className="text-sm text-muted-foreground">Analisando dados históricos...</p>
+          </div>
+        </div>
+      ) : isError ? (
+        /*
+         * Sem este estado, falha de consulta aparecia como KPI zerado: "nenhum
+         * cliente em risco, R$ 0" com cara de analise concluida (achado do
+         * Devin na PR #404). Ausencia de analise nao e ausencia de risco.
+         */
+        <div
+          role="alert"
+          className="flex items-center justify-center h-64 rounded-lg border border-destructive/30 bg-destructive/5"
+        >
+          <div className="text-center space-y-3 px-6">
+            <AlertTriangle className="h-8 w-8 text-destructive mx-auto" />
+            <p className="text-sm font-medium">Não foi possível calcular a previsão.</p>
+            <p className="text-xs text-muted-foreground max-w-md">
+              Os indicadores não são exibidos para não passar falta de dados como ausência de risco.{' '}
+              {error instanceof Error ? error.message : 'Erro ao consultar os recebíveis.'}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+              Tentar de novo
+            </Button>
           </div>
         </div>
       ) : (
