@@ -180,6 +180,38 @@ async function testConnection(
   }
 }
 
+/**
+ * Empresa que o usuario autenticado realmente acessa.
+ *
+ * O sync roda com service_role, que ignora RLS na escrita. Sem empresa_id nem
+ * user_id no payload, o registro entra no banco mas nenhuma policy de leitura
+ * o devolve (`empresa_acessivel(empresa_id)` ou `user_id = auth.uid()`), e o
+ * cliente importado fica invisivel apesar do contador de sucesso.
+ *
+ * Nao pega "a primeira empresa cadastrada": resolve pelo vinculo do proprio
+ * usuario em user_empresas, preferindo a empresa padrao dele.
+ */
+async function resolverEmpresaDoUsuario(supabase: any, userId: string): Promise<string> {
+  const { data, error } = await supabase
+    .from('user_empresas')
+    .select('empresa_id, is_default')
+    .eq('user_id', userId)
+    .eq('ativo', true)
+    .order('is_default', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    throw new Error(`resolver empresa do usuario: ${error.message}`);
+  }
+  const empresaId = data?.empresa_id as string | undefined;
+  if (!empresaId) {
+    throw new Error(
+      'Usuario autenticado nao tem empresa ativa vinculada em user_empresas — vincule antes de sincronizar'
+    );
+  }
+  return empresaId;
+}
+
 async function syncDeals(
   supabase: any,
   accessToken: string,
@@ -213,13 +245,7 @@ async function syncDeals(
       .eq('entidade', 'deal')
       .eq('ativo', true);
 
-    // Get first empresa_id
-    const { data: empresas } = await supabase.from('empresas').select('id').limit(1);
-    const empresaId = empresas?.[0]?.id;
-
-    if (!empresaId) {
-      throw new Error('Nenhuma empresa cadastrada no sistema');
-    }
+    const empresaId = await resolverEmpresaDoUsuario(supabase, userId);
 
     while (true) {
       const result = await callBitrixAPI('crm.deal.list', accessToken, {
@@ -357,6 +383,8 @@ async function syncContacts(
   let start = 0;
 
   try {
+    const empresaId = await resolverEmpresaDoUsuario(supabase, userId);
+
     while (true) {
       const result = await callBitrixAPI('crm.contact.list', accessToken, {
         start,
@@ -401,9 +429,13 @@ async function syncContacts(
             .single();
 
           if (existing) {
+            // update sem empresa_id/user_id: preserva o vinculo que o registro
+            // ja tem em vez de reescrever com a empresa de quem sincronizou
             await supabase.from('clientes').update(clienteData).eq('id', existing.id);
           } else {
-            await supabase.from('clientes').insert(clienteData);
+            await supabase
+              .from('clientes')
+              .insert({ ...clienteData, empresa_id: empresaId, user_id: userId });
           }
 
           processed++;
@@ -486,6 +518,8 @@ async function syncCompanies(
   let start = 0;
 
   try {
+    const empresaId = await resolverEmpresaDoUsuario(supabase, userId);
+
     while (true) {
       const result = await callBitrixAPI('crm.company.list', accessToken, {
         start,
@@ -520,9 +554,12 @@ async function syncCompanies(
             .single();
 
           if (existing) {
+            // update sem empresa_id/user_id: preserva o vinculo existente
             await supabase.from('clientes').update(clienteData).eq('id', existing.id);
           } else {
-            await supabase.from('clientes').insert(clienteData);
+            await supabase
+              .from('clientes')
+              .insert({ ...clienteData, empresa_id: empresaId, user_id: userId });
           }
 
           processed++;
