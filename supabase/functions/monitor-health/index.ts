@@ -119,8 +119,8 @@ function escaparHtml(txt: string): string {
     .replace(/"/g, '&quot;');
 }
 
-// Chamada apenas quando `inserirAlerta` gravou um alerta novo, de modo que o
-// cooldown de 2 h limita também quantas notificações saem por problema.
+// Chamada apenas quando `inserirAlerta` devolve `deveNotificar`: alerta novo E
+// nenhuma notificação do mesmo problema nas últimas 2 h, independente de `lido`.
 async function notificarAlerta(titulo: string, mensagem: string): Promise<Record<string, unknown>> {
   const canais: Record<string, unknown> = { titulo };
   const slackUrl = Deno.env.get('SLACK_WEBHOOK_URL');
@@ -186,6 +186,32 @@ async function notificarAlerta(titulo: string, mensagem: string): Promise<Record
 // Janela de cooldown: não reabrir um alerta do mesmo tipo/título recém-criado.
 const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;
 
+// Gate da notificação externa: diferente de `existeAlertaRecente`, NÃO filtra por
+// `lido`. Marcar o alerta como lido no app (useAlertas) reabre o alerta na tela por
+// política existente, mas não deve liberar um novo e-mail/Slack a cada 30 min.
+export async function existeNotificacaoRecente(
+  db: SupabaseClient,
+  titulo: string
+): Promise<boolean> {
+  const { data, error } = await db
+    .from('alertas')
+    .select('id')
+    .eq('tipo', 'monitor_health')
+    .eq('titulo', titulo)
+    .gte('created_at', new Date(Date.now() - COOLDOWN_ALERTA_MS).toISOString())
+    .limit(1);
+
+  if (error) {
+    // Na dúvida, não notifica: repetir e-mail é pior que atrasar um aviso.
+    log.error('Falha ao checar notificação recente; tratando como já notificado', {
+      context: { error, titulo },
+    });
+    return true;
+  }
+
+  return (data?.length ?? 0) > 0;
+}
+
 async function existeAlertaRecente(db: SupabaseClient, titulo: string): Promise<boolean> {
   const { data, error } = await db
     .from('alertas')
@@ -203,14 +229,23 @@ async function existeAlertaRecente(db: SupabaseClient, titulo: string): Promise<
   return (data?.length ?? 0) > 0;
 }
 
-async function inserirAlerta(
+export interface ResultadoAlerta {
+  inserido: boolean;
+  deveNotificar: boolean;
+}
+
+export async function inserirAlerta(
   db: SupabaseClient,
   titulo: string,
   mensagem: string
-): Promise<boolean> {
+): Promise<ResultadoAlerta> {
+  // Antes de gravar: já saiu notificação deste mesmo problema nas últimas 2h?
+  // Checado aqui porque depois do insert a própria linha nova casaria na consulta.
+  const jaNotificado = await existeNotificacaoRecente(db, titulo);
+
   if (await existeAlertaRecente(db, titulo)) {
     log.info('Alerta já existente nas últimas 2h, pulando duplicata', { context: { titulo } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
   // alertas.user_id é NOT NULL DEFAULT uid(); insert com service_role manda
@@ -225,12 +260,12 @@ async function inserirAlerta(
 
   if (errAdmin) {
     log.error('Falha ao buscar admin destinatário do alerta', { context: { error: errAdmin } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
   if (!admin?.id) {
     log.error('Nenhum admin global encontrado; alerta não inserido', { context: { titulo } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
   const { error } = await db.from('alertas').insert({
@@ -244,98 +279,100 @@ async function inserirAlerta(
 
   if (error) {
     log.error('Falha ao inserir alerta na tabela alertas', { context: { error, titulo } });
-    return false;
+    return { inserido: false, deveNotificar: false };
   }
 
-  return true;
+  return { inserido: true, deveNotificar: !jaNotificado };
 }
 
 // ─── Handler principal ───────────────────────────────────────────────────────
 
-serve(
-  withEdgeObservability('monitor-health', async (req) => {
-    const corsHeaders = corsHeadersPara(req);
+// Guarda igual a notify-performance-alert:201 — permite importar o módulo no teste
+// sem subir servidor.
+if (!Deno.env.get('DENO_TESTING')) {
+  serve(
+    withEdgeObservability('monitor-health', async (req) => {
+      const corsHeaders = corsHeadersPara(req);
 
-    if (req.method === 'OPTIONS') {
-      return new Response('ok', { headers: corsHeaders });
-    }
-
-    // GET é apenas health-check: não executa monitoramento nem insere nada.
-    if (req.method === 'GET') {
-      return new Response(JSON.stringify({ ok: true }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Apenas pg_cron ou chamada interna com segredo rotacionável.
-    const auth = await exigirChamadaInterna(req, 'monitor_health_cron');
-    if (!auth.ok) return auth.resposta;
-
-    try {
-      const db = clientDeServico();
-      const status: StatusMonitor = {
-        cron_falhos: [],
-        webhook_taxa_erro: 0,
-        total_webhooks_2h: 0,
-        total_erros_2h: 0,
-        alertas_inseridos: 0,
-        notificacoes: [],
-      };
-
-      // 1. Cron jobs com 2 falhas consecutivas nas últimas 2h
-      status.cron_falhos = await verificarCronFalhos(db);
-
-      for (const job of status.cron_falhos) {
-        const titulo = `[MONITOR] Cron "${job.jobname}" falhou 2× consecutivas`;
-        const mensagem =
-          `Job: ${job.jobname}\n` +
-          `Falhas consecutivas: ${job.falhas_consecutivas}\n` +
-          `Última execução: ${job.ultima_execucao}\n` +
-          `Erro: ${job.ultimo_erro ?? 'sem detalhe'}`;
-
-        log.warn(titulo, { context: { job } });
-        if (await inserirAlerta(db, titulo, mensagem)) {
-          status.alertas_inseridos++;
-          status.notificacoes.push(await notificarAlerta(titulo, mensagem));
-        }
+      if (req.method === 'OPTIONS') {
+        return new Response('ok', { headers: corsHeaders });
       }
 
-      // 2. Taxa de erro de webhooks nas últimas 2h
-      const { taxa, total, erros } = await verificarWebhooks(db);
-      status.webhook_taxa_erro = taxa;
-      status.total_webhooks_2h = total;
-      status.total_erros_2h = erros;
-
-      if (total > 0 && taxa > 0.2) {
-        // Titulo sem a taxa: `existeAlertaRecente` casa por titulo exato, e a
-        // porcentagem muda a cada rodada — com ela no titulo o cooldown de 2 h
-        // nunca pegava e o alerta reabria a cada 30 min. A taxa segue na mensagem.
-        const titulo = '[MONITOR] Webhooks acima do limiar de erro nas últimas 2h';
-        const mensagem =
-          `Total de webhooks: ${total}\n` +
-          `Com erro: ${erros}\n` +
-          `Taxa: ${(taxa * 100).toFixed(1)}%\n` +
-          `Limiar: 20%`;
-
-        log.warn(titulo, { context: { taxa, total, erros } });
-        if (await inserirAlerta(db, titulo, mensagem)) {
-          status.alertas_inseridos++;
-          status.notificacoes.push(await notificarAlerta(titulo, mensagem));
-        }
+      // GET é apenas health-check: não executa monitoramento nem insere nada.
+      if (req.method === 'GET') {
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
 
-      log.info('monitor-health concluído', { context: { status } });
+      // Apenas pg_cron ou chamada interna com segredo rotacionável.
+      const auth = await exigirChamadaInterna(req, 'monitor_health_cron');
+      if (!auth.ok) return auth.resposta;
 
-      return new Response(JSON.stringify({ ok: true, status }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (err) {
-      const mensagem = err instanceof Error ? err.message : 'erro desconhecido no monitor-health';
-      log.error('Erro inesperado no monitor-health', { context: { error: mensagem } });
-      return new Response(JSON.stringify({ ok: false, error: 'falha interna' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-  })
-);
+      try {
+        const db = clientDeServico();
+        const status: StatusMonitor = {
+          cron_falhos: [],
+          webhook_taxa_erro: 0,
+          total_webhooks_2h: 0,
+          total_erros_2h: 0,
+          alertas_inseridos: 0,
+          notificacoes: [],
+        };
+
+        // 1. Cron jobs com 2 falhas consecutivas nas últimas 2h
+        status.cron_falhos = await verificarCronFalhos(db);
+
+        for (const job of status.cron_falhos) {
+          const titulo = `[MONITOR] Cron "${job.jobname}" falhou 2× consecutivas`;
+          const mensagem =
+            `Job: ${job.jobname}\n` +
+            `Falhas consecutivas: ${job.falhas_consecutivas}\n` +
+            `Última execução: ${job.ultima_execucao}\n` +
+            `Erro: ${job.ultimo_erro ?? 'sem detalhe'}`;
+
+          log.warn(titulo, { context: { job } });
+          const r = await inserirAlerta(db, titulo, mensagem);
+          if (r.inserido) status.alertas_inseridos++;
+          if (r.deveNotificar) status.notificacoes.push(await notificarAlerta(titulo, mensagem));
+        }
+
+        // 2. Taxa de erro de webhooks nas últimas 2h
+        const { taxa, total, erros } = await verificarWebhooks(db);
+        status.webhook_taxa_erro = taxa;
+        status.total_webhooks_2h = total;
+        status.total_erros_2h = erros;
+
+        if (total > 0 && taxa > 0.2) {
+          // Título sem a taxa: `existeAlertaRecente` casa por título exato, e a
+          // porcentagem muda a cada rodada — com ela no título o cooldown de 2 h
+          // nunca pegava e o alerta reabria a cada 30 min. A taxa segue na mensagem.
+          const titulo = '[MONITOR] Webhooks acima do limiar de erro nas últimas 2h';
+          const mensagem =
+            `Total de webhooks: ${total}\n` +
+            `Com erro: ${erros}\n` +
+            `Taxa: ${(taxa * 100).toFixed(1)}%\n` +
+            `Limiar: 20%`;
+
+          log.warn(titulo, { context: { taxa, total, erros } });
+          const r = await inserirAlerta(db, titulo, mensagem);
+          if (r.inserido) status.alertas_inseridos++;
+          if (r.deveNotificar) status.notificacoes.push(await notificarAlerta(titulo, mensagem));
+        }
+
+        log.info('monitor-health concluído', { context: { status } });
+
+        return new Response(JSON.stringify({ ok: true, status }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        const mensagem = err instanceof Error ? err.message : 'erro desconhecido no monitor-health';
+        log.error('Erro inesperado no monitor-health', { context: { error: mensagem } });
+        return new Response(JSON.stringify({ ok: false, error: 'falha interna' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    })
+  );
+}
