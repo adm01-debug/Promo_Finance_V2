@@ -20,6 +20,7 @@ export const RISCO_BADGE: Record<RiscoElisao, string> = {
 export const CATALOGO_PARA_DETECTOR: Record<string, string> = {
   DEP_ACELERADA: 'DEPRECIACAO_ACELERADA',
   INOV_TECNOLOGIA: 'LEI_BEM',
+  CRED_PIS_COFINS: 'RECUPERACAO_PIS_COFINS',
 };
 
 export const STATUS_LABEL: Record<string, string> = {

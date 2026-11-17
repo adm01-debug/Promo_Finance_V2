@@ -9,11 +9,11 @@ vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
 /**
  * public.estrategias_elisao_catalogo tem 8 estratégias com economia de referência,
  * e o hook useOportunidadesElisao já as buscava e devolvia — mas nenhuma das 3
- * páginas que usam o hook desestruturava `catalogo`. Resultado: 6 estratégias
- * catalogadas (R$ 190.500 de referência) nunca apareciam em tela, porque os
+ * páginas que usam o hook desestruturava `catalogo`. Resultado: 5 estratégias
+ * catalogadas (R$ 145.500 de referência) nunca apareciam em tela, porque os
  * códigos do catálogo não existem no motor de 13 detectores.
  *
- * Esta aba passa a listar só as que o motor NÃO avalia. As duas que têm
+ * Esta aba passa a listar só as que o motor NÃO avalia. As três que têm
  * equivalente semântico (CATALOGO_PARA_DETECTOR) ficam de fora para não duplicar
  * o que o motor já mostra acima.
  */
@@ -72,18 +72,30 @@ describe('AnaliseTab — catálogo não avaliado', () => {
   it('soma só o que não é avaliado', () => {
     montar(relatorio(['LEI_BEM']), [
       cat('INOV_TECNOLOGIA', 'Lei do Bem', 95000), // tem detector -> fora
-      cat('CRED_PIS_COFINS', 'Crédito de PIS/COFINS', 45000),
+      cat('CRED_ICMS_ST', 'Recuperação de ICMS-ST', 28000),
       cat('RATEIO_CUSTOS', 'Rateio de Custos', 12000),
     ]);
     const bloco = screen.getByText(/Catalogadas, ainda não avaliadas/).closest('div');
     expect(bloco).toBeTruthy();
     expect(screen.queryByText('Lei do Bem')).not.toBeInTheDocument();
-    expect(screen.getByText('Crédito de PIS/COFINS')).toBeInTheDocument();
+    expect(screen.getByText('Recuperação de ICMS-ST')).toBeInTheDocument();
     expect(screen.getByText('Rateio de Custos')).toBeInTheDocument();
-    // 45000 + 12000 = 57000, nao 152000
-    expect(screen.getByText(/57\.000,00/)).toBeInTheDocument();
-    expect(screen.queryByText(/152\.000,00/)).not.toBeInTheDocument();
+    // 28000 + 12000 = 40000, nao 135000
+    expect(screen.getByText(/40\.000,00/)).toBeInTheDocument();
+    expect(screen.queryByText(/135\.000,00/)).not.toBeInTheDocument();
     expect(screen.getByText(/2 de 3 estratégias/)).toBeInTheDocument();
+  });
+
+  it('NÃO lista CRED_PIS_COFINS: o detector Tema 779 já avalia o mesmo crédito', () => {
+    // Revisão das PRs #398 (Devin e Codex): detectar-recuperacao-pis-cofins.ts avalia
+    // "créditos de PIS/COFINS sobre insumos essenciais" e roda sempre
+    // (orquestrador-elisao.ts:51) — listar o código do catálogo duplicaria a
+    // estratégia e somaria R$ 45.000 indevidos à referência não avaliada.
+    montar(relatorio(['RECUPERACAO_PIS_COFINS']), [
+      cat('CRED_PIS_COFINS', 'Crédito de PIS/COFINS sobre Insumos', 45000),
+    ]);
+    expect(screen.queryByText('Crédito de PIS/COFINS sobre Insumos')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Catalogadas, ainda não avaliadas/)).not.toBeInTheDocument();
   });
 
   it('sem catálogo não renderiza a seção', () => {
