@@ -6,11 +6,39 @@ import { TabsContent } from '@/components/ui/tabs';
 import { Banknote, CheckCircle2, Scale, SearchX, Upload, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '@/lib/formatters';
-import { RISCO_BADGE } from './constants';
+import { CATALOGO_PARA_DETECTOR, RISCO_BADGE } from './constants';
 import type { RelatorioElisao, OportunidadeDetectada } from '@/lib/tributario/elisao';
 
-export function AnaliseTab({ relatorio }: { relatorio: RelatorioElisao }) {
+export interface EstrategiaCatalogo {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  tipo: string | null;
+  economia_estimada_padrao: number | null;
+  ativo: boolean;
+}
+
+export function AnaliseTab({
+  relatorio,
+  catalogo = [],
+}: {
+  relatorio: RelatorioElisao;
+  catalogo?: EstrategiaCatalogo[];
+}) {
   const navigate = useNavigate();
+
+  // Estratégias catalogadas que o motor não avalia: o código do catálogo não tem
+  // detector correspondente (nem direto, nem via CATALOGO_PARA_DETECTOR).
+  const avaliados = new Set(relatorio.oportunidades.map((o) => o.estrategia));
+  const naoAvaliadas = catalogo.filter(
+    (c) => !avaliados.has(c.codigo) && !avaliados.has(CATALOGO_PARA_DETECTOR[c.codigo] ?? '')
+  );
+  const economiaCatalogada = naoAvaliadas.reduce(
+    (acc, c) => acc + Number(c.economia_estimada_padrao ?? 0),
+    0
+  );
+
   return (
     <TabsContent value="analise" className="space-y-4 mt-4">
       {relatorio.total_aplicaveis === 0 && relatorio.total_oportunidades > 0 && (
@@ -101,6 +129,63 @@ export function AnaliseTab({ relatorio }: { relatorio: RelatorioElisao }) {
           </CardContent>
         </Card>
       ))}
+
+      {naoAvaliadas.length > 0 && (
+        <Card className="border-dashed border-warning/40">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <CardTitle className="text-base">
+                  Catalogadas, ainda não avaliadas automaticamente
+                </CardTitle>
+                <CardDescription>
+                  {naoAvaliadas.length} de {catalogo.length} estratégias do catálogo não têm
+                  detector no motor. Os valores abaixo são a estimativa de referência do catálogo,
+                  não um cálculo para esta empresa — exigem análise manual do contador.
+                </CardDescription>
+              </div>
+              {economiaCatalogada > 0 && (
+                <div className="text-right shrink-0">
+                  <div className="text-xs text-muted-foreground">Referência do catálogo</div>
+                  <div className="font-bold text-warning flex items-center gap-1">
+                    <Banknote className="h-4 w-4" aria-hidden="true" />
+                    {formatCurrency(economiaCatalogada)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {naoAvaliadas.map((c) => (
+                <li
+                  key={c.id}
+                  className="flex items-start justify-between gap-4 rounded-md bg-muted/40 p-3"
+                >
+                  <div className="space-y-0.5">
+                    <div className="text-sm font-medium">{c.nome}</div>
+                    {c.descricao && (
+                      <div className="text-xs text-muted-foreground">{c.descricao}</div>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    {c.tipo && (
+                      <Badge variant="outline" className="text-xs">
+                        {c.tipo.replace(/_/g, ' ')}
+                      </Badge>
+                    )}
+                    {c.economia_estimada_padrao != null && (
+                      <span className="text-sm font-semibold">
+                        {formatCurrency(Number(c.economia_estimada_padrao))}
+                      </span>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </TabsContent>
   );
 }
