@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `61390965dae84c5fe1521db35fb2005d5f5e46b4` (2026-11-17T01:52:12-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `61d2a4b36d664d2b9c4c6e11f20af77fd7efc657` (2026-11-17T02:09:41-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2332), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2334), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3884 |
-| arquivos_codigo | 2446 |
-| linhas_codigo | 436138 |
+| arquivos_total | 3886 |
+| arquivos_codigo | 2448 |
+| linhas_codigo | 436378 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1029 |
 | cron_jobs | 22 |
-| testes | 457 |
+| testes | 458 |
 | workflows | 19 |
 | scripts | 111 |
 | docs_md | 196 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (777), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (267), outro (107), co-localizado (*.test) (43)
+- testes: co-localizado (__tests__) (267), outro (108), co-localizado (*.test) (43)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `61d2a4b` fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)
 - 2026-11-17 `6139096` feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)
 - 2026-11-17 `915784c` chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)
 - 2026-11-17 `9871bfb` feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `a133ea0` feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)
 - 2026-11-16 `3ea2086` fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)
 - 2026-11-16 `8f1767c` feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)
-- 2026-11-16 `f48e9c1` fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

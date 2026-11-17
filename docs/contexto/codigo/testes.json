@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 457,
+ "total": 458,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 381
+  "unit": 382
  },
  "onde_ficam": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 107
+   "arquivos": 108
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -1105,12 +1105,12 @@
   {
    "arquivo": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
    "tipo": "unit",
-   "linhas": 192,
+   "linhas": 226,
    "testa": [
     "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
     "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx"
    ],
-   "casos": 5
+   "casos": 6
   },
   {
    "arquivo": "src/components/ui/__tests__/alert.test.tsx",
@@ -3478,6 +3478,15 @@
    "casos": 2
   },
   {
+   "arquivo": "supabase/functions/_shared/cnae_test.ts",
+   "tipo": "unit",
+   "linhas": 66,
+   "testa": [
+    "supabase/functions/_shared/cnae.ts"
+   ],
+   "casos": 7
+  },
+  {
    "arquivo": "supabase/functions/_shared/contract-coverage_test.ts",
    "tipo": "contrato",
    "linhas": 280,
@@ -4346,6 +4355,7 @@
   "src/types/reforma-tributaria.ts": 1,
   "src/types/tipo-cobranca-rotulo.ts": 1,
   "supabase/functions/_shared/auth-guard.ts": 1,
+  "supabase/functions/_shared/cnae.ts": 1,
   "supabase/functions/_shared/contract-response.ts": 1,
   "supabase/functions/_shared/cors.ts": 1,
   "supabase/functions/_shared/edge-observability.ts": 1,

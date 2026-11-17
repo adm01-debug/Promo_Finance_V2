@@ -61,6 +61,8 @@
   "supabase/functions/_shared/app-url.ts",
   "supabase/functions/_shared/auth-guard.ts",
   "supabase/functions/_shared/auth-guard_test.ts",
+  "supabase/functions/_shared/cnae.ts",
+  "supabase/functions/_shared/cnae_test.ts",
   "supabase/functions/_shared/concurrency-limiter.ts",
   "supabase/functions/_shared/console-persist.ts",
   "supabase/functions/_shared/contract-coverage_test.ts",
@@ -864,7 +866,7 @@
    "nome": "comparar-benchmark-setorial",
    "entrada": "supabase/functions/comparar-benchmark-setorial/index.ts",
    "arquivos": 1,
-   "linhas": 279,
+   "linhas": 309,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -888,6 +890,7 @@
    "hosts_externos": [],
    "usa_shared": [
     "auth-guard.ts",
+    "cnae.ts",
     "cors.ts",
     "edge-observability.ts",
     "zod.ts"
@@ -2038,7 +2041,7 @@
    "nome": "gerar-alertas-tributarios",
    "entrada": "supabase/functions/gerar-alertas-tributarios/index.ts",
    "arquivos": 1,
-   "linhas": 374,
+   "linhas": 399,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2063,6 +2066,7 @@
    "hosts_externos": [],
    "usa_shared": [
     "auth-guard.ts",
+    "cnae.ts",
     "cors.ts",
     "edge-observability.ts",
     "observability.ts"

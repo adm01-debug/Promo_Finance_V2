@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (267)",
-   "outro (107)",
+   "outro (108)",
    "co-localizado (*.test) (43)"
   ],
   "edge_functions": "supabase/functions",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)",
    "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)",
    "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)",
    "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)",
-   "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)",
-   "chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)"
+   "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

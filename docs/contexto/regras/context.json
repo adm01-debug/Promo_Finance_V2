@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "61390965dae84c5fe1521db35fb2005d5f5e46b4",
+  "sha": "61d2a4b36d664d2b9c4c6e11f20af77fd7efc657",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 04:52 UTC",
-  "files_total": 3923,
-  "code_files": 3546,
-  "code_lines": 504623
+  "generated_at": "2026-11-17 05:10 UTC",
+  "files_total": 3925,
+  "code_files": 3548,
+  "code_lines": 504865
  },
  "version": "1.3.2",
- "facts_hash": "02b77b961bb5cf54",
+ "facts_hash": "bbd8d29fd2e4f25a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1230,
+   ".ts": 1232,
    ".tsx": 1102,
    ".sql": 1099,
    ".mjs": 63,
@@ -71381,7 +71381,7 @@
   {
    "module": "src/components",
    "files": 985,
-   "lines": 162916,
+   "lines": 162950,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72544,8 +72544,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 225,
-   "lines": 50334,
+   "files": 227,
+   "lines": 50542,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72661,6 +72661,7 @@
    "exports": [
     "app-url.ts: getAppBaseUrl",
     "auth-guard.ts: corsHeadersComSegredoPara, corsHeadersComSegredo, segredosIguais, UsuarioAutenticado, ResultadoGuard, exigirUsuario",
+    "cnae.ts: prefixosCnaeCandidatos, porPrefixoMaisEspecifico, REGIMES_CANONICOS, RegimeCanonico, regimeParaBenchmark, chaveReferenciaInterna",
     "concurrency-limiter.ts: ConcurrencyLimiter",
     "contract-response.ts: VALIDATION_ERROR_CODE, ContractFieldError, ContractValidationError, normalizeValidationFields, createValidationErrorResponse",
     "contract-validator.ts: CommonSchemas, validateContract, contractSuccess",
@@ -72697,8 +72698,7 @@
     "gunzip.ts: gzipBase64, gunzipBase64, corruptedGzipBase64",
     "manifestacao.ts: ManifTipo, MANIF_DESCRICAO, EventoInput, recepcaoEventoEndpoint, RECEPCAO_EVENTO_SOAP_ACTION, buildInfEvento",
     "parser.ts: SchemaTipo, ParsedNFe, ParsedEvento, ParsedDoc, detectSchema, parseDoc",
-    "pfx.ts: CertificadoRow, CertificadoPem, makeAdminClient, pfxToPem, loadCertificado",
-    "soap.ts: SOAP_ACTION, DistDFeRequest, buildDistDFeEnvelope, DistDFeDoc, DistDFeResponse, parseDistDFeResponse"
+    "pfx.ts: CertificadoRow, CertificadoPem, makeAdminClient, pfxToPem, loadCertificado"
    ],
    "docs": [
     "concurrency-limiter.ts: Concurrency Limiter Utility Limits the number of concurrent asynchronous operations.",
@@ -72727,6 +72727,8 @@
     "supabase/functions/_shared/app-url.ts",
     "supabase/functions/_shared/auth-guard.ts",
     "supabase/functions/_shared/auth-guard_test.ts",
+    "supabase/functions/_shared/cnae.ts",
+    "supabase/functions/_shared/cnae_test.ts",
     "supabase/functions/_shared/concurrency-limiter.ts",
     "supabase/functions/_shared/console-persist.ts",
     "supabase/functions/_shared/contract-coverage_test.ts",
@@ -72799,9 +72801,7 @@
     "supabase/functions/asaas-proxy/test_plan.ts",
     "supabase/functions/asaas-webhook/index.test.ts",
     "supabase/functions/asaas-webhook/index.ts",
-    "supabase/functions/benchmarking-setorial/index.ts",
-    "supabase/functions/bitrix24-sync/index.ts",
-    "supabase/functions/bitrix24-webhook/index.test.ts"
+    "supabase/functions/benchmarking-setorial/index.ts"
    ]
   },
   {
@@ -80525,6 +80525,11 @@
     "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | nenhum"
    },
    {
+    "file": "supabase/functions/_shared/cnae.ts",
+    "name": "REGIMES_CANONICOS",
+    "values": "'mei', 'simples_nacional', 'lucro_presumido', 'lucro_real', 'arbitrado',"
+   },
+   {
     "file": "supabase/functions/_shared/logger.ts",
     "name": "LogLevel",
     "values": "DEBUG = 'DEBUG', INFO = 'INFO', WARN = 'WARN', ERROR = 'ERROR', CRITICAL = 'CRITICAL',"
@@ -87661,6 +87666,10 @@
    {
     "file": "supabase/functions/gerar-alertas/index.ts",
     "text": "0.7; // Alerta quando atinge 70% do limite"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "text": "Regime NAO pode ter default: `?? 'simples_nacional'` fazia o cron"
    },
    {
     "file": "supabase/functions/gerar-heatmap-tributario/index.ts",
@@ -124493,6 +124502,10 @@
    {
     "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
     "name": "empresa sem faturamento 12m nao aparece "
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "empresa sem regime registrado nao recebe faixa de Simples"
    },
    {
     "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
@@ -196888,7 +196901,7 @@
   },
   "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx": {
    "path": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
-   "lines": 193,
+   "lines": 227,
    "is_test": true,
    "rule_comments": [
     "o badge de pico nao pode aparecer sem mes de pico",
@@ -196904,6 +196917,7 @@
     "mes sem lancamento nao aparece como tributo zero",
     "benchmark setorial — sem carga e sem percentil",
     "empresa sem faturamento 12m nao aparece ",
+    "empresa sem regime registrado nao recebe faixa de Simples",
     "percentil nulo (P25 = P75) esconde a régua em vez de mostrar zero"
    ]
   },
@@ -229987,6 +230001,28 @@
    ],
    "uses_service_role": true
   },
+  "supabase/functions/_shared/cnae.ts": {
+   "path": "supabase/functions/_shared/cnae.ts",
+   "lines": 86,
+   "exports": [
+    "function prefixosCnaeCandidatos",
+    "function porPrefixoMaisEspecifico",
+    "const REGIMES_CANONICOS",
+    "type RegimeCanonico",
+    "function regimeParaBenchmark",
+    "function chaveReferenciaInterna"
+   ],
+   "enums": [
+    {
+     "name": "REGIMES_CANONICOS",
+     "values": "'mei', 'simples_nacional', 'lucro_presumido', 'lucro_real', 'arbitrado',"
+    }
+   ]
+  },
+  "supabase/functions/_shared/cnae_test.ts": {
+   "path": "supabase/functions/_shared/cnae_test.ts",
+   "lines": 67
+  },
   "supabase/functions/_shared/concurrency-limiter.ts": {
    "path": "supabase/functions/_shared/concurrency-limiter.ts",
    "lines": 31,
@@ -233631,7 +233667,7 @@
   },
   "supabase/functions/comparar-benchmark-setorial/index.ts": {
    "path": "supabase/functions/comparar-benchmark-setorial/index.ts",
-   "lines": 280,
+   "lines": 310,
    "tables": [
     {
      "table": "user_empresas",
@@ -236366,7 +236402,7 @@
   },
   "supabase/functions/gerar-alertas-tributarios/index.ts": {
    "path": "supabase/functions/gerar-alertas-tributarios/index.ts",
-   "lines": 375,
+   "lines": 400,
    "exports": [
     "const handler"
    ],
@@ -236448,7 +236484,8 @@
      "carga_media_pct",
      "cnae_prefix",
      "regime",
-     "setor"
+     "setor",
+     "vigencia_inicio"
     ],
     "movimentacoes": [
      "data_movimentacao",
@@ -236515,6 +236552,9 @@
      "value": "pago",
      "kind": "filtra"
     }
+   ],
+   "rule_comments": [
+    "Regime NAO pode ter default: `?? 'simples_nacional'` fazia o cron"
    ],
    "doc": "============================================ EDGE FUNCTION: gerar-alertas-tributarios (cron diário) Detecta sublimite Simples, Fator R, vencimentos, desvios setoriais, IRPFM Hardened: structured logging, retry com exponential backoff, top-level try/catch ============================================",
    "percents": [
@@ -246504,10 +246544,25 @@
   }
  },
  "git": {
-  "sha": "61390965dae84c5fe1521db35fb2005d5f5e46b4",
+  "sha": "61d2a4b36d664d2b9c4c6e11f20af77fd7efc657",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "61d2a4b",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)",
+    "files": [
+     "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+     "src/hooks/useBenchmarkSetorial.ts",
+     "src/lib/arquitetura/grafo-observado.json",
+     "supabase/functions/_shared/cnae.ts",
+     "supabase/functions/_shared/cnae_test.ts",
+     "supabase/functions/comparar-benchmark-setorial/index.ts",
+     "supabase/functions/gerar-alertas-tributarios/index.ts"
+    ]
+   },
    {
     "sha": "6139096",
     "date": "2026-11-17",
@@ -246880,17 +246935,6 @@
     "files": [
      "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql"
     ]
-   },
-   {
-    "sha": "15dc272",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)",
-    "files": [
-     "src/components/fornecedores/FornecedorForm.tsx",
-     "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
-     "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246905,6 +246949,18 @@
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
     3
+   ],
+   [
+    "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    2
+   ],
+   [
+    "src/hooks/useBenchmarkSetorial.ts",
+    2
+   ],
+   [
+    "supabase/functions/comparar-benchmark-setorial/index.ts",
+    2
    ],
    [
     "supabase/migrations/20260825250000_recreate_6_constraints.sql",
@@ -246931,6 +246987,22 @@
     2
    ],
    [
+    "src/lib/arquitetura/grafo-observado.json",
+    1
+   ],
+   [
+    "supabase/functions/_shared/cnae.ts",
+    1
+   ],
+   [
+    "supabase/functions/_shared/cnae_test.ts",
+    1
+   ],
+   [
+    "supabase/functions/gerar-alertas-tributarios/index.ts",
+    1
+   ],
+   [
     "src/components/contas-receber/WebhookConfigDialog.tsx",
     1
    ],
@@ -246944,34 +247016,6 @@
    ],
    [
     "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
-    1
-   ],
-   [
-    "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
-    1
-   ],
-   [
-    "src/pages/AdminTelemetria.tsx",
-    1
-   ],
-   [
-    "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts",
-    1
-   ],
-   [
-    "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
-    1
-   ],
-   [
-    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
-    1
-   ],
-   [
-    "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts",
-    1
-   ],
-   [
-    "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
     1
    ]
   ]

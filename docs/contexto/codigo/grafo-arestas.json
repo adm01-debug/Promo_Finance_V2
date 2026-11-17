@@ -11116,6 +11116,7 @@
   ],
   "supabase/functions/comparar-benchmark-setorial/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/cnae.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/zod.ts"
@@ -11329,6 +11330,7 @@
   ],
   "supabase/functions/gerar-alertas-tributarios/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/cnae.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/observability.ts"

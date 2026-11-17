@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `61390965da` · branch `main` · 2026-11-17 04:52 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `61d2a4b36d` · branch `main` · 2026-11-17 05:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -307,7 +307,7 @@
 | `app_role` (enum) | admin, financeiro, operacional, visualizador, contador, viewer, manager, operator |  | banco |
 | `status_pagamento` (enum) | pago, pendente, vencido, parcial, cancelado, atrasado |  | banco |
 | `tipo_transacao` (enum) | receita, despesa |  | banco |
-| … +263 linhas — lista completa em `context.json` | | | |
+| … +264 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 

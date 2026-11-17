@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `61390965da` · branch `main` · 2026-11-17 04:52 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `61d2a4b36d` · branch `main` · 2026-11-17 05:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1750,6 +1750,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | StatusCreditoTributario | disponivel \| utilizado \| compensado \| expirado \| estornado \| transferido | `src/types/reforma-tributaria/enums.ts` |
 | TipoOperacao | venda \| compra \| servico_prestado \| servico_tomado \| importacao \| exportacao | `src/types/reforma-tributaria/enums.ts` |
 | RegimeEspecial | zona_franca_manaus \| combustiveis \| servicos_financeiros \| imobiliario \| hotelaria \| bares_restaurantes \| parques_diversao \| agencias_viagem \| transporte_coletivo \| sociedades_cooperativas \| nenhum | `src/types/reforma-tributaria/enums.ts` |
+| REGIMES_CANONICOS | 'mei', 'simples_nacional', 'lucro_presumido', 'lucro_real', 'arbitrado', | `supabase/functions/_shared/cnae.ts` |
 | LogLevel | DEBUG = 'DEBUG', INFO = 'INFO', WARN = 'WARN', ERROR = 'ERROR', CRITICAL = 'CRITICAL', | `supabase/functions/_shared/logger.ts` |
 | TipoDetectado | pdf \| png \| jpeg \| zip \| gzip \| pfx \| pem \| xml \| texto \| exe \| elf \| macho \| wasm \| classe \| script \| webp \| desconhecido | `supabase/functions/_shared/magic-bytes.ts` |
 | ComandoSqlMcp | select \| insert \| update \| delete | `supabase/functions/_shared/sql-write-guard.ts` |
@@ -5106,7 +5107,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3453 testes em 298 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3454 testes em 298 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5241,6 +5242,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/admin/telemetry/__tests__/TelemetryCharts.test.tsx` | 9 | TelemetryCharts · renders nothing when rows is empty · renders three chart cards when rows have data · renders without error for timeFilter=%s … |
 | `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 9 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
 | `src/components/layout/sidebar/sidebarNavState.test.ts` | 9 | isSidebarNavItemActive · exige hash correspondente quando o link aponta para uma âncora · mantém rotas sem hash ativas no mesmo pathname · mantém o item-pai ativo em rotas filhas (detalhe/edição) … |
+| `src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx` | 9 | heatmap tributario — ano sem faturamento · renderiza o estado vazio em vez de quebrar no insights.mes_pico · resposta sem a chave insights ainda renderiza (nao le antes da guarda) · heatmap tributario — ano parcial … |
 | `src/hooks/__tests__/use-toast.test.ts` | 9 | use-toast (adapter sonner) · variant default delega para sonner com title e description · variant destructive delega para sonner.error · propaga duration … |
 | `src/hooks/__tests__/useCashbackSimulador.test.ts` | 9 | useCashbackSimulador · estado inicial: elegível, cesta padrão e alíquotas de 2026 · calcula cashback por categoria conforme LC 214/2025 · inelegível quando renda acima do limite (3 salários mínimos) … |
 | `src/hooks/__tests__/useConsultaTributaria.test.tsx` | 9 | consultarTributos · propaga erro de transporte da edge function · propaga erro lógico devolvido no corpo (status 200 com { error }) · encaminha os parâmetros no body da invocação … |
@@ -5256,7 +5258,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `scripts/security/test-rpc-runtime.evaluate.test.ts` | 8 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx` | 8 | useReviewQueue — idempotência e concorrência · #1 [idempotência] dois handleAcao paralelos para o mesmo id disparam a mutation UMA vez · #2 [retry] erro transitório  · #3 [retry esgotado] 3 falhas transitórias → toast.error + fila e stats intactos … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
-| `src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx` | 8 | heatmap tributario — ano sem faturamento · renderiza o estado vazio em vez de quebrar no insights.mes_pico · resposta sem a chave insights ainda renderiza (nao le antes da guarda) · heatmap tributario — ano parcial … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
@@ -5990,4 +5991,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Snapshot é utilizável apenas se trouxer, no mínimo, um faturamento anual | `src/lib/tributario/historico-simulacao.ts` |
 | * Filtra apenas os itens que satisfazem integralmente o contrato de ajuste. */ | `src/lib/tributario/historico-simulacao.ts` |
 | apenas snapshots que exigem atenção do contador; caso o filtro zere a lista, | `src/lib/tributario/historico-simulacao.ts` |
-| … +390 linhas — lista completa em `context.json` | |
+| … +391 linhas — lista completa em `context.json` | |

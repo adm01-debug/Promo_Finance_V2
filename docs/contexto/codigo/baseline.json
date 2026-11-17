@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "61390965dae84c5fe1521db35fb2005d5f5e46b4",
+  "commit": "61d2a4b36d664d2b9c4c6e11f20af77fd7efc657",
   "branch": "main",
-  "data_commit": "2026-11-17T01:52:12-03:00",
+  "data_commit": "2026-11-17T02:09:41-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "61d2a4b",
+    "data": "2026-11-17",
+    "assunto": "fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)"
+   },
    {
     "sha": "6139096",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "d9ff7e0",
     "data": "2026-11-16",
     "assunto": "fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)"
-   },
-   {
-    "sha": "38f4896",
-    "data": "2026-11-16",
-    "assunto": "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)"
    }
   ],
-  "arquivos_mudados_7d": 811,
+  "arquivos_mudados_7d": 814,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -165,7 +165,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 19
+    "mudancas": 21
    },
    {
     "pasta": "src/lib/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 160
+    "commits": 161
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3884,
-  "arquivos_codigo": 2446,
-  "linhas_codigo": 436138,
+  "arquivos_total": 3886,
+  "arquivos_codigo": 2448,
+  "linhas_codigo": 436378,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 457,
+  "testes": 458,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -636,7 +636,7 @@
   },
   "src/components": {
    "arquivos": 985,
-   "linhas": 161931
+   "linhas": 161965
   },
   "src/config": {
    "arquivos": 1,
@@ -683,8 +683,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 225,
-   "linhas": 50109
+   "arquivos": 227,
+   "linhas": 50315
   },
   "supabase/tests": {
    "arquivos": 2,
