@@ -124,12 +124,25 @@ Proxy: contar versões na tabela de controle.
 SELECT count(*) AS migrations_aplicadas
 FROM supabase_migrations.schema_migrations;
 
--- Conferir se a última migration está registrada
--- (substituir pelo timestamp mais recente do diretório supabase/migrations/):
+-- Última migration registrada no banco, sem timestamp cravado:
 SELECT version, statements IS NOT NULL AS tem_sql
 FROM supabase_migrations.schema_migrations
-WHERE version = '20261101200000';  -- ajustar para o timestamp mais recente
+WHERE version = (SELECT max(version) FROM supabase_migrations.schema_migrations);
 ```
+
+> **Limite desta consulta:** o máximo vem da própria tabela, não do diretório. Se a
+> última migration do repositório estiver **pendente**, a consulta devolve a anterior
+> sem acusar nada. Para detectar pendência é preciso comparar com o disco, o que SQL
+> puro não alcança — na raiz do repositório:
+>
+> ```bash
+> # maior timestamp em disco vs. maior registrado no banco
+> ls supabase/migrations/*.sql | sed 's#.*/##; s#_.*##' | sort | tail -1
+> ```
+>
+> Os dois valores têm de ser iguais. O replay completo
+> (`bash scripts/db/replay-migrations.sh`) é a verificação forte: aplica os 1034
+> arquivos num Postgres limpo e acusa qualquer um que não rode.
 
 > **Nota:** a query de `EXCEPT` entre `fs_migrations` e `schema_migrations` requer
 > acesso ao filesystem, o que não é possível via SQL puro. Mantenha o count acima como
@@ -160,24 +173,36 @@ ORDER BY ultima_falha DESC;
 
 ### 7. Cobertura de guards nas Edge Functions
 
-Edge Functions sem guard de autenticação expõem endpoints sem proteção.  
-Esperado após Bloco D (Steps 33-48): **0** funções no terceiro balde.
+Edge Functions sem nenhuma forma de autenticação expõem endpoints sem proteção.
+Aqui a fonte de verdade é o código mais o `supabase/config.toml`, não o banco: um
+`SELECT` que devolve texto dizendo "verificar manualmente" não é verificação.
 
-```sql
--- Proxy via config.toml: lista funções sem entrada no config (verify_jwt não declarado).
--- Para auditoria real, comparar o diretório supabase/functions/ com supabase/config.toml.
+Um `grep` por `exigirUsuario|exigirPapel|exigirChamadaInterna` **não** responde a
+pergunta: função pode autenticar por conta própria. `n8n-callback`, por exemplo,
+valida HMAC ou segredo compartilhado em
+`supabase/functions/n8n-callback/index.ts:62-69` e não usa guard nenhum desses
+três. Medido em 2026-11-17: 70 funções sem os três guards, das quais 30 têm
+outra forma de auth no código. Esperar **0** aqui é alarme falso.
 
--- Funções declaradas no config.toml com verify_jwt = false e sem guard interno documentado:
--- Consultar manualmente ou via script:
---   grep -L 'exigirUsuario\|exigirPapel\|exigirChamadaInterna\|verify_jwt.*true' \
---        supabase/functions/*/index.ts | wc -l
+A auditoria tem dois passos, e o resultado é uma lista de **candidatos à
+revisão**, não uma contagem de defeitos:
 
--- Proxy no banco: edge functions deployadas (requer pg_net ou log de deploy):
-SELECT
-  'Verificar manualmente supabase/functions/*/index.ts' AS instrucao,
-  'grep -rL exigirUsuario\|exigirPapel\|exigirChamadaInterna supabase/functions/' AS comando_shell,
-  '0 arquivos sem guard' AS valor_esperado;
+```bash
+# Passo 1 — funções sem nenhuma autenticação no código:
+grep -rL 'exigirUsuario\|exigirPapel\|exigirChamadaInterna\|authorizeHmacOrSharedSecret\|auth\.getUser\|CRON_SECRET\|INTERNAL_' \
+  supabase/functions/*/index.ts
+# Medido em 2026-11-17: 40
+
+# Passo 2 — cruzar com verify_jwt: a plataforma recusa a requisição antes do
+# código rodar quando verify_jwt está ligado, então só é candidato quem não tem
+# guard no código E tem verify_jwt = false no supabase/config.toml.
+# Medido em 2026-11-17: 21 candidatos
 ```
+
+Os 21 candidatos precisam de justificativa individual — vários são públicos de
+propósito (webhooks que validam a própria assinatura, endpoints de SSO que o IdP
+chama sem sessão, `get-vapid-key`, que devolve chave pública). O invariante útil
+não é "zero funções na lista": é "nenhum candidato sem justificativa escrita".
 
 ---
 
