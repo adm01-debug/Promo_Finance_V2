@@ -3,6 +3,12 @@
 // Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
+import {
+  chaveReferenciaInterna,
+  porPrefixoMaisEspecifico,
+  prefixosCnaeCandidatos,
+  regimeParaBenchmark,
+} from '../_shared/cnae.ts';
 import { z } from '../_shared/zod.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -54,7 +60,7 @@ Deno.serve(
       let empresa = {
         id: empresaId,
         razao_social: 'Empresa',
-        regime: 'simples',
+        regime: '',
         cnae: null as string | null,
       };
       // Sem default: 6.8 era exatamente a mediana do Simples, entao empresa sem
@@ -92,7 +98,7 @@ Deno.serve(
           empresa = {
             id: emp.id,
             razao_social: emp.razao_social || 'Empresa',
-            regime: emp.regime_tributario || 'simples',
+            regime: emp.regime_tributario ?? '',
             cnae: emp.cnae_principal ?? null,
           };
         }
@@ -116,7 +122,37 @@ Deno.serve(
       // houver linha para o regime.
       let origemBenchmark: 'tabela' | 'referencia_interna' = 'referencia_interna';
       let fonteBenchmark = 'Faixa de referência interna por regime tributário';
-      let benchmark = REFERENCIA[empresa.regime] ?? REFERENCIA.simples;
+      // `empresa.regime` guarda o valor canonico do banco
+      // (simples_nacional | lucro_presumido | ...); a faixa interna e indexada
+      // por rotulo curto, entao a traducao e explicita.
+      const regimeCanonico = regimeParaBenchmark(empresa.regime);
+
+      // Empresa sem regime registrado nao tem faixa: a versao anterior assumia
+      // Simples (`emp.regime_tributario || 'simples'`) e devolvia percentil e
+      // posicao como se o regime fosse conhecido. Em producao a unica empresa
+      // cadastrada tem `regime_tributario` NULL (CHECK permite), entao esse era
+      // o caminho REAL da tela.
+      if (!regimeCanonico) {
+        return jsonComCors(
+          {
+            empresa,
+            carga_empresa_12m: cargaEmpresa12m,
+            benchmark: null,
+            posicao: null,
+            percentil: null,
+            diferenca_mediana: null,
+            motivo: 'regime_nao_registrado',
+            insights: [
+              'Regime tributário da empresa não está registrado: sem ele não existe faixa de comparação. Preencha o regime no cadastro da empresa.',
+            ],
+            atualizado_em: new Date().toISOString(),
+          },
+          200,
+          req
+        );
+      }
+
+      let benchmark = REFERENCIA[chaveReferenciaInterna(regimeCanonico)];
 
       if (supabaseUrl && serviceKey) {
         const supa2 = createClient(supabaseUrl, serviceKey);
@@ -135,30 +171,24 @@ Deno.serve(
         // ABRANGEM o codigo da empresa e escolhemos o mais especifico.
         let bm: Array<Record<string, unknown>> | null = null;
 
-        const digitosCnae = String(empresa.cnae ?? '').replace(/\D/g, '');
-        if (digitosCnae.length >= 2) {
-          const candidatos: string[] = [];
-          for (let n = Math.min(digitosCnae.length, 7); n >= 2; n--) {
-            candidatos.push(digitosCnae.slice(0, n));
-          }
+        const candidatos = prefixosCnaeCandidatos(empresa.cnae);
+        // Sem regime canonico nao da para consultar: o CHECK da tabela so
+        // aceita mei | simples_nacional | lucro_presumido | lucro_real |
+        // arbitrado, e consultar com rotulo curto ('simples') nunca casa --
+        // era o que esta funcao fazia.
+        if (candidatos.length > 0 && regimeCanonico) {
           const { data: setorial } = await supa2
             .from('benchmarks_setoriais')
             .select(
               'regime, carga_p25_pct, mediana, carga_p75_pct, carga_media_pct, fonte, setor, cnae_prefix'
             )
-            .eq('regime', empresa.regime)
+            .eq('regime', regimeCanonico)
             .in('cnae_prefix', candidatos)
             .lte('vigencia_inicio', hoje)
             .or(`vigencia_fim.is.null,vigencia_fim.gte.${hoje}`)
             .order('vigencia_inicio', { ascending: false });
-          // Prefixo mais longo primeiro (setor mais especifico). O sort de Array e
-          // estavel, entao empate de tamanho mantem a vigencia mais recente que a
-          // query ja ordenou.
-          const ordenado = (setorial ?? [])
-            .slice()
-            .sort(
-              (a, b) => String(b.cnae_prefix ?? '').length - String(a.cnae_prefix ?? '').length
-            );
+          // Prefixo mais longo primeiro (setor mais especifico).
+          const ordenado = porPrefixoMaisEspecifico(setorial ?? []);
           bm = ordenado.length > 0 ? ordenado : null;
         }
 
@@ -172,7 +202,7 @@ Deno.serve(
           linha.carga_p75_pct != null
         ) {
           benchmark = {
-            regime: empresa.regime,
+            regime: regimeCanonico ?? empresa.regime,
             p25: Number(linha.carga_p25_pct),
             mediana: Number(linha.mediana),
             p75: Number(linha.carga_p75_pct),
