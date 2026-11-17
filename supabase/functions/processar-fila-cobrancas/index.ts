@@ -121,7 +121,11 @@ export const handler = async (req: Request) => {
           });
           await supabase
             .from('fila_cobrancas')
-            .update({ status: 'falhou', erro: e instanceof Error ? e.message : String(e) })
+            .update({
+              status: 'falhou',
+              // a coluna é erro_mensagem; `erro` não existe em fila_cobrancas
+              erro_mensagem: e instanceof Error ? e.message : String(e),
+            })
             .eq('id', item.fila_id);
         }
       }

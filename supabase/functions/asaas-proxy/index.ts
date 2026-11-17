@@ -773,7 +773,6 @@ export const handler = async (req: Request) => {
             });
 
           await supabase.from('asaas_audit_trail').insert({
-            payment_id: null,
             action: 'PIX_CASHOUT_CREATED',
             details: { asaas_id: result.id, valor: data.valor, chave: data.chave_pix },
             user_id: user.id,
@@ -1068,11 +1067,11 @@ export const handler = async (req: Request) => {
         await supabase
           .from('asaas_sync_queue')
           .update({ status: 'completed' })
-          .eq('payment_id', data.payment_id);
+          .eq('asaas_payment_id', data.payment_id);
 
         if (data?.reason) {
           await supabase.from('asaas_audit_trail').insert({
-            payment_id: data.payment_id,
+            asaas_payment_id: data.payment_id,
             action: 'MANUAL_SYNC',
             user_id: user.id,
             details: { reason: data.reason, manual: true },
