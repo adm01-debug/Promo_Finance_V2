@@ -37,6 +37,7 @@ import { NegativacoesProtestosPanel } from '@/components/cobranca/NegativacoesPr
 import { WhatsAppHistoryPanel } from '@/components/cobranca/WhatsAppHistoryPanel';
 import { WhatsAppProativoPanel } from '@/components/cobranca/WhatsAppProativoPanel';
 import { CobrancaKpis } from '@/components/cobranca/CobrancaKpis';
+import { PrevisaoInadimplencia } from '@/components/cobranca/PrevisaoInadimplencia';
 import { ReguaCobrancaVisual } from '@/components/cobranca/ReguaCobrancaVisual';
 import { MetricasPorCanal } from '@/components/cobranca/MetricasPorCanal';
 import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
@@ -170,6 +171,7 @@ export default function Cobrancas() {
           <TabsList className="mb-8 p-1.5 bg-background/20 backdrop-blur-xl border border-white/10 rounded-2xl h-14 overflow-x-auto overflow-y-hidden">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="analytics">Analytics & IA</TabsTrigger>
+            <TabsTrigger value="previsao">Previsão 30 dias</TabsTrigger>
             <TabsTrigger value="engine">Engine & Fila</TabsTrigger>
             <TabsTrigger value="regua">Régua & Templates</TabsTrigger>
             <TabsTrigger value="negativacoes">Negativações & Protestos</TabsTrigger>
@@ -178,6 +180,19 @@ export default function Cobrancas() {
 
           <TabsContent value="analytics" className="space-y-6">
             <InadimplenciaSegmentada />
+          </TabsContent>
+
+          {/*
+            589 linhas em 4 arquivos (PrevisaoInadimplencia + previsao/*) estavam
+            prontas e sem nenhum caminho na UI: nenhum arquivo as importava, nao
+            havia rota nem lazy() apontando para elas. Pior, docs/INVENTARIO_
+            FUNCIONALIDADES.md:270 e docs/FUNCIONALIDADES_SISTEMA.md:111 listam a
+            funcionalidade como entregue. A aba "Analytics & IA" cobre previsao em
+            termos genericos (alertas preditivos), nao a lista por cliente em 30
+            dias com nivel de risco, fatores e acao sugerida -- que e isto aqui.
+          */}
+          <TabsContent value="previsao" className="space-y-6">
+            <PrevisaoInadimplencia empresaId={currentEmpresaId ?? undefined} />
           </TabsContent>
 
           <TabsContent value="engine">
