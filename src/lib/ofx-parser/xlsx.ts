@@ -1,7 +1,7 @@
 // Excel (XLSX) bank statement parser
 import * as XLSX from 'xlsx';
 import type { ResultadoImportacao, TransacaoOFX } from './types';
-import { parseData } from './utils';
+import { parseData, parseValorMonetario } from './utils';
 
 export function parseExcel(content: ArrayBuffer, fileName: string): ResultadoImportacao {
   const avisos: string[] = [];
@@ -39,14 +39,18 @@ export function parseExcel(content: ArrayBuffer, fileName: string): ResultadoImp
       try {
         const data =
           row[dataIdx] instanceof Date ? (row[dataIdx] as Date) : parseData(String(row[dataIdx]));
-        const valor =
-          typeof row[valorIdx] === 'number'
-            ? (row[valorIdx] as number)
-            : parseFloat(
-                String(row[valorIdx])
-                  .replace(/[^\d,.-]/g, '')
-                  .replace(',', '.')
-              );
+        // Celula numerica do Excel ja vem como number; a de texto usa a mesma
+        // regra do CSV (parseValorMonetario), que lanca em entrada invalida em
+        // vez de devolver NaN. O catch abaixo transforma o throw em linha
+        // ignorada com aviso.
+        const bruto = row[valorIdx];
+        let valor: number;
+        if (typeof bruto === 'number') {
+          if (!Number.isFinite(bruto)) throw new Error(`Valor inválido: ${String(bruto)}`);
+          valor = bruto;
+        } else {
+          valor = parseValorMonetario(String(bruto));
+        }
 
         const tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
         const descricao = String(row[descIdx] || 'Transação Excel');
