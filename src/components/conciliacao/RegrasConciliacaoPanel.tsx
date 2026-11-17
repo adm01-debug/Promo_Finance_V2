@@ -215,7 +215,10 @@ export function RegrasConciliacaoPanel() {
       <AddRegraDialog open={showAddDialog} onOpenChange={setShowAddDialog} />
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-2xl rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-2xl rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl"
+        >
           <DialogHeader>
             <DialogTitle className="text-xl font-black flex items-center gap-2">
               <Eye className="h-5 w-5 text-primary" />
@@ -329,7 +332,10 @@ function AddRegraDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl">
+      <DialogContent
+        aria-describedby={undefined}
+        className="sm:max-w-md rounded-[2rem] border-primary/10 bg-background/95 backdrop-blur-xl"
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-black">Nova Regra de Conciliação</DialogTitle>
           <CardDescription>

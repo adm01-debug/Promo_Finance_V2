@@ -96,7 +96,10 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] border-none bg-background/80 backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl">
+      <DialogContent
+        aria-describedby={undefined}
+        className="sm:max-w-[500px] border-none bg-background/80 backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ArrowRightLeft className="h-5 w-5 text-primary" />

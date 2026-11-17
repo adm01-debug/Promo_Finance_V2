@@ -111,7 +111,7 @@ export function CategoriaForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent aria-describedby={undefined} className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{categoria ? 'Editar Categoria' : 'Nova Categoria'}</DialogTitle>
         </DialogHeader>

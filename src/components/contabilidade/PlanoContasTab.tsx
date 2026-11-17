@@ -150,7 +150,10 @@ export function PlanoContasTab({ empresaId }: Props) {
                   Nova Conta
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[2rem] p-8">
+              <DialogContent
+                aria-describedby={undefined}
+                className="max-w-xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[2rem] p-8"
+              >
                 <DialogHeader className="mb-6">
                   <DialogTitle className="text-2xl font-black tracking-tight flex items-center gap-3">
                     <Plus className="h-6 w-6 text-primary" />
@@ -357,7 +360,10 @@ export function PlanoContasTab({ empresaId }: Props) {
       </CardContent>
 
       <Dialog open={auditOpen} onOpenChange={setAuditOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-4xl max-h-[90vh] overflow-y-auto"
+        >
           <DialogHeader>
             <DialogTitle>Auditoria de códigos referenciais CFC</DialogTitle>
           </DialogHeader>
@@ -366,7 +372,10 @@ export function PlanoContasTab({ empresaId }: Props) {
       </Dialog>
 
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-3xl max-h-[90vh] overflow-hidden"
+        >
           <DialogHeader>
             <DialogTitle>Histórico do Plano de Contas</DialogTitle>
           </DialogHeader>

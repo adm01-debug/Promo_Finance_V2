@@ -291,7 +291,10 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
         onBoletoDetected={handleBoletoDetected}
       />
       <Dialog open={open} onOpenChange={requestClose}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl font-display">
               <div

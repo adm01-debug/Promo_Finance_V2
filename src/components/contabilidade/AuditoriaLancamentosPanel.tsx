@@ -294,7 +294,7 @@ function AuditRow({ log }: { log: AuditoriaLancamentoRow }) {
               <Eye className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[85vh]">
+          <DialogContent aria-describedby={undefined} className="max-w-3xl max-h-[85vh]">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <History className="h-4 w-4 text-primary" />

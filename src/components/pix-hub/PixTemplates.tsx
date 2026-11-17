@@ -235,7 +235,7 @@ export function PixTemplates() {
 
       {/* Create dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent aria-describedby={undefined} className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Novo Template PIX</DialogTitle>
           </DialogHeader>

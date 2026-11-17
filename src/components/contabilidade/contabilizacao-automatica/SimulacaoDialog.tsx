@@ -77,7 +77,7 @@ export function SimulacaoDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl">
+      <DialogContent aria-describedby={undefined} className="max-w-xl">
         <DialogHeader>
           <DialogTitle>Simulação de Contabilização (Dry-run)</DialogTitle>
         </DialogHeader>

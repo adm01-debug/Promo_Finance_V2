@@ -12,6 +12,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
+import { DialogDescription } from '@/components/ui/dialog';
 import { Search } from 'lucide-react';
 import { useTheme } from '@/components/theme/ThemeContext';
 import { Badge } from '@/components/ui/badge';
@@ -92,6 +93,9 @@ export function CommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
+      <DialogDescription className="sr-only">
+        Busque páginas, ações e registros do sistema.
+      </DialogDescription>
       <Command className="animate-[velaPop_0.28s_cubic-bezier(0.22,1,0.36,1)] rounded-lg border [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em]">
         <div
           aria-hidden

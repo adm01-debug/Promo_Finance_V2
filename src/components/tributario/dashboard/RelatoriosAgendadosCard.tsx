@@ -69,7 +69,7 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
               <Plus className="h-3.5 w-3.5" /> Novo
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Agendar envio automático</DialogTitle>
             </DialogHeader>

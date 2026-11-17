@@ -420,7 +420,10 @@ export const AlertasRejeicao = () => {
 
       {/* Dialog de detalhes */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-lg max-h-[80vh] overflow-y-auto"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />

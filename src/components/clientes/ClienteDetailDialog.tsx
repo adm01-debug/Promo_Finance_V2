@@ -80,7 +80,10 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-4xl max-h-[90vh] overflow-hidden"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />

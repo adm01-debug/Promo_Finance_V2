@@ -228,7 +228,7 @@ export function AprovacaoRapidaMobile() {
 
       {/* Reject dialog */}
       <Dialog open={!!rejectDialog} onOpenChange={(v) => !v && setRejectDialog(null)}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent aria-describedby={undefined} className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-destructive" />

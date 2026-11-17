@@ -91,7 +91,10 @@ export function EvidenciaStatusDialog({
         if (status !== 'running') onOpenChange(v);
       }}
     >
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-2xl max-h-[85vh] overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {status === 'running' && <Loader2 className="h-5 w-5 animate-spin text-primary" />}

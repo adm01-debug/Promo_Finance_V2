@@ -135,7 +135,7 @@ export function NegativacoesProtestosPanel() {
                 Nova Negativação
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Registrar Negativação</DialogTitle>
               </DialogHeader>
@@ -270,7 +270,7 @@ export function NegativacoesProtestosPanel() {
                 Novo Protesto
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Registrar Protesto</DialogTitle>
               </DialogHeader>
