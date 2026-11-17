@@ -93,10 +93,18 @@ export const useConfiguracaoAprovacao = (empresaId?: string) => {
 };
 
 /**
- * Configuracao que o PAINEL edita. Diferente da efetiva: nao filtra por
- * `ativo`. Com a leitura efetiva, desativar o workflow zerava a lista de faixas
+ * Configuracao que o PAINEL edita. Diferente da efetiva: nao descarta as faixas
+ * inativas. Com a leitura efetiva, desativar o workflow zerava a lista de faixas
  * ativas, o painel ficava sem registro e `handleSave` saia no `if (!config)` --
  * nao havia como reativar pela tela, mesmo com as linhas intactas no banco.
+ *
+ * A ordem e `ativo` primeiro, depois valor: o painel tem que mostrar a MESMA
+ * faixa que decide o pagamento. Ordenando so por valor, com a faixa de 50.000
+ * inativa e a de 5.000 reativada em 100.000, o painel lia a de 50.000 (inativa)
+ * e anunciava "Workflow desativado. Todos os pagamentos serao liberados
+ * automaticamente" enquanto RegistrarPagamentoDialog lia a de 100.000 e seguia
+ * exigindo aprovacao -- achado P2 do Codex na revisao da PR #400. `nullslast`
+ * porque `ativo` e nullable (default true) e DESC traria NULL na frente.
  */
 export const useConfiguracaoAprovacaoEditavel = (empresaId?: string) => {
   return useQuery({
@@ -105,6 +113,7 @@ export const useConfiguracaoAprovacaoEditavel = (empresaId?: string) => {
       let q = supabase
         .from('configuracoes_aprovacao')
         .select('*')
+        .order('ativo', { ascending: false, nullsFirst: false })
         .order('valor_minimo_aprovacao', { ascending: true })
         .limit(1);
       if (empresaId) q = q.eq('empresa_id', empresaId);

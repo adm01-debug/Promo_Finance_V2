@@ -439,4 +439,37 @@ describe('useConfiguracaoAprovacaoEditavel (painel nao fica trancado)', () => {
     expect(chain.eq).toHaveBeenCalledWith('empresa_id', 'e1');
     expect(chain.order).toHaveBeenCalledWith('valor_minimo_aprovacao', { ascending: true });
   });
+
+  it('prioriza a faixa ATIVA: o painel nao pode mostrar faixa inativa com outra ativa', async () => {
+    // Revisao da PR #400 (Codex P2): com as tres faixas inativas, reativar
+    // informando 100.000 passa pela validacao (ela so procura outras ATIVAS) e
+    // grava na faixa de 5.000. Ordenando so por valor, o painel voltava a ler a
+    // faixa INATIVA de 50.000 e anunciava "Workflow desativado. Todos os
+    // pagamentos serao liberados automaticamente", enquanto o gate de pagamento
+    // lia a ATIVA de 100.000 e seguia exigindo aprovacao.
+    const chain = buildChain({
+      data: [
+        {
+          id: 'a',
+          empresa_id: 'e1',
+          valor_minimo_aprovacao: 100000,
+          aprovadores_obrigatorios: 1,
+          ativo: true,
+        },
+      ],
+      error: null,
+    });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useConfiguracaoAprovacaoEditavel('e1'), {
+      wrapper: makeWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    // o que garante que a ativa vem primeiro (e NULL por ultimo: `ativo` e
+    // nullable, e DESC traria NULL na frente)
+    expect(chain.order).toHaveBeenCalledWith('ativo', { ascending: false, nullsFirst: false });
+    expect(result.current.data?.ativo).toBe(true);
+    expect(result.current.data?.valor_minimo_aprovacao).toBe(100000);
+  });
 });

@@ -122,7 +122,9 @@ export const ConfiguracaoAprovacaoCard = () => {
               <p className="text-sm text-muted-foreground max-w-md">
                 {ativo
                   ? 'Controle de alçadas ativado. Pagamentos acima do limite requerem aprovação formal.'
-                  : 'Workflow desativado. Todos os pagamentos serão liberados automaticamente.'}
+                  : 'Workflow desativado: pagamentos liberados sem aprovação. Se a empresa ' +
+                    'tiver outra faixa de alçada ativa, a gravação é recusada em vez de ' +
+                    'desligar pela metade.'}
               </p>
             </div>
           </div>
