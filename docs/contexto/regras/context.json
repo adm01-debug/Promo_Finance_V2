@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b",
+  "sha": "fee7c1da1e562fd66c901f5e7dc886adc81b247a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 23:14 UTC",
+  "generated_at": "2026-11-17 23:25 UTC",
   "files_total": 3975,
   "code_files": 3592,
   "code_lines": 510799
  },
  "version": "1.3.2",
- "facts_hash": "7117c3cb15b57548",
+ "facts_hash": "7dd5e742ffd56f90",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -17,7 +17,7 @@
   ],
   "deps": {
    "@radix-ui/react-dialog": {
-    "version": "^1.0.5",
+    "version": "^1.3.1",
     "role": "Radix UI / shadcn",
     "in": "package.json"
    },
@@ -245128,10 +245128,20 @@
   }
  },
  "git": {
-  "sha": "f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b",
+  "sha": "fee7c1da1e562fd66c901f5e7dc886adc81b247a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "fee7c1d",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "f17d2d4",
     "date": "2026-11-17",
@@ -245421,29 +245431,19 @@
      "src/hooks/useMetasFinanceiras.ts",
      "src/hooks/useRegimesEspeciais.ts"
     ]
-   },
-   {
-    "sha": "900fcbd",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)",
-    "files": [
-     "supabase/functions/monitor-health/index.test.ts",
-     "supabase/functions/monitor-health/index.ts"
-    ]
    }
   ],
   "hot_files": [
    [
-    "docs/agentes/auditoria-branches-2026-11-17.md",
-    2
-   ],
-   [
     "bun.lock",
-    2
+    3
    ],
    [
     "package.json",
+    3
+   ],
+   [
+    "docs/agentes/auditoria-branches-2026-11-17.md",
     2
    ],
    [

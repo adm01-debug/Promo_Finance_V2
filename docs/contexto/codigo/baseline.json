@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f17d2d4d1850f09b41cf1cb6c663e00f4e43d90b",
+  "commit": "fee7c1da1e562fd66c901f5e7dc886adc81b247a",
   "branch": "main",
-  "data_commit": "2026-11-17T20:03:17-03:00",
+  "data_commit": "2026-11-17T20:24:19-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "fee7c1d",
+    "data": "2026-11-17",
+    "assunto": "chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)"
+   },
    {
     "sha": "f17d2d4",
     "data": "2026-11-17",
@@ -126,11 +131,6 @@
     "sha": "6c6dec8",
     "data": "2026-11-17",
     "assunto": "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)"
-   },
-   {
-    "sha": "17a5777",
-    "data": "2026-11-17",
-    "assunto": "chore(db): harness de replay das migrations num Postgres local efêmero (#433)"
    }
   ],
   "arquivos_mudados_7d": 926,
@@ -161,15 +161,15 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 23
+    "mudancas": 24
+   },
+   {
+    "pasta": "bun.lock",
+    "mudancas": 22
    },
    {
     "pasta": "src/components/contas-pagar",
     "mudancas": 22
-   },
-   {
-    "pasta": "bun.lock",
-    "mudancas": 21
    },
    {
     "pasta": "src/components/admin",
@@ -199,15 +199,15 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 38
+    "mudancas": 39
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 33
+    "mudancas": 34
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 25
+    "mudancas": 24
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -238,10 +238,6 @@
     "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/supabase-linter.yml",
-    "mudancas": 10
-   },
-   {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 10
    },
@@ -250,15 +246,11 @@
     "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/deno-tests.yml",
+    "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 9
    },
    {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/config.toml",
     "mudancas": 9
    },
    {
@@ -276,6 +268,10 @@
    {
     "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 9
+   },
+   {
+    "arquivo": ".github/workflows/deno-tests.yml",
+    "mudancas": 8
    },
    {
     "arquivo": ".github/workflows/graphify.yml",
@@ -296,12 +292,16 @@
    {
     "arquivo": "src/hooks/useAcordosParcelamento.ts",
     "mudancas": 8
+   },
+   {
+    "arquivo": "src/hooks/useContasPagarLogic.ts",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 211
+    "commits": 212
    },
    {
     "autor": "dependabot[bot]",
