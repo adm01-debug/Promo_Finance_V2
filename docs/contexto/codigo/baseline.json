@@ -2,11 +2,31 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9ae3a5f7c751475e225b1f895b37d69db3f3e99a",
+  "commit": "e9cd14550a3ca6528593e9236700191388c778d6",
   "branch": "main",
-  "data_commit": "2026-11-17T16:36:04-03:00",
+  "data_commit": "2026-11-17T16:39:13-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e9cd145",
+    "data": "2026-11-17",
+    "assunto": "fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)"
+   },
+   {
+    "sha": "8215f7d",
+    "data": "2026-11-17",
+    "assunto": "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)"
+   },
+   {
+    "sha": "61b3838",
+    "data": "2026-11-17",
+    "assunto": "fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)"
+   },
+   {
+    "sha": "b982315",
+    "data": "2026-11-17",
+    "assunto": "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)"
+   },
    {
     "sha": "9ae3a5f",
     "data": "2026-11-17",
@@ -111,29 +131,9 @@
     "sha": "c772d63",
     "data": "2026-11-17",
     "assunto": "fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)"
-   },
-   {
-    "sha": "685b65c",
-    "data": "2026-11-17",
-    "assunto": "fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)"
-   },
-   {
-    "sha": "a8d124b",
-    "data": "2026-11-17",
-    "assunto": "fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)"
-   },
-   {
-    "sha": "c19b86c",
-    "data": "2026-11-17",
-    "assunto": "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)"
-   },
-   {
-    "sha": "00a7783",
-    "data": "2026-11-17",
-    "assunto": "fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)"
    }
   ],
-  "arquivos_mudados_7d": 911,
+  "arquivos_mudados_7d": 916,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -211,15 +211,11 @@
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 17
+    "mudancas": 18
    },
    {
     "arquivo": "env.manifest.json",
     "mudancas": 13
-   },
-   {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 12
    },
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
@@ -235,6 +231,10 @@
    },
    {
     "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 11
+   },
+   {
+    "arquivo": "supabase/config.toml",
     "mudancas": 11
    },
    {
@@ -278,6 +278,10 @@
     "mudancas": 9
    },
    {
+    "arquivo": "supabase/functions/executar-analise-preditiva/index.ts",
+    "mudancas": 9
+   },
+   {
     "arquivo": "supabase/functions/gerar-alertas-tributarios/index.ts",
     "mudancas": 9
    },
@@ -292,16 +296,12 @@
    {
     "arquivo": ".github/workflows/graphify.yml",
     "mudancas": 8
-   },
-   {
-    "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 191
+    "commits": 195
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3920,
+  "arquivos_total": 3922,
   "arquivos_codigo": 2469,
-  "linhas_codigo": 440071,
+  "linhas_codigo": 440113,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -329,8 +329,8 @@
   "componentes": 992,
   "hooks": 273,
   "edge_functions": 106,
-  "tabelas": 320,
-  "migrations": 1036,
+  "tabelas": 321,
+  "migrations": 1038,
   "cron_jobs": 22,
   "testes": 475,
   "workflows": 19,
@@ -684,7 +684,7 @@
   },
   "supabase/functions": {
    "arquivos": 231,
-   "linhas": 50931
+   "linhas": 50973
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -718,7 +718,7 @@
   },
   {
    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-   "linhas": 1437
+   "linhas": 1436
   },
   {
    "arquivo": "scripts/graphify-local.mjs",
@@ -1078,7 +1078,6 @@
    "whatsapp_conversas"
   ],
   "rpcs_sem_definicao": [
-   "cnpja_check_rate_limit",
    "exec_sql",
    "get_cron_run_history",
    "pg_try_advisory_lock"

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9ae3a5f7c751475e225b1f895b37d69db3f3e99a` (2026-11-17T16:36:04-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e9cd14550a3ca6528593e9236700191388c778d6` (2026-11-17T16:39:13-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2355), SQL (1107), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2355), SQL (1109), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3920 |
+| arquivos_total | 3922 |
 | arquivos_codigo | 2469 |
-| linhas_codigo | 440071 |
+| linhas_codigo | 440113 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -45,8 +45,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 992 |
 | hooks | 273 |
 | edge_functions | 106 |
-| tabelas | 320 |
-| migrations | 1036 |
+| tabelas | 321 |
+| migrations | 1038 |
 | cron_jobs | 22 |
 | testes | 475 |
 | workflows | 19 |
@@ -299,7 +299,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Edge functions
 - `aceitar-convite` — tabelas: convites, organizacao_membros, organizacoes; chamada por 1 arquivo(s) do front
 - `analise-fluxo-ia` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
-- `analise-preditiva` — tabelas: clientes, contas_pagar, contas_receber, transacoes_bancarias; chamada por 1 arquivo(s) do front
+- `analise-preditiva` — tabelas: clientes, contas_bancarias, contas_pagar, contas_receber, transacoes_bancarias; chamada por 1 arquivo(s) do front
 - `analyze-document` (verify_jwt=false) — tabelas: -; chamada por 2 arquivo(s) do front
 - `api-keys-manage` (verify_jwt=false) — tabelas: api_keys, user_empresas; chamada por 1 arquivo(s) do front
 - `asaas-proxy` (verify_jwt=false) — tabelas: asaas_audit_trail, asaas_config, asaas_credit_risk_analysis, asaas_customers, asaas_payment_links, asaas_payments, asaas_reconciliation_suggestions, asaas_sync_queue, asaas_transfers, clientes, contas_receber, user_empresas, user_roles; chamada por 4 arquivo(s) do front
@@ -333,8 +333,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `enviar-convite-organizacao` — tabelas: convites, organizacao_membros, organizacoes; chamada por 1 arquivo(s) do front
 - `enviar-digest-conformidade` — tabelas: alertas_tributarios, digest_envios_log, empresas, integration_secrets, profiles, user_digest_preferences, user_roles; chamada por 0 arquivo(s) do front, por SQL/cron
 - `enviar-relatorios-tributarios-agendados` — tabelas: empresas, relatorios_tributarios_agendados; chamada por 0 arquivo(s) do front — **ÓRFÃ**
-- `executar-analise-preditiva` (verify_jwt=false) — tabelas: alertas_preditivos, clientes, contas_pagar, contas_receber, empresas, historico_analises_preditivas, historico_score_saude, metas_financeiras, recomendacoes_metas_ia, transacoes_bancarias, user_empresas; chamada por 0 arquivo(s) do front
-- `executar-fechamento-tributario` — tabelas: apuracoes_tributarias, empresas, fechamentos_tributarios, regime_decision_cache, relatorios_tributarios, transacoes_bancarias, user_roles, verificacoes_conformidade; chamada por 1 arquivo(s) do front
+- `executar-analise-preditiva` (verify_jwt=false) — tabelas: alertas_preditivos, clientes, contas_bancarias, contas_pagar, contas_receber, empresas, historico_analises_preditivas, historico_score_saude, metas_financeiras, recomendacoes_metas_ia, transacoes_bancarias, user_empresas; chamada por 0 arquivo(s) do front
+- `executar-fechamento-tributario` — tabelas: apuracoes_tributarias, contas_bancarias, empresas, fechamentos_tributarios, regime_decision_cache, relatorios_tributarios, transacoes_bancarias, user_roles, verificacoes_conformidade; chamada por 1 arquivo(s) do front
 - `executar-regua-cobranca` (verify_jwt=false) — tabelas: contas_receber, execucoes_regua_cobranca, regua_cobranca; chamada por 0 arquivo(s) do front, por SQL/cron
 - `executar-relatorios` (verify_jwt=false) — tabelas: contas_bancarias, contas_pagar, contas_receber, historico_relatorios, relatorios_agendados, user_empresas; chamada por 1 arquivo(s) do front
 - `expert-agent` (verify_jwt=false) — tabelas: -; chamada por 2 arquivo(s) do front
@@ -449,7 +449,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
 - tabelas_com_drift_migration_vs_types: 155 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
-- rpcs_sem_definicao: 4 — ex.: cnpja_check_rate_limit, exec_sql, get_cron_run_history
+- rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
 - scripts_orfaos: 0
@@ -464,13 +464,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (38)
 - bun.lock (33)
 - .github/workflows/ci.yml (27)
-- supabase/functions/asaas-proxy/index.ts (17)
+- supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
-- supabase/config.toml (12)
 - .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
+- supabase/config.toml (11)
 - supabase/functions/bling-proxy/index.ts (11)
 - .github/workflows/deno-tests.yml (10)
 - .github/workflows/functions-deploy.yml (10)
@@ -629,6 +629,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `e9cd145` fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)
+- 2026-11-17 `8215f7d` fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)
+- 2026-11-17 `61b3838` fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)
+- 2026-11-17 `b982315` fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)
 - 2026-11-17 `9ae3a5f` fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)
 - 2026-11-17 `6d1f269` chore(docs): auditoria de drift entre migrations e produção (#437)
 - 2026-11-17 `6c6dec8` chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)
@@ -640,10 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `900fcbd` feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)
 - 2026-11-17 `710f7a8` chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)
 - 2026-11-17 `ab257ab` chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)
-- 2026-11-17 `cf7bc77` fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)
-- 2026-11-17 `19a248a` fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)
-- 2026-11-17 `ece50dc` fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)
-- 2026-11-17 `b2929c4` fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

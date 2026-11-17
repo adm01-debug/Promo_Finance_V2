@@ -213,13 +213,14 @@
    "nome": "analise-preditiva",
    "entrada": "supabase/functions/analise-preditiva/index.ts",
    "arquivos": 1,
-   "linhas": 359,
+   "linhas": 371,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
    ],
    "tabelas": [
     "clientes",
+    "contas_bancarias",
     "contas_pagar",
     "contas_receber",
     "transacoes_bancarias"
@@ -328,7 +329,7 @@
    "nome": "asaas-proxy",
    "entrada": "supabase/functions/asaas-proxy/index.ts",
    "arquivos": 3,
-   "linhas": 1480,
+   "linhas": 1479,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -392,7 +393,7 @@
    "nome": "asaas-webhook",
    "entrada": "supabase/functions/asaas-webhook/index.ts",
    "arquivos": 1,
-   "linhas": 236,
+   "linhas": 239,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1619,7 +1620,7 @@
    "nome": "executar-analise-preditiva",
    "entrada": "supabase/functions/executar-analise-preditiva/index.ts",
    "arquivos": 1,
-   "linhas": 468,
+   "linhas": 479,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1627,6 +1628,7 @@
    "tabelas": [
     "alertas_preditivos",
     "clientes",
+    "contas_bancarias",
     "contas_pagar",
     "contas_receber",
     "empresas",
@@ -1668,13 +1670,14 @@
    "nome": "executar-fechamento-tributario",
    "entrada": "supabase/functions/executar-fechamento-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 351,
+   "linhas": 363,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
    ],
    "tabelas": [
     "apuracoes_tributarias",
+    "contas_bancarias",
     "empresas",
     "fechamentos_tributarios",
     "regime_decision_cache",
@@ -3159,7 +3162,7 @@
    "nome": "processar-fila-cobrancas",
    "entrada": "supabase/functions/processar-fila-cobrancas/index.ts",
    "arquivos": 1,
-   "linhas": 157,
+   "linhas": 161,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -4349,7 +4352,7 @@
    "nome": "whatsapp-webhook",
    "entrada": "supabase/functions/whatsapp-webhook/index.ts",
    "arquivos": 1,
-   "linhas": 198,
+   "linhas": 199,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",

@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1036,
+ "migrations": 1038,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -340,6 +340,7 @@
   "cleanup_rpc_observability_metrics",
   "clear_login_attempts",
   "close_stale_integrity_alerts",
+  "cnpja_check_rate_limit",
   "compare_pg_stat_baseline",
   "confirmar_conciliacao_manual",
   "confirmar_envio_cobranca",
@@ -14209,6 +14210,54 @@
    "sem_rls": false,
    "nao_usada": false
   },
+  "cnpja_rate_limit": {
+   "colunas": {
+    "request_count": {
+     "tipo": "integer",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "window_start": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "Usuário vê próprio uso CNPJá",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [
+    {
+     "nome": "idx_cnpja_rate_limit_window",
+     "colunas": "window_start",
+     "unico": false
+    }
+   ],
+   "fks": [],
+   "criada_em": "20261117195500_restaura_cnpja_rate_limit.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
   "conciliacao_bancaria": {
    "colunas": {},
    "rls": false,
@@ -15177,8 +15226,11 @@
    },
    "usada_no_front": 17,
    "usada_em_edges": [
+    "analise-preditiva",
     "calcular-health-score-operacional",
     "copilot-global",
+    "executar-analise-preditiva",
+    "executar-fechamento-tributario",
     "executar-relatorios",
     "open-finance"
    ],
@@ -43120,7 +43172,7 @@
      "ref": null
     },
     "expires_at": {
-     "tipo": "timestamptz",
+     "tipo": "timestamp with time zone",
      "nn": false,
      "pk": false,
      "default": null,
@@ -48849,7 +48901,7 @@
   },
   {
    "nome": "cnpja_check_rate_limit",
-   "definida": false,
+   "definida": true,
    "usada_em": 1
   },
   {

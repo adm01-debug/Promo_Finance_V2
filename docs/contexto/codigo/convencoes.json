@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
-   "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)",
-   "chore(docs): auditoria de drift entre migrations e produção (#437)",
-   "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)",
-   "chore(db): harness de replay das migrations num Postgres local efêmero (#433)",
-   "fix(ci): destrava o bun audit do advisory novo do picomatch (#434)"
+   "fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)",
+   "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)",
+   "fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)",
+   "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)",
+   "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

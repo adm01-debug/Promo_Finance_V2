@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9ae3a5f7c7` · branch `main` · 2026-11-17 19:43 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e9cd14550a` · branch `main` · 2026-11-17 20:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -79,6 +79,7 @@
 | `clientes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
 | `cnaes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `cnpja_cache` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
+| `cnpja_rate_limit` | _(sem COMMENT ON TABLE — significado não documentado)_ | 3 colunas | migration |
 | `conciliacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `conciliacoes_parciais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `configuracoes_aprovacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -252,7 +253,7 @@
 | `solicitacoes_lgpd` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `sped_contabil_arquivos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `split_payment_transacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
-| `sso_login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `sso_login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `sso_providers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 34 colunas | migration |
 | `sso_role_mappings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `sso_sandbox_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
@@ -306,8 +307,7 @@
 | `tipo_alerta_tributario` (enum) | vencimento_apuracao, vencimento_darf, vencimento_obrigacao, prazo_credito, limite_compensacao, pendencia_conciliacao, inconsistencia_fiscal, atualizacao_legislacao, split_payment, retencao_pendente, nfe_rejeitada, saldo_negativo |  | banco |
 | `alert_severity` (enum) | INFO, WARNING, CRITICAL |  | banco |
 | `alert_type` (enum) | DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED |  | banco |
-| `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
-| … +244 linhas — lista completa em `context.json` | | | |
+| … +245 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -405,7 +405,6 @@
 | status | valor `persistindo` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | coluna | coluna `telefone` usada no código não existe no schema de `profiles` |  |
 | coluna | coluna `bitrix_id` usada no código não existe no schema de `clientes` |  |
-| coluna | coluna `empresa_id` usada no código não existe no schema de `transacoes_bancarias` |  |
 | coluna | coluna `categoria` usada no código não existe no schema de `regras_conciliacao` |  |
 | coluna | coluna `ativa` usada no código não existe no schema de `empresas` |  |
 | coluna | coluna `inscricao_municipal` usada no código não existe no schema de `empresas` |  |
@@ -413,15 +412,12 @@
 | coluna | coluna `centro_custo_id` usada no código não existe no schema de `movimentacoes` |  |
 | coluna | coluna `count` usada no código não existe no schema de `asaas_config` |  |
 | coluna | coluna `total_tributos` usada no código não existe no schema de `faturamento_mensal` |  |
-| coluna | coluna `payment_id` usada no código não existe no schema de `asaas_sync_queue` |  |
 | coluna | coluna `carga_pct` usada no código não existe no schema de `regime_decision_cache` |  |
 | coluna | coluna `regime_recomendado` usada no código não existe no schema de `regime_decision_cache` |  |
-| coluna | coluna `state` usada no código não existe no schema de `sso_login_attempts` |  |
 | tabela | tabela `companies` usada no código não existe nas migrations/types do repo | `supabase/functions/external-data/index.ts` |
 | rls | `operacoes_tributaveis`: front faz INSERT mas nenhuma política RLS permite INSERT → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | rls | `operacoes_tributaveis`: front faz UPDATE mas nenhuma política RLS permite UPDATE → vai falhar/retornar vazio para usuários | `src/hooks/useOperacoesTributaveis.ts` |
 | dinheiro | `pg_stat_statements_baseline.total_exec_time` guarda dinheiro em `DOUBLE PRECISION` (ponto flutuante) — arredondamento imprevisível; padrão é numeric |  |
-| rpc | RPC `cnpja_check_rate_limit` chamada mas não definida nas migrations/types | `supabase/functions/cnpja-lookup/index.ts` |
 | rpc | RPC `pg_try_advisory_lock` chamada mas não definida nas migrations/types | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | dinâmico | 2 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `eslint-rules/no-floating-supabase-write.js` |
 | dinâmico | 2 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `src/components/relatorios/RelatorioDrillDown.tsx` |
@@ -504,6 +500,7 @@
 - `anomalias_detectadas.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `acoes_recomendadas.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `user_onboarding_progress.last_step` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
+- `sso_login_attempts.state` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `lancamentos_contabeis.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `sped_contabil_arquivos.status` tem valores ['cancelado', 'gerado', 'rejeitado', 'transmitido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `anomalia_detection_runs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
@@ -544,7 +541,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 271/277 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- 272/278 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

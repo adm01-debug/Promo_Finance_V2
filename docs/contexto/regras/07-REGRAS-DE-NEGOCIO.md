@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9ae3a5f7c7` · branch `main` · 2026-11-17 19:43 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e9cd14550a` · branch `main` · 2026-11-17 20:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `simulacoes` | simulacoes_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
-| … +513 linhas — lista completa em `context.json` | | | | | | |
+| … +514 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2282 linhas — lista completa em `context.json` | | |
+| … +2286 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1133,6 +1133,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `anomalias_detectadas` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `acoes_recomendadas` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `user_onboarding_progress` | `last_step` | **livre (sem enum/CHECK)** |  |
+| `sso_login_attempts` | `state` | **livre (sem enum/CHECK)** |  |
 | `lancamentos_contabeis` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `sped_contabil_arquivos` | `status` | `cancelado`, `gerado`, `rejeitado`, `transmitido` | `gerado` |
 | `sso_sandbox_runs` | `status` | **livre (sem enum/CHECK)** |  |
@@ -5966,4 +5967,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +424 linhas — lista completa em `context.json` | |
+| … +425 linhas — lista completa em `context.json` | |

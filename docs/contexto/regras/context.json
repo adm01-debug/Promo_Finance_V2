@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9ae3a5f7c751475e225b1f895b37d69db3f3e99a",
+  "sha": "e9cd14550a3ca6528593e9236700191388c778d6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 19:43 UTC",
-  "files_total": 3959,
-  "code_files": 3577,
-  "code_lines": 509248
+  "generated_at": "2026-11-17 20:01 UTC",
+  "files_total": 3961,
+  "code_files": 3579,
+  "code_lines": 509415
  },
  "version": "1.3.2",
- "facts_hash": "8d75ec50fb781f9e",
+ "facts_hash": "12c26386259118ba",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1241,
    ".tsx": 1114,
-   ".sql": 1107,
+   ".sql": 1109,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -14007,6 +14007,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "state",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117201000_sso_login_attempts_state.sql"
+     },
+     {
+      "name": "expires_at",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117201000_sso_login_attempts_state.sql"
      }
     ],
     "constraints": [
@@ -27980,6 +27994,37 @@
     "comment": "",
     "origin": "migration"
    },
+   "cnpja_rate_limit": {
+    "columns": [
+     {
+      "name": "user_id",
+      "type": "UUID NOT NULL",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+     },
+     {
+      "name": "window_start",
+      "type": "TIMESTAMPTZ NOT NULL",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+     },
+     {
+      "name": "request_count",
+      "type": "INTEGER NOT NULL DEFAULT 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+     }
+    ],
+    "constraints": [
+     "PRIMARY KEY (user_id, window_start)"
+    ],
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "audit_logs_2026_01": {
     "columns": [
      {
@@ -37379,6 +37424,16 @@
     "using": "true",
     "check": "",
     "src": "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql"
+   },
+   {
+    "name": "Usuário vê próprio uso CNPJá",
+    "table": "cnpja_rate_limit",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')",
+    "check": "",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
    }
   ],
   "triggers": [
@@ -43788,6 +43843,22 @@
      "contas_receber"
     ]
    },
+   "cnpja_check_rate_limit": {
+    "args": "_user_id UUID, _max INTEGER DEFAULT 10, _window_minutes INTEGER DEFAULT 60",
+    "returns": "BOOLEAN",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_window TIMESTAMPTZ; v_count INTEGER; BEGIN v_window := date_trunc('minute', now()) - (EXTRACT(MINUTE FROM now())::INTEGER % _window_minutes) * INTERVAL '1 minute'; INSERT INTO public.cnpja_rate_limit (user_id, window_start, request_count) VALUES (_user_id, v_window, 1) ON CONFLICT (user_id, window_start) DO UPDATE SET request_count = cnpja_rate_limit.request_count + 1 RETURNING request_count INTO v_count; DELETE FROM public.cnpja_rate_limit WHERE window_start < now() - INTERVAL '1 day'; RETURN v_count <= _max; END;",
+    "raises": [],
+    "tables": [
+     "SET",
+     "cnpja_rate_limit",
+     "now",
+     "v_count"
+    ]
+   },
    "exec_sql": {
     "args": "",
     "returns": "?",
@@ -48963,6 +49034,22 @@
     "unique": true,
     "where": "WHERE conta_pagar_id IS NOT NULL",
     "src": "supabase/migrations/20261116210000_restaura_unicidade_nfe_conta_pagar.sql"
+   },
+   {
+    "name": "idx_cnpja_rate_limit_window",
+    "table": "cnpja_rate_limit",
+    "columns": "window_start",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+   },
+   {
+    "name": "idx_sso_attempts_state",
+    "table": "sso_login_attempts",
+    "columns": "state",
+    "unique": false,
+    "where": "WHERE state IS NOT NULL",
+    "src": "supabase/migrations/20261117201000_sso_login_attempts_state.sql"
    }
   ],
   "cron_jobs": [
@@ -50250,6 +50337,8 @@
    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
    "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
    "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
+   "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+   "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -50508,7 +50597,8 @@
    "user_passkeys": "enabled",
    "webauthn_challenges": "enabled",
    "asaas_payment_links": "enabled",
-   "estrategias_elisao_catalogo": "enabled"
+   "estrategias_elisao_catalogo": "enabled",
+   "cnpja_rate_limit": "enabled"
   },
   "grants": [
    {
@@ -58390,6 +58480,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "cnpja_check_rate_limit",
+    "objkind": "function",
+    "roles": "PUBLIC",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "cnpja_check_rate_limit",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
    }
   ],
   "raises": [
@@ -61607,6 +61713,7 @@
     "auth": "service_role (ignora RLS) + valida JWT do usuário",
     "tables": [
      "clientes",
+     "contas_bancarias",
      "contas_pagar",
      "contas_receber",
      "edge_function_logs",
@@ -62671,6 +62778,7 @@
     "tables": [
      "alertas_preditivos",
      "clientes",
+     "contas_bancarias",
      "contas_pagar",
      "contas_receber",
      "edge_function_logs",
@@ -62717,6 +62825,7 @@
     "auth": "service_role (ignora RLS) + valida JWT do usuário",
     "tables": [
      "apuracoes_tributarias",
+     "contas_bancarias",
      "edge_function_logs",
      "empresas",
      "fechamentos_tributarios",
@@ -70431,7 +70540,7 @@
   {
    "module": "supabase/functions",
    "files": 231,
-   "lines": 51162,
+   "lines": 51204,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -70692,8 +70801,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1036,
-   "lines": 79954,
+   "files": 1038,
+   "lines": 80079,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -71435,8 +71544,11 @@
      "src/hooks/useFluxoCaixa.ts",
      "src/hooks/useOptimizedQueries.ts",
      "src/lib/conciliacao-page-helpers.ts",
+     "supabase/functions/analise-preditiva/index.ts",
      "supabase/functions/calcular-health-score-operacional/index.ts",
      "supabase/functions/copilot-global/index.ts",
+     "supabase/functions/executar-analise-preditiva/index.ts",
+     "supabase/functions/executar-fechamento-tributario/index.ts",
      "supabase/functions/executar-relatorios/index.ts",
      "supabase/functions/open-finance/index.ts"
     ],
@@ -73447,9 +73559,9 @@
     "status"
    ],
    "asaas_sync_queue": [
+    "asaas_payment_id",
     "id",
     "next_retry_at",
-    "payment_id",
     "status",
     "updated_at"
    ],
@@ -74349,7 +74461,6 @@
     "conta_bancaria_id",
     "data",
     "descricao",
-    "empresa_id",
     "id",
     "saldo",
     "tipo",
@@ -75743,6 +75854,7 @@
    "bloat_snapshots",
    "catalogos_fiscais_cargas",
    "catalogos_tributarios_health_history",
+   "cnpja_rate_limit",
    "custom_field_values",
    "drivers",
    "elisao_regras_creditos",
@@ -75805,10 +75917,6 @@
     "column": "bitrix_id"
    },
    {
-    "table": "transacoes_bancarias",
-    "column": "empresa_id"
-   },
-   {
     "table": "regras_conciliacao",
     "column": "categoria"
    },
@@ -75837,20 +75945,12 @@
     "column": "total_tributos"
    },
    {
-    "table": "asaas_sync_queue",
-    "column": "payment_id"
-   },
-   {
     "table": "regime_decision_cache",
     "column": "carga_pct"
    },
    {
     "table": "regime_decision_cache",
     "column": "regime_recomendado"
-   },
-   {
-    "table": "sso_login_attempts",
-    "column": "state"
    }
   ]
  },
@@ -85971,6 +86071,10 @@
    {
     "file": "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql",
     "text": "340 (branch claude/fix-estorno-contabil-movimentacao-261113-1811,"
+   },
+   {
+    "file": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+    "text": "a tabela tem RLS com policy apenas de SELECT — não há policy de INSERT,"
    }
   ],
   "db_constraints": [
@@ -98678,6 +98782,26 @@
     "table": "estrategias_elisao_catalogo",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "cnpja_rate_limit",
+    "column": "user_id",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "cnpja_rate_limit",
+    "column": "window_start",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "cnpja_rate_limit",
+    "column": "request_count",
+    "rule": "default 0"
+   },
+   {
+    "table": "cnpja_rate_limit",
+    "column": "(tabela)",
+    "rule": "PRIMARY KEY (user_id, window_start)"
    },
    {
     "table": "audit_logs_2026_01",
@@ -143368,6 +143492,16 @@
     "using": "true",
     "check": "",
     "src": "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql"
+   },
+   {
+    "name": "Usuário vê próprio uso CNPJá",
+    "table": "cnpja_rate_limit",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')",
+    "check": "",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
    }
   ],
   "db_triggers": [
@@ -149777,6 +149911,22 @@
      "contas_receber"
     ]
    },
+   "cnpja_check_rate_limit": {
+    "args": "_user_id UUID, _max INTEGER DEFAULT 10, _window_minutes INTEGER DEFAULT 60",
+    "returns": "BOOLEAN",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_window TIMESTAMPTZ; v_count INTEGER; BEGIN v_window := date_trunc('minute', now()) - (EXTRACT(MINUTE FROM now())::INTEGER % _window_minutes) * INTERVAL '1 minute'; INSERT INTO public.cnpja_rate_limit (user_id, window_start, request_count) VALUES (_user_id, v_window, 1) ON CONFLICT (user_id, window_start) DO UPDATE SET request_count = cnpja_rate_limit.request_count + 1 RETURNING request_count INTO v_count; DELETE FROM public.cnpja_rate_limit WHERE window_start < now() - INTERVAL '1 day'; RETURN v_count <= _max; END;",
+    "raises": [],
+    "tables": [
+     "SET",
+     "cnpja_rate_limit",
+     "now",
+     "v_count"
+    ]
+   },
    "exec_sql": {
     "args": "",
     "returns": "?",
@@ -151984,6 +152134,14 @@
      "allowed": [],
      "default": "",
      "type": "TEXT"
+    },
+    {
+     "table": "sso_login_attempts",
+     "column": "state",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "text"
     },
     {
      "table": "lancamentos_contabeis",
@@ -156261,6 +156419,15 @@
      "service_role: true"
     ]
    },
+   "cnpja_rate_limit": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')"
+    ],
+    "INSERT": [],
+    "UPDATE": [],
+    "DELETE": []
+   },
    "conciliacoes": {
     "rls": "enabled",
     "SELECT": [
@@ -159878,6 +160045,7 @@
    "supabase/migrations/20261117000000_catalogo_elisao_volta_a_ser_tabela.sql",
    "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
+   "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -159910,6 +160078,7 @@
    "cleanup_rpc_observability_metrics",
    "clear_login_attempts",
    "close_stale_integrity_alerts",
+   "cnpja_check_rate_limit",
    "compare_pg_stat_baseline",
    "confirmar_conciliacao_manual",
    "confirmar_envio_cobranca",
@@ -168011,6 +168180,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "cnpja_check_rate_limit",
+    "objkind": "function",
+    "roles": "PUBLIC",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "cnpja_check_rate_limit",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
    }
   ],
   "guards": [
@@ -170756,6 +170941,7 @@
    "estrategias_elisao_catalogo": [
     "created_at"
    ],
+   "cnpja_rate_limit": [],
    "audit_logs_2026_01": [
     "created_at"
    ],
@@ -172471,11 +172657,6 @@
    },
    {
     "kind": "coluna",
-    "msg": "coluna `empresa_id` usada no código não existe no schema de `transacoes_bancarias`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `categoria` usada no código não existe no schema de `regras_conciliacao`",
     "where": []
    },
@@ -172511,22 +172692,12 @@
    },
    {
     "kind": "coluna",
-    "msg": "coluna `payment_id` usada no código não existe no schema de `asaas_sync_queue`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `carga_pct` usada no código não existe no schema de `regime_decision_cache`",
     "where": []
    },
    {
     "kind": "coluna",
     "msg": "coluna `regime_recomendado` usada no código não existe no schema de `regime_decision_cache`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
-    "msg": "coluna `state` usada no código não existe no schema de `sso_login_attempts`",
     "where": []
    },
    {
@@ -172554,13 +172725,6 @@
     "kind": "dinheiro",
     "msg": "`pg_stat_statements_baseline.total_exec_time` guarda dinheiro em `DOUBLE PRECISION` (ponto flutuante) — arredondamento imprevisível; padrão é numeric",
     "where": []
-   },
-   {
-    "kind": "rpc",
-    "msg": "RPC `cnpja_check_rate_limit` chamada mas não definida nas migrations/types",
-    "where": [
-     "supabase/functions/cnpja-lookup/index.ts"
-    ]
    },
    {
     "kind": "rpc",
@@ -172781,6 +172945,7 @@
    "`anomalias_detectadas.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`acoes_recomendadas.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`user_onboarding_progress.last_step` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
+   "`sso_login_attempts.state` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`lancamentos_contabeis.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`sped_contabil_arquivos.status` tem valores ['cancelado', 'gerado', 'rejeitado', 'transmitido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`anomalia_detection_runs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
@@ -172821,7 +172986,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "271/277 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "272/278 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -229236,8 +229401,12 @@
   },
   "supabase/functions/analise-preditiva/index.ts": {
    "path": "supabase/functions/analise-preditiva/index.ts",
-   "lines": 360,
+   "lines": 372,
    "tables": [
+    {
+     "table": "contas_bancarias",
+     "op": "select"
+    },
     {
      "table": "contas_receber",
      "op": "select"
@@ -229256,6 +229425,10 @@
     }
    ],
    "table_cols": {
+    "contas_bancarias": [
+     "empresa_id",
+     "id"
+    ],
     "contas_receber": [
      "empresa_id"
     ],
@@ -229266,8 +229439,8 @@
      "empresa_id"
     ],
     "transacoes_bancarias": [
-     "data",
-     "empresa_id"
+     "conta_bancaria_id",
+     "data"
     ]
    },
    "external_urls": [
@@ -229482,7 +229655,7 @@
   },
   "supabase/functions/asaas-proxy/index.ts": {
    "path": "supabase/functions/asaas-proxy/index.ts",
-   "lines": 1438,
+   "lines": 1437,
    "exports": [
     "const handler"
    ],
@@ -229704,9 +229877,9 @@
      "empresa_id"
     ],
     "asaas_sync_queue": [
+     "asaas_payment_id",
      "id",
      "next_retry_at",
-     "payment_id",
      "status",
      "updated_at"
     ],
@@ -229882,7 +230055,7 @@
   },
   "supabase/functions/asaas-webhook/index.ts": {
    "path": "supabase/functions/asaas-webhook/index.ts",
-   "lines": 237,
+   "lines": 240,
    "exports": [
     "const handler"
    ],
@@ -232419,11 +232592,15 @@
   },
   "supabase/functions/executar-analise-preditiva/index.ts": {
    "path": "supabase/functions/executar-analise-preditiva/index.ts",
-   "lines": 469,
+   "lines": 480,
    "exports": [
     "const handler"
    ],
    "tables": [
+    {
+     "table": "contas_bancarias",
+     "op": "select"
+    },
     {
      "table": "contas_receber",
      "op": "select"
@@ -232470,6 +232647,10 @@
     }
    ],
    "table_cols": {
+    "contas_bancarias": [
+     "empresa_id",
+     "id"
+    ],
     "contas_receber": [
      "empresa_id"
     ],
@@ -232480,8 +232661,8 @@
      "empresa_id"
     ],
     "transacoes_bancarias": [
-     "data",
-     "empresa_id"
+     "conta_bancaria_id",
+     "data"
     ],
     "metas_financeiras": [
      "ativo",
@@ -232546,7 +232727,7 @@
   },
   "supabase/functions/executar-fechamento-tributario/index.ts": {
    "path": "supabase/functions/executar-fechamento-tributario/index.ts",
-   "lines": 352,
+   "lines": 364,
    "tables": [
     {
      "table": "user_roles",
@@ -232554,6 +232735,10 @@
     },
     {
      "table": "apuracoes_tributarias",
+     "op": "select"
+    },
+    {
+     "table": "contas_bancarias",
      "op": "select"
     },
     {
@@ -232586,10 +232771,14 @@
      "status",
      "total_geral"
     ],
+    "contas_bancarias": [
+     "empresa_id",
+     "id"
+    ],
     "transacoes_bancarias": [
      "conciliada",
-     "data",
-     "empresa_id"
+     "conta_bancaria_id",
+     "data"
     ],
     "empresas": [
      "email",
@@ -235843,7 +236032,7 @@
   },
   "supabase/functions/processar-fila-cobrancas/index.ts": {
    "path": "supabase/functions/processar-fila-cobrancas/index.ts",
-   "lines": 158,
+   "lines": 162,
    "exports": [
     "const handler"
    ],
@@ -238682,7 +238871,7 @@
   },
   "supabase/functions/whatsapp-webhook/index.ts": {
    "path": "supabase/functions/whatsapp-webhook/index.ts",
-   "lines": 199,
+   "lines": 200,
    "exports": [
     "const handler"
    ],
@@ -243580,6 +243769,18 @@
     "asaas"
    ]
   },
+  "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql": {
+   "path": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+   "lines": 89,
+   "rule_comments": [
+    "a tabela tem RLS com policy apenas de SELECT — não há policy de INSERT,"
+   ],
+   "uses_service_role": true
+  },
+  "supabase/migrations/20261117201000_sso_login_attempts_state.sql": {
+   "path": "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
+   "lines": 36
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -243688,10 +243889,51 @@
   }
  },
  "git": {
-  "sha": "9ae3a5f7c751475e225b1f895b37d69db3f3e99a",
+  "sha": "e9cd14550a3ca6528593e9236700191388c778d6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e9cd145",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)",
+    "files": [
+     "supabase/functions/analise-preditiva/index.ts",
+     "supabase/functions/executar-analise-preditiva/index.ts",
+     "supabase/functions/executar-fechamento-tributario/index.ts"
+    ]
+   },
+   {
+    "sha": "8215f7d",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)",
+    "files": [
+     "supabase/migrations/20261117201000_sso_login_attempts_state.sql"
+    ]
+   },
+   {
+    "sha": "61b3838",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)",
+    "files": [
+     "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+    ]
+   },
+   {
+    "sha": "b982315",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)",
+    "files": [
+     "supabase/functions/asaas-proxy/index.ts",
+     "supabase/functions/asaas-webhook/index.ts",
+     "supabase/functions/processar-fila-cobrancas/index.ts",
+     "supabase/functions/whatsapp-webhook/index.ts"
+    ]
+   },
    {
     "sha": "9ae3a5f",
     "date": "2026-11-17",
@@ -244039,61 +244281,12 @@
      "src/lib/contabil/__tests__/balancete-utils.test.ts",
      "src/lib/contabil/balancete-utils.ts"
     ]
-   },
-   {
-    "sha": "1bbc484",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)",
-    "files": [
-     "src/components/nfe/CancelamentoNFe.tsx",
-     "src/components/nfe/ContingenciaNFe.tsx",
-     "src/components/nfe/InutilizacaoNFe.tsx",
-     "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
-     "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-     "src/components/nfe/nfe-types.ts"
-    ]
-   },
-   {
-    "sha": "44c623c",
-    "date": "2026-11-17",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
-   },
-   {
-    "sha": "9224222",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore: declara o Node que o projeto ja exige (>=22.12) (#411)",
-    "files": [
-     "README.md",
-     "package.json"
-    ]
-   },
-   {
-    "sha": "f62e08e",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat(webhooks): botao de reprocessar na fila de falhas (#410)",
-    "files": [
-     "src/components/contas-receber/WebhookDlqItem.tsx",
-     "src/components/contas-receber/WebhookDlqPanel.tsx",
-     "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx"
-    ]
    }
   ],
   "hot_files": [
    [
-    "package.json",
+    "supabase/functions/asaas-proxy/index.ts",
     3
-   ],
-   [
-    "bun.lock",
-    2
    ],
    [
     "src/components/nfe/AlertasRejeicao.tsx",
@@ -244112,16 +244305,40 @@
     2
    ],
    [
-    "supabase/functions/asaas-proxy/index.ts",
-    2
-   ],
-   [
-    "src/components/nfe/ContingenciaNFe.tsx",
-    2
-   ],
-   [
     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
     2
+   ],
+   [
+    "supabase/functions/analise-preditiva/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/executar-analise-preditiva/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/executar-fechamento-tributario/index.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
+    1
+   ],
+   [
+    "supabase/functions/asaas-webhook/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/processar-fila-cobrancas/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/whatsapp-webhook/index.ts",
+    1
    ],
    [
     "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
@@ -244145,26 +244362,6 @@
    ],
    [
     "scripts/db/replay-bootstrap.sql",
-    1
-   ],
-   [
-    "scripts/db/replay-migrations.sh",
-    1
-   ],
-   [
-    ".github/workflows/ci.yml",
-    1
-   ],
-   [
-    ".github/workflows/functions-deploy.yml",
-    1
-   ],
-   [
-    "src/hooks/useAprovacoes.ts",
-    1
-   ],
-   [
-    "src/hooks/useMetasFinanceiras.ts",
     1
    ]
   ]
