@@ -35,6 +35,16 @@ async function analisarEmpresa(
   const tresMesesAtras = new Date(hoje);
   tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
 
+  // transacoes_bancarias não tem empresa_id: o escopo por empresa passa por
+  // conta_bancaria_id. Com o filtro antigo a consulta falhava (42703) e o erro de
+  // `transacoes` não era checado — a análise rodava sem transação bancária.
+  const { data: contasDaEmpresa, error: erroContas } = await supabase
+    .from('contas_bancarias')
+    .select('id')
+    .eq('empresa_id', empresaId);
+  if (erroContas) throw erroContas;
+  const idsContas = (contasDaEmpresa ?? []).map((c: { id: string }) => c.id);
+
   const [contasReceber, contasPagar, clientes, transacoes, metas] = await Promise.all([
     supabase
       .from('contas_receber')
@@ -46,7 +56,7 @@ async function analisarEmpresa(
     supabase
       .from('transacoes_bancarias')
       .select('*')
-      .eq('empresa_id', empresaId)
+      .in('conta_bancaria_id', idsContas)
       .gte('data', tresMesesAtras.toISOString().split('T')[0])
       .order('data'),
     supabase.from('metas_financeiras').select('*').eq('empresa_id', empresaId).eq('ativo', true),
@@ -54,6 +64,7 @@ async function analisarEmpresa(
 
   if (contasReceber.error) throw contasReceber.error;
   if (contasPagar.error) throw contasPagar.error;
+  if (transacoes.error) throw transacoes.error;
   if (clientes.error) throw clientes.error;
 
   log.info('[executar-analise-preditiva] Dados carregados:', {
