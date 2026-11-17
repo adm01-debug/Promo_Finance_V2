@@ -4122,7 +4122,7 @@
     "BalanceteTable"
    ],
    "export_default": null,
-   "linhas": 121,
+   "linhas": 134,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],

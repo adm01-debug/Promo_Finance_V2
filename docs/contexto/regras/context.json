@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "1bbc48461e1df44255b860ae7d5ab997f240c7db",
+  "sha": "629b697fcc1134efe70bbfee64e1e25e5ed9447a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 06:46 UTC",
+  "generated_at": "2026-11-17 06:48 UTC",
   "files_total": 3935,
   "code_files": 3558,
-  "code_lines": 506250
+  "code_lines": 506349
  },
  "version": "1.3.2",
- "facts_hash": "3c504ab7e2d97c9f",
+ "facts_hash": "e47aeca78905cc2d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -71382,7 +71382,7 @@
   {
    "module": "src/components",
    "files": 993,
-   "lines": 164146,
+   "lines": 164159,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71988,7 +71988,7 @@
   {
    "module": "src/lib",
    "files": 413,
-   "lines": 54826,
+   "lines": 54912,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -86351,6 +86351,10 @@
    {
     "file": "src/lib/contabil/balancete-utils.ts",
     "text": "* Diferença D-C; deve ser zero em escrituração íntegra. */"
+   },
+   {
+    "file": "src/lib/contabil/balancete-utils.ts",
+    "text": "Qualquer valor assim impede `balanceado: true` -- um balancete não pode"
    },
    {
     "file": "src/lib/contabil/balancete-utils.ts",
@@ -118577,7 +118581,7 @@
     "file": "src/lib/contabil/balancete-utils.ts",
     "name": "computeBalanceteTotais",
     "params": "rows: readonly BalanceteRow[]",
-    "body": "const analiticas = rows.filter((r) => r.aceita_lancamento); let debitos = 0; let creditos = 0; let saldoDevedor = 0; let saldoCredor = 0; for (const r of analiticas) { debitos += Number(r.debitos) || 0; creditos += Number(r.creditos) || 0; const saldo = Number(r.saldo_final) || 0; if (saldo > 0) saldoDevedor += saldo; else if (saldo < 0) saldoCredor += -saldo; } const diferenca = round2(debitos - creditos); return { debitos: round2(debitos), creditos: round2(creditos), diferenca, balanceado: Mat …"
+    "body": "const analiticas = rows.filter((r) => r.aceita_lancamento); let debitos = 0; let creditos = 0; let saldoDevedor = 0; let saldoCredor = 0; let linhasInvalidas = 0; for (const r of analiticas) { // `Number(x) || 0` transformava NaN/Infinity em zero e o balancete podia // FECHAR sobre valor inexistente (achado F09). A unica barreira era o Zod // de `useBalancete`, fora desta funcao pura: qualquer outro consumidor // (exportador, SPED, RPC nova, arquivo importado) reintroduzia o // \"balanceado: true …"
    },
    {
     "file": "src/lib/contabil/balancete-utils.ts",
@@ -130484,6 +130488,26 @@
    {
     "file": "src/lib/contabil/__tests__/balancete-utils.test.ts",
     "name": "sem opções devolve tudo"
+   },
+   {
+    "file": "src/lib/contabil/__tests__/balancete-utils.test.ts",
+    "name": "computeBalanceteTotais com valor nao finito (F09)"
+   },
+   {
+    "file": "src/lib/contabil/__tests__/balancete-utils.test.ts",
+    "name": "debito NaN NAO fecha o balancete e a linha sai da soma"
+   },
+   {
+    "file": "src/lib/contabil/__tests__/balancete-utils.test.ts",
+    "name": "Infinity em credito tambem impede o fechamento"
+   },
+   {
+    "file": "src/lib/contabil/__tests__/balancete-utils.test.ts",
+    "name": "saldo_final NaN nao contamina saldo devedor/credor"
+   },
+   {
+    "file": "src/lib/contabil/__tests__/balancete-utils.test.ts",
+    "name": "sem valor invalido, nada muda: continua fechando"
    },
    {
     "file": "src/lib/contabil/__tests__/indices.test.ts",
@@ -188205,7 +188229,7 @@
   },
   "src/components/contabilidade/balancete/BalanceteTable.tsx": {
    "path": "src/components/contabilidade/balancete/BalanceteTable.tsx",
-   "lines": 122,
+   "lines": 135,
    "exports": [
     "function BalanceteTable"
    ],
@@ -215940,7 +215964,7 @@
   },
   "src/lib/contabil/balancete-utils.ts": {
    "path": "src/lib/contabil/balancete-utils.ts",
-   "lines": 114,
+   "lines": 139,
    "exports": [
     "interface BalanceteRow",
     "interface BalanceteTotais",
@@ -215961,6 +215985,7 @@
     "* Soma dos débitos do período (apenas contas analíticas — evita dupla contagem). */",
     "* Soma dos créditos do período (apenas contas analíticas). */",
     "* Diferença D-C; deve ser zero em escrituração íntegra. */",
+    "Qualquer valor assim impede `balanceado: true` -- um balancete não pode",
     "* Totaliza apenas as contas analíticas (`aceita_lancamento`), pois as",
     "* Exibe apenas contas até este nível hierárquico. */"
    ],
@@ -215974,7 +215999,7 @@
     {
      "name": "computeBalanceteTotais",
      "params": "rows: readonly BalanceteRow[]",
-     "body": "const analiticas = rows.filter((r) => r.aceita_lancamento); let debitos = 0; let creditos = 0; let saldoDevedor = 0; let saldoCredor = 0; for (const r of analiticas) { debitos += Number(r.debitos) || 0; creditos += Number(r.creditos) || 0; const saldo = Number(r.saldo_final) || 0; if (saldo > 0) saldoDevedor += saldo; else if (saldo < 0) saldoCredor += -saldo; } const diferenca = round2(debitos - creditos); return { debitos: round2(debitos), creditos: round2(creditos), diferenca, balanceado: Mat …"
+     "body": "const analiticas = rows.filter((r) => r.aceita_lancamento); let debitos = 0; let creditos = 0; let saldoDevedor = 0; let saldoCredor = 0; let linhasInvalidas = 0; for (const r of analiticas) { // `Number(x) || 0` transformava NaN/Infinity em zero e o balancete podia // FECHAR sobre valor inexistente (achado F09). A unica barreira era o Zod // de `useBalancete`, fora desta funcao pura: qualquer outro consumidor // (exportador, SPED, RPC nova, arquivo importado) reintroduzia o // \"balanceado: true …"
     },
     {
      "name": "splitSaldo",
@@ -216084,7 +216109,7 @@
   },
   "src/lib/contabil/__tests__/balancete-utils.test.ts": {
    "path": "src/lib/contabil/__tests__/balancete-utils.test.ts",
-   "lines": 119,
+   "lines": 180,
    "is_test": true,
    "tests": [
     "round2",
@@ -216103,7 +216128,12 @@
     "respeita o nível máximo",
     "oculta contas totalmente zeradas quando solicitado",
     "busca por código ou nome, sem diferenciar maiúsculas",
-    "sem opções devolve tudo"
+    "sem opções devolve tudo",
+    "computeBalanceteTotais com valor nao finito (F09)",
+    "debito NaN NAO fecha o balancete e a linha sai da soma",
+    "Infinity em credito tambem impede o fechamento",
+    "saldo_final NaN nao contamina saldo devedor/credor",
+    "sem valor invalido, nada muda: continua fechando"
    ]
   },
   "src/lib/contabil/__tests__/indices.test.ts": {
@@ -246924,10 +246954,21 @@
   }
  },
  "git": {
-  "sha": "1bbc48461e1df44255b860ae7d5ab997f240c7db",
+  "sha": "629b697fcc1134efe70bbfee64e1e25e5ed9447a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "629b697",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)",
+    "files": [
+     "src/components/contabilidade/balancete/BalanceteTable.tsx",
+     "src/lib/contabil/__tests__/balancete-utils.test.ts",
+     "src/lib/contabil/balancete-utils.ts"
+    ]
+   },
    {
     "sha": "1bbc484",
     "date": "2026-11-17",
@@ -247301,15 +247342,6 @@
     "files": [
      "supabase/migrations/20260712223141_stub-alerts-tables.sql"
     ]
-   },
-   {
-    "sha": "1d6ef94",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)",
-    "files": [
-     "supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -247370,6 +247402,18 @@
     2
    ],
    [
+    "src/components/contabilidade/balancete/BalanceteTable.tsx",
+    1
+   ],
+   [
+    "src/lib/contabil/__tests__/balancete-utils.test.ts",
+    1
+   ],
+   [
+    "src/lib/contabil/balancete-utils.ts",
+    1
+   ],
+   [
     "src/components/nfe/CancelamentoNFe.tsx",
     1
    ],
@@ -247379,18 +247423,6 @@
    ],
    [
     "src/components/nfe/InutilizacaoNFe.tsx",
-    1
-   ],
-   [
-    "src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx",
-    1
-   ],
-   [
-    "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-    1
-   ],
-   [
-    "src/components/nfe/nfe-types.ts",
     1
    ]
   ]

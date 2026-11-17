@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "1bbc48461e1df44255b860ae7d5ab997f240c7db",
+  "commit": "629b697fcc1134efe70bbfee64e1e25e5ed9447a",
   "branch": "main",
-  "data_commit": "2026-11-17T03:45:57-03:00",
+  "data_commit": "2026-11-17T03:47:33-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "629b697",
+    "data": "2026-11-17",
+    "assunto": "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)"
+   },
    {
     "sha": "1bbc484",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "02a26f0",
     "data": "2026-11-16",
     "assunto": "fix(db): catálogo de elisão volta a ser tabela na cadeia, como já é em produção (#393)"
-   },
-   {
-    "sha": "c4a6304",
-    "data": "2026-11-16",
-    "assunto": "fix(db): destrava a cascata risk_rules/geo_blocks/alerts_sent na cadeia de migrations (#392)"
    }
   ],
-  "arquivos_mudados_7d": 834,
+  "arquivos_mudados_7d": 837,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -145,7 +145,7 @@
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 29
+    "mudancas": 30
    },
    {
     "pasta": "src/components/reforma-tributaria",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 166
+    "commits": 167
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3896,
   "arquivos_codigo": 2458,
-  "linhas_codigo": 437753,
+  "linhas_codigo": 437852,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -636,7 +636,7 @@
   },
   "src/components": {
    "arquivos": 993,
-   "linhas": 163153
+   "linhas": 163166
   },
   "src/config": {
    "arquivos": 1,
@@ -660,7 +660,7 @@
   },
   "src/lib": {
    "arquivos": 413,
-   "linhas": 54413
+   "linhas": 54499
   },
   "src/main.tsx": {
    "arquivos": 1,

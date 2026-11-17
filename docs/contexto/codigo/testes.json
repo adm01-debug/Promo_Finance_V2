@@ -2334,11 +2334,11 @@
   {
    "arquivo": "src/lib/contabil/__tests__/balancete-utils.test.ts",
    "tipo": "unit",
-   "linhas": 118,
+   "linhas": 179,
    "testa": [
     "src/lib/contabil/balancete-utils.ts"
    ],
-   "casos": 13
+   "casos": 17
   },
   {
    "arquivo": "src/lib/contabil/__tests__/indices.test.ts",

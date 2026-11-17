@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)",
    "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)",
    "chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)",
    "chore: declara o Node que o projeto ja exige (>=22.12) (#411)",
-   "feat(webhooks): botao de reprocessar na fila de falhas (#410)",
-   "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)"
+   "feat(webhooks): botao de reprocessar na fila de falhas (#410)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

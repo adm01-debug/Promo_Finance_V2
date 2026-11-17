@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1bbc48461e` · branch `main` · 2026-11-17 06:46 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `629b697fcc` · branch `main` · 2026-11-17 06:48 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3060,7 +3060,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **computeBalanceteTotais(rows: readonly BalanceteRow[])** — `src/lib/contabil/balancete-utils.ts`
   ```
-  const analiticas = rows.filter((r) => r.aceita_lancamento); let debitos = 0; let creditos = 0; let saldoDevedor = 0; let saldoCredor = 0; for (const r of analiticas) { debitos += Number(r.debitos) || 0; creditos += Number(r.creditos) || 0; const saldo = Number(r.saldo_final) || 0; if (saldo > 0) saldoDevedor += saldo; else if (saldo < 0) saldoCredor += -saldo; } const diferenca = round2(debitos - creditos); return { debitos: round2(debitos), creditos: round2(creditos), diferenca, balanceado: Mat …
+  const analiticas = rows.filter((r) => r.aceita_lancamento); let debitos = 0; let creditos = 0; let saldoDevedor = 0; let saldoCredor = 0; let linhasInvalidas = 0; for (const r of analiticas) { // `Number(x) || 0` transformava NaN/Infinity em zero e o balancete podia // FECHAR sobre valor inexistente (achado F09). A unica barreira era o Zod // de `useBalancete`, fora desta funcao pura: qualquer outro consumidor // (exportador, SPED, RPC nova, arquivo importado) reintroduzia o // "balanceado: true …
   ```
 - **splitSaldo(saldo: number)** — `src/lib/contabil/balancete-utils.ts`
   ```
@@ -5097,7 +5097,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3505 testes em 305 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3510 testes em 305 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5140,6 +5140,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/periodicidade-apuracao.test.ts` | 23 | IRPJ por período de apuração · não aplica adicional até R$ 60 mil no trimestre · aplica 10% sobre o excedente trimestral · usa limite de R$ 240 mil no período anual … |
 | `src/lib/tributario/__tests__/pis-cofins-creditos.test.ts` | 23 | base de cálculo da receita (Tema 69) · exclui ICMS, IPI e descontos incondicionais · nunca retorna base negativa · ignora valores inválidos ou negativos … |
 | `src/lib/__tests__/navigation.test.ts` | 22 | getRouteMeta · resolve rotas exatas · resolve rotas com parâmetro · retorna undefined para rota desconhecida … |
+| `src/lib/contabil/__tests__/balancete-utils.test.ts` | 22 | round2 · elimina ruído de ponto flutuante · splitSaldo · classifica saldo positivo como devedor … |
 | `src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts` | 22 | detectarDeliberacaoLucros · é aplicável dentro da janela com saldo e sem ata registrada · não é aplicável após 31/12/2025 · não é aplicável quando a ata já foi registrada … |
 | `src/components/admin/telemetry/__tests__/performance-alerts-deeplink.test.ts` | 21 | performance-alerts-deeplink · isSeverity · aceita valores válidos · rejeita valores inválidos … |
 | `src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts` | 21 | detectarJCP · deve identificar oportunidade aplicável para empresa Lucro Real com PL e lucro positivos · deve limitar JCP a 50% do lucro se o limite do PL for superior · não deve ser aplicável para empresas fora do Lucro Real … |
@@ -5154,7 +5155,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/savedFiltersValidation.test.ts` | 17 | savedFiltersValidation > isAppRole · aceita os 4 papéis canônicos · rejeita valor inválido %p · savedFiltersValidation > normalizeRoles … |
 | `src/lib/__tests__/cfc-validator.test.ts` | 17 | validarFormatoCFC · aceita 4 níveis · aceita 5 níveis com subconta 1-3 dígitos · rejeita formatos inválidos … |
 | `src/lib/__tests__/csv-importer.test.ts` | 17 | csv-importer — faturamento · parse UTF-8 com separador  · parse com separador  · parse com separador TAB … |
-| `src/lib/contabil/__tests__/balancete-utils.test.ts` | 17 | round2 · elimina ruído de ponto flutuante · splitSaldo · classifica saldo positivo como devedor … |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
@@ -5972,6 +5972,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Soma dos débitos do período (apenas contas analíticas — evita dupla contagem). */ | `src/lib/contabil/balancete-utils.ts` |
 | * Soma dos créditos do período (apenas contas analíticas). */ | `src/lib/contabil/balancete-utils.ts` |
 | * Diferença D-C; deve ser zero em escrituração íntegra. */ | `src/lib/contabil/balancete-utils.ts` |
+| Qualquer valor assim impede `balanceado: true` -- um balancete não pode | `src/lib/contabil/balancete-utils.ts` |
 | * Totaliza apenas as contas analíticas (`aceita_lancamento`), pois as | `src/lib/contabil/balancete-utils.ts` |
 | * Exibe apenas contas até este nível hierárquico. */ | `src/lib/contabil/balancete-utils.ts` |
 | * Preenchido apenas quando `valor === null`. */ | `src/lib/contabil/indices.types.ts` |
@@ -5983,5 +5984,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | regra do CSV (parseValorMonetario), que lanca em entrada invalida em | `src/lib/ofx-parser/xlsx.ts` |
 | * Toda a regra de negócio (validade, normalização, hierarquia de papéis) fica | `src/lib/organizacoes/convites.ts` |
 | ambiente um token de convite NÃO pode nascer de PRNG fraco — falha | `src/lib/organizacoes/convites.ts` |
-| - emails[work].value    (opcional, mas se presente deve ser e-mail válido) | `src/lib/scim/userTemplate.ts` |
-| … +408 linhas — lista completa em `context.json` | |
+| … +409 linhas — lista completa em `context.json` | |
