@@ -64,20 +64,53 @@ export function parseCSV(
 
       const cols = parseCSVLine(line, delimiter);
 
+      // Delimitador virgula + valor BRL SEM aspas (1.234,56) chega aqui partido
+      // em duas colunas: ['1.234', '56']. O valor lido virava 1234 -- mil vezes
+      // menor -- e sem nenhum aviso, porque '1.234' e milhar BRL valido para o
+      // parser. Era a ressalva que manteve o achado F01 como PARCIAL.
+      //
+      // A recomposicao e deliberadamente estreita: so quando a linha tem
+      // EXATAMENTE uma coluna a mais que o cabecalho e a vizinha do valor tem
+      // 1 ou 2 digitos. Uma planilha com coluna extra declarada (valor,parcela)
+      // tem o mesmo numero de colunas do cabecalho e nao entra aqui.
+      let colunas = cols;
+      const vizinha = valorIdx !== -1 ? (cols[valorIdx + 1] ?? '') : '';
+      if (
+        delimiter === ',' &&
+        valorIdx !== -1 &&
+        cols.length === headers.length + 1 &&
+        /^\d{1,2}$/.test(vizinha)
+      ) {
+        colunas = [
+          ...cols.slice(0, valorIdx),
+          `${cols[valorIdx]},${vizinha}`,
+          ...cols.slice(valorIdx + 2),
+        ];
+        avisos.push(
+          `Linha ${i + 1}: valor "${cols[valorIdx]},${vizinha}" estava sem aspas num CSV separado por vírgula; os centavos foram recompostos. Exporte com aspas ou use ponto e vírgula.`
+        );
+      } else if (cols.length !== headers.length) {
+        // Nao descarta a linha (CSV com coluna sobrando funciona hoje), mas a
+        // leitura pode estar deslocada e isso deixa de ser silencioso.
+        avisos.push(
+          `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento.`
+        );
+      }
+
       try {
-        const dataStr = dataIdx !== -1 ? cols[dataIdx] : cols[0];
+        const dataStr = dataIdx !== -1 ? colunas[dataIdx] : colunas[0];
         if (!dataStr) continue;
         const data = parseData(dataStr);
 
-        const valorRaw = valorIdx !== -1 ? cols[valorIdx] : cols[1];
+        const valorRaw = valorIdx !== -1 ? colunas[valorIdx] : colunas[1];
         if (!valorRaw) continue;
 
         let valor = parseValorMonetario(valorRaw);
 
         let tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
 
-        if (tipoIdx !== -1 && cols[tipoIdx]) {
-          const tipoStr = cols[tipoIdx].toLowerCase();
+        if (tipoIdx !== -1 && colunas[tipoIdx]) {
+          const tipoStr = colunas[tipoIdx].toLowerCase();
           if (tipoStr.startsWith('d') || tipoStr.includes('deb')) {
             tipo = 'debito';
             if (valor > 0) valor = -valor;
@@ -88,7 +121,7 @@ export function parseCSV(
         }
 
         const descricao =
-          (descricaoIdx !== -1 ? cols[descricaoIdx] : cols[2]) || 'Transação sem descrição';
+          (descricaoIdx !== -1 ? colunas[descricaoIdx] : colunas[2]) || 'Transação sem descrição';
 
         transacoes.push({
           id: `csv-${i}-${Date.now()}`,

@@ -83,3 +83,45 @@ describe('parseExcel — valor monetario BRL', () => {
     expect(xls.extrato?.transacoes[0].valor).toBe(1234.56);
   });
 });
+
+/**
+ * Ressalva que manteve o achado F01 como PARCIAL: CSV com delimitador virgula e
+ * valor BRL SEM aspas perdia os centavos em silencio, porque o parseCSVLine
+ * quebra a coluna antes do parser de valor ver o conteudo.
+ *
+ * Medido no main antes desta correcao:
+ *   'data,descricao,valor' + '01/01/2026,Teste,1.234,56' -> valor 1234, avisos []
+ */
+describe('CSV separado por virgula com valor BRL sem aspas (F01)', () => {
+  it('recompoe os centavos e avisa, em vez de perder 56 centavos calado', () => {
+    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,1.234,56\n', 'e.csv');
+    expect(r.sucesso).toBe(true);
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).toMatch(/centavos foram recompostos/i);
+  });
+
+  it('negativo tambem preserva a grandeza', () => {
+    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,-1.234,56\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(-1234.56);
+  });
+
+  it('com aspas continua funcionando sem aviso de recomposicao', () => {
+    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,"1.234,56"\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+
+  it('coluna extra declarada no cabecalho NAO e recomposta', () => {
+    // 'parcela' existe no cabecalho: a linha tem o mesmo numero de colunas,
+    // entao 1.234 e o valor inteiro de verdade e 2 e a parcela.
+    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,2\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+
+  it('ponto e virgula com valor BRL segue intacto', () => {
+    const r = parseCSV('data;descricao;valor\n01/01/2026;Teste;1.234,56\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+  });
+});
