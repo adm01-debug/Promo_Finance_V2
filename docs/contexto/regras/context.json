@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "92242221b8f1cc050bd4dcf7399a7f0cec4d6963",
+  "sha": "44c623c43071abbdb4a0efe2fdbc72e0006e0147",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 06:18 UTC",
+  "generated_at": "2026-11-17 06:19 UTC",
   "files_total": 3934,
   "code_files": 3557,
   "code_lines": 506481
@@ -247079,10 +247079,20 @@
   }
  },
  "git": {
-  "sha": "92242221b8f1cc050bd4dcf7399a7f0cec4d6963",
+  "sha": "44c623c43071abbdb4a0efe2fdbc72e0006e0147",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "44c623c",
+    "date": "2026-11-17",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps-dev): bump @sentry/vite-plugin from 2.22.7 to 11.12.0 (#378)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "9224222",
     "date": "2026-11-17",
@@ -247467,27 +247477,16 @@
      "src/types/financial.ts",
      "src/types/tipo-cobranca-rotulo.ts"
     ]
-   },
-   {
-    "sha": "38f4896",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)",
-    "files": [
-     "src/components/tesouraria/ProjectedCashFlowChart.tsx",
-     "src/components/tesouraria/TesourariaCentralizada.tsx",
-     "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    5
+    6
    ],
    [
     "bun.lock",
-    4
+    5
    ],
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
