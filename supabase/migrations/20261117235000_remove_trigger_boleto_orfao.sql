@@ -1,0 +1,33 @@
+-- Remove o trigger e a função de boleto que ficaram apontando para uma tabela
+-- inexistente depois da #435.
+--
+-- O que aconteceu. A migration 20261117190000_drop_tabelas_residuo_lovable.sql
+-- derrubou `boleto_events`. Mas `handle_boleto_payment_sync()`
+-- (20260508173615_2c2a2eb6-cf9f-483d-936c-979dd4810862.sql:31-79) escreve
+-- nessa tabela no último bloco, e o trigger `on_boleto_status_change`
+-- (AFTER UPDATE em `boletos`, mesma migration:75-79) continua associado.
+-- Referência dentro de corpo PL/pgSQL não é dependência de catálogo: o
+-- `CASCADE` do DROP não a remove. Nenhuma migration posterior derruba a função
+-- nem o trigger — conferido com grep em supabase/migrations/.
+--
+-- Efeito num banco reconstruído pelo replay: QUALQUER mudança de status de
+-- boleto falha com `relation "public.boleto_events" does not exist` e sofre
+-- rollback. Isso derruba o cancelamento (src/hooks/useBoletos.ts:348) e a
+-- marcação de pago (src/hooks/useBoletos.ts:246-307). Apontado por Devin
+-- (2 × 🔴) e Codex (P2) na #435, antes do merge.
+--
+-- Em PRODUÇÃO não há regressão hoje, e foi conferido antes desta migration:
+-- pg_trigger de `public.boletos` tem só `set_updated_at_6ccc02b67895ed316b66`;
+-- `handle_boleto_payment_sync` não existe em pg_proc; `boleto_events` não
+-- existe em information_schema.tables. Os dois objetos foram removidos fora do
+-- versionamento em algum momento. Esta migration apenas faz o banco
+-- reconstruído convergir para esse mesmo estado — é no-op em produção.
+--
+-- O que esta migration NÃO faz. Não recria a baixa automática
+-- ("boleto pago → conta a receber/pagar baixada + evento"). Essa regra está
+-- morta hoje: `useBoletos.ts` não a executa e o `asaas-proxy/index.ts:1398`
+-- baixa por `conta_id`, em outro fluxo. Restaurá-la muda comportamento
+-- financeiro em produção, decisão do dono — fica em "Próximos passos".
+
+DROP TRIGGER IF EXISTS on_boleto_status_change ON public.boletos;
+DROP FUNCTION IF EXISTS public.handle_boleto_payment_sync();
