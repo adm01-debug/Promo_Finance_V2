@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)",
    "fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)",
    "fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)",
    "fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)",
-   "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)",
-   "fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)"
+   "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

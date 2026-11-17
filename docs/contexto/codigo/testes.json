@@ -1421,11 +1421,11 @@
   {
    "arquivo": "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
    "tipo": "unit",
-   "linhas": 188,
+   "linhas": 227,
    "testa": [
     "src/hooks/useConciliacaoPage.ts"
    ],
-   "casos": 10
+   "casos": 13
   },
   {
    "arquivo": "src/hooks/__tests__/useConciliacaoPage.mutations.test.tsx",

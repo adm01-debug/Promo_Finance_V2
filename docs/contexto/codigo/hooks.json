@@ -2681,7 +2681,7 @@
    "hooks_exportados": [
     "useConciliacaoPage"
    ],
-   "linhas": 464,
+   "linhas": 457,
    "dominio": "hooks",
    "tabelas": [
     "alertas",

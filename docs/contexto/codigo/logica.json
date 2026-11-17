@@ -1478,10 +1478,11 @@
     "carregarTransacoesBanco",
     "filtrarTransacoes",
     "montarExportData",
-    "montarLancamentosSistema"
+    "montarLancamentosSistema",
+    "persistirExtratoImportado"
    ],
    "export_default": null,
-   "linhas": 348,
+   "linhas": 377,
    "tabelas": [
     "contas_bancarias",
     "transacoes_bancarias",

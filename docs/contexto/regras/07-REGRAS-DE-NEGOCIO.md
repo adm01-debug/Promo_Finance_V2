@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c772d6357f` · branch `main` · 2026-11-17 07:58 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2627e95b23` · branch `main` · 2026-11-17 08:45 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5093,7 +5093,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3537 testes em 307 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3541 testes em 307 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5156,6 +5156,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
+| `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 16 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
 | `src/lib/__tests__/sped-generator.test.ts` | 16 | SPED Generator · gerarEFD_IBS_CBS · gera arquivo com registro inicial 0000 · gera arquivo com registro final 9999 … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
@@ -5194,7 +5195,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 12 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
 | `src/components/navigation/__tests__/BackButton.test.tsx` | 12 | BackButton · renders on non-home pages · does NOT render on home page · does NOT render on /dashboard … |
 | `src/hooks/__tests__/useBulkActions.test.ts` | 12 | useBulkActions · toggle adiciona e remove id da seleção · selectAll seleciona todos e limpa quando já estão todos selecionados · deselectAll/clearSelection limpa a seleção … |
-| `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 12 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
 | `src/lib/__tests__/filterHydrationTelemetry.test.ts` | 12 | filterHydrationTelemetry · registra evento com timestamp ISO · filtra falhas via getHydrationFailures · mantém buffer FIFO limitado a 100 eventos … |
 | `src/lib/__tests__/sefaz-rejection-monitor.test.ts` | 12 | sefaz-rejection-monitor · retorna null quando não há rejeições suficientes · gera alerta tipo aviso ao atingir limite mínimo · gera alerta crítico ao atingir limite superior … |
 | `src/lib/sso/__tests__/sandbox-csv.test.ts` | 12 | parseBulkCsv · parse cabeçalho + groups com pipe · detecta delimitador ; · reporta erro quando faltam colunas … |
@@ -5912,6 +5912,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Fator de vencimento (posições 6-9) | `src/lib/barcode-parser.ts` |
 | Validação de códigos referenciais CFC (Conselho Federal de Contabilidade) | `src/lib/cfc-validator.ts` |
 | Sugere correção mínima quando o prefixo está errado: troca apenas o 1º dígito. | `src/lib/cfc-validator.ts` |
+| gravação também devolve zero: o relatório de importação não pode afirmar | `src/lib/conciliacao-page-helpers.ts` |
 | local, e um `new Date` cru aqui deslocaria o limite superior em 3h, | `src/lib/conciliacao-page-helpers.ts` |
 | deve crescer (para amortizar overhead) mas a quantidade real de requests | `src/lib/concurrency-limiter.ts` |
 | const limit = createConcurrencyLimiter(4); | `src/lib/concurrency-limiter.ts` |
@@ -5979,5 +5980,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
-| // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +415 linhas — lista completa em `context.json` | |
+| … +416 linhas — lista completa em `context.json` | |

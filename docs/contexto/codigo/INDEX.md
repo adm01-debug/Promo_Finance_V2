@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c772d6357f668d6d95f78f8e8699670b0bbbebab` (2026-11-17T04:57:21-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2627e95b23495e252229da3f0330a03e960bb490` (2026-11-17T05:44:27-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3898 |
 | arquivos_codigo | 2460 |
-| linhas_codigo | 438479 |
+| linhas_codigo | 438540 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -473,9 +473,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
+- src/hooks/useConciliacaoPage.ts (10)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
 - supabase/functions/mcp-query/index.ts (10)
-- .github/workflows/functions-deploy.yml (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `2627e95` fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)
 - 2026-11-17 `c772d63` fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)
 - 2026-11-17 `685b65c` fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)
 - 2026-11-17 `a8d124b` fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `2698b5b` fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)
 - 2026-11-17 `61d2a4b` fix(tributário): o casamento com benchmarks_setoriais nunca podia dar certo (CNAE + vocabulário de regime) (#407)
 - 2026-11-17 `6139096` feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)
-- 2026-11-17 `915784c` chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

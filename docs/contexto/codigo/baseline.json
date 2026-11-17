@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "c772d6357f668d6d95f78f8e8699670b0bbbebab",
+  "commit": "2627e95b23495e252229da3f0330a03e960bb490",
   "branch": "main",
-  "data_commit": "2026-11-17T04:57:21-03:00",
+  "data_commit": "2026-11-17T05:44:27-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2627e95",
+    "data": "2026-11-17",
+    "assunto": "fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)"
+   },
    {
     "sha": "c772d63",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "e93d744",
     "data": "2026-11-16",
     "assunto": "fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)"
-   },
-   {
-    "sha": "a133ea0",
-    "data": "2026-11-16",
-    "assunto": "feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)"
    }
   ],
-  "arquivos_mudados_7d": 844,
+  "arquivos_mudados_7d": 846,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -173,7 +173,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 18
+    "mudancas": 19
    },
    {
     "pasta": "src/lib/tributario",
@@ -246,6 +246,10 @@
     "mudancas": 11
    },
    {
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 10
+   },
+   {
     "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 10
    },
@@ -259,10 +263,6 @@
    },
    {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 9
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 172
+    "commits": 173
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3898,
   "arquivos_codigo": 2460,
-  "linhas_codigo": 438479,
+  "linhas_codigo": 438540,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -648,7 +648,7 @@
   },
   "src/hooks": {
    "arquivos": 319,
-   "linhas": 46620
+   "linhas": 46652
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -660,7 +660,7 @@
   },
   "src/lib": {
    "arquivos": 413,
-   "linhas": 54730
+   "linhas": 54759
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -810,7 +810,7 @@
   "console_log": 226,
   "ts_ignore": 2,
   "eslint_disable": 1,
-  "todos": 15,
+  "todos": 14,
   "arquivos_acima_500_linhas": 28
  },
  "todos": [
@@ -849,12 +849,6 @@
    "linha": 266,
    "tipo": "TODO",
    "texto": "(2026-08-14): cast do tableName para tabelas com coluna status (mark-done só faz sentido nelas)"
-  },
-  {
-   "arquivo": "src/hooks/useConciliacaoPage.ts",
-   "linha": 165,
-   "tipo": "TODO",
-   "texto": "(2026-08-14): sem registro de cabeçalho do arquivo — extratos_importacoes não existe"
   },
   {
    "arquivo": "src/hooks/useFluxoCaixa.ts",
