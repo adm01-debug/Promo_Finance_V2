@@ -15,6 +15,10 @@ export interface FaturamentoRow {
   receita_revenda: number;
   receita_industria: number;
   receita_exportacao: number;
+  // Opcional porque o import de CSV (src/lib/csv-importer.ts) não envia este
+  // campo: o HEADER_FATURAMENTO é lista de colunas obrigatórias, e exigir
+  // `valor_impostos` ali invalidaria todo CSV já em uso. A tela envia.
+  valor_impostos?: number;
   observacoes?: string | null;
 }
 

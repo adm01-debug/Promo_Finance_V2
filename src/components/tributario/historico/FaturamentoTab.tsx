@@ -42,6 +42,7 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
     receita_revenda: 0,
     receita_industria: 0,
     receita_exportacao: 0,
+    valor_impostos: 0,
   });
 
   const adicionar = () => {
@@ -89,7 +90,7 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-7 gap-2 p-4 border rounded-lg bg-muted/30">
+        <div className="grid grid-cols-2 md:grid-cols-8 gap-2 p-4 border rounded-lg bg-muted/30">
           <div>
             <Label className="text-xs">Ano</Label>
             <Input
@@ -122,6 +123,7 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
               type="number"
               value={novo.receita_bruta}
               onChange={(e) => setNovo({ ...novo, receita_bruta: Number(e.target.value) })}
+              aria-label="Receita bruta do mês"
             />
           </div>
           <div>
@@ -148,6 +150,15 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
               onChange={(e) => setNovo({ ...novo, receita_industria: Number(e.target.value) })}
             />
           </div>
+          <div>
+            <Label className="text-xs">Impostos</Label>
+            <Input
+              type="number"
+              value={novo.valor_impostos}
+              onChange={(e) => setNovo({ ...novo, valor_impostos: Number(e.target.value) })}
+              aria-label="Impostos do mês"
+            />
+          </div>
           <div className="flex items-end">
             <Button onClick={adicionar} className="w-full" disabled={upsertFaturamento.isPending}>
               <Plus className="h-4 w-4 mr-1" /> Salvar
@@ -165,13 +176,14 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
                 <TableHead className="text-right">Revenda</TableHead>
                 <TableHead className="text-right">Indústria</TableHead>
                 <TableHead className="text-right">Exportação</TableHead>
+                <TableHead className="text-right">Impostos</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {(faturamento || []).length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                     Nenhum registro
                   </TableCell>
                 </TableRow>
@@ -195,6 +207,9 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
                     </TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(f.receita_exportacao)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(f.valor_impostos ?? 0)}
                     </TableCell>
                     <TableCell>
                       <Button
