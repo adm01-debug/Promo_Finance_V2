@@ -11,34 +11,35 @@
  * apenas `webhooks_log` -- os webhooks que CHEGARAM. Resultado: uma cobranca do
  * Asaas que falha por timeout ou assinatura invalida saia de cena sem aviso.
  *
- * O botao de reprocessar NAO entra aqui: `reprocess_dlq` nao tem EXECUTE para o
- * papel `authenticated` (verificado: `has_function_privilege('authenticated',
- * ..., 'EXECUTE')` = false), e conceder isso e DDL em producao -- decisao do
- * dono pelo AGENTS.md 6.6. Esta tela mostra a falha; o reprocessamento vem na
- * PR da migration.
+ * O botao de reprocessar entrou depois, quando o banco deixou de bloquear os
+ * dois lados: `reprocess_dlq` ganhou EXECUTE para `authenticated` (verificado:
+ * `has_function_privilege('authenticated', ..., 'EXECUTE')` = true) e a funcao
+ * em si foi corrigida -- antes ela estourava violacao de unicidade em qualquer
+ * evento com `external_id`, porque inseria um segundo registro em vez de
+ * reagendar o original (PR #409).
  */
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { AlertTriangle, Clock, Inbox, RefreshCw } from 'lucide-react';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AlertTriangle, Inbox, RefreshCw } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { cn } from '@/lib/utils';
-import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-
-interface DlqRow {
-  id: string;
-  source: string | null;
-  event_type: string | null;
-  external_id: string | null;
-  error_message: string | null;
-  attempts: number | null;
-  first_failed_at: string | null;
-  last_attempt_at: string | null;
-  created_at: string;
-}
+import { WebhookDlqItem, type DlqRow } from './WebhookDlqItem';
 
 /**
  * `supabase.from(...)` rejeita com PostgrestError -- objeto `{ message }`, nao
@@ -113,6 +114,37 @@ export function WebhookDlqPanel() {
   const linhas = (data?.pages ?? []).flatMap((p) => p.linhas);
   const total = data?.pages?.[0]?.total ?? 0;
 
+  // Reprocessar reentrega um evento real (cobranca, baixa, estorno), entao
+  // passa por confirmacao em vez de disparar no clique.
+  const [aConfirmar, setAConfirmar] = useState<DlqRow | null>(null);
+  const queryClient = useQueryClient();
+
+  const reprocessar = useMutation({
+    mutationFn: async (row: DlqRow) => {
+      // `reprocess_dlq` nao esta nos tipos gerados -- supabaseDyn e o ponto
+      // unico de cast do repo. Ela NAO rejeita: devolve `{ data, error }`.
+      const { data: logId, error: erroRpc } = await supabaseDyn.rpc<string>('reprocess_dlq', {
+        p_dlq_id: row.id,
+      });
+      if (erroRpc) throw erroRpc;
+      return logId;
+    },
+    onSuccess: () => {
+      toast.success('Evento reenfileirado. O worker tenta de novo na próxima rodada.');
+      void queryClient.invalidateQueries({ queryKey: ['webhook-dlq-abertos'] });
+    },
+    // Falha de reprocessamento nao pode sumir: alem do toast, o motivo fica na
+    // tela -- e o mesmo princípio do erro de leitura logo abaixo.
+    onError: (erro: unknown) => {
+      toast.error(`Não foi possível reprocessar: ${mensagemDeErro(erro)}`);
+    },
+    onSettled: () => setAConfirmar(null),
+  });
+
+  // Estavel: a linha e `memo`, entao um callback novo a cada render anularia a
+  // memoizacao justamente quando a lista cresce.
+  const pedirConfirmacao = useCallback((row: DlqRow) => setAConfirmar(row), []);
+
   if (!podeLerDlq) {
     return (
       <div className="rounded-lg border border-border bg-muted/30 p-3">
@@ -176,30 +208,12 @@ export function WebhookDlqPanel() {
       ) : (
         <div className="space-y-2">
           {linhas.map((row) => (
-            <div
+            <WebhookDlqItem
               key={row.id}
-              className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 space-y-1"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-bold truncate">
-                  {row.source ?? 'origem desconhecida'} · {row.event_type ?? 'evento sem tipo'}
-                </p>
-                <Badge variant="outline" className="text-[9px] shrink-0">
-                  {row.attempts ?? 0} tentativa{(row.attempts ?? 0) === 1 ? '' : 's'}
-                </Badge>
-              </div>
-              <p className="text-[11px] text-destructive/90 break-words">
-                {row.error_message ?? 'sem mensagem de erro registrada'}
-              </p>
-              <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {formatDistanceToNow(new Date(row.last_attempt_at ?? row.created_at), {
-                  addSuffix: true,
-                  locale: ptBR,
-                })}
-                {row.external_id ? ` · id externo ${row.external_id}` : ''}
-              </p>
-            </div>
+              row={row}
+              reprocessando={reprocessar.isPending}
+              onReprocessar={pedirConfirmacao}
+            />
           ))}
           {hasNextPage ? (
             <div className="flex items-center justify-between gap-2">
@@ -216,12 +230,51 @@ export function WebhookDlqPanel() {
               </Button>
             </div>
           ) : null}
+          {reprocessar.isError ? (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/5 p-3"
+            >
+              <p className="text-xs font-medium">O reprocessamento não foi aceito.</p>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                O evento continua na fila. {mensagemDeErro(reprocessar.error)}
+              </p>
+            </div>
+          ) : null}
           <p className="text-[10px] text-muted-foreground">
-            Reprocessar um evento exige liberar a função <code>reprocess_dlq</code> para a aplicação
-            — alteração de banco pendente de aprovação.
+            Reprocessar devolve o evento à fila do worker. Evento que já foi concluído por outro
+            caminho não é reexecutado: a fila apenas marca o item como resolvido.
           </p>
         </div>
       )}
+
+      <AlertDialog
+        open={aConfirmar !== null}
+        onOpenChange={(aberto) => {
+          if (!aberto) setAConfirmar(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reprocessar este webhook?</AlertDialogTitle>
+            <AlertDialogDescription>
+              O evento volta para a fila e será entregue de novo ao sistema — pode alterar títulos,
+              cobranças e baixas. Origem {aConfirmar?.source ?? 'desconhecida'}
+              {aConfirmar?.external_id ? `, id externo ${aConfirmar.external_id}` : ''}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (aConfirmar) reprocessar.mutate(aConfirmar);
+              }}
+            >
+              Reprocessar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
