@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "cf7bc77bfee93888fe9f078f3edb7ce5732a3d39",
+  "commit": "710f7a86391b86cf5be7b4cac07bd620f1d81697",
   "branch": "main",
-  "data_commit": "2026-11-17T12:18:13-03:00",
+  "data_commit": "2026-11-17T12:56:03-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "710f7a8",
+    "data": "2026-11-17",
+    "assunto": "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)"
+   },
+   {
+    "sha": "ab257ab",
+    "data": "2026-11-17",
+    "assunto": "chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)"
+   },
    {
     "sha": "cf7bc77",
     "data": "2026-11-17",
@@ -121,19 +131,9 @@
     "sha": "6139096",
     "data": "2026-11-17",
     "assunto": "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)"
-   },
-   {
-    "sha": "915784c",
-    "data": "2026-11-17",
-    "assunto": "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)"
-   },
-   {
-    "sha": "9871bfb",
-    "data": "2026-11-17",
-    "assunto": "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)"
    }
   ],
-  "arquivos_mudados_7d": 908,
+  "arquivos_mudados_7d": 910,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -215,7 +215,7 @@
    },
    {
     "arquivo": ".github/workflows/deno-tests.yml",
-    "mudancas": 14
+    "mudancas": 13
    },
    {
     "arquivo": "env.manifest.json",
@@ -270,14 +270,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/bling-webhook/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/convidar-contador/index.ts",
     "mudancas": 9
    },
@@ -296,12 +288,20 @@
    {
     "arquivo": "supabase/functions/gerar-sped-ecd/index.ts",
     "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/gerar-sped-ecf/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "mudancas": 9
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 181
+    "commits": 183
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3912,
+  "arquivos_total": 3913,
   "arquivos_codigo": 2468,
   "linhas_codigo": 439803,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 474,
   "workflows": 19,
   "scripts": 111,
-  "docs_md": 197
+  "docs_md": 198
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

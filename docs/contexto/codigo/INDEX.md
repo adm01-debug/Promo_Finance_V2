@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cf7bc77bfee93888fe9f078f3edb7ce5732a3d39` (2026-11-17T12:18:13-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `710f7a86391b86cf5be7b4cac07bd620f1d81697` (2026-11-17T12:56:03-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2354), SQL (1104), Markdown (197), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2354), SQL (1104), Markdown (198), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3912 |
+| arquivos_total | 3913 |
 | arquivos_codigo | 2468 |
 | linhas_codigo | 439803 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 474 |
 | workflows | 19 |
 | scripts | 111 |
-| docs_md | 197 |
+| docs_md | 198 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -465,7 +465,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - bun.lock (33)
 - .github/workflows/ci.yml (26)
 - supabase/functions/asaas-proxy/index.ts (17)
-- .github/workflows/deno-tests.yml (14)
+- .github/workflows/deno-tests.yml (13)
 - env.manifest.json (13)
 - supabase/config.toml (13)
 - .github/workflows/supabase-linter.yml (11)
@@ -625,10 +625,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/agentes (9), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (10), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `710f7a8` chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)
+- 2026-11-17 `ab257ab` chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)
 - 2026-11-17 `cf7bc77` fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)
 - 2026-11-17 `19a248a` fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)
 - 2026-11-17 `ece50dc` fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)
@@ -642,8 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `685b65c` fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)
 - 2026-11-17 `a8d124b` fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)
 - 2026-11-17 `c19b86c` fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)
-- 2026-11-17 `00a7783` fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)
-- 2026-11-17 `629b697` fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

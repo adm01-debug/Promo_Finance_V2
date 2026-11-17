@@ -4,9 +4,9 @@
 |---|---|
 | nome | relatorio-diario-anomalias |
 | status | ACTIVE |
-| versão | 87 |
+| versão | 90 |
 | verify_jwt | sim |
-| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/relatorio-diario-anomalias/index.ts |
+| entrypoint | file:///app/supabase/functions/relatorio-diario-anomalias/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/relatorio-diario-anomalias |
 | fonte no repo | `supabase/functions/relatorio-diario-anomalias/` |

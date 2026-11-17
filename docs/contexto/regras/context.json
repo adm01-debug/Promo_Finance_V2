@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "cf7bc77bfee93888fe9f078f3edb7ce5732a3d39",
+  "sha": "710f7a86391b86cf5be7b4cac07bd620f1d81697",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 15:19 UTC",
-  "files_total": 3951,
+  "generated_at": "2026-11-17 16:18 UTC",
+  "files_total": 3952,
   "code_files": 3573,
   "code_lines": 508674
  },
@@ -247363,10 +247363,31 @@
   }
  },
  "git": {
-  "sha": "cf7bc77bfee93888fe9f078f3edb7ce5732a3d39",
+  "sha": "710f7a86391b86cf5be7b4cac07bd620f1d81697",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "710f7a8",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)",
+    "files": [
+     ".prettierignore",
+     "docs/ci/MATRIZ_EDGE_TABELA.md",
+     "docs/ci/README.md",
+     "docs/ci/kpi.json"
+    ]
+   },
+   {
+    "sha": "ab257ab",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)",
+    "files": [
+     "docs/agentes/auditoria-branches-2026-11-17.md"
+    ]
+   },
    {
     "sha": "cf7bc77",
     "date": "2026-11-17",
@@ -247758,40 +247779,6 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "41310e8",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(aprovações): a alçada configurada nunca era exigida de nenhum pagamento (#400)",
-    "files": [
-     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
-     "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
-     "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts",
-     "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
-     "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
-     "src/hooks/__tests__/useAprovacoes.test.tsx",
-     "src/hooks/useAprovacoes.ts",
-     "src/hooks/useContasPagarLogic.ts",
-     "src/pages/ContasPagar.tsx"
-    ]
-   },
-   {
-    "sha": "0b95e25",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, \"1247 empresas\") (#403)",
-    "files": [
-     "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
-     "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx",
-     "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
-     "src/hooks/useBenchmarkSetorial.ts",
-     "src/hooks/useHeatmapTributario.ts",
-     "supabase/functions/comparar-benchmark-setorial/index.ts",
-     "supabase/functions/gerar-dre-tributaria/index.ts",
-     "supabase/functions/gerar-heatmap-tributario/index.test.ts",
-     "supabase/functions/gerar-heatmap-tributario/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -247852,27 +247839,27 @@
     2
    ],
    [
-    "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
-    2
+    ".prettierignore",
+    1
    ],
    [
-    "src/hooks/useBenchmarkSetorial.ts",
-    2
+    "docs/ci/MATRIZ_EDGE_TABELA.md",
+    1
    ],
    [
-    "supabase/functions/comparar-benchmark-setorial/index.ts",
-    2
+    "docs/ci/README.md",
+    1
+   ],
+   [
+    "docs/ci/kpi.json",
+    1
+   ],
+   [
+    "docs/agentes/auditoria-branches-2026-11-17.md",
+    1
    ],
    [
     "src/components/admin/sso/SSOWizardDialog.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/ScimTokensTab.tsx",
-    1
-   ],
-   [
-    "src/components/admin/telemetry/weekly-trend/WeekDetailDialog.tsx",
     1
    ]
   ]
