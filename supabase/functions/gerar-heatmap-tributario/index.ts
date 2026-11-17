@@ -7,6 +7,33 @@ import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
+/**
+ * Contrato COMPLETO (com zeros) para ano sem nenhum lancamento de faturamento.
+ *
+ * Exportado para o teste Deno deste diretorio assertar o contrato de verdade:
+ * a primeira versao desta correcao devolvia so `{ celulas: [], motivo }`, e o
+ * cabecalho do painel le `data.insights?.mes_pico` dentro de `{data && ...}`
+ * (HeatmapTributarioAnual.tsx:83) ANTES da guarda de vazio -- a resposta curta
+ * trocava o numero inventado por TypeError na renderizacao. `mes_pico` e
+ * `mes_vale` vao nulos de proposito: nao existe pico num ano sem lancamento.
+ */
+export function respostaSemFaturamento(ano: number, empresaId: string) {
+  return {
+    success: true as const,
+    ano,
+    empresa_id: empresaId,
+    celulas: [] as CelulaHeatmap[],
+    meses_com_lancamento: [] as number[],
+    total_por_mes: Array.from({ length: 12 }, () => 0),
+    total_ano: 0,
+    max_valor: 0,
+    insights: { mes_pico: null as number | null, mes_vale: null as number | null },
+    motivo: 'sem_faturamento_no_ano' as const,
+    detalhe:
+      'Nao ha faturamento lancado para o ano informado. Lance o faturamento mensal para o mapa de calor ser calculado.',
+  };
+}
+
 const ReqBodySchema = z.object({
   empresa_id: z.string().uuid(),
   ano: z
@@ -107,31 +134,7 @@ Deno.serve(
         .sort((a, b) => a - b);
 
       if (mesesComLancamento.length === 0) {
-        // Contrato COMPLETO, com zeros. A primeira versao desta correcao devolvia
-        // so `{ celulas: [], motivo }`, e o cabecalho do painel le
-        // `data.insights.mes_pico` dentro de `{data && ...}`
-        // (HeatmapTributarioAnual.tsx:86) ANTES da guarda de vazio da linha 102 --
-        // ou seja, a resposta curta trocava o numero inventado por TypeError na
-        // renderizacao. `mes_pico` e `mes_vale` vao nulos de proposito: nao existe
-        // pico num ano sem lancamento.
-        return jsonComCors(
-          {
-            success: true,
-            ano,
-            empresa_id: empresaId,
-            celulas: [],
-            meses_com_lancamento: [],
-            total_por_mes: Array.from({ length: 12 }, () => 0),
-            total_ano: 0,
-            max_valor: 0,
-            insights: { mes_pico: null, mes_vale: null },
-            motivo: 'sem_faturamento_no_ano',
-            detalhe:
-              'Nao ha faturamento lancado para o ano informado. Lance o faturamento mensal para o mapa de calor ser calculado.',
-          },
-          200,
-          req
-        );
+        return jsonComCors(respostaSemFaturamento(ano, empresaId), 200, req);
       }
 
       // Gerar células

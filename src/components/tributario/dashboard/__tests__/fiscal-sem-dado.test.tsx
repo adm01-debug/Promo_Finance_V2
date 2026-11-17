@@ -63,12 +63,22 @@ describe('heatmap tributario — ano sem faturamento', () => {
     expect(screen.queryByText(/Pico:/)).not.toBeInTheDocument();
   });
 
-  it('o contrato vazio traz insights presente, com mes_pico nulo', () => {
-    // Se a funcao voltar a omitir `insights`, o cabecalho do painel volta a
-    // quebrar: este teste trava o contrato, nao a renderizacao.
-    expect(heatmapVazio.insights).toBeDefined();
-    expect(heatmapVazio.insights.mes_pico).toBeNull();
-    expect(heatmapVazio.total_por_mes).toHaveLength(12);
+  it('resposta sem a chave insights ainda renderiza (nao le antes da guarda)', async () => {
+    // Revisao da PR #403 (Devin): assertar o objeto `heatmapVazio` deste arquivo
+    // nao prova nada sobre a funcao -- o contrato real e assertado em
+    // supabase/functions/gerar-heatmap-tributario/index.test.ts. O que cabe
+    // aqui e a robustez do componente: mesmo uma resposta ANTIGA, sem
+    // `insights`, nao pode mais quebrar o cabecalho.
+    const { insights: _descartado, ...semInsights } = heatmapVazio;
+    mockInvoke.mockResolvedValue({ data: semInsights, error: null });
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <HeatmapTributarioAnual empresaId="e1" ano={2025} />
+      </Wrapper>
+    );
+    expect(await screen.findByText(/Nao ha faturamento lancado/)).toBeInTheDocument();
+    expect(screen.queryByText(/Pico:/)).not.toBeInTheDocument();
   });
 });
 

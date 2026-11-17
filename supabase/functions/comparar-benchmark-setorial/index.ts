@@ -22,6 +22,13 @@ interface Benchmark {
 // regime, e sempre declarada como referencia na resposta -- antes a funcao
 // afirmava "Comparado a 1247 empresas do mesmo regime", numero que nao existe
 // em lugar nenhum: nem a tabela real tem coluna de amostra.
+interface EmpresaBenchmark {
+  id: string;
+  razao_social: string | null;
+  regime_tributario: string | null;
+  cnae_principal: string | null;
+}
+
 const REFERENCIA: Record<string, Benchmark> = {
   simples: { regime: 'simples', p25: 4.5, mediana: 6.8, p75: 9.2, media: 7.1 },
   presumido: { regime: 'presumido', p25: 11.5, mediana: 14.2, p75: 17.8, media: 14.6 },
@@ -75,17 +82,18 @@ Deno.serve(
           }
         }
 
-        const { data: emp } = await supa
+        const { data: empRaw } = await supa
           .from('empresas')
           .select('id, razao_social, regime_tributario, cnae_principal')
           .eq('id', empresaId)
           .maybeSingle();
+        const emp = empRaw as EmpresaBenchmark | null;
         if (emp) {
           empresa = {
             id: emp.id,
             razao_social: emp.razao_social || 'Empresa',
-            regime: (emp as any).regime_tributario || 'simples',
-            cnae: (emp as any).cnae_principal ?? null,
+            regime: emp.regime_tributario || 'simples',
+            cnae: emp.cnae_principal ?? null,
           };
         }
 
@@ -117,22 +125,41 @@ Deno.serve(
         // benchmark_unico), entao filtrar so por regime e vigencia escolhia a linha
         // mais RECENTE de QUALQUER setor e a rotulava como setorial da empresa --
         // uma industria de CNAE 10 podia receber a mediana do comercio, CNAE 47.
-        // Prefixo de 4 digitos com ilike e o padrao que
-        // gerar-alertas-tributarios/index.ts:194-201 ja usa.
+        //
+        // A direcao da comparacao importa: `cnae_prefix` e o PREFIXO e o CNAE da
+        // empresa e o codigo completo. O seed da tabela grava prefixo de 2 digitos
+        // (migrations/20260417155857_...sql:82-90: '47', '10', '62', '69'), entao
+        // casar `cnae_prefix ILIKE '<4 primeiros digitos>%'` -- o padrao de
+        // gerar-alertas-tributarios/index.ts:194-201, que tem o mesmo defeito --
+        // nunca casaria: '4781%' nao encontra '47'. Aqui montamos os prefixos que
+        // ABRANGEM o codigo da empresa e escolhemos o mais especifico.
         let bm: Array<Record<string, unknown>> | null = null;
 
-        if (empresa.cnae) {
-          const cnaePrefix = String(empresa.cnae).slice(0, 4);
+        const digitosCnae = String(empresa.cnae ?? '').replace(/\D/g, '');
+        if (digitosCnae.length >= 2) {
+          const candidatos: string[] = [];
+          for (let n = Math.min(digitosCnae.length, 7); n >= 2; n--) {
+            candidatos.push(digitosCnae.slice(0, n));
+          }
           const { data: setorial } = await supa2
             .from('benchmarks_setoriais')
-            .select('regime, carga_p25_pct, mediana, carga_p75_pct, carga_media_pct, fonte, setor')
+            .select(
+              'regime, carga_p25_pct, mediana, carga_p75_pct, carga_media_pct, fonte, setor, cnae_prefix'
+            )
             .eq('regime', empresa.regime)
-            .ilike('cnae_prefix', `${cnaePrefix}%`)
+            .in('cnae_prefix', candidatos)
             .lte('vigencia_inicio', hoje)
             .or(`vigencia_fim.is.null,vigencia_fim.gte.${hoje}`)
-            .order('vigencia_inicio', { ascending: false })
-            .limit(1);
-          bm = setorial ?? null;
+            .order('vigencia_inicio', { ascending: false });
+          // Prefixo mais longo primeiro (setor mais especifico). O sort de Array e
+          // estavel, entao empate de tamanho mantem a vigencia mais recente que a
+          // query ja ordenou.
+          const ordenado = (setorial ?? [])
+            .slice()
+            .sort(
+              (a, b) => String(b.cnae_prefix ?? '').length - String(a.cnae_prefix ?? '').length
+            );
+          bm = ordenado.length > 0 ? ordenado : null;
         }
 
         // Sem CNAE na empresa, ou sem linha para o setor dela, cai na referencia
