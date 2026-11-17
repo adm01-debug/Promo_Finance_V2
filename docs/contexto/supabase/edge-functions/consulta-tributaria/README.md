@@ -4,7 +4,7 @@
 |---|---|
 | nome | consulta-tributaria |
 | status | ACTIVE |
-| versão | 64 |
+| versão | 68 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/consulta-tributaria/index.ts |
 | import_map |  |

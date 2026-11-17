@@ -4,7 +4,7 @@
 |---|---|
 | nome | external-data |
 | status | ACTIVE |
-| versão | 72 |
+| versão | 76 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/external-data/index.ts |
 | import_map |  |
