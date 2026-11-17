@@ -11,12 +11,22 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 type Filtro = { metodo: string; coluna?: string; valor?: unknown };
-const { mockFrom, filtros } = vi.hoisted(() => ({
+const { mockFrom, mockRpc, filtros } = vi.hoisted(() => ({
   mockFrom: vi.fn(),
+  mockRpc: vi.fn(),
   filtros: [] as Filtro[],
 }));
 
-vi.mock('@/integrations/supabase/client', () => ({ supabase: { from: mockFrom } }));
+// `rpc` no mesmo mock porque `supabaseDyn` e o proprio client castado
+// (src/lib/supabase-dynamic.ts) -- a RPC `reprocess_dlq` nao esta nos tipos.
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: { from: mockFrom, rpc: mockRpc },
+}));
+
+const { mockToast } = vi.hoisted(() => ({
+  mockToast: { success: vi.fn(), error: vi.fn() },
+}));
+vi.mock('sonner', () => ({ toast: mockToast }));
 
 const { mockPapel } = vi.hoisted(() => ({
   mockPapel: { global: 'admin' as string | null, empresa: 'admin' as string | null },
@@ -82,6 +92,7 @@ describe('WebhookDlqPanel', () => {
     filtros.length = 0;
     mockPapel.global = 'admin';
     mockPapel.empresa = 'admin';
+    mockRpc.mockResolvedValue({ data: 'log-1', error: null });
   });
 
   it('lista so as falhas em aberto, da tabela webhook_dlq', async () => {
@@ -220,13 +231,19 @@ describe('WebhookDlqPanel', () => {
     expect(filtros.filter((f) => f.metodo === 'range' && f.valor === 19)).toHaveLength(1);
     expect(screen.getByText(/Mostrando 20 de 1001/i)).toBeInTheDocument();
 
-    // "Carregar mais" avanca a JANELA, entao chega na falha 1.001
+    // "Carregar mais" avanca a JANELA, entao chega na falha 1.001.
+    //
+    // O no do botao e reaproveitado pelo React entre as paginas, entao o laco
+    // clica a MESMA referencia e para quando ele sai do DOM (`isConnected`
+    // falso = nao ha proxima pagina). Antes o laco chamava `getByRole` duas
+    // vezes por volta, e com 1.001 linhas em tela -- cada uma com o botao de
+    // reprocessar -- o calculo do nome acessivel de todos os botoes dominava o
+    // tempo e estourava o limite do teste. A asserção e a mesma.
+    const user = userEvent.setup({ pointerEventsCheck: 0 });
     const botao = screen.getByRole('button', { name: /Carregar mais/i });
-    for (let i = 0; i < 50; i++) {
-      if (!screen.queryByRole('button', { name: /Carregar mais/i })) break;
-      await userEvent.click(screen.getByRole('button', { name: /Carregar mais/i }));
+    for (let i = 0; i < 50 && botao.isConnected; i++) {
+      await user.click(botao);
     }
-    void botao;
     expect(await screen.findByText(/a milesima primeira/i)).toBeInTheDocument();
     expect(filtros.some((f) => f.metodo === 'range' && f.coluna === '1000')).toBe(true);
   }, 20000);
@@ -242,5 +259,73 @@ describe('WebhookDlqPanel', () => {
 
     expect(await screen.findByText(/Nenhum webhook em falha/i)).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('reprocessa a falha pela RPC reprocess_dlq, com o id do item', async () => {
+    // O back-end da fila ja estava completo; o que faltava era o acionamento.
+    // A RPC ganhou EXECUTE para `authenticated` e deixou de estourar violacao
+    // de unicidade (PR #409), entao o botao passou a ter o que chamar.
+    mockFrom.mockImplementation(() => builder({ data: [FALHA], error: null }));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <WebhookDlqPanel />
+      </Wrapper>
+    );
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Reprocessar asaas evt_123/i })
+    );
+    // Reentrega evento real: so dispara depois da confirmacao.
+    expect(mockRpc).not.toHaveBeenCalled();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Reprocessar' }));
+
+    expect(mockRpc).toHaveBeenCalledWith('reprocess_dlq', { p_dlq_id: 'd1' });
+    expect(mockToast.success).toHaveBeenCalled();
+  });
+
+  it('cancelar a confirmacao NAO reprocessa', async () => {
+    mockFrom.mockImplementation(() => builder({ data: [FALHA], error: null }));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <WebhookDlqPanel />
+      </Wrapper>
+    );
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Reprocessar asaas evt_123/i })
+    );
+    await userEvent.click(await screen.findByRole('button', { name: /Cancelar/i }));
+
+    expect(mockRpc).not.toHaveBeenCalled();
+  });
+
+  it('falha do reprocessamento aparece na tela, nao so no toast', async () => {
+    // `supabaseDyn.rpc` NAO rejeita: devolve `{ data: null, error: { message } }`.
+    // Tratar so `instanceof Error` esconderia o motivo real.
+    mockRpc.mockResolvedValue({
+      data: null,
+      error: { message: 'Acesso negado: apenas administradores podem reprocessar DLQ.' },
+    });
+    mockFrom.mockImplementation(() => builder({ data: [FALHA], error: null }));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <WebhookDlqPanel />
+      </Wrapper>
+    );
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Reprocessar asaas evt_123/i })
+    );
+    await userEvent.click(await screen.findByRole('button', { name: 'Reprocessar' }));
+
+    expect(await screen.findByText(/O reprocessamento não foi aceito/i)).toBeInTheDocument();
+    expect(screen.getByText(/apenas administradores podem reprocessar DLQ/i)).toBeInTheDocument();
+    // o evento continua listado
+    expect(screen.getByText(/asaas · payment_failed/i)).toBeInTheDocument();
+    expect(mockToast.error).toHaveBeenCalled();
   });
 });
