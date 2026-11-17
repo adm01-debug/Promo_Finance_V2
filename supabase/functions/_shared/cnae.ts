@@ -83,3 +83,27 @@ export function chaveReferenciaInterna(
   if (regime === 'lucro_real' || regime === 'arbitrado') return 'real';
   return 'simples';
 }
+
+/**
+ * Carga tributaria (%) do MESMO periodo da apuracao.
+ *
+ * Dividir o tributo de um mes por `rbt12 / 12` compara um mes contra a media de
+ * 12: com historico parcial (empresa com um unico mes cadastrado) o denominador
+ * fica ate 12x menor e o desvio contra o benchmark setorial nasce errado.
+ * Sem a receita do mes apurado nao ha comparacao possivel -- devolve `null` em
+ * vez de inventar denominador.
+ */
+export function cargaDoPeriodo(
+  apuracao: { total_geral?: unknown; ano?: unknown; mes?: unknown } | null | undefined,
+  faturamentos: Array<{ receita_bruta?: unknown; ano?: unknown; mes?: unknown }> | null | undefined
+): number | null {
+  if (!apuracao) return null;
+  const doMes = (faturamentos ?? []).find(
+    (f) => Number(f.ano) === Number(apuracao.ano) && Number(f.mes) === Number(apuracao.mes)
+  );
+  const receita = Number(doMes?.receita_bruta ?? 0);
+  const tributos = Number(apuracao.total_geral ?? 0);
+  if (!Number.isFinite(receita) || receita <= 0) return null;
+  if (!Number.isFinite(tributos)) return null;
+  return (tributos / receita) * 100;
+}
