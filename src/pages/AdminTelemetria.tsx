@@ -15,6 +15,10 @@ import { PerformanceAlertsWeeklyTrend } from '@/components/admin/telemetry/Perfo
 import { IntegrityAlertsPanel } from '@/components/admin/telemetry/IntegrityAlertsPanel';
 import { RetentionHistoryPanel } from '@/components/admin/telemetry/RetentionHistoryPanel';
 import { RetentionPoliciesPanel } from '@/components/admin/telemetry/RetentionPoliciesPanel';
+import { AcessosSuspeitosPanel } from '@/components/admin/telemetry/AcessosSuspeitosPanel';
+import { CatalogosTributariosHealthPanel } from '@/components/admin/telemetry/CatalogosTributariosHealthPanel';
+import { CatalogosTributariosHistoryPanel } from '@/components/admin/telemetry/CatalogosTributariosHistoryPanel';
+import { CoberturaFiscalUFPanel } from '@/components/admin/telemetry/CoberturaFiscalUFPanel';
 
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -325,6 +329,18 @@ export default function AdminTelemetriaPage() {
 
         {/* Invariantes de Integridade de Dados */}
         <IntegrityAlertsPanel />
+
+        {/* Auditoria de acessos entre empresas (public.get_acessos_suspeitos) */}
+        <AcessosSuspeitosPanel />
+
+        {/* Saude dos catalogos tributarios (public.get_catalogos_tributarios_health) */}
+        <CatalogosTributariosHealthPanel />
+
+        {/* Historico diario da saude dos catalogos */}
+        <CatalogosTributariosHistoryPanel />
+
+        {/* Cobertura fiscal por UF e ultima carga de seeds */}
+        <CoberturaFiscalUFPanel />
 
         {/* Governança de retenção: políticas vigentes por tabela */}
         <RetentionPoliciesPanel />

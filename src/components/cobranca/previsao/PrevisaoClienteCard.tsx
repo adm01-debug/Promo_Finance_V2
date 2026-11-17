@@ -7,7 +7,6 @@ import {
   DollarSign,
   Calendar,
   TrendingDown,
-  ChevronRight,
   MessageSquare,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -18,10 +17,22 @@ import { cn } from '@/lib/utils';
 import { WhatsAppHistoryIA } from '@/components/financeiro/cobranca/WhatsAppHistoryIA';
 
 export interface ClienteRisco {
+  /** Chave de agrupamento da analise: pode ser o nome digitado, nao e uuid. */
   id: string;
+  /**
+   * `clientes.id` de verdade, ou null para titulo sem cadastro. Separado do
+   * `id` porque consumidores filtram coluna uuid com ele: mandar o nome
+   * digitado derruba a consulta (achado P1 do Codex / Devin na PR #404).
+   */
+  clienteIdReal: string | null;
   nome: string;
   nomeFantasia: string | null;
-  score: number;
+  /**
+   * Escala 0-1000, do unico produtor (useScoringClientes.ts:144). `null` =
+   * nunca calculado -- hoje e o caso de todos os 12 clientes em producao, e
+   * exibir "100" era numero inventado.
+   */
+  score: number | null;
   totalPendente: number;
   diasAteVencimento: number;
   historicoAtrasos: number;
@@ -80,7 +91,7 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
               </span>
               <span className="flex items-center gap-1">
                 <TrendingDown className="h-3 w-3" />
-                Score: {cliente.score}
+                Score: {cliente.score == null ? 'não calculado' : `${cliente.score}/1000`}
               </span>
             </div>
 
@@ -98,23 +109,49 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
           <div className="flex flex-col items-end gap-2">
             <Progress value={cliente.probabilidadeAtraso} className="w-20 h-2" />
             <div className="flex gap-1">
-              <Button size="sm" variant="ghost" onClick={() => setShowWhatsApp(true)}>
-                <MessageSquare className="h-4 w-4" />
-              </Button>
-              <Button size="sm" variant="ghost">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              {/*
+                Sem cadastro de cliente nao existe conversa vinculada, e
+                useWhatsAppConversas sem clienteId consulta whatsapp_conversas
+                INTEIRA, sem filtro: o botao some em vez de abrir historico de
+                outra pessoa.
+              */}
+              {cliente.clienteIdReal ? (
+                <Button size="sm" variant="ghost" onClick={() => setShowWhatsApp(true)}>
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+              ) : null}
+              {/*
+                O botao de chevron nao tinha onClick, link nem dialogo: clique,
+                toque e teclado nao faziam nada, e a lista anunciava um
+                detalhamento inexistente (achado P2 do Codex na PR #404). Sai
+                até existir a tela de detalhe.
+              */}
             </div>
           </div>
         </div>
       </motion.div>
 
-      <WhatsAppHistoryIA
-        clienteId={cliente.id}
-        clienteNome={cliente.nomeFantasia || cliente.nome}
-        open={showWhatsApp}
-        onOpenChange={setShowWhatsApp}
-      />
+      {/*
+        Montado so com cliente cadastrado: WhatsAppHistoryIA chama
+        useWhatsAppConversas no corpo, antes de olhar `open`, e o hook filtra
+        `cliente_id` -- coluna uuid. Com a chave de agrupamento (que pode ser o
+        nome digitado) a consulta quebra; sem clienteId, ela varre
+        whatsapp_conversas inteira.
+      */}
+      {/*
+        `showWhatsApp` no gate: antes cada cartao montava o dialogo mesmo
+        fechado, e WhatsAppHistoryIA chama useWhatsAppConversas no corpo --
+        abrir a aba disparava uma consulta de conversa por cliente da lista, sem
+        ninguem abrir dialogo nenhum (achado P2 do Codex na PR #404).
+      */}
+      {showWhatsApp && cliente.clienteIdReal ? (
+        <WhatsAppHistoryIA
+          clienteId={cliente.clienteIdReal}
+          clienteNome={cliente.nomeFantasia || cliente.nome}
+          open={showWhatsApp}
+          onOpenChange={setShowWhatsApp}
+        />
+      ) : null}
     </>
   );
 }

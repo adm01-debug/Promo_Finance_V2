@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { WebhookConfigPanel } from './WebhookConfigPanel';
+import { WebhookDlqPanel } from './WebhookDlqPanel';
 import { Settings } from 'lucide-react';
 
 interface WebhookConfigDialogProps {
@@ -25,8 +26,14 @@ export function WebhookConfigDialog({ open, onOpenChange }: WebhookConfigDialogP
             Gerencie endpoints e visualize logs de recepção em tempo real.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
+        <div className="py-4 space-y-6">
           <WebhookConfigPanel />
+          {/*
+            O painel acima mostra `webhooks_log` -- o que CHEGOU. A fila de
+            falhas (`webhook_dlq`) nao tinha tela nenhuma: webhook de cobranca
+            que esgota as tentativas saia de cena sem aviso.
+          */}
+          <WebhookDlqPanel />
         </div>
       </DialogContent>
     </Dialog>
