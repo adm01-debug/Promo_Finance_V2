@@ -14,10 +14,19 @@ export interface HeatmapResponse {
   ano: number;
   empresa_id: string;
   celulas: CelulaHeatmap[];
+  /**
+   * Meses que TEM faturamento lancado. Mes fora desta lista nao tem celula: ele
+   * nao e zero, e desconhecido. Preencher com zero fazia a ausencia virar vale
+   * do ano e variacao de -100% no mes seguinte.
+   */
+  meses_com_lancamento: number[];
   total_por_mes: number[];
   total_ano: number;
   max_valor: number;
-  insights: { mes_pico: number; mes_vale: number | null };
+  /** `mes_pico` e nulo no ano sem lancamento; `mes_vale` tambem com um mes so. */
+  insights: { mes_pico: number | null; mes_vale: number | null };
+  motivo?: 'sem_faturamento_no_ano';
+  detalhe?: string;
 }
 
 export function useHeatmapTributario(empresaId?: string, ano?: number) {
