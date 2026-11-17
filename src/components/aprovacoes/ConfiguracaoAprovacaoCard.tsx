@@ -17,8 +17,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/hooks/useAuth';
 import {
-  useConfiguracaoAprovacao,
+  useConfiguracaoAprovacaoEditavel,
   useUpdateConfiguracaoAprovacao,
   useFluxosNiveis,
 } from '@/hooks/useAprovacoes';
@@ -27,7 +28,13 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
 export const ConfiguracaoAprovacaoCard = () => {
-  const { data: config, isLoading: loadingConfig } = useConfiguracaoAprovacao();
+  // Sem a empresa, a leitura devolve a menor faixa entre TODAS as empresas
+  // acessiveis: com acesso a A e B, editar a governanca de B alteraria as
+  // faixas de A, porque o empresa_id que vai para a gravacao vem desta leitura.
+  const { currentEmpresaId } = useAuth();
+  const { data: config, isLoading: loadingConfig } = useConfiguracaoAprovacaoEditavel(
+    currentEmpresaId ?? undefined
+  );
   const { data: niveis, isLoading: loadingNiveis } = useFluxosNiveis();
   const updateMutation = useUpdateConfiguracaoAprovacao();
 
@@ -57,6 +64,12 @@ export const ConfiguracaoAprovacaoCard = () => {
     if (!config) return;
     updateMutation.mutate({
       id: config.id,
+      // Empresa + valor original delimitam a FAIXA editada: as duplicatas dela
+      // andam juntas (senao o limite salvo nao faz efeito) e as faixas de outro
+      // patamar ficam intactas (senao o save apaga patamar que a tela nem
+      // mostra).
+      empresa_id: config.empresa_id,
+      valor_minimo_original: config.valor_minimo_aprovacao,
       valor_minimo_aprovacao: parseFloat(valorMinimo) || 0,
       aprovadores_obrigatorios: parseInt(aprovadores) || 1,
       ativo,
@@ -109,7 +122,9 @@ export const ConfiguracaoAprovacaoCard = () => {
               <p className="text-sm text-muted-foreground max-w-md">
                 {ativo
                   ? 'Controle de alçadas ativado. Pagamentos acima do limite requerem aprovação formal.'
-                  : 'Workflow desativado. Todos os pagamentos serão liberados automaticamente.'}
+                  : 'Workflow desativado: pagamentos liberados sem aprovação. Se a empresa ' +
+                    'tiver outra faixa de alçada ativa, a gravação é recusada em vez de ' +
+                    'desligar pela metade.'}
               </p>
             </div>
           </div>
