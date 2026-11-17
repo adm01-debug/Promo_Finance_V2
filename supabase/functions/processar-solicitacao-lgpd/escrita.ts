@@ -3,8 +3,22 @@
  * importar o `index.ts` — que chama `serve` no topo.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ClienteSupabase = any;
+/**
+ * Contrato mínimo usado por estas duas escritas: `from(tabela).update(payload).eq(coluna, valor)`.
+ * Tipar em vez de usar `any` faz o compilador checar a forma da chamada nos dois
+ * auxiliares e vale igualmente para o cliente real e para o dublê do teste.
+ */
+export interface RespostaEscrita {
+  error: { message: string } | null;
+}
+
+export interface ClienteEscrita {
+  from(tabela: string): {
+    update(payload: Record<string, unknown>): {
+      eq(coluna: string, valor: unknown): PromiseLike<RespostaEscrita>;
+    };
+  };
+}
 
 /**
  * Anonimiza o perfil do titular.
@@ -18,7 +32,7 @@ type ClienteSupabase = any;
  * "atendida" com o dado do titular intacto.
  */
 export async function anonimizarTitular(
-  client: ClienteSupabase,
+  client: ClienteEscrita,
   targetUserId: string,
   agoraIso: string
 ): Promise<Record<string, unknown>> {
@@ -43,7 +57,7 @@ export async function anonimizarTitular(
  * e enviado ao storage.
  */
 export async function fecharSolicitacao(
-  client: ClienteSupabase,
+  client: ClienteEscrita,
   args: {
     solicitacaoId: string;
     payloadResposta: Record<string, unknown>;
