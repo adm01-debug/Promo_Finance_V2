@@ -115,8 +115,8 @@ export function ImportarExtratoDialogArquivoLocal({
             <div className="space-y-2">
               <h4 className="font-bold text-lg">Conexão Bancária Direta</h4>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                Sincronize transações em tempo real sem precisar exportar arquivos. Seguro e
-                autorizado via Open Finance.
+                A conexão via Open Finance ainda não foi homologada: nenhuma instituição está
+                conectada. Use o arquivo OFX, OFC ou CSV do banco na outra aba.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-4 py-4 opacity-50 grayscale hover:grayscale-0 transition-all">
@@ -125,15 +125,17 @@ export function ImportarExtratoDialogArquivoLocal({
               <Building2 className="h-6 w-6" />
               <Building2 className="h-6 w-6" />
             </div>
+            {/* Antes este botão fingia conectar e inventava três transações, que a
+                confirmação gravava em transacoes_bancarias. Fica desabilitado
+                enquanto não houver provedor homologado. */}
             <Button
               onClick={handleOpenFinanceConnect}
+              disabled
+              title="Integração Open Finance ainda não homologada: nenhuma instituição pode ser conectada."
               className="w-full gap-2 bg-gradient-to-r from-primary to-primary/80"
             >
               <Link2 className="h-4 w-4" /> Conectar via Open Finance
             </Button>
-            <p className="text-[10px] text-muted-foreground">
-              Powered by Lovable Gateway Open Banking. Seus dados são criptografados.
-            </p>
           </div>
         </TabsContent>
       </Tabs>
