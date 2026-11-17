@@ -385,3 +385,28 @@ reescritas foram conferidas pelo invariante de cada PR onde havia risco de segur
 do histórico completo passa 1045/1045. Não houve inspeção manual linha a linha das 19.906 linhas
 adicionadas nem das 7.097 removidas — o que foi feito está descrito acima, e é o que sustenta a
 conclusão.
+
+### 6.7 As 4 PRs do Dependabot — prova byte a byte
+
+A seção 2 (linha 29) deixou as quatro como "decisão de custo/major do dono", sem a
+conferência de conteúdo. Fechada aqui. Nenhuma delas tem código: o diff de cada uma é
+`package.json` + `bun.lock`, só strings de versão.
+
+| PR | estado | o que propunha | está na `main`? |
+|---|---|---|---|
+| #371 | fechada sem merge | 19 pacotes `@radix-ui/*` | **sim, idêntico** — as 19 versões propostas batem uma a uma com a `main` (entregues pela #460, `fee7c1da1`) |
+| #375 | **mergeada** | `mapbox-gl` 3.26.0 → 3.35.0 | sim — `"mapbox-gl": "^3.35.0"` |
+| #377 | **mergeada** | `i18next` 26.0.10 → 27.1.1 | sim — `"i18next": "^27.1.1"` |
+| #373 | fechada sem merge | `react` ^18.2.0 → ^19.3.1 e `@types/react` ^18.2.43 → ^19.3.0 | **não, e de propósito** |
+
+Por que a #373 não entra: ela sobe `react` para 19 e **não** sobe `react-dom`
+(`^18.2.0`) nem `@types/react-dom` (`^18.2.17`). `react-dom` precisa acompanhar o major
+de `react`; a proposta quebra por construção, não é "trabalho pela metade a terminar".
+Subir para React 19 corretamente é bump major com reteste das 2689 suítes e revisão de
+compatibilidade de shadcn/Radix — custo e arquitetura, portanto decisão do dono
+(AGENTS §6.6). O Dependabot reabre a PR quando houver nova versão; nada se perde ao
+mantê-la fechada.
+
+Branches das quatro: removidas pelo próprio GitHub no fechamento. Isso não apaga o
+conteúdo — `refs/pull/<n>/head` sobrevive e foi de lá que os diffs acima saíram
+(`gh api repos/.../pulls/<n>/files`), depois das branches já não existirem.
