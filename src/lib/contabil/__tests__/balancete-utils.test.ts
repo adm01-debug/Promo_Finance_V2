@@ -116,3 +116,64 @@ describe('filterBalancete', () => {
     expect(filterBalancete(rows)).toHaveLength(3);
   });
 });
+
+/**
+ * Achado F09: `Number(x) || 0` transformava NaN/Infinity em zero, e o
+ * balancete podia devolver `balanceado: true` somando valor que nao existe.
+ * A unica barreira era o Zod de `useBalancete`, FORA desta funcao pura.
+ */
+describe('computeBalanceteTotais com valor nao finito (F09)', () => {
+  const linha = (over: Partial<BalanceteRow>): BalanceteRow => ({
+    conta_id: 'c1',
+    codigo: '1.1.01',
+    nome: 'Caixa',
+    tipo: 'ativo',
+    natureza: 'devedora',
+    nivel: 3,
+    aceita_lancamento: true,
+    saldo_anterior: 0,
+    debitos: 0,
+    creditos: 0,
+    saldo_final: 0,
+    ...over,
+  });
+
+  it('debito NaN NAO fecha o balancete e a linha sai da soma', () => {
+    const t = computeBalanceteTotais([
+      linha({ debitos: Number.NaN, creditos: 100, saldo_final: -100 }),
+      linha({ conta_id: 'c2', debitos: 50, creditos: 50, saldo_final: 0 }),
+    ]);
+    expect(t.linhasInvalidas).toBe(1);
+    expect(t.balanceado).toBe(false);
+    // a linha invalida nao entra: sobra so o par 50/50
+    expect(t.debitos).toBe(50);
+    expect(t.creditos).toBe(50);
+  });
+
+  it('Infinity em credito tambem impede o fechamento', () => {
+    const t = computeBalanceteTotais([
+      linha({ debitos: 10, creditos: Number.POSITIVE_INFINITY, saldo_final: 10 }),
+    ]);
+    expect(t.linhasInvalidas).toBe(1);
+    expect(t.balanceado).toBe(false);
+    expect(Number.isFinite(t.creditos)).toBe(true);
+  });
+
+  it('saldo_final NaN nao contamina saldo devedor/credor', () => {
+    const t = computeBalanceteTotais([
+      linha({ debitos: 100, creditos: 100, saldo_final: Number.NaN }),
+    ]);
+    expect(t.linhasInvalidas).toBe(1);
+    expect(t.saldoDevedor).toBe(0);
+    expect(t.saldoCredor).toBe(0);
+    expect(t.balanceado).toBe(false);
+  });
+
+  it('sem valor invalido, nada muda: continua fechando', () => {
+    const t = computeBalanceteTotais([
+      linha({ debitos: 1234.56, creditos: 1234.56, saldo_final: 0 }),
+    ]);
+    expect(t.linhasInvalidas).toBe(0);
+    expect(t.balanceado).toBe(true);
+  });
+});

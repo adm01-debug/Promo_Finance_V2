@@ -34,6 +34,12 @@ export interface BalanceteTotais {
   saldoCredor: number;
   /** Quantidade de contas consideradas na totalização. */
   contas: number;
+  /**
+   * Linhas analíticas com débito, crédito ou saldo não finito (NaN/Infinity).
+   * Qualquer valor assim impede `balanceado: true` -- um balancete não pode
+   * fechar sobre número que não existe.
+   */
+  linhasInvalidas: number;
 }
 
 const TOLERANCIA = 0.005;
@@ -54,10 +60,28 @@ export function computeBalanceteTotais(rows: readonly BalanceteRow[]): Balancete
   let saldoDevedor = 0;
   let saldoCredor = 0;
 
+  let linhasInvalidas = 0;
+
   for (const r of analiticas) {
-    debitos += Number(r.debitos) || 0;
-    creditos += Number(r.creditos) || 0;
-    const saldo = Number(r.saldo_final) || 0;
+    // `Number(x) || 0` transformava NaN/Infinity em zero e o balancete podia
+    // FECHAR sobre valor inexistente (achado F09). A unica barreira era o Zod
+    // de `useBalancete`, fora desta funcao pura: qualquer outro consumidor
+    // (exportador, SPED, RPC nova, arquivo importado) reintroduzia o
+    // "balanceado: true" falso. Agora valor nao finito e contado e impede o
+    // fechamento, em vez de virar zero calado.
+    const debito = Number(r.debitos);
+    const credito = Number(r.creditos);
+    const saldo = Number(r.saldo_final);
+    const invalida =
+      !Number.isFinite(debito) || !Number.isFinite(credito) || !Number.isFinite(saldo);
+
+    if (invalida) {
+      linhasInvalidas += 1;
+      continue;
+    }
+
+    debitos += debito;
+    creditos += credito;
     if (saldo > 0) saldoDevedor += saldo;
     else if (saldo < 0) saldoCredor += -saldo;
   }
@@ -67,10 +91,11 @@ export function computeBalanceteTotais(rows: readonly BalanceteRow[]): Balancete
     debitos: round2(debitos),
     creditos: round2(creditos),
     diferenca,
-    balanceado: Math.abs(diferenca) < TOLERANCIA,
+    balanceado: linhasInvalidas === 0 && Math.abs(diferenca) < TOLERANCIA,
     saldoDevedor: round2(saldoDevedor),
     saldoCredor: round2(saldoCredor),
     contas: analiticas.length,
+    linhasInvalidas,
   };
 }
 
