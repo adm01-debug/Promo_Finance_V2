@@ -104,31 +104,30 @@ export function removePendingNFe(id: string): ContingencyState {
   return state;
 }
 
+/**
+ * Status de comunicação com a SEFAZ.
+ *
+ * Não há consulta real: a integração ainda precisa ser homologada. Esta função
+ * devolvia `Math.random() > 0.1` como "online" e o tempo do próprio
+ * `setTimeout` como latência — número sorteado que a tela exibia como medição e
+ * que `runAutoContingencyCheck` usava para **trocar o modo de emissão fiscal**.
+ *
+ * Agora devolve o estado desconhecido (`online: null`) e não grava carimbo de
+ * verificação. `registerCommunicationFailure`/`registerCommunicationSuccess`
+ * seguem exportadas de propósito: são o gancho de quem for ligar a consulta de
+ * verdade, e os testes de regra de 3 falhas continuam valendo sobre elas.
+ */
 export async function checkSefazHealth(): Promise<SefazHealthStatus> {
-  const startTime = Date.now();
-  await new Promise((resolve) => setTimeout(resolve, 300 + Math.random() * 700));
-
-  const isOnline = Math.random() > 0.1;
-  const latency = Date.now() - startTime;
-
   const currentHealth = getSefazHealthStatus();
   const status: SefazHealthStatus = {
-    online: isOnline,
-    latency,
-    lastCheck: new Date(),
-    consecutiveFailures: isOnline ? 0 : currentHealth.consecutiveFailures + 1,
-    averageResponseTime: isOnline
-      ? (currentHealth.averageResponseTime + latency) / 2
-      : currentHealth.averageResponseTime,
+    online: null,
+    latency: null,
+    lastCheck: null,
+    consecutiveFailures: currentHealth.consecutiveFailures,
+    averageResponseTime: currentHealth.averageResponseTime,
   };
 
   updateSefazHealthStatus(status);
-
-  if (!isOnline) {
-    registerCommunicationFailure();
-  } else {
-    registerCommunicationSuccess();
-  }
 
   return status;
 }

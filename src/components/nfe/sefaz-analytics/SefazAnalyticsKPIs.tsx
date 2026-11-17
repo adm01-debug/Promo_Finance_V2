@@ -23,6 +23,8 @@ interface Props {
   erros: number;
 }
 
+// Sem evento nenhum no período, taxa e tempo não existem: exibir 0,0% de sucesso
+// (ou 0,0s de resposta) afirma uma medição que nunca foi feita.
 export function SefazAnalyticsKPIs({
   taxaSucesso,
   taxaRejeicao,
@@ -41,7 +43,9 @@ export function SefazAnalyticsKPIs({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Sucesso</p>
-                <p className="text-2xl font-bold text-success">{taxaSucesso.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-success">
+                  {total === 0 ? '—' : `${taxaSucesso.toFixed(1)}%`}
+                </p>
               </div>
               <div className="p-2 rounded-full bg-success/10">
                 <CheckCircle2 className="h-5 w-5 text-success" />
@@ -60,7 +64,9 @@ export function SefazAnalyticsKPIs({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Rejeição</p>
-                <p className="text-2xl font-bold text-destructive">{taxaRejeicao.toFixed(1)}%</p>
+                <p className="text-2xl font-bold text-destructive">
+                  {total === 0 ? '—' : `${taxaRejeicao.toFixed(1)}%`}
+                </p>
               </div>
               <div className="p-2 rounded-full bg-destructive/10">
                 <XCircle className="h-5 w-5 text-destructive" />
@@ -79,7 +85,9 @@ export function SefazAnalyticsKPIs({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Tempo Médio</p>
-                <p className="text-2xl font-bold">{(tempoMedio / 1000).toFixed(1)}s</p>
+                <p className="text-2xl font-bold">
+                  {total === 0 ? '—' : `${(tempoMedio / 1000).toFixed(1)}s`}
+                </p>
               </div>
               <div className="p-2 rounded-full bg-primary/10">
                 <Clock className="h-5 w-5 text-primary" />

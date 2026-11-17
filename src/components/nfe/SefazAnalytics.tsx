@@ -178,6 +178,15 @@ export const SefazAnalytics = () => {
         </Select>
       </div>
 
+      {/* Os gráficos abaixo derivam de eventosFiltrados: sem evento algum eles
+          desenham eixos vazios, que leem como "zero rejeições" em vez de "nada medido". */}
+      {stats.total === 0 && (
+        <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+          Nenhum evento da SEFAZ registrado no período. Os indicadores e gráficos passam a ter valor
+          quando a comunicação com a SEFAZ for homologada e registrar eventos reais.
+        </div>
+      )}
+
       <SefazAnalyticsKPIs {...stats} />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

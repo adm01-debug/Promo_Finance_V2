@@ -292,8 +292,9 @@ export const AlertasRejeicao = () => {
           </motion.div>
         )}
 
-        {/* Estatísticas de tendência */}
-        {padroes && (
+        {/* Estatísticas de tendência — sem alerta nenhum, padroes devolve
+            tendencia 'estavel' e a tela afirmava uma tendência que não foi medida. */}
+        {padroes && alertas.length > 0 && (
           <div className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2">
               {getTendenciaIcon()}
@@ -320,7 +321,10 @@ export const AlertasRejeicao = () => {
               >
                 <Bell className="h-12 w-12 mx-auto mb-3 opacity-30" />
                 <p>Nenhum alerta de rejeição</p>
-                <p className="text-sm">O sistema monitora automaticamente</p>
+                <p className="text-sm">
+                  Os alertas vêm das rejeições devolvidas pela SEFAZ. Enquanto a comunicação não
+                  estiver homologada, nada é monitorado aqui.
+                </p>
               </motion.div>
             ) : (
               <div className="space-y-2">

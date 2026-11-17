@@ -113,7 +113,11 @@ export function evaluateContingencyRules(): {
         }
         break;
       case 'latency':
-        if (rule.config.maxLatency && health.latency > rule.config.maxLatency) {
+        if (
+          rule.config.maxLatency &&
+          health.latency !== null &&
+          health.latency > rule.config.maxLatency
+        ) {
           triggered = true;
         }
         break;
@@ -148,7 +152,9 @@ export function shouldAutoDeactivate(): boolean {
   if (!config.autoDeactivateWhenOnline || !state.autoActivated || state.mode === 'normal') {
     return false;
   }
-  if (!health.online) return false;
+  // `online !== true` cobre o status desconhecido: sem medição não se devolve a
+  // emissão ao modo normal automaticamente.
+  if (health.online !== true || health.lastCheck === null) return false;
   if (state.pendingNFes.some((n) => n.status === 'pendente')) return false;
 
   const onlineFor = (Date.now() - health.lastCheck.getTime()) / (1000 * 60);
@@ -160,7 +166,15 @@ export async function runAutoContingencyCheck(): Promise<{
   rule?: ContingencyRule;
   newState?: ContingencyState;
 }> {
-  await checkSefazHealth();
+  const health = await checkSefazHealth();
+
+  // Sem status medido, não se decide modo de emissão fiscal. Antes, o `online`
+  // sorteado em checkSefazHealth podia ativar contingência (ou devolver a
+  // emissão ao normal) sem nenhuma consulta à SEFAZ. A ativação e a desativação
+  // manuais seguem disponíveis na tela.
+  if (health.online !== true) {
+    return { action: 'none' };
+  }
 
   const evaluation = evaluateContingencyRules();
   if (evaluation.shouldActivate && evaluation.triggeredRule) {

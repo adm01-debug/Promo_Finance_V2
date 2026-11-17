@@ -17,9 +17,11 @@ import {
   AlertCircle,
   Play,
   Settings2,
+  HelpCircle,
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import {
   ContingencyMode,
   ContingencyState,
@@ -55,38 +57,46 @@ export function ContingenciaNFe() {
   const autoConfig = getAutoContingencyConfig();
   const stats = getContingencyStats();
   const isContingencyActive = state.mode !== 'normal';
+  const semIntegracao = health.online === null;
 
   useEffect(() => {
-    if (!autoCheck) return;
+    // Sem consulta real à SEFAZ não há o que monitorar: o laço ficava chamando
+    // runAutoContingencyCheck a cada 30s em cima de um status sorteado.
+    if (!autoCheck || semIntegracao) return;
     const interval = setInterval(async () => {
-      const result = await runAutoContingencyCheck();
-      setHealth(getSefazHealthStatus());
-      setState(getContingencyState());
-      if (result.action === 'activated' && result.rule) {
-        registrarEvento({
-          tipo: 'CONTINGENCIA',
-          cStat: 'CONT_AUTO_ATIVADA',
-          xMotivo: `Contingência automática: ${result.rule.name}`,
-          detalhes: result.rule.reason,
-          ambiente: 'homologacao',
-        });
-        if (autoConfig.notifyOnActivation)
-          toast.warning(`Contingência automática ativada: ${result.rule.name}`);
-      } else if (result.action === 'deactivated') {
-        registrarEvento({
-          tipo: 'CONTINGENCIA',
-          cStat: 'CONT_AUTO_DESATIVADA',
-          xMotivo: 'Contingência desativada automaticamente',
-          detalhes: 'SEFAZ voltou a ficar disponível',
-          ambiente: 'homologacao',
-        });
-        if (autoConfig.notifyOnDeactivation)
-          toast.success('Contingência desativada automaticamente');
+      try {
+        const result = await runAutoContingencyCheck();
+        setHealth(getSefazHealthStatus());
+        setState(getContingencyState());
+        if (result.action === 'activated' && result.rule) {
+          registrarEvento({
+            tipo: 'CONTINGENCIA',
+            cStat: 'CONT_AUTO_ATIVADA',
+            xMotivo: `Contingência automática: ${result.rule.name}`,
+            detalhes: result.rule.reason,
+            ambiente: 'homologacao',
+          });
+          if (autoConfig.notifyOnActivation)
+            toast.warning(`Contingência automática ativada: ${result.rule.name}`);
+        } else if (result.action === 'deactivated') {
+          registrarEvento({
+            tipo: 'CONTINGENCIA',
+            cStat: 'CONT_AUTO_DESATIVADA',
+            xMotivo: 'Contingência desativada automaticamente',
+            detalhes: 'SEFAZ voltou a ficar disponível',
+            ambiente: 'homologacao',
+          });
+          if (autoConfig.notifyOnDeactivation)
+            toast.success('Contingência desativada automaticamente');
+        }
+      } catch (erro: unknown) {
+        logger.error('[Contingência] Falha na verificação automática', erro);
       }
     }, autoConfig.checkIntervalSeconds * 1000);
     return () => clearInterval(interval);
   }, [
     autoCheck,
+    semIntegracao,
     autoConfig.checkIntervalSeconds,
     autoConfig.notifyOnActivation,
     autoConfig.notifyOnDeactivation,
@@ -98,9 +108,15 @@ export function ContingenciaNFe() {
       const newHealth = await checkSefazHealth();
       setHealth(newHealth);
       setState(getContingencyState());
-      toast[newHealth.online ? 'success' : 'warning'](
-        newHealth.online ? 'SEFAZ está online e operacional' : 'SEFAZ está indisponível'
-      );
+      if (newHealth.online === null) {
+        toast.error(
+          'Status da SEFAZ indisponível: a integração ainda precisa ser homologada e responder de verdade.'
+        );
+      } else {
+        toast[newHealth.online ? 'success' : 'warning'](
+          newHealth.online ? 'SEFAZ está online e operacional' : 'SEFAZ está indisponível'
+        );
+      }
     } catch {
       toast.error('Erro ao verificar status da SEFAZ');
     } finally {
@@ -257,9 +273,17 @@ export function ContingenciaNFe() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
-                      className={`p-2 rounded-lg ${health.online ? 'bg-success/10' : 'bg-destructive/10'}`}
+                      className={`p-2 rounded-lg ${
+                        semIntegracao
+                          ? 'bg-muted'
+                          : health.online
+                            ? 'bg-success/10'
+                            : 'bg-destructive/10'
+                      }`}
                     >
-                      {health.online ? (
+                      {semIntegracao ? (
+                        <HelpCircle className="h-5 w-5 text-muted-foreground" />
+                      ) : health.online ? (
                         <Wifi className="h-5 w-5 text-success" />
                       ) : (
                         <WifiOff className="h-5 w-5 text-destructive" />
@@ -267,20 +291,29 @@ export function ContingenciaNFe() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Status SEFAZ</p>
-                      <p className="font-bold">{health.online ? 'Online' : 'Offline'}</p>
+                      <p className="font-bold">
+                        {semIntegracao ? 'Não verificado' : health.online ? 'Online' : 'Offline'}
+                      </p>
                     </div>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={handleCheckHealth}
-                    disabled={isChecking}
+                    disabled={isChecking || semIntegracao}
+                    title={
+                      semIntegracao
+                        ? 'Integração SEFAZ ainda não homologada: não há status para verificar.'
+                        : undefined
+                    }
                   >
                     <RefreshCw className={`h-4 w-4 ${isChecking ? 'animate-spin' : ''}`} />
                   </Button>
                 </div>
                 <div className="mt-2 text-xs text-muted-foreground">
-                  Latência: {health.latency}ms
+                  {semIntegracao
+                    ? 'Integração SEFAZ não homologada'
+                    : `Latência: ${health.latency}ms`}
                 </div>
               </CardContent>
             </Card>
@@ -323,10 +356,16 @@ export function ContingenciaNFe() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Monitoramento</p>
-                      <p className="font-medium">{autoCheck ? 'Automático' : 'Manual'}</p>
+                      <p className="font-medium">
+                        {semIntegracao ? 'Indisponível' : autoCheck ? 'Automático' : 'Manual'}
+                      </p>
                     </div>
                   </div>
-                  <Switch checked={autoCheck} onCheckedChange={setAutoCheck} />
+                  <Switch
+                    checked={semIntegracao ? false : autoCheck}
+                    onCheckedChange={setAutoCheck}
+                    disabled={semIntegracao}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -334,7 +373,7 @@ export function ContingenciaNFe() {
 
           <ContingenciaPendingList
             pendingNFes={state.pendingNFes}
-            isOnline={health.online}
+            isOnline={health.online === true}
             isTransmitting={isTransmitting}
             onTransmit={handleTransmitPending}
           />

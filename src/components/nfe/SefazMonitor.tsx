@@ -51,7 +51,9 @@ export function SefazMonitor() {
   const [lastAlertTime, setLastAlertTime] = useState<Date | null>(null);
 
   const autoConfig = getAutoContingencyConfig();
-  const uptime = checkCount > 0 ? (successCount / checkCount) * 100 : 100;
+  // `null` enquanto nenhuma verificação real aconteceu: 100% seria uptime
+  // fabricado sobre zero amostras.
+  const uptime = checkCount > 0 ? (successCount / checkCount) * 100 : null;
 
   const addAlert = useCallback(
     (type: AlertItem['type'], message: string) => {
@@ -80,8 +82,15 @@ export function SefazMonitor() {
       const newHealth = await checkSefazHealth();
       setHealth(newHealth);
       setContingencyState(getContingencyState());
+
+      // Status desconhecido não conta como verificação nem entra na série dos
+      // gráficos: sem isso, uptime e latência seriam calculados sobre nada e os
+      // alertas de transição anunciariam uma queda que ninguém mediu.
+      const online = newHealth.online;
+      if (online === null) return;
+
       setCheckCount((prev) => prev + 1);
-      if (newHealth.online) setSuccessCount((prev) => prev + 1);
+      if (online) setSuccessCount((prev) => prev + 1);
 
       const now = new Date();
       setHealthHistory((prev) =>
@@ -94,17 +103,18 @@ export function SefazMonitor() {
               second: '2-digit',
             }),
             timestamp: now.getTime(),
-            latency: newHealth.latency,
-            online: newHealth.online,
-            status: newHealth.online ? 100 : 0,
+            latency: newHealth.latency ?? 0,
+            online,
+            status: online ? 100 : 0,
           },
         ].slice(-30)
       );
 
-      if (prevHealth.online && !newHealth.online) addAlert('error', 'SEFAZ ficou indisponível');
-      else if (!prevHealth.online && newHealth.online)
-        addAlert('success', 'SEFAZ voltou a ficar disponível');
-      else if (newHealth.online && newHealth.latency > 3000)
+      if (prevHealth.online === null) {
+        // Primeira medição real: não há transição para anunciar.
+      } else if (prevHealth.online && !online) addAlert('error', 'SEFAZ ficou indisponível');
+      else if (!prevHealth.online && online) addAlert('success', 'SEFAZ voltou a ficar disponível');
+      else if (online && newHealth.latency !== null && newHealth.latency > 3000)
         addAlert('warning', `Latência alta detectada: ${newHealth.latency}ms`);
       if (newHealth.consecutiveFailures >= 3)
         addAlert('error', `${newHealth.consecutiveFailures} falhas consecutivas de comunicação`);
