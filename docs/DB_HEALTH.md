@@ -173,17 +173,36 @@ ORDER BY ultima_falha DESC;
 
 ### 7. Cobertura de guards nas Edge Functions
 
-Edge Functions sem guard de autenticação expõem endpoints sem proteção.  
-Esperado após Bloco D (Steps 33-48): **0** funções no terceiro balde.
+Edge Functions sem nenhuma forma de autenticação expõem endpoints sem proteção.
+Aqui a fonte de verdade é o código mais o `supabase/config.toml`, não o banco: um
+`SELECT` que devolve texto dizendo "verificar manualmente" não é verificação.
 
-Aqui a fonte de verdade é o código, não o banco: um `SELECT` que devolve texto
-dizendo "verificar manualmente" não é verificação. Rodar na raiz do repositório:
+Um `grep` por `exigirUsuario|exigirPapel|exigirChamadaInterna` **não** responde a
+pergunta: função pode autenticar por conta própria. `n8n-callback`, por exemplo,
+valida HMAC ou segredo compartilhado em
+`supabase/functions/n8n-callback/index.ts:62-69` e não usa guard nenhum desses
+três. Medido em 2026-11-17: 70 funções sem os três guards, das quais 30 têm
+outra forma de auth no código. Esperar **0** aqui é alarme falso.
+
+A auditoria tem dois passos, e o resultado é uma lista de **candidatos à
+revisão**, não uma contagem de defeitos:
 
 ```bash
-# Edge Functions sem nenhum guard de autenticação:
-grep -rL 'exigirUsuario\|exigirPapel\|exigirChamadaInterna' supabase/functions/*/index.ts | wc -l
-# Resultado esperado: 0
+# Passo 1 — funções sem nenhuma autenticação no código:
+grep -rL 'exigirUsuario\|exigirPapel\|exigirChamadaInterna\|authorizeHmacOrSharedSecret\|auth\.getUser\|CRON_SECRET\|INTERNAL_' \
+  supabase/functions/*/index.ts
+# Medido em 2026-11-17: 40
+
+# Passo 2 — cruzar com verify_jwt: a plataforma recusa a requisição antes do
+# código rodar quando verify_jwt está ligado, então só é candidato quem não tem
+# guard no código E tem verify_jwt = false no supabase/config.toml.
+# Medido em 2026-11-17: 21 candidatos
 ```
+
+Os 21 candidatos precisam de justificativa individual — vários são públicos de
+propósito (webhooks que validam a própria assinatura, endpoints de SSO que o IdP
+chama sem sessão, `get-vapid-key`, que devolve chave pública). O invariante útil
+não é "zero funções na lista": é "nenhum candidato sem justificativa escrita".
 
 ---
 
