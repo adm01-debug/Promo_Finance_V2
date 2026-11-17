@@ -39,3 +39,19 @@ DROP TABLE IF EXISTS public.ponto_registros CASCADE;
 DROP TABLE IF EXISTS public.ponto_sync_log CASCADE;
 DROP TABLE IF EXISTS public.registro_duplicidade CASCADE;
 DROP TABLE IF EXISTS public.user_preferences CASCADE;
+
+-- Objetos que ficariam apontando para as tabelas acima num banco reconstruído.
+-- `DROP TABLE ... CASCADE` não alcança referências dentro de corpo PL/pgSQL, então
+-- sem isto o replay terminaria sem erro e deixaria, por exemplo, o trigger de
+-- boletos gravando numa tabela inexistente — qualquer mudança de status de boleto
+-- falharia. Conferido em 17/11/2026: nenhuma destas 4 funções nem o trigger
+-- existem no projeto canônico, ou seja, produção removeu tabela, função e trigger
+-- em conjunto e estes DROPs são igualmente no-op lá.
+--
+-- Atenção: `audit_trigger_function()` (com "tion") é outra função, grava em
+-- `audit_logs` e tem 9 triggers ativos — não entra aqui.
+DROP TRIGGER IF EXISTS on_boleto_status_change ON public.boletos;
+DROP FUNCTION IF EXISTS public.handle_boleto_payment_sync();
+DROP FUNCTION IF EXISTS public.cnpja_check_rate_limit(uuid, integer, integer);
+DROP FUNCTION IF EXISTS public.check_account_lockout(text);
+DROP FUNCTION IF EXISTS public.audit_trigger_func();
