@@ -59,6 +59,13 @@ interface ClienteMapCliente {
  * As faixas abaixo sao as mesmas do produtor (useScoringClientes.ts:372-373):
  * >= 700 baixo, >= 500 medio, >= 300 alto, < 300 critico.
  */
+/**
+ * Quantos `cliente_id` por consulta de historico. `.in()` viaja na URL do GET:
+ * 100 UUIDs dao ~3,9 KB, com folga para os outros filtros; mil dariam ~39 KB e
+ * estourariam o limite de URI.
+ */
+const IDS_POR_LOTE = 100;
+
 function useAnaliseInadimplencia(empresaId?: string) {
   return useQuery({
     // `enabled` abaixo: sem empresa a consulta NAO roda. No primeiro acesso
@@ -176,13 +183,18 @@ function useAnaliseInadimplencia(empresaId?: string) {
         .filter((id): id is string => id != null);
 
       const historicoPorCliente = new Map<string, HistoricoContaData[]>();
-      if (idsReais.length > 0) {
+      // Lotes de IDS_POR_LOTE: `.in()` vai na URL do GET, e mil UUIDs dao ~39 KB
+      // -- passa do limite de URI do gateway e derruba a previsao inteira
+      // (achado P2 do Codex na PR #404). Paginar nao resolve isso: cada pagina
+      // repete o filtro completo.
+      for (let i = 0; i < idsReais.length; i += IDS_POR_LOTE) {
+        const lote = idsReais.slice(i, i + IDS_POR_LOTE);
         // O historico tambem fica na empresa: sem isso, atraso do mesmo cliente
         // em OUTRA empresa elevaria o risco aqui.
         let qHistorico = supabase
           .from('contas_receber')
           .select('cliente_id, status, data_vencimento, data_recebimento', { count: 'exact' })
-          .in('cliente_id', idsReais)
+          .in('cliente_id', lote)
           .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'))
           // sem ordenacao unica, cada janela podia repetir e omitir linhas
           .order('id');

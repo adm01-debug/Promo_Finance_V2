@@ -203,6 +203,35 @@ describe('PrevisaoInadimplencia — escopo por empresa', () => {
     ).toBe(true);
   });
 
+  it('historico vai em LOTES de 100 ids, nao todos na mesma URL', async () => {
+    // Revisao da PR #404 (Codex P2): `.in()` viaja na URL do GET. Mil UUIDs dao
+    // ~39 KB e estouram o limite de URI do gateway, derrubando a previsao
+    // inteira. 250 clientes => 3 lotes (100 + 100 + 50).
+    const pendentes = Array.from({ length: 250 }, (_, i) => ({
+      ...PENDENTE,
+      id: `t${i}`,
+      cliente_id: `cli-${i}`,
+      cliente_nome: `Cliente ${i}`,
+      clientes: { ...PENDENTE.clientes, id: `cli-${i}`, razao_social: `Cliente ${i}` },
+    }));
+    let chamada = 0;
+    mockFrom.mockImplementation(() =>
+      builder(chamada++ === 0 ? { data: pendentes, error: null } : { data: [], error: null })
+    );
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    await screen.findByText(/Cliente 0/i);
+    const lotes = filtros.filter((f) => f.metodo === 'in' && f.coluna === 'cliente_id');
+    expect(lotes).toHaveLength(3);
+    expect((lotes[0].valor as string[]).length).toBe(100);
+    expect((lotes[2].valor as string[]).length).toBe(50);
+  }, 20000);
+
   it('erro na consulta NAO vira "nenhum cliente em risco"', async () => {
     // Antes: o erro era descartado, `data: null` virava analise vazia e a tela
     // exibia KPI zerado como sucesso.
