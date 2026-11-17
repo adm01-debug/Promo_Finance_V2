@@ -64,6 +64,46 @@ export function parseCSV(
 
       const cols = parseCSVLine(line, delimiter);
 
+      // Delimitador virgula + valor BRL SEM aspas (1.234,56) chega aqui partido
+      // em duas colunas: ['1.234', '56']. O valor lido virava 1234 -- mil vezes
+      // menor -- e sem nenhum aviso, porque '1.234' e milhar BRL valido para o
+      // parser. Era a ressalva que manteve o achado F01 como PARCIAL.
+      //
+      // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no
+      // fim da linha tambem produz coluna extra, e ai a coluna seguinte ao valor
+      // e dado legitimo (ex.: `parcela`). Nesse caso a recomposicao somava a
+      // parcela ao valor -- 1.234 + 2 virava 1.234,2 (achado dos revisores na
+      // PR #413). Entao, nesta ordem:
+      //   1) coluna vazia no FIM (vinda de delimitador final) nao conta;
+      //   2) o valor nao pode ja ter virgula -- se tem, os centavos estao la;
+      //   3) a vizinha tem de ser 1 ou 2 digitos;
+      //   4) o valor recomposto tem de ser aceito pelo parser, senao fica como
+      //      estava.
+      // Coluna a mais que o cabecalho tem origem AMBIGUA e nao ha regra que a
+      // resolva. O valor BRL sem aspas parte em duas celulas
+      // (`1.234,56` -> ['1.234','56']), mas exatamente a mesma forma aparece
+      // quando sobra delimitador no fim, quando a ultima coluna declarada esta
+      // vazia, ou quando a VIRGULA esta na descricao
+      // (`...,1234,2,Pagamento,loja`). Tentei recompor automaticamente em duas
+      // rodadas desta PR e as duas corromperam caso legitimo -- parcela somada
+      // ao valor e colunas deslocadas.
+      //
+      // Entao nao se adivinha: a leitura continua a mesma de antes (nenhum
+      // numero e inventado) e o que muda e o SILENCIO. O achado F01 era
+      // "perde os centavos silenciosamente"; agora a linha avisa, com dica
+      // especifica quando a forma sugere centavos partidos.
+      if (cols.length !== headers.length) {
+        const valorCelula = valorIdx !== -1 ? (cols[valorIdx] ?? '') : '';
+        const vizinha = valorIdx !== -1 ? (cols[valorIdx + 1] ?? '') : '';
+        const pareceCentavosPartidos =
+          delimiter === ',' && !valorCelula.includes(',') && /^\d{1,2}$/.test(vizinha);
+        avisos.push(
+          pareceCentavosPartidos
+            ? `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho. O valor foi lido como "${valorCelula}" e pode ter perdido centavos (um valor como "${valorCelula},${vizinha}" sem aspas vira duas colunas) — exporte com aspas ou use ponto e vírgula.`
+            : `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento; alguma coluna pode conter o separador.`
+        );
+      }
+
       try {
         const dataStr = dataIdx !== -1 ? cols[dataIdx] : cols[0];
         if (!dataStr) continue;
