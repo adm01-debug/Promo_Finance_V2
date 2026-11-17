@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "0b95e257235b70e58e92ff37d0102e9c8c8e7fbd",
+  "sha": "41310e8e9e089dcbf4e7e0ca590c5c7bd90adf1c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 03:20 UTC",
-  "files_total": 3917,
-  "code_files": 3540,
-  "code_lines": 503187
+  "generated_at": "2026-11-17 03:42 UTC",
+  "files_total": 3919,
+  "code_files": 3542,
+  "code_lines": 503961
  },
  "version": "1.3.2",
- "facts_hash": "c69ae25d0f30b299",
+ "facts_hash": "b64f81b74d41fff0",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1229,
    ".sql": 1099,
-   ".tsx": 1097,
+   ".tsx": 1099,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -68358,7 +68358,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 983,
+  "components_count": 984,
   "hooks": [
    {
     "name": "useContacts",
@@ -68798,6 +68798,10 @@
    },
    {
     "name": "useConfiguracaoAprovacao",
+    "file": "src/hooks/useAprovacoes.ts"
+   },
+   {
+    "name": "useConfiguracaoAprovacaoEditavel",
     "file": "src/hooks/useAprovacoes.ts"
    },
    {
@@ -71373,8 +71377,8 @@
   },
   {
    "module": "src/components",
-   "files": 981,
-   "lines": 162186,
+   "files": 982,
+   "lines": 162313,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71641,8 +71645,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 316,
-   "lines": 45905,
+   "files": 317,
+   "lines": 46541,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71821,7 +71825,7 @@
     "useAnomaliasDetectadas.ts: Anomalia, useAnomaliasDetectadas, usePendingAnomaliasQueue, usePendingAnomaliasQueueInfinite, AnomaliaJaRevisadaError, useRevisarAnomalia",
     "useAnomaliasReabertasIndex.ts: ReaberturaInfo, useAnomaliasReabertasIndex",
     "useApiKeys.ts: ApiKey, useApiKeys, useCreateApiKey, useRevokeApiKey",
-    "useAprovacoes.ts: ConfiguracaoAprovacao, SolicitacaoAprovacao, FluxoNivel, ComentarioAprovacao, useConfiguracaoAprovacao, useUpdateConfiguracaoAprovacao",
+    "useAprovacoes.ts: ConfiguracaoAprovacao, SolicitacaoAprovacao, FluxoNivel, ComentarioAprovacao, useConfiguracaoAprovacao, useConfiguracaoAprovacaoEditavel",
     "useAprovacoesPendentesCount.ts: useAprovacoesPendentesCount",
     "useApuracoesTributarias.ts: ApuracaoTributaria, CreateApuracaoInput, useApuracoesTributarias",
     "useAsaas.helpers.ts: invokeAsaas",
@@ -72176,7 +72180,7 @@
   {
    "module": "src/pages",
    "files": 272,
-   "lines": 47037,
+   "lines": 47048,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -75683,7 +75687,8 @@
    ],
    "configuracoes_aprovacao": [
     "ativo",
-    "id"
+    "empresa_id",
+    "valor_minimo_aprovacao"
    ],
    "configuracoes_duplicidade": [
     "ativo",
@@ -82609,6 +82614,10 @@
    },
    {
     "file": "src/hooks/useAprovacoes.ts",
+    "msg": "A faixa foi alterada por outra pessoa desde que esta tela carregou. "
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
     "msg": "Erro ao aprovar"
    },
    {
@@ -82622,6 +82631,14 @@
    {
     "file": "src/hooks/useAprovacoes.ts",
     "msg": "Erro ao solicitar aprovação"
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "msg": "Existe outra faixa ativa em ${fmt(menorOutra)} para esta empresa. "
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "msg": "Existe outra faixa ativa em ${fmt(menorOutra)}, ${porque} Remova a duplicidade de faixas antes."
    },
    {
     "file": "src/hooks/useAprovacoes.ts",
@@ -85265,6 +85282,10 @@
    },
    {
     "file": "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
+    "text": "andam juntas (senao o limite salvo nao faz efeito) e as faixas de outro"
+   },
+   {
+    "file": "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
     "text": "Valor Mínimo */}"
    },
    {
@@ -85530,6 +85551,26 @@
    {
     "file": "src/hooks/useAnomaliaPreferences.ts",
     "text": "Validação client-side espelha o trigger Postgres + regras de UX."
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "text": "limite salvo nao faz efeito;"
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "text": "limite fica gravado, o erro aparece, e a nova"
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "text": "// Entao em vez de adivinhar, a gravacao RECUSA o que nao pode virar o"
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "text": "limite efetivo, e diz qual faixa esta no caminho. Nao perde dado, nao"
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "text": "Subir o limite ACIMA de outra faixa ativa nao muda o limite efetivo."
    },
    {
     "file": "src/hooks/useAuthValidation.ts",
@@ -123025,6 +123066,18 @@
     "name": "réplica tem as mesmas chaves do ContabilizarEventoSchema da Edge"
    },
    {
+    "file": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
+    "name": "RegistrarPagamentoDialog — empresa da alcada"
+   },
+   {
+    "file": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
+    "name": "consulta a alcada da empresa do titulo, nao a do filtro global"
+   },
+   {
+    "file": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
+    "name": "registro legado sem empresa_id cai no filtro global"
+   },
+   {
     "file": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
     "name": "AplicarDescontoDialog"
    },
@@ -125245,6 +125298,10 @@
     "name": "propaga erro do Supabase"
    },
    {
+    "file": "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
+    "name": "nao entrega a configuracao da empresa anterior enquanto a nova carrega"
+   },
+   {
     "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
     "name": "useComentariosAprovacao (contrato real user_id/comentario)"
    },
@@ -125255,6 +125312,74 @@
    {
     "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
     "name": "propaga erro do supabase"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "useConfiguracaoAprovacao (alcada com varias faixas ativas)"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "carrega a configuracao com 6 faixas ativas, em vez de quebrar no maybeSingle"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "pede a MENOR faixa ativa ao banco: ordena crescente e limita a 1"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "filtra por empresa quando o chamador informa, e nao filtra quando nao informa"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "sem faixa ativa devolve null, e nao um objeto falso"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "useUpdateConfiguracaoAprovacao (gravacao na faixa editada)"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "grava nas duplicatas da faixa editada, e NAO nas outras faixas"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "desativar atinge a faixa editada, nao os outros patamares"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "sem empresa ou sem valor original, mantem a gravacao por id"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "recusa subir o limite acima de outra faixa ativa, em vez de nao fazer efeito"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "recusa o limite IGUAL ao de outra faixa ativa (colisao de quorum)"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "recusa desativar quando outra faixa ativa continuaria exigindo aprovacao"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "sem outra faixa ativa, grava normalmente em UM unico update"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "conflito: zero linha atualizada NAO pode virar sucesso"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "useConfiguracaoAprovacaoEditavel (painel nao fica trancado)"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "acha a configuracao mesmo com TODAS as faixas inativas"
+   },
+   {
+    "file": "src/hooks/__tests__/useAprovacoes.test.tsx",
+    "name": "prioriza a faixa ATIVA: o painel nao pode mostrar faixa inativa com outra ativa"
    },
    {
     "file": "src/hooks/__tests__/useBulkActions.test.ts",
@@ -153555,6 +153680,10 @@
    {
     "file": "src/hooks/useAnomaliasReabertasIndex.ts",
     "limit": "2000"
+   },
+   {
+    "file": "src/hooks/useAprovacoes.ts",
+    "limit": "1"
    },
    {
     "file": "src/hooks/useAuditoriaIA.ts",
@@ -183020,7 +183149,7 @@
   },
   "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx": {
    "path": "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
-   "lines": 282,
+   "lines": 297,
    "exports": [
     "const ConfiguracaoAprovacaoCard"
    ],
@@ -183035,6 +183164,7 @@
     }
    ],
    "rule_comments": [
+    "andam juntas (senao o limite salvo nao faz efeito) e as faixas de outro",
     "Valor Mínimo */}"
    ]
   },
@@ -189086,7 +189216,7 @@
   },
   "src/components/contas-pagar/RegistrarPagamentoDialog.tsx": {
    "path": "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
-   "lines": 428,
+   "lines": 436,
    "exports": [
     "function RegistrarPagamentoDialog"
    ],
@@ -189141,7 +189271,7 @@
   },
   "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts": {
    "path": "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts",
-   "lines": 23,
+   "lines": 32,
    "exports": [
     "interface ContaPagar",
     "interface RegistrarPagamentoDialogProps",
@@ -189153,6 +189283,20 @@
    "lines": 126,
    "exports": [
     "function SolicitarAprovacaoDialog"
+   ]
+  },
+  "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx": {
+   "path": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
+   "lines": 95,
+   "is_test": true,
+   "rule_comments": [
+    "limite de 5.000 em A e 50.000 em B, um titulo de 10.000 de A seria pago sem"
+   ],
+   "doc": "Revisao da PR #400 (Codex P2): a alcada consultada tem que ser a da empresa do TITULO. Com o dialogo aberto num titulo da empresa A e a empresa atual trocada para B em outra aba (listener de `storage` em useGlobalFinancialFilter), a consulta passava a usar a alcada de B: com limite de 5.000 em A e 5 …",
+   "tests": [
+    "RegistrarPagamentoDialog — empresa da alcada",
+    "consulta a alcada da empresa do titulo, nao a do filtro global",
+    "registro legado sem empresa_id cai no filtro global"
    ]
   },
   "src/components/contas-pagar/registrar-pagamento/PagamentoApprovalAlert.tsx": {
@@ -199757,13 +199901,14 @@
   },
   "src/hooks/useAprovacoes.ts": {
    "path": "src/hooks/useAprovacoes.ts",
-   "lines": 382,
+   "lines": 523,
    "exports": [
     "interface ConfiguracaoAprovacao",
     "interface SolicitacaoAprovacao",
     "interface FluxoNivel",
     "interface ComentarioAprovacao",
     "const useConfiguracaoAprovacao",
+    "const useConfiguracaoAprovacaoEditavel",
     "const useUpdateConfiguracaoAprovacao",
     "const useFluxosNiveis",
     "const useUpdateFluxoNivel",
@@ -199783,7 +199928,15 @@
     },
     {
      "table": "configuracoes_aprovacao",
-     "op": "select,update"
+     "op": "select"
+    },
+    {
+     "table": "configuracoes_aprovacao",
+     "op": "select"
+    },
+    {
+     "table": "configuracoes_aprovacao",
+     "op": "update"
     },
     {
      "table": "fluxos_aprovacao_niveis",
@@ -199821,7 +199974,8 @@
    "table_cols": {
     "configuracoes_aprovacao": [
      "ativo",
-     "id"
+     "empresa_id",
+     "valor_minimo_aprovacao"
     ],
     "fluxos_aprovacao_niveis": [
      "id"
@@ -199838,10 +199992,13 @@
     "aprovar_solicitacao_pagamento"
    ],
    "errors": [
+    "A faixa foi alterada por outra pessoa desde que esta tela carregou. ",
     "Erro ao aprovar",
     "Erro ao rejeitar",
     "Erro ao salvar",
     "Erro ao solicitar aprovação",
+    "Existe outra faixa ativa em ${fmt(menorOutra)} para esta empresa. ",
+    "Existe outra faixa ativa em ${fmt(menorOutra)}, ${porque} Remova a duplicidade de faixas antes.",
     "Pagamento rejeitado",
     "Usuário não autenticado"
    ],
@@ -199862,8 +200019,16 @@
      "kind": "filtra"
     }
    ],
+   "rule_comments": [
+    "limite salvo nao faz efeito;",
+    "limite fica gravado, o erro aparece, e a nova",
+    "// Entao em vez de adivinhar, a gravacao RECUSA o que nao pode virar o",
+    "limite efetivo, e diz qual faixa esta no caminho. Nao perde dado, nao",
+    "Subir o limite ACIMA de outra faixa ativa nao muda o limite efetivo."
+   ],
    "hooks": [
     "useConfiguracaoAprovacao",
+    "useConfiguracaoAprovacaoEditavel",
     "useUpdateConfiguracaoAprovacao",
     "useFluxosNiveis",
     "useUpdateFluxoNivel",
@@ -199875,6 +200040,9 @@
     "useAprovarSolicitacao",
     "useRejeitarSolicitacao",
     "useVerificarAprovacaoNecessaria"
+   ],
+   "pagination": [
+    "1"
    ]
   },
   "src/hooks/useAprovacoesPendentesCount.ts": {
@@ -202205,7 +202373,7 @@
   },
   "src/hooks/useContasPagarLogic.ts": {
    "path": "src/hooks/useContasPagarLogic.ts",
-   "lines": 471,
+   "lines": 474,
    "exports": [
     "function useContasPagarLogic"
    ],
@@ -209702,14 +209870,48 @@
     "propaga erro do Supabase"
    ]
   },
+  "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx": {
+   "path": "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
+   "lines": 89,
+   "is_test": true,
+   "rule_comments": [
+    "* Arquivo separado do useAprovacoes.test.tsx porque aquele bateu no limite de"
+   ],
+   "tests": [
+    "nao entrega a configuracao da empresa anterior enquanto a nova carrega"
+   ]
+  },
   "src/hooks/__tests__/useAprovacoes.test.tsx": {
    "path": "src/hooks/__tests__/useAprovacoes.test.tsx",
-   "lines": 98,
+   "lines": 501,
    "is_test": true,
+   "rule_comments": [
+    "o contrato antigo nao pode voltar",
+    "deixava a duplicata de 5.000 como a menor e o limite salvo nao fazia",
+    "Um request so: o esquema de dois updates sem transacao deixava o limite",
+    "informando 100.000 passa pela validacao (ela so procura outras ATIVAS) e"
+   ],
    "tests": [
     "useComentariosAprovacao (contrato real user_id/comentario)",
     "busca comentarios com select simples (sem embed profiles — FK inexistente)",
-    "propaga erro do supabase"
+    "propaga erro do supabase",
+    "useConfiguracaoAprovacao (alcada com varias faixas ativas)",
+    "carrega a configuracao com 6 faixas ativas, em vez de quebrar no maybeSingle",
+    "pede a MENOR faixa ativa ao banco: ordena crescente e limita a 1",
+    "filtra por empresa quando o chamador informa, e nao filtra quando nao informa",
+    "sem faixa ativa devolve null, e nao um objeto falso",
+    "useUpdateConfiguracaoAprovacao (gravacao na faixa editada)",
+    "grava nas duplicatas da faixa editada, e NAO nas outras faixas",
+    "desativar atinge a faixa editada, nao os outros patamares",
+    "sem empresa ou sem valor original, mantem a gravacao por id",
+    "recusa subir o limite acima de outra faixa ativa, em vez de nao fazer efeito",
+    "recusa o limite IGUAL ao de outra faixa ativa (colisao de quorum)",
+    "recusa desativar quando outra faixa ativa continuaria exigindo aprovacao",
+    "sem outra faixa ativa, grava normalmente em UM unico update",
+    "conflito: zero linha atualizada NAO pode virar sucesso",
+    "useConfiguracaoAprovacaoEditavel (painel nao fica trancado)",
+    "acha a configuracao mesmo com TODAS as faixas inativas",
+    "prioriza a faixa ATIVA: o painel nao pode mostrar faixa inativa com outra ativa"
    ]
   },
   "src/hooks/__tests__/useBulkActions.test.ts": {
@@ -223995,7 +224197,7 @@
   },
   "src/pages/ContasPagar.tsx": {
    "path": "src/pages/ContasPagar.tsx",
-   "lines": 302,
+   "lines": 313,
    "exports": [
     "function ContasPagar"
    ],
@@ -246066,10 +246268,27 @@
   }
  },
  "git": {
-  "sha": "0b95e257235b70e58e92ff37d0102e9c8c8e7fbd",
+  "sha": "41310e8e9e089dcbf4e7e0ca590c5c7bd90adf1c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "41310e8",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(aprovações): a alçada configurada nunca era exigida de nenhum pagamento (#400)",
+    "files": [
+     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
+     "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+     "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts",
+     "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
+     "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
+     "src/hooks/__tests__/useAprovacoes.test.tsx",
+     "src/hooks/useAprovacoes.ts",
+     "src/hooks/useContasPagarLogic.ts",
+     "src/pages/ContasPagar.tsx"
+    ]
+   },
    {
     "sha": "0b95e25",
     "date": "2026-11-17",
@@ -246453,16 +246672,6 @@
     "files": [
      "docs/prod-readiness.md"
     ]
-   },
-   {
-    "sha": "c4b811d",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(a11y): filtros do dashboard ganham nome acessível e anel de foco (#364)",
-    "files": [
-     "src/components/dashboard/DashboardFiltersHeader.tsx",
-     "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -246511,39 +246720,39 @@
     2
    ],
    [
-    "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
+    "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
     1
    ],
    [
-    "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
     1
    ],
    [
-    "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts",
     1
    ],
    [
-    "src/hooks/useBenchmarkSetorial.ts",
+    "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
     1
    ],
    [
-    "src/hooks/useHeatmapTributario.ts",
+    "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
     1
    ],
    [
-    "supabase/functions/comparar-benchmark-setorial/index.ts",
+    "src/hooks/__tests__/useAprovacoes.test.tsx",
     1
    ],
    [
-    "supabase/functions/gerar-dre-tributaria/index.ts",
+    "src/hooks/useAprovacoes.ts",
     1
    ],
    [
-    "supabase/functions/gerar-heatmap-tributario/index.test.ts",
+    "src/hooks/useContasPagarLogic.ts",
     1
    ],
    [
-    "supabase/functions/gerar-heatmap-tributario/index.ts",
+    "src/pages/ContasPagar.tsx",
     1
    ]
   ]

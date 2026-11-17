@@ -1535,10 +1535,11 @@
     "ConfiguracaoAprovacaoCard"
    ],
    "export_default": null,
-   "linhas": 281,
+   "linhas": 296,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
-    "useConfiguracaoAprovacao",
+    "useAuth",
+    "useConfiguracaoAprovacaoEditavel",
     "useFluxosNiveis",
     "useUpdateConfiguracaoAprovacao"
    ],
@@ -5494,7 +5495,7 @@
     "RegistrarPagamentoDialog"
    ],
    "export_default": null,
-   "linhas": 427,
+   "linhas": 435,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useConfiguracaoAprovacao",
@@ -13824,7 +13825,7 @@
     "ContasPagar"
    ],
    "export_default": "ContasPagar",
-   "linhas": 301,
+   "linhas": 312,
    "dominio": "pages",
    "hooks_locais": [
     "useContasPagarLogic",

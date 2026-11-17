@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 452,
+ "total": 454,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 376
+  "unit": 378
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 262
+   "arquivos": 264
   },
   {
    "padrao": "outro",
@@ -879,6 +879,15 @@
    "casos": 5
   },
   {
+   "arquivo": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
+   "tipo": "unit",
+   "linhas": 94,
+   "testa": [
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx"
+   ],
+   "casos": 2
+  },
+  {
    "arquivo": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
    "tipo": "unit",
    "linhas": 157,
@@ -1271,13 +1280,22 @@
    "casos": 4
   },
   {
-   "arquivo": "src/hooks/__tests__/useAprovacoes.test.tsx",
+   "arquivo": "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
    "tipo": "unit",
-   "linhas": 97,
+   "linhas": 88,
    "testa": [
     "src/hooks/useAprovacoes.ts"
    ],
-   "casos": 2
+   "casos": 1
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAprovacoes.test.tsx",
+   "tipo": "unit",
+   "linhas": 500,
+   "testa": [
+    "src/hooks/useAprovacoes.ts"
+   ],
+   "casos": 16
   },
   {
    "arquivo": "src/hooks/__tests__/useBulkActions.test.ts",
@@ -4049,6 +4067,7 @@
   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts": 1,
   "src/components/contabilidade/indices/IndicesGrid.tsx": 1,
   "src/components/contabilidade/indices/IndicesToolbar.tsx": 1,
+  "src/components/contas-pagar/RegistrarPagamentoDialog.tsx": 1,
   "src/components/contas-receber/AplicarDescontoDialog.tsx": 1,
   "src/components/contas-receber/ContaReceberFormFields.helpers.ts": 1,
   "src/components/contas-receber/ContasReceberFilters.tsx": 1,
@@ -4107,7 +4126,7 @@
   "src/hooks/useAlertasTributariosCount.ts": 1,
   "src/hooks/useAnomaliaPreferences.ts": 1,
   "src/hooks/useApiKeys.ts": 1,
-  "src/hooks/useAprovacoes.ts": 1,
+  "src/hooks/useAprovacoes.ts": 2,
   "src/hooks/useBoletos.helpers.ts": 1,
   "src/hooks/useBulkActions.ts": 1,
   "src/hooks/useCashbackSimulador.ts": 1,

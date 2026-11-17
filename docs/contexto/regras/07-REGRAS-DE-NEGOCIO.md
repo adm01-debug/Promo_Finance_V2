@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `0b95e25723` · branch `main` · 2026-11-17 03:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `41310e8e9e` · branch `main` · 2026-11-17 03:42 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4645,6 +4645,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 200 | `src/hooks/useAnomaliasDetectadas.ts` |
 | 500 | `src/hooks/useAnomaliasDetectadas.ts` |
 | 2000 | `src/hooks/useAnomaliasReabertasIndex.ts` |
+| 1 | `src/hooks/useAprovacoes.ts` |
 | 500 | `src/hooks/useAuditoriaIA.ts` |
 | 50 | `src/hooks/useBitrix24.ts` |
 | 1 | `src/hooks/useBoletos.helpers.ts` |
@@ -5045,7 +5046,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
 | Sem dados para exportar. | `src/components/contabilidade/dre-balanco/exporters.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
-| … +779 linhas — lista completa em `context.json` | |
+| … +782 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5103,7 +5104,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3416 testes em 293 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3437 testes em 295 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5149,6 +5150,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts` | 22 | detectarDeliberacaoLucros · é aplicável dentro da janela com saldo e sem ata registrada · não é aplicável após 31/12/2025 · não é aplicável quando a ata já foi registrada … |
 | `src/components/admin/telemetry/__tests__/performance-alerts-deeplink.test.ts` | 21 | performance-alerts-deeplink · isSeverity · aceita valores válidos · rejeita valores inválidos … |
 | `src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts` | 21 | detectarJCP · deve identificar oportunidade aplicável para empresa Lucro Real com PL e lucro positivos · deve limitar JCP a 50% do lucro se o limite do PL for superior · não deve ser aplicável para empresas fora do Lucro Real … |
+| `src/hooks/__tests__/useAprovacoes.test.tsx` | 20 | useComentariosAprovacao (contrato real user_id/comentario) · busca comentarios com select simples (sem embed profiles — FK inexistente) · propaga erro do supabase · useConfiguracaoAprovacao (alcada com varias faixas ativas) … |
 | `src/lib/__tests__/barcode-parser.test.ts` | 19 | Barcode Parser · parseBoleto · código inválido com poucos dígitos retorna erros · 44 dígitos é reconhecido como código de barras … |
 | `src/lib/tributario/__tests__/conformidade-fiscal.test.ts` | 19 | classificarConformidade · mapeia as quatro faixas nos limites exatos · calcularConformidade — casos unitários · retorna 100 para conjunto vazio (sem obrigações, sem risco) … |
 | `src/components/reforma-tributaria/__tests__/KPIComparativo.test.tsx` | 18 | KPIComparativo · Cálculo de variação · exibe variação positiva · exibe variação negativa … |
@@ -5359,11 +5361,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/cobranca/__tests__/MetricasPorCanal.test.tsx` | 3 | MetricasPorCanal · não projeta métricas financeiras quando não há registros reais por canal · apresenta apenas os números fornecidos por uma fonte de dados |
 | `src/components/common/StartupDiagnostic.test.tsx` | 3 | StartupDiagnostic · não bloqueia a rota pública quando a checagem falha · mantém a tela da aplicação disponível durante a verificação |
 | `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
+| `src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx` | 3 | RegistrarPagamentoDialog — empresa da alcada · consulta a alcada da empresa do titulo, nao a do filtro global · registro legado sem empresa_id cai no filtro global |
 | `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
-| `src/hooks/__tests__/useAprovacoes.test.tsx` | 3 | useComentariosAprovacao (contrato real user_id/comentario) · busca comentarios com select simples (sem embed profiles — FK inexistente) · propaga erro do supabase |
 | `src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts` | 3 | relatórios do EXPERT com contas vencidas · o fluxo de caixa pede contas a pagar vencidas, não só pendentes · o relatório de contas a pagar pede as vencidas e as soma no total |
 | `src/lib/__tests__/brazilian-validators.regression.test.ts` | 3 | brazilian-validators — regressão de API pública · preserva exports históricos · validateCPF/CNPJ geram e validam consistentes |
 | `src/lib/__tests__/sped-generator.regression.test.ts` | 3 | sped-generator — regressão de API pública · preserva exports históricos após modularização · validarArquivoSPED rejeita conteúdo inválido |
@@ -5399,6 +5401,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/test/scenarios/__tests__/scenarios.spec.ts` | 2 | Scenario Harness · ${COUNT} cenários combinatórios: zero violações de invariantes |
 | `supabase/functions/gerar-heatmap-tributario/index.test.ts` | 2 | ano sem lancamento: contrato completo, sem numero inventado · total_por_mes tem 12 posicoes zeradas |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/puller_test.ts` | 2 | runPuxador — resposta empty (cStat=137) não altera cursor · gzip round-trip preserva XML |
+| `src/hooks/__tests__/useAprovacoes.placeholder.test.tsx` | 1 | nao entrega a configuracao da empresa anterior enquanto a nova carrega |
 | `src/lib/__tests__/eslint-no-floating-supabase-write.test.ts` | 1 | no-floating-supabase-write |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
@@ -5712,6 +5715,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * { "<tabela>": <linhas removidas> } — apenas chaves numéricas do resultado. */ | `src/components/admin/telemetry/RetentionHistoryPanel.tsx` |
 | o que foi purgado por tabela — antes essa informação existia apenas dentro de | `src/components/admin/telemetry/RetentionHistoryPanel.tsx` |
 | Ajuste para prazo desde emissão | `src/components/analytics/BenchmarkingSetorial.tsx` |
+| andam juntas (senao o limite salvo nao faz efeito) e as faixas de outro | `src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx` |
 | Valor Mínimo */} | `src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx` |
 | DIALOG: Estorno de Cobrança ASAAS | `src/components/asaas/EstornoDialog.tsx` |
 | Juros, Multa, Desconto | `src/components/asaas/NovaCobrancaDialog.tsx` |
@@ -5779,6 +5783,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Apenas alertas de alta prioridade ou ruptura | `src/hooks/useAlertasPreditivos.ts` |
 | 0.02, 0); // 2% de desconto estimado | `src/hooks/useAlertasPreditivos.ts` |
 | Validação client-side espelha o trigger Postgres + regras de UX. | `src/hooks/useAnomaliaPreferences.ts` |
+| limite salvo nao faz efeito; | `src/hooks/useAprovacoes.ts` |
+| limite fica gravado, o erro aparece, e a nova | `src/hooks/useAprovacoes.ts` |
+| // Entao em vez de adivinhar, a gravacao RECUSA o que nao pode virar o | `src/hooks/useAprovacoes.ts` |
+| limite efetivo, e diz qual faixa esta no caminho. Nao perde dado, nao | `src/hooks/useAprovacoes.ts` |
+| Subir o limite ACIMA de outra faixa ativa nao muda o limite efetivo. | `src/hooks/useAprovacoes.ts` |
 | Silently fail - IP/geo validation will be skipped | `src/hooks/useAuthValidation.ts` |
 | Validação IP/Geo agora é feita 100% no servidor pela edge function | `src/hooks/useAuthValidation.ts` |
 | Channel name must be unique per (mount, accountId) so we don't | `src/hooks/useBankAccounts.ts` |
@@ -5976,10 +5985,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | para o limite mais próximo (útil quando o filtro de pendências encurta a | `src/lib/tributario/historico-simulacao.ts` |
 | * Item mínimo ordenável (subconjunto do exportável). */ | `src/lib/tributario/historico-simulacao.ts` |
 | Imposto Mínimo PF sobre dividendos > R$ 50k/mês | `src/lib/tributario/irpfm.ts` |
-| * Limite de isenção: R$ 50.000,00 por mês | `src/lib/tributario/irpfm.ts` |
-| Aplica alíquota progressiva sobre o excedente do limite de R$ 50k/mês. | `src/lib/tributario/irpfm.ts` |
-| Extraído de `shared-logic.ts` (modularização max-lines). Ciclo de tipo apenas | `src/lib/tributario/parametros.ts` |
-| 3. IRPFM (Imposto de Renda Pessoa Física Mínimo) — alíquota LINEAR de 0% a 10% para renda | `src/lib/tributario/pf-vinculada.ts` |
-| * Alíquota do IRRF sobre dividendos acima do limite mensal. */ | `src/lib/tributario/pf-vinculada.ts` |
-| * Limite superior do desconto redutor da isenção ampliada. */ | `src/lib/tributario/pf-vinculada.ts` |
-| … +379 linhas — lista completa em `context.json` | |
+| … +385 linhas — lista completa em `context.json` | |

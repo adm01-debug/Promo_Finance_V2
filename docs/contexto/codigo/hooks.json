@@ -1549,6 +1549,7 @@
     "useAprovarSolicitacao",
     "useComentariosAprovacao",
     "useConfiguracaoAprovacao",
+    "useConfiguracaoAprovacaoEditavel",
     "useCriarSolicitacaoAprovacao",
     "useFluxosNiveis",
     "useRejeitarSolicitacao",
@@ -1558,7 +1559,7 @@
     "useUpdateFluxoNivel",
     "useVerificarAprovacaoNecessaria"
    ],
-   "linhas": 381,
+   "linhas": 522,
    "dominio": "hooks",
    "tabelas": [
     "aprovacao_comentarios",
@@ -1587,7 +1588,7 @@
     "src/components/pix-hub/AprovacaoRapidaMobile.tsx",
     "src/hooks/useContasPagarLogic.ts"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useAprovacoesPendentesCount.ts",
@@ -1877,10 +1878,11 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 104,
+   "usado_por": 105,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",
+    "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
     "src/components/aprovacoes/PasswordResetApprovals.tsx",
     "src/components/auth/EmpresaSelectionGate.tsx",
     "src/components/auth/PermissionGate.tsx",
@@ -1907,8 +1909,7 @@
     "src/components/layout/sidebar/SidebarNavGroups.tsx",
     "src/components/providers/NavigationTracker.tsx",
     "src/components/security/GeoRestrictionPanel.tsx",
-    "src/components/security/KnownDevicesPanel.tsx",
-    "src/components/shared/SavedFiltersBar.tsx"
+    "src/components/security/KnownDevicesPanel.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -2913,7 +2914,7 @@
    "hooks_exportados": [
     "useContasPagarLogic"
    ],
-   "linhas": 470,
+   "linhas": 473,
    "dominio": "hooks",
    "tabelas": [
     "profiles",
