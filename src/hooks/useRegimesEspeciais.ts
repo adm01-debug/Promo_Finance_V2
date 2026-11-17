@@ -32,7 +32,6 @@ export function useUpdateRegimeEspecial() {
     }) => {
       const { error } = await supabase
         .from('regimes_especiais_empresa')
-        // TODO(2026-08-14): reducao_aliquota→reducao_cbs/reducao_ibs (renomeada no schema canônico)
         .update({
           ativo: data.ativo,
           reducao_cbs: data.reducao_aliquota,

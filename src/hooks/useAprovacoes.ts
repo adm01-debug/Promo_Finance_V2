@@ -322,7 +322,6 @@ export const useAdicionarComentario = () => {
 
       const { data, error } = await supabase
         .from('aprovacao_comentarios')
-        // TODO(2026-08-14): usuario_id→user_id e texto→comentario (nomes canônicos em aprovacao_comentarios)
         .insert({
           solicitacao_id: solicitacaoId,
           user_id: userData.user.id,
