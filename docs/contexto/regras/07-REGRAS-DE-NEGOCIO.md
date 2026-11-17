@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f9b3094ba8` · branch `main` · 2026-11-17 20:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1702166d43` · branch `main` · 2026-11-17 20:49 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2288 linhas — lista completa em `context.json` | | |
+| … +2296 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -5662,6 +5662,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql` |
 | `asaas` | `supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql` |
 | `asaas` | `supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql` |
+| `notify_email` | `supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql` |
+| `notify_inapp` | `supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql` |
+| `notify_push` | `supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql` |
 
 ## N. Regras citadas em comentários do código
 

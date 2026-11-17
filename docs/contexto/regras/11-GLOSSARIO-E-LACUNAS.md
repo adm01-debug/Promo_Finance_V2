@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f9b3094ba8` · branch `main` · 2026-11-17 20:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1702166d43` · branch `main` · 2026-11-17 20:49 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -235,7 +235,7 @@
 | `role_permissions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 4 colunas | migration |
 | `rpc_observability_metrics` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `runtime_error_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
-| `saved_filter_subscriptions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
+| `saved_filter_subscriptions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
 | `saved_filters` | Filtros salvos por usuários para diferentes entidades | 12 colunas | migration |
 | `scim_operations_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `scim_setup_checklist` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |

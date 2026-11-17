@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f9b3094ba80b4004405ec9ef5f561592374a668c",
+  "sha": "1702166d4312845031e6f3960aeb634cbc17db7e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:45 UTC",
-  "files_total": 3968,
-  "code_files": 3586,
-  "code_lines": 510009
+  "generated_at": "2026-11-17 20:49 UTC",
+  "files_total": 3969,
+  "code_files": 3587,
+  "code_lines": 510145
  },
  "version": "1.3.2",
- "facts_hash": "ae289bb10feef7b1",
+ "facts_hash": "2df6ef8f25190754",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1245,
    ".tsx": 1114,
-   ".sql": 1112,
+   ".sql": 1113,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -15147,14 +15147,14 @@
      },
      {
       "name": "frequencia",
-      "type": "text DEFAULT 'diaria'::text NOT NULL",
+      "type": "public.subscription_frequencia NOT NULL DEFAULT 'imediata'::public.subscription_frequencia",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
      },
      {
       "name": "canal",
-      "type": "text DEFAULT 'email'::text NOT NULL",
+      "type": "text",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
@@ -15188,6 +15188,76 @@
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
      },
      {
+      "name": "notify_inapp",
+      "type": "boolean NOT NULL DEFAULT true",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "notify_push",
+      "type": "boolean NOT NULL DEFAULT false",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "notify_email",
+      "type": "boolean NOT NULL DEFAULT false",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "horario_preferido",
+      "type": "time without time zone NOT NULL DEFAULT '09:00:00'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "severidades_criticas",
+      "type": "text[] NOT NULL DEFAULT ARRAY['critica']::text[]",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "tipos_eventos_ativos",
+      "type": "text[] NOT NULL DEFAULT ARRAY[]::text[]",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "rate_limit_max",
+      "type": "integer NOT NULL DEFAULT 5",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "rate_limit_window_min",
+      "type": "integer NOT NULL DEFAULT 10",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "last_seen_at",
+      "type": "timestamptz NOT NULL DEFAULT now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
+      "name": "next_dispatch_at",
+      "type": "timestamptz",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+     },
+     {
       "name": "filter_id",
       "type": "string not null",
       "fk": "",
@@ -15200,7 +15270,7 @@
      "constraint saved_filter_subscriptions_saved_filter_id_fkey FOREIGN KEY (saved_filter_id) REFERENCES public.saved_filters(id) ON DELETE CASCADE",
      "constraint saved_filter_subscriptions_unique UNIQUE (saved_filter_id, user_id)",
      "constraint saved_filter_subscriptions_canal_check CHECK ((canal = ANY (ARRAY['email'::text, 'push'::text, 'whatsapp'::text]))) NOT VALID",
-     "constraint saved_filter_subscriptions_frequencia_check CHECK ((frequencia = ANY (ARRAY['diaria'::text, 'semanal'::text, 'mensal'::text]))) NOT VALID"
+     "constraint saved_filter_subscriptions_user_id_saved_filter_id_key UNIQUE (user_id, saved_filter_id)"
     ],
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
     "comment": "",
@@ -49600,6 +49670,22 @@
     "src": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
    },
    {
+    "name": "idx_sfs_user",
+    "table": "saved_filter_subscriptions",
+    "columns": "user_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+   },
+   {
+    "name": "idx_sfs_filter",
+    "table": "saved_filter_subscriptions",
+    "columns": "saved_filter_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+   },
+   {
     "name": "idx_boletos_conta_bancaria_id",
     "table": "boletos",
     "columns": "conta_bancaria_id",
@@ -51233,6 +51319,7 @@
    "supabase/migrations/20261117201000_sso_login_attempts_state.sql",
    "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql",
    "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
+   "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
    "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
@@ -71697,8 +71784,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1041,
-   "lines": 80328,
+   "files": 1042,
+   "lines": 80464,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -93181,12 +93268,7 @@
    {
     "table": "saved_filter_subscriptions",
     "column": "frequencia",
-    "rule": "default 'diaria'::text"
-   },
-   {
-    "table": "saved_filter_subscriptions",
-    "column": "canal",
-    "rule": "default 'email'::text"
+    "rule": "default 'imediata'::public.subscription_frequencia"
    },
    {
     "table": "saved_filter_subscriptions",
@@ -93201,6 +93283,51 @@
    {
     "table": "saved_filter_subscriptions",
     "column": "updated_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "notify_inapp",
+    "rule": "default true"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "notify_push",
+    "rule": "default false"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "notify_email",
+    "rule": "default false"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "horario_preferido",
+    "rule": "default '09:00:00'"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "severidades_criticas",
+    "rule": "default ARRAY['critica']::text[]"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "tipos_eventos_ativos",
+    "rule": "default ARRAY[]::text[]"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "rate_limit_max",
+    "rule": "default 5"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "rate_limit_window_min",
+    "rule": "default 10"
+   },
+   {
+    "table": "saved_filter_subscriptions",
+    "column": "last_seen_at",
     "rule": "default now()"
    },
    {
@@ -93231,7 +93358,7 @@
    {
     "table": "saved_filter_subscriptions",
     "column": "(tabela)",
-    "rule": "constraint saved_filter_subscriptions_frequencia_check CHECK ((frequencia = ANY (ARRAY['diaria'::text, 'semanal'::text, 'mensal'::text]))) NOT VALID"
+    "rule": "constraint saved_filter_subscriptions_user_id_saved_filter_id_key UNIQUE (user_id, saved_filter_id)"
    },
    {
     "table": "anomalia_detection_runs",
@@ -136322,6 +136449,18 @@
    {
     "file": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
     "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
+    "call": "notify_email"
+   },
+   {
+    "file": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
+    "call": "notify_inapp"
+   },
+   {
+    "file": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
+    "call": "notify_push"
    }
   ],
   "db_policies": [
@@ -244784,6 +244923,15 @@
    "path": "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql",
    "lines": 57
   },
+  "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql": {
+   "path": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
+   "lines": 136,
+   "side_effects": [
+    "notify_email",
+    "notify_inapp",
+    "notify_push"
+   ]
+  },
   "supabase/migrations/20261117225000_indices_recuperados_da_445.sql": {
    "path": "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
    "lines": 81
@@ -244896,10 +245044,19 @@
   }
  },
  "git": {
-  "sha": "f9b3094ba80b4004405ec9ef5f561592374a668c",
+  "sha": "1702166d4312845031e6f3960aeb634cbc17db7e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1702166",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)",
+    "files": [
+     "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
+    ]
+   },
    {
     "sha": "f9b3094",
     "date": "2026-11-17",
@@ -245269,25 +245426,9 @@
     "files": [
      "docs/auditoria/INVENTARIO_TRABALHO_INACABADO_2026-11-17.md"
     ]
-   },
-   {
-    "sha": "e0aba34",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)",
-    "files": [
-     "supabase/functions/_shared/asaas-config.ts",
-     "supabase/functions/_shared/asaas-config_test.ts",
-     "supabase/functions/asaas-proxy/index.ts",
-     "supabase/functions/gerar-resumo-financeiro-diario/index.ts"
-    ]
    }
   ],
   "hot_files": [
-   [
-    "supabase/functions/asaas-proxy/index.ts",
-    3
-   ],
    [
     "bun.lock",
     2
@@ -245301,6 +245442,10 @@
     2
    ],
    [
+    "supabase/functions/asaas-proxy/index.ts",
+    2
+   ],
+   [
     "src/components/nfe/AlertasRejeicao.tsx",
     2
    ],
@@ -245309,12 +245454,8 @@
     2
    ],
    [
-    "supabase/functions/_shared/asaas-config.ts",
-    2
-   ],
-   [
-    "supabase/functions/_shared/asaas-config_test.ts",
-    2
+    "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
+    1
    ],
    [
     "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
@@ -245362,6 +245503,10 @@
    ],
    [
     ".github/workflows/dependency-review.yml",
+    1
+   ],
+   [
+    "supabase/functions/gerar-acoes-recomendadas/index.ts",
     1
    ]
   ]

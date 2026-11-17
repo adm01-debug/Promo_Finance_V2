@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f9b3094ba80b4004405ec9ef5f561592374a668c",
+  "commit": "1702166d4312845031e6f3960aeb634cbc17db7e",
   "branch": "main",
-  "data_commit": "2026-11-17T17:42:04-03:00",
+  "data_commit": "2026-11-17T17:47:15-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1702166",
+    "data": "2026-11-17",
+    "assunto": "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)"
+   },
    {
     "sha": "f9b3094",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "ab257ab",
     "data": "2026-11-17",
     "assunto": "chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)"
-   },
-   {
-    "sha": "cf7bc77",
-    "data": "2026-11-17",
-    "assunto": "fix: dialogs sem descrição deixam de gerar aviso de acessibilidade (#427)"
    }
   ],
-  "arquivos_mudados_7d": 916,
+  "arquivos_mudados_7d": 917,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -262,10 +262,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
     "mudancas": 9
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
+   },
+   {
+    "arquivo": "src/App.tsx",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 203
+    "commits": 204
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3929,
+  "arquivos_total": 3930,
   "arquivos_codigo": 2473,
   "linhas_codigo": 440454,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1041,
+  "migrations": 1042,
   "cron_jobs": 22,
   "testes": 477,
   "workflows": 19,

@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1041,
+ "migrations": 1042,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -40214,9 +40214,9 @@
     },
     "canal": {
      "tipo": "text",
-     "nn": true,
+     "nn": false,
      "pk": false,
-     "default": "'email'::text",
+     "default": null,
      "ref": null
     },
     "created_at": {
@@ -40230,11 +40230,11 @@
      "tipo": "text",
      "nn": true,
      "pk": false,
-     "default": "'diaria'::text",
+     "default": "'imediata'::public.subscription_frequencia",
      "ref": null
     },
     "horario_preferido": {
-     "tipo": "time",
+     "tipo": "time without time zone",
      "nn": true,
      "pk": false,
      "default": "'09:00:00'",
@@ -40307,14 +40307,14 @@
      "tipo": "text[]",
      "nn": true,
      "pk": false,
-     "default": "ARRAY['critica']::TEXT[]",
+     "default": "ARRAY['critica']::text[]",
      "ref": null
     },
     "tipos_eventos_ativos": {
      "tipo": "text[]",
      "nn": true,
      "pk": false,
-     "default": "ARRAY[]::TEXT[]",
+     "default": "ARRAY[]::text[]",
      "ref": null
     },
     "ultimo_envio_em": {
