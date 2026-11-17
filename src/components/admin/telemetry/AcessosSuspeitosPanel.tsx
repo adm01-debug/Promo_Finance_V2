@@ -68,6 +68,8 @@ export function AcessosSuspeitosPanel() {
   const {
     data = [],
     isLoading,
+    isError,
+    error,
     refetch,
     isRefetching,
   } = useQuery<AcessoSuspeitoRow[]>({
@@ -150,6 +152,25 @@ export function AcessosSuspeitosPanel() {
       <CardContent>
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando achados…</p>
+        ) : isError ? (
+          /*
+           * Auditoria que falha NAO e auditoria limpa. Sem este estado, erro na
+           * RPC caia no ramo `data.length === 0` e o painel exibia
+           * "✅ Nenhum acesso entre empresas ou uso administrativo anomalo" --
+           * visto verde para uma verificacao que nao rodou.
+           */
+          <div role="alert" className="space-y-2">
+            <p className="text-sm font-medium text-destructive">
+              Não foi possível verificar os acessos.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Nenhum resultado é exibido para não passar falha de consulta como auditoria limpa.{' '}
+              {error instanceof Error ? error.message : 'Erro ao consultar get_acessos_suspeitos.'}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
+              Tentar de novo
+            </Button>
+          </div>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             ✅ Nenhum acesso entre empresas ou uso administrativo anômalo no período.
