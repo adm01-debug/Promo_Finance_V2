@@ -96,9 +96,24 @@ Deno.serve(
         }
       }
 
-      // Fallback sazonal determinístico (sazonalidade típica de eventos + indústria promocional)
-      const sazonalidade = [0.78, 0.82, 0.95, 1.05, 1.12, 1.18, 1.05, 0.98, 0.92, 0.88, 0.82, 0.75];
-      const receitaMedia = 285000;
+      // Mes sem faturamento lancado fica vazio, e nao preenchido com receita
+      // ficticia. Antes, cada mes sem dado recebia 285000 fixos multiplicados
+      // por uma curva de sazonalidade escrita no codigo, e o mapa de calor saia
+      // inteiro preenchido -- indistinguivel de um ano de dados reais.
+      // O painel ja trata a ausencia (HeatmapTributarioAnual.tsx:102).
+      const mesesComFaturamento = Object.keys(receitaPorMes).length;
+      if (mesesComFaturamento === 0) {
+        return jsonComCors(
+          {
+            celulas: [],
+            motivo: 'sem_faturamento_no_ano',
+            detalhe:
+              'Nao ha faturamento lancado para o ano informado. Lance o faturamento mensal para o mapa de calor ser calculado.',
+          },
+          200,
+          req
+        );
+      }
 
       // Gerar células
       const celulas: CelulaHeatmap[] = [];
@@ -110,7 +125,7 @@ Deno.serve(
       for (const t of TRIBUTOS) variacoesMesAnterior[t] = null;
 
       for (let mes = 1; mes <= 12; mes++) {
-        const receita = receitaPorMes[mes] ?? receitaMedia * sazonalidade[mes - 1];
+        const receita = receitaPorMes[mes] ?? 0;
         for (const t of TRIBUTOS) {
           const valor = receita * ALIQUOTAS[t];
           if (valor > maxValor) maxValor = valor;

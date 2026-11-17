@@ -47,6 +47,33 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
     );
   }
 
+  // Sem carga ou sem benchmark nao ha comparacao: o badge de posicao e o gauge
+  // de percentil sao renderizados sem guarda mais abaixo, e com nulo mostrariam
+  // "Na mediana do setor" e "Percentil estimado: null" para uma empresa sem
+  // nenhum lancamento. A funcao devolvia 6.8% fixos justamente para evitar
+  // isso -- o que fazia a tela afirmar uma posicao setorial inventada.
+  if (data.carga_empresa_12m === null || !data.benchmark) {
+    return (
+      <Card className="backdrop-blur-sm bg-card/60 border-border/50">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-primary" /> Benchmark setorial
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            {data.insights[0] ??
+              'Sem faturamento lançado nos últimos 12 meses: não há carga tributária a comparar.'}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // TS nao mantem o estreitamento de data.carga_empresa_12m ate o JSX abaixo.
+  const cargaEmpresa = data.carga_empresa_12m;
+  const percentil = data.percentil ?? 0;
+
   const corPosicao =
     data.posicao === 'abaixo_p25'
       ? 'bg-success/10 text-success border-success/30'
@@ -95,13 +122,13 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
             <div className="absolute inset-y-0 right-0 w-1/4 bg-destructive/30" />
             <motion.div
               initial={{ left: '0%' }}
-              animate={{ left: `${Math.min(95, Math.max(2, data.percentil))}%` }}
+              animate={{ left: `${Math.min(95, Math.max(2, percentil))}%` }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-5 w-1.5 bg-foreground rounded-full shadow-md"
             />
           </div>
           <p className="text-xs text-muted-foreground mt-2 text-center">
-            Percentil estimado: <strong className="text-foreground">{data.percentil}</strong>
+            Percentil estimado: <strong className="text-foreground">{percentil}</strong>
           </p>
         </div>
 
@@ -110,7 +137,7 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="rounded-md bg-muted/40 p-2">
               <p className="text-xs text-muted-foreground">Sua carga (12m)</p>
-              <p className="font-semibold">{formatBRL(data.carga_empresa_12m)}</p>
+              <p className="font-semibold">{formatBRL(cargaEmpresa)}</p>
             </div>
             <div className="rounded-md bg-muted/40 p-2">
               <p className="text-xs text-muted-foreground">Mediana setor</p>
