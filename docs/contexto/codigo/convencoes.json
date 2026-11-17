@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)",
+   "chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)",
    "chore(deps-dev): bump vite from 8.2.2 to 8.3.8 (#372)",
    "fix(aprovações): a alçada configurada nunca era exigida de nenhum pagamento (#400)",
-   "fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, \"1247 empresas\") (#403)",
-   "chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)",
-   "fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)"
+   "fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, \"1247 empresas\") (#403)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

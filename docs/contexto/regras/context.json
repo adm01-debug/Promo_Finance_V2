@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "2c931d533813d87ec230ea3ace735923bbda31ea",
+  "sha": "d97021a274c65818b6aeb998e8f97c5901f2cdce",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 03:53 UTC",
+  "generated_at": "2026-11-17 03:54 UTC",
   "files_total": 3919,
   "code_files": 3542,
   "code_lines": 503961
@@ -246268,10 +246268,30 @@
   }
  },
  "git": {
-  "sha": "2c931d533813d87ec230ea3ace735923bbda31ea",
+  "sha": "d97021a274c65818b6aeb998e8f97c5901f2cdce",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d97021a",
+    "date": "2026-11-17",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
+   {
+    "sha": "66fc736",
+    "date": "2026-11-17",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "2c931d5",
     "date": "2026-11-17",
@@ -246652,30 +246672,17 @@
      "supabase/functions/simular-simples/index.ts",
      "supabase/functions/whatsapp-ia-proativo/index.ts"
     ]
-   },
-   {
-    "sha": "cf94b6b",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(db): refresh_mv_benchmark_setorial sai de PUBLIC e para de engolir erro em WHEN OTHERS (#370)",
-    "files": [
-     "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql"
-    ]
-   },
-   {
-    "sha": "5272662",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix: estorno contábil de movimentação excluída/alterada, com as 6 correções da revisão da #340 (#366)",
-    "files": [
-     "src/hooks/useDemonstrativosContabeis.ts",
-     "supabase/functions/gerar-sped-ecd/index.ts",
-     "supabase/functions/gerar-sped-ecf/index.ts",
-     "supabase/migrations/20261116170000_estorno_contabil_movimentacao_origem.sql"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "bun.lock",
+    3
+   ],
+   [
+    "package.json",
+    3
+   ],
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
     3
@@ -246713,22 +246720,6 @@
     2
    ],
    [
-    "supabase/functions/gerar-sped-ecd/index.ts",
-    2
-   ],
-   [
-    "supabase/functions/gerar-sped-ecf/index.ts",
-    2
-   ],
-   [
-    "bun.lock",
-    1
-   ],
-   [
-    "package.json",
-    1
-   ],
-   [
     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
     1
    ],
@@ -246754,6 +246745,14 @@
    ],
    [
     "src/hooks/useAprovacoes.ts",
+    1
+   ],
+   [
+    "src/hooks/useContasPagarLogic.ts",
+    1
+   ],
+   [
+    "src/pages/ContasPagar.tsx",
     1
    ]
   ]

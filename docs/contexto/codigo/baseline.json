@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2c931d533813d87ec230ea3ace735923bbda31ea",
+  "commit": "d97021a274c65818b6aeb998e8f97c5901f2cdce",
   "branch": "main",
-  "data_commit": "2026-11-17T00:52:26-03:00",
+  "data_commit": "2026-11-17T00:52:51-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d97021a",
+    "data": "2026-11-17",
+    "assunto": "chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)"
+   },
+   {
+    "sha": "66fc736",
+    "data": "2026-11-17",
+    "assunto": "chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)"
+   },
    {
     "sha": "2c931d5",
     "data": "2026-11-17",
@@ -121,16 +131,6 @@
     "sha": "e314002",
     "data": "2026-11-16",
     "assunto": "chore(db): versiona a DDL que está em produção e não existe no repositório (#380)"
-   },
-   {
-    "sha": "8236365",
-    "data": "2026-11-16",
-    "assunto": "fix(db): restaura a unicidade NFe → conta a pagar que outro agente derrubou em produção (#385)"
-   },
-   {
-    "sha": "15dc272",
-    "data": "2026-11-16",
-    "assunto": "fix: NF-e de emitente novo para de falhar — fornecedores ganha empresa_id (#381)"
    }
   ],
   "arquivos_mudados_7d": 804,
@@ -153,15 +153,15 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 21
+    "mudancas": 23
+   },
+   {
+    "pasta": "bun.lock",
+    "mudancas": 22
    },
    {
     "pasta": "src/components/contas-pagar",
     "mudancas": 21
-   },
-   {
-    "pasta": "bun.lock",
-    "mudancas": 20
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 34
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 29
+    "mudancas": 31
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -304,12 +304,12 @@
     "commits": 158
    },
    {
-    "autor": "devin-ai-integration[bot]",
+    "autor": "dependabot[bot]",
     "commits": 15
    },
    {
-    "autor": "dependabot[bot]",
-    "commits": 13
+    "autor": "devin-ai-integration[bot]",
+    "commits": 15
    },
    {
     "autor": "Joaquim Ataides",
