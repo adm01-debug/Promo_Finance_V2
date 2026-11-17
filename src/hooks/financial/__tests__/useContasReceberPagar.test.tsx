@@ -3,8 +3,7 @@
  * variantes paginadas. Valida:
  *  - Chamada correta da view tipada (`vw_contas_*_painel`).
  *  - Ordenação por `data_vencimento` ascendente.
- *  - Limite de 1000 registros (contas a receber) e leitura paginada até o fim
- *    no agregado de contas a pagar.
+ *  - Leitura paginada até o fim nos agregados de contas a pagar e a receber.
  *  - Filtro por `empresa_id` quando informado (e ausência quando 'all'/undefined).
  *  - Paginação: cálculo correto de `range(from, to)` e `totalPages`.
  *  - Mapeamento coerente das colunas tipadas (`ContasReceberPainelRow` / `ContasPagarPainelRow`).
@@ -110,7 +109,7 @@ beforeEach(() => {
 // -------------------- ContasReceber (view) --------------------
 
 describe('useContasReceber', () => {
-  it('consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e limit 1000', async () => {
+  it('consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e primeira pagina', async () => {
     const row: Partial<ContasReceberPainelRow> = {
       id: 'r1',
       cliente_nome_display: 'ACME',
@@ -123,12 +122,54 @@ describe('useContasReceber', () => {
     const { result } = renderHook(() => useContasReceber(), { wrapper: wrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(calls).toHaveLength(1);
+    expect(calls).toHaveLength(1); // página incompleta encerra a leitura
     expect(calls[0].table).toBe('vw_contas_receber_painel');
-    expect(calls[0].order).toEqual({ column: 'data_vencimento', opts: { ascending: true } });
-    expect(calls[0].limit).toBe(1000);
+    expect(calls[0].orders).toEqual([
+      { column: 'data_vencimento', opts: { ascending: true } },
+      { column: 'id', opts: { ascending: true } },
+    ]);
+    expect(calls[0].range).toEqual([0, 999]);
     expect(calls[0].eq).toEqual([]);
     expect(result.current.data?.[0].cliente_nome_display).toBe('ACME');
+  });
+
+  it('agrega todas as paginas: totais deixam de parar nos primeiros 1.000 titulos', async () => {
+    const pagina = (prefixo: string, n: number) =>
+      Array.from({ length: n }, (_, i) => ({
+        id: `${prefixo}-${i}`,
+        cliente_nome_display: 'ACME',
+        valor: 1,
+        data_vencimento: '2026-01-15',
+        status: 'pendente',
+      }));
+
+    nextResponses.push({ data: pagina('a', 1000), error: null });
+    nextResponses.push({ data: pagina('b', 4), error: null });
+
+    const { result } = renderHook(() => useContasReceber('emp-1'), { wrapper: wrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toHaveLength(1004);
+    expect(calls.map((c) => c.range)).toEqual([
+      [0, 999],
+      [1000, 1999],
+    ]);
+    expect(calls.every((c) => c.eq.length === 1 && c.eq[0][0] === 'empresa_id')).toBe(true);
+  });
+
+  it('propaga erro de uma pagina seguinte em vez de devolver agregado parcial', async () => {
+    const pagina = Array.from({ length: 1000 }, (_, i) => ({
+      id: `a-${i}`,
+      valor: 1,
+      data_vencimento: '2026-01-15',
+      status: 'pendente',
+    }));
+    nextResponses.push({ data: pagina, error: null });
+    nextResponses.push({ data: null, error: new Error('timeout na segunda pagina') });
+
+    const { result } = renderHook(() => useContasReceber(), { wrapper: wrapper() });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect((result.current.error as Error).message).toBe('timeout na segunda pagina');
   });
 
   it("filtra por empresa_id quando informado e ignora quando 'all'", async () => {
