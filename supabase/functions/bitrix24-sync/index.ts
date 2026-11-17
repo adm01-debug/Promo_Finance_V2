@@ -382,7 +382,9 @@ async function syncContacts(
       for (const contact of contacts) {
         try {
           const clienteData = {
-            bitrix_id: String(contact.ID),
+            // a coluna de vínculo do contato é bitrix_contact_id; `bitrix_id`
+            // não existe em clientes, então o upsert não vinculava nada
+            bitrix_contact_id: String(contact.ID),
             razao_social:
               `${contact.NAME || ''} ${contact.LAST_NAME || ''}`.trim() || `Contato #${contact.ID}`,
             email: Array.isArray(contact.EMAIL) ? contact.EMAIL[0]?.VALUE : contact.EMAIL,
@@ -395,7 +397,7 @@ async function syncContacts(
           const { data: existing } = await supabase
             .from('clientes')
             .select('id')
-            .eq('bitrix_id', String(contact.ID))
+            .eq('bitrix_contact_id', String(contact.ID))
             .single();
 
           if (existing) {
@@ -500,7 +502,9 @@ async function syncCompanies(
       for (const company of companies) {
         try {
           const clienteData = {
-            bitrix_id: String(company.ID),
+            // empresa do Bitrix vincula por bitrix_company_id, coluna separada
+            // da do contato — é assim que o schema declara
+            bitrix_company_id: String(company.ID),
             razao_social: company.TITLE || `Empresa #${company.ID}`,
             email: Array.isArray(company.EMAIL) ? company.EMAIL[0]?.VALUE : company.EMAIL,
             telefone: Array.isArray(company.PHONE) ? company.PHONE[0]?.VALUE : company.PHONE,
@@ -512,7 +516,7 @@ async function syncCompanies(
           const { data: existing } = await supabase
             .from('clientes')
             .select('id')
-            .eq('bitrix_id', String(company.ID))
+            .eq('bitrix_company_id', String(company.ID))
             .single();
 
           if (existing) {

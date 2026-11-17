@@ -14,7 +14,8 @@ import { Users, Building2 } from 'lucide-react';
 
 interface SyncedClient {
   id: string;
-  bitrix_id?: string | null;
+  bitrix_contact_id?: string | null;
+  bitrix_company_id?: string | null;
   razao_social: string;
   email?: string | null;
   telefone?: string | null;
@@ -73,7 +74,7 @@ export function BitrixClientsTab({ clients, isLoading, onSyncContacts, onSyncCom
                 <TableRow key={cliente.id}>
                   <TableCell>
                     <Badge variant="outline" className="font-mono">
-                      {cliente.bitrix_id}
+                      {cliente.bitrix_contact_id ?? cliente.bitrix_company_id ?? '-'}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-medium">{cliente.razao_social}</TableCell>
