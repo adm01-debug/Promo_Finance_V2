@@ -4,7 +4,7 @@
 |---|---|
 | nome | sso-generate-metadata |
 | status | ACTIVE |
-| versão | 56 |
+| versão | 58 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/sso-generate-metadata/index.ts |
 | import_map |  |

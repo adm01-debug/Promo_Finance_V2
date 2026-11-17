@@ -4,7 +4,7 @@
 |---|---|
 | nome | ci-security-gate-log |
 | status | ACTIVE |
-| versão | 55 |
+| versão | 57 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/ci-security-gate-log/index.ts |
 | import_map |  |
