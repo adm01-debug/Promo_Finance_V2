@@ -95,10 +95,7 @@ export function chaveReferenciaInterna(
  */
 export function cargaDoPeriodo(
   apuracao: { total_geral?: unknown; ano?: unknown; mes?: unknown } | null | undefined,
-  faturamentos:
-    | Array<{ receita_bruta?: unknown; ano?: unknown; mes?: unknown }>
-    | null
-    | undefined
+  faturamentos: Array<{ receita_bruta?: unknown; ano?: unknown; mes?: unknown }> | null | undefined
 ): number | null {
   if (!apuracao) return null;
   const doMes = (faturamentos ?? []).find(

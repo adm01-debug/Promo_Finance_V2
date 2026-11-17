@@ -76,12 +76,18 @@ Deno.test('carga do periodo usa a receita do mes apurado, nao a media de 12 mese
 });
 
 Deno.test('carga do periodo nao compara quando falta a receita do mes', () => {
-  assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 11 }, [
-    { ano: 2026, mes: 10, receita_bruta: 100_000 },
-  ]), null);
-  assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 10 }, [
-    { ano: 2026, mes: 10, receita_bruta: 0 },
-  ]), null);
+  assertEquals(
+    cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 11 }, [
+      { ano: 2026, mes: 10, receita_bruta: 100_000 },
+    ]),
+    null
+  );
+  assertEquals(
+    cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 10 }, [
+      { ano: 2026, mes: 10, receita_bruta: 0 },
+    ]),
+    null
+  );
   assertEquals(cargaDoPeriodo({ total_geral: 6_500, ano: 2026, mes: 10 }, []), null);
   assertEquals(cargaDoPeriodo(null, [{ ano: 2026, mes: 10, receita_bruta: 100_000 }]), null);
 });
