@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 990,
+ "total": 991,
  "orfaos": 40,
  "nomes_duplicados": {
   "Accordion": [
@@ -5957,7 +5957,7 @@
     "WebhookConfigDialog"
    ],
    "export_default": null,
-   "linhas": 34,
+   "linhas": 41,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5976,6 +5976,24 @@
    "hooks_locais": [],
    "tabelas": [
     "webhooks_log"
+   ],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/WebhookDlqPanel.tsx",
+   "exports": [
+    "WebhookDlqPanel"
+   ],
+   "export_default": null,
+   "linhas": 227,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [
+    "useAuth"
+   ],
+   "tabelas": [
+    "webhook_dlq"
    ],
    "edges": [],
    "usado_por": 1,
@@ -10958,7 +10976,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 446,
+   "usado_por": 447,
    "orfao": false
   },
   {
@@ -11007,7 +11025,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 527,
+   "usado_por": 528,
    "orfao": false
   },
   {
@@ -11996,7 +12014,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 125,
+   "usado_por": 126,
    "orfao": false
   },
   {

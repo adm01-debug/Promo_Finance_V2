@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "915784ca7f764889554a91799115986f8553be43",
+  "sha": "61390965dae84c5fe1521db35fb2005d5f5e46b4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 04:39 UTC",
-  "files_total": 3921,
-  "code_files": 3544,
-  "code_lines": 504141
+  "generated_at": "2026-11-17 04:52 UTC",
+  "files_total": 3923,
+  "code_files": 3546,
+  "code_lines": 504623
  },
  "version": "1.3.2",
- "facts_hash": "eefecc9b85047db8",
+ "facts_hash": "02b77b961bb5cf54",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1230,
-   ".tsx": 1100,
+   ".tsx": 1102,
    ".sql": 1099,
    ".mjs": 63,
    ".py": 45,
@@ -61961,6 +61961,7 @@
      "vendedores",
      "vw_contas_pagar_painel",
      "vw_contas_receber_painel",
+     "webhook_dlq",
      "webhooks_log"
     ],
     "invokes_transitive": [
@@ -61970,7 +61971,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 139
+    "deps_count": 140
    },
    {
     "path": "",
@@ -63008,6 +63009,7 @@
      "vendedores",
      "vw_contas_pagar_painel",
      "vw_contas_receber_painel",
+     "webhook_dlq",
      "webhooks_log"
     ],
     "invokes_transitive": [
@@ -63016,7 +63018,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 207
+    "deps_count": 209
    },
    {
     "path": "/contratos",
@@ -68359,7 +68361,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 985,
+  "components_count": 987,
   "hooks": [
    {
     "name": "useContacts",
@@ -71378,8 +71380,8 @@
   },
   {
    "module": "src/components",
-   "files": 983,
-   "lines": 162434,
+   "files": 985,
+   "lines": 162916,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71429,6 +71431,7 @@
     "transacoes_bancarias",
     "transferencias",
     "webauthn_credentials",
+    "webhook_dlq",
     "webhook_simulation_results",
     "webhook_simulation_runs",
     "webhooks_log"
@@ -75347,6 +75350,11 @@
      "src/hooks/useWebAuthn.ts"
     ]
    },
+   "webhook_dlq": {
+    "select": [
+     "src/components/contas-receber/WebhookDlqPanel.tsx"
+    ]
+   },
    "webhook_simulation_results": {
     "select": [
      "src/components/admin/WebhookSimulator.tsx"
@@ -76550,6 +76558,18 @@
     "device_name",
     "id",
     "user_id"
+   ],
+   "webhook_dlq": [
+    "attempts",
+    "created_at",
+    "error_message",
+    "event_type",
+    "external_id",
+    "first_failed_at",
+    "id",
+    "last_attempt_at",
+    "resolved_at",
+    "source"
    ],
    "webhook_simulation_results": [
     "run_id"
@@ -77908,7 +77928,6 @@
    "user_passkeys",
    "user_preferences",
    "webauthn_challenges",
-   "webhook_dlq",
    "webhook_events"
   ],
   "columns_unknown": [
@@ -82036,6 +82055,10 @@
     "msg": "O valor não pode ser maior que o saldo restante (${formatCurrency(saldoRestante)})"
    },
    {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "msg": " className="
+   },
+   {
     "file": "src/components/copilot/CopilotGlobalFloat.tsx",
     "msg": "Conexão interrompida."
    },
@@ -84990,6 +85013,10 @@
     "value": "denied"
    },
    {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "value": "admin"
+   },
+   {
     "file": "src/components/copilot/CopilotGlobalFloat.tsx",
     "value": "assistant"
    },
@@ -85374,6 +85401,26 @@
    {
     "file": "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
     "text": "Calculadora de Juros/Multa para títulos vencidos */}"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "apenas `webhooks_log` -- os webhooks que CHEGARAM. Resultado: uma cobranca do"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "\"permission denied for table webhook_dlq\") atras do texto genérico. Mesmo"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "Paginacao por `range`, nao por `limit` crescente: o PostgREST corta a"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "text": "* Falha de leitura NAO pode virar \"nenhuma falha\": era justamente esse"
    },
    {
     "file": "src/components/dashboard-receber/ReceberKpis.tsx",
@@ -101507,6 +101554,11 @@
     "value": "60000"
    },
    {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "name": "PAGINA_DLQ",
+    "value": "20"
+   },
+   {
     "file": "src/components/layout/transitions/presets.ts",
     "name": "DEFAULT_DURATION",
     "value": "350"
@@ -106020,6 +106072,12 @@
     "file": "src/components/contas-receber/WebhookConfigPanel.tsx",
     "field": "status",
     "value": "success",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
+    "field": "role",
+    "value": "admin",
     "kind": "compara"
    },
    {
@@ -123687,6 +123745,42 @@
    {
     "file": "src/components/contas-receber/__tests__/EnviarCobrancaDialog.test.tsx",
     "name": "alterna canal ao clicar"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "WebhookDlqPanel"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "lista so as falhas em aberto, da tabela webhook_dlq"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "erro de leitura NAO vira fila vazia"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "usuario sem papel admin NAO ve "
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "admin APENAS da empresa nao recebe "
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "admin GLOBAL com papel menor na empresa consulta normalmente"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "contador mostra o TOTAL em aberto, nao o recorte da pagina"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "falha 1.001 aparece: paginacao por range, nao por limite crescente"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    "name": "fila realmente vazia diz que esta vazia"
    },
    {
     "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
@@ -156703,6 +156797,7 @@
     "role": {
      "admin": [
       "compara:src/components/admin/GerenciadorPermissoes.tsx",
+      "compara:src/components/contas-receber/WebhookDlqPanel.tsx",
       "compara:src/pages/Usuarios.tsx",
       "compara:supabase/functions/asaas-proxy/index.ts",
       "compara:supabase/functions/executar-fechamento-tributario/index.ts",
@@ -190034,7 +190129,7 @@
   },
   "src/components/contas-receber/WebhookConfigDialog.tsx": {
    "path": "src/components/contas-receber/WebhookConfigDialog.tsx",
-   "lines": 35,
+   "lines": 42,
    "exports": [
     "function WebhookConfigDialog"
    ]
@@ -190078,6 +190173,59 @@
    ],
    "pagination": [
     "10"
+   ]
+  },
+  "src/components/contas-receber/WebhookDlqPanel.tsx": {
+   "path": "src/components/contas-receber/WebhookDlqPanel.tsx",
+   "lines": 228,
+   "exports": [
+    "function WebhookDlqPanel"
+   ],
+   "tables": [
+    {
+     "table": "webhook_dlq",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "webhook_dlq": [
+     "attempts",
+     "created_at",
+     "error_message",
+     "event_type",
+     "external_id",
+     "first_failed_at",
+     "id",
+     "last_attempt_at",
+     "resolved_at",
+     "source"
+    ]
+   },
+   "errors": [
+    " className="
+   ],
+   "params": [
+    {
+     "name": "PAGINA_DLQ",
+     "value": "20"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "role",
+     "value": "admin",
+     "kind": "compara"
+    }
+   ],
+   "role_checks": [
+    "admin"
+   ],
+   "rule_comments": [
+    "apenas `webhooks_log` -- os webhooks que CHEGARAM. Resultado: uma cobranca do",
+    "\"permission denied for table webhook_dlq\") atras do texto genérico. Mesmo",
+    "Paginacao por `range`, nao por `limit` crescente: o PostgREST corta a",
+    "resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha",
+    "* Falha de leitura NAO pode virar \"nenhuma falha\": era justamente esse"
    ]
   },
   "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx": {
@@ -190286,6 +190434,30 @@
     "fecha dialog após enviar",
     "inclui nome do cliente na mensagem WhatsApp",
     "alterna canal ao clicar"
+   ]
+  },
+  "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx": {
+   "path": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+   "lines": 247,
+   "is_test": true,
+   "rule_comments": [
+    "isAdmin do provider prioriza o papel da EMPRESA -- o painel NAO deve usar",
+    "Revisao da PR #406 (Devin): `.limit(limite)` nunca passa do teto de 1.000"
+   ],
+   "doc": "O back-end da fila de falhas estava completo em producao (tabela webhook_dlq com RLS admin, `webhook_mark_failure` gravando nela e a RPC `reprocess_dlq`) e NENHUM arquivo de src/ lia a tabela: webhook de cobranca que esgota as tentativas saia de cena sem aviso.",
+   "tests": [
+    "WebhookDlqPanel",
+    "lista so as falhas em aberto, da tabela webhook_dlq",
+    "erro de leitura NAO vira fila vazia",
+    "usuario sem papel admin NAO ve ",
+    "admin APENAS da empresa nao recebe ",
+    "admin GLOBAL com papel menor na empresa consulta normalmente",
+    "contador mostra o TOTAL em aberto, nao o recorte da pagina",
+    "falha 1.001 aparece: paginacao por range, nao por limite crescente",
+    "fila realmente vazia diz que esta vazia"
+   ],
+   "side_effects": [
+    "asaas"
    ]
   },
   "src/components/contas-receber/row/AcoesCell.tsx": {
@@ -246332,10 +246504,21 @@
   }
  },
  "git": {
-  "sha": "915784ca7f764889554a91799115986f8553be43",
+  "sha": "61390965dae84c5fe1521db35fb2005d5f5e46b4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "6139096",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)",
+    "files": [
+     "src/components/contas-receber/WebhookConfigDialog.tsx",
+     "src/components/contas-receber/WebhookDlqPanel.tsx",
+     "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx"
+    ]
+   },
    {
     "sha": "915784c",
     "date": "2026-11-17",
@@ -246708,15 +246891,6 @@
      "src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx",
      "supabase/migrations/20261116200000_fornecedores_empresa_id_reconcilia.sql"
     ]
-   },
-   {
-    "sha": "9003088",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(test): trava o escopo por empresa do card de duplicidades do dashboard (#369)",
-    "files": [
-     "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -246757,6 +246931,18 @@
     2
    ],
    [
+    "src/components/contas-receber/WebhookConfigDialog.tsx",
+    1
+   ],
+   [
+    "src/components/contas-receber/WebhookDlqPanel.tsx",
+    1
+   ],
+   [
+    "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
+    1
+   ],
+   [
     "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
     1
    ],
@@ -246786,18 +246972,6 @@
    ],
    [
     "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/__tests__/useAprovacoes.placeholder.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/__tests__/useAprovacoes.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/useAprovacoes.ts",
     1
    ]
   ]

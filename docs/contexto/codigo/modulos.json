@@ -2413,13 +2413,13 @@
   },
   {
    "modulo": "components/contas-receber",
-   "arquivos": 34,
-   "testes": 6,
-   "linhas": 5399,
+   "arquivos": 35,
+   "testes": 7,
+   "linhas": 5633,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
-   "componentes": 30,
+   "componentes": 31,
    "hooks_locais": [
     "useAuth",
     "useCategoria",
@@ -2485,6 +2485,7 @@
     "vendedores",
     "vw_contas_pagar_painel",
     "vw_contas_receber_painel",
+    "webhook_dlq",
     "webhooks_log"
    ],
    "rpcs": [],
@@ -2504,6 +2505,7 @@
    ],
    "flags": [],
    "papeis": [
+    "admin",
     "alert",
     "dialog",
     "progressbar",
@@ -2521,6 +2523,7 @@
      "execucoes_cobranca",
      "logs_baixa_automatica",
      "transacoes_bancarias",
+     "webhook_dlq",
      "webhooks_log"
     ],
     "rpcs": []
@@ -4970,6 +4973,7 @@
     "vw_contas_receber_painel",
     "vw_webhooks_recentes",
     "webauthn_credentials",
+    "webhook_dlq",
     "webhooks_log"
    ],
    "rpcs": [
@@ -5011,6 +5015,7 @@
     "AMBOS",
     "DESTINO",
     "ORIGEM",
+    "admin",
     "alert",
     "assistant",
     "button",
@@ -7526,6 +7531,7 @@
     "vw_tributario_dashboard",
     "vw_webhooks_recentes",
     "webauthn_credentials",
+    "webhook_dlq",
     "webhooks_log",
     "whatsapp_conversas"
    ],
@@ -7594,6 +7600,7 @@
     "DESTINO",
     "ORIGEM",
     "RESPONSAVEL",
+    "admin",
     "alert",
     "assistant",
     "button",
@@ -10105,6 +10112,7 @@
     "vw_transferencias_painel",
     "vw_webhooks_recentes",
     "webauthn_credentials",
+    "webhook_dlq",
     "webhook_simulation_results",
     "webhook_simulation_runs",
     "webhooks_log"
@@ -12628,6 +12636,7 @@
     "vw_tributario_dashboard",
     "vw_webhooks_recentes",
     "webauthn_credentials",
+    "webhook_dlq",
     "webhook_simulation_results",
     "webhook_simulation_runs",
     "webhooks_log"

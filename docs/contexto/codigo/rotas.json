@@ -7542,6 +7542,7 @@
     "useHaptic",
     "useHighlightFromUrl",
     "useId",
+    "useInfiniteQuery",
     "useInstallPrompt",
     "useInvalidateRelatedQueries",
     "useIsMobile",
@@ -7711,6 +7712,7 @@
     "vendedores",
     "vw_contas_pagar_painel",
     "vw_contas_receber_painel",
+    "webhook_dlq",
     "webhooks_log"
    ],
    "rpcs": [
@@ -7733,6 +7735,7 @@
    ],
    "flags": [],
    "papeis": [
+    "admin",
     "alert",
     "assistant",
     "combobox",
@@ -7744,7 +7747,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 219
+   "arquivos_puxados": 220
   },
   {
    "protegida": true,

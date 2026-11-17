@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `915784ca7f` · branch `main` · 2026-11-17 04:39 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `61390965da` · branch `main` · 2026-11-17 04:52 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1480,7 +1480,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `estado` | `critical` | compara | `src/components/admin/FiscalHealthBadge.tsx` |
 | `estado` | `ok` | compara | `src/components/admin/FiscalHealthBadge.tsx` |
 | `estado` | `warning` | compara | `src/components/admin/FiscalHealthBadge.tsx` |
-| `role` | `admin` | compara, escreve, filtra | `src/components/admin/GerenciadorPermissoes.tsx`<br>`src/pages/Usuarios.tsx`<br>`supabase/functions/_shared/auth-guard.ts`<br>`supabase/functions/_shared/auth-guard_test.ts`<br>`supabase/functions/asaas-proxy/index.ts`<br>… +11 |
+| `role` | `admin` | compara, escreve, filtra | `src/components/admin/GerenciadorPermissoes.tsx`<br>`src/components/contas-receber/WebhookDlqPanel.tsx`<br>`src/pages/Usuarios.tsx`<br>`supabase/functions/_shared/auth-guard.ts`<br>`supabase/functions/_shared/auth-guard_test.ts`<br>… +12 |
 | `role` | `assistant` | compara, escreve | `src/components/cobranca/NegociacaoIA.tsx`<br>`src/components/copilot/CopilotGlobalFloat.tsx`<br>`src/components/expert/ExpertChatMessages.tsx`<br>`src/components/tributario/dashboard/CopilotTributarioFloat.tsx`<br>`src/pages/Expert.tsx` |
 | `role` | `contador_readonly` | compara, escreve | `supabase/functions/convidar-contador/index.ts`<br>`supabase/functions/validar-token-contador/index.ts` |
 | `role` | `financeiro` | compara, filtra | `src/pages/Usuarios.tsx`<br>`supabase/functions/contabilizar-evento/index.ts`<br>`supabase/functions/executar-fechamento-tributario/index.ts` |
@@ -4096,6 +4096,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `ALPHA` | `0.3` | `src/components/contabilidade/ImportLancamentosCSVDialog.tsx` |
 | `TITULO` | `'ÍNDICES ECONÔMICO-FINANCEIROS'` | `src/components/contabilidade/indices/exporters.ts` |
 | `COOLDOWN` | `60000` | `src/components/contas-receber/ContasReceberKPIs.tsx` |
+| `PAGINA_DLQ` | `20` | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | `DEFAULT_DURATION` | `350` | `src/components/layout/transitions/presets.ts` |
 | `DEFAULT_DISTANCE` | `24` | `src/components/layout/transitions/presets.ts` |
 | `SWIPE_THRESHOLD` | `100` | `src/components/pix-hub/AprovacaoRapidaMobile.tsx` |
@@ -5046,7 +5047,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | ; import { Badge } from  | `src/components/contabilidade/dre-balanco/DreView.tsx` |
 | Sem dados para exportar. | `src/components/contabilidade/dre-balanco/exporters.ts` |
-| … +783 linhas — lista completa em `context.json` | |
+| … +784 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5059,6 +5060,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `undefined` | `src/components/admin/sso/SSOWizardDialog.tsx` |
 | `user` | `src/components/cobranca/NegociacaoIA.tsx` |
 | `denied` | `src/components/configuracoes/NotificacoesConfig.tsx` |
+| `admin` | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | `assistant` | `src/components/copilot/CopilotGlobalFloat.tsx` |
 | `user` | `src/components/copilot/CopilotGlobalFloat.tsx` |
 | `assistant` | `src/components/expert/ExpertChatMessages.tsx` |
@@ -5104,7 +5106,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3444 testes em 297 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3453 testes em 298 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5237,6 +5239,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/convidar-usuario/index.test.ts` | 10 | convite de usuário: preflight não exige autenticação · convite de usuário: anônimo não alcança Auth nem banco · convite de usuário: payload inválido não cria convite · convite de usuário: rate limit bloqueia antes de consultar ou convidar … |
 | `supabase/functions/sso-callback/build-profile-sync-delta.test.ts` | 10 | idempotência: incoming idêntico ao current → changes/updates vazios · idempotência: espaços extras nas pontas (incoming) são ignorados · idempotência: espaços extras no current também são ignorados · idempotência: incoming vazio/whitespace-only nunca sobrescreve … |
 | `src/components/admin/telemetry/__tests__/TelemetryCharts.test.tsx` | 9 | TelemetryCharts · renders nothing when rows is empty · renders three chart cards when rows have data · renders without error for timeFilter=%s … |
+| `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 9 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
 | `src/components/layout/sidebar/sidebarNavState.test.ts` | 9 | isSidebarNavItemActive · exige hash correspondente quando o link aponta para uma âncora · mantém rotas sem hash ativas no mesmo pathname · mantém o item-pai ativo em rotas filhas (detalhe/edição) … |
 | `src/hooks/__tests__/use-toast.test.ts` | 9 | use-toast (adapter sonner) · variant default delega para sonner com title e description · variant destructive delega para sonner.error · propaga duration … |
 | `src/hooks/__tests__/useCashbackSimulador.test.ts` | 9 | useCashbackSimulador · estado inicial: elegível, cesta padrão e alíquotas de 2026 · calcula cashback por categoria conforme LC 214/2025 · inelegível quando renda acima do limite (3 salários mínimos) … |
@@ -5739,6 +5742,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | bloqueado no Safari (ativação transitória expira no fetch assíncrono). | `src/components/contas-receber/DrawerAnexosTab.tsx` |
 | Juros/Multa Calculator for overdue */} | `src/components/contas-receber/DrawerDetailsTab.tsx` |
 | Calculadora de Juros/Multa para títulos vencidos */} | `src/components/contas-receber/RegistrarRecebimentoDialog.tsx` |
+| apenas `webhooks_log` -- os webhooks que CHEGARAM. Resultado: uma cobranca do | `src/components/contas-receber/WebhookDlqPanel.tsx` |
+| "permission denied for table webhook_dlq") atras do texto genérico. Mesmo | `src/components/contas-receber/WebhookDlqPanel.tsx` |
+| Paginacao por `range`, nao por `limit` crescente: o PostgREST corta a | `src/components/contas-receber/WebhookDlqPanel.tsx` |
+| resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha | `src/components/contas-receber/WebhookDlqPanel.tsx` |
+| * Falha de leitura NAO pode virar "nenhuma falha": era justamente esse | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | Delta do recebido: último mês vs anterior (apenas com base real > 0) | `src/components/dashboard-receber/ReceberKpis.tsx` |
 | A derivação é apenas uma sugestão: o usuário pode sobrescrever ambos manualmente. | `src/components/empresas/EmpresaForm.tsx` |
 | Ensure required fields are present | `src/components/empresas/EmpresaForm.tsx` |
@@ -5982,9 +5990,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Snapshot é utilizável apenas se trouxer, no mínimo, um faturamento anual | `src/lib/tributario/historico-simulacao.ts` |
 | * Filtra apenas os itens que satisfazem integralmente o contrato de ajuste. */ | `src/lib/tributario/historico-simulacao.ts` |
 | apenas snapshots que exigem atenção do contador; caso o filtro zere a lista, | `src/lib/tributario/historico-simulacao.ts` |
-| a UI deve informar o usuário em vez de simplesmente sumir com o card. | `src/lib/tributario/historico-simulacao.ts` |
-| * Item mínimo exigido para compor a trilha exportável. */ | `src/lib/tributario/historico-simulacao.ts` |
-| para o limite mais próximo (útil quando o filtro de pendências encurta a | `src/lib/tributario/historico-simulacao.ts` |
-| * Item mínimo ordenável (subconjunto do exportável). */ | `src/lib/tributario/historico-simulacao.ts` |
-| Imposto Mínimo PF sobre dividendos > R$ 50k/mês | `src/lib/tributario/irpfm.ts` |
-| … +385 linhas — lista completa em `context.json` | |
+| … +390 linhas — lista completa em `context.json` | |

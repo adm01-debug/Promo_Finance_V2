@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "915784ca7f764889554a91799115986f8553be43",
+  "commit": "61390965dae84c5fe1521db35fb2005d5f5e46b4",
   "branch": "main",
-  "data_commit": "2026-11-17T01:39:12-03:00",
+  "data_commit": "2026-11-17T01:52:12-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6139096",
+    "data": "2026-11-17",
+    "assunto": "feat(cobrança): webhook de cobrança que falha deixa de desaparecer sem aviso (fila DLQ visível) (#406)"
+   },
    {
     "sha": "915784c",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "38f4896",
     "data": "2026-11-16",
     "assunto": "fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)"
-   },
-   {
-    "sha": "311bf35",
-    "data": "2026-11-16",
-    "assunto": "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)"
    }
   ],
-  "arquivos_mudados_7d": 808,
+  "arquivos_mudados_7d": 811,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -144,12 +144,12 @@
     "mudancas": 29
    },
    {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 27
+    "pasta": "src/components/contas-receber",
+    "mudancas": 28
    },
    {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 25
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 27
    },
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 159
+    "commits": 160
    },
    {
     "autor": "dependabot[bot]",
@@ -318,21 +318,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3882,
-  "arquivos_codigo": 2444,
-  "linhas_codigo": 435658,
+  "arquivos_total": 3884,
+  "arquivos_codigo": 2446,
+  "linhas_codigo": 436138,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 128,
-  "componentes": 990,
+  "componentes": 991,
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 456,
+  "testes": 457,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 983,
-   "linhas": 161451
+   "arquivos": 985,
+   "linhas": 161931
   },
   "src/config": {
    "arquivos": 1,

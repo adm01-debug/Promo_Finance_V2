@@ -3467,12 +3467,21 @@
   ],
   "src/components/contas-receber/WebhookConfigDialog.tsx": [
    "src/components/contas-receber/WebhookConfigPanel.tsx",
+   "src/components/contas-receber/WebhookDlqPanel.tsx",
    "src/components/ui/dialog.tsx"
   ],
   "src/components/contas-receber/WebhookConfigPanel.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
+   "src/integrations/supabase/client.ts",
+   "src/lib/utils.ts"
+  ],
+  "src/components/contas-receber/WebhookDlqPanel.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/skeleton.tsx",
+   "src/hooks/useAuth.tsx",
    "src/integrations/supabase/client.ts",
    "src/lib/utils.ts"
   ],
