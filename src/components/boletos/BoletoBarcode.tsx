@@ -1,144 +1,148 @@
-import { useMemo } from 'react';
-import { Barcode, Copy, Check } from 'lucide-react';
+/**
+ * Codigo de barras e linha digitavel DO PROVEDOR. Nao gera nada.
+ *
+ * A versao anterior fabricava os dois a partir de banco + valor + vencimento +
+ * numero, exibia como "Dados do Boleto (FEBRABAN)" com botao de copiar, e era
+ * renderizada ao lado da linha real do ASAAS (BoletoPreviewPanel.tsx:113). O
+ * resultado era um instrumento de pagamento falso que o PROPRIO parser do
+ * projeto rejeita (achado F10, P0, da auditoria de 2026-09-10):
+ *
+ * - `calcularFatorVencimento` fazia `padStart(4,'0')` sem truncar, e o fator de
+ *   vencimento FEBRABAN passou de 9999 em fev/2025: qualquer vencimento futuro
+ *   gerava 45 digitos. Medido: 2024-12-10 -> 44; 2025-02-21 -> 44;
+ *   2026-12-10 -> 45. `parseBoleto` responde
+ *   "Codigo invalido: esperado 44, 47 ou 48 digitos, recebido 45".
+ * - a linha digitavel saia com 44 digitos onde o padrao pede 47 (sem os DVs de
+ *   campo), entao `parseBoleto` a tratava como codigo de barras e reprovava no
+ *   digito verificador -- invalida em TODOS os casos, inclusive antes de 2025.
+ *
+ * Quem emite boleto aqui e o ASAAS (useBoletos.ts:120-124 exige provedor
+ * homologado e useBoletos.helpers.ts:24-33 aborta se o provedor nao devolver os
+ * campos). Entao a tela mostra o que o provedor devolveu, ou diz que nao tem --
+ * nunca um numero proprio com cara de FEBRABAN.
+ */
+import { useState } from 'react';
+import { Barcode, Copy, Check, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { useState } from 'react';
 
 interface BoletoBarcodeProps {
-  banco: string;
-  valor: number;
-  vencimento: string;
-  cedenteCnpj?: string;
-  numero: string;
+  /** `boletos.codigo_barras`, como o provedor devolveu. */
+  codigoBarras?: string | null;
+  /** `boletos.linha_digitavel`, como o provedor devolveu. */
+  linhaDigitavel?: string | null;
 }
 
-function gerarCodigoBarras(
-  banco: string,
-  valor: number,
-  vencimento: string,
-  numero: string
-): string {
-  // Simplified FEBRABAN barcode generation
-  const codigoBanco = banco.padStart(3, '0').substring(0, 3);
-  const moeda = '9'; // Real
-  const fatorVencimento = calcularFatorVencimento(vencimento);
-  const valorFormatado = Math.round(valor * 100)
-    .toString()
-    .padStart(10, '0');
-  const campoLivre = numero.replace(/\D/g, '').padStart(25, '0').substring(0, 25);
+/** Só dígitos, para medir o tamanho do que o provedor mandou. */
+const digitos = (v: string) => v.replace(/\D/g, '');
 
-  const semDV = codigoBanco + moeda + fatorVencimento + valorFormatado + campoLivre;
-  const dv = calcularDV(semDV);
-
-  return codigoBanco + moeda + dv + fatorVencimento + valorFormatado + campoLivre;
-}
-
-function calcularFatorVencimento(vencimento: string): string {
-  const base = new Date('1997-10-07');
-  const venc = new Date(vencimento);
-  const diff = Math.floor((venc.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(diff, 0).toString().padStart(4, '0');
-}
-
-function calcularDV(codigo: string): string {
-  const pesos = [2, 3, 4, 5, 6, 7, 8, 9];
-  let soma = 0;
-  const digits = codigo.split('').reverse();
-  for (let i = 0; i < digits.length; i++) {
-    soma += parseInt(digits[i]) * pesos[i % pesos.length];
-  }
-  const resto = soma % 11;
-  const dv = 11 - resto;
-  if (dv === 0 || dv === 10 || dv === 11) return '1';
-  return dv.toString();
-}
-
-function gerarLinhaDigitavel(codigoBarras: string): string {
-  if (codigoBarras.length < 44) return codigoBarras;
-  // Simplified conversion
-  const campo1 = codigoBarras.substring(0, 4) + codigoBarras.substring(19, 24);
-  const campo2 = codigoBarras.substring(24, 34);
-  const campo3 = codigoBarras.substring(34, 44);
-  const campo4 = codigoBarras.substring(4, 5);
-  const campo5 = codigoBarras.substring(5, 19);
-
-  return `${campo1.substring(0, 5)}.${campo1.substring(5)} ${campo2.substring(0, 5)}.${campo2.substring(5)} ${campo3.substring(0, 5)}.${campo3.substring(5)} ${campo4} ${campo5}`;
-}
-
-export function BoletoBarcode({ banco, valor, vencimento, numero }: BoletoBarcodeProps) {
+export function BoletoBarcode({ codigoBarras, linhaDigitavel }: BoletoBarcodeProps) {
   const [copied, setCopied] = useState<'barras' | 'linha' | null>(null);
 
-  const { codigoBarras, linhaDigitavel } = useMemo(() => {
-    const cb = gerarCodigoBarras(banco, valor, vencimento, numero);
-    const ld = gerarLinhaDigitavel(cb);
-    return { codigoBarras: cb, linhaDigitavel: ld };
-  }, [banco, valor, vencimento, numero]);
+  const cb = (codigoBarras ?? '').trim();
+  const ld = (linhaDigitavel ?? '').trim();
+  const temAlgum = cb.length > 0 || ld.length > 0;
 
   const handleCopy = async (text: string, type: 'barras' | 'linha') => {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(digitos(text));
     setCopied(type);
     toast.success('Copiado!');
     setTimeout(() => setCopied(null), 2000);
   };
 
+  if (!temAlgum) {
+    return (
+      <div className="space-y-2 p-4 rounded-lg border bg-muted/20">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-warning" />
+          <span className="text-sm font-semibold">Código de barras não disponível</span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          O provedor não devolveu código de barras nem linha digitável para este boleto. Nenhum
+          número é gerado aqui: um código próprio não é aceito pelo banco.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 p-4 rounded-lg border bg-muted/20">
       <div className="flex items-center gap-2">
         <Barcode className="h-4 w-4 text-primary" />
-        <span className="text-sm font-semibold">Dados do Boleto (FEBRABAN)</span>
+        <span className="text-sm font-semibold">Dados do boleto</span>
         <Badge variant="outline" className="text-xs">
-          Auto-gerado
+          Do provedor
         </Badge>
       </div>
 
       <div className="space-y-2">
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Código de Barras (44 dígitos)</p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">
-              {codigoBarras}
-            </code>
-            <Button size="icon" variant="ghost" onClick={() => handleCopy(codigoBarras, 'barras')}>
-              {copied === 'barras' ? (
-                <Check className="h-4 w-4 text-success" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
+        {cb ? (
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">
+              {`Código de barras (${digitos(cb).length} dígitos)`}
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">
+                {cb}
+              </code>
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label="Copiar código de barras"
+                onClick={() => handleCopy(cb, 'barras')}
+              >
+                {copied === 'barras' ? (
+                  <Check className="h-4 w-4 text-success" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
+        ) : null}
 
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Linha Digitável</p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">
-              {linhaDigitavel}
-            </code>
-            <Button size="icon" variant="ghost" onClick={() => handleCopy(linhaDigitavel, 'linha')}>
-              {copied === 'linha' ? (
-                <Check className="h-4 w-4 text-success" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
+        {ld ? (
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Linha digitável</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">
+                {ld}
+              </code>
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label="Copiar linha digitável"
+                onClick={() => handleCopy(ld, 'linha')}
+              >
+                {copied === 'linha' ? (
+                  <Check className="h-4 w-4 text-success" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
-      {/* Visual barcode representation */}
-      <div className="h-12 flex items-end gap-px overflow-hidden">
-        {codigoBarras.split('').map((digit, i) => (
-          <div
-            key={i}
-            className="bg-foreground"
-            style={{
-              width: parseInt(digit) % 2 === 0 ? '1px' : '2px',
-              height: `${30 + parseInt(digit) * 3}%`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Representação visual: desenhada a partir do código REAL, quando existe. */}
+      {cb ? (
+        <div className="h-12 flex items-end gap-px overflow-hidden" aria-hidden="true">
+          {digitos(cb)
+            .split('')
+            .map((digit, i) => (
+              <div
+                key={i}
+                className="bg-foreground"
+                style={{
+                  width: parseInt(digit) % 2 === 0 ? '1px' : '2px',
+                  height: `${30 + parseInt(digit) * 3}%`,
+                }}
+              />
+            ))}
+        </div>
+      ) : null}
     </div>
   );
 }
