@@ -192,25 +192,3 @@ export function analisarPadroesRejeicao(): {
 
   return { codigosFrequentes, horariosPico, tendencia };
 }
-
-// Inicializa com alguns alertas de demo
-export function inicializarAlertasDemo(): void {
-  const alertaDemo: AlertaRejeicao = {
-    id: 'ALERTA-DEMO-1',
-    tipo: 'aviso',
-    titulo: 'Atenção: 3 Rejeições Consecutivas',
-    mensagem:
-      'Foram detectadas rejeições consecutivas. Recomenda-se verificar os dados das notas fiscais antes de continuar.',
-    rejeicoesConsecutivas: 3,
-    ultimasRejeicoes: [],
-    dataDetectado: new Date(Date.now() - 30 * 60 * 1000),
-    lido: false,
-    acaoRecomendada:
-      'Revisar os dados das últimas notas rejeitadas e corrigir os erros antes de reenviar.',
-  };
-
-  alertasRejeicao.push(alertaDemo);
-}
-
-// Inicializa demo
-inicializarAlertasDemo();

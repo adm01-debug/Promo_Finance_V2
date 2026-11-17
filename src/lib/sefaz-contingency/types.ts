@@ -29,9 +29,19 @@ export interface PendingNFe {
 }
 
 export interface SefazHealthStatus {
-  online: boolean;
-  latency: number;
-  lastCheck: Date;
+  /**
+   * `null` = status desconhecido: ninguém consultou a SEFAZ.
+   *
+   * Enquanto a integração não estiver homologada, este é o único valor honesto —
+   * `true` afirmaria disponibilidade que não foi medida e `false` afirmaria uma
+   * queda que também não foi medida. `null` é falsy, então nenhum ternário
+   * existente inverte de sentido ao receber o terceiro estado.
+   */
+  online: boolean | null;
+  /** `null` quando não houve medição — 0ms seria latência fabricada. */
+  latency: number | null;
+  /** `null` quando nunca houve verificação. */
+  lastCheck: Date | null;
   consecutiveFailures: number;
   averageResponseTime: number;
 }

@@ -107,7 +107,11 @@ export function EventosHistorico() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Tempo Médio</p>
-                <p className="text-2xl font-bold">{stats.tempoMedioResposta}ms</p>
+                {/* Sem nenhum evento registrado, getEstatisticas devolve 0 e a tela
+                    anunciava "0ms de resposta da SEFAZ" — um tempo que ninguém mediu. */}
+                <p className="text-2xl font-bold">
+                  {stats.temposMedidos === 0 ? '—' : `${stats.tempoMedioResposta}ms`}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -235,8 +239,20 @@ export function EventosHistorico() {
               {filteredEventos.length === 0 && (
                 <div className="text-center py-12 text-muted-foreground">
                   <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum evento encontrado</p>
-                  <p className="text-sm">Ajuste os filtros ou emita uma NF-e</p>
+                  {eventos.length === 0 ? (
+                    <>
+                      <p>Nenhum evento registrado</p>
+                      <p className="text-sm">
+                        O histórico passa a ser preenchido quando a comunicação com a SEFAZ for
+                        homologada e registrar eventos de verdade.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>Nenhum evento encontrado</p>
+                      <p className="text-sm">Ajuste os filtros</p>
+                    </>
+                  )}
                 </div>
               )}
             </div>
