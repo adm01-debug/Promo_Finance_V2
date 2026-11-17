@@ -334,3 +334,54 @@ PostgREST e cobertos pela lista de exceções do gate da #457. Duas entradas do 
 
 **Conclusão: não existe trabalho de agente, total ou parcial, fora da `main` — em branch ou em
 PR fechada.**
+
+### 6.6 O que o containment NÃO prova, e os dois testes que fecham o buraco
+
+O teste da seção 6.1 olha só linhas **adicionadas**, com no mínimo 20 caracteres, e não confere
+ordem nem contexto. Ele **não** cobre o caso de uma PR cujo valor era *remover* algo: a remoção
+poderia não estar na `main` e o teste passaria. Apontado pelo Devin na #462. Dois testes
+adicionais fecham isso.
+
+#### Teste simétrico — as remoções de cada PR foram aplicadas?
+
+Mesmo método, invertido: cada linha que a PR **apagou** é procurada no arquivo da `main` de hoje.
+Se ainda está lá, a remoção não foi aplicada.
+
+```
+TOTAL removidas=7097   ainda presentes na main=4968
+```
+
+Número alto porque reescrita de bloco conta como remoção + adição, e porque a busca é por
+string em qualquer posição do arquivo. O que importa é o **invariante de cada PR**, e as duas em
+que isso era segurança foram verificadas uma a uma:
+
+| PR | invariante | onde está na `main` |
+|---|---|---|
+| #64 | `exigirPapel()` tem de respeitar `is_active` em `user_roles` | `supabase/functions/_shared/auth-guard.ts` filtra `.eq('is_active', true)` em **:195, :462 e :520**, com o porquê de não usar `has_role` documentado em **:455** — e há teste de regressão em `auth-guard_test.ts:57` (`searchParams.get('is_active') === 'eq.true'`) |
+| #112 | link de pagamento Asaas amarrado à empresa, sem vazamento cross-tenant | `supabase/functions/asaas-proxy/index.ts:222` define `empresaDoLinkPagamento()` + `exigirEmpresaDoRecurso()`; o insert grava `empresa_id` (**:887**) e a listagem monta `empresaPorLink` para filtrar (**:921**) |
+
+#### Replay real das migrations — prova direta de que os guards da #65 não faltam
+
+Das 34 PRs, 61 arquivos "em risco" eram migrations **já existentes** que a #65 modificou para
+acrescentar guards do tipo
+`ALTER TABLE ... ADD COLUMN IF NOT EXISTS empresa_id` com o comentário
+`-- Guard: table may already exist on preview branch without empresa_id column`. A `main` ficou
+com os arquivos originais. Esses guards existiam para o replay numa preview branch parcialmente
+migrada.
+
+Rodei o harness da #433 (`scripts/db/replay-migrations.sh`) num Postgres 16 local, do zero,
+sobre a árvore da `main` — **sem** os guards:
+
+```
+aplicados=1045  falharam=0  total=1045
+```
+
+Replay completo, zero falha. Os guards da #65 são comprovadamente dispensáveis, e as colunas que
+eles protegiam existem em produção (ex.: `bitrix_sync_logs.empresa_id`).
+
+**Escopo exato da conclusão:** para as 34 PRs de agente fechadas sem merge, nenhum arquivo
+criado por elas está ausente da `main` (as 3 exceções estão explicadas em 6.2); as remoções e
+reescritas foram conferidas pelo invariante de cada PR onde havia risco de segurança; e o replay
+do histórico completo passa 1045/1045. Não houve inspeção manual linha a linha das 19.906 linhas
+adicionadas nem das 7.097 removidas — o que foi feito está descrito acima, e é o que sustenta a
+conclusão.
