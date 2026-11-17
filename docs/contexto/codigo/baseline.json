@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "512c1e735322bc27154996beedcc3f2897a84098",
+  "commit": "a45b5d8458594b5e95d02d13cd0887604e47ac69",
   "branch": "main",
-  "data_commit": "2026-11-17T14:27:01-03:00",
+  "data_commit": "2026-11-17T15:31:21-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a45b5d8",
+    "data": "2026-11-17",
+    "assunto": "fix(ci): destrava o bun audit do advisory novo do picomatch (#434)"
+   },
    {
     "sha": "512c1e7",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "9224222",
     "data": "2026-11-17",
     "assunto": "chore: declara o Node que o projeto ja exige (>=22.12) (#411)"
-   },
-   {
-    "sha": "f62e08e",
-    "data": "2026-11-17",
-    "assunto": "feat(webhooks): botao de reprocessar na fila de falhas (#410)"
    }
   ],
-  "arquivos_mudados_7d": 910,
+  "arquivos_mudados_7d": 908,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -145,27 +145,27 @@
    },
    {
     "pasta": "src/components/contas-receber",
-    "mudancas": 32
+    "mudancas": 30
    },
    {
     "pasta": "src/components/nfe",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "pasta": "src/components/reforma-tributaria",
     "mudancas": 28
    },
    {
-    "pasta": "package.json",
-    "mudancas": 27
-   },
-   {
     "pasta": "supabase/functions/_shared",
     "mudancas": 27
    },
    {
+    "pasta": "package.json",
+    "mudancas": 26
+   },
+   {
     "pasta": "bun.lock",
-    "mudancas": 25
+    "mudancas": 24
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -188,12 +188,12 @@
     "mudancas": 16
    },
    {
-    "pasta": "src/components/layout",
-    "mudancas": 14
-   },
-   {
     "pasta": ".github/workflows/ci.yml",
     "mudancas": 13
+   },
+   {
+    "pasta": "src/components/dashboard",
+    "mudancas": 12
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 26
+    "mudancas": 27
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -301,15 +301,15 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 186
+    "commits": 187
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 18
+    "commits": 17
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 11
+    "commits": 10
    },
    {
     "autor": "Joaquim Ataides",

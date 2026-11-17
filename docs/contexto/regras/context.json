@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "512c1e735322bc27154996beedcc3f2897a84098",
+  "sha": "a45b5d8458594b5e95d02d13cd0887604e47ac69",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 17:28 UTC",
+  "generated_at": "2026-11-17 18:31 UTC",
   "files_total": 3953,
   "code_files": 3574,
   "code_lines": 508943
@@ -247500,10 +247500,19 @@
   }
  },
  "git": {
-  "sha": "512c1e735322bc27154996beedcc3f2897a84098",
+  "sha": "a45b5d8458594b5e95d02d13cd0887604e47ac69",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "a45b5d8",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(ci): destrava o bun audit do advisory novo do picomatch (#434)",
+    "files": [
+     ".github/workflows/ci.yml"
+    ]
+   },
    {
     "sha": "512c1e7",
     "date": "2026-11-17",
@@ -247904,26 +247913,16 @@
      "src/components/contas-receber/WebhookDlqPanel.tsx",
      "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx"
     ]
-   },
-   {
-    "sha": "915784c",
-    "date": "2026-11-17",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    4
+    3
    ],
    [
     "bun.lock",
-    3
+    2
    ],
    [
     "src/components/nfe/AlertasRejeicao.tsx",
@@ -247974,6 +247973,10 @@
     2
    ],
    [
+    ".github/workflows/ci.yml",
+    1
+   ],
+   [
     ".github/workflows/functions-deploy.yml",
     1
    ],
@@ -247991,10 +247994,6 @@
    ],
    [
     "supabase/functions/monitor-health/index.test.ts",
-    1
-   ],
-   [
-    "supabase/functions/monitor-health/index.ts",
     1
    ]
   ]

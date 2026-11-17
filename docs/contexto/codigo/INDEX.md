@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `512c1e735322bc27154996beedcc3f2897a84098` (2026-11-17T14:27:01-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a45b5d8458594b5e95d02d13cd0887604e47ac69` (2026-11-17T15:31:21-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -463,7 +463,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (39)
 - bun.lock (34)
-- .github/workflows/ci.yml (26)
+- .github/workflows/ci.yml (27)
 - supabase/functions/asaas-proxy/index.ts (17)
 - .github/workflows/deno-tests.yml (13)
 - env.manifest.json (13)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `a45b5d8` fix(ci): destrava o bun audit do advisory novo do picomatch (#434)
 - 2026-11-17 `512c1e7` chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)
 - 2026-11-17 `8c70124` infra: monitor-health entra na lista de funcoes implantaveis (#426)
 - 2026-11-17 `6c4a75c` chore: remove 3 TODOs de rename ja concluidos no banco (#432)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `e0aba34` fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)
 - 2026-11-17 `9fe3277` fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)
 - 2026-11-17 `e4c5fa9` infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)
-- 2026-11-17 `2627e95` fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
