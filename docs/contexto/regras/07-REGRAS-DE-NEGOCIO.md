@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a8d124b09b` · branch `main` · 2026-11-17 07:39 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `685b65c525` · branch `main` · 2026-11-17 07:57 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5091,7 +5091,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3530 testes em 306 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3535 testes em 307 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5320,6 +5320,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx` | 5 | useFluxoCaixaKPIs · filtra as três consultas pela empresa selecionada · a previsão de 30 dias ignora vencimento fora da janela · título vencido fora da janela não entra na previsão de 30 dias … |
 | `src/hooks/__tests__/useGlobalFilterSync.test.ts` | 5 | useGlobalFilterSync · deve registrar o listener de evento ao montar · deve disparar toast quando o evento current-empresa-changed ocorre · não deve disparar se o detalhe do evento estiver vazio … |
 | `src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx` | 5 | useSugestoesContaPagar — formato do payload · devolve a lista quando o proxy responde o formato esperado · devolve lista vazia — não um objeto — quando o proxy responde fora do formato · trata null como ausência de candidatas, sem alarde … |
+| `src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx` | 5 | persistirOportunidades — substituição sem transação · insere a nova leva antes de apagar a anterior, e apaga só os ids lidos · o delete revalida o status: oportunidade aprovada no meio do caminho nao e apagada · insert que falha não apaga o histórico anterior e propaga o erro … |
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |
 | `src/lib/__tests__/conciliacao-e2e.test.ts` | 5 | E2E: Conciliação Bancária - Matching e Divergências · deve encontrar match de alta confiança com valor exato e data próxima · deve permitir match com pequena divergência de centavos · deve separar corretamente transações de crédito e débito para diferentes tipos de lançamento … |
 | `src/lib/__tests__/secure-random.test.ts` | 5 | secureRandomInt · returns integers inside [min, max) · handles a single-element range and rejects inverted bounds · rejects ranges wider than the 32-bit source instead of looping … |
@@ -5394,8 +5395,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/reforma-tributaria-types.regression.test.ts` | 2 | types/reforma-tributaria — regressão de API pública · preserva constantes e catálogos exportados |
 | `src/lib/__tests__/relatorio-pdf.regression.test.ts` | 2 | relatorio-pdf — regressão de API pública · preserva exports históricos |
 | `src/lib/__tests__/sefaz-simulator.regression.test.ts` | 2 | sefaz-simulator — regressão de API pública · preserva exports históricos |
-| `src/lib/__tests__/transaction-matcher.regression.test.ts` | 2 | transaction-matcher — regressão de API pública · expõe símbolos históricos após modularização |
-| … +6 linhas — lista completa em `context.json` | | |
+| … +7 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5861,6 +5861,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Limite padrão de conexões simultâneas contra o backend. */ | `src/hooks/useLancamentosContabeis.ts` |
 | `limiter.limit()` deles executam simultaneamente. Cada lançamento | `src/hooks/useLancamentosContabeis.ts` |
 | - limit 1, mais recente | `src/hooks/useLastSsoProfileSync.ts` |
+| (seletor do HistoricoTab -> atualizarStatus), e apagar por id apenas | `src/hooks/useOportunidadesElisao.ts` |
 | , nota:notas_fiscais_ocr(*), regra:elisao_regras_creditos(*)') | `src/hooks/useOportunidadesElisao.ts` |
 | Auto-validação de consistência | `src/hooks/useOportunidadesElisao.ts` |
 | leitura/escrita e aplicamos as guardas de negócio do motor puro | `src/hooks/useOrganizacoes.ts` |
@@ -5977,5 +5978,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
 | 2) o valor nao pode ja ter virgula -- se tem, os centavos estao la; | `src/lib/ofx-parser/csv.ts` |
-| Coluna a mais que o cabecalho tem origem AMBIGUA e nao ha regra que a | `src/lib/ofx-parser/csv.ts` |
-| … +413 linhas — lista completa em `context.json` | |
+| … +414 linhas — lista completa em `context.json` | |

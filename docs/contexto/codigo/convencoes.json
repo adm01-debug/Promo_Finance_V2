@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (275)",
+   "co-localizado (__tests__) (276)",
    "outro (108)",
    "co-localizado (*.test) (43)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)",
    "fix(contas a pagar): KPIs deixam de parar nas primeiras 1.000 contas (#417)",
    "fix(conciliação): CSV com coluna a mais deixa de perder centavos em silêncio — fecha o achado F01 (#413)",
    "fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)",
-   "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)",
-   "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)"
+   "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 466,
+ "total": 467,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 390
+  "unit": 391
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 275
+   "arquivos": 276
   },
   {
    "padrao": "outro",
@@ -1614,6 +1614,15 @@
    "linhas": 73,
    "testa": [
     "src/hooks/useNfeVinculo.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx",
+   "tipo": "unit",
+   "linhas": 145,
+   "testa": [
+    "src/hooks/useOportunidadesElisao.ts"
    ],
    "casos": 4
   },
@@ -4275,6 +4284,7 @@
   "src/hooks/useKeyboardShortcuts.ts": 1,
   "src/hooks/useLancamentosContabeis.ts": 1,
   "src/hooks/useNfeVinculo.ts": 1,
+  "src/hooks/useOportunidadesElisao.ts": 1,
   "src/hooks/useOrganizacoes.ts": 1,
   "src/hooks/usePerDcomp.ts": 1,
   "src/hooks/usePixTemplates.ts": 1,
@@ -4780,7 +4790,6 @@
    "src/hooks/useOnboardingProgress.ts",
    "src/hooks/useOpenFinance.ts",
    "src/hooks/useOperacoesTributaveis.ts",
-   "src/hooks/useOportunidadesElisao.ts",
    "src/hooks/useOptimizedQueries.ts",
    "src/hooks/useOverlayRejeicoesAuditoria.ts",
    "src/hooks/usePagamentosRecorrentes.ts",

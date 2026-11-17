@@ -4877,7 +4877,7 @@
    "hooks_exportados": [
     "useOportunidadesElisao"
    ],
-   "linhas": 318,
+   "linhas": 339,
    "dominio": "hooks",
    "tabelas": [
     "elisao_alertas",
@@ -4906,7 +4906,7 @@
     "src/pages/tributario/OportunidadesElisao.tsx",
     "src/pages/tributario/SimulacaoRegimes.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useOptimizedQueries.ts",

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "a8d124b09bd13a67e0e1a93fe6b987e069523adc",
+  "commit": "685b65c525748455e9acfcf5f3233a2b0e08083c",
   "branch": "main",
-  "data_commit": "2026-11-17T04:39:12-03:00",
+  "data_commit": "2026-11-17T04:57:06-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "685b65c",
+    "data": "2026-11-17",
+    "assunto": "fix(elisão): salvar oportunidades deixa de poder zerar o histórico da empresa (#416)"
+   },
    {
     "sha": "a8d124b",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "3ea2086",
     "data": "2026-11-16",
     "assunto": "fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)"
-   },
-   {
-    "sha": "8f1767c",
-    "data": "2026-11-16",
-    "assunto": "feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)"
    }
   ],
-  "arquivos_mudados_7d": 842,
+  "arquivos_mudados_7d": 843,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -173,7 +173,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 17
+    "mudancas": 18
    },
    {
     "pasta": "src/lib/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 170
+    "commits": 171
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3897,
-  "arquivos_codigo": 2459,
-  "linhas_codigo": 438238,
+  "arquivos_total": 3898,
+  "arquivos_codigo": 2460,
+  "linhas_codigo": 438404,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 466,
+  "testes": 467,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -647,8 +647,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 318,
-   "linhas": 46379
+   "arquivos": 319,
+   "linhas": 46545
   },
   "src/i18n.ts": {
    "arquivos": 1,
