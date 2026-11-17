@@ -10,7 +10,7 @@ Sistema financeiro corporativo multi-empresa: Contas a Pagar, Contas a Receber, 
 
 ## Como rodar localmente
 
-Pré-requisito: Node.js ≥ 18.18 (ou Bun ≥ 1.1, usado no CI).
+Pré-requisito: Node.js ≥ 22.12 (ou Bun ≥ 1.1, usado no CI). É o que a CI usa (`NODE_VERSION: 22`) e o que as dependências instaladas já exigem — `vite@8` e `@sentry/react@11` pedem `^20.19.0 || >=22.12.0`.
 
 ```sh
 # 1. Clone e entre no diretório
