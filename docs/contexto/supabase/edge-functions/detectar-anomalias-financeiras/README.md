@@ -4,9 +4,9 @@
 |---|---|
 | nome | detectar-anomalias-financeiras |
 | status | ACTIVE |
-| versão | 86 |
+| versão | 87 |
 | verify_jwt | sim |
-| entrypoint | file:///app/supabase/functions/detectar-anomalias-financeiras/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/detectar-anomalias-financeiras/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/detectar-anomalias-financeiras |
 | fonte no repo | `supabase/functions/detectar-anomalias-financeiras/` |

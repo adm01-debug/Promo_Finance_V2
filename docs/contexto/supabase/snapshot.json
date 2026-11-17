@@ -381,15 +381,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/asaas-webhook/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/asaas-webhook/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "asaas-webhook",
         "slug": "asaas-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794916352260,
         "verify_jwt": false,
-        "version": 89
+        "version": 90
       },
       {
         "created_at": 1787655368587,
@@ -441,15 +441,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/bling-webhook/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bling-webhook/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "bling-webhook",
         "slug": "bling-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794918107394,
         "verify_jwt": false,
-        "version": 84
+        "version": 85
       },
       {
         "created_at": 1787655368587,
@@ -501,15 +501,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/ci-security-gate-log/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/ci-security-gate-log/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "ci-security-gate-log",
         "slug": "ci-security-gate-log",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914985034,
         "verify_jwt": false,
-        "version": 85
+        "version": 86
       },
       {
         "created_at": 1787655368587,
@@ -525,15 +525,15 @@
       },
       {
         "created_at": 1785349017739,
-        "entrypoint_path": "file:///app/supabase/functions/comparar-benchmark-setorial/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/comparar-benchmark-setorial/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "comparar-benchmark-setorial",
         "slug": "comparar-benchmark-setorial",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914423093,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -549,27 +549,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/conciliacao-ia/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/conciliacao-ia/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "conciliacao-ia",
         "slug": "conciliacao-ia",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917965933,
         "verify_jwt": true,
-        "version": 85
+        "version": 86
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/conciliacao-proxy/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/conciliacao-proxy/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "conciliacao-proxy",
         "slug": "conciliacao-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794916763601,
         "verify_jwt": true,
-        "version": 87
+        "version": 88
       },
       {
         "created_at": 1787655368587,
@@ -585,15 +585,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/contabilizar-evento/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/contabilizar-evento/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "contabilizar-evento",
         "slug": "contabilizar-evento",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917561595,
         "verify_jwt": true,
-        "version": 88
+        "version": 89
       },
       {
         "created_at": 1787655368587,
@@ -621,15 +621,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/copilot-global/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/copilot-global/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "copilot-global",
         "slug": "copilot-global",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794915137261,
         "verify_jwt": true,
-        "version": 84
+        "version": 85
       },
       {
         "created_at": 1787655368587,
@@ -657,15 +657,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/detectar-anomalias-financeiras/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/detectar-anomalias-financeiras/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "detectar-anomalias-financeiras",
         "slug": "detectar-anomalias-financeiras",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917832556,
         "verify_jwt": true,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1787655368587,
@@ -753,27 +753,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/executar-fechamento-tributario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/executar-fechamento-tributario/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "executar-fechamento-tributario",
         "slug": "executar-fechamento-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917705186,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787410714411,
-        "entrypoint_path": "file:///app/supabase/functions/executar-regua-cobranca/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/executar-regua-cobranca/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "executar-regua-cobranca",
         "slug": "executar-regua-cobranca",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794916481028,
         "verify_jwt": false,
-        "version": 88
+        "version": 89
       },
       {
         "created_at": 1787655368587,
@@ -861,39 +861,39 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-alertas-tributarios/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-alertas-tributarios/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-alertas-tributarios",
         "slug": "gerar-alertas-tributarios",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914676545,
         "verify_jwt": false,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1785349068086,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-dre-tributaria/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-dre-tributaria/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-dre-tributaria",
         "slug": "gerar-dre-tributaria",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914225372,
         "verify_jwt": false,
-        "version": 89
+        "version": 90
       },
       {
         "created_at": 1785349108621,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-heatmap-tributario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-heatmap-tributario/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-heatmap-tributario",
         "slug": "gerar-heatmap-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914334416,
         "verify_jwt": false,
-        "version": 91
+        "version": 92
       },
       {
         "created_at": 1787655368587,
@@ -945,15 +945,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-resumo-financeiro-diario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-resumo-financeiro-diario/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-resumo-financeiro-diario",
         "slug": "gerar-resumo-financeiro-diario",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914533993,
         "verify_jwt": true,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
@@ -969,27 +969,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-sped-ecd/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-sped-ecd/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-sped-ecd",
         "slug": "gerar-sped-ecd",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917194205,
         "verify_jwt": true,
-        "version": 85
+        "version": 86
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/gerar-sped-ecf/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-sped-ecf/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-sped-ecf",
         "slug": "gerar-sped-ecf",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917384778,
         "verify_jwt": true,
-        "version": 82
+        "version": 83
       },
       {
         "created_at": 1787655368587,
@@ -1053,15 +1053,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/mcp-query/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/mcp-query/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "mcp-query",
         "slug": "mcp-query",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794914832207,
         "verify_jwt": false,
-        "version": 86
+        "version": 87
       },
       {
         "created_at": 1794586833536,
@@ -1125,15 +1125,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/nfe-vinculo-proxy/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/nfe-vinculo-proxy/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "nfe-vinculo-proxy",
         "slug": "nfe-vinculo-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794917047085,
         "verify_jwt": true,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
@@ -1197,15 +1197,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/processar-fila-cobrancas/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/processar-fila-cobrancas/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "processar-fila-cobrancas",
         "slug": "processar-fila-cobrancas",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794916624376,
         "verify_jwt": true,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,
@@ -1293,15 +1293,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///app/supabase/functions/sefaz-manifestar/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-manifestar/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sefaz-manifestar",
         "slug": "sefaz-manifestar",
         "status": "ACTIVE",
-        "updated_at": 1794913206549,
+        "updated_at": 1794916914742,
         "verify_jwt": true,
-        "version": 83
+        "version": 84
       },
       {
         "created_at": 1787655368587,

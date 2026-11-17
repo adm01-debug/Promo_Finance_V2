@@ -4,9 +4,9 @@
 |---|---|
 | nome | ci-security-gate-log |
 | status | ACTIVE |
-| versão | 85 |
+| versão | 86 |
 | verify_jwt | não |
-| entrypoint | file:///app/supabase/functions/ci-security-gate-log/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/ci-security-gate-log/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/ci-security-gate-log |
 | fonte no repo | `supabase/functions/ci-security-gate-log/` |
