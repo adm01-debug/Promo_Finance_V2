@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1044,
+ "migrations": 1045,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -15845,7 +15845,7 @@
     },
     {
      "nome": "idx_contas_pagar_prevent_duplicates",
-     "colunas": "fornecedor_id, valor, data_vencimento, numero_documento",
+     "colunas": "empresa_id, fornecedor_id, valor, data_vencimento, numero_documento",
      "unico": true
     },
     {
@@ -16581,7 +16581,7 @@
     },
     {
      "nome": "idx_contas_receber_prevent_duplicates",
-     "colunas": "cliente_id, valor, data_vencimento, numero_documento",
+     "colunas": "empresa_id, cliente_id, valor, data_vencimento, numero_documento",
      "unico": true
     },
     {

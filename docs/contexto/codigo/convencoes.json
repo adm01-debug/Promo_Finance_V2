@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)",
    "fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)",
    "feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)",
    "docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)",
-   "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)",
-   "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)"
+   "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ec4122e05b616d7bf15c0d6a2c4792e721320064",
+  "commit": "ed338a2dd5be7973fcf7098f1e68ef4254a1cb80",
   "branch": "main",
-  "data_commit": "2026-11-17T18:39:10-03:00",
+  "data_commit": "2026-11-17T18:56:57-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ed338a2",
+    "data": "2026-11-17",
+    "assunto": "fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)"
+   },
    {
     "sha": "ec4122e",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "512c1e7",
     "data": "2026-11-17",
     "assunto": "chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)"
-   },
-   {
-    "sha": "8c70124",
-    "data": "2026-11-17",
-    "assunto": "infra: monitor-health entra na lista de funcoes implantaveis (#426)"
    }
   ],
-  "arquivos_mudados_7d": 924,
+  "arquivos_mudados_7d": 925,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 208
+    "commits": 209
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3934,
+  "arquivos_total": 3935,
   "arquivos_codigo": 2474,
   "linhas_codigo": 440624,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1044,
+  "migrations": 1045,
   "cron_jobs": 22,
   "testes": 478,
   "workflows": 19,
