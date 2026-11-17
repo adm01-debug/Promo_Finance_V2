@@ -161,9 +161,14 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
       }
 
       if (idsAnteriores.length > 0) {
+        // O status volta a ser revalidado no delete: entre a leitura dos ids e
+        // esta chamada outra pessoa pode ter aprovado uma das oportunidades
+        // (seletor do HistoricoTab -> atualizarStatus), e apagar por id apenas
+        // levaria embora um registro que já saiu de "identificada".
         const { error } = await supabase
           .from('oportunidades_elisao')
           .delete()
+          .eq('status', 'identificada')
           .in('id', idsAnteriores);
         if (error) throw error;
       }

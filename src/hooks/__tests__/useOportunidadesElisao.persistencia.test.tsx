@@ -13,7 +13,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 type Resultado = { data: unknown; error: unknown };
-type Chamada = { metodo: string; args: unknown[] };
+type Chamada = { metodo: string; args: unknown[]; contexto: string };
 
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }));
 
@@ -57,8 +57,10 @@ function criarChain(tabela: string) {
   for (const m of ['select', 'insert', 'delete', 'update', 'eq', 'in', 'order', 'limit']) {
     chain[m] = vi.fn((...args: unknown[]) => {
       if (['select', 'insert', 'delete'].includes(m)) metodo = m;
-      if (tabela === 'oportunidades_elisao' && ['insert', 'delete', 'in'].includes(m)) {
-        chamadas.push({ metodo: m, args });
+      if (tabela === 'oportunidades_elisao' && ['insert', 'delete', 'in', 'eq'].includes(m)) {
+        // `contexto` guarda a operação da cadeia no momento da chamada, para
+        // separar os filtros do select dos filtros do delete.
+        chamadas.push({ metodo: m, args, contexto: metodo });
       }
       return chain;
     });
@@ -100,11 +102,25 @@ describe('persistirOportunidades — substituição sem transação', () => {
     const { result } = montar();
     await result.current.persistirOportunidades.mutateAsync();
 
-    const sequencia = chamadas.filter((c) => c.metodo !== 'in').map((c) => c.metodo);
+    const sequencia = chamadas
+      .filter((c) => c.metodo === 'insert' || c.metodo === 'delete')
+      .map((c) => c.metodo);
     expect(sequencia).toEqual(['insert', 'delete']);
 
     const filtro = chamadas.find((c) => c.metodo === 'in');
     expect(filtro?.args).toEqual(['id', ['antiga-1', 'antiga-2']]);
+  });
+
+  it('o delete revalida o status: oportunidade aprovada no meio do caminho nao e apagada', async () => {
+    const { result } = montar();
+    await result.current.persistirOportunidades.mutateAsync();
+
+    // Devin/Codex na PR #416: apagar so por id levaria embora uma oportunidade
+    // que outra sessao aprovou entre a leitura dos ids e o delete.
+    const filtrosDoDelete = chamadas
+      .filter((c) => c.contexto === 'delete' && c.metodo === 'eq')
+      .map((c) => c.args);
+    expect(filtrosDoDelete).toEqual([['status', 'identificada']]);
   });
 
   it('insert que falha não apaga o histórico anterior e propaga o erro', async () => {
