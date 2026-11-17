@@ -50,6 +50,10 @@ fi
 
 if [ ! -d "$DATA/base" ]; then
   rm -rf "$DATA" "$SOCK"; mkdir -p "$DATA" "$SOCK"
+  # 0700: o socket aceita conexão como superusuário sem senha (--auth=trust),
+  # então só o dono pode alcançá-lo. Sem isso, qualquer conta local do host
+  # conectaria como postgres neste banco.
+  chmod 700 "$DATA" "$SOCK"
   chown "$RUNAS:$RUNAS" "$DATA" "$SOCK" 2>/dev/null || true
   as_pg "$PGBIN/initdb -D $DATA -U postgres --auth=trust" >/dev/null || exit 1
   # pg_stat_statements é exigido por migrations de telemetria
