@@ -270,7 +270,11 @@ async function syncDeals(
 
       for (const deal of deals) {
         try {
-          // Map Bitrix deal to conta_receber
+          // Map Bitrix deal to conta_receber.
+          // empresa_id e created_by ficam FORA deste payload: eles entram so no
+          // insert. Com empresaId variando por usuario, manda-los no update
+          // transferiria a conta ja importada para a empresa de quem rodou o
+          // sync — um usuario so da empresa B reassinaria os recebiveis da A.
           const contaData = {
             bitrix_deal_id: String(deal.ID),
             descricao: deal.TITLE || `Deal #${deal.ID}`,
@@ -279,16 +283,17 @@ async function syncDeals(
               ? deal.CLOSEDATE.split('T')[0]
               : new Date().toISOString().split('T')[0],
             cliente_nome: `Bitrix Deal #${deal.ID}`,
-            empresa_id: empresaId,
-            created_by: userId,
           };
 
-          // Check if already exists
+          // A busca tambem e escopada por empresa: o cliente usa service_role e
+          // ignora RLS, entao sem o .eq('empresa_id') ela acharia o deal de
+          // qualquer empresa e o update cruzaria o isolamento.
           const { data: existing } = await supabase
             .from('contas_receber')
             .select('id')
             .eq('bitrix_deal_id', String(deal.ID))
-            .single();
+            .eq('empresa_id', empresaId)
+            .maybeSingle();
 
           if (existing) {
             // Update
@@ -298,7 +303,12 @@ async function syncDeals(
             await supabase.from('contas_receber').update(contaData).eq('id', existing.id);
           } else {
             // Insert
-            await supabase.from('contas_receber').insert({ ...contaData, status: 'pendente' });
+            await supabase.from('contas_receber').insert({
+              ...contaData,
+              empresa_id: empresaId,
+              created_by: userId,
+              status: 'pendente',
+            });
           }
 
           processed++;
@@ -422,11 +432,14 @@ async function syncContacts(
             endereco: contact.ADDRESS,
           };
 
+          // escopado por empresa: service_role ignora RLS, e sem isto o
+          // sync de uma empresa atualizaria o cliente de outra
           const { data: existing } = await supabase
             .from('clientes')
             .select('id')
             .eq('bitrix_contact_id', String(contact.ID))
-            .single();
+            .eq('empresa_id', empresaId)
+            .maybeSingle();
 
           if (existing) {
             // update sem empresa_id/user_id: preserva o vinculo que o registro
@@ -547,11 +560,14 @@ async function syncCompanies(
             endereco: company.ADDRESS,
           };
 
+          // escopado por empresa: service_role ignora RLS, e sem isto o
+          // sync de uma empresa atualizaria o cliente de outra
           const { data: existing } = await supabase
             .from('clientes')
             .select('id')
             .eq('bitrix_company_id', String(company.ID))
-            .single();
+            .eq('empresa_id', empresaId)
+            .maybeSingle();
 
           if (existing) {
             // update sem empresa_id/user_id: preserva o vinculo existente
