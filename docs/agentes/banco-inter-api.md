@@ -109,9 +109,29 @@ obrigatórios, `filtrarDataPor` (`VENCIMENTO`|`EMISSAO`|`PAGAMENTO`), `situacao`
 3. **Edge function `inter-cobranca-emitir`**: `validatePayload` com Zod (gate do CI),
    `verify_jwt` ligado, token em cache de 1h, `Deno.createHttpClient` com o certificado,
    grava a linha e devolve `codigoSolicitacao`.
-4. **Edge function `inter-cobranca-webhook`**: `verify_jwt` **desligado** com justificativa
-   em comentário (o Inter chama sem JWT), valida o array com Zod, idempotente por
-   `codigoSolicitacao` + `dataHoraSituacao`, e em `RECEBIDO` baixa a `contas_receber`.
+4. **Edge function `inter-cobranca-webhook`**: `verify_jwt` **desligado** (o Inter chama sem
+   JWT) — e por isso precisa de **guarda própria**, como manda `SECURITY_RULES.md:58-66`.
+   Zod valida formato, não origem.
+
+   A doc do Inter **não prevê HMAC nem header de assinatura** no callback: o único
+   parâmetro do cadastro é `webhookUrl` e o Inter não envia header customizado (conferido
+   na seção "Validar webhook" da referência). Logo o padrão do Asaas (`asaas-access-token`
+   em header, `asaas-webhook/index.ts:40`) não se aplica aqui. A guarda tem de viajar
+   **na própria URL registrada**:
+
+   - secret `INTER_WEBHOOK_TOKEN` de alta entropia, gerado por nós, nunca em código;
+   - cadastro com `webhookUrl = https://<projeto>.supabase.co/functions/v1/inter-cobranca-webhook?t=<INTER_WEBHOOK_TOKEN>`;
+   - a função compara o `t` recebido com o secret em **tempo constante** e devolve 401 sem
+     corpo quando não casa — antes de ler payload, antes de qualquer escrita;
+   - rate limit defensivo, como o `asaas-webhook/index.ts:74`, em defesa em profundidade;
+   - idempotência por `codigoSolicitacao` + `dataHoraSituacao`, para as 4 reentregas do
+     Inter não baixarem a mesma conta duas vezes;
+   - só então, em `RECEBIDO`, baixa a `contas_receber`.
+
+   Antes do merge, a função entra na tabela de `verify_jwt = false` documentadas do
+   `SECURITY_RULES.md`, com a justificativa "validação por token na URL registrada no
+   Inter (a API não assina o callback)". Sem essa guarda seria endpoint público capaz de
+   dar baixa em conta a receber — não vai assim.
 5. **UI**: botão "Emitir boleto" na conta a receber + coluna com a situação e o
    `linhaDigitavel`/`pixCopiaECola` para copiar.
 
