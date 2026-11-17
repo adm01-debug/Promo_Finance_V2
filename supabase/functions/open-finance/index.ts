@@ -67,6 +67,13 @@ export function acaoExigeProvedorHomologado(action: string): boolean {
   return ACOES_SEM_PROVEDOR.has(action);
 }
 
+export function respostaSemProvedor(corsHeaders: Record<string, string>): Response {
+  return new Response(JSON.stringify({ success: false, error: MENSAGEM_SEM_PROVEDOR }), {
+    status: 503,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
 serve(
   withEdgeObservability('open-finance', async (req) => {
     const _t0 = Date.now();
@@ -123,11 +130,10 @@ serve(
         // invocação direta da função, não o clique na tela (o botão Importar só
         // aparece com consentimento `authorized`, status que nada grava).
         if (acaoExigeProvedorHomologado(action)) {
-          log.warn('[open-finance] acao recusada: integracao nao homologada', { action });
-          return new Response(JSON.stringify({ success: false, error: MENSAGEM_SEM_PROVEDOR }), {
-            status: 503,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          log.warn('[open-finance] acao recusada: integracao nao homologada', {
+            context: { action },
           });
+          return respostaSemProvedor(corsHeaders);
         }
 
         let result;

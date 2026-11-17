@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx-parser';
+import { parseExtratoBancario, ResultadoImportacao } from '@/lib/ofx-parser';
 import { ExtratoPreviewStep } from './ExtratoPreviewStep';
 import { toast } from 'sonner';
 import { validarMagicBytes } from '@/lib/magic-bytes';
@@ -45,76 +45,19 @@ export function ImportarExtratoDialog({
   };
 
   const handleOpenFinanceConnect = async () => {
-    setStep('open-finance-loading');
-    setProgress(10);
-
-    // Simulação de conexão Open Finance (Pluggy/Belvo flow)
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
-        }
-        return prev + 10;
-      });
-    }, 400);
-
-    try {
-      // Mock de dados retornados pelo Open Finance
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      const mockExtrato: ExtratoOFX = {
-        nomeArquivo: 'Open Finance Sync',
-        dataImportacao: new Date(),
-        formato: 'OPEN_FINANCE',
-        conta: {
-          agencia: '0001',
-          conta: '12345-6',
-          banco: 'Open Finance',
-          saldoFinal: 15420.5,
-          tipoConta: 'CORRENTE',
-          moeda: 'BRL',
-        },
-        transacoes: [
-          {
-            id: 'of1',
-            data: new Date(),
-            descricao: 'SYNC: RECEBIMENTO PIX CLIENTE A',
-            valor: 1250.0,
-            tipo: 'credito',
-          },
-          {
-            id: 'of2',
-            data: new Date(),
-            descricao: 'SYNC: PAGAMENTO FORNECEDOR B',
-            valor: -450.0,
-            tipo: 'debito',
-          },
-          {
-            id: 'of3',
-            data: new Date(),
-            descricao: 'SYNC: TARIFA BANCARIA',
-            valor: -12.5,
-            tipo: 'debito',
-          },
-        ],
-      };
-
-      setResultado({
-        sucesso: true,
-        extrato: mockExtrato,
-        avisos: ['Sincronizado via Open Finance'],
-      });
-      setSelectedTransacoes(new Set(mockExtrato.transacoes.map((t) => t.id)));
-      setStep('preview');
-      toast.success('Conexão Open Finance estabelecida', {
-        description: 'Transações sincronizadas com sucesso.',
-      });
-    } catch {
-      setStep('error');
-    } finally {
-      clearInterval(interval);
-    }
+    // Este caminho (Conciliação -> Importar Extrato -> Open Finance) fingia uma
+    // conexão de 3s e inventava três transações ('SYNC: RECEBIMENTO PIX CLIENTE
+    // A', 'SYNC: PAGAMENTO FORNECEDOR B', 'SYNC: TARIFA BANCARIA') mais um saldo
+    // final de R$ 15.420,50, já pré-selecionadas, anunciando "Transações
+    // sincronizadas com sucesso". Confirmar levava tudo isso para
+    // transacoes_bancarias via handleImportSuccess — extrato fabricado dentro da
+    // conciliação, pela tela, sem nem chamar a edge function (achado do Devin na
+    // PR #425). Não há provedor de Open Finance homologado: o botão fica
+    // desabilitado e isto aqui é a defesa de quem chamar de outro jeito.
+    toast.error('Open Finance não homologado', {
+      description:
+        'Nenhuma instituição está conectada de verdade. Importe o extrato pelo arquivo OFX, OFC ou CSV do banco.',
+    });
   };
 
   const processFile = useCallback(

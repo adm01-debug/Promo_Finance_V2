@@ -2,7 +2,11 @@ import {
   assertEquals,
   assertStringIncludes,
 } from 'https://deno.land/std@0.190.0/testing/asserts.ts';
-import { MENSAGEM_SEM_PROVEDOR, acaoExigeProvedorHomologado } from './index.ts';
+import {
+  MENSAGEM_SEM_PROVEDOR,
+  acaoExigeProvedorHomologado,
+  respostaSemProvedor,
+} from './index.ts';
 
 Deno.test('acoes que dependiam de dado fabricado sao recusadas', () => {
   for (const acao of [
@@ -28,4 +32,14 @@ Deno.test('listar instituicoes e revogar consentimento seguem permitidos', () =>
 Deno.test('a mensagem diz que nada foi lido nem importado', () => {
   assertStringIncludes(MENSAGEM_SEM_PROVEDOR, 'não homologado');
   assertStringIncludes(MENSAGEM_SEM_PROVEDOR, 'nenhuma transação foi importada');
+});
+
+Deno.test('a recusa responde 503 com o motivo no corpo', async () => {
+  const resposta = respostaSemProvedor({ 'Access-Control-Allow-Origin': '*' });
+  assertEquals(resposta.status, 503);
+  assertEquals(resposta.headers.get('Content-Type'), 'application/json');
+  assertEquals(resposta.headers.get('Access-Control-Allow-Origin'), '*');
+  const corpo = await resposta.json();
+  assertEquals(corpo.success, false);
+  assertEquals(corpo.error, MENSAGEM_SEM_PROVEDOR);
 });
