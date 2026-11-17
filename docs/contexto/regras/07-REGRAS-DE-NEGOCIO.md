@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `61d2a4b36d` · branch `main` · 2026-11-17 05:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2698b5b44e` · branch `main` · 2026-11-17 05:12 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2478,22 +2478,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   switch (unidade) { case 'percent': return `${valor.toFixed(1)}%`; case 'currency': return formatCurrency(valor); case 'days': return `${Math.round(valor)} dias`; case 'ratio': return valor.toFixed(2); }
   ```
-- **gerarCodigoBarras(banco: string, valor: number, vencimento: string, numero: string)** — `src/components/boletos/BoletoBarcode.tsx`
-  ```
-  // Simplified FEBRABAN barcode generation const codigoBanco = banco.padStart(3, '0').substring(0, 3); const moeda = '9'; // Real const fatorVencimento = calcularFatorVencimento(vencimento); const valorFormatado = Math.round(valor * 100) .toString() .padStart(10, '0'); const campoLivre = numero.replace(/\D/g, '').padStart(25, '0').substring(0, 25); const semDV = codigoBanco + moeda + fatorVencimento + valorFormatado + campoLivre; const dv = calcularDV(semDV); return codigoBanco + moeda + dv + fat …
-  ```
-- **calcularFatorVencimento(vencimento: string)** — `src/components/boletos/BoletoBarcode.tsx`
-  ```
-  const base = new Date('1997-10-07'); const venc = new Date(vencimento); const diff = Math.floor((venc.getTime() - base.getTime()) / (1000 * 60 * 60 * 24)); return Math.max(diff, 0).toString().padStart(4, '0');
-  ```
-- **calcularDV(codigo: string)** — `src/components/boletos/BoletoBarcode.tsx`
-  ```
-  const pesos = [2, 3, 4, 5, 6, 7, 8, 9]; let soma = 0; const digits = codigo.split('').reverse(); for (let i = 0; i < digits.length; i++) { soma += parseInt(digits[i]) * pesos[i % pesos.length]; } const resto = soma % 11; const dv = 11 - resto; if (dv === 0 || dv === 10 || dv === 11) return '1'; return dv.toString();
-  ```
-- **gerarLinhaDigitavel(codigoBarras: string)** — `src/components/boletos/BoletoBarcode.tsx`
-  ```
-  if (codigoBarras.length < 44) return codigoBarras; // Simplified conversion const campo1 = codigoBarras.substring(0, 4) + codigoBarras.substring(19, 24); const campo2 = codigoBarras.substring(24, 34); const campo3 = codigoBarras.substring(34, 44); const campo4 = codigoBarras.substring(4, 5); const campo5 = codigoBarras.substring(5, 19); return `${campo1.substring(0, 5)}.${campo1.substring(5)} ${campo2.substring(0, 5)}.${campo2.substring(5)} ${campo3.substring(0, 5)}.${campo3.substring(5)} ${camp …
-  ```
 - **calculateAggregatedBudget(node: TreeNode)** — `src/components/centros-custo/CentroCustoTree.tsx`
   ```
   previsto: number; realizado: number
@@ -4377,7 +4361,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `setTimeout(() => setCopied(null), 2000);` | `src/components/api/DocumentacaoAPI.tsx` |
 | `const [startDate, setStartDate] = useState(format(subDays(new Date(), 30), 'yyyy-MM-dd'));` | `src/components/asaas/ExtratoAsaasPanel.tsx` |
 | `window.setTimeout(() => setCopied(false), 2000);` | `src/components/audit/AuditDiffView.tsx` |
-| `const diff = Math.floor((venc.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));` | `src/components/boletos/BoletoBarcode.tsx` |
 | `setTimeout(() => setCopied(null), 2000);` | `src/components/boletos/BoletoBarcode.tsx` |
 | `setTimeout(() => setCopied(false), 2000);` | `src/components/boletos/BoletoPreviewPanel.tsx` |
 | `setTimeout(() => setCopiedId(null), 2000);` | `src/components/clientes/PortalClientePanel.tsx` |
@@ -5107,7 +5090,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3454 testes em 298 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3459 testes em 299 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5323,6 +5306,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts` | 6 | buildInfEvento gera Id ID<tipo><chave><seq2> · buildInfEvento inclui xJust apenas em 210240 · buildEnvEvento serializa envelope SOAP · recepcaoEventoEndpoint distingue produção/homologação … |
 | `src/components/__tests__/regression-fixes.test.tsx` | 5 | EmpresaHeroKPI (regressão: require() no render quebrava a página) · renderiza sem lançar com dados consolidados · PageHeader (regressão: prop icon era aceito e nunca renderizado) · renderiza o ícone quando fornecido … |
 | `src/components/admin/telemetry/__tests__/RetentionPoliciesPanel.test.tsx` | 5 | RetentionPoliciesPanel · sinaliza cobertura total quando todas as tabelas têm política · destaca tabelas sem política de retenção · filtra apenas as tabelas com registros vencidos … |
+| `src/components/boletos/__tests__/BoletoBarcode.test.tsx` | 5 | BoletoBarcode · mostra o codigo do PROVEDOR, sem fabricar nada · o tamanho exibido e o do codigo recebido, nao um rotulo fixo de 44 · sem codigo do provedor, diz que nao tem -- e nao oferece copia … |
 | `src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx` | 5 | ValidacoesPreSpedDialog — bloqueio de download por erros · desabilita .txt e .zip quando há erros em validacoes.erros · habilita .txt e .zip quando validacoes.erros está vazio (mesmo com avisos) · habilita downloads quando não há erros nem avisos … |
 | `src/hooks/__tests__/useAlertasTributariosCount.test.ts` | 5 | useAlertasTributariosCount · retorna count quando query bem-sucedida · retorna 0 quando count é null · filtra por tipos tributários e lido=false … |
 | `src/hooks/__tests__/useConciliacaoIA.test.ts` | 5 | useConciliacaoIA · deve retornar erro se não houver dados para análise · deve processar matches retornados pela Edge Function com sucesso · deve lidar com erros de rate limit (429) graciosamente … |
@@ -5728,6 +5712,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Valor, Vencimento e Parcelas */} | `src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx` |
 | No permission specified, allow access | `src/components/auth/PermissionGate.tsx` |
 | Provedor sem end_session_endpoint — apenas confirmamos sucesso local. | `src/components/auth/SloFailureBanner.tsx` |
+| * A versao anterior fabricava os dois a partir de banco + valor + vencimento + | `src/components/boletos/BoletoBarcode.tsx` |
+| vencimento FEBRABAN passou de 9999 em fev/2025: qualquer vencimento futuro | `src/components/boletos/BoletoBarcode.tsx` |
 | Limite de Crédito */} | `src/components/clientes/ClienteFormFields.tsx` |
 | Proposta 1: Desconto à vista | `src/components/cobranca/NegociacaoIA.tsx` |
 | não pode ser apresentada como falha caso esse enriquecimento falhe. | `src/components/conciliacao/ConciliacaoManualDialog.tsx` |
@@ -5989,6 +5975,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Aplicável apenas para atividades de serviço listadas no §5º-M. | `src/lib/tributario/fator-r.ts` |
 | * Aceita apenas séries mensais bem-formadas; descarta a série inteira se corrompida. */ | `src/lib/tributario/historico-simulacao.ts` |
 | * Snapshot é utilizável apenas se trouxer, no mínimo, um faturamento anual | `src/lib/tributario/historico-simulacao.ts` |
-| * Filtra apenas os itens que satisfazem integralmente o contrato de ajuste. */ | `src/lib/tributario/historico-simulacao.ts` |
-| apenas snapshots que exigem atenção do contador; caso o filtro zere a lista, | `src/lib/tributario/historico-simulacao.ts` |
-| … +391 linhas — lista completa em `context.json` | |
+| … +393 linhas — lista completa em `context.json` | |

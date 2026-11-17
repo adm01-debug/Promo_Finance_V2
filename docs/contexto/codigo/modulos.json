@@ -1003,8 +1003,8 @@
   {
    "modulo": "components/boletos",
    "arquivos": 5,
-   "testes": 0,
-   "linhas": 898,
+   "testes": 1,
+   "linhas": 905,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

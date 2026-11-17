@@ -2653,7 +2653,7 @@
     "BoletoBarcode"
    ],
    "export_default": null,
-   "linhas": 144,
+   "linhas": 148,
    "dominio": "components/boletos",
    "hooks_locais": [],
    "tabelas": [],
@@ -2699,7 +2699,7 @@
     "BoletoPreviewPanel"
    ],
    "export_default": null,
-   "linhas": 305,
+   "linhas": 308,
    "dominio": "components/boletos",
    "hooks_locais": [],
    "tabelas": [],

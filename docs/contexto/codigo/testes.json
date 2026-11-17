@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 458,
+ "total": 459,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 382
+  "unit": 383
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 267
+   "arquivos": 268
   },
   {
    "padrao": "outro",
@@ -812,6 +812,15 @@
     "src/components/admin/telemetry/TelemetryCharts.tsx"
    ],
    "casos": 8
+  },
+  {
+   "arquivo": "src/components/boletos/__tests__/BoletoBarcode.test.tsx",
+   "tipo": "unit",
+   "linhas": 65,
+   "testa": [
+    "src/components/boletos/BoletoBarcode.tsx"
+   ],
+   "casos": 4
   },
   {
    "arquivo": "src/components/cobranca/__tests__/CustomerDeepScore.test.tsx",
@@ -4091,6 +4100,7 @@
   "src/components/admin/telemetry/RetentionPoliciesPanel.tsx": 1,
   "src/components/admin/telemetry/TelemetryCharts.tsx": 1,
   "src/components/admin/telemetry/performance-alerts-deeplink.ts": 1,
+  "src/components/boletos/BoletoBarcode.tsx": 1,
   "src/components/cobranca/CustomerDeepScore.tsx": 1,
   "src/components/cobranca/MetricasPorCanal.tsx": 1,
   "src/components/cobranca/ReguaCobrancaConfig.tsx": 1,
