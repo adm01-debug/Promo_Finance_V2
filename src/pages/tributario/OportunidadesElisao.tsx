@@ -33,6 +33,7 @@ export default function OportunidadesElisao() {
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
 
   const {
+    catalogo,
     relatorio,
     oportunidadesSalvas,
     persistirOportunidades,
@@ -137,7 +138,7 @@ export default function OportunidadesElisao() {
           <TabsTrigger value="acoes">Ações Bitrix ({tarefasAcionaveis.length})</TabsTrigger>
         </TabsList>
 
-        <AnaliseTab relatorio={relatorio} />
+        <AnaliseTab relatorio={relatorio} catalogo={catalogo} />
         <HistoricoTab oportunidadesSalvas={oportunidadesSalvas} atualizarStatus={atualizarStatus} />
         <AuditoriaTab
           creditosAuditoria={creditosAuditoria}
