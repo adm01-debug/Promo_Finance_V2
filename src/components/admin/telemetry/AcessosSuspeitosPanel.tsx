@@ -61,6 +61,20 @@ function severityBadge(severidade: string) {
  * leituras/escritas em dados de empresas às quais o usuário não pertence e
  * comportamento administrativo anômalo (picos, madrugada, exclusões em massa).
  */
+/**
+ * `supabaseDyn.rpc` rejeita com `{ message: string }`, nao com `Error`
+ * (src/lib/supabase-dynamic.ts:74-77). Checar so `instanceof Error` jogava o
+ * motivo real na mensagem genérica (revisao da PR #405, Devin).
+ */
+function mensagemDeErro(erro: unknown): string {
+  if (erro instanceof Error && erro.message) return erro.message;
+  if (erro && typeof erro === 'object' && 'message' in erro) {
+    const m = (erro as { message?: unknown }).message;
+    if (typeof m === 'string' && m) return m;
+  }
+  return 'Erro ao consultar get_acessos_suspeitos.';
+}
+
 export function AcessosSuspeitosPanel() {
   const [hours, setHours] = useState(168);
   const [somenteAbertos, setSomenteAbertos] = useState(true);
@@ -165,7 +179,7 @@ export function AcessosSuspeitosPanel() {
             </p>
             <p className="text-xs text-muted-foreground">
               Nenhum resultado é exibido para não passar falha de consulta como auditoria limpa.{' '}
-              {error instanceof Error ? error.message : 'Erro ao consultar get_acessos_suspeitos.'}
+              {mensagemDeErro(error)}
             </p>
             <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
               Tentar de novo

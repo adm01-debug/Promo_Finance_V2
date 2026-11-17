@@ -48,6 +48,9 @@ describe('AcessosSuspeitosPanel', () => {
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     expect(screen.getByText(/Não foi possível verificar os acessos/i)).toBeInTheDocument();
+    // o motivo real tem que aparecer: supabaseDyn.rpc rejeita com
+    // `{ message }`, nao com Error (revisao da PR #405, Devin)
+    expect(screen.getByText(/requer papel admin/i)).toBeInTheDocument();
     // o visto verde nao pode aparecer
     expect(screen.queryByText(/Nenhum acesso entre empresas/i)).not.toBeInTheDocument();
   });
