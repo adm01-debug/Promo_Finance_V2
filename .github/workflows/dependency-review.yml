@@ -37,5 +37,12 @@ jobs:
             MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC,
             0BSD, Unlicense, CC0-1.0, BlueOak-1.0.0, Python-2.0,
             LGPL-2.1, LGPL-3.0, MPL-2.0
+          # Exceção de licença: mapbox-gl publica sob "SEE LICENSE IN
+          # LICENSE.txt" (Mapbox TOS, proprietária) desde a linha 2.x. A versão
+          # 3.26.0 já está em produção com essa mesma licença — o gate só
+          # dispara quando o pacote aparece no diff, bloqueando qualquer
+          # atualização dele (ex.: #375, 3.26.0 -> 3.35.0). A exceção cobre só
+          # a licença; vulnerabilidade continua reprovando por fail-on-severity.
+          allow-dependencies-licenses: pkg:npm/mapbox-gl
           # Comentar no PR com o resumo dos achados
           comment-summary-in-pr: always
