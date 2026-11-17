@@ -30,6 +30,17 @@ interface WhatsAppHistoryProps {
   clienteNome: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /**
+   * Libera o campo de envio. Default `false`, e de proposito: `useSendMessage`
+   * (useWhatsAppIA.ts:37-62) apenas INSERE em `whatsapp_conversas` com
+   * `status: 'enviado'` -- nao existe nenhuma chamada a provedor de WhatsApp no
+   * projeto (as 3 edge functions do assunto so analisam ou geram texto, e nao
+   * ha secret de provedor). Com o campo liberado, o operador manda uma cobranca
+   * que nunca chega ao cliente e a tela confirma o envio (achado P1 do Codex na
+   * PR #404). Ligar isso depende de contratar provedor: decisao de custo do
+   * dono, AGENTS.md secao 6.6.
+   */
+  permitirEnvio?: boolean;
 }
 
 export function WhatsAppHistoryIA({
@@ -37,6 +48,7 @@ export function WhatsAppHistoryIA({
   clienteNome,
   open,
   onOpenChange,
+  permitirEnvio = false,
 }: WhatsAppHistoryProps) {
   const { data: conversas, isLoading } = useWhatsAppConversas(clienteId);
   const sendMessage = useSendMessage();
@@ -138,27 +150,38 @@ export function WhatsAppHistoryIA({
         </ScrollArea>
 
         <div className="p-4 border-t bg-accent/30">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="flex gap-2"
-          >
-            <Input
-              placeholder="Digite uma mensagem..."
-              value={mensagem}
-              onChange={(e) => setMensagem(e.target.value)}
-              disabled={sendMessage.isPending}
-            />
-            <Button size="icon" type="submit" disabled={sendMessage.isPending || !mensagem.trim()}>
-              {sendMessage.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </form>
+          {!permitirEnvio ? (
+            <p className="text-xs text-muted-foreground">
+              Histórico somente leitura: o envio de mensagem ainda não está integrado a um provedor
+              de WhatsApp, e registrar aqui não entregaria nada ao cliente.
+            </p>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSend();
+              }}
+              className="flex gap-2"
+            >
+              <Input
+                placeholder="Digite uma mensagem..."
+                value={mensagem}
+                onChange={(e) => setMensagem(e.target.value)}
+                disabled={sendMessage.isPending}
+              />
+              <Button
+                size="icon"
+                type="submit"
+                disabled={sendMessage.isPending || !mensagem.trim()}
+              >
+                {sendMessage.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </form>
+          )}
         </div>
       </DialogContent>
     </Dialog>
