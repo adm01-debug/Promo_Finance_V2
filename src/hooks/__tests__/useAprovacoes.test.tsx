@@ -298,6 +298,31 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
     expect(chain.eq).toHaveBeenCalledWith('id', 'z');
     expect(chain.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
   });
+  it('conflito: zero linha atualizada NAO pode virar sucesso', async () => {
+    // Revisao da PR #400, round 4 (Codex): dois administradores carregam a faixa
+    // de 5.000; o primeiro muda para 10.000. O segundo salva, o filtro por
+    // valor_minimo_original = 5000 nao casa mais nada, e o PostgREST devolve
+    // `data: []` com `error: null` -- toast de sucesso sem gravar nada, que e o
+    // mesmo tipo de mentira que esta PR comecou corrigindo.
+    const chain = buildChain({ data: [], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_original: 5000,
+      valor_minimo_aprovacao: 20000,
+      aprovadores_obrigatorios: 1,
+      ativo: true,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(String(result.current.error?.message)).toMatch(/alterada por outra pessoa/i);
+    expect(result.current.isSuccess).toBe(false);
+  });
 });
 
 describe('useConfiguracaoAprovacaoEditavel (painel nao fica trancado)', () => {

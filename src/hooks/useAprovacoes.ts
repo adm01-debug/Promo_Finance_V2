@@ -157,6 +157,18 @@ export const useUpdateConfiguracaoAprovacao = () => {
         : await base.eq('id', config.id).select();
 
       if (error) throw error;
+
+      // `data: []` com `error: null` acontece quando o filtro nao casa linha
+      // nenhuma: outro administrador mudou a faixa entre o carregamento e o
+      // salvamento. Sem esta checagem, o toast anunciava sucesso e nada tinha
+      // sido gravado -- o mesmo tipo de mentira que esta PR comecou corrigindo.
+      if (porFaixa && (!data || data.length === 0)) {
+        throw new Error(
+          'A faixa foi alterada por outra pessoa desde que esta tela carregou. ' +
+            'Recarregue a configuracao e tente de novo.'
+        );
+      }
+
       return data;
     },
     onSuccess: () => {

@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/hooks/useAuth';
 import {
   useConfiguracaoAprovacaoEditavel,
   useUpdateConfiguracaoAprovacao,
@@ -27,7 +28,13 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
 export const ConfiguracaoAprovacaoCard = () => {
-  const { data: config, isLoading: loadingConfig } = useConfiguracaoAprovacaoEditavel();
+  // Sem a empresa, a leitura devolve a menor faixa entre TODAS as empresas
+  // acessiveis: com acesso a A e B, editar a governanca de B alteraria as
+  // faixas de A, porque o empresa_id que vai para a gravacao vem desta leitura.
+  const { currentEmpresaId } = useAuth();
+  const { data: config, isLoading: loadingConfig } = useConfiguracaoAprovacaoEditavel(
+    currentEmpresaId ?? undefined
+  );
   const { data: niveis, isLoading: loadingNiveis } = useFluxosNiveis();
   const updateMutation = useUpdateConfiguracaoAprovacao();
 
