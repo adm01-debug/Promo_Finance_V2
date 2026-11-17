@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Brain, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Brain, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { paginarTudo } from '@/lib/paginar-postgrest';
+import {
+  calcularProbabilidadeAtraso,
+  determinarNivelRisco,
+  gerarAcaoSugerida,
+  gerarFatoresRisco,
+  teveAtraso,
+} from './previsao/risco';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { PrevisaoKPIs } from './previsao/PrevisaoKPIs';
 import { PrevisaoClientesList } from './previsao/PrevisaoClientesList';
@@ -20,11 +28,6 @@ interface AnaliseInadimplencia {
   geradoEm: string;
 }
 
-interface ClienteData {
-  score: number | null;
-  limite_credito: number | null;
-}
-
 interface ContaData {
   valor: number;
   valor_recebido: number | null;
@@ -34,6 +37,8 @@ interface ContaData {
 
 interface HistoricoContaData {
   status: string;
+  data_vencimento: string | null;
+  data_recebimento: string | null;
 }
 
 interface ClienteMapCliente {
@@ -44,114 +49,72 @@ interface ClienteMapCliente {
   nome_fantasia: string | null;
 }
 
-function calcularProbabilidadeAtraso(
-  cliente: ClienteData,
-  contasPendentes: ContaData[],
-  historicoContas: HistoricoContaData[]
-): number {
-  let score = 0;
-  const scoreCliente = cliente.score || 100;
-  if (scoreCliente < 50) score += 30;
-  else if (scoreCliente < 70) score += 20;
-  else if (scoreCliente < 85) score += 10;
+/**
+ * `clientes.score` esta na escala 0-1000: o unico produtor e
+ * useScoringClientes.ts:144 (`recalcularScoreMutation`), que grava o resultado
+ * de `Math.min(1000, ...)`. Este arquivo comparava com 50/70/85 -- limites de
+ * uma escala 0-100 -- entao um cliente recalculado com 250 (critico para o
+ * produtor) recebia ZERO ponto de risco, igual a um de 850.
+ *
+ * As faixas abaixo sao as mesmas do produtor (useScoringClientes.ts:372-373):
+ * >= 700 baixo, >= 500 medio, >= 300 alto, < 300 critico.
+ */
+/**
+ * Quantos `cliente_id` por consulta de historico. `.in()` viaja na URL do GET:
+ * 100 UUIDs dao ~3,9 KB, com folga para os outros filtros; mil dariam ~39 KB e
+ * estourariam o limite de URI.
+ */
+const IDS_POR_LOTE = 100;
 
-  const contasVencidas = historicoContas.filter((c) => c.status === 'vencido');
-  const taxaAtraso =
-    historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0;
-  if (taxaAtraso > 30) score += 40;
-  else if (taxaAtraso > 15) score += 25;
-  else if (taxaAtraso > 5) score += 10;
-
-  const totalPendente = contasPendentes.reduce(
-    (sum, c) => sum + c.valor - (c.valor_recebido || 0),
-    0
-  );
-  const limiteCredito = cliente.limite_credito || 10000;
-  const utilizacao = (totalPendente / limiteCredito) * 100;
-  if (utilizacao > 100) score += 20;
-  else if (utilizacao > 80) score += 15;
-  else if (utilizacao > 50) score += 5;
-
-  const proximoVencimento = contasPendentes
-    .map((c) => new Date(c.data_vencimento))
-    .sort((a, b) => a.getTime() - b.getTime())[0];
-
-  if (proximoVencimento) {
-    const diasAteVencimento = differenceInDays(proximoVencimento, new Date());
-    if (diasAteVencimento <= 3) score += 10;
-    else if (diasAteVencimento <= 7) score += 5;
-  }
-
-  return Math.min(score, 100);
-}
-
-function determinarNivelRisco(probabilidade: number): 'alto' | 'medio' | 'baixo' {
-  if (probabilidade >= 60) return 'alto';
-  if (probabilidade >= 30) return 'medio';
-  return 'baixo';
-}
-
-function gerarFatoresRisco(
-  cliente: ClienteData,
-  contasPendentes: ContaData[],
-  historicoContas: HistoricoContaData[]
-): string[] {
-  const fatores: string[] = [];
-  if ((cliente.score || 100) < 70) {
-    fatores.push(`Score baixo (${cliente.score || 0})`);
-  }
-  const contasVencidas = historicoContas.filter((c) => c.status === 'vencido');
-  if (contasVencidas.length > 0) {
-    fatores.push(`${contasVencidas.length} atraso(s) no histórico`);
-  }
-  const totalPendente = contasPendentes.reduce(
-    (sum, c) => sum + c.valor - (c.valor_recebido || 0),
-    0
-  );
-  if (totalPendente > (cliente.limite_credito || 10000)) {
-    fatores.push('Limite de crédito excedido');
-  }
-  const proximoVencimento = contasPendentes
-    .map((c) => new Date(c.data_vencimento))
-    .sort((a, b) => a.getTime() - b.getTime())[0];
-  if (proximoVencimento && differenceInDays(proximoVencimento, new Date()) <= 7) {
-    fatores.push('Vencimento próximo');
-  }
-  return fatores.length > 0 ? fatores : ['Nenhum fator de risco identificado'];
-}
-
-function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]): string {
-  if (nivelRisco === 'alto') {
-    if (fatores.some((f) => f.includes('atraso'))) {
-      return 'Entrar em contato imediatamente para negociação preventiva';
-    }
-    return 'Monitorar de perto e preparar régua de cobrança preventiva';
-  }
-  if (nivelRisco === 'medio') {
-    return 'Enviar lembrete amigável antes do vencimento';
-  }
-  return 'Manter acompanhamento padrão';
-}
-
-function useAnaliseInadimplencia() {
+function useAnaliseInadimplencia(empresaId?: string) {
   return useQuery({
-    queryKey: ['analise-inadimplencia'],
+    // `enabled` abaixo: sem empresa a consulta NAO roda. No primeiro acesso
+    // `currentEmpresaId` nasce null (AuthProvider) e o EmpresaScopeProvider só
+    // escolhe a empresa num efeito posterior -- nesse intervalo a consulta sem
+    // `empresa_id` agregava TODAS as empresas que o RLS permite, e a tela
+    // mostrava uma previsao multiempresa antes do refetch (achado P1 do Codex
+    // na PR #404). AGENTS.md secao 4: isolamento por empresa_id.
+    queryKey: ['analise-inadimplencia', empresaId ?? 'sem-empresa'],
     queryFn: async (): Promise<AnaliseInadimplencia> => {
       const hoje = new Date();
       const em30Dias = addDays(hoje, 30);
 
-      const { data: contasPendentes } = await supabase
+      // Filtro funcional por empresa, alem do RLS: sem ele a tela somaria
+      // clientes de todas as empresas acessiveis num unico ranking de risco.
+      // AGENTS.md secao 4 pede isolamento por empresa_id, e o achado F17 da
+      // auditoria de 2026-09-10 registra que "RLS pode restringir acesso, mas
+      // nao substitui filtro funcional da empresa selecionada".
+      let qPendentes = supabase
         .from('contas_receber')
         .select(
           `
           id, valor, valor_recebido, data_vencimento, status, cliente_id, cliente_nome,
           clientes(id, razao_social, nome_fantasia, score, limite_credito, ramo_atividade)
-        `
+        `,
+          { count: 'exact' }
         )
         .in('status', ['pendente', 'parcial'])
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
         .lte('data_vencimento', format(em30Dias, 'yyyy-MM-dd'))
-        .order('data_vencimento');
+        // `id` como desempate: paginacao por offset exige ordenacao UNICA. Com
+        // varios titulos no mesmo vencimento, janelas diferentes podiam
+        // devolver os empates em ordens diferentes -- titulo repetido numa
+        // pagina e omitido na outra, sem a contagem perceber (achado do Devin e
+        // P2 do Codex).
+        .order('data_vencimento')
+        .order('id');
+      if (empresaId) qPendentes = qPendentes.eq('empresa_id', empresaId);
+
+      // Erro de consulta NAO pode virar "nenhum cliente em risco": a tela
+      // mostrava zeros como analise concluida (achado do Devin na PR #404).
+      //
+      // E nao basta um await: o PostgREST corta em 1.000 linhas SEM erro, entao
+      // empresa com mais titulos no periodo publicava analise parcial como
+      // concluida -- clientes, contagens e `valorTotalRisco` sao somados aqui,
+      // no cliente (achado P1 do Codex; o proprio
+      // docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md:48 registra
+      // somatorio local limitado a 1.000 como P1).
+      const contasPendentes = await paginarTudo(qPendentes);
 
       if (!contasPendentes || contasPendentes.length === 0) {
         return {
@@ -170,6 +133,15 @@ function useAnaliseInadimplencia() {
       const clientesMap = new Map<
         string,
         {
+          /**
+           * `cliente_id` de verdade, quando existe. A CHAVE do mapa pode ser o
+           * nome digitado (titulo sem cadastro, permitido por
+           * ContaReceberForm.tsx:187 `cliente_id: data.cliente_id || null`), e
+           * manda-la para `.eq('cliente_id', ...)` -- coluna uuid -- derruba a
+           * consulta. Com o `throw` desta PR, um unico titulo desses abortava a
+           * previsao de TODOS os clientes (achado P1 do Codex / Devin, #404).
+           */
+          clienteIdReal: string | null;
           cliente: ClienteMapCliente;
           contas: ContaData[];
         }
@@ -178,6 +150,7 @@ function useAnaliseInadimplencia() {
         const clienteId = conta.cliente_id || conta.cliente_nome || 'sem-cliente';
         if (!clientesMap.has(clienteId)) {
           clientesMap.set(clienteId, {
+            clienteIdReal: conta.cliente_id ?? null,
             cliente: conta.clientes || {
               score: null,
               limite_credito: null,
@@ -201,23 +174,81 @@ function useAnaliseInadimplencia() {
 
       const clientesAnalise: ClienteRisco[] = [];
 
-      for (const [clienteId, { cliente, contas }] of clientesMap.entries()) {
-        const { data: historico } = await supabase
+      // Historico de TODOS os clientes numa consulta, antes do loop. Era uma
+      // consulta por cliente, serial dentro do `for`: com 50 clientes eram 51
+      // idas ao banco e a tela ficava em carregamento durante a sequencia
+      // inteira (achado P2 do Codex na PR #404).
+      const idsReais = [...clientesMap.values()]
+        .map((e) => e.clienteIdReal)
+        .filter((id): id is string => id != null);
+
+      const historicoPorCliente = new Map<string, HistoricoContaData[]>();
+      // Lotes de IDS_POR_LOTE: `.in()` vai na URL do GET, e mil UUIDs dao ~39 KB
+      // -- passa do limite de URI do gateway e derruba a previsao inteira
+      // (achado P2 do Codex na PR #404). Paginar nao resolve isso: cada pagina
+      // repete o filtro completo.
+      for (let i = 0; i < idsReais.length; i += IDS_POR_LOTE) {
+        const lote = idsReais.slice(i, i + IDS_POR_LOTE);
+        // O historico tambem fica na empresa: sem isso, atraso do mesmo cliente
+        // em OUTRA empresa elevaria o risco aqui.
+        let qHistorico = supabase
           .from('contas_receber')
-          .select('status')
-          .eq('cliente_id', clienteId)
-          .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
+          .select('cliente_id, status, data_vencimento, data_recebimento', { count: 'exact' })
+          .in('cliente_id', lote)
+          .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'))
+          // sem ordenacao unica, cada janela podia repetir e omitir linhas
+          .order('id');
+        if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
+
+        // Paginado: cliente antigo pode ter mais de 1.000 titulos vencidos, e
+        // taxa de atraso sobre pagina parcial e numero errado.
+        const todoHistorico = await paginarTudo<{
+          cliente_id: string | null;
+          status: string | null;
+          data_vencimento: string | null;
+          data_recebimento: string | null;
+        }>(qHistorico);
+
+        for (const h of todoHistorico) {
+          if (!h.cliente_id) continue;
+          const lista = historicoPorCliente.get(h.cliente_id) ?? [];
+          lista.push({
+            status: h.status ?? '',
+            data_vencimento: h.data_vencimento ?? null,
+            data_recebimento: h.data_recebimento ?? null,
+          });
+          historicoPorCliente.set(h.cliente_id, lista);
+        }
+      }
+
+      for (const [clienteId, { clienteIdReal, cliente, contas }] of clientesMap.entries()) {
+        // Sem cadastro de cliente nao existe historico consultavel: a coluna e
+        // uuid. A tela diz que o historico nao foi avaliado -- em vez de
+        // derrubar a previsao inteira ou fingir zero atraso.
+        const historicoAvaliado = clienteIdReal != null;
+        const historico = clienteIdReal ? (historicoPorCliente.get(clienteIdReal) ?? []) : [];
 
         const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
           status: h.status ?? '',
+          data_vencimento: h.data_vencimento ?? null,
+          data_recebimento: h.data_recebimento ?? null,
         }));
         const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historicoContas);
         const nivelRisco = determinarNivelRisco(probabilidade);
         const fatoresRisco = gerarFatoresRisco(cliente, contas, historicoContas);
 
+        if (!historicoAvaliado) {
+          fatoresRisco.push('Sem cadastro de cliente: histórico não avaliado');
+        }
+
         // Refinamento por Ramo de Atividade (Engine 10/10)
         if (cliente.ramo_atividade && ['Construção', 'Varejo'].includes(cliente.ramo_atividade)) {
           fatoresRisco.push(`Setor de alto risco: ${cliente.ramo_atividade}`);
+        }
+
+        // Fallback DEPOIS de todos os fatores.
+        if (fatoresRisco.length === 0) {
+          fatoresRisco.push('Nenhum fator de risco identificado');
         }
 
         interface ContaReceberData {
@@ -236,12 +267,13 @@ function useAnaliseInadimplencia() {
 
         clientesAnalise.push({
           id: clienteId,
+          clienteIdReal,
           nome: cliente.razao_social || 'Cliente não identificado',
           nomeFantasia: cliente.nome_fantasia,
-          score: cliente.score || 100,
+          score: cliente.score,
           totalPendente,
           diasAteVencimento: proximoVencimento ? differenceInDays(proximoVencimento, hoje) : 0,
-          historicoAtrasos: historicoContas.filter((c) => c.status === 'vencido').length,
+          historicoAtrasos: historicoContas.filter(teveAtraso).length,
           probabilidadeAtraso: probabilidade,
           nivelRisco,
           fatoresRisco,
@@ -269,13 +301,21 @@ function useAnaliseInadimplencia() {
         geradoEm: new Date().toISOString(),
       };
     },
+    enabled: !!empresaId,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function PrevisaoInadimplencia() {
+interface PrevisaoInadimplenciaProps {
+  /** Empresa selecionada. Sem ela, a analise some de empresas diferentes. */
+  empresaId?: string;
+}
+
+export function PrevisaoInadimplencia({ empresaId }: PrevisaoInadimplenciaProps) {
   const [tabAtiva, setTabAtiva] = useState('todos');
-  const { data, isLoading, refetch, isFetching } = useAnaliseInadimplencia();
+  const { data, isLoading, isError, error, refetch, isFetching } =
+    useAnaliseInadimplencia(empresaId);
+  const semEmpresa = !empresaId;
 
   const clientesFiltrados =
     data?.clientes.filter((c) => {
@@ -305,11 +345,40 @@ export function PrevisaoInadimplencia() {
         </Button>
       </div>
 
-      {isLoading ? (
+      {semEmpresa ? (
+        <div className="flex items-center justify-center h-64 rounded-lg border border-border bg-muted/30">
+          <p className="text-sm text-muted-foreground max-w-md text-center px-6">
+            Selecione uma empresa para calcular a previsão. Sem empresa, a análise somaria clientes
+            de todas as empresas acessíveis num único ranking de risco.
+          </p>
+        </div>
+      ) : isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
             <p className="text-sm text-muted-foreground">Analisando dados históricos...</p>
+          </div>
+        </div>
+      ) : isError ? (
+        /*
+         * Sem este estado, falha de consulta aparecia como KPI zerado: "nenhum
+         * cliente em risco, R$ 0" com cara de analise concluida (achado do
+         * Devin na PR #404). Ausencia de analise nao e ausencia de risco.
+         */
+        <div
+          role="alert"
+          className="flex items-center justify-center h-64 rounded-lg border border-destructive/30 bg-destructive/5"
+        >
+          <div className="text-center space-y-3 px-6">
+            <AlertTriangle className="h-8 w-8 text-destructive mx-auto" />
+            <p className="text-sm font-medium">Não foi possível calcular a previsão.</p>
+            <p className="text-xs text-muted-foreground max-w-md">
+              Os indicadores não são exibidos para não passar falta de dados como ausência de risco.{' '}
+              {error instanceof Error ? error.message : 'Erro ao consultar os recebíveis.'}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+              Tentar de novo
+            </Button>
           </div>
         </div>
       ) : (
