@@ -30,7 +30,7 @@
 | `categorizar-despesa` | — |
 | `ci-security-gate-log` | `ci_security_gate_events` |
 | `cnpja-lookup` | `cnpja_cache` |
-| `comparar-benchmark-setorial` | `empresas`, `faturamento_mensal`, `user_empresas` |
+| `comparar-benchmark-setorial` | `benchmarks_setoriais`, `empresas`, `faturamento_mensal`, `user_empresas` |
 | `compare-schemas` | — |
 | `conciliacao-ia` | — |
 | `conciliacao-proxy` | — |
@@ -147,7 +147,7 @@
 | `audit_logs` | `log-sped-bitrix24`, `processar-solicitacao-lgpd`, `sso-callback`, `sso-logout`, `sync-profile-to-bitrix` |
 | `auditoria_tributaria` | `processar-solicitacao-lgpd` |
 | `auth_logs` | `validate-ip-geo` |
-| `benchmarks_setoriais` | `gerar-alertas-tributarios` |
+| `benchmarks_setoriais` | `comparar-benchmark-setorial`, `gerar-alertas-tributarios` |
 | `beneficios_fiscais` | `consulta-tributaria` |
 | `bitrix_field_mappings` | `bitrix24-sync` |
 | `bitrix_oauth_tokens` | `bitrix24-sync`, `sync-profile-to-bitrix` |
