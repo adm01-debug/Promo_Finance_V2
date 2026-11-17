@@ -86,94 +86,71 @@ describe('parseExcel — valor monetario BRL', () => {
 
 /**
  * Ressalva que manteve o achado F01 como PARCIAL: CSV com delimitador virgula e
- * valor BRL SEM aspas perdia os centavos em silencio, porque o parseCSVLine
+ * valor BRL SEM aspas perdia os centavos EM SILENCIO, porque o parseCSVLine
  * quebra a coluna antes do parser de valor ver o conteudo.
  *
  * Medido no main antes desta correcao:
  *   'data,descricao,valor' + '01/01/2026,Teste,1.234,56' -> valor 1234, avisos []
+ *
+ * A correcao NAO adivinha onde a coluna extra nasceu -- a revisao desta PR
+ * mostrou tres formas identicas entre si (delimitador sobrando, coluna
+ * declarada vazia, virgula na descricao) e duas tentativas de recomposicao
+ * automatica corromperam caso legitimo. O que muda e o silencio.
  */
-describe('CSV separado por virgula com valor BRL sem aspas (F01)', () => {
-  it('recompoe os centavos e avisa, em vez de perder 56 centavos calado', () => {
+describe('CSV com coluna a mais: avisa em vez de perder centavos calado (F01)', () => {
+  it('valor BRL sem aspas: le a parte inteira MAS avisa que pode faltar centavos', () => {
     const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,1.234,56\n', 'e.csv');
     expect(r.sucesso).toBe(true);
-    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).toMatch(/centavos foram recompostos/i);
+    expect(r.extrato?.transacoes[0].valor).toBe(1234);
+    expect(r.avisos.join(' ')).toMatch(/pode ter perdido centavos/i);
+    expect(r.avisos.join(' ')).toMatch(/exporte com aspas/i);
   });
 
-  it('negativo tambem preserva a grandeza', () => {
-    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,-1.234,56\n', 'e.csv');
-    expect(r.extrato?.transacoes[0].valor).toBe(-1234.56);
-  });
-
-  it('com aspas continua funcionando sem aviso de recomposicao', () => {
+  it('com aspas continua certo e sem aviso', () => {
     const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,"1.234,56"\n', 'e.csv');
     expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+    expect(r.avisos.join(' ')).not.toMatch(/pode ter perdido centavos|colunas para/i);
   });
 
-  it('coluna extra declarada no cabecalho NAO e recomposta', () => {
-    // 'parcela' existe no cabecalho: a linha tem o mesmo numero de colunas,
-    // entao 1.234 e o valor inteiro de verdade e 2 e a parcela.
-    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,2\n', 'e.csv');
-    expect(r.extrato?.transacoes[0].valor).toBe(1234);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
-  });
-
-  it('ponto e virgula com valor BRL segue intacto', () => {
+  it('ponto e virgula com valor BRL segue intacto e sem aviso', () => {
     const r = parseCSV('data;descricao;valor\n01/01/2026;Teste;1.234,56\n', 'e.csv');
     expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+    expect(r.avisos.join(' ')).not.toMatch(/pode ter perdido centavos|colunas para/i);
   });
-});
 
-/**
- * Regressao que eu introduzi na primeira versao da correcao do F01 e que os
- * revisores da PR #413 pegaram: virgula sobrando no FIM da linha tambem cria
- * coluna extra, e ai a vizinha do valor e dado legitimo (`parcela`) -- a
- * recomposicao somava a parcela ao valor.
- */
-describe('recomposicao nao confunde coluna extra do fim com valor partido', () => {
-  it('virgula final com parcela declarada: valor continua 1234, sem recomposicao', () => {
+  it('coluna extra declarada no cabecalho: nada muda, nenhum aviso', () => {
+    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,2\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234);
+    expect(r.avisos.join(' ')).not.toMatch(/colunas para/i);
+  });
+
+  it('virgula final com parcela: valor e parcela preservados, com aviso', () => {
+    // Caso do Codex: antes a parcela era somada ao valor (1234,2).
     const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,2,\n', 'e.csv');
     expect(r.extrato?.transacoes[0].valor).toBe(1234);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
-    // ambiguo com o caso "ultima coluna declarada vazia": tem de avisar
-    expect(r.avisos.join(' ')).toMatch(/pode ter perdido centavos/i);
+    expect(r.avisos.join(' ')).toMatch(/colunas para/i);
   });
 
-  it('ultima coluna DECLARADA vazia com valor partido: le inteiro mas NAO fica calado', () => {
-    // Achado do Devin na 2a rodada: `data,descricao,valor,tipo` + `...,1.234,56,`
-    // tem a mesma forma do caso da parcela. Antes a linha era aceita como 1234
-    // sem aviso nenhum.
+  it('virgula na DESCRICAO nao desloca o valor nem a descricao', () => {
+    // Caso do Codex: `01/01/2026,1234,2,Pagamento,loja` com cabecalho
+    // data,valor,parcela,descricao -- a coluna extra veio da descricao.
+    const r = parseCSV('data,valor,parcela,descricao\n01/01/2026,1234,2,Pagamento,loja\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234);
+    expect(r.extrato?.transacoes[0].descricao).toBe('Pagamento');
+    expect(r.avisos.join(' ')).toMatch(/colunas para/i);
+  });
+
+  it('valor internacional valido com coluna extra: valor intacto e aviso presente', () => {
+    // Caso do Devin: `1234.56` seguido de `12` -- a recomposicao falhava e o
+    // encadeamento comia o aviso de contagem.
+    const r = parseCSV('data,valor,descricao\n01/01/2026,1234.56,12,Compra\n', 'e.csv');
+    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
+    expect(r.avisos.join(' ')).toMatch(/colunas para/i);
+  });
+
+  it('ultima coluna declarada vazia com valor partido: le inteiro e avisa', () => {
     const r = parseCSV('data,descricao,valor,tipo\n01/01/2026,Teste,1.234,56,\n', 'e.csv');
-    expect(r.sucesso).toBe(true);
     expect(r.extrato?.transacoes[0].valor).toBe(1234);
     expect(r.avisos.join(' ')).toMatch(/pode ter perdido centavos/i);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
-  });
-
-  it('valor entre aspas com parcela e virgula final nao e concatenado nem descartado', () => {
-    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,"1.234,56",2,\n', 'e.csv');
-    expect(r.sucesso).toBe(true);
-    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
-  });
-
-  it('valor que JA tem virgula nunca e recomposto com a vizinha', () => {
-    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,"1.234,56",2\n', 'e.csv');
-    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
-  });
-
-  it('valor partido E parcela na mesma linha: recompoe o valor e preserva a parcela', () => {
-    const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,56,2\n', 'e.csv');
-    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).toMatch(/centavos foram recompostos/i);
-  });
-
-  it('valor internacional com ponto decimal segue intacto', () => {
-    const r = parseCSV('data,descricao,valor\n01/01/2026,Teste,1234.56\n', 'e.csv');
-    expect(r.extrato?.transacoes[0].valor).toBe(1234.56);
-    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
   });
 });

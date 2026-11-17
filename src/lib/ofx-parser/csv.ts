@@ -79,80 +79,45 @@ export function parseCSV(
       //   3) a vizinha tem de ser 1 ou 2 digitos;
       //   4) o valor recomposto tem de ser aceito pelo parser, senao fica como
       //      estava.
-      // Tres formas chegam aqui com UMA coluna a mais que o cabecalho, e duas
-      // delas sao indistinguiveis uma da outra:
+      // Coluna a mais que o cabecalho tem origem AMBIGUA e nao ha regra que a
+      // resolva. O valor BRL sem aspas parte em duas celulas
+      // (`1.234,56` -> ['1.234','56']), mas exatamente a mesma forma aparece
+      // quando sobra delimitador no fim, quando a ultima coluna declarada esta
+      // vazia, ou quando a VIRGULA esta na descricao
+      // (`...,1234,2,Pagamento,loja`). Tentei recompor automaticamente em duas
+      // rodadas desta PR e as duas corromperam caso legitimo -- parcela somada
+      // ao valor e colunas deslocadas.
       //
-      //   A) valor BRL sem aspas partido pela virgula decimal:
-      //      `data,descricao,valor` + `...,1.234,56`      -> ['1.234','56']
-      //   B) delimitador sobrando no fim, com coluna declarada depois do valor:
-      //      `data,descricao,valor,parcela` + `...,1.234,2,`
-      //   C) valor partido E ultima coluna declarada vazia:
-      //      `data,descricao,valor,tipo` + `...,1.234,56,`
-      //
-      // B e C produzem exatamente a mesma sequencia de celulas. Nenhuma regra
-      // decide entre elas, entao a linha NAO e adivinhada: fica a leitura
-      // conservadora (valor inteiro, como antes desta correcao) e sai um aviso
-      // dizendo que pode ter perdido centavos. Adivinhar aqui foi o defeito que
-      // os revisores pegaram nas duas rodadas anteriores desta PR.
-      const ultimaVazia = cols.length > 0 && cols.at(-1) === '';
-      const umaColunaAMais = cols.length === headers.length + 1;
-      const valorCelula = valorIdx !== -1 ? (cols[valorIdx] ?? '') : '';
-      const vizinha = valorIdx !== -1 ? (cols[valorIdx + 1] ?? '') : '';
-      const podeSerValorPartido =
-        delimiter === ',' &&
-        valorIdx !== -1 &&
-        umaColunaAMais &&
-        !valorCelula.includes(',') &&
-        /^\d{1,2}$/.test(vizinha);
-
-      let colunas = cols;
-
-      if (podeSerValorPartido && !ultimaVazia) {
-        // Caso A, sem ambiguidade: a coluna extra veio da virgula decimal.
-        const recomposto = `${valorCelula},${vizinha}`;
-        let aceito = false;
-        try {
-          parseValorMonetario(recomposto);
-          aceito = true;
-        } catch {
-          aceito = false;
-        }
-        if (aceito) {
-          colunas = [...cols.slice(0, valorIdx), recomposto, ...cols.slice(valorIdx + 2)];
-          avisos.push(
-            `Linha ${i + 1}: valor "${recomposto}" estava sem aspas num CSV separado por vírgula; os centavos foram recompostos. Exporte com aspas ou use ponto e vírgula.`
-          );
-        }
-      } else if (podeSerValorPartido && ultimaVazia) {
-        // Casos B e C: ambiguos entre si. Le o valor inteiro (comportamento
-        // anterior, nunca inventa centavos) e avisa.
-        colunas = cols.slice(0, -1);
+      // Entao nao se adivinha: a leitura continua a mesma de antes (nenhum
+      // numero e inventado) e o que muda e o SILENCIO. O achado F01 era
+      // "perde os centavos silenciosamente"; agora a linha avisa, com dica
+      // especifica quando a forma sugere centavos partidos.
+      if (cols.length !== headers.length) {
+        const valorCelula = valorIdx !== -1 ? (cols[valorIdx] ?? '') : '';
+        const vizinha = valorIdx !== -1 ? (cols[valorIdx + 1] ?? '') : '';
+        const pareceCentavosPartidos =
+          delimiter === ',' && !valorCelula.includes(',') && /^\d{1,2}$/.test(vizinha);
         avisos.push(
-          `Linha ${i + 1}: valor "${valorCelula}" seguido de "${vizinha}" e de coluna vazia — não é possível saber se são centavos sem aspas ou coluna declarada. O valor foi lido como ${valorCelula} e pode ter perdido centavos; exporte com aspas ou use ponto e vírgula.`
-        );
-      } else if (umaColunaAMais && ultimaVazia) {
-        // Delimitador sobrando no fim, sem ambiguidade de valor.
-        colunas = cols.slice(0, -1);
-      } else if (cols.length !== headers.length) {
-        avisos.push(
-          `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento.`
+          pareceCentavosPartidos
+            ? `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho. O valor foi lido como "${valorCelula}" e pode ter perdido centavos (um valor como "${valorCelula},${vizinha}" sem aspas vira duas colunas) — exporte com aspas ou use ponto e vírgula.`
+            : `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento; alguma coluna pode conter o separador.`
         );
       }
 
       try {
-        const dataStr = dataIdx !== -1 ? colunas[dataIdx] : colunas[0];
+        const dataStr = dataIdx !== -1 ? cols[dataIdx] : cols[0];
         if (!dataStr) continue;
         const data = parseData(dataStr);
 
-        const valorRaw = valorIdx !== -1 ? colunas[valorIdx] : colunas[1];
+        const valorRaw = valorIdx !== -1 ? cols[valorIdx] : cols[1];
         if (!valorRaw) continue;
 
         let valor = parseValorMonetario(valorRaw);
 
         let tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
 
-        if (tipoIdx !== -1 && colunas[tipoIdx]) {
-          const tipoStr = colunas[tipoIdx].toLowerCase();
+        if (tipoIdx !== -1 && cols[tipoIdx]) {
+          const tipoStr = cols[tipoIdx].toLowerCase();
           if (tipoStr.startsWith('d') || tipoStr.includes('deb')) {
             tipo = 'debito';
             if (valor > 0) valor = -valor;
@@ -163,7 +128,7 @@ export function parseCSV(
         }
 
         const descricao =
-          (descricaoIdx !== -1 ? colunas[descricaoIdx] : colunas[2]) || 'Transação sem descrição';
+          (descricaoIdx !== -1 ? cols[descricaoIdx] : cols[2]) || 'Transação sem descrição';
 
         transacoes.push({
           id: `csv-${i}-${Date.now()}`,
