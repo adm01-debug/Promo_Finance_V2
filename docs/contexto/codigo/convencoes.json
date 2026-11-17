@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)",
    "infra: monitor-health entra na lista de funcoes implantaveis (#426)",
    "chore: remove 3 TODOs de rename ja concluidos no banco (#432)",
    "feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)",
-   "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)",
-   "chore: auditoria de fechamento das branches — prova de que nada de agente foi perdido (#428)"
+   "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

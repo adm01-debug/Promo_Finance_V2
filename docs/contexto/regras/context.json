@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "8c7012488ce1775634e9ea628ca41e758ff35a73",
+  "sha": "512c1e735322bc27154996beedcc3f2897a84098",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 17:27 UTC",
+  "generated_at": "2026-11-17 17:28 UTC",
   "files_total": 3953,
   "code_files": 3574,
   "code_lines": 508943
  },
  "version": "1.3.2",
- "facts_hash": "400788f17d19af7a",
+ "facts_hash": "7c42251c1e738569",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -37,7 +37,7 @@
     "in": "package.json"
    },
    "i18next": {
-    "version": "^26.0.10",
+    "version": "^27.1.1",
     "role": "i18n",
     "in": "package.json"
    },
@@ -247500,10 +247500,20 @@
   }
  },
  "git": {
-  "sha": "8c7012488ce1775634e9ea628ca41e758ff35a73",
+  "sha": "512c1e735322bc27154996beedcc3f2897a84098",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "512c1e7",
+    "date": "2026-11-17",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "8c70124",
     "date": "2026-11-17",
@@ -247904,23 +247914,15 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "9871bfb",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)",
-    "files": [
-     "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
-     "src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx",
-     "src/pages/AdminTelemetria.tsx",
-     "src/pages/__tests__/admin-telemetria-paineis-ligados.test.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
+    4
+   ],
+   [
+    "bun.lock",
     3
    ],
    [
@@ -247961,10 +247963,6 @@
    ],
    [
     "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
-    2
-   ],
-   [
-    "bun.lock",
     2
    ],
    [

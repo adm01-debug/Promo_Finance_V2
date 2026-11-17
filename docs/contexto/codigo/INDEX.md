@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8c7012488ce1775634e9ea628ca41e758ff35a73` (2026-11-17T14:25:42-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `512c1e735322bc27154996beedcc3f2897a84098` (2026-11-17T14:27:01-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -461,8 +461,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (38)
-- bun.lock (33)
+- package.json (39)
+- bun.lock (34)
 - .github/workflows/ci.yml (26)
 - supabase/functions/asaas-proxy/index.ts (17)
 - .github/workflows/deno-tests.yml (13)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `512c1e7` chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)
 - 2026-11-17 `8c70124` infra: monitor-health entra na lista de funcoes implantaveis (#426)
 - 2026-11-17 `6c4a75c` chore: remove 3 TODOs de rename ja concluidos no banco (#432)
 - 2026-11-17 `900fcbd` feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `9fe3277` fix(webhooks): webhook_replay passa a resolver o item da DLQ (#418)
 - 2026-11-17 `e4c5fa9` infra(db): fecha os itens de banco pendentes — reprocessamento da DLQ, faixas duplicadas, catálogo setorial (#409)
 - 2026-11-17 `2627e95` fix(conciliação): relatório de importação deixa de contar como salvo o que não entrou (#420)
-- 2026-11-17 `c772d63` fix(contas a receber): totais deixam de parar nos primeiros 1.000 títulos (#419)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

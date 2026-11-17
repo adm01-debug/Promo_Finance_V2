@@ -105,7 +105,7 @@
    "@tanstack/react-virtual": "^3.14.4",
    "date-fns": "^4.4.0",
    "framer-motion": "^14.9.1",
-   "i18next": "^26.0.10",
+   "i18next": "^27.1.1",
    "i18next-browser-languagedetector": "^8.2.1",
    "next-themes": "^0.4.6",
    "react": "^18.2.0",
@@ -1438,7 +1438,7 @@
    {
     "pacote": "i18next",
     "servico": "i18next",
-    "versao": "^26.0.10"
+    "versao": "^27.1.1"
    },
    {
     "pacote": "react-i18next",
