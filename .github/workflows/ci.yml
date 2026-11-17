@@ -201,6 +201,16 @@ jobs:
         # GHSA-3g3m-2fjr-6pw4 (glob >=9.0.0 <=14.0.1): AbortSignal bypass —
         # entra via eslint (devDependency). Não exposto em runtime. Fix requer
         # bump de glob para >=15.0.0 (breaking changes no consumer).
+        # GHSA-fc5q-39xc-vjpf (picomatch <=4.0.7): ReDoS por extglob repetido
+        # de ramo único. Sem release corrigida — 4.0.7 é a última publicada no
+        # registry e o advisory cobre <=4.0.7 (mesma situação de braces e
+        # deepmerge acima). Entra só por devDependencies: rollup-plugin-visualizer,
+        # vite e vitest (via tinyglobby/fdir), tailwindcss e lint-staged (via
+        # micromatch), @vitest/ui e typescript-eslint — nenhuma em
+        # `dependencies`. Os padrões glob casados são os do próprio projeto,
+        # escritos em código; ReDoS exige padrão controlado por atacante. Prod é
+        # build estático na Vercel: o servidor de dev e o runner de testes não
+        # são implantados. Revisitar quando sair picomatch >4.0.7.
         run: >
           bun audit
           --ignore=GHSA-vfj7-8cjw-p6xm
@@ -217,6 +227,7 @@ jobs:
           --ignore=GHSA-xp26-3454-mjgp
           --ignore=GHSA-g3hv-75wg-m249
           --ignore=GHSA-3g3m-2fjr-6pw4
+          --ignore=GHSA-fc5q-39xc-vjpf
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
