@@ -167,3 +167,77 @@ function — é a versão anterior ao merge.
 **Conclusão byte a byte: não existe um byte de código-fonte, migration, edge function ou UI
 em branch alguma que não esteja na `main` ou não seja uma versão mais antiga de algo que
 está na `main`.**
+
+---
+
+## 5. Fechamento da auditoria — 2026-11-17 21:46 UTC
+
+Estado final das branches remotas, depois dos merges da sessão (#448, #450, #451, #453,
+#454, #456, #452):
+
+| branch                                          | veredito                                                                                   | ação          |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------- |
+| `main`                                          | —                                                                                          | —             |
+| `claude/fix-duplicatas-contas-261117-2320`       | PR #455 aberta, índices anti-duplicata                                                     | merge na sessão |
+| `claude/infra-gate-colunas-select-261117-2340`   | PR #457, mexe em `.github/workflows/ci.yml`                                                | **aberta para o dono** (regra 6.6) |
+| `dependabot/bun/radix-ui-4a35e951ff`             | PR #371; diff = **só** `package.json` + `bun.lock`, todos os bumps dentro do mesmo major; `CONFLICTING`/`DIRTY` | **aberta para o dono**; branch alheia = somente leitura (regra 6.1) |
+| `computador_local`                              | **ancestral** de `main` (`git merge-base --is-ancestor` verdadeiro, 0 commits próprios)    | mantida, nada a recuperar |
+| `contexto`                                       | artefato gerado (`docs/contexto/**`: 1673 dumps `.sql` de funções do banco + índices JSON), histórico órfão, autor `contexto[bot]` | mantida, workflow regenera |
+| `inventario`                                     | artefato gerado (`inventario/**`, 0 arquivo `.ts/.tsx/.sql`), histórico órfão, autor `inventario[bot]` | mantida, workflow regenera |
+| `automation/estado-real`                         | 1 commit próprio, diff = `docs/ci/{MATRIZ_EDGE_TABELA.md,README.md,kpi.json}`, os três presentes na `main` | mantida, workflow regenera |
+
+### 5.1 Branch apagada, com prova
+
+`claude/fix-review-findings-20261117-1611` tinha **1 commit fora da `main`** —
+`569ebd6ed fix: aplica findings de review das PRs #240/#248 (n8n-callback, vite.config, DB_HEALTH)`,
+trabalho de outro agente. Conferido arquivo por arquivo antes de apagar:
+
+| arquivo                                   | o que a branch trazia                                                                 | onde está na `main`                               |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `supabase/functions/n8n-callback/index.ts` | `throw new Error('severity invalida')` sem vazar o valor recebido; `throw new Error(mensagemErro(error))` no `insertSingle` | `main:174` e `main:204` — idênticos               |
+| `vite.config.ts`                          | `createRequire(import.meta.url)` no lugar de `require()`; Sentry exigindo `SENTRY_ORG`/`SENTRY_PROJECT`; filtro `missing` | `main:4`, `main:18`, `main:65-69` — só a quebra de linha do prettier difere |
+| `docs/DB_HEALTH.md`                       | seção 7 afirmando "esperado **0** funções sem guard"                                  | a `main` tem versão **mais nova que desmente isso** com medição (70 funções sem os três guards, 30 com auth própria, 21 candidatos reais) |
+
+Nenhum byte exclusivo restante: `git diff origin/main origin/<branch>` só acusava a `main`
+à frente. Ref apagada via `github_delete_ref` (204).
+
+**Base da exclusão.** O AGENTS §6.1 diz que branch alheia é somente leitura, e isso continua
+valendo para *escrever* nela — commit, rebase, force-push. A exclusão aqui foi feita sob
+instrução direta e explícita do dono nesta sessão, que manda fechar as branches depois de
+recuperar o trabalho e fixa a condição: *"vc precisa ter certeza absoluta (byte x byte) de
+cada branch ou pr antes de exclui-la, só podemos excluir aquilo que temos certeza já foi
+incorporado a main ou ficou realmente obsoleto — essa regra vale para prs e branchs"*.
+Regra do dono vence o documento (AGENTS, cabeçalho). A condição foi cumprida arquivo por
+arquivo, como está registrado acima. **Sem essa instrução, a branch não seria apagada** — e
+nenhuma outra branch alheia foi tocada: a `dependabot/bun/radix-ui-4a35e951ff` segue intacta
+e com a PR #371 aberta, porque ali não houve nem equivalência nem obsolescência comprovada.
+
+As branches de PR mergeada (`claude/fix-vw-fluxo-caixa-261117-2225`,
+`claude/fix-faturamento-impostos-261117-2330` e as demais da sessão) foram apagadas
+automaticamente pelo GitHub no squash-merge — confirmado por `git fetch` devolvendo
+`couldn't find remote ref`, com o conteúdo presente na `main`
+(`supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql`,
+`src/.../__tests__/faturamento-grava-impostos.test.tsx`, `useHistoricoFinanceiro.ts:21`).
+
+### 5.2 Conferência por hash de blob, refeita depois dos merges da sessão
+
+Repetida contra a `main` já com #452/#456 dentro, pelo mesmo método da seção 4.4:
+
+| branch                   | exclusivos que são código-fonte | blobs de código divergentes |
+| ------------------------ | ------------------------------- | --------------------------- |
+| `contexto`               | **0**                           | **0**                       |
+| `inventario`             | **0**                           | **0**                       |
+| `automation/estado-real` | **0**                           | 2                           |
+| `computador_local`       | **0**                           | 2                           |
+
+Os 2 blobs são os mesmos nas duas branches — `src/components/tributario/historico/FaturamentoTab.tsx`
+e `src/hooks/useHistoricoFinanceiro.ts` — e são **byte-idênticos à versão que a `main`
+tinha antes da #456**:
+
+```
+FaturamentoTab.tsx        main hoje d8ee29aa | main antes da #456 8210940e | ambas as branches 8210940e
+useHistoricoFinanceiro.ts main hoje 87f672e9 | main antes da #456 cfc773f3 | ambas as branches cfc773f3
+```
+
+Ou seja: cópia da versão anterior, não variante com trabalho próprio. **Zero byte de
+código-fonte exclusivo em qualquer branch de bot.**
