@@ -10,6 +10,15 @@ Resposta com evidência à issue #90 ("Replay do zero das migrations não comple
 aplicados=1034  falharam=0  total=1034
 ```
 
+**Requisito que "postgresql-16" não cobre:** as migrations
+`20251214193742` e `20251214204951` fazem `CREATE EXTENSION pg_cron` e
+`pg_net` **sem tratamento de erro**, então o replay precisa dos _arquivos_
+dessas extensões no host (em Debian/Ubuntu: `postgresql-16-cron`,
+`postgresql-16-pg-net`, `postgresql-contrib`). A biblioteca `.so` do pg_cron
+não é necessária — o replay só cria objetos SQL, não roda o agendador. O script
+checa isso antes de começar e aborta nomeando o que falta, em vez de produzir um
+"falhou" enganoso.
+
 A issue foi aberta em 20/09/2026, quando o replay parava em ~`20260421`. Os erros
 documentados nela (ALTER VIEW sem guard, policy duplicada) foram corrigidos pelas
 PRs #87 e #88 e pelos commits `dee40a96`, `1859c623`, `5f16e5a0`. Desde então nada
