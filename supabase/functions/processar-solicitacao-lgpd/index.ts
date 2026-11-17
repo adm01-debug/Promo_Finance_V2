@@ -7,6 +7,7 @@ import { mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { anonimizarTitular, fecharSolicitacao } from './escrita.ts';
 const log = createLogger('processar-solicitacao-lgpd');
 
 interface Payload {
@@ -168,25 +169,11 @@ serve(
           urlDump = signed?.signedUrl ?? null;
           payloadResposta = { formato: 'csv', path, registros: dump };
         } else if (sol.tipo === 'exclusao' || sol.tipo === 'anonimizacao') {
-          const hashed = `anon-${targetUserId.slice(0, 8)}@removido.local`;
-          // `phone` não existe em public.profiles (as colunas são id, full_name,
-          // avatar_url, role, created_at, updated_at, email, user_id, empresa_id).
-          // Com ela no payload o UPDATE inteiro era recusado pelo banco, e o erro
-          // não era checado: nenhum dado do titular era anonimizado e a
-          // solicitação ainda assim seguia para "atendida".
-          const { error: erroAnon } = await adminClient
-            .from('profiles')
-            .update({
-              full_name: 'Titular removido',
-              email: hashed,
-              avatar_url: null,
-            })
-            .eq('id', targetUserId);
-          if (erroAnon) throw erroAnon;
-          payloadResposta = {
-            anonimizado_em: new Date().toISOString(),
-            email_substituto: hashed,
-          };
+          payloadResposta = await anonimizarTitular(
+            adminClient,
+            targetUserId,
+            new Date().toISOString()
+          );
         } else if (sol.tipo === 'retificacao') {
           payloadResposta = {
             instrucoes:
@@ -194,21 +181,13 @@ serve(
           };
         }
 
-        // Atualiza solicitação.
-        // Quem atendeu vai dentro de payload_resposta: a coluna atendida_por não
-        // existe em public.solicitacoes_lgpd, e com ela no payload este UPDATE era
-        // recusado — a solicitação nunca saía de "pendente", mesmo com a resposta
-        // já gerada e o dump no storage.
-        const { error: erroFechamento } = await adminClient
-          .from('solicitacoes_lgpd')
-          .update({
-            status: 'atendida',
-            payload_resposta: { ...payloadResposta, atendida_por: userId },
-            url_dump: urlDump,
-            atendida_em: new Date().toISOString(),
-          })
-          .eq('id', sol.id);
-        if (erroFechamento) throw erroFechamento;
+        await fecharSolicitacao(adminClient, {
+          solicitacaoId: sol.id,
+          payloadResposta,
+          urlDump,
+          userId,
+          agoraIso: new Date().toISOString(),
+        });
 
         // Auditoria P9
         await adminClient.from('auditoria_tributaria').insert({
