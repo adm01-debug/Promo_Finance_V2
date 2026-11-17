@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { competenciasConsecutivas } from '../_shared/carga-tributaria.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
@@ -336,6 +337,9 @@ serve(
           for (const [empId, arr] of byEmp.entries()) {
             if (arr.length < 2) continue;
             const [atual, anterior] = arr;
+            // regime_decision_cache nao garante serie mensal: sem este guarda,
+            // janeiro vs novembro virava "variacao MoM" de 100%
+            if (!competenciasConsecutivas(atual, anterior)) continue;
             if (atual.carga_pct && anterior.carga_pct) {
               const variacao = Math.abs(
                 ((Number(atual.carga_pct) - Number(anterior.carga_pct)) /
