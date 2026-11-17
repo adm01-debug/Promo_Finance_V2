@@ -30,7 +30,7 @@ import { PrevisaoInadimplencia } from '../PrevisaoInadimplencia';
  * `count: 'exact'`. Sem isso o teste nao distingue leitura completa de leitura
  * truncada na primeira pagina.
  */
-function builder(resultado: { data: unknown; error: unknown }) {
+function builder(resultado: { data: unknown; error: unknown; tetoServidor?: number }) {
   const b: Record<string, unknown> = {};
   for (const m of ['select', 'in', 'gte', 'lte', 'lt', 'eq', 'order']) {
     b[m] = vi.fn((coluna?: unknown, valor?: unknown) => {
@@ -42,8 +42,15 @@ function builder(resultado: { data: unknown; error: unknown }) {
   b.range = vi.fn((de: number, ate: number) => {
     filtros.push({ metodo: 'range', coluna: String(de), valor: ate });
     if (resultado.error) return Promise.resolve({ data: null, error: resultado.error });
+    const janela = linhas ? linhas.slice(de, ate + 1) : null;
     return Promise.resolve({
-      data: linhas ? linhas.slice(de, ate + 1) : resultado.data,
+      // teto do servidor: devolve MENOS que a janela pedida, como um
+      // db-max-rows menor que o range
+      data: janela
+        ? resultado.tetoServidor
+          ? janela.slice(0, resultado.tetoServidor)
+          : janela
+        : resultado.data,
       error: null,
       count: linhas ? linhas.length : null,
     });
@@ -378,6 +385,66 @@ describe('PrevisaoInadimplencia — escala do score e atraso no historico', () =
     );
 
     expect(await screen.findByText(/Nenhum fator de risco identificado/i)).toBeInTheDocument();
+  });
+
+  it('ordena por id nas DUAS consultas (paginacao por offset exige ordem unica)', async () => {
+    // Revisao da PR #404 (Devin 🔴 / Codex P2): sem desempate unico, janelas
+    // diferentes podiam devolver titulos de mesmo vencimento em ordens
+    // diferentes -- um repetido numa pagina, outro omitido, e a contagem exata
+    // nao percebe porque conta a repeticao.
+    const respostas = [
+      { data: [PENDENTE], error: null },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    await screen.findByText(/Cliente Um/i);
+    const ordens = filtros.filter((f) => f.metodo === 'order').map((f) => f.coluna);
+    // pendencias: vencimento + id; historico: id
+    expect(ordens.filter((c) => c === 'id').length).toBeGreaterThanOrEqual(2);
+    expect(ordens).toEqual(expect.arrayContaining(['data_vencimento', 'id']));
+  });
+
+  it('servidor que devolve menos que a janela nao faz a leitura pular titulos', async () => {
+    // Revisao da PR #404 (Devin): o deslocamento avancava 1.000 por volta. Com
+    // db-max-rows de 500 e 1.200 titulos, a 2a janela comecaria em 1.000 e
+    // deixaria 500 para tras -- e a 3a pediria offset fora do conjunto.
+    const mil2 = Array.from({ length: 1200 }, (_, i) => ({
+      ...PENDENTE,
+      id: `t${i}`,
+      // o ultimo titulo e de outro cliente: so aparece se nada for pulado
+      ...(i === 1199
+        ? {
+            cliente_id: 'cli-ultimo',
+            cliente_nome: 'Cliente Ultimo',
+            clientes: { ...PENDENTE.clientes, id: 'cli-ultimo', razao_social: 'Cliente Ultimo' },
+          }
+        : {}),
+    }));
+    let chamada = 0;
+    mockFrom.mockImplementation(() =>
+      builder(
+        chamada++ === 0 ? { data: mil2, error: null, tetoServidor: 500 } : { data: [], error: null }
+      )
+    );
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(await screen.findByText(/Cliente Ultimo/i)).toBeInTheDocument();
+    // janelas pedidas comecam em 0, 500 e 1000 -- avanco pelo recebido
+    const inicios = filtros.filter((f) => f.metodo === 'range').map((f) => f.coluna);
+    expect(inicios).toEqual(expect.arrayContaining(['0', '500', '1000']));
   });
 
   it('titulo pago com atraso conta como atraso no historico', async () => {

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, Brain, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { paginarTudo } from '@/lib/paginar-postgrest';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { PrevisaoKPIs } from './previsao/PrevisaoKPIs';
 import { PrevisaoClientesList } from './previsao/PrevisaoClientesList';
@@ -169,47 +170,6 @@ function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: stri
   return 'Manter acompanhamento padrão';
 }
 
-const PAGINA = 1000;
-/** Teto de seguranca: 50 paginas = 50 mil titulos no periodo. */
-const MAX_PAGINAS = 50;
-
-/**
- * Le TODAS as linhas de uma consulta, usando a CONTAGEM EXATA como criterio de
- * parada.
- *
- * O PostgREST corta a resposta no seu limite de linhas e nao sinaliza o corte,
- * entao `await` direto num conjunto maior entrega resultado parcial sem erro --
- * era o achado P1 do Codex nesta PR. Comparar `pagina.length` com um tamanho
- * assumido tambem nao serve: se o servidor cortar ABAIXO da janela pedida, a
- * leitura para calada do mesmo jeito. `count: 'exact'` vem do servidor, entao a
- * parada e sobre o total real.
- *
- * Se o teto de paginas for atingido, LANCA em vez de devolver parcial: a tela
- * tem estado de erro, e numero errado seria pior que erro visivel.
- */
-async function paginarTudo<T>(consulta: {
-  range: (
-    de: number,
-    ate: number
-  ) => PromiseLike<{ data: T[] | null; error: unknown; count?: number | null }>;
-}): Promise<T[]> {
-  const tudo: T[] = [];
-  for (let p = 0; p < MAX_PAGINAS; p++) {
-    const de = p * PAGINA;
-    const { data, error, count } = await consulta.range(de, de + PAGINA - 1);
-    if (error) throw error;
-    const pagina = data ?? [];
-    tudo.push(...pagina);
-    const total = typeof count === 'number' ? count : null;
-    if (pagina.length === 0) return tudo;
-    if (total != null ? tudo.length >= total : pagina.length < PAGINA) return tudo;
-  }
-  throw new Error(
-    `Mais de ${MAX_PAGINAS * PAGINA} títulos no período: a previsão não calcula somatório parcial. ` +
-      'Reduza o intervalo ou peça a agregação no banco.'
-  );
-}
-
 function useAnaliseInadimplencia(empresaId?: string) {
   return useQuery({
     queryKey: ['analise-inadimplencia', empresaId ?? 'all'],
@@ -234,7 +194,13 @@ function useAnaliseInadimplencia(empresaId?: string) {
         .in('status', ['pendente', 'parcial'])
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
         .lte('data_vencimento', format(em30Dias, 'yyyy-MM-dd'))
-        .order('data_vencimento');
+        // `id` como desempate: paginacao por offset exige ordenacao UNICA. Com
+        // varios titulos no mesmo vencimento, janelas diferentes podiam
+        // devolver os empates em ordens diferentes -- titulo repetido numa
+        // pagina e omitido na outra, sem a contagem perceber (achado do Devin e
+        // P2 do Codex).
+        .order('data_vencimento')
+        .order('id');
       if (empresaId) qPendentes = qPendentes.eq('empresa_id', empresaId);
 
       // Erro de consulta NAO pode virar "nenhum cliente em risco": a tela
@@ -325,7 +291,9 @@ function useAnaliseInadimplencia(empresaId?: string) {
             .from('contas_receber')
             .select('status, data_vencimento, data_recebimento', { count: 'exact' })
             .eq('cliente_id', clienteIdReal)
-            .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
+            .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'))
+            // sem ordenacao, cada janela podia trazer linhas em ordem diferente
+            .order('id');
           if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
 
           // Mesma razao: cliente antigo pode ter mais de 1.000 titulos vencidos,
