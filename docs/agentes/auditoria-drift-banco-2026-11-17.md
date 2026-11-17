@@ -24,10 +24,30 @@ Mas o schema **não** é o mesmo: **188 das 272 tabelas têm colunas diferentes*
 
 ## O que já está quebrado em produção
 
-Cruzando as colunas do grupo 2 com o código, há **45 escritas** (`insert`/`upsert`/`update`) em **14 tabelas** que miram coluna inexistente. Toda uma dessas chamadas falha no banco; onde o `error` não é checado, falha em silêncio.
+Cruzando as colunas do grupo 2 com o código, há **39 escritas** (`insert`/`upsert`/`update`) em **13 tabelas** que miram coluna inexistente. Cada uma dessas chamadas falha no banco por inteiro; onde o `error` não é checado, falha em silêncio.
+
+> **Correção de 17/11/2026, após a revisão da PR #437.** A primeira versão desta
+> contagem dizia 45 escritas em 14 tabelas. Devin e Codex mostraram que 7 dos
+> itens eram **chaves dentro de `details`/`payload`**, não colunas: `asaas_id`,
+> `asaas_link_id`, `config`, `message`, `reason` e `transfer_id` em
+> `asaas_audit_trail`, e `transacao` em `webhooks_log`. O detector de chaves de
+> primeiro nível errou a contagem de profundidade. Essas 7 saíram da tabela.
+>
+> Ao reconferir caso a caso apareceu o inverso, um falso negativo: `payment_id`
+> **é** de primeiro nível em 3 inserts de `asaas_audit_trail`, e a coluna real
+> em produção é `asaas_payment_id`. Entrou na tabela abaixo; corrigido na PR #441.
+>
+> A revisão também expôs uma classe que esta auditoria não havia varrido:
+> **filtros** (`.eq`/`.in`/...) sobre coluna inexistente, que fazem a consulta
+> falhar igual a uma escrita. A varredura posterior achou 5:
+> `asaas_sync_queue.payment_id` (corrigido na #441),
+> `transacoes_bancarias.empresa_id` (3 locais; a tabela não tem essa coluna e o
+> escopo por empresa passa por `conta_bancaria_id`), `clientes.bitrix_id`,
+> `empresas.ativa` (a coluna é `ativo`) e `sso_login_attempts.state`.
 
 | tabela | coluna ausente | onde o código grava |
 | --- | --- | --- |
+| `asaas_audit_trail` | `payment_id` | `supabase/functions/asaas-webhook/index.ts:125` (insert), `asaas-proxy/index.ts:776,1075` (insert), `whatsapp-webhook/index.ts:135` (insert) |
 | `saved_filter_subscriptions` | `horario_preferido` | `src/hooks/useSavedFilterSubscriptions.ts:128` (upsert) |
 | `saved_filter_subscriptions` | `last_seen_at` | `src/hooks/useSavedFilterSubscriptions.ts:128` (upsert) |
 | `saved_filter_subscriptions` | `next_dispatch_at` | `src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts:106` (update) |
@@ -38,14 +58,8 @@ Cruzando as colunas do grupo 2 com o código, há **45 escritas** (`insert`/`ups
 | `saved_filter_subscriptions` | `rate_limit_window_min` | `src/hooks/useSavedFilterSubscriptions.ts:128` (upsert) |
 | `saved_filter_subscriptions` | `severidades_criticas` | `src/hooks/useSavedFilterSubscriptions.ts:128` (upsert) |
 | `saved_filter_subscriptions` | `tipos_eventos_ativos` | `src/hooks/useSavedFilterSubscriptions.ts:128` (upsert) |
-| `asaas_audit_trail` | `asaas_id` | `supabase/functions/asaas-proxy/index.ts:775` (insert) |
-| `asaas_audit_trail` | `asaas_link_id` | `supabase/functions/asaas-proxy/index.ts:948` (insert) |
-| `asaas_audit_trail` | `config` | `supabase/functions/asaas-proxy/index.ts:1271` (insert) |
-| `asaas_audit_trail` | `message` | `supabase/functions/whatsapp-webhook/index.ts:135` (insert) |
 | `asaas_audit_trail` | `new_status` | `supabase/functions/asaas-webhook/index.ts:124` (insert) |
 | `asaas_audit_trail` | `previous_status` | `supabase/functions/asaas-webhook/index.ts:124` (insert) |
-| `asaas_audit_trail` | `reason` | `supabase/functions/asaas-proxy/index.ts:1074` (insert) |
-| `asaas_audit_trail` | `transfer_id` | `supabase/functions/asaas-webhook/index.ts:162` (insert) |
 | `asaas_audit_trail` | `user_id` | `supabase/functions/asaas-proxy/index.ts:1074` (insert) |
 | `historico_cobranca_whatsapp` | `created_by` | `src/hooks/useWhatsAppCobrancaHistory.ts:38` (insert) |
 | `historico_cobranca_whatsapp` | `enviado_em` | `src/hooks/useWhatsAppCobrancaHistory.ts:38` (insert) |
@@ -68,7 +82,6 @@ Cruzando as colunas do grupo 2 com o código, há **45 escritas** (`insert`/`ups
 | `asaas_transfers` | `user_id` | `supabase/functions/asaas-proxy/index.ts:758` (insert) |
 | `resumos_executivos_semanais` | `destinatarios` | `supabase/functions/gerar-resumo-executivo-semanal/index.ts:266` (upsert) |
 | `resumos_executivos_semanais` | `erro_envio` | `supabase/functions/gerar-resumo-executivo-semanal/index.ts:266` (upsert) |
-| `webhooks_log` | `transacao` | `src/lib/conciliacao-page-helpers.ts:281` (insert) |
 | `profiles` | `phone` | `supabase/functions/processar-solicitacao-lgpd/index.ts:173` (update) |
 | `solicitacoes_lgpd` | `atendida_por` | `supabase/functions/processar-solicitacao-lgpd/index.ts:194` (update) |
 | `open_finance_consents` | `revoked_at` | `supabase/functions/open-finance/index.ts:527` (update) |
@@ -94,7 +107,7 @@ Amostra conferida contra produção com `information_schema.columns`: 16 de 16 a
 
 ## Ordem de correção proposta
 
-1. Adicionar as colunas do grupo 2 **que o código grava** (as da tabela acima), com `ADD COLUMN IF NOT EXISTS`. É DDL em produção — regra 6.6, decisão do dono.
+1. ~~Adicionar as colunas do grupo 2 que o código grava~~ — feito na PR #440: 25 colunas em 10 tabelas, mais a `UNIQUE (empresa_id, semana_inicio)` de `resumos_executivos_semanais`. Ficaram de fora, de propósito, `saved_filter_subscriptions` (produção tem outro desenho da tabela, precisa de convergência de constraint) e os nomes errados de coluna, corrigidos na PR #441.
 
 2. Versionar as colunas do grupo 1 (as 272 que só existem no banco), para a restauração não perdê-las.
 
