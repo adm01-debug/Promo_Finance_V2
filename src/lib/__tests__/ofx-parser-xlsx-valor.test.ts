@@ -137,6 +137,19 @@ describe('recomposicao nao confunde coluna extra do fim com valor partido', () =
     const r = parseCSV('data,descricao,valor,parcela\n01/01/2026,Teste,1.234,2,\n', 'e.csv');
     expect(r.extrato?.transacoes[0].valor).toBe(1234);
     expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
+    // ambiguo com o caso "ultima coluna declarada vazia": tem de avisar
+    expect(r.avisos.join(' ')).toMatch(/pode ter perdido centavos/i);
+  });
+
+  it('ultima coluna DECLARADA vazia com valor partido: le inteiro mas NAO fica calado', () => {
+    // Achado do Devin na 2a rodada: `data,descricao,valor,tipo` + `...,1.234,56,`
+    // tem a mesma forma do caso da parcela. Antes a linha era aceita como 1234
+    // sem aviso nenhum.
+    const r = parseCSV('data,descricao,valor,tipo\n01/01/2026,Teste,1.234,56,\n', 'e.csv');
+    expect(r.sucesso).toBe(true);
+    expect(r.extrato?.transacoes[0].valor).toBe(1234);
+    expect(r.avisos.join(' ')).toMatch(/pode ter perdido centavos/i);
+    expect(r.avisos.join(' ')).not.toMatch(/recompostos/i);
   });
 
   it('valor entre aspas com parcela e virgula final nao e concatenado nem descartado', () => {

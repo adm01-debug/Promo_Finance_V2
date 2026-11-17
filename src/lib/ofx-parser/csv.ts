@@ -79,21 +79,36 @@ export function parseCSV(
       //   3) a vizinha tem de ser 1 ou 2 digitos;
       //   4) o valor recomposto tem de ser aceito pelo parser, senao fica como
       //      estava.
-      const semVaziosNoFim = [...cols];
-      while (semVaziosNoFim.length > headers.length && semVaziosNoFim.at(-1) === '') {
-        semVaziosNoFim.pop();
-      }
-
-      let colunas = semVaziosNoFim;
-      const valorCelula = valorIdx !== -1 ? (semVaziosNoFim[valorIdx] ?? '') : '';
-      const vizinha = valorIdx !== -1 ? (semVaziosNoFim[valorIdx + 1] ?? '') : '';
-      if (
+      // Tres formas chegam aqui com UMA coluna a mais que o cabecalho, e duas
+      // delas sao indistinguiveis uma da outra:
+      //
+      //   A) valor BRL sem aspas partido pela virgula decimal:
+      //      `data,descricao,valor` + `...,1.234,56`      -> ['1.234','56']
+      //   B) delimitador sobrando no fim, com coluna declarada depois do valor:
+      //      `data,descricao,valor,parcela` + `...,1.234,2,`
+      //   C) valor partido E ultima coluna declarada vazia:
+      //      `data,descricao,valor,tipo` + `...,1.234,56,`
+      //
+      // B e C produzem exatamente a mesma sequencia de celulas. Nenhuma regra
+      // decide entre elas, entao a linha NAO e adivinhada: fica a leitura
+      // conservadora (valor inteiro, como antes desta correcao) e sai um aviso
+      // dizendo que pode ter perdido centavos. Adivinhar aqui foi o defeito que
+      // os revisores pegaram nas duas rodadas anteriores desta PR.
+      const ultimaVazia = cols.length > 0 && cols.at(-1) === '';
+      const umaColunaAMais = cols.length === headers.length + 1;
+      const valorCelula = valorIdx !== -1 ? (cols[valorIdx] ?? '') : '';
+      const vizinha = valorIdx !== -1 ? (cols[valorIdx + 1] ?? '') : '';
+      const podeSerValorPartido =
         delimiter === ',' &&
         valorIdx !== -1 &&
-        semVaziosNoFim.length === headers.length + 1 &&
+        umaColunaAMais &&
         !valorCelula.includes(',') &&
-        /^\d{1,2}$/.test(vizinha)
-      ) {
+        /^\d{1,2}$/.test(vizinha);
+
+      let colunas = cols;
+
+      if (podeSerValorPartido && !ultimaVazia) {
+        // Caso A, sem ambiguidade: a coluna extra veio da virgula decimal.
         const recomposto = `${valorCelula},${vizinha}`;
         let aceito = false;
         try {
@@ -103,22 +118,24 @@ export function parseCSV(
           aceito = false;
         }
         if (aceito) {
-          colunas = [
-            ...semVaziosNoFim.slice(0, valorIdx),
-            recomposto,
-            ...semVaziosNoFim.slice(valorIdx + 2),
-          ];
+          colunas = [...cols.slice(0, valorIdx), recomposto, ...cols.slice(valorIdx + 2)];
           avisos.push(
             `Linha ${i + 1}: valor "${recomposto}" estava sem aspas num CSV separado por vírgula; os centavos foram recompostos. Exporte com aspas ou use ponto e vírgula.`
           );
         }
-      }
-
-      if (colunas === semVaziosNoFim && semVaziosNoFim.length !== headers.length) {
-        // Nao descarta a linha (CSV com coluna sobrando funciona hoje), mas a
-        // leitura pode estar deslocada e isso deixa de ser silencioso.
+      } else if (podeSerValorPartido && ultimaVazia) {
+        // Casos B e C: ambiguos entre si. Le o valor inteiro (comportamento
+        // anterior, nunca inventa centavos) e avisa.
+        colunas = cols.slice(0, -1);
         avisos.push(
-          `Linha ${i + 1}: ${semVaziosNoFim.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento.`
+          `Linha ${i + 1}: valor "${valorCelula}" seguido de "${vizinha}" e de coluna vazia — não é possível saber se são centavos sem aspas ou coluna declarada. O valor foi lido como ${valorCelula} e pode ter perdido centavos; exporte com aspas ou use ponto e vírgula.`
+        );
+      } else if (umaColunaAMais && ultimaVazia) {
+        // Delimitador sobrando no fim, sem ambiguidade de valor.
+        colunas = cols.slice(0, -1);
+      } else if (cols.length !== headers.length) {
+        avisos.push(
+          `Linha ${i + 1}: ${cols.length} colunas para ${headers.length} do cabeçalho — confira o mapeamento.`
         );
       }
 
