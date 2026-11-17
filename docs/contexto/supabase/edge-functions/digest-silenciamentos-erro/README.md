@@ -4,9 +4,9 @@
 |---|---|
 | nome | digest-silenciamentos-erro |
 | status | ACTIVE |
-| versão | 86 |
+| versão | 87 |
 | verify_jwt | não |
-| entrypoint | file:///app/supabase/functions/digest-silenciamentos-erro/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/digest-silenciamentos-erro/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/digest-silenciamentos-erro |
 | fonte no repo | `supabase/functions/digest-silenciamentos-erro/` |

@@ -4,9 +4,9 @@
 |---|---|
 | nome | decidir-regime |
 | status | ACTIVE |
-| versão | 87 |
+| versão | 88 |
 | verify_jwt | não |
-| entrypoint | file:///app/supabase/functions/decidir-regime/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/decidir-regime/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/decidir-regime |
 | fonte no repo | `supabase/functions/decidir-regime/` |

@@ -4,9 +4,9 @@
 |---|---|
 | nome | expert-agent |
 | status | ACTIVE |
-| versão | 84 |
+| versão | 85 |
 | verify_jwt | não |
-| entrypoint | file:///app/supabase/functions/expert-agent/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/expert-agent/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/expert-agent |
 | fonte no repo | `supabase/functions/expert-agent/` |
