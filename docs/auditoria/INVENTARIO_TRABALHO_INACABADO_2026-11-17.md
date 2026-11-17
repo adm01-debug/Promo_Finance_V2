@@ -228,6 +228,8 @@ ENTREGA 2 — tornar a antecedência de alerta real (DDL em produção, deixar P
 
 Cobertura: adicionar teste de componente que renderiza a aba Sistema, clica "Salvar Configurações" e exige a chamada de persistência (hoje nenhum teste toca esse caminho), e um teste SQL do novo parâmetro da RPC.
 
+> **Ressalva na correção proposta** (achado do Codex na PR #422): `CREATE OR REPLACE FUNCTION gerar_alertas_vencimento(p_dias integer DEFAULT 7)` **não substitui** a função atual — cria uma sobrecarga. Em produção existe uma única assinatura, `gerar_alertas_vencimento()` sem argumentos (`SELECT oid::regprocedure FROM pg_proc WHERE proname LIKE 'gerar_alertas%'` → 1 linha), e é ela que o cron e `supabase/functions/gerar-alertas/index.ts:59` chamam. Com a sobrecarga, esses consumidores continuariam executando o corpo antigo, com os limites fixos. A correção tem de manter a assinatura sem argumentos e resolver a antecedência por usuário dentro do corpo; se o parâmetro for mesmo necessário, a migração precisa trocar os consumidores junto.
+
 ## 4. Cobrança Asaas é criada no provedor e nunca gravada no sistema: insert em asaas*payments falha sempre (uuid x id "cus*") e o erro só é logado
 
 - **Gravidade:** alta · **Esforço estimado:** pequeno · **Frente:** falha-silenciosa
