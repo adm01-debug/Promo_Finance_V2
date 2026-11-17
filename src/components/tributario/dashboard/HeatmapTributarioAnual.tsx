@@ -80,7 +80,7 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
             </Button>
           </div>
         </div>
-        {data && (
+        {data && data.insights?.mes_pico != null && (
           <div className="flex flex-wrap gap-2 pt-2">
             <Badge variant="outline" className="text-xs">
               <TrendingUp className="h-3 w-3 mr-1" /> Pico: {MESES[data.insights.mes_pico - 1]}
@@ -99,9 +99,9 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-64 w-full" />
-        ) : !data ? (
+        ) : !data || data.celulas.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Selecione uma empresa e ano para visualizar.
+            {data?.detalhe ?? 'Selecione uma empresa e ano para visualizar.'}
           </p>
         ) : (
           <div ref={gridRef} className="overflow-x-auto">

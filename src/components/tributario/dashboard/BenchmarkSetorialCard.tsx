@@ -72,7 +72,11 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
 
   // TS nao mantem o estreitamento de data.carga_empresa_12m ate o JSX abaixo.
   const cargaEmpresa = data.carga_empresa_12m;
-  const percentil = data.percentil ?? 0;
+  // `?? 0` aqui mostrava "Percentil estimado: 0" quando o percentil nao e
+  // calculavel -- faixa de benchmark com P25 = P75, permitida pela constraint
+  // benchmark_percentis_coerentes. Percentil ausente esconde a regua, em vez de
+  // virar posicao falsa.
+  const percentil = data.percentil;
 
   const corPosicao =
     data.posicao === 'abaixo_p25'
@@ -109,28 +113,30 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Gauge percentil */}
-        <div>
-          <div className="flex justify-between text-xs text-muted-foreground mb-2">
-            <span>P25</span>
-            <span>Mediana</span>
-            <span>P75</span>
+        {/* Gauge percentil — só quando há percentil calculável */}
+        {percentil != null && (
+          <div>
+            <div className="flex justify-between text-xs text-muted-foreground mb-2">
+              <span>P25</span>
+              <span>Mediana</span>
+              <span>P75</span>
+            </div>
+            <div className="relative h-3 rounded-full bg-muted overflow-hidden">
+              <div className="absolute inset-y-0 left-0 w-1/4 bg-success/30" />
+              <div className="absolute inset-y-0 left-1/4 w-1/2 bg-warning/30" />
+              <div className="absolute inset-y-0 right-0 w-1/4 bg-destructive/30" />
+              <motion.div
+                initial={{ left: '0%' }}
+                animate={{ left: `${Math.min(95, Math.max(2, percentil))}%` }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-5 w-1.5 bg-foreground rounded-full shadow-md"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              Percentil estimado: <strong className="text-foreground">{percentil}</strong>
+            </p>
           </div>
-          <div className="relative h-3 rounded-full bg-muted overflow-hidden">
-            <div className="absolute inset-y-0 left-0 w-1/4 bg-success/30" />
-            <div className="absolute inset-y-0 left-1/4 w-1/2 bg-warning/30" />
-            <div className="absolute inset-y-0 right-0 w-1/4 bg-destructive/30" />
-            <motion.div
-              initial={{ left: '0%' }}
-              animate={{ left: `${Math.min(95, Math.max(2, percentil))}%` }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-5 w-1.5 bg-foreground rounded-full shadow-md"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            Percentil estimado: <strong className="text-foreground">{percentil}</strong>
-          </p>
-        </div>
+        )}
 
         {/* Números */}
         {data.benchmark && (

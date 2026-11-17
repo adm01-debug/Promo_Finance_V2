@@ -44,7 +44,12 @@ Deno.serve(
       const supabaseUrl = Deno.env.get('SUPABASE_URL');
       const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-      let empresa = { id: empresaId, razao_social: 'Empresa', regime: 'simples' };
+      let empresa = {
+        id: empresaId,
+        razao_social: 'Empresa',
+        regime: 'simples',
+        cnae: null as string | null,
+      };
       // Sem default: 6.8 era exatamente a mediana do Simples, entao empresa sem
       // faturamento aparecia "na mediana do setor" com 0,0 p.p. de diferenca.
       let cargaEmpresa12m: number | null = null;
@@ -72,7 +77,7 @@ Deno.serve(
 
         const { data: emp } = await supa
           .from('empresas')
-          .select('id, razao_social, regime_tributario')
+          .select('id, razao_social, regime_tributario, cnae_principal')
           .eq('id', empresaId)
           .maybeSingle();
         if (emp) {
@@ -80,6 +85,7 @@ Deno.serve(
             id: emp.id,
             razao_social: emp.razao_social || 'Empresa',
             regime: (emp as any).regime_tributario || 'simples',
+            cnae: (emp as any).cnae_principal ?? null,
           };
         }
 
@@ -107,15 +113,30 @@ Deno.serve(
       if (supabaseUrl && serviceKey) {
         const supa2 = createClient(supabaseUrl, serviceKey);
         const hoje = new Date().toISOString().slice(0, 10);
-        const { data: bm } = await supa2
-          .from('benchmarks_setoriais')
-          .select('regime, carga_p25_pct, mediana, carga_p75_pct, carga_media_pct, fonte')
-          .eq('regime', empresa.regime)
-          .lte('vigencia_inicio', hoje)
-          .or(`vigencia_fim.is.null,vigencia_fim.gte.${hoje}`)
-          .order('vigencia_inicio', { ascending: false })
-          .limit(1);
+        // A tabela distingue benchmark por `cnae_prefix` (faz parte da chave
+        // benchmark_unico), entao filtrar so por regime e vigencia escolhia a linha
+        // mais RECENTE de QUALQUER setor e a rotulava como setorial da empresa --
+        // uma industria de CNAE 10 podia receber a mediana do comercio, CNAE 47.
+        // Prefixo de 4 digitos com ilike e o padrao que
+        // gerar-alertas-tributarios/index.ts:194-201 ja usa.
+        let bm: Array<Record<string, unknown>> | null = null;
 
+        if (empresa.cnae) {
+          const cnaePrefix = String(empresa.cnae).slice(0, 4);
+          const { data: setorial } = await supa2
+            .from('benchmarks_setoriais')
+            .select('regime, carga_p25_pct, mediana, carga_p75_pct, carga_media_pct, fonte, setor')
+            .eq('regime', empresa.regime)
+            .ilike('cnae_prefix', `${cnaePrefix}%`)
+            .lte('vigencia_inicio', hoje)
+            .or(`vigencia_fim.is.null,vigencia_fim.gte.${hoje}`)
+            .order('vigencia_inicio', { ascending: false })
+            .limit(1);
+          bm = setorial ?? null;
+        }
+
+        // Sem CNAE na empresa, ou sem linha para o setor dela, cai na referencia
+        // interna -- e NAO na linha de outro setor, que seria pior que nao ter.
         const linha = bm?.[0];
         if (
           linha &&
@@ -131,10 +152,12 @@ Deno.serve(
             media: Number(linha.carga_media_pct ?? linha.mediana),
           };
           origemBenchmark = 'tabela';
+          const setor =
+            typeof linha.setor === 'string' && linha.setor ? ` — setor ${linha.setor}` : '';
           fonteBenchmark =
-            typeof linha.fonte === 'string' && linha.fonte
+            (typeof linha.fonte === 'string' && linha.fonte
               ? linha.fonte
-              : 'public.benchmarks_setoriais';
+              : 'public.benchmarks_setoriais') + setor;
         }
       }
 
@@ -165,7 +188,7 @@ Deno.serve(
       const diferenca = Math.round((cargaEmpresa12m - mediana) * 10) / 10;
 
       let posicao: 'abaixo_p25' | 'mediana' | 'acima_p75';
-      let percentil: number;
+      let percentil: number | null;
       if (cargaEmpresa12m < benchmark.p25) {
         posicao = 'abaixo_p25';
         percentil = Math.max(
@@ -181,7 +204,13 @@ Deno.serve(
       } else {
         posicao = 'mediana';
         const range = benchmark.p75 - benchmark.p25;
-        percentil = Math.round(25 + ((cargaEmpresa12m - benchmark.p25) / range) * 50);
+        // Faixa de largura zero e permitida pela constraint
+        // benchmark_percentis_coerentes (`carga_p75_pct >= carga_p25_pct`). Com
+        // P25 = P75 = carga, a conta era 0/0 = NaN, serializado como
+        // `percentil: null`, e o card mostrava percentil 0 ao lado do badge de
+        // mediana -- posicao falsa. Faixa sem largura nao tem percentil.
+        percentil =
+          range > 0 ? Math.round(25 + ((cargaEmpresa12m - benchmark.p25) / range) * 50) : null;
       }
 
       const insights: string[] = [];

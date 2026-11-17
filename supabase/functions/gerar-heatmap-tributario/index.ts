@@ -101,11 +101,30 @@ Deno.serve(
       // por uma curva de sazonalidade escrita no codigo, e o mapa de calor saia
       // inteiro preenchido -- indistinguivel de um ano de dados reais.
       // O painel ja trata a ausencia (HeatmapTributarioAnual.tsx:102).
-      const mesesComFaturamento = Object.keys(receitaPorMes).length;
-      if (mesesComFaturamento === 0) {
+      const mesesComLancamento = Object.keys(receitaPorMes)
+        .map(Number)
+        .filter((m) => m >= 1 && m <= 12)
+        .sort((a, b) => a - b);
+
+      if (mesesComLancamento.length === 0) {
+        // Contrato COMPLETO, com zeros. A primeira versao desta correcao devolvia
+        // so `{ celulas: [], motivo }`, e o cabecalho do painel le
+        // `data.insights.mes_pico` dentro de `{data && ...}`
+        // (HeatmapTributarioAnual.tsx:86) ANTES da guarda de vazio da linha 102 --
+        // ou seja, a resposta curta trocava o numero inventado por TypeError na
+        // renderizacao. `mes_pico` e `mes_vale` vao nulos de proposito: nao existe
+        // pico num ano sem lancamento.
         return jsonComCors(
           {
+            success: true,
+            ano,
+            empresa_id: empresaId,
             celulas: [],
+            meses_com_lancamento: [],
+            total_por_mes: Array.from({ length: 12 }, () => 0),
+            total_ano: 0,
+            max_valor: 0,
+            insights: { mes_pico: null, mes_vale: null },
             motivo: 'sem_faturamento_no_ano',
             detalhe:
               'Nao ha faturamento lancado para o ano informado. Lance o faturamento mensal para o mapa de calor ser calculado.',
@@ -124,7 +143,12 @@ Deno.serve(
       const variacoesMesAnterior: Record<string, number | null> = {};
       for (const t of TRIBUTOS) variacoesMesAnterior[t] = null;
 
-      for (let mes = 1; mes <= 12; mes++) {
+      // So gera celula para mes COM lancamento. Preencher mes ausente com receita
+      // zero fazia a ausencia virar vale do ano e variacao de -100% em relacao ao
+      // mes anterior -- ausencia de dado lida como queda real de tributo. Sem
+      // celula, o mes nao entra em pico/vale e a variacao do mes seguinte fica
+      // nula, porque nao existe celula anterior para comparar.
+      for (const mes of mesesComLancamento) {
         const receita = receitaPorMes[mes] ?? 0;
         for (const t of TRIBUTOS) {
           const valor = receita * ALIQUOTAS[t];
@@ -157,9 +181,14 @@ Deno.serve(
       });
 
       const totalAno = totalPorMes.reduce((a, b) => a + b, 0);
-      const mesPico = totalPorMes.indexOf(Math.max(...totalPorMes)) + 1;
-      const mesValeIdx = totalPorMes.findIndex((v) => v === Math.min(...totalPorMes));
-      const mesVale = mesValeIdx >= 0 ? mesValeIdx + 1 : null;
+
+      // Pico e vale so entre meses COM lancamento. Antes o indexOf percorria os 12
+      // e um mes sem dado, valendo zero, era eleito vale do ano.
+      const comDado = mesesComLancamento.map((m) => ({ mes: m, total: totalPorMes[m - 1] }));
+      const mesPico = comDado.reduce((a, b) => (b.total > a.total ? b : a)).mes;
+      // Com um unico mes lancado, pico e vale seriam o mesmo mes: vale fica nulo.
+      const mesVale =
+        comDado.length > 1 ? comDado.reduce((a, b) => (b.total < a.total ? b : a)).mes : null;
 
       return jsonComCors(
         {
@@ -167,6 +196,7 @@ Deno.serve(
           ano,
           empresa_id: empresaId,
           celulas,
+          meses_com_lancamento: mesesComLancamento,
           total_por_mes: totalPorMes.map((v) => Math.round(v)),
           total_ano: Math.round(totalAno),
           max_valor: Math.round(maxValor),
