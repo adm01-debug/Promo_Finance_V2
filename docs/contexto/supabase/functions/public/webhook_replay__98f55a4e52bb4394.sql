@@ -6,11 +6,20 @@ CREATE OR REPLACE FUNCTION public.webhook_replay(p_id uuid)
 AS $function$
 DECLARE
   v_row public.webhooks_log%ROWTYPE;
+  v_dlq_id uuid;
 BEGIN
   -- Guarda: só admin ou service_role (auth.uid() nulo).
   IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN
     RAISE EXCEPTION 'unauthorized: admin role required to replay webhooks';
   END IF;
+
+  -- O dlq_id tem de ser lido ANTES do update: o `RETURNING *` devolve a linha
+  -- nova, em que dlq_id acabou de virar NULL, de modo que o bloco seguinte
+  -- nunca rodava e o item da DLQ ficava aberto para sempre.
+  SELECT dlq_id INTO v_dlq_id
+    FROM public.webhooks_log
+   WHERE id = p_id
+     FOR UPDATE;
 
   UPDATE public.webhooks_log
      SET status        = 'pending',
@@ -27,11 +36,13 @@ BEGIN
   END IF;
 
   -- Se veio de DLQ, marca DLQ como resolvido.
-  IF v_row.dlq_id IS NOT NULL THEN
+  IF v_dlq_id IS NOT NULL THEN
     UPDATE public.webhook_dlq
        SET resolved_at = now(),
+           resolved_by = COALESCE(resolved_by, auth.uid()),
            notes = COALESCE(notes,'') || E'\nRe-enfileirado via webhook_replay em ' || now()::text
-     WHERE id = v_row.dlq_id;
+     WHERE id = v_dlq_id
+       AND resolved_at IS NULL;
   END IF;
 
   RETURN v_row;
