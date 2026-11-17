@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9871bfbd5ba063528310b25866ef859f540c5025` (2026-11-17T00:54:44-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `915784ca7f764889554a91799115986f8553be43` (2026-11-17T01:39:12-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -461,8 +461,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (36)
-- bun.lock (31)
+- package.json (37)
+- bun.lock (32)
 - .github/workflows/ci.yml (26)
 - supabase/functions/asaas-proxy/index.ts (15)
 - .github/workflows/deno-tests.yml (14)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `915784c` chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)
 - 2026-11-17 `9871bfb` feat(admin): liga os 4 painéis de telemetria órfãos — 36 KB prontos e inalcançáveis (#405)
 - 2026-11-17 `d97021a` chore(deps): bump axe-core from 4.11.3 to 4.14.0 (#379)
 - 2026-11-17 `66fc736` chore(deps-dev): bump @testing-library/dom from 10.4.1 to 10.4.2 (#376)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `8f1767c` feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)
 - 2026-11-16 `f48e9c1` fix: inadimplência, liquidez e cobertura de caixa paravam de funcionar com a carteira toda vencida (#396)
 - 2026-11-16 `c7bd81b` fix: não perder dívida vencida de balanço, relatório e cobrança quando o status 'vencido' passar a existir (#394)
-- 2026-11-16 `02a26f0` fix(db): catálogo de elisão volta a ser tabela na cadeia, como já é em produção (#393)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

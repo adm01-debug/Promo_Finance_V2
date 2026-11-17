@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "9871bfbd5ba063528310b25866ef859f540c5025",
+  "sha": "915784ca7f764889554a91799115986f8553be43",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 03:55 UTC",
+  "generated_at": "2026-11-17 04:39 UTC",
   "files_total": 3921,
   "code_files": 3544,
   "code_lines": 504141
@@ -246332,10 +246332,20 @@
   }
  },
  "git": {
-  "sha": "9871bfbd5ba063528310b25866ef859f540c5025",
+  "sha": "915784ca7f764889554a91799115986f8553be43",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "915784c",
+    "date": "2026-11-17",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "9871bfb",
     "date": "2026-11-17",
@@ -246707,25 +246717,16 @@
     "files": [
      "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx"
     ]
-   },
-   {
-    "sha": "0bb1b7a",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)",
-    "files": [
-     "src/lib/__tests__/edge-functions.security.test.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    3
+    4
    ],
    [
     "package.json",
-    3
+    4
    ],
    [
     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",

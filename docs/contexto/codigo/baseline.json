@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9871bfbd5ba063528310b25866ef859f540c5025",
+  "commit": "915784ca7f764889554a91799115986f8553be43",
   "branch": "main",
-  "data_commit": "2026-11-17T00:54:44-03:00",
+  "data_commit": "2026-11-17T01:39:12-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "915784c",
+    "data": "2026-11-17",
+    "assunto": "chore(deps-dev): bump typescript-eslint from 8.71.2 to 8.72.2 (#374)"
+   },
    {
     "sha": "9871bfb",
     "data": "2026-11-17",
@@ -126,11 +131,6 @@
     "sha": "311bf35",
     "data": "2026-11-16",
     "assunto": "fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)"
-   },
-   {
-    "sha": "40876f4",
-    "data": "2026-11-16",
-    "assunto": "fix: KPIs de contas a receber e a pagar param de inventar o período anterior (#382)"
    }
   ],
   "arquivos_mudados_7d": 808,
@@ -153,11 +153,11 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 23
+    "mudancas": 24
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 22
+    "mudancas": 23
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 31
+    "mudancas": 32
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -305,7 +305,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 15
+    "commits": 16
    },
    {
     "autor": "devin-ai-integration[bot]",
