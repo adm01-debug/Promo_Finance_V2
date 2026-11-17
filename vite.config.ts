@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
+import { createRequire } from 'node:module';
 import { componentTagger } from 'lovable-tagger';
 import { visualizer } from 'rollup-plugin-visualizer';
 import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
@@ -14,8 +15,7 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
   if (mode !== 'production') return;
   const manifestVars: { name: string; scope: string; required: boolean }[] = (() => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      return require('./env.manifest.json').vars;
+      return createRequire(import.meta.url)('./env.manifest.json').vars;
     } catch {
       return [];
     }
@@ -23,7 +23,9 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
   const required = manifestVars
     .filter((v) => v.scope === 'frontend' && v.required)
     .map((v) => v.name as string);
-  const missing = required.filter((k) => !env[k as keyof typeof env] || !env[k as keyof typeof env].trim());
+  const missing = required.filter(
+    (k) => !env[k as keyof typeof env] || !env[k as keyof typeof env].trim()
+  );
   if (missing.length > 0) {
     const msg = [
       '',
@@ -54,11 +56,17 @@ export default defineConfig(({ mode }) => {
           open: false,
         }),
       // Publica source maps e associa release no Sentry.
-      // Ativo somente quando SENTRY_AUTH_TOKEN está presente — build local sem token passa normalmente.
-      // Para ativar: adicione o secret SENTRY_AUTH_TOKEN nas configurações do repositório GitHub
-      // (Settings → Secrets and variables → Actions) com o token de ingest da organização Sentry.
+      // Ativo somente quando SENTRY_AUTH_TOKEN, SENTRY_ORG e SENTRY_PROJECT estão
+      // presentes — o plugin falha no build sem org e project, então exigir os três
+      // evita quebrar o build de quem tem só o token. Build local sem eles passa.
+      // Para ativar: adicione os três secrets nas configurações do repositório
+      // (Settings → Secrets and variables → Actions).
       process.env.SENTRY_AUTH_TOKEN &&
+        process.env.SENTRY_ORG &&
+        process.env.SENTRY_PROJECT &&
         sentryVitePlugin({
+          org: process.env.SENTRY_ORG,
+          project: process.env.SENTRY_PROJECT,
           sourcemaps: {
             filesToDeleteAfterUpload: ['./dist/**/*.map'],
           },

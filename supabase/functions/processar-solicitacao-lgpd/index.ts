@@ -7,6 +7,7 @@ import { mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { anonimizarTitular, fecharSolicitacao } from './escrita.ts';
 const log = createLogger('processar-solicitacao-lgpd');
 
 interface Payload {
@@ -168,20 +169,11 @@ serve(
           urlDump = signed?.signedUrl ?? null;
           payloadResposta = { formato: 'csv', path, registros: dump };
         } else if (sol.tipo === 'exclusao' || sol.tipo === 'anonimizacao') {
-          const hashed = `anon-${targetUserId.slice(0, 8)}@removido.local`;
-          await adminClient
-            .from('profiles')
-            .update({
-              full_name: 'Titular removido',
-              email: hashed,
-              avatar_url: null,
-              phone: null,
-            })
-            .eq('id', targetUserId);
-          payloadResposta = {
-            anonimizado_em: new Date().toISOString(),
-            email_substituto: hashed,
-          };
+          payloadResposta = await anonimizarTitular(
+            adminClient,
+            targetUserId,
+            new Date().toISOString()
+          );
         } else if (sol.tipo === 'retificacao') {
           payloadResposta = {
             instrucoes:
@@ -189,17 +181,13 @@ serve(
           };
         }
 
-        // Atualiza solicitação
-        await adminClient
-          .from('solicitacoes_lgpd')
-          .update({
-            status: 'atendida',
-            payload_resposta: payloadResposta,
-            url_dump: urlDump,
-            atendida_em: new Date().toISOString(),
-            atendida_por: userId,
-          })
-          .eq('id', sol.id);
+        await fecharSolicitacao(adminClient, {
+          solicitacaoId: sol.id,
+          payloadResposta,
+          urlDump,
+          userId,
+          agoraIso: new Date().toISOString(),
+        });
 
         // Auditoria P9
         await adminClient.from('auditoria_tributaria').insert({

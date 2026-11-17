@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { competenciasConsecutivas } from '../_shared/carga-tributaria.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
@@ -308,7 +309,10 @@ serve(
         await updateRun({ current_step: 'detector_regime', step_index: 5 });
         const { data: regimes } = await client
           .from('regime_decision_cache')
-          .select('empresa_id, ano, mes, carga_pct, regime_recomendado')
+          // regime_decision_cache não tem `carga_pct` nem `regime_recomendado`:
+          // a decisão inteira fica em `decisao` (jsonb), e pedir as colunas
+          // inexistentes derrubava o select, desligando este detector
+          .select('empresa_id, ano, mes, decisao')
           .order('ano', { ascending: false })
           .order('mes', { ascending: false })
           .limit(500);
@@ -319,12 +323,23 @@ serve(
           >();
           for (const r of regimes) {
             if (!r.empresa_id) continue;
+            const decisao = (r.decisao ?? {}) as {
+              recomendado?: { cargaEfetiva?: number | null };
+            };
+            const carga = decisao.recomendado?.cargaEfetiva;
             if (!byEmp.has(r.empresa_id)) byEmp.set(r.empresa_id, []);
-            byEmp.get(r.empresa_id)!.push(r);
+            byEmp.get(r.empresa_id)!.push({
+              carga_pct: typeof carga === 'number' ? carga : null,
+              ano: r.ano,
+              mes: r.mes,
+            });
           }
           for (const [empId, arr] of byEmp.entries()) {
             if (arr.length < 2) continue;
             const [atual, anterior] = arr;
+            // regime_decision_cache nao garante serie mensal: sem este guarda,
+            // janeiro vs novembro virava "variacao MoM" de 100%
+            if (!competenciasConsecutivas(atual, anterior)) continue;
             if (atual.carga_pct && anterior.carga_pct) {
               const variacao = Math.abs(
                 ((Number(atual.carga_pct) - Number(anterior.carga_pct)) /

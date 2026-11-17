@@ -2,6 +2,7 @@
 // Substitui a versão que dependia de LOVABLE_API_KEY (ausente neste projeto).
 // Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { cargaEfetivaDeFaturamento } from '../_shared/carga-tributaria.ts';
 import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import {
   chaveReferenciaInterna,
@@ -105,16 +106,21 @@ Deno.serve(
 
         const { data: fat } = await supa
           .from('faturamento_mensal')
-          .select('receita_bruta, total_tributos')
+          // a coluna de tributos em faturamento_mensal é `valor_impostos`;
+          // `total_tributos` não existe e derrubava o select inteiro, deixando
+          // a carga da empresa sem histórico nenhum
+          .select('receita_bruta, valor_impostos')
           .eq('empresa_id', empresaId)
           .order('ano', { ascending: false })
           .order('mes', { ascending: false })
           .limit(12);
 
         if (fat && fat.length > 0) {
-          const totReceita = fat.reduce((acc, r) => acc + Number(r.receita_bruta || 0), 0);
-          const totTrib = fat.reduce((acc, r) => acc + Number(r.total_tributos || 0), 0);
-          if (totReceita > 0) cargaEmpresa12m = Math.round((totTrib / totReceita) * 1000) / 10;
+          // cargaEfetivaDeFaturamento devolve null quando o tributo somado e
+          // zero: com default 0 na coluna e a tela de cadastro nao enviando
+          // imposto, publicar 0% faria o benchmark dizer "operacao eficiente"
+          // sem ter medido imposto nenhum
+          cargaEmpresa12m = cargaEfetivaDeFaturamento(fat) ?? cargaEmpresa12m;
         }
       }
 
