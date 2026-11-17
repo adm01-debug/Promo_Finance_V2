@@ -228,45 +228,53 @@ CRITICAS = {
     "rpcs_escopo": "20260902170000_fix_rpcs_security_definer_sem_escopo.sql",
 }
 
-# Conteudo que o gate exige PRESENTE (check_present). Sem ele o cenario limpo
-# reprova, porque "SELECT 1;" nao satisfaz padrao obrigatorio nenhum.
-OBRIGATORIO = {
-    CRITICAS["plano_contas"]: (
-        "CREATE TABLE IF NOT EXISTS public.plano_contas (id uuid PRIMARY KEY);\n"
-    ),
-    CRITICAS["recreate6"]: (
-        "DROP FUNCTION IF EXISTS public.faixa_simples_reparticao_valida(jsonb);\n"
-        "ALTER TABLE public.protocolos_st_ncms\n"
-        "  DROP CONSTRAINT IF EXISTS protocolos_st_ncms_mva_range_chk;\n"
-        "ALTER TABLE public.elisao_regras_creditos\n"
-        "  DROP CONSTRAINT IF EXISTS elisao_regras_creditos_aliquota_check;\n"
-    ),
-    CRITICAS["reconciliar_v3"]: (
-        "ALTER TABLE public.cron_job_logs\n"
-        "    ADD COLUMN IF NOT EXISTS success boolean,\n"
-        "    ADD COLUMN IF NOT EXISTS created_at timestamp with time zone"
-        " NOT NULL DEFAULT now();\n"
-        "ALTER TABLE public.elisao_regras_creditos\n"
-        "    ADD COLUMN IF NOT EXISTS aliquota numeric;\n"
-    ),
-    CRITICAS["rpcs_escopo"]: (
+# Conteudo que o gate exige PRESENTE (check_present), um fragmento por padrao.
+# Fragmentado de proposito: test_reprova_cada_padrao_obrigatorio_ausente remove
+# um fragmento por vez e exige que o gate reprove. Sem isso a guarda nao estaria
+# provada -- e um check_present que nao reprova e exatamente o defeito que esta
+# PR corrigiu no proprio script.
+OBRIGATORIO_FRAGMENTOS = {
+    CRITICAS["plano_contas"]: [
+        "CREATE TABLE IF NOT EXISTS public.plano_contas (id uuid PRIMARY KEY);\n",
+    ],
+    CRITICAS["recreate6"]: [
         "DROP FUNCTION IF EXISTS"
-        " public.confirmar_conciliacao(uuid, uuid, uuid, numeric);\n"
-    ),
-    CRITICAS["ledger3"]: (
+        " public.faixa_simples_reparticao_valida(jsonb);\n",
+        "ALTER TABLE public.protocolos_st_ncms\n"
+        "  DROP CONSTRAINT IF EXISTS protocolos_st_ncms_mva_range_chk;\n",
+        "ALTER TABLE public.elisao_regras_creditos\n"
+        "  DROP CONSTRAINT IF EXISTS elisao_regras_creditos_aliquota_check;\n",
+    ],
+    CRITICAS["reconciliar_v3"]: [
+        "ALTER TABLE public.cron_job_logs\n"
+        "    ADD COLUMN IF NOT EXISTS success boolean;\n",
+        "ALTER TABLE public.cron_job_logs\n"
+        "    ADD COLUMN IF NOT EXISTS created_at timestamp with time zone"
+        " NOT NULL DEFAULT now();\n",
+        "ALTER TABLE public.elisao_regras_creditos\n"
+        "    ADD COLUMN IF NOT EXISTS aliquota numeric;\n",
+    ],
+    CRITICAS["rpcs_escopo"]: [
+        "DROP FUNCTION IF EXISTS"
+        " public.confirmar_conciliacao(uuid, uuid, uuid, numeric);\n",
+    ],
+    CRITICAS["ledger3"]: [
         "DO $g$ BEGIN\n"
         "  IF to_regprocedure('public.watch_cron_failures()') IS NOT NULL THEN\n"
         "    NULL;\n"
         "  END IF;\n"
-        "END $g$;\n"
-    ),
+        "END $g$;\n",
+    ],
 }
+
+OBRIGATORIO = {k: "".join(v) for k, v in OBRIGATORIO_FRAGMENTOS.items()}
 
 
 class MigrationReplaySafety(_MiniRepo):
     SCRIPT = "test-migration-replay-safety.sh"
 
     def gate(self, arquivos: dict[str, str] | None = None, ausentes: tuple[str, ...] = (),
+             crus: tuple[str, ...] = (),
              ) -> subprocess.CompletedProcess[str]:
         pasta = self.repo / "supabase" / "migrations"
         shutil.rmtree(pasta, ignore_errors=True)
@@ -280,10 +288,8 @@ class MigrationReplaySafety(_MiniRepo):
         # negativo testa exatamente a violacao que ele injeta, e nao reprova de
         # carona por ter apagado um padrao obrigatorio do arquivo.
         for nome, conteudo in (arquivos or {}).items():
-            self.escrever(
-                f"supabase/migrations/{nome}",
-                OBRIGATORIO.get(nome, "") + conteudo,
-            )
+            base = "" if nome in crus else OBRIGATORIO.get(nome, "")
+            self.escrever(f"supabase/migrations/{nome}", base + conteudo)
         return _rodar(["bash", str(self.script)], cwd=Path("/"))
 
     def test_migrations_limpas_aprovam(self) -> None:
@@ -352,6 +358,22 @@ class MigrationReplaySafety(_MiniRepo):
             with self.subTest(nome):
                 proc = self.gate(arquivos)
                 self.assertEqual(proc.returncode, 0, f"{proc.stdout}\n{proc.stderr}")
+
+    def test_reprova_cada_padrao_obrigatorio_ausente(self) -> None:
+        # Arquivo PRESENTE mas sem um dos padroes exigidos tem de reprovar com
+        # codigo 1 (violacao), nao 0 nem 2. Um subteste por padrao.
+        for nome, frags in OBRIGATORIO_FRAGMENTOS.items():
+            for i in range(len(frags)):
+                restante = "".join(f for j, f in enumerate(frags) if j != i)
+                with self.subTest(f"{nome}#{i}"):
+                    proc = self.gate(
+                        {nome: restante or "SELECT 1;\n"}, crus=(nome,)
+                    )
+                    self.assertEqual(
+                        proc.returncode, 1, f"{proc.stdout}\n{proc.stderr}"
+                    )
+                    self.assertIn("Padrão obrigatório ausente", proc.stderr)
+                    self.assertNotIn("OK:", proc.stdout)
 
     def test_arquivo_critico_ausente_nao_vira_ok(self) -> None:
         for nome in CRITICAS.values():
