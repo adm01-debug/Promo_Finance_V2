@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `90e96caf8f` · branch `main` · 2026-11-17 03:18 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `0b95e25723` · branch `main` · 2026-11-17 03:20 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3889,6 +3889,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `atraso pontuam 60%.` | `src/components/tributario/ConformidadeCard.tsx` |
 | `Regressão linear sobre o histórico, com banda de previsão de ~95%.` | `src/components/tributario/ProjecaoConformidadeCard.tsx` |
 | `transition={{ delay: i * 0.05 }}` | `src/components/tributario/dashboard/AssistenteFechamentoMensal.tsx` |
+| `// nenhum lancamento. A funcao devolvia 6.8% fixos justamente para evitar` | `src/components/tributario/dashboard/BenchmarkSetorialCard.tsx` |
 | `transition={{ delay: i * 0.02 }}` | `src/components/tributario/dashboard/HeatmapTributarioAnual.tsx` |
 | `folha_total_anual: p.kpis.faturamento_anual * 0.15,` | `src/components/tributario/relatorios/RelatorioAnualTributarioPDF.ts` |
 | `lucro_liquido: p.kpis.faturamento_anual * 0.1,` | `src/components/tributario/relatorios/RelatorioAnualTributarioPDF.ts` |
@@ -3941,6 +3942,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const irCs = lucroAntesIR > 0 ? lucroAntesIR * 0.15 : 0;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const obrTrib = cpPend * 0.1;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `// Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e` | `src/hooks/useExpertContext.ts` |
+| `* do ano e variacao de -100% no mes seguinte.` | `src/hooks/useHeatmapTributario.ts` |
 | `// IRPJ Adicional (10% sobre excedente)` | `src/hooks/useIRPJCSLL.ts` |
 | `const limiteCompensacao = Math.max(0, lucroRealAntesComp * 0.3);` | `src/hooks/useIRPJCSLL.ts` |
 | `// Aproximação da SELIC mensal (0.9% ao mês)` | `src/hooks/usePerDcomp.ts` |
@@ -4076,9 +4078,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// Dedução antecipada em relação ao regime normal (10 anos, 10% a.a.):` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
 | `// no 1º ano deduz-se 100% em vez de 10% → 90% do investimento antecipado.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
 | `const baseAntecipada = investimento * 0.9;` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| `economia_min: economiaEstimada * 0.7,` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| `// Economia estimada: ~18% sobre o valor importado vinculado à exportação` | `src/lib/tributario/elisao/detectar-drawback.ts` |
-| … +178 linhas — lista completa em `context.json` | |
+| … +181 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3406 testes em 291 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3416 testes em 293 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5251,6 +5251,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `scripts/security/test-rpc-runtime.evaluate.test.ts` | 8 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx` | 8 | useReviewQueue — idempotência e concorrência · #1 [idempotência] dois handleAcao paralelos para o mesmo id disparam a mutation UMA vez · #2 [retry] erro transitório  · #3 [retry esgotado] 3 falhas transitórias → toast.error + fila e stats intactos … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
+| `src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx` | 8 | heatmap tributario — ano sem faturamento · renderiza o estado vazio em vez de quebrar no insights.mes_pico · resposta sem a chave insights ainda renderiza (nao le antes da guarda) · heatmap tributario — ano parcial … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
@@ -5396,6 +5397,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/transaction-matcher.regression.test.ts` | 2 | transaction-matcher — regressão de API pública · expõe símbolos históricos após modularização |
 | `src/lib/tributario/calculadora/__tests__/harness-cenarios.test.ts` | 2 | Harness — 200 cenários aleatórios da Calculadora · cenário #%i respeita invariantes |
 | `src/test/scenarios/__tests__/scenarios.spec.ts` | 2 | Scenario Harness · ${COUNT} cenários combinatórios: zero violações de invariantes |
+| `supabase/functions/gerar-heatmap-tributario/index.test.ts` | 2 | ano sem lancamento: contrato completo, sem numero inventado · total_por_mes tem 12 posicoes zeradas |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/puller_test.ts` | 2 | runPuxador — resposta empty (cStat=137) não altera cursor · gzip round-trip preserva XML |
 | `src/lib/__tests__/eslint-no-floating-supabase-write.test.ts` | 1 | no-floating-supabase-write |
 
@@ -5980,4 +5982,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 3. IRPFM (Imposto de Renda Pessoa Física Mínimo) — alíquota LINEAR de 0% a 10% para renda | `src/lib/tributario/pf-vinculada.ts` |
 | * Alíquota do IRRF sobre dividendos acima do limite mensal. */ | `src/lib/tributario/pf-vinculada.ts` |
 | * Limite superior do desconto redutor da isenção ampliada. */ | `src/lib/tributario/pf-vinculada.ts` |
-| … +378 linhas — lista completa em `context.json` | |
+| … +379 linhas — lista completa em `context.json` | |

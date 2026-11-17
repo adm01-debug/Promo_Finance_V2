@@ -10347,7 +10347,7 @@
     "BenchmarkSetorialCard"
    ],
    "export_default": null,
-   "linhas": 133,
+   "linhas": 166,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useBenchmarkSetorial"
@@ -10472,7 +10472,7 @@
     "HeatmapTributarioAnual"
    ],
    "export_default": null,
-   "linhas": 162,
+   "linhas": 183,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useHeatmapTributario"

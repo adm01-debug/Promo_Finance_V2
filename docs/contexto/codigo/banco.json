@@ -10814,6 +10814,7 @@
    },
    "usada_no_front": 0,
    "usada_em_edges": [
+    "comparar-benchmark-setorial",
     "gerar-alertas-tributarios"
    ],
    "triggers": [

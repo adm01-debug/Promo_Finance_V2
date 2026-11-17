@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `90e96caf8f98907555607f0bee9d801500fa864d` (2026-11-16T23:40:10-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0b95e257235b70e58e92ff37d0102e9c8c8e7fbd` (2026-11-17T00:19:56-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2324), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
+- linguagens: TypeScript (2326), SQL (1099), Markdown (196), JavaScript (71), Python (45), JSON (41), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3876 |
-| arquivos_codigo | 2438 |
-| linhas_codigo | 434208 |
+| arquivos_total | 3878 |
+| arquivos_codigo | 2440 |
+| linhas_codigo | 434708 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 340 |
 | migrations | 1029 |
 | cron_jobs | 22 |
-| testes | 450 |
+| testes | 452 |
 | workflows | 19 |
 | scripts | 111 |
 | docs_md | 196 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (776), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (261), outro (107), co-localizado (*.test) (42)
+- testes: co-localizado (__tests__) (262), outro (107), co-localizado (*.test) (43)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -315,7 +315,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `categorizar-despesa` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
 - `ci-security-gate-log` (verify_jwt=false) — tabelas: ci_security_gate_events; chamada por 0 arquivo(s) do front
 - `cnpja-lookup` (verify_jwt=false) — tabelas: cnpja_cache; chamada por 1 arquivo(s) do front
-- `comparar-benchmark-setorial` — tabelas: empresas, faturamento_mensal, user_empresas; chamada por 1 arquivo(s) do front
+- `comparar-benchmark-setorial` — tabelas: benchmarks_setoriais, empresas, faturamento_mensal, user_empresas; chamada por 1 arquivo(s) do front
 - `compare-schemas` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
 - `conciliacao-ia` — tabelas: -; chamada por 1 arquivo(s) do front
 - `conciliacao-proxy` — tabelas: -; chamada por 1 arquivo(s) do front
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `0b95e25` fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, "1247 empresas") 
 - 2026-11-16 `90e96ca` chore(docs): recupera a auditoria financeira de 10/09/2026 que só existia numa tag de arquivo (#402)
 - 2026-11-16 `5bc41a5` fix(conciliação): extrato de banco em .xlsx entrava com valor mil vezes menor (#401)
 - 2026-11-16 `e93d744` fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `91ff2d8` fix(db): preenche empresa_id nas 42 partidas contábeis antigas (#390)
 - 2026-11-16 `0cdf2a7` fix(db): as 17 colunas nascem onde a tabela é criada — 106 → 123 dos 126 índices no replay (#389)
 - 2026-11-16 `298cc49` fix(db): destrava o replay da cadeia de migrations — índice da FK no mesmo arquivo que cria a FK (#388)
-- 2026-11-16 `1d6ef94` chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -864,13 +864,14 @@
    "nome": "comparar-benchmark-setorial",
    "entrada": "supabase/functions/comparar-benchmark-setorial/index.ts",
    "arquivos": 1,
-   "linhas": 150,
+   "linhas": 279,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
     "POST"
    ],
    "tabelas": [
+    "benchmarks_setoriais",
     "empresas",
     "faturamento_mensal",
     "user_empresas"
@@ -2076,7 +2077,7 @@
    "nome": "gerar-dre-tributaria",
    "entrada": "supabase/functions/gerar-dre-tributaria/index.ts",
    "arquivos": 1,
-   "linhas": 145,
+   "linhas": 162,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2115,7 +2116,7 @@
    "nome": "gerar-heatmap-tributario",
    "entrada": "supabase/functions/gerar-heatmap-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 167,
+   "linhas": 215,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2147,7 +2148,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "gerar-pacote-evidencias",

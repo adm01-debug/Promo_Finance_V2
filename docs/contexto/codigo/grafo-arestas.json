@@ -5867,7 +5867,8 @@
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/skeleton.tsx",
-   "src/hooks/useHeatmapTributario.ts"
+   "src/hooks/useHeatmapTributario.ts",
+   "src/lib/utils.ts"
   ],
   "src/components/tributario/dashboard/OportunidadesElisaoWidget.tsx": [
    "src/components/ui/badge.tsx",

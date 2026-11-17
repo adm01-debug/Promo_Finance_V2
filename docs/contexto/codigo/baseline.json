@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "90e96caf8f98907555607f0bee9d801500fa864d",
+  "commit": "0b95e257235b70e58e92ff37d0102e9c8c8e7fbd",
   "branch": "main",
-  "data_commit": "2026-11-16T23:40:10-03:00",
+  "data_commit": "2026-11-17T00:19:56-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0b95e25",
+    "data": "2026-11-17",
+    "assunto": "fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, \"1247 empresas\") "
+   },
    {
     "sha": "90e96ca",
     "data": "2026-11-16",
@@ -126,14 +131,9 @@
     "sha": "0bb1b7a",
     "data": "2026-11-16",
     "assunto": "chore(test): gate de origem das edge functions cruza config.toml e cobre 16 funções (#368)"
-   },
-   {
-    "sha": "9782d38",
-    "data": "2026-11-16",
-    "assunto": "fix(edge): corpo JSON malformado responde 422 em vez de 500 em 20 edge functions (#365)"
    }
   ],
-  "arquivos_mudados_7d": 789,
+  "arquivos_mudados_7d": 798,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 156
+    "commits": 157
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3876,
-  "arquivos_codigo": 2438,
-  "linhas_codigo": 434208,
+  "arquivos_total": 3878,
+  "arquivos_codigo": 2440,
+  "linhas_codigo": 434708,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 340,
   "migrations": 1029,
   "cron_jobs": 22,
-  "testes": 450,
+  "testes": 452,
   "workflows": 19,
   "scripts": 111,
   "docs_md": 196
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 980,
-   "linhas": 160959
+   "arquivos": 981,
+   "linhas": 161205
   },
   "src/config": {
    "arquivos": 1,
@@ -648,7 +648,7 @@
   },
   "src/hooks": {
    "arquivos": 316,
-   "linhas": 45573
+   "linhas": 45589
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -683,8 +683,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 224,
-   "linhas": 49871
+   "arquivos": 225,
+   "linhas": 50109
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -806,7 +806,7 @@
   }
  ],
  "qualidade": {
-  "any": 349,
+  "any": 348,
   "console_log": 226,
   "ts_ignore": 2,
   "eslint_disable": 1,

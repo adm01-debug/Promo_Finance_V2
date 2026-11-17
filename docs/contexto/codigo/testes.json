@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 450,
+ "total": 452,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 374
+  "unit": 376
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 261
+   "arquivos": 262
   },
   {
    "padrao": "outro",
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 42
+   "arquivos": 43
   },
   {
    "padrao": "e2e/",
@@ -1074,6 +1074,16 @@
     "src/hooks/financial/views.types.ts"
    ],
    "casos": 1
+  },
+  {
+   "arquivo": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+   "tipo": "unit",
+   "linhas": 192,
+   "testa": [
+    "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
+    "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx"
+   ],
+   "casos": 5
   },
   {
    "arquivo": "src/components/ui/__tests__/alert.test.tsx",
@@ -3738,6 +3748,15 @@
    "casos": 3
   },
   {
+   "arquivo": "supabase/functions/gerar-heatmap-tributario/index.test.ts",
+   "tipo": "unit",
+   "linhas": 44,
+   "testa": [
+    "supabase/functions/gerar-heatmap-tributario/index.ts"
+   ],
+   "casos": 3
+  },
+  {
    "arquivo": "supabase/functions/gerar-sped-ecd/__fixtures__/ecd-fixture.ts",
    "tipo": "unit",
    "linhas": 113,
@@ -4056,6 +4075,8 @@
   "src/components/reforma-tributaria/KPIComparativo.tsx": 1,
   "src/components/reforma-tributaria/NavigationTributaria.tsx": 1,
   "src/components/tesouraria/ProjectedCashFlowChart.tsx": 1,
+  "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx": 1,
+  "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx": 1,
   "src/components/ui/alert.tsx": 1,
   "src/components/ui/badge.tsx": 1,
   "src/components/ui/button.tsx": 2,
@@ -4324,6 +4345,7 @@
   "supabase/functions/executar-regua-cobranca/domain.ts": 1,
   "supabase/functions/exportar-sped-contribuicoes/layout.ts": 2,
   "supabase/functions/gerar-alertas-tributarios/index.ts": 1,
+  "supabase/functions/gerar-heatmap-tributario/index.ts": 1,
   "supabase/functions/gerar-sped-ecd/layout.ts": 2,
   "supabase/functions/gerar-sped-ecf/layout.ts": 2,
   "supabase/functions/insights-relatorio/index.ts": 1,
@@ -4726,7 +4748,6 @@
    "gerar-alertas",
    "gerar-alertas-dispatcher",
    "gerar-dre-tributaria",
-   "gerar-heatmap-tributario",
    "gerar-pacote-evidencias",
    "gerar-pdf-tributario",
    "gerar-relatorio-anual",

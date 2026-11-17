@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "90e96caf8f98907555607f0bee9d801500fa864d",
+  "sha": "0b95e257235b70e58e92ff37d0102e9c8c8e7fbd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 03:18 UTC",
-  "files_total": 3915,
-  "code_files": 3538,
-  "code_lines": 502685
+  "generated_at": "2026-11-17 03:20 UTC",
+  "files_total": 3917,
+  "code_files": 3540,
+  "code_lines": 503187
  },
  "version": "1.3.2",
- "facts_hash": "3405491d39609b3b",
+ "facts_hash": "c69ae25d0f30b299",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,9 +332,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1228,
+   ".ts": 1229,
    ".sql": 1099,
-   ".tsx": 1096,
+   ".tsx": 1097,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -64231,6 +64231,7 @@
     ],
     "auth": "service_role (ignora RLS) — NÃO valida usuário no código",
     "tables": [
+     "benchmarks_setoriais",
      "edge_function_logs",
      "empresas",
      "faturamento_mensal",
@@ -68357,7 +68358,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 982,
+  "components_count": 983,
   "hooks": [
    {
     "name": "useContacts",
@@ -71372,8 +71373,8 @@
   },
   {
    "module": "src/components",
-   "files": 980,
-   "lines": 161939,
+   "files": 981,
+   "lines": 162186,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71641,7 +71642,7 @@
   {
    "module": "src/hooks",
    "files": 316,
-   "lines": 45889,
+   "lines": 45905,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -72533,8 +72534,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 224,
-   "lines": 50095,
+   "files": 225,
+   "lines": 50334,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -73285,6 +73286,7 @@
    },
    "benchmarks_setoriais": {
     "select": [
+     "supabase/functions/comparar-benchmark-setorial/index.ts",
      "supabase/functions/gerar-alertas-tributarios/index.ts"
     ]
    },
@@ -75584,9 +75586,14 @@
    ],
    "benchmarks_setoriais": [
     "carga_media_pct",
+    "carga_p25_pct",
+    "carga_p75_pct",
     "cnae_prefix",
+    "fonte",
+    "mediana",
     "regime",
-    "setor"
+    "setor",
+    "vigencia_inicio"
    ],
    "beneficios_fiscais": [
     "uf"
@@ -87407,6 +87414,10 @@
    {
     "file": "supabase/functions/cnpja-lookup/index.ts",
     "text": "2) Rate limit antes de chamada externa"
+   },
+   {
+    "file": "supabase/functions/comparar-benchmark-setorial/index.ts",
+    "text": "2026-11-17). Usada apenas quando a tabela nao tem linha vigente para o"
    },
    {
     "file": "supabase/functions/conciliacao-ia/index.ts",
@@ -121016,6 +121027,10 @@
     "line": "transition={{ delay: i * 0.05 }}"
    },
    {
+    "file": "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
+    "line": "// nenhum lancamento. A funcao devolvia 6.8% fixos justamente para evitar"
+   },
+   {
     "file": "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx",
     "line": "transition={{ delay: i * 0.02 }}"
    },
@@ -121222,6 +121237,10 @@
    {
     "file": "src/hooks/useExpertContext.ts",
     "line": "// Sem isto, uma carteira 100% vencida reportava inadimplencia 0% e"
+   },
+   {
+    "file": "src/hooks/useHeatmapTributario.ts",
+    "line": "* do ano e variacao de -100% no mes seguinte."
    },
    {
     "file": "src/hooks/useIRPJCSLL.ts",
@@ -122410,6 +122429,10 @@
    {
     "file": "supabase/functions/gerar-dre-tributaria/index.ts",
     "line": "const tributosReais = receitaBruta * 0.22;"
+   },
+   {
+    "file": "supabase/functions/gerar-heatmap-tributario/index.ts",
+    "line": "// zero fazia a ausencia virar vale do ano e variacao de -100% em relacao ao"
    },
    {
     "file": "supabase/functions/gerar-sped-ecf/layout.ts",
@@ -124272,6 +124295,38 @@
    {
     "file": "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
     "name": "usa o valor residual e inclui título parcial"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "heatmap tributario — ano sem faturamento"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "renderiza o estado vazio em vez de quebrar no insights.mes_pico"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "resposta sem a chave insights ainda renderiza (nao le antes da guarda)"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "heatmap tributario — ano parcial"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "mes sem lancamento nao aparece como tributo zero"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "benchmark setorial — sem carga e sem percentil"
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "empresa sem faturamento 12m nao aparece "
+   },
+   {
+    "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+    "name": "percentil nulo (P25 = P75) esconde a régua em vez de mostrar zero"
    },
    {
     "file": "src/components/ui/__tests__/alert.test.tsx",
@@ -135724,6 +135779,14 @@
    {
     "file": "supabase/functions/gerar-alertas-tributarios/index.test.ts",
     "name": "gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight"
+   },
+   {
+    "file": "supabase/functions/gerar-heatmap-tributario/index.test.ts",
+    "name": "ano sem lancamento: contrato completo, sem numero inventado"
+   },
+   {
+    "file": "supabase/functions/gerar-heatmap-tributario/index.test.ts",
+    "name": "total_por_mes tem 12 posicoes zeradas"
    },
    {
     "file": "supabase/functions/n8n-callback/index.test.ts",
@@ -196229,9 +196292,12 @@
   },
   "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx": {
    "path": "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
-   "lines": 134,
+   "lines": 167,
    "exports": [
     "function BenchmarkSetorialCard"
+   ],
+   "percents": [
+    "// nenhum lancamento. A funcao devolvia 6.8% fixos justamente para evitar"
    ]
   },
   "src/components/tributario/dashboard/CalculadoraWidget.tsx": {
@@ -196369,7 +196435,7 @@
   },
   "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx": {
    "path": "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx",
-   "lines": 163,
+   "lines": 184,
    "exports": [
     "function HeatmapTributarioAnual"
    ],
@@ -196449,6 +196515,27 @@
      "value": "erro",
      "kind": "compara"
     }
+   ]
+  },
+  "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx": {
+   "path": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+   "lines": 193,
+   "is_test": true,
+   "rule_comments": [
+    "o badge de pico nao pode aparecer sem mes de pico",
+    "`insights`, nao pode mais quebrar o cabecalho.",
+    "fevereiro nao foi lancado: nao pode receber valor monetario nenhum"
+   ],
+   "doc": "Regressao: as 3 funcoes fiscais inventavam numero quando faltava faturamento, e tirar a invencao sem acertar o contrato trocava a mentira por tela quebrada. Revisao da PR #403 (Devin e Codex): a primeira versao devolvia `{ celulas: [], motivo }` no heatmap, e o cabecalho do painel le `data.insights. …",
+   "tests": [
+    "heatmap tributario — ano sem faturamento",
+    "renderiza o estado vazio em vez de quebrar no insights.mes_pico",
+    "resposta sem a chave insights ainda renderiza (nao le antes da guarda)",
+    "heatmap tributario — ano parcial",
+    "mes sem lancamento nao aparece como tributo zero",
+    "benchmark setorial — sem carga e sem percentil",
+    "empresa sem faturamento 12m nao aparece ",
+    "percentil nulo (P25 = P75) esconde a régua em vez de mostrar zero"
    ]
   },
   "src/components/tributario/historico/EvolucaoChart.tsx": {
@@ -200436,7 +200523,7 @@
   },
   "src/hooks/useBenchmarkSetorial.ts": {
    "path": "src/hooks/useBenchmarkSetorial.ts",
-   "lines": 37,
+   "lines": 44,
    "exports": [
     "interface BenchmarkResult",
     "function useBenchmarkSetorial"
@@ -204133,7 +204220,7 @@
   },
   "src/hooks/useHeatmapTributario.ts": {
    "path": "src/hooks/useHeatmapTributario.ts",
-   "lines": 38,
+   "lines": 47,
    "exports": [
     "interface CelulaHeatmap",
     "interface HeatmapResponse",
@@ -204147,6 +204234,9 @@
    ],
    "temporal": [
     "staleTime: 10 * 60 * 1000,"
+   ],
+   "percents": [
+    "* do ano e variacao de -100% no mes seguinte."
    ],
    "side_effects": [
     "invoke("
@@ -233103,7 +233193,7 @@
   },
   "supabase/functions/comparar-benchmark-setorial/index.ts": {
    "path": "supabase/functions/comparar-benchmark-setorial/index.ts",
-   "lines": 151,
+   "lines": 280,
    "tables": [
     {
      "table": "user_empresas",
@@ -233116,6 +233206,10 @@
     {
      "table": "faturamento_mensal",
      "op": "select"
+    },
+    {
+     "table": "benchmarks_setoriais",
+     "op": "select"
     }
    ],
    "table_cols": {
@@ -233126,6 +233220,7 @@
      "user_id"
     ],
     "empresas": [
+     "cnae_principal",
      "id",
      "razao_social",
      "regime_tributario"
@@ -233134,6 +233229,17 @@
      "empresa_id",
      "receita_bruta",
      "total_tributos"
+    ],
+    "benchmarks_setoriais": [
+     "carga_media_pct",
+     "carga_p25_pct",
+     "carga_p75_pct",
+     "cnae_prefix",
+     "fonte",
+     "mediana",
+     "regime",
+     "setor",
+     "vigencia_inicio"
     ]
    },
    "rpc": [
@@ -233151,6 +233257,9 @@
      "refines": [],
      "chain": []
     }
+   ],
+   "rule_comments": [
+    "2026-11-17). Usada apenas quando a tabela nao tem linha vigente para o"
    ],
    "doc": "Edge: comparar-benchmark-setorial — versão determinística (stub) Substitui a versão que dependia de LOVABLE_API_KEY (ausente neste projeto). Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.",
    "pagination": [
@@ -235982,7 +236091,7 @@
   },
   "supabase/functions/gerar-dre-tributaria/index.ts": {
    "path": "supabase/functions/gerar-dre-tributaria/index.ts",
-   "lines": 146,
+   "lines": 163,
    "tables": [
     {
      "table": "user_empresas",
@@ -236049,9 +236158,22 @@
    ],
    "uses_service_role": true
   },
+  "supabase/functions/gerar-heatmap-tributario/index.test.ts": {
+   "path": "supabase/functions/gerar-heatmap-tributario/index.test.ts",
+   "lines": 45,
+   "is_test": true,
+   "doc": "Contrato da resposta de ano sem faturamento. Revisao da PR #403 (Devin): o teste anterior vivia no vitest e assertava uma CONSTANTE LOCAL copiada da funcao -- passaria mesmo se a resposta real voltasse a omitir `insights`. Aqui a assercao roda sobre a funcao da propria Edge Function, descoberta pelo …",
+   "tests": [
+    "ano sem lancamento: contrato completo, sem numero inventado",
+    "total_por_mes tem 12 posicoes zeradas"
+   ]
+  },
   "supabase/functions/gerar-heatmap-tributario/index.ts": {
    "path": "supabase/functions/gerar-heatmap-tributario/index.ts",
-   "lines": 168,
+   "lines": 216,
+   "exports": [
+    "function respostaSemFaturamento"
+   ],
    "tables": [
     {
      "table": "user_empresas",
@@ -236096,6 +236218,9 @@
     "Calcula intensidade (0-1 normalizado pelo máximo do mês+tributo) e variação MoM"
    ],
    "doc": "Edge: gerar-heatmap-tributario — versão determinística (stub) Substitui a versão com Lovable AI Gateway. Gera heatmap 12m × 8 tributos com intensidade normalizada e variação MoM.",
+   "percents": [
+    "// zero fazia a ausencia virar vale do ano e variacao de -100% em relacao ao"
+   ],
    "uses_service_role": true
   },
   "supabase/functions/gerar-pacote-evidencias/index.ts": {
@@ -245941,10 +246066,27 @@
   }
  },
  "git": {
-  "sha": "90e96caf8f98907555607f0bee9d801500fa864d",
+  "sha": "0b95e257235b70e58e92ff37d0102e9c8c8e7fbd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "0b95e25",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(tributário): tira os números inventados das 3 funções fiscais (DRE de R$ 285.000, heatmap sazonal, \"1247 empresas\") (#403)",
+    "files": [
+     "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
+     "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx",
+     "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
+     "src/hooks/useBenchmarkSetorial.ts",
+     "src/hooks/useHeatmapTributario.ts",
+     "supabase/functions/comparar-benchmark-setorial/index.ts",
+     "supabase/functions/gerar-dre-tributaria/index.ts",
+     "supabase/functions/gerar-heatmap-tributario/index.test.ts",
+     "supabase/functions/gerar-heatmap-tributario/index.ts"
+    ]
+   },
    {
     "sha": "90e96ca",
     "date": "2026-11-16",
@@ -246321,17 +246463,6 @@
      "src/components/dashboard/DashboardFiltersHeader.tsx",
      "src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx"
     ]
-   },
-   {
-    "sha": "a6393dc",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "chore(ci): resgata docs/ci/kpi.json — custo e taxa de falha por workflow (#363)",
-    "files": [
-     "docs/ci/MATRIZ_EDGE_TABELA.md",
-     "docs/ci/README.md",
-     "docs/ci/kpi.json"
-    ]
    }
   ],
   "hot_files": [
@@ -246380,39 +246511,39 @@
     2
    ],
    [
-    "docs/AUDITORIA_FINANCEIRA_EVIDENCIAS_2026-09-10.md",
+    "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx",
     1
    ],
    [
-    "docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md",
+    "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/INTERFACE_E_INVENTARIO.md",
+    "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/SHA256SUMS",
+    "src/hooks/useBenchmarkSetorial.ts",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/STATUS_2026-11-17.md",
+    "src/hooks/useHeatmapTributario.ts",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/VERIFICACOES.json",
+    "supabase/functions/comparar-benchmark-setorial/index.ts",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/cenarios.json",
+    "supabase/functions/gerar-dre-tributaria/index.ts",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/inventario.json.gz",
+    "supabase/functions/gerar-heatmap-tributario/index.test.ts",
     1
    ],
    [
-    "docs/auditoria-financeira-20260910/navegacao.json.gz",
+    "supabase/functions/gerar-heatmap-tributario/index.ts",
     1
    ]
   ]
