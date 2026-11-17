@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "6c6dec83e20721789480b0247c7fab69e97390f2",
+  "commit": "9ae3a5f7c751475e225b1f895b37d69db3f3e99a",
   "branch": "main",
-  "data_commit": "2026-11-17T16:00:39-03:00",
+  "data_commit": "2026-11-17T16:36:04-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9ae3a5f",
+    "data": "2026-11-17",
+    "assunto": "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)"
+   },
+   {
+    "sha": "6d1f269",
+    "data": "2026-11-17",
+    "assunto": "chore(docs): auditoria de drift entre migrations e produção (#437)"
+   },
    {
     "sha": "6c6dec8",
     "data": "2026-11-17",
@@ -121,19 +131,9 @@
     "sha": "00a7783",
     "data": "2026-11-17",
     "assunto": "fix(fluxo de caixa): projeção deixa de sortear número e de zerar o caixa — fecha F06 e F07 (#415)"
-   },
-   {
-    "sha": "629b697",
-    "data": "2026-11-17",
-    "assunto": "fix(contabil): balancete nao fecha mais sobre valor que nao existe (F09) (#414)"
-   },
-   {
-    "sha": "1bbc484",
-    "data": "2026-11-17",
-    "assunto": "fix(nfe): nenhuma tela anuncia mais ato fiscal que nao aconteceu (F12, P0) (#412)"
    }
   ],
-  "arquivos_mudados_7d": 910,
+  "arquivos_mudados_7d": 911,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -161,15 +161,15 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 24
-   },
-   {
-    "pasta": "bun.lock",
-    "mudancas": 22
+    "mudancas": 23
    },
    {
     "pasta": "src/components/contas-pagar",
     "mudancas": 22
+   },
+   {
+    "pasta": "bun.lock",
+    "mudancas": 21
    },
    {
     "pasta": "src/components/admin",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 39
+    "mudancas": 38
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -216,10 +216,6 @@
    {
     "arquivo": "env.manifest.json",
     "mudancas": 13
-   },
-   {
-    "arquivo": ".github/workflows/deno-tests.yml",
-    "mudancas": 12
    },
    {
     "arquivo": "supabase/config.toml",
@@ -244,6 +240,10 @@
    {
     "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 11
+   },
+   {
+    "arquivo": ".github/workflows/deno-tests.yml",
+    "mudancas": 10
    },
    {
     "arquivo": ".github/workflows/functions-deploy.yml",
@@ -282,10 +282,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/mcp-query/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 9
    },
@@ -296,16 +292,20 @@
    {
     "arquivo": ".github/workflows/graphify.yml",
     "mudancas": 8
+   },
+   {
+    "arquivo": ".github/workflows/prod-migrate.yml",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 189
+    "commits": 191
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 14
+    "commits": 13
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3918,
+  "arquivos_total": 3920,
   "arquivos_codigo": 2469,
   "linhas_codigo": 440071,
   "rotas": 130,
@@ -330,12 +330,12 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 320,
-  "migrations": 1035,
+  "migrations": 1036,
   "cron_jobs": 22,
   "testes": 475,
   "workflows": 19,
   "scripts": 113,
-  "docs_md": 199
+  "docs_md": 200
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6c6dec83e2` · branch `main` · 2026-11-17 19:01 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9ae3a5f7c7` · branch `main` · 2026-11-17 19:43 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2277 linhas — lista completa em `context.json` | | |
+| … +2282 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1137,6 +1137,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `sped_contabil_arquivos` | `status` | `cancelado`, `gerado`, `rejeitado`, `transmitido` | `gerado` |
 | `sso_sandbox_runs` | `status` | **livre (sem enum/CHECK)** |  |
 | `anomalia_detection_runs` | `status` | **livre (sem enum/CHECK)** | `queued` |
+| `anomalia_detection_runs` | `current_step` | **livre (sem enum/CHECK)** |  |
 | `scim_setup_checklist` | `etapa` | **livre (sem enum/CHECK)** |  |
 | `scim_setup_checklist` | `status` | **livre (sem enum/CHECK)** |  |
 | `anomalia_toast_eventos` | `status` | **livre (sem enum/CHECK)** | `sent` |
@@ -1152,6 +1153,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `regua_cobranca_status` | `status_cobranca` | **livre (sem enum/CHECK)** |  |
 | `regua_cobranca_status` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `asaas_sync_queue` | `status` | **livre (sem enum/CHECK)** | `pending` |
+| `asaas_audit_trail` | `new_status` | **livre (sem enum/CHECK)** |  |
+| `asaas_audit_trail` | `previous_status` | **livre (sem enum/CHECK)** |  |
 | `asaas_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `asaas_reconciliation_suggestions` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `bloqueios_duplicidade` | `status` | **livre (sem enum/CHECK)** |  |
@@ -5657,6 +5660,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/migrations/20261116190000_versiona_ddl_ja_aplicado_em_producao.sql` |
 | `asaas` | `supabase/migrations/20261116220000_reconcilia_17_colunas_que_so_existem_em_producao.sql` |
 | `asaas` | `supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql` |
+| `asaas` | `supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql` |
 
 ## N. Regras citadas em comentários do código
 

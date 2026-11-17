@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "6c6dec83e20721789480b0247c7fab69e97390f2",
+  "sha": "9ae3a5f7c751475e225b1f895b37d69db3f3e99a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 19:01 UTC",
-  "files_total": 3957,
-  "code_files": 3576,
-  "code_lines": 509103
+  "generated_at": "2026-11-17 19:43 UTC",
+  "files_total": 3959,
+  "code_files": 3577,
+  "code_lines": 509248
  },
  "version": "1.3.2",
- "facts_hash": "0ef0bccdfe212e4f",
+ "facts_hash": "8d75ec50fb781f9e",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -334,7 +334,7 @@
   "languages": {
    ".ts": 1241,
    ".tsx": 1114,
-   ".sql": 1106,
+   ".sql": 1107,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -4443,6 +4443,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260519155255_2a1b7def-402c-4caa-95df-17ffe59aca99.sql"
+     },
+     {
+      "name": "revoked_at",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -4937,6 +4944,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260519134138_c29a6d89-8c64-4d2a-9889-5440de5c4ac6.sql"
+     },
+     {
+      "name": "created_by",
+      "type": "uuid",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "enviado_em",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "ia_proxima_acao",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "ia_resumo",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -10639,6 +10674,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518171459_af07ac43-0a7f-45fc-a591-e99f6665220b.sql"
+     },
+     {
+      "name": "erro_mensagem",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [
@@ -10733,6 +10775,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518180925_089af0e3-d755-4139-b9d8-d943c2803ab6.sql"
+     },
+     {
+      "name": "cliente_id",
+      "type": "uuid",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "erro_mensagem",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "metadata",
+      "type": "jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -12832,9 +12895,25 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260519134259_ba7e383c-820b-41db-bbc7-38c2c475840c.sql"
+     },
+     {
+      "name": "destinatarios",
+      "type": "text[] DEFAULT ARRAY[]::text[] NOT NULL",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "erro_envio",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
-    "constraints": [],
+    "constraints": [
+     "constraint resumos_executivos_semanais_empresa_id_semana_inicio_key UNIQUE (empresa_id, semana_inicio)"
+    ],
     "src": "supabase/migrations/20260519134259_ba7e383c-820b-41db-bbc7-38c2c475840c.sql",
     "comment": "",
     "origin": "migration"
@@ -13900,6 +13979,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260711164723_create-security-tables-stub.sql"
+     },
+     {
+      "name": "app_redirect",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "code_verifier_hash",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "duration_ms",
+      "type": "integer",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "uuid",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [
@@ -15099,6 +15206,34 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260519120718_ee2af21a-48fa-48f5-b5de-9fcbdb85bbcb.sql"
+     },
+     {
+      "name": "current_step",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "finished_at",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "started_at",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "step_index",
+      "type": "integer DEFAULT 0 NOT NULL",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -17123,6 +17258,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql"
+     },
+     {
+      "name": "error_history",
+      "type": "jsonb DEFAULT '[]'::jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -17173,6 +17315,27 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql"
+     },
+     {
+      "name": "new_status",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "previous_status",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "user_id",
+      "type": "uuid DEFAULT auth.uid()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -17336,6 +17499,20 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql"
+     },
+     {
+      "name": "transaction_receipt_url",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+     },
+     {
+      "name": "user_id",
+      "type": "uuid",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
      }
     ],
     "constraints": [],
@@ -50072,6 +50249,7 @@
    "supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql",
    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
    "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
+   "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -70514,8 +70692,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1035,
-   "lines": 79809,
+   "files": 1036,
+   "lines": 79954,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -75649,10 +75827,6 @@
    {
     "table": "movimentacoes",
     "column": "centro_custo_id"
-   },
-   {
-    "table": "anomalia_detection_runs",
-    "column": "started_at"
    },
    {
     "table": "asaas_config",
@@ -90996,6 +91170,16 @@
     "rule": "default now()"
    },
    {
+    "table": "resumos_executivos_semanais",
+    "column": "destinatarios",
+    "rule": "default ARRAY[]::text[]"
+   },
+   {
+    "table": "resumos_executivos_semanais",
+    "column": "(tabela)",
+    "rule": "constraint resumos_executivos_semanais_empresa_id_semana_inicio_key UNIQUE (empresa_id, semana_inicio)"
+   },
+   {
     "table": "solicitacoes_lgpd",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -92081,6 +92265,11 @@
     "rule": "default now()"
    },
    {
+    "table": "anomalia_detection_runs",
+    "column": "step_index",
+    "rule": "default 0"
+   },
+   {
     "table": "user_active_filters",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -93146,6 +93335,11 @@
     "rule": "default now()"
    },
    {
+    "table": "asaas_sync_queue",
+    "column": "error_history",
+    "rule": "default '[]'::jsonb"
+   },
+   {
     "table": "asaas_audit_trail",
     "column": "id",
     "rule": "PK; default gen_random_uuid()"
@@ -93164,6 +93358,11 @@
     "table": "asaas_audit_trail",
     "column": "created_at",
     "rule": "default now()"
+   },
+   {
+    "table": "asaas_audit_trail",
+    "column": "user_id",
+    "rule": "default auth.uid()"
    },
    {
     "table": "asaas_config",
@@ -135033,6 +135232,10 @@
    {
     "file": "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
     "call": "asaas"
+   },
+   {
+    "file": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
+    "call": "asaas"
    }
   ],
   "db_policies": [
@@ -151820,6 +152023,14 @@
      "type": "TEXT DEFAULT 'queued'"
     },
     {
+     "table": "anomalia_detection_runs",
+     "column": "current_step",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "text"
+    },
+    {
      "table": "scim_setup_checklist",
      "column": "etapa",
      "enum": "",
@@ -151968,6 +152179,22 @@
      "allowed": [],
      "default": "pending",
      "type": "text DEFAULT 'pending'"
+    },
+    {
+     "table": "asaas_audit_trail",
+     "column": "new_status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "text"
+    },
+    {
+     "table": "asaas_audit_trail",
+     "column": "previous_status",
+     "enum": "",
+     "allowed": [],
+     "default": "",
+     "type": "text"
     },
     {
      "table": "asaas_transfers",
@@ -169317,6 +169544,7 @@
    "anomalias_detectadas",
    "acoes_recomendadas",
    "sso_providers",
+   "sso_login_attempts",
    "sso_role_mappings",
    "lancamentos_contabeis",
    "partidas_contabeis",
@@ -169736,7 +169964,8 @@
     "updated_at"
    ],
    "historico_cobranca_whatsapp": [
-    "created_at"
+    "created_at",
+    "created_by"
    ],
    "acordos_parcelamento": [
     "created_at",
@@ -172272,11 +172501,6 @@
    },
    {
     "kind": "coluna",
-    "msg": "coluna `started_at` usada no código não existe no schema de `anomalia_detection_runs`",
-    "where": []
-   },
-   {
-    "kind": "coluna",
     "msg": "coluna `count` usada no código não existe no schema de `asaas_config`",
     "where": []
    },
@@ -172560,6 +172784,7 @@
    "`lancamentos_contabeis.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`sped_contabil_arquivos.status` tem valores ['cancelado', 'gerado', 'rejeitado', 'transmitido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`anomalia_detection_runs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
+   "`anomalia_detection_runs.current_step` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`anomalia_toast_eventos.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`notification_history.status` tem valores ['failed', 'queued', 'sent'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
    "`execucoes_regua_cobranca.etapa` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
@@ -172573,6 +172798,8 @@
    "`regua_cobranca_status.status_cobranca` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`regua_cobranca_status.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`asaas_sync_queue.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
+   "`asaas_audit_trail.new_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
+   "`asaas_audit_trail.previous_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`asaas_transfers.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`asaas_reconciliation_suggestions.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`planos_acao.status` tem valores ['cancelado', 'concluido', 'em_andamento', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
@@ -243346,6 +243573,13 @@
     "asaas"
    ]
   },
+  "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql": {
+   "path": "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
+   "lines": 145,
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -243454,10 +243688,28 @@
   }
  },
  "git": {
-  "sha": "6c6dec83e20721789480b0247c7fab69e97390f2",
+  "sha": "9ae3a5f7c751475e225b1f895b37d69db3f3e99a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9ae3a5f",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)",
+    "files": [
+     "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql"
+    ]
+   },
+   {
+    "sha": "6d1f269",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(docs): auditoria de drift entre migrations e produção (#437)",
+    "files": [
+     "docs/agentes/auditoria-drift-banco-2026-11-17.md"
+    ]
+   },
    {
     "sha": "6c6dec8",
     "date": "2026-11-17",
@@ -243832,36 +244084,6 @@
      "src/components/contas-receber/WebhookDlqPanel.tsx",
      "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx"
     ]
-   },
-   {
-    "sha": "58d7e40",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat(cobrança): liga a Previsão de Inadimplência na tela — 589 linhas prontas e inalcançáveis (#404)",
-    "files": [
-     "src/components/cobranca/PrevisaoInadimplencia.tsx",
-     "src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx",
-     "src/components/cobranca/__tests__/PrevisaoInadimplencia.escopo.test.tsx",
-     "src/components/cobranca/previsao/PrevisaoClienteCard.tsx",
-     "src/components/cobranca/previsao/__tests__/risco.test.ts",
-     "src/components/cobranca/previsao/risco.ts",
-     "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx",
-     "src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx",
-     "src/lib/__tests__/paginar-postgrest.test.ts",
-     "src/lib/paginar-postgrest.ts",
-     "src/pages/Cobrancas.tsx"
-    ]
-   },
-   {
-    "sha": "2698b5b",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(boletos): para de fabricar codigo de barras FEBRABAN (achado F10, P0) (#408)",
-    "files": [
-     "src/components/boletos/BoletoBarcode.tsx",
-     "src/components/boletos/BoletoPreviewPanel.tsx",
-     "src/components/boletos/__tests__/BoletoBarcode.test.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -243902,6 +244124,14 @@
     2
    ],
    [
+    "supabase/migrations/20261117193000_colunas_nunca_aplicadas.sql",
+    1
+   ],
+   [
+    "docs/agentes/auditoria-drift-banco-2026-11-17.md",
+    1
+   ],
+   [
     "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql",
     1
    ],
@@ -243935,14 +244165,6 @@
    ],
    [
     "src/hooks/useMetasFinanceiras.ts",
-    1
-   ],
-   [
-    "src/hooks/useRegimesEspeciais.ts",
-    1
-   ],
-   [
-    "supabase/functions/monitor-health/index.test.ts",
     1
    ]
   ]

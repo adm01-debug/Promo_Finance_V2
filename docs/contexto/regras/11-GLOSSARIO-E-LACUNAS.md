@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6c6dec83e2` · branch `main` · 2026-11-17 19:01 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9ae3a5f7c7` · branch `main` · 2026-11-17 19:43 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -23,22 +23,22 @@
 | `allowed_countries` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `allowed_ips` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `anexos_financeiros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `anomalia_detection_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `anomalia_detection_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `anomalia_toast_eventos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `anomalias_detectadas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 31 colunas | migration |
 | `api_keys` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `aprovacao_comentarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 5 colunas | migration |
 | `apuracoes_irpj_csll` | _(sem COMMENT ON TABLE — significado não documentado)_ | 52 colunas | migration |
 | `apuracoes_tributarias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 40 colunas | migration |
-| `asaas_audit_trail` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
+| `asaas_audit_trail` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `asaas_config` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `asaas_credit_risk_analysis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `asaas_customers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `asaas_payment_links` | Espelho local de paymentLinks criados via asaas-proxy, com empresa_id — permite a listar_links_pagamento filtrar por empresa, já que a API do Asaas não amarra paymentLinks a empresa. | 8 colunas | migration |
 | `asaas_payments` | _(sem COMMENT ON TABLE — significado não documentado)_ | 24 colunas | migration |
 | `asaas_reconciliation_suggestions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
-| `asaas_sync_queue` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
-| `asaas_transfers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `asaas_sync_queue` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
+| `asaas_transfers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `audit_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `audit_logs_2026_01` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `audit_logs_2026_02` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
@@ -115,7 +115,7 @@
 | `estrategias_elisao_catalogo` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `eventos_contabilizacao_log` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `evidencias_pacotes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
-| `execucoes_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
+| `execucoes_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `execucoes_regua_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `expert_conversations` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `expert_messages` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
@@ -124,7 +124,7 @@
 | `faturamento_mensal` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `fechamentos_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `feedback_conciliacao_ia` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
-| `fila_cobrancas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
+| `fila_cobrancas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 19 colunas | migration |
 | `fluxos_aprovacao_niveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `folha_pagamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `formas_pagamento` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
@@ -150,7 +150,7 @@
 | `health_scores_operacionais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `historico_analises_preditivas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `historico_cobranca` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
-| `historico_cobranca_whatsapp` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
+| `historico_cobranca_whatsapp` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `historico_cobrancas_boletos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `historico_conciliacao_ia` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `historico_relatorios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
@@ -181,7 +181,7 @@
 | `notas_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
 | `notas_fiscais_ocr` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 12 colunas | migration |
-| `open_finance_consents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
+| `open_finance_consents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `operacoes_icms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `operacoes_tributaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 53 colunas | migration |
 | `oportunidades_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 29 colunas | migration |
@@ -227,7 +227,7 @@
 | `regua_cobranca_status` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `relatorios_agendados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `relatorios_tributarios_agendados` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `resumos_executivos_semanais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
+| `resumos_executivos_semanais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `retencao_politicas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `retencoes_fonte` | _(sem COMMENT ON TABLE — significado não documentado)_ | 25 colunas | migration |
 | `risk_rules` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -252,7 +252,7 @@
 | `solicitacoes_lgpd` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `sped_contabil_arquivos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
 | `split_payment_transacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
-| `sso_login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `sso_login_attempts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `sso_providers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 34 colunas | migration |
 | `sso_role_mappings` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `sso_sandbox_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
@@ -411,7 +411,6 @@
 | coluna | coluna `inscricao_municipal` usada no código não existe no schema de `empresas` |  |
 | coluna | coluna `provider_message_id` usada no código não existe no schema de `execucoes_cobranca` |  |
 | coluna | coluna `centro_custo_id` usada no código não existe no schema de `movimentacoes` |  |
-| coluna | coluna `started_at` usada no código não existe no schema de `anomalia_detection_runs` |  |
 | coluna | coluna `count` usada no código não existe no schema de `asaas_config` |  |
 | coluna | coluna `total_tributos` usada no código não existe no schema de `faturamento_mensal` |  |
 | coluna | coluna `payment_id` usada no código não existe no schema de `asaas_sync_queue` |  |
@@ -508,6 +507,7 @@
 - `lancamentos_contabeis.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `sped_contabil_arquivos.status` tem valores ['cancelado', 'gerado', 'rejeitado', 'transmitido'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `anomalia_detection_runs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
+- `anomalia_detection_runs.current_step` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `anomalia_toast_eventos.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `notification_history.status` tem valores ['failed', 'queued', 'sent'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
 - `execucoes_regua_cobranca.etapa` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
@@ -521,6 +521,8 @@
 - `regua_cobranca_status.status_cobranca` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `regua_cobranca_status.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `asaas_sync_queue.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
+- `asaas_audit_trail.new_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
+- `asaas_audit_trail.previous_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `asaas_transfers.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `asaas_reconciliation_suggestions.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `planos_acao.status` tem valores ['cancelado', 'concluido', 'em_andamento', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.

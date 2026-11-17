@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1035,
+ "migrations": 1036,
  "seeds": [],
  "avisos": [
-  "196 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -5952,7 +5952,7 @@
      "ref": null
     },
     "finished_at": {
-     "tipo": "timestamptz",
+     "tipo": "timestamp with time zone",
      "nn": false,
      "pk": false,
      "default": null,
@@ -5973,7 +5973,7 @@
      "ref": null
     },
     "started_at": {
-     "tipo": "timestamptz",
+     "tipo": "timestamp with time zone",
      "nn": false,
      "pk": false,
      "default": null,
@@ -5987,7 +5987,7 @@
      "ref": null
     },
     "step_index": {
-     "tipo": "int",
+     "tipo": "integer",
      "nn": true,
      "pk": false,
      "default": "0",
@@ -7835,7 +7835,7 @@
      "nn": false,
      "pk": false,
      "default": "auth.uid()",
-     "ref": "auth"
+     "ref": null
     }
    },
    "rls": true,
@@ -9234,7 +9234,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "auth"
+     "ref": null
     },
     "valor": {
      "tipo": "numeric(14,2)",
@@ -20918,7 +20918,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "clientes"
+     "ref": null
     },
     "cliente_nome": {
      "tipo": "text",
@@ -30911,7 +30911,7 @@
      "ref": null
     },
     "revoked_at": {
-     "tipo": "timestamptz",
+     "tipo": "timestamp with time zone",
      "nn": false,
      "pk": false,
      "default": null,
@@ -38942,7 +38942,7 @@
      "tipo": "text[]",
      "nn": true,
      "pk": false,
-     "default": "ARRAY[]::TEXT[]",
+     "default": "ARRAY[]::text[]",
      "ref": null
     },
     "empresa_id": {
@@ -43096,7 +43096,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "error_code": {
      "tipo": "text",

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `6c6dec83e20721789480b0247c7fab69e97390f2` (2026-11-17T16:00:39-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9ae3a5f7c751475e225b1f895b37d69db3f3e99a` (2026-11-17T16:36:04-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2355), SQL (1106), Markdown (199), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2355), SQL (1107), Markdown (200), JavaScript (71), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3918 |
+| arquivos_total | 3920 |
 | arquivos_codigo | 2469 |
 | linhas_codigo | 440071 |
 | rotas | 130 |
@@ -46,12 +46,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 320 |
-| migrations | 1035 |
+| migrations | 1036 |
 | cron_jobs | 22 |
 | testes | 475 |
 | workflows | 19 |
 | scripts | 113 |
-| docs_md | 199 |
+| docs_md | 200 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -461,18 +461,18 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (39)
-- bun.lock (34)
+- package.json (38)
+- bun.lock (33)
 - .github/workflows/ci.yml (27)
 - supabase/functions/asaas-proxy/index.ts (17)
 - env.manifest.json (13)
-- .github/workflows/deno-tests.yml (12)
 - supabase/config.toml (12)
 - .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
+- .github/workflows/deno-tests.yml (10)
 - .github/workflows/functions-deploy.yml (10)
 - src/hooks/useConciliacaoPage.ts (10)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
@@ -625,10 +625,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/agentes (11), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (12), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `9ae3a5f` fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)
+- 2026-11-17 `6d1f269` chore(docs): auditoria de drift entre migrations e produção (#437)
 - 2026-11-17 `6c6dec8` chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)
 - 2026-11-17 `17a5777` chore(db): harness de replay das migrations num Postgres local efêmero (#433)
 - 2026-11-17 `a45b5d8` fix(ci): destrava o bun audit do advisory novo do picomatch (#434)
@@ -642,8 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `19a248a` fix(open-finance): para de gravar extrato inventado na conciliação bancária (#425)
 - 2026-11-17 `ece50dc` fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)
 - 2026-11-17 `b2929c4` fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)
-- 2026-11-17 `9cfb6b3` chore(docs): inventário de trabalho inacabado — 18 achados confirmados com evidência (#422)
-- 2026-11-17 `e0aba34` fix(asaas): configurações salvas na tela voltam a valer no backend — e param de vazar entre empresas (#421)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
