@@ -124,16 +124,21 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
     mutationFn: async () => {
       if (!empresaId) throw new Error('Selecione uma empresa antes de salvar.');
 
-      // Limpa oportunidades anteriores em status "identificada" para evitar duplicatas
-      // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
-      await supabase
+      // Oportunidades anteriores em status "identificada" são substituídas, mas só
+      // apagadas DEPOIS que a nova leva entra: não há transação entre as duas
+      // chamadas, então apagar primeiro deixava a empresa sem histórico algum
+      // quando o insert falhava (RLS, coluna, rede) — e o erro do delete nem era
+      // verificado, de modo que a falha sumia e o fluxo seguia como se tivesse
+      // limpado.
+      const { data: anteriores, error: erroAnteriores } = await supabase
         .from('oportunidades_elisao')
-        .delete()
+        .select('id')
         .eq('empresa_id', empresaId)
         .eq('status', 'identificada');
+      if (erroAnteriores) throw erroAnteriores;
+      const idsAnteriores = (anteriores ?? []).map((linha) => linha.id);
 
       const aplicaveis = relatorio.oportunidades.filter((o) => o.aplicavel);
-      if (aplicaveis.length === 0) return 0;
 
       const linhas = aplicaveis.map((o) => ({
         empresa_id: empresaId,
@@ -150,8 +155,19 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
         created_by: user?.id ?? null,
       }));
 
-      const { error } = await supabase.from('oportunidades_elisao').insert(linhas);
-      if (error) throw error;
+      if (linhas.length > 0) {
+        const { error } = await supabase.from('oportunidades_elisao').insert(linhas);
+        if (error) throw error;
+      }
+
+      if (idsAnteriores.length > 0) {
+        const { error } = await supabase
+          .from('oportunidades_elisao')
+          .delete()
+          .in('id', idsAnteriores);
+        if (error) throw error;
+      }
+
       return aplicaveis.length;
     },
     onSuccess: (count) => {
