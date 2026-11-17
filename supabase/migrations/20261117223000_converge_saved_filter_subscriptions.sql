@@ -1,27 +1,30 @@
--- Converge saved_filter_subscriptions para o desenho declarado, religando a
--- assinatura de filtro salvo.
+-- Religa a assinatura de filtro salvo convergindo saved_filter_subscriptions
+-- ao desenho declarado — SEM remover nenhuma coluna.
 --
 -- Produção tem outro desenho da mesma tabela, e ele é autocontraditório:
 --   canal      NOT NULL DEFAULT 'inapp'  + CHECK (canal IN ('email','push','whatsapp'))
 --   frequencia NOT NULL DEFAULT 'diario' + CHECK (frequencia IN ('diaria','semanal','mensal'))
 -- Os dois defaults violam os CHECKs da própria tabela, então nenhum INSERT que
--- use default é aceito. Reproduzi o formato num banco local e o insert mínimo
--- falha em `saved_filter_subscriptions_canal_check`.
+-- use default é aceito. Por cima disso, filter_id é NOT NULL sem default, e o
+-- código (src/hooks/useSavedFilterSubscriptions.ts:128) não envia esse campo:
+-- sozinho já impedia qualquer insert. O upsert do hook usa
+-- onConflict 'user_id,saved_filter_id' (único que produção não tem), grava 10
+-- colunas que não existem lá e usa frequencia 'imediata', fora do CHECK. A
+-- assinatura de filtro salvo nunca funcionou.
 --
--- Por cima disso, o código (src/hooks/useSavedFilterSubscriptions.ts:128) faz
--- upsert com onConflict 'user_id,saved_filter_id' — índice único que produção
--- não tem — grava 10 colunas que não existem lá e usa frequencia 'imediata',
--- fora do CHECK. A assinatura de filtro salvo nunca funcionou.
+-- A versão anterior desta migration (20261117212000, descartada) fazia
+-- DROP COLUMN em filter_id, canal, ativo e ultimo_envio_em. Mesmo com as duas
+-- tabelas vazias em produção, apagar objeto de schema é irreversível e não é
+-- necessário: filter_id e canal com NOT NULL/DEFAULT removidos deixam de
+-- bloquear o insert, e NULL satisfaz CHECK em Postgres — por isso o
+-- saved_filter_subscriptions_canal_check continua de pé, intocado. A UNIQUE
+-- antiga (filter_id, user_id, canal) também fica: com as duas colunas nulas,
+-- NULLs são distintos e ela não bloqueia o modelo de uma linha por
+-- (user_id, saved_filter_id).
 --
--- O desenho declarado pelas migrations é o que o código e a tela esperam:
--- uma linha por (user_id, saved_filter_id), com os canais em três booleanos
--- (notify_inapp/notify_push/notify_email) em vez de uma linha por canal.
---
--- Esta migration remove colunas e constraints. É seguro no sentido de dado:
--- saved_filter_subscriptions e saved_filters estão as duas com 0 linhas em
--- produção — a funcionalidade nunca foi usada. Mesmo assim, por ser deleção de
--- objeto de schema, a PR fica aberta para decisão do dono (AGENTS.md §6.6);
--- nada foi aplicado em produção por mim.
+-- O único objeto removido é o CHECK de frequencia, que é incompatível por
+-- construção com o enum declarado (não aceita 'imediata'). Nenhuma coluna,
+-- nenhum dado.
 
 -- 1) Tipo declarado para a frequência.
 DO $$
@@ -31,25 +34,19 @@ BEGIN
   END IF;
 END $$;
 
--- 2) Constraints do desenho antigo saem antes das colunas que elas usam.
-ALTER TABLE public.saved_filter_subscriptions
-  DROP CONSTRAINT IF EXISTS saved_filter_subscriptions_canal_check,
-  DROP CONSTRAINT IF EXISTS saved_filter_subscriptions_frequencia_check,
-  DROP CONSTRAINT IF EXISTS saved_filter_subscriptions_filter_id_user_id_canal_key;
+-- 2) Destrava as colunas do desenho antigo em vez de apagá-las.
+ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN filter_id DROP NOT NULL;
+ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN canal DROP NOT NULL;
+ALTER TABLE public.saved_filter_subscriptions ALTER COLUMN canal DROP DEFAULT;
 
--- 3) Colunas do stub que o desenho declarado não tem. `filter_id` era NOT NULL
---    sem default, então sozinha já impedia qualquer insert do código.
+-- 3) O CHECK de frequencia sai: o enum declarado inclui 'imediata', que ele
+--    recusa. É o único objeto que esta migration remove.
 ALTER TABLE public.saved_filter_subscriptions
-  DROP COLUMN IF EXISTS filter_id,
-  DROP COLUMN IF EXISTS canal,
-  DROP COLUMN IF EXISTS ativo,
-  DROP COLUMN IF EXISTS ultimo_envio_em;
+  DROP CONSTRAINT IF EXISTS saved_filter_subscriptions_frequencia_check;
 
--- 4) frequencia passa de text para o enum. A tabela está vazia, então não há
---    valor a converter; o USING cobre o caso de a migration rodar sobre dados.
---    O passo é guardado pelo tipo atual: sem isso, numa segunda passagem o CASE
---    compararia um enum com o literal 'diario' e falharia com
---    "invalid input value for enum".
+-- 4) frequencia passa de text para o enum. Guardado pelo tipo atual: sem isso,
+--    numa segunda passagem o CASE compararia um enum com o literal 'diario' e
+--    falharia com "invalid input value for enum".
 DO $$
 BEGIN
   IF EXISTS (
