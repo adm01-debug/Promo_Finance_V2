@@ -10631,7 +10631,7 @@
     "FaturamentoTab"
    ],
    "export_default": null,
-   "linhas": 235,
+   "linhas": 250,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useHistoricoFinanceiro"

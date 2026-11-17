@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f76fcd2116` · branch `main` · 2026-11-17 20:57 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b75c138c4e` · branch `main` · 2026-11-17 21:35 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5074,7 +5074,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3601 testes em 315 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3605 testes em 316 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5322,6 +5322,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx` | 4 | AcessosSuspeitosPanel · consulta get_acessos_suspeitos com os parametros canonicos · falha na consulta NAO vira auditoria limpa · achado critico aparece na tabela |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx` | 4 | painel do Open Finance não promete integração que não existe · o botão Conectar Banco fica desabilitado com o motivo à mostra · o texto não anuncia sincronização automática de saldos · avisa que nada é importado para a conciliação |
+| `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
@@ -5377,8 +5378,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx` | 2 | ProjectedCashFlowChart · usa o valor residual e inclui título parcial |
 | `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
 | `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
-| `src/hooks/usePixTemplates.test.ts` | 2 | useCreatePixTemplate · preenche as colunas NOT NULL beneficiario_nome, tipo_chave e cidade |
-| … +15 linhas — lista completa em `context.json` | | |
+| … +16 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f76fcd2116140780d3b447d00f5c620de8ad785d",
+  "sha": "b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 20:57 UTC",
-  "files_total": 3970,
-  "code_files": 3588,
-  "code_lines": 510249
+  "generated_at": "2026-11-17 21:35 UTC",
+  "files_total": 3971,
+  "code_files": 3589,
+  "code_lines": 510359
  },
  "version": "1.3.2",
- "facts_hash": "e7918f8842090386",
+ "facts_hash": "9ee7f195393761cc",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,8 +333,8 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1245,
+   ".tsx": 1115,
    ".sql": 1114,
-   ".tsx": 1114,
    ".mjs": 63,
    ".py": 45,
    ".js": 8
@@ -67370,7 +67370,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 999,
+  "components_count": 1000,
   "hooks": [
    {
     "name": "useContacts",
@@ -70390,8 +70390,8 @@
   },
   {
    "module": "src/components",
-   "files": 997,
-   "lines": 164814,
+   "files": 998,
+   "lines": 164920,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70660,7 +70660,7 @@
   {
    "module": "src/hooks",
    "files": 319,
-   "lines": 47099,
+   "lines": 47103,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -123110,6 +123110,22 @@
    {
     "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
     "name": "percentil nulo (P25 = P75) esconde a régua em vez de mostrar zero"
+   },
+   {
+    "file": "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+    "name": "FaturamentoTab — imposto do mês"
+   },
+   {
+    "file": "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+    "name": "tem campo de imposto no formulário e na tabela"
+   },
+   {
+    "file": "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+    "name": "manda valor_impostos no payload do upsert"
+   },
+   {
+    "file": "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+    "name": "não bloqueia o salvamento quando o imposto fica zero"
    },
    {
     "file": "src/components/ui/__tests__/alert.test.tsx",
@@ -195103,7 +195119,7 @@
   },
   "src/components/tributario/historico/FaturamentoTab.tsx": {
    "path": "src/components/tributario/historico/FaturamentoTab.tsx",
-   "lines": 236,
+   "lines": 251,
    "exports": [
     "function FaturamentoTab"
    ],
@@ -195122,6 +195138,24 @@
     "Informe valores da folha"
    ],
    "doc": "TAB: Folha de Pagamento — Histórico Tributário Extraído de HistoricoFinanceiro.tsx (modularização)"
+  },
+  "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx": {
+   "path": "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+   "lines": 91,
+   "is_test": true,
+   "params": [
+    {
+     "name": "EMPRESA",
+     "value": "'610db558-22b8-45e9-821f-f203cca01c3a'"
+    }
+   ],
+   "doc": "Achado: a tela de Faturamento Mensal salvava receita e NÃO salvava imposto. `faturamento_mensal.valor_impostos` tem default 0, então cada mês cadastrado pela tela entrava com imposto zero — e `vw_dre_mensal` calcula `carga_tributaria_pct = valor_impostos / receita_bruta * 100`, logo a carga saía 0% …",
+   "tests": [
+    "FaturamentoTab — imposto do mês",
+    "tem campo de imposto no formulário e na tabela",
+    "manda valor_impostos no payload do upsert",
+    "não bloqueia o salvamento quando o imposto fica zero"
+   ]
   },
   "src/components/tributario/monofasico/DetalhamentoTable.tsx": {
    "path": "src/components/tributario/monofasico/DetalhamentoTable.tsx",
@@ -202910,7 +202944,7 @@
   },
   "src/hooks/useHistoricoFinanceiro.ts": {
    "path": "src/hooks/useHistoricoFinanceiro.ts",
-   "lines": 142,
+   "lines": 146,
    "exports": [
     "interface FaturamentoRow",
     "interface FolhaRow",
@@ -245080,10 +245114,30 @@
   }
  },
  "git": {
-  "sha": "f76fcd2116140780d3b447d00f5c620de8ad785d",
+  "sha": "b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b75c138",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)",
+    "files": [
+     "src/components/tributario/historico/FaturamentoTab.tsx",
+     "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+     "src/hooks/useHistoricoFinanceiro.ts"
+    ]
+   },
+   {
+    "sha": "e1a239c",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)",
+    "files": [
+     "docs/agentes/auditoria-branches-2026-11-17.md"
+    ]
+   },
    {
     "sha": "f76fcd2",
     "date": "2026-11-17",
@@ -245425,49 +245479,13 @@
      "supabase/functions/open-finance/index.ts",
      "supabase/functions/open-finance/index_test.ts"
     ]
-   },
-   {
-    "sha": "ece50dc",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(asaas): cobrança criada no Asaas volta a ser registrada no financeiro (#424)",
-    "files": [
-     "src/hooks/useAsaas.ts",
-     "src/hooks/useBoletos.helpers.ts",
-     "src/hooks/useBoletos.ts",
-     "src/hooks/useBoletos.validation.test.ts",
-     "supabase/functions/_shared/asaas-config.ts",
-     "supabase/functions/_shared/asaas-config_test.ts",
-     "supabase/functions/asaas-proxy/index.ts"
-    ]
-   },
-   {
-    "sha": "b2929c4",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(nfe): painel da SEFAZ para de exibir status, latência e uptime que ninguém mediu (#423)",
-    "files": [
-     "src/components/nfe/AlertasRejeicao.tsx",
-     "src/components/nfe/ContingenciaNFe.tsx",
-     "src/components/nfe/EventosHistorico.tsx",
-     "src/components/nfe/SefazAnalytics.tsx",
-     "src/components/nfe/SefazMonitor.tsx",
-     "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
-     "src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx",
-     "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx",
-     "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx",
-     "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx",
-     "src/lib/__tests__/sefaz-sem-status-fabricado.test.ts",
-     "src/lib/sefaz-contingency/rules.ts",
-     "src/lib/sefaz-contingency/state.ts",
-     "src/lib/sefaz-contingency/storage.ts",
-     "src/lib/sefaz-contingency/types.ts",
-     "src/lib/sefaz-event-logger.ts",
-     "src/lib/sefaz-rejection-monitor.ts"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "docs/agentes/auditoria-branches-2026-11-17.md",
+    2
+   ],
    [
     "bun.lock",
     2
@@ -245481,16 +245499,16 @@
     2
    ],
    [
-    "supabase/functions/asaas-proxy/index.ts",
-    2
+    "src/components/tributario/historico/FaturamentoTab.tsx",
+    1
    ],
    [
-    "src/components/nfe/AlertasRejeicao.tsx",
-    2
+    "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
+    1
    ],
    [
-    "src/components/nfe/EventosHistorico.tsx",
-    2
+    "src/hooks/useHistoricoFinanceiro.ts",
+    1
    ],
    [
     "src/components/bitrix/BitrixClientsTab.tsx",
@@ -245542,10 +245560,6 @@
    ],
    [
     "docs/DB_HEALTH.md",
-    1
-   ],
-   [
-    "supabase/functions/n8n-callback/index.ts",
     1
    ]
   ]

@@ -4127,7 +4127,7 @@
    "hooks_exportados": [
     "useHistoricoFinanceiro"
    ],
-   "linhas": 141,
+   "linhas": 145,
    "dominio": "hooks",
    "tabelas": [
     "faturamento_mensal",

@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f76fcd2116140780d3b447d00f5c620de8ad785d",
+  "commit": "b75c138c4eeda2273ce6b325fbbf6b6f2cef9e7c",
   "branch": "main",
-  "data_commit": "2026-11-17T17:50:50-03:00",
+  "data_commit": "2026-11-17T18:35:00-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b75c138",
+    "data": "2026-11-17",
+    "assunto": "feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)"
+   },
+   {
+    "sha": "e1a239c",
+    "data": "2026-11-17",
+    "assunto": "docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)"
+   },
    {
     "sha": "f76fcd2",
     "data": "2026-11-17",
@@ -121,19 +131,9 @@
     "sha": "6c4a75c",
     "data": "2026-11-17",
     "assunto": "chore: remove 3 TODOs de rename ja concluidos no banco (#432)"
-   },
-   {
-    "sha": "900fcbd",
-    "data": "2026-11-17",
-    "assunto": "feat: monitor-health avisa fora do app e corrige dois cooldowns do alerta (#431)"
-   },
-   {
-    "sha": "710f7a8",
-    "data": "2026-11-17",
-    "assunto": "chore: incorpora o snapshot do estado real do CI que ficou órfão na branch automation/estado-real (#429)"
    }
   ],
-  "arquivos_mudados_7d": 920,
+  "arquivos_mudados_7d": 922,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -145,19 +145,19 @@
    },
    {
     "pasta": "src/components/contas-receber",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "pasta": "src/components/nfe",
     "mudancas": 29
    },
    {
-    "pasta": "supabase/functions/_shared",
-    "mudancas": 29
-   },
-   {
     "pasta": "src/components/reforma-tributaria",
     "mudancas": 28
+   },
+   {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 27
    },
    {
     "pasta": "package.json",
@@ -246,15 +246,7 @@
     "mudancas": 10
    },
    {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 10
-   },
-   {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 10
    },
    {
@@ -266,11 +258,19 @@
     "mudancas": 9
    },
    {
+    "arquivo": "supabase/config.toml",
+    "mudancas": 9
+   },
+   {
     "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 9
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 205
+    "commits": 207
    },
    {
     "autor": "dependabot[bot]",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 9
+    "commits": 7
    },
    {
     "autor": "Joaquim Ataides",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3931,
-  "arquivos_codigo": 2473,
-  "linhas_codigo": 440515,
+  "arquivos_total": 3932,
+  "arquivos_codigo": 2474,
+  "linhas_codigo": 440624,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 321,
   "migrations": 1043,
   "cron_jobs": 22,
-  "testes": 477,
+  "testes": 478,
   "workflows": 19,
   "scripts": 113,
   "docs_md": 200
@@ -635,8 +635,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 997,
-   "linhas": 163817
+   "arquivos": 998,
+   "linhas": 163922
   },
   "src/config": {
    "arquivos": 1,
@@ -648,7 +648,7 @@
   },
   "src/hooks": {
    "arquivos": 319,
-   "linhas": 46780
+   "linhas": 46784
   },
   "src/i18n.ts": {
    "arquivos": 1,
