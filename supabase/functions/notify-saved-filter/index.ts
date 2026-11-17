@@ -15,6 +15,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { parseJsonBody } from '../_shared/validation.ts';
 const log = createLogger('notify-saved-filter');
 
 interface NotifyRequest {
@@ -61,7 +62,9 @@ const handler = async (req: Request): Promise<Response> => {
     const userId = userData.user.id;
     const userEmail = userData.user.email ?? null;
 
-    const raw = await req.json();
+    const __json = await parseJsonBody(req, 'notify-saved-filter');
+    if (!__json.success) return __json.response;
+    const raw = __json.data;
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
     const Schema = z
@@ -218,7 +221,9 @@ function renderEmail(input: {
     .map((l) => escapeHtml(l))
     .join('<br/>');
   const cta = input.url
-    ? `<a href="${escapeHtml(input.url)}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:20px;">Ver no app</a>`
+    ? `<a href="${escapeHtml(
+        input.url
+      )}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:20px;">Ver no app</a>`
     : '';
   return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
@@ -231,7 +236,9 @@ function renderEmail(input: {
         ${cta}
       </div>
       <div style="background:#f3f4f6;padding:15px;text-align:center;color:#6b7280;font-size:12px;">
-        Você recebeu este e-mail porque ativou notificações para o filtro "${escapeHtml(input.filterName)}".
+        Você recebeu este e-mail porque ativou notificações para o filtro "${escapeHtml(
+          input.filterName
+        )}".
       </div>
     </div>
   `;

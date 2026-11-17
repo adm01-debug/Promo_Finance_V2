@@ -424,13 +424,16 @@ async function gerarBalanco(supabase: any, empresaId: string | null) {
 
   let queryReceber = supabase
     .from('contas_receber')
+    // 'vencido' incluido: um recebivel em atraso continua sendo ativo circulante.
+    // A rotina marcar_contas_vencidas() passa 'pendente' -> 'vencido' no vencimento.
     .select('valor, valor_recebido')
-    .in('status', ['pendente', 'parcial']);
+    .in('status', ['pendente', 'vencido', 'parcial']);
 
   let queryPagar = supabase
     .from('contas_pagar')
+    // 'vencido' incluido: uma divida em atraso continua sendo passivo circulante.
     .select('valor, valor_pago')
-    .in('status', ['pendente', 'parcial']);
+    .in('status', ['pendente', 'vencido', 'parcial']);
 
   if (empresaId) {
     queryContas = queryContas.eq('empresa_id', empresaId);

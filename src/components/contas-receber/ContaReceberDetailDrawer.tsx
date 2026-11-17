@@ -31,6 +31,7 @@ import { DrawerAnexosTab } from './DrawerAnexosTab';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, calculateOverdueDays, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { rotuloTipoCobranca } from '@/types/tipo-cobranca-rotulo';
 import type { ContaReceberWithRelations } from './ContasReceberTableRow';
 import type { StatusPagamento } from '@/types/financial';
 
@@ -81,7 +82,8 @@ const etapaConfig: Record<string, { label: string; color: string; icon: typeof S
 const tipoCobrancaIcons: Record<string, typeof Banknote> = {
   boleto: Banknote,
   pix: QrCode,
-  cartao: CreditCard,
+  cartao_credito: CreditCard,
+  cartao_debito: CreditCard,
   transferencia: Building2,
   dinheiro: Wallet,
 };
@@ -205,7 +207,7 @@ export function ContaReceberDetailDrawer({
                 )}
                 <Badge variant="outline" className="gap-1">
                   <TipoIcon className="h-3 w-3" />
-                  {conta.tipo_cobranca?.toUpperCase() || 'BOLETO'}
+                  {rotuloTipoCobranca(conta.tipo_cobranca)}
                 </Badge>
               </div>
             </div>

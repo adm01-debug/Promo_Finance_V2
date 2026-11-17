@@ -1,6 +1,11 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
+import {
+  Bitrix24SyncSchema,
+  validatePayload,
+  createErrorResponse,
+  parseJsonBody,
+} from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -250,7 +255,6 @@ async function syncDeals(
             cliente_nome: `Bitrix Deal #${deal.ID}`,
             empresa_id: empresaId,
             created_by: userId,
-            status: 'pendente',
           };
 
           // Check if already exists
@@ -262,10 +266,13 @@ async function syncDeals(
 
           if (existing) {
             // Update
+            // status fora do update de proposito: quem escreve nessa coluna e o
+            // usuario e a rotina marcar_contas_vencidas(). Reenviar 'pendente'
+            // aqui desfazia o 'vencido' (e tambem 'recebido'/'parcial').
             await supabase.from('contas_receber').update(contaData).eq('id', existing.id);
           } else {
             // Insert
-            await supabase.from('contas_receber').insert(contaData);
+            await supabase.from('contas_receber').insert({ ...contaData, status: 'pendente' });
           }
 
           processed++;
@@ -607,7 +614,9 @@ async function exportPaymentStatus(
           id: conta.bitrix_deal_id,
           fields: {
             STAGE_ID: 'WON',
-            COMMENTS: `Pagamento recebido em ${conta.data_recebimento || new Date().toISOString().split('T')[0]}`,
+            COMMENTS: `Pagamento recebido em ${
+              conta.data_recebimento || new Date().toISOString().split('T')[0]
+            }`,
           },
         });
 
@@ -686,7 +695,9 @@ async function syncElisaoTask(
     const taskParams = {
       fields: {
         TITLE: `[RECUPERAÇÃO FISCAL] ${tarefa.titulo}`,
-        DESCRIPTION: `${tarefa.descricao}\n\nValor estimado: R$ ${tarefa.valor_envolvido}\nPrazo: ${tarefa.prazo || 'N/D'}`,
+        DESCRIPTION: `${tarefa.descricao}\n\nValor estimado: R$ ${tarefa.valor_envolvido}\nPrazo: ${
+          tarefa.prazo || 'N/D'
+        }`,
         RESPONSIBLE_ID: 1,
         DEADLINE: tarefa.prazo ? `${tarefa.prazo}T18:00:00` : undefined,
       },
@@ -834,7 +845,9 @@ serve(
         const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
         if (inativa) return inativa;
 
-        const rawBody = await req.json();
+        const __json = await parseJsonBody(req, 'bitrix24-sync');
+        if (!__json.success) return __json.response;
+        const rawBody = __json.data;
         const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');
         if (!validation.success) {
           return createErrorResponse(validation.error, 400, validation.details, req);

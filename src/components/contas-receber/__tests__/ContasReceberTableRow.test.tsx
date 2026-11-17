@@ -207,9 +207,14 @@ describe('ContasReceberTableRow', () => {
       expect(screen.getByText('PIX')).toBeInTheDocument();
     });
 
-    it('exibe badge Cartão', () => {
-      renderRow({ tipo_cobranca: 'cartao' });
-      expect(screen.getByText('Cartão')).toBeInTheDocument();
+    it('exibe badge Cartão de crédito', () => {
+      renderRow({ tipo_cobranca: 'cartao_credito' });
+      expect(screen.getByText('Cartão de crédito')).toBeInTheDocument();
+    });
+
+    it('exibe badge Cartão de débito', () => {
+      renderRow({ tipo_cobranca: 'cartao_debito' });
+      expect(screen.getByText('Cartão de débito')).toBeInTheDocument();
     });
 
     it('exibe badge TED', () => {

@@ -88,3 +88,19 @@ INSERT INTO public.benchmarks_setoriais (cnae_prefix, setor, regime, carga_media
 ('62', 'Tecnologia / Software', 'simples', 8.7, 25.0, 'IBPT 2024', 2025),
 ('62', 'Tecnologia / Software', 'presumido', 13.3, 25.0, 'IBPT 2024', 2025),
 ('69', 'Atividades Jurídicas/Contábeis', 'simples', 12.5, 30.0, 'IBPT 2024', 2025);
+
+-- Reconciliacao com producao, no arquivo que CRIA a tabela.
+-- Este CREATE TABLE (linha 36) e o vencedor no replay: e CREATE TABLE puro e tem
+-- o timestamp mais antigo, enquanto 20260728163134:6 e 20260825100000:207 sao
+-- CREATE TABLE IF NOT EXISTS, no-op. Ele declara ano_referencia e NAO declara
+-- vigencia_inicio/vigencia_fim, que existem em PRODUCAO (conferido no canonico:
+-- bench_tem_vigencia=1, tem_benchmark_unico=1).
+-- Sem estas colunas, 20260825110000:7046 falhava com
+--   ERROR: column "vigencia_inicio" named in key does not exist
+-- ao criar a constraint benchmark_unico (cnae_prefix, regime, vigencia_inicio),
+-- e como o arquivo roda em uma transacao, derrubava a criacao de risk_rules,
+-- alerts_sent, geo_blocks e watch_cron_failures junto.
+-- Em producao e no-op: este arquivo ja foi aplicado.
+ALTER TABLE public.benchmarks_setoriais
+  ADD COLUMN IF NOT EXISTS vigencia_inicio date NOT NULL DEFAULT CURRENT_DATE,
+  ADD COLUMN IF NOT EXISTS vigencia_fim date;

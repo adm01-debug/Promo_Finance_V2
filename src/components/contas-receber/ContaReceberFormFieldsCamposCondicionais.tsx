@@ -4,7 +4,14 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 
 interface ContaReceberFormFieldsCamposCondicionaisProps {
-  tipoCobranca: 'boleto' | 'pix' | 'transferencia' | 'cartao' | 'dinheiro' | undefined;
+  tipoCobranca:
+    | 'boleto'
+    | 'pix'
+    | 'transferencia'
+    | 'cartao_credito'
+    | 'cartao_debito'
+    | 'dinheiro'
+    | undefined;
   form: import('react-hook-form').UseFormReturn<
     import('@/components/contas-receber/ContaReceberFormFields.types').ContaReceberFormValues
   >;

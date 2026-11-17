@@ -9,6 +9,7 @@ import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
+import { parseJsonBody } from '../_shared/validation.ts';
 const log = createLogger('n8n-dispatch');
 
 interface DispatchRequest {
@@ -106,7 +107,9 @@ Deno.serve(
         const inativa = respostaIntegracaoDesativada('n8n', corsHeaders);
         if (inativa) return inativa;
 
-        const raw = await req.json();
+        const __json = await parseJsonBody(req, 'n8n-dispatch');
+        if (!__json.success) return __json.response;
+        const raw = __json.data;
         const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
         const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
         const Schema = z

@@ -44,39 +44,67 @@ DROP INDEX IF EXISTS public.idx_asaas_reconciliation_suggestions_contas_receber_
 DROP INDEX IF EXISTS public.idx_asaas_reconciliation_suggestions_empresa_id;
 DROP INDEX IF EXISTS public.idx_asaas_sync_queue_asaas_payment_id_fk;
 DROP INDEX IF EXISTS public.idx_asaas_transferencias_empresa_id;
-DROP INDEX IF EXISTS public.audit_logs_2026_01_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_01_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_01_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_02_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_02_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_02_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_03_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_03_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_03_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_04_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_04_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_04_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_05_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_05_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_05_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_06_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_06_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_06_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_07_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_07_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_07_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_08_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_08_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_08_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_09_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_09_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_09_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_10_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_10_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_2026_10_user_id_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_default_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_default_table_name_created_at_idx;
-DROP INDEX IF EXISTS public.audit_logs_default_user_id_created_at_idx;
+-- Indices de particao de audit_logs: em producao public.audit_logs e tabela comum
+-- (relkind 'r') e estes 33 indices eram autonomos nas tabelas soltas audit_logs_AAAA_MM,
+-- por isso o DROP direto passou (versao ja no ledger). No replay da cadeia,
+-- 20260711164339 converte audit_logs em PARTITION BY RANGE e cria
+-- idx_audit_logs_created_at/_user_id/_table (linhas 92-94) ANTES de
+-- ensure_monthly_partitions() (linha 97): cada particao ganha um indice filho ANEXADO
+-- ao indice particionado do pai, e o Postgres recusa o DROP isolado do filho
+-- ("because index idx_audit_logs_created_at requires it"). O pai nao esta nesta lista
+-- (nao e idle), logo o filho deve ser mantido. Guarda: so dropa indice sem pai.
+DO $$
+DECLARE
+  v_idx text;
+BEGIN
+  FOREACH v_idx IN ARRAY ARRAY[
+    'audit_logs_2026_01_created_at_idx',
+    'audit_logs_2026_01_table_name_created_at_idx',
+    'audit_logs_2026_01_user_id_created_at_idx',
+    'audit_logs_2026_02_created_at_idx',
+    'audit_logs_2026_02_table_name_created_at_idx',
+    'audit_logs_2026_02_user_id_created_at_idx',
+    'audit_logs_2026_03_created_at_idx',
+    'audit_logs_2026_03_table_name_created_at_idx',
+    'audit_logs_2026_03_user_id_created_at_idx',
+    'audit_logs_2026_04_created_at_idx',
+    'audit_logs_2026_04_table_name_created_at_idx',
+    'audit_logs_2026_04_user_id_created_at_idx',
+    'audit_logs_2026_05_created_at_idx',
+    'audit_logs_2026_05_table_name_created_at_idx',
+    'audit_logs_2026_05_user_id_created_at_idx',
+    'audit_logs_2026_06_created_at_idx',
+    'audit_logs_2026_06_table_name_created_at_idx',
+    'audit_logs_2026_06_user_id_created_at_idx',
+    'audit_logs_2026_07_created_at_idx',
+    'audit_logs_2026_07_table_name_created_at_idx',
+    'audit_logs_2026_07_user_id_created_at_idx',
+    'audit_logs_2026_08_created_at_idx',
+    'audit_logs_2026_08_table_name_created_at_idx',
+    'audit_logs_2026_08_user_id_created_at_idx',
+    'audit_logs_2026_09_created_at_idx',
+    'audit_logs_2026_09_table_name_created_at_idx',
+    'audit_logs_2026_09_user_id_created_at_idx',
+    'audit_logs_2026_10_created_at_idx',
+    'audit_logs_2026_10_table_name_created_at_idx',
+    'audit_logs_2026_10_user_id_created_at_idx',
+    'audit_logs_default_created_at_idx',
+    'audit_logs_default_table_name_created_at_idx',
+    'audit_logs_default_user_id_created_at_idx'
+  ] LOOP
+    IF EXISTS (
+      SELECT 1
+      FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      JOIN pg_catalog.pg_inherits i ON i.inhrelid = c.oid
+      WHERE n.nspname = 'public' AND c.relname = v_idx
+    ) THEN
+      RAISE NOTICE 'drop_idle_indexes: public.% e indice de particao anexado a indice particionado do pai — mantido', v_idx;
+    ELSE
+      EXECUTE format('DROP INDEX IF EXISTS public.%I', v_idx);
+    END IF;
+  END LOOP;
+END $$;
 DROP INDEX IF EXISTS public.idx_auditoria_financeira_empresa_id;
 DROP INDEX IF EXISTS public.idx_auditoria_trib_entidade;
 DROP INDEX IF EXISTS public.idx_auth_logs_created;

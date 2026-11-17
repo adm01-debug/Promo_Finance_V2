@@ -38,7 +38,10 @@ BEGIN
     'public.sefaz_process_batch(text,text,uuid,bigint,bigint,text,text,jsonb)',
     'public.silenciar_alerta_erro_frontend(text,integer,text)',
     'public.validar_catalogos_tributarios()',
-    'public.watch_cron_failures()',
+    -- public.watch_cron_failures() fica fora do preflight: o overload legado sem
+    -- argumentos é criado por ESTA migration (seção 10, linha ~1132) e não existe
+    -- em banco recriado do zero — exigi-lo aqui tornava a cadeia não-replayável.
+    -- O postflight (seção 11) continua validando a definição dele após o CREATE.
     'public.watch_cron_failures(integer,integer)'
   ]::text[]) AS v(assinatura)
   WHERE to_regprocedure(v.assinatura) IS NULL;

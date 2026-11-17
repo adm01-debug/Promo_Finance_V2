@@ -96,7 +96,18 @@ REVOKE EXECUTE ON FUNCTION public.pix_template_sync_legacy() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.prevent_profile_privilege_escalation() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.profile_sensitive_fields_unchanged(_profile_id uuid, _user_id uuid, _role text, _empresa_id uuid) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.provisionar_usuario(_user_id uuid) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.purge_old_rows(p_table text, p_column text, p_days integer) FROM authenticated;
+DO $$
+BEGIN
+  -- Overload legada (text,text,integer): existe em producao por drift (criada
+  -- fora do versionamento), mas a cadeia so cria purge_old_rows(regclass,...).
+  -- Em replay do zero a assinatura nao existe e o REVOKE direto abortava o arquivo.
+  IF to_regprocedure('public.purge_old_rows(text,text,integer)') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.purge_old_rows(text,text,integer) FROM authenticated';
+  ELSE
+    RAISE NOTICE 'purge_old_rows(text,text,integer) inexistente nesta base: REVOKE ignorado';
+  END IF;
+END
+$$;
 REVOKE EXECUTE ON FUNCTION public.purge_old_rows(p_table regclass, p_column text, p_days integer, p_where text, p_batch integer, p_max_batches integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.recarregar_seeds_fiscais(p_motivo text) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.record_failed_login(p_email text, p_ip_address inet) FROM authenticated;
@@ -120,7 +131,15 @@ REVOKE EXECUTE ON FUNCTION public.update_updated_at_column() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.use_reset_token(p_token_hash text, p_ip_address inet) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.validar_catalogos_tributarios() FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.validar_partidas_dobradas() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.watch_cron_failures() FROM authenticated;
+-- A producao tem os dois overloads; a cadeia so cria watch_cron_failures
+-- (integer, integer). REVOKE em funcao inexistente aborta o arquivo todo,
+-- entao o overload sem argumentos vai sob guarda de existencia.
+DO $e09_watch_cron_sem_args$
+BEGIN
+  IF to_regprocedure('public.watch_cron_failures()') IS NOT NULL THEN
+    REVOKE EXECUTE ON FUNCTION public.watch_cron_failures() FROM authenticated;
+  END IF;
+END $e09_watch_cron_sem_args$;
 REVOKE EXECUTE ON FUNCTION public.watch_cron_failures(p_lookback_minutes integer, p_stale_hours integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.webhook_claim(p_source text, p_external_id text, p_event_type text, p_payload jsonb, p_max_attempts integer) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.webhook_dequeue_retries(p_limit integer) FROM authenticated;

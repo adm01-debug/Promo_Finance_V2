@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { addDays, format } from 'date-fns';
+import { useAuth } from '@/hooks/useAuth';
 import {
   ProjecaoDiaria,
   ProjecaoCenario,
@@ -16,44 +17,73 @@ export interface FluxoKPIs {
 }
 
 export function useFluxoCaixaKPIs() {
+  // A barra de empresa do topo (Header.tsx:138 -> EmpresaScopeBar) vale para
+  // esta página, mas o hook não lia o escopo: os três números somavam TODAS as
+  // empresas acessíveis e o cache não separava por empresa, então trocar a
+  // empresa no topo não mudava nada na tela. src/contexts/useEmpresaScope.ts:11-15
+  // declara essa regra para o próprio projeto.
+  const { currentEmpresaId } = useAuth();
+
   return useQuery({
-    queryKey: ['fluxo-caixa-kpis'],
+    queryKey: ['fluxo-caixa-kpis', currentEmpresaId],
     queryFn: async (): Promise<FluxoKPIs> => {
+      // Janela da previsão: o cartão se chama "30 dias" e somava TODO o
+      // pendente, inclusive vencimento de anos à frente. As linhas de
+      // useFluxoCaixaProjetado já usavam .gte/.lte('data_vencimento'), então a
+      // janela existia no arquivo e faltava só aqui.
+      const hojeStr = format(new Date(), 'yyyy-MM-dd');
+      const limite30d = format(addDays(new Date(), 30), 'yyyy-MM-dd');
+      // Janela fechada nos dois lados, igual à da projeção diária (que começa
+      // hoje): só o limite superior deixaria passar título vencido com
+      // vencimento no passado, e os dois números da mesma tela divergiriam.
+      const dentroDaJanela = (venc?: string | null) =>
+        !!venc && venc >= hojeStr && venc <= limite30d;
+
       // Buscar saldo total das contas bancárias
-      const { data: contas, error: errorContas } = await supabase
-        .from('contas_bancarias')
-        .select('saldo_atual')
-        .eq('ativo', true);
+      let qContas = supabase.from('contas_bancarias').select('saldo_atual').eq('ativo', true);
+      if (currentEmpresaId) qContas = qContas.eq('empresa_id', currentEmpresaId);
+      const { data: contas, error: errorContas } = await qContas;
 
       if (errorContas) throw errorContas;
 
       const saldoTotal = (contas || []).reduce((sum, c) => sum + (c.saldo_atual || 0), 0);
 
       // Buscar total a receber (pendentes)
-      const { data: receber, error: errorReceber } = await supabase
+      let qReceber = supabase
         .from('contas_receber')
-        .select('valor, valor_recebido')
+        .select('valor, valor_recebido, data_vencimento')
         .in('status', ['pendente', 'vencido', 'parcial']);
+      if (currentEmpresaId) qReceber = qReceber.eq('empresa_id', currentEmpresaId);
+      const { data: receber, error: errorReceber } = await qReceber;
 
       if (errorReceber) throw errorReceber;
 
-      const totalReceber = (receber || []).reduce(
-        (sum, c) => sum + (c.valor - (c.valor_recebido || 0)),
-        0
-      );
+      const saldoReceber = (c: { valor: number; valor_recebido?: number | null }) =>
+        c.valor - (c.valor_recebido || 0);
+      const totalReceber = (receber || []).reduce((sum, c) => sum + saldoReceber(c), 0);
+      const receber30d = (receber || [])
+        .filter((c) => dentroDaJanela(c.data_vencimento))
+        .reduce((sum, c) => sum + saldoReceber(c), 0);
 
       // Buscar total a pagar (pendentes)
-      const { data: pagar, error: errorPagar } = await supabase
+      let qPagar = supabase
         .from('contas_pagar')
-        .select('valor, valor_pago')
+        .select('valor, valor_pago, data_vencimento')
         .in('status', ['pendente', 'vencido', 'parcial']);
+      if (currentEmpresaId) qPagar = qPagar.eq('empresa_id', currentEmpresaId);
+      const { data: pagar, error: errorPagar } = await qPagar;
 
       if (errorPagar) throw errorPagar;
 
-      const totalPagar = (pagar || []).reduce((sum, c) => sum + (c.valor - (c.valor_pago || 0)), 0);
+      const saldoPagar = (c: { valor: number; valor_pago?: number | null }) =>
+        c.valor - (c.valor_pago || 0);
+      const totalPagar = (pagar || []).reduce((sum, c) => sum + saldoPagar(c), 0);
+      const pagar30d = (pagar || [])
+        .filter((c) => dentroDaJanela(c.data_vencimento))
+        .reduce((sum, c) => sum + saldoPagar(c), 0);
 
-      // Previsão de saldo em 30 dias
-      const previsaoSaldo30d = saldoTotal + totalReceber - totalPagar;
+      // Previsão de saldo em 30 dias — só o que vence dentro da janela.
+      const previsaoSaldo30d = saldoTotal + receber30d - pagar30d;
 
       return {
         saldoTotal,
@@ -66,8 +96,12 @@ export function useFluxoCaixaKPIs() {
 }
 
 export function useFluxoCaixaProjetado(dias: number = 30) {
+  // Mesmo escopo do KPI: sem isto a curva projetada misturava o saldo inicial
+  // e os vencimentos de todas as empresas acessíveis.
+  const { currentEmpresaId } = useAuth();
+
   return useQuery({
-    queryKey: ['fluxo-caixa-projetado', dias],
+    queryKey: ['fluxo-caixa-projetado', dias, currentEmpresaId],
     queryFn: async (): Promise<ProjecaoDiaria[]> => {
       const hoje = new Date();
       const dataFim = addDays(hoje, dias);
@@ -75,32 +109,35 @@ export function useFluxoCaixaProjetado(dias: number = 30) {
       const dataFimStr = format(dataFim, 'yyyy-MM-dd');
 
       // Buscar saldo inicial das contas bancárias
-      const { data: contas, error: errorContas } = await supabase
-        .from('contas_bancarias')
-        .select('saldo_atual')
-        .eq('ativo', true);
+      let qContas = supabase.from('contas_bancarias').select('saldo_atual').eq('ativo', true);
+      if (currentEmpresaId) qContas = qContas.eq('empresa_id', currentEmpresaId);
+      const { data: contas, error: errorContas } = await qContas;
 
       if (errorContas) throw errorContas;
 
       const saldoInicial = (contas || []).reduce((sum, c) => sum + (c.saldo_atual || 0), 0);
 
       // Buscar contas a receber no período
-      const { data: receber, error: errorReceber } = await supabase
+      let qReceber = supabase
         .from('contas_receber')
         .select('id, valor, valor_recebido, data_vencimento')
         .gte('data_vencimento', hojeStr)
         .lte('data_vencimento', dataFimStr)
         .in('status', ['pendente', 'vencido', 'parcial']);
+      if (currentEmpresaId) qReceber = qReceber.eq('empresa_id', currentEmpresaId);
+      const { data: receber, error: errorReceber } = await qReceber;
 
       if (errorReceber) throw errorReceber;
 
       // Buscar contas a pagar no período
-      const { data: pagar, error: errorPagar } = await supabase
+      let qPagar = supabase
         .from('contas_pagar')
         .select('id, valor, valor_pago, data_vencimento')
         .gte('data_vencimento', hojeStr)
         .lte('data_vencimento', dataFimStr)
         .in('status', ['pendente', 'vencido', 'parcial']);
+      if (currentEmpresaId) qPagar = qPagar.eq('empresa_id', currentEmpresaId);
+      const { data: pagar, error: errorPagar } = await qPagar;
 
       if (errorPagar) throw errorPagar;
 

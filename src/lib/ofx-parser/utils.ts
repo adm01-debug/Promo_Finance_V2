@@ -72,6 +72,39 @@ export function parseData(dateStr: string): Date {
   throw new Error(`Formato de data não reconhecido: ${dateStr}`);
 }
 
+/**
+ * Valor monetario de extrato bancario, em texto.
+ *
+ * Fica aqui, e nao em csv.ts, porque os dois parsers de extrato precisam da
+ * MESMA regra: o parseCSV foi corrigido em 2026-09 e o parseExcel ficou com a
+ * logica antiga (`parseFloat` depois de trocar a primeira virgula por ponto).
+ * O resultado era que o mesmo extrato importado em .xlsx entrava com valor mil
+ * vezes menor ("1.234,56" -> 1.234) e celula nao numerica entrava como NaN,
+ * sem aviso. Uma funcao so para os dois impede a divergencia de voltar.
+ *
+ * Lanca em entrada invalida de proposito: os dois chamadores transformam o
+ * throw em linha ignorada com aviso, em vez de aceitar numero inventado.
+ */
+export function parseValorMonetario(valorRaw: string): number {
+  const cleaned = valorRaw
+    .trim()
+    .replace(/^R\$\s*/i, '')
+    .replace(/\s/g, '');
+  let normalized: string;
+  if (/^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:,\d+)?$/.test(cleaned)) {
+    normalized = cleaned.replace(/\./g, '').replace(',', '.');
+  } else if (/^-?\d+\.\d{1,2}$/.test(cleaned)) {
+    // Extratos internacionais normalmente usam ponto decimal. So aceite essa
+    // forma quando ela nao puder ser confundida com agrupamento BRL de milhar.
+    normalized = cleaned;
+  } else {
+    throw new Error(`Valor inválido: ${valorRaw}`);
+  }
+  const valor = Number(normalized);
+  if (!Number.isFinite(valor)) throw new Error(`Valor inválido: ${valorRaw}`);
+  return valor;
+}
+
 export function parseCSVLine(line: string, delimiter: string): string[] {
   const result: string[] = [];
   let current = '';

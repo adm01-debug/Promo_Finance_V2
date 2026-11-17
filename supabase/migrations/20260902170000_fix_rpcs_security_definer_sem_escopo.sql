@@ -39,6 +39,13 @@
 BEGIN;
 
 DROP FUNCTION IF EXISTS public.confirmar_conciliacao(uuid, uuid, uuid, uuid, uuid, numeric);
+-- A cadeia tambem deixa viva a versao legada de 4 argumentos
+-- (20260519122543/122647/122751), que este DROP de 6 argumentos nao
+-- alcanca -- e e por ela que 20261102000000 acusa "DROP nao confirmado".
+-- Na producao nenhum overload de confirmar_conciliacao existe, e nenhuma
+-- linha de src/ ou supabase/functions/ a chama (so confirmar_conciliacao_manual,
+-- em conciliacao-proxy/index.ts:84), entao removemos o legado tambem.
+DROP FUNCTION IF EXISTS public.confirmar_conciliacao(uuid, uuid, uuid, numeric);
 
 REVOKE ALL ON FUNCTION public.fn_verificar_vencidos() FROM PUBLIC, anon, authenticated;
 

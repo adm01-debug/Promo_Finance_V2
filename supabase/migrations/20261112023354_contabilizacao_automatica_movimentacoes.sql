@@ -142,4 +142,8 @@ CREATE TRIGGER trg_contabilizar_movimentacao
   FOR EACH ROW EXECUTE FUNCTION public.contabilizar_movimentacao();
 
 -- Trigger antigo: desligado, gravava em colunas inexistentes.
+-- Num banco recriado do zero o gatilho trigger_gerar_contabilidade
+-- (20260509132924:89) ainda depende da funcao neste ponto da cadeia, e o DROP
+-- sem CASCADE falha. Em producao esse gatilho nao existe: o comando e no-op.
+DROP TRIGGER IF EXISTS trigger_gerar_contabilidade ON public.movimentacoes;
 DROP FUNCTION IF EXISTS public.gerar_lancamento_contabil_automatico();

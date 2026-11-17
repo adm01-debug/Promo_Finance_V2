@@ -61,7 +61,10 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
       const { data: contasPagar } = await supabase
         .from('contas_pagar')
         .select('valor, data_vencimento')
-        .eq('status', 'pendente')
+        // 'vencido' incluido: a janela nao tem piso de data, entao o titulo em
+        // atraso esta dentro dela e continua sendo divida a pagar. Sem isso o
+        // saldo projetado sobe e o alerta de saldo negativo para de disparar.
+        .in('status', ['pendente', 'vencido'])
         .lte('data_vencimento', toISOLocal(em30Dias));
 
       const { data: contasReceber } = await supabase
@@ -104,8 +107,13 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
         contasReceber
           ?.filter((c) => c.status === 'vencido')
           .reduce((sum, c) => sum + Number(c.valor), 0) || 0;
-      const taxaInadimplencia =
-        totalReceber > 0 ? (totalVencido / (totalReceber + totalVencido)) * 100 : 0;
+      // Guard pela carteira em aberto (pendente + vencido), nao por totalReceber,
+      // que soma so 'pendente'. Com a rotina marcar_contas_vencidas() gravando
+      // 'vencido', uma carteira 100% vencida deixa totalReceber em 0 e o guard
+      // antigo devolvia taxa 0% — suprimindo o alerta exatamente no pior caso,
+      // ja que ele so dispara acima de 10%.
+      const carteiraAberta = totalReceber + totalVencido;
+      const taxaInadimplencia = carteiraAberta > 0 ? (totalVencido / carteiraAberta) * 100 : 0;
 
       if (taxaInadimplencia > 10) {
         newSuggestions.push({

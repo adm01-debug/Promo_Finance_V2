@@ -51,7 +51,8 @@ export function AdvancedFiltersPopover({
   tiposCobranca = [
     { value: 'boleto', label: 'Boleto' },
     { value: 'pix', label: 'PIX' },
-    { value: 'cartao', label: 'Cartão' },
+    { value: 'cartao_credito', label: 'Cartão de crédito' },
+    { value: 'cartao_debito', label: 'Cartão de débito' },
     { value: 'transferencia', label: 'Transferência' },
     { value: 'dinheiro', label: 'Dinheiro' },
   ],

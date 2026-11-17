@@ -74,6 +74,16 @@ export function TesourariaCentralizada() {
   }, [contas, empresas, pagar, receber, filtroEmpresa, busca]);
 
   const saldoTotal = contasFiltradas.reduce((s, c) => s + (c.saldo_atual || 0), 0);
+
+  const pagarFiltrados = useMemo(
+    () => (filtroEmpresa === 'all' ? pagar : pagar.filter((p) => p.empresa_id === filtroEmpresa)),
+    [pagar, filtroEmpresa]
+  );
+  const receberFiltrados = useMemo(
+    () =>
+      filtroEmpresa === 'all' ? receber : receber.filter((r) => r.empresa_id === filtroEmpresa),
+    [receber, filtroEmpresa]
+  );
   const contasAlerta = contasFiltradas.filter((c) => c.alertaBaixo).length;
 
   if (isLoading) {
@@ -143,7 +153,17 @@ export function TesourariaCentralizada() {
         )}
       </div>
 
-      <ProjectedCashFlowChart pagar={pagar} receber={receber} saldoAtual={saldoTotal} />
+      {/* pagar/receber filtrados pela MESMA empresa de saldoTotal: saldoTotal vem
+          de contasFiltradas (já filtrado por filtroEmpresa), e antes o gráfico
+          recebia pagar/receber crus de useContasPagar()/useContasReceber().
+          Com uma empresa selecionada, a curva misturava o saldo inicial de UMA
+          empresa com as entradas e saídas diárias de TODAS — o seletor da
+          própria tela não tinha efeito sobre as barras. */}
+      <ProjectedCashFlowChart
+        pagar={pagarFiltrados}
+        receber={receberFiltrados}
+        saldoAtual={saldoTotal}
+      />
 
       {/* Account Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
