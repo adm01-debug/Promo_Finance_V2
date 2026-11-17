@@ -21,6 +21,7 @@ BEGIN
     RAISE EXCEPTION 'DLQ item não encontrado ou já resolvido';
   END IF;
 
+  -- 1) o registro original, achado pelo vinculo gravado na promocao
   SELECT id, status INTO v_log_id, v_log_status
     FROM public.webhooks_log
    WHERE dlq_id = p_dlq_id
@@ -28,6 +29,7 @@ BEGIN
    LIMIT 1
    FOR UPDATE;
 
+  -- 2) sem vinculo, cai na chave de idempotencia, que e o que o indice protege
   IF v_log_id IS NULL AND v_dlq.external_id IS NOT NULL THEN
     SELECT id, status INTO v_log_id, v_log_status
       FROM public.webhooks_log
@@ -37,6 +39,12 @@ BEGIN
      FOR UPDATE;
   END IF;
 
+  -- Evento JA CONCLUIDO por outro caminho: webhook_replay limpa `dlq_id` antes
+  -- de olhar esse vinculo (20260723124731:187-200 -- o IF da 196 le o valor ja
+  -- anulado), entao o item da DLQ fica aberto mesmo depois do sucesso.
+  -- Reagendar aqui reexecutaria um evento
+  -- concluido -- um PAYMENT_RECEIVED antigo sobrescreveria um REFUNDED
+  -- posterior. Resolve so o item obsoleto e preserva o registro.
   IF v_log_status = 'success' THEN
     UPDATE public.webhook_dlq
        SET resolved_at = now(),
@@ -50,6 +58,7 @@ BEGIN
     RETURN v_log_id;
   END IF;
 
+  -- Em execucao agora: reiniciar competiria com o worker que o reservou.
   IF v_log_status = 'processing' THEN
     RAISE EXCEPTION 'Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual.', v_log_id;
   END IF;
