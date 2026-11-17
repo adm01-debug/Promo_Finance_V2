@@ -167,3 +167,221 @@ function — é a versão anterior ao merge.
 **Conclusão byte a byte: não existe um byte de código-fonte, migration, edge function ou UI
 em branch alguma que não esteja na `main` ou não seja uma versão mais antiga de algo que
 está na `main`.**
+
+---
+
+## 5. Fechamento da auditoria — 2026-11-17 21:46 UTC
+
+Estado final das branches remotas, depois dos merges da sessão (#448, #450, #451, #453,
+#454, #456, #452):
+
+| branch                                          | veredito                                                                                   | ação          |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------- |
+| `main`                                          | —                                                                                          | —             |
+| `claude/fix-duplicatas-contas-261117-2320`       | PR #455 aberta, índices anti-duplicata                                                     | merge na sessão |
+| `claude/infra-gate-colunas-select-261117-2340`   | PR #457, mexe em `.github/workflows/ci.yml`                                                | **aberta para o dono** (regra 6.6) |
+| `dependabot/bun/radix-ui-4a35e951ff`             | PR #371; diff = **só** `package.json` + `bun.lock`, todos os bumps dentro do mesmo major; `CONFLICTING`/`DIRTY` | **aberta para o dono**; branch alheia = somente leitura (regra 6.1) |
+| `computador_local`                              | **ancestral** de `main` (`git merge-base --is-ancestor` verdadeiro, 0 commits próprios)    | mantida, nada a recuperar |
+| `contexto`                                       | artefato gerado (`docs/contexto/**`: 1673 dumps `.sql` de funções do banco + índices JSON), histórico órfão, autor `contexto[bot]` | mantida, workflow regenera |
+| `inventario`                                     | artefato gerado (`inventario/**`, 0 arquivo `.ts/.tsx/.sql`), histórico órfão, autor `inventario[bot]` | mantida, workflow regenera |
+| `automation/estado-real`                         | 1 commit próprio, diff = `docs/ci/{MATRIZ_EDGE_TABELA.md,README.md,kpi.json}`, os três presentes na `main` | mantida, workflow regenera |
+
+### 5.1 Branch apagada, com prova
+
+`claude/fix-review-findings-20261117-1611` tinha **1 commit fora da `main`** —
+`569ebd6ed fix: aplica findings de review das PRs #240/#248 (n8n-callback, vite.config, DB_HEALTH)`,
+trabalho de outro agente. Conferido arquivo por arquivo antes de apagar:
+
+| arquivo                                   | o que a branch trazia                                                                 | onde está na `main`                               |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `supabase/functions/n8n-callback/index.ts` | `throw new Error('severity invalida')` sem vazar o valor recebido; `throw new Error(mensagemErro(error))` no `insertSingle` | `main:174` e `main:204` — idênticos               |
+| `vite.config.ts`                          | `createRequire(import.meta.url)` no lugar de `require()`; Sentry exigindo `SENTRY_ORG`/`SENTRY_PROJECT`; filtro `missing` | `main:4`, `main:18`, `main:65-69` — só a quebra de linha do prettier difere |
+| `docs/DB_HEALTH.md`                       | seção 7 afirmando "esperado **0** funções sem guard"                                  | a `main` tem versão **mais nova que desmente isso** com medição (70 funções sem os três guards, 30 com auth própria, 21 candidatos reais) |
+
+Nenhum byte exclusivo restante: `git diff origin/main origin/<branch>` só acusava a `main`
+à frente. Ref apagada via `github_delete_ref` (204).
+
+**Base da exclusão.** O AGENTS §6.1 diz que branch alheia é somente leitura, e isso continua
+valendo para *escrever* nela — commit, rebase, force-push. A exclusão aqui foi feita sob
+instrução direta e explícita do dono nesta sessão, que manda fechar as branches depois de
+recuperar o trabalho e fixa a condição: *"vc precisa ter certeza absoluta (byte x byte) de
+cada branch ou pr antes de exclui-la, só podemos excluir aquilo que temos certeza já foi
+incorporado a main ou ficou realmente obsoleto — essa regra vale para prs e branchs"*.
+Regra do dono vence o documento (AGENTS, cabeçalho). A condição foi cumprida arquivo por
+arquivo, como está registrado acima. **Sem essa instrução, a branch não seria apagada** — e
+nenhuma outra branch alheia foi tocada: a `dependabot/bun/radix-ui-4a35e951ff` segue intacta
+e com a PR #371 aberta, porque ali não houve nem equivalência nem obsolescência comprovada.
+
+As branches de PR mergeada (`claude/fix-vw-fluxo-caixa-261117-2225`,
+`claude/fix-faturamento-impostos-261117-2330` e as demais da sessão) foram apagadas
+automaticamente pelo GitHub no squash-merge — confirmado por `git fetch` devolvendo
+`couldn't find remote ref`, com o conteúdo presente na `main`
+(`supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql`,
+`src/.../__tests__/faturamento-grava-impostos.test.tsx`, `useHistoricoFinanceiro.ts:21`).
+
+### 5.2 Conferência por hash de blob, refeita depois dos merges da sessão
+
+Repetida contra a `main` já com #452/#456 dentro, pelo mesmo método da seção 4.4:
+
+| branch                   | exclusivos que são código-fonte | blobs de código divergentes |
+| ------------------------ | ------------------------------- | --------------------------- |
+| `contexto`               | **0**                           | **0**                       |
+| `inventario`             | **0**                           | **0**                       |
+| `automation/estado-real` | **0**                           | 2                           |
+| `computador_local`       | **0**                           | 2                           |
+
+Os 2 blobs são os mesmos nas duas branches — `src/components/tributario/historico/FaturamentoTab.tsx`
+e `src/hooks/useHistoricoFinanceiro.ts` — e são **byte-idênticos à versão que a `main`
+tinha antes da #456**:
+
+```
+FaturamentoTab.tsx        main hoje d8ee29aa | main antes da #456 8210940e | ambas as branches 8210940e
+useHistoricoFinanceiro.ts main hoje 87f672e9 | main antes da #456 cfc773f3 | ambas as branches cfc773f3
+```
+
+Ou seja: cópia da versão anterior, não variante com trabalho próprio. **Zero byte de
+código-fonte exclusivo em qualquer branch de bot.**
+
+---
+
+## 6. Auditoria das 75 PRs **fechadas** — 2026-11-17 23:30 UTC
+
+A seção 5 fechou as branches. Falta o lugar onde trabalho de agente realmente desaparece: **PR
+fechada sem merge**. O repositório tem 75 fechadas; as de `dependabot` são bumps (substituídos
+ou recusados de propósito), sobrando **34 de agente**. Todas foram auditadas.
+
+### 6.1 Método (três testes, do mais fraco ao decisivo)
+
+```bash
+# 1) ancestralidade — a head da PR já está contida na main?
+git fetch origin "refs/pull/$N/head:refs/pr/$N"
+git merge-base --is-ancestor refs/pr/$N origin/main
+
+# 2) patch-id — git cherry casa o diff byte a byte
+git cherry origin/main refs/pr/$N      # '-' = já na main, '+' = fora
+
+# 3) containment de linha — as linhas que a PR ADICIONOU existem hoje na main?
+git diff -U0 $(git merge-base refs/pr/$N origin/main) refs/pr/$N -- <arquivo> \
+  | grep '^+' | grep -v '^+++'         # cada linha >= 25 chars é procurada no arquivo da main
+```
+
+Os testes 1 e 2 **super-reportam**: squash-merge e meses de drift mudam o patch-id mesmo quando
+o conteúdo está lá. O teste 3 é o que decide, complementado por **verificação do efeito em
+produção** (query no banco) quando o que faltava era DDL.
+
+### 6.2 Resultado
+
+**Arquivos criados por PR fechada e ausentes da `main`: nenhum** — com três exceções
+investigadas uma a uma, todas resolvidas:
+
+| PR | arquivo ausente | veredito |
+|---|---|---|
+| #65 | `20251213000001_add_missing_columns_contas_pagar.sql` | **obsoleta**: das 17 colunas, 9 não existem em produção — e nenhuma das 9 é declarada no `types.ts` para `contas_pagar` (36 colunas, casa com o banco). O contrato do app nunca as esperou. |
+| #65 | `20251215000001_fix_status_pagamento_enum.sql` | **obsoleta**: `ALTER TYPE status_pagamento ADD VALUE 'atrasado'` — o tipo **não existe** em produção (`pg_enum` devolve 0); o schema foi para `text` + `chk_contas_pagar_status`. |
+| #65 | `20260728214210_add_sessao_id_to_historico_conciliacao_ia.sql` | **aplicada por outra via**: `historico_conciliacao_ia.sessao_id` **existe** em produção. |
+
+**#3** (`Limpeza profunda: ~70 arquivos fantasmas`) parecia ter 59 arquivos ausentes. São as
+**próprias deleções dela**: `git diff --name-status` devolve 58 `D` e 2 `A`, e os 2 adicionados
+(`src/components/__tests__/regression-fixes.test.tsx`, `src/hooks/__tests__/use-toast.test.ts`)
+**estão na `main`**. A faxina foi aplicada; nada a recuperar.
+
+**#116, #253, #112, #69, #64, #259**: zero arquivo ausente. O que o containment acusava é drift
+de linha (a `main` evoluiu em cima).
+
+### 6.3 Containment baixo que não era perda
+
+| PR | o que parecia faltar | o que a `main` tem |
+|---|---|---|
+| #246 / #233 (39%) | 16 linhas de `supabase/functions/_shared/sentry.ts` | reescrita **superset**: mesmo `captureException(error, context)`, mesmo endpoint `/api/<project>/store/`, mas lendo `EDGE_SENTRY_DSN ?? SENTRY_DSN` e com `SENTRY_ENVIRONMENT` |
+| #65 (42%) | linhas de `empresa_id` em forms e hooks | o invariante está lá e **mais forte**: `useCategorias.ts:101`, `useCentrosCusto.ts:50` e `FornecedorForm.tsx:148` gravam `empresa_id` da sessão, e os hooks fazem `const { empresa_id: _empresaIdIgnorada, ...dados } = input` — o cliente não consegue mais injetar empresa. `CentroCustoForm.tsx` não cita `empresa_id` porque delega (`:99 criarCentroCusto.mutateAsync`), e o hook **lança** se não houver empresa selecionada |
+
+### 6.4 Efeito em produção das PRs de DDL fechadas
+
+Conferido por query, não por arquivo:
+
+| PR | o que trazia | produção |
+|---|---|---|
+| #348 | GRANTs `authenticated` | `audit_logs` INSERT ✅, `planos_acao` SELECT ✅ |
+| #345 | rotina que marca contas vencidas | função presente em `pg_proc` ✅ |
+| #332 | `performance_alerts` no realtime | em `pg_publication_tables` ✅ |
+| #228 | `obter_totais_movimentacoes` com assinatura certa | `(p_start date, p_end date, p_tipo text, p_search text)` ✅ |
+| #232 | steps 12-21 | policies em `estrategias_elisao` (2) ✅, `asaas_payment_links.empresa_id NOT NULL` ✅, `movimentacoes` com autovacuum próprio ✅ |
+| #231 / #223 | ignores GHSA e warning `DATABASE_URL` no CI | ambos no `ci.yml` da `main` ✅ |
+| #229 | rate limit em 4 edge functions | presente nas 4 ✅ |
+| #302 | registro do `github-settings-guard` | registrado no `automation.config.json` ✅ |
+| #224 | `conta_ids` em `TopDevedor` | `src/hooks/useCobrancas.ts:34` ✅ |
+| #430 / #340 | — | fechadas de propósito: "diagnóstico errado" e "substituída pela #366" |
+
+### 6.5 Varredura de drift `types.ts` × produção (294 tabelas e views)
+
+Feita por fingerprint `md5` por tabela, comparada em bucket por letra inicial para não trafegar
+o schema inteiro:
+
+```sql
+SELECT table_name, substr(md5(string_agg(column_name, ',' ORDER BY column_name)),1,8)
+FROM information_schema.columns WHERE table_schema='public' GROUP BY table_name;
+```
+
+**Coluna declarada no `types.ts` e ausente em produção — e lida pelo código: nenhuma.** O único
+caso declarado-e-ausente é `vw_fluxo_caixa.data`, `.total_creditos` e `.total_debitos`, resíduo
+do `types.ts` anterior à #452: `grep -rn 'total_creditos\|total_debitos' src supabase/functions`
+(fora do `types.ts`) devolve **zero**, e o único consumidor da view usa
+`select('*').order('dia')` (`src/hooks/useViews.ts:40`), colunas que existem. Os outros 20
+desvios são o inverso — produção com mais colunas que o `types.ts` —, inofensivos para o
+PostgREST e cobertos pela lista de exceções do gate da #457. Duas entradas do `types.ts`
+(`mv_benchmark_setorial`, `mv_performance_alerts_weekly`) não aparecem em
+`information_schema.columns` porque são **materialized views**, não drift.
+
+**Conclusão: não existe trabalho de agente, total ou parcial, fora da `main` — em branch ou em
+PR fechada.**
+
+### 6.6 O que o containment NÃO prova, e os dois testes que fecham o buraco
+
+O teste da seção 6.1 olha só linhas **adicionadas**, com no mínimo 20 caracteres, e não confere
+ordem nem contexto. Ele **não** cobre o caso de uma PR cujo valor era *remover* algo: a remoção
+poderia não estar na `main` e o teste passaria. Apontado pelo Devin na #462. Dois testes
+adicionais fecham isso.
+
+#### Teste simétrico — as remoções de cada PR foram aplicadas?
+
+Mesmo método, invertido: cada linha que a PR **apagou** é procurada no arquivo da `main` de hoje.
+Se ainda está lá, a remoção não foi aplicada.
+
+```
+TOTAL removidas=7097   ainda presentes na main=4968
+```
+
+Número alto porque reescrita de bloco conta como remoção + adição, e porque a busca é por
+string em qualquer posição do arquivo. O que importa é o **invariante de cada PR**, e as duas em
+que isso era segurança foram verificadas uma a uma:
+
+| PR | invariante | onde está na `main` |
+|---|---|---|
+| #64 | `exigirPapel()` tem de respeitar `is_active` em `user_roles` | `supabase/functions/_shared/auth-guard.ts` filtra `.eq('is_active', true)` em **:195, :462 e :520**, com o porquê de não usar `has_role` documentado em **:455** — e há teste de regressão em `auth-guard_test.ts:57` (`searchParams.get('is_active') === 'eq.true'`) |
+| #112 | link de pagamento Asaas amarrado à empresa, sem vazamento cross-tenant | `supabase/functions/asaas-proxy/index.ts:222` define `empresaDoLinkPagamento()` + `exigirEmpresaDoRecurso()`; o insert grava `empresa_id` (**:887**) e a listagem monta `empresaPorLink` para filtrar (**:921**) |
+
+#### Replay real das migrations — prova direta de que os guards da #65 não faltam
+
+Das 34 PRs, 61 arquivos "em risco" eram migrations **já existentes** que a #65 modificou para
+acrescentar guards do tipo
+`ALTER TABLE ... ADD COLUMN IF NOT EXISTS empresa_id` com o comentário
+`-- Guard: table may already exist on preview branch without empresa_id column`. A `main` ficou
+com os arquivos originais. Esses guards existiam para o replay numa preview branch parcialmente
+migrada.
+
+Rodei o harness da #433 (`scripts/db/replay-migrations.sh`) num Postgres 16 local, do zero,
+sobre a árvore da `main` — **sem** os guards:
+
+```
+aplicados=1045  falharam=0  total=1045
+```
+
+Replay completo, zero falha. Os guards da #65 são comprovadamente dispensáveis, e as colunas que
+eles protegiam existem em produção (ex.: `bitrix_sync_logs.empresa_id`).
+
+**Escopo exato da conclusão:** para as 34 PRs de agente fechadas sem merge, nenhum arquivo
+criado por elas está ausente da `main` (as 3 exceções estão explicadas em 6.2); as remoções e
+reescritas foram conferidas pelo invariante de cada PR onde havia risco de segurança; e o replay
+do histórico completo passa 1045/1045. Não houve inspeção manual linha a linha das 19.906 linhas
+adicionadas nem das 7.097 removidas — o que foi feito está descrito acima, e é o que sustenta a
+conclusão.
