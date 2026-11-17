@@ -5,15 +5,11 @@
 //  1. Verifica se algum job falhou nas 2 execuções consecutivas mais recentes.
 //  2. Verifica se a taxa de erro de webhooks nas últimas 2 h supera 20%.
 //  3. Em caso de problema: insere na tabela `alertas` e loga no console.
+//  4. Notifica fora do app (Slack e/ou e-mail), só quando o alerta é novo —
+//     o cooldown de `existeAlertaRecente` também segura a notificação.
 //
-// TODO(canal-alerta): conectar ao canal WhatsApp/e-mail preferido após inserir o
-// alerta. Exemplo para e-mail:
-//   await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/enviar-alerta-email`, {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json',
-//                Authorization: `******'SUPABASE_SERVICE_ROLE_KEY')}` },
-//     body: JSON.stringify({ to: ADMIN_EMAIL, subject: titulo, body: mensagem }),
-//   });
+// Mesmo padrão de canais de `notify-performance-alert`: cada canal atrás do seu
+// próprio segredo, para a função seguir útil quando um deles não está no vault.
 
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
@@ -39,6 +35,7 @@ interface StatusMonitor {
   total_webhooks_2h: number;
   total_erros_2h: number;
   alertas_inseridos: number;
+  notificacoes: Record<string, unknown>[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -110,6 +107,80 @@ async function verificarWebhooks(
   const taxa = total > 0 ? erros / total : 0;
 
   return { taxa, total, erros };
+}
+
+// ─── Notificação fora do app ─────────────────────────────────────────────────
+
+function escaparHtml(txt: string): string {
+  return txt
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Chamada apenas quando `inserirAlerta` gravou um alerta novo, de modo que o
+// cooldown de 2 h limita também quantas notificações saem por problema.
+async function notificarAlerta(titulo: string, mensagem: string): Promise<Record<string, unknown>> {
+  const canais: Record<string, unknown> = { titulo };
+  const slackUrl = Deno.env.get('SLACK_WEBHOOK_URL');
+  const resendKey = Deno.env.get('RESEND_API_KEY');
+  const emailTo = Deno.env.get('ALERTS_EMAIL_TO');
+  // ALERTS_EMAIL_FROM segue o nome usado por notify-performance-alert; RESEND_FROM
+  // é o remetente verificado do projeto e vale mais que o domínio de teste.
+  const emailFrom =
+    Deno.env.get('ALERTS_EMAIL_FROM') ?? Deno.env.get('RESEND_FROM') ?? 'alerts@resend.dev';
+
+  if (slackUrl) {
+    try {
+      const r = await fetch(slackUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: `${titulo}\n\n${mensagem}` }),
+      });
+      canais.slack = { status: r.status, ok: r.ok };
+    } catch (err) {
+      canais.slack = { ok: false, error: err instanceof Error ? err.message : 'falha no envio' };
+    }
+  }
+
+  if (resendKey && emailTo) {
+    try {
+      const html =
+        `<h2 style="font-family:system-ui;color:#dc2626">${escaparHtml(titulo)}</h2>` +
+        `<pre style="font-family:ui-monospace,monospace;font-size:13px;background:#f5f5f5;` +
+        `padding:12px;border-radius:6px;white-space:pre-wrap">${escaparHtml(mensagem)}</pre>` +
+        `<p style="font-family:system-ui;font-size:12px;color:#666;margin-top:16px">` +
+        `Alerta automático do monitor de saúde. Veja os detalhes no painel de alertas do sistema.</p>`;
+
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: emailFrom,
+          to: emailTo
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+          subject: titulo.slice(0, 120),
+          html,
+        }),
+      });
+      canais.email = { status: r.status, ok: r.ok };
+    } catch (err) {
+      canais.email = { ok: false, error: err instanceof Error ? err.message : 'falha no envio' };
+    }
+  }
+
+  if (!slackUrl && !(resendKey && emailTo)) {
+    canais.nenhum_canal = true;
+    log.warn('Alerta gravado sem canal de notificação configurado no vault', {
+      context: { titulo },
+    });
+  }
+
+  log.info('Notificação de alerta processada', { context: { canais } });
+  return canais;
 }
 
 // Janela de cooldown: não reabrir um alerta do mesmo tipo/título recém-criado.
@@ -208,6 +279,7 @@ serve(
         total_webhooks_2h: 0,
         total_erros_2h: 0,
         alertas_inseridos: 0,
+        notificacoes: [],
       };
 
       // 1. Cron jobs com 2 falhas consecutivas nas últimas 2h
@@ -224,6 +296,7 @@ serve(
         log.warn(titulo, { context: { job } });
         if (await inserirAlerta(db, titulo, mensagem)) {
           status.alertas_inseridos++;
+          status.notificacoes.push(await notificarAlerta(titulo, mensagem));
         }
       }
 
@@ -234,7 +307,10 @@ serve(
       status.total_erros_2h = erros;
 
       if (total > 0 && taxa > 0.2) {
-        const titulo = `[MONITOR] Webhooks com ${(taxa * 100).toFixed(1)}% de erro nas últimas 2h`;
+        // Titulo sem a taxa: `existeAlertaRecente` casa por titulo exato, e a
+        // porcentagem muda a cada rodada — com ela no titulo o cooldown de 2 h
+        // nunca pegava e o alerta reabria a cada 30 min. A taxa segue na mensagem.
+        const titulo = '[MONITOR] Webhooks acima do limiar de erro nas últimas 2h';
         const mensagem =
           `Total de webhooks: ${total}\n` +
           `Com erro: ${erros}\n` +
@@ -244,6 +320,7 @@ serve(
         log.warn(titulo, { context: { taxa, total, erros } });
         if (await inserirAlerta(db, titulo, mensagem)) {
           status.alertas_inseridos++;
+          status.notificacoes.push(await notificarAlerta(titulo, mensagem));
         }
       }
 
