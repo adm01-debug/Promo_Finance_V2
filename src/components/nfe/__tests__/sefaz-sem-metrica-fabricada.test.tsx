@@ -40,6 +40,7 @@ vi.mock('@/lib/sefaz-event-logger', () => ({
     erros: 0,
     taxaSucesso: '0',
     tempoMedioResposta: '0',
+    temposMedidos: 0,
   }),
   eventTypeConfig: {},
 }));
@@ -164,6 +165,27 @@ describe('painel da SEFAZ não exibe métrica fabricada (F11)', () => {
     expect(screen.getByText('2.5%')).toBeInTheDocument();
     expect(screen.getByText('1.2s')).toBeInTheDocument();
     expect(screen.queryByText('—')).not.toBeInTheDocument();
+  });
+
+  it('evento sem tempo de resposta não vira "0.0s" de resposta da SEFAZ', () => {
+    // Ativar contingência manualmente registra evento sem tempoResposta: total
+    // passa a ser > 0 sem nenhuma medição (achado do Devin na PR #423).
+    render(
+      <SefazAnalyticsKPIs
+        taxaSucesso={0}
+        taxaRejeicao={0}
+        tempoMedio={0}
+        total={3}
+        autorizadas={0}
+        rejeitadas={0}
+        cancelamentos={3}
+        erros={0}
+        temposMedidos={0}
+      />
+    );
+    expect(screen.getAllByText('—')).toHaveLength(1);
+    expect(screen.queryByText('0.0s')).not.toBeInTheDocument();
+    expect(screen.getByText('0.0%', { selector: '.text-success' })).toBeInTheDocument();
   });
 
   it('histórico vazio não anuncia "0ms de resposta" nem promete evento por emissão', () => {

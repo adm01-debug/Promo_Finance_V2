@@ -74,6 +74,7 @@ export const SefazAnalytics = () => {
       cancelamentos,
       erros,
       tempoMedio,
+      temposMedidos: tempos.length,
       taxaSucesso: total > 0 ? (autorizadas / total) * 100 : 0,
       taxaRejeicao: total > 0 ? (rejeitadas / total) * 100 : 0,
     };

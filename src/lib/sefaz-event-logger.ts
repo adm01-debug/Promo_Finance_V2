@@ -121,6 +121,11 @@ export function getEstatisticas() {
     erros,
     taxaSucesso: total > 0 ? ((autorizadas / total) * 100).toFixed(1) : '0',
     tempoMedioResposta: tempoMedio.toFixed(0),
+    // Quantos eventos têm tempo de resposta medido. Eventos administrativos
+    // (ativar/desativar contingência) entram no log sem `tempoResposta`, então
+    // `total > 0` não garante que exista média: sem este contador a tela
+    // exibia "0ms" de resposta da SEFAZ (achado do Devin na PR #423).
+    temposMedidos: temposResposta.length,
   };
 }
 

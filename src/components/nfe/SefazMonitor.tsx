@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -49,8 +49,15 @@ export function SefazMonitor() {
   const [checkCount, setCheckCount] = useState(0);
   const [successCount, setSuccessCount] = useState(0);
   const [lastAlertTime, setLastAlertTime] = useState<Date | null>(null);
+  // O status anterior fica em ref, não como dependência do callback: cada
+  // verificação devolve um objeto novo, então depender de `health` recriava
+  // `performHealthCheck`, que recriava o efeito, que verificava de novo — laço
+  // contínuo, agora que a verificação retorna sem espera (achado do Devin e do
+  // Codex na PR #423). Com a ref, o intervalo configurado volta a valer.
+  const healthRef = useRef(health);
 
   const autoConfig = getAutoContingencyConfig();
+  const semIntegracao = health.online === null;
   // `null` enquanto nenhuma verificação real aconteceu: 100% seria uptime
   // fabricado sobre zero amostras.
   const uptime = checkCount > 0 ? (successCount / checkCount) * 100 : null;
@@ -77,9 +84,10 @@ export function SefazMonitor() {
 
   const performHealthCheck = useCallback(async () => {
     setIsChecking(true);
-    const prevHealth = health;
+    const prevHealth = healthRef.current;
     try {
       const newHealth = await checkSefazHealth();
+      healthRef.current = newHealth;
       setHealth(newHealth);
       setContingencyState(getContingencyState());
 
@@ -123,14 +131,16 @@ export function SefazMonitor() {
     } finally {
       setIsChecking(false);
     }
-  }, [health, addAlert]);
+  }, [addAlert]);
 
   useEffect(() => {
-    if (!autoMonitor) return;
+    // Enquanto não há consulta real à SEFAZ, monitorar não mede nada: o efeito
+    // fica suspenso em vez de reexecutar a cada 30s para registrar desconhecido.
+    if (!autoMonitor || semIntegracao) return;
     performHealthCheck();
     const interval = setInterval(performHealthCheck, autoConfig.checkIntervalSeconds * 1000);
     return () => clearInterval(interval);
-  }, [autoMonitor, autoConfig.checkIntervalSeconds, performHealthCheck]);
+  }, [autoMonitor, semIntegracao, autoConfig.checkIntervalSeconds, performHealthCheck]);
 
   const avgLatency =
     healthHistory.length > 0
@@ -184,7 +194,14 @@ export function SefazMonitor() {
           <CardContent className="py-3 px-6">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-4">
-                {autoMonitor ? (
+                {semIntegracao ? (
+                  // Sem integração homologada o selo verde "Monitorando" prometia
+                  // vigilância que não existe (achado do Devin na PR #423).
+                  <Badge variant="outline" className="text-muted-foreground">
+                    <Clock className="h-3 w-3 mr-1" />
+                    Indisponível
+                  </Badge>
+                ) : autoMonitor ? (
                   <Badge variant="outline" className="bg-success/10 text-success border-success/20">
                     <Activity className="h-3 w-3 mr-1 animate-pulse" />
                     Monitorando

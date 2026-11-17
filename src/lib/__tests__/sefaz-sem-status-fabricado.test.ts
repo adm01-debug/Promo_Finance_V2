@@ -82,6 +82,45 @@ describe('SEFAZ não fabrica status (F11)', () => {
     expect(getSefazHealthStatus().lastCheck).toBeNull();
   });
 
+  it('registro gravado pela versão que sorteava status é descartado na leitura', () => {
+    // Quem já abriu o painel tem no navegador um status inventado pela versão
+    // anterior; sem descartar, a aba Contingência o trata como medição real
+    // (achado do Devin e do Codex na PR #423).
+    store.set(
+      HEALTH_KEY,
+      JSON.stringify({
+        online: true,
+        latency: 450,
+        lastCheck: '2026-11-16T10:00:00.000Z',
+        consecutiveFailures: 0,
+        averageResponseTime: 450,
+      })
+    );
+    const health = getSefazHealthStatus();
+    expect(health.online).toBeNull();
+    expect(health.latency).toBeNull();
+    expect(health.lastCheck).toBeNull();
+  });
+
+  it('checkSefazHealth apaga o carimbo fabricado que estava no navegador', async () => {
+    store.set(
+      HEALTH_KEY,
+      JSON.stringify({
+        versao: 2,
+        online: true,
+        latency: 450,
+        lastCheck: '2026-11-16T10:00:00.000Z',
+        consecutiveFailures: 0,
+        averageResponseTime: 450,
+      })
+    );
+    await checkSefazHealth();
+    // Releitura do storage: antes o `?? current.lastCheck` devolvia a data
+    // antiga e o banner a reexibia como "última verificação".
+    expect(getSefazHealthStatus().lastCheck).toBeNull();
+    expect(getSefazHealthStatus().online).toBeNull();
+  });
+
   it('updateSefazHealthStatus não carimba verificação em quem não verificou', () => {
     updateSefazHealthStatus({ consecutiveFailures: 2 });
     const health = getSefazHealthStatus();

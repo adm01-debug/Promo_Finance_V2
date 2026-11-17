@@ -21,6 +21,8 @@ interface Props {
   rejeitadas: number;
   cancelamentos: number;
   erros: number;
+  /** Quantos eventos do período têm tempo de resposta medido. */
+  temposMedidos?: number;
 }
 
 // Sem evento nenhum no período, taxa e tempo não existem: exibir 0,0% de sucesso
@@ -34,7 +36,12 @@ export function SefazAnalyticsKPIs({
   rejeitadas,
   cancelamentos,
   erros,
+  temposMedidos,
 }: Props) {
+  // Evento administrativo (ativar/desativar contingência) entra no log sem
+  // tempo de resposta: com `total > 0` e nenhuma medição, a média dava "0.0s"
+  // de resposta da SEFAZ (achado do Devin na PR #423).
+  const semTempoMedido = temposMedidos !== undefined ? temposMedidos === 0 : total === 0;
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <motion.div variants={itemVariants}>
@@ -86,7 +93,7 @@ export function SefazAnalyticsKPIs({
               <div>
                 <p className="text-sm text-muted-foreground">Tempo Médio</p>
                 <p className="text-2xl font-bold">
-                  {total === 0 ? '—' : `${(tempoMedio / 1000).toFixed(1)}s`}
+                  {semTempoMedido ? '—' : `${(tempoMedio / 1000).toFixed(1)}s`}
                 </p>
               </div>
               <div className="p-2 rounded-full bg-primary/10">

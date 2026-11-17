@@ -110,7 +110,7 @@ export function EventosHistorico() {
                 {/* Sem nenhum evento registrado, getEstatisticas devolve 0 e a tela
                     anunciava "0ms de resposta da SEFAZ" — um tempo que ninguém mediu. */}
                 <p className="text-2xl font-bold">
-                  {stats.total === 0 ? '—' : `${stats.tempoMedioResposta}ms`}
+                  {stats.temposMedidos === 0 ? '—' : `${stats.tempoMedioResposta}ms`}
                 </p>
               </div>
             </div>
