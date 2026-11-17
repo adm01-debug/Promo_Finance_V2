@@ -55,7 +55,14 @@ export function RegistrarPagamentoDialog({
   const queryClient = useQueryClient();
   const [tipoPagamento, setTipoPagamento] = useState<'total' | 'parcial'>('total');
   const { data: contasBancarias = [] } = useContasBancarias();
-  const { data: configAprovacao } = useConfiguracaoAprovacao(empresaId);
+  // A empresa da ALCADA e a do titulo, nao a do filtro global. O listener de
+  // `storage` em useGlobalFinancialFilter troca a empresa atual quando o usuario
+  // muda de empresa em outra aba, enquanto este dialogo segue aberto no titulo
+  // da anterior: a alcada consultada passava a ser de outra empresa (achado P2
+  // do Codex na PR #400). `empresaId` fica como fallback para registro legado
+  // sem empresa_id.
+  const empresaDaAlcada = conta?.empresa_id ?? empresaId;
+  const { data: configAprovacao } = useConfiguracaoAprovacao(empresaDaAlcada);
   const criarSolicitacaoMutation = useCriarSolicitacaoAprovacao();
 
   const saldoRestante = conta ? conta.valor - (conta.valor_pago || 0) : 0;

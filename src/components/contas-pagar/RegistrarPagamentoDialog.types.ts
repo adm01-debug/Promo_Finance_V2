@@ -3,6 +3,8 @@ import { pagamentoSchema } from './RegistrarPagamentoDialog.helpers';
 
 export interface ContaPagar {
   id: string;
+  /** Empresa do titulo: e ela que define a alcada aplicavel. */
+  empresa_id?: string | null;
   fornecedor_nome: string;
   descricao: string;
   valor: number;
