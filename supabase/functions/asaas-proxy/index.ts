@@ -1188,7 +1188,16 @@ export const handler = async (req: Request) => {
       case 'simular_backoff': {
         // Simula com a configuração da empresa informada; sem empresa, mostra
         // os padrões, em vez de exibir a configuração de uma empresa qualquer.
+        //
+        // O vínculo é exigido antes da consulta: este client é service_role e
+        // ignora RLS, então sem o guard um usuário com papel financeiro
+        // descobriria a política de retentativa de qualquer empresa só passando
+        // o id dela (achado de segurança do Devin e do Codex na PR #421).
         const empresaSimulacao = data?.empresa_id as string | undefined;
+        if (empresaSimulacao) {
+          const vinculoErrSimular = await exigirEmpresaDoRecurso(empresaSimulacao);
+          if (vinculoErrSimular) return vinculoErrSimular;
+        }
         const { data: configRow } = empresaSimulacao
           ? await supabase
               .from('asaas_config')
