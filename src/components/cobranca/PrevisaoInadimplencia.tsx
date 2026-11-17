@@ -213,6 +213,15 @@ function useAnaliseInadimplencia(empresaId?: string) {
       const clientesMap = new Map<
         string,
         {
+          /**
+           * `cliente_id` de verdade, quando existe. A CHAVE do mapa pode ser o
+           * nome digitado (titulo sem cadastro, permitido por
+           * ContaReceberForm.tsx:187 `cliente_id: data.cliente_id || null`), e
+           * manda-la para `.eq('cliente_id', ...)` -- coluna uuid -- derruba a
+           * consulta. Com o `throw` desta PR, um unico titulo desses abortava a
+           * previsao de TODOS os clientes (achado P1 do Codex / Devin, #404).
+           */
+          clienteIdReal: string | null;
           cliente: ClienteMapCliente;
           contas: ContaData[];
         }
@@ -221,6 +230,7 @@ function useAnaliseInadimplencia(empresaId?: string) {
         const clienteId = conta.cliente_id || conta.cliente_nome || 'sem-cliente';
         if (!clientesMap.has(clienteId)) {
           clientesMap.set(clienteId, {
+            clienteIdReal: conta.cliente_id ?? null,
             cliente: conta.clientes || {
               score: null,
               limite_credito: null,
@@ -244,18 +254,32 @@ function useAnaliseInadimplencia(empresaId?: string) {
 
       const clientesAnalise: ClienteRisco[] = [];
 
-      for (const [clienteId, { cliente, contas }] of clientesMap.entries()) {
-        // O historico que alimenta a probabilidade tambem fica na empresa: sem
-        // isso, atraso do mesmo cliente em OUTRA empresa elevaria o risco aqui.
-        let qHistorico = supabase
-          .from('contas_receber')
-          .select('status, data_vencimento, data_recebimento')
-          .eq('cliente_id', clienteId)
-          .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
-        if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
+      for (const [clienteId, { clienteIdReal, cliente, contas }] of clientesMap.entries()) {
+        // Sem cadastro de cliente nao existe historico consultavel: a coluna e
+        // uuid. Pular a consulta, e dizer na tela que o historico nao foi
+        // avaliado -- em vez de derrubar a previsao inteira ou fingir zero
+        // atraso.
+        const historicoAvaliado = clienteIdReal != null;
+        let historico: Array<{
+          status: string | null;
+          data_vencimento: string | null;
+          data_recebimento: string | null;
+        }> | null = null;
 
-        const { data: historico, error: erroHistorico } = await qHistorico;
-        if (erroHistorico) throw erroHistorico;
+        if (historicoAvaliado) {
+          // O historico que alimenta a probabilidade tambem fica na empresa: sem
+          // isso, atraso do mesmo cliente em OUTRA empresa elevaria o risco aqui.
+          let qHistorico = supabase
+            .from('contas_receber')
+            .select('status, data_vencimento, data_recebimento')
+            .eq('cliente_id', clienteIdReal)
+            .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
+          if (empresaId) qHistorico = qHistorico.eq('empresa_id', empresaId);
+
+          const { data, error: erroHistorico } = await qHistorico;
+          if (erroHistorico) throw erroHistorico;
+          historico = data;
+        }
 
         const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
           status: h.status ?? '',
@@ -265,6 +289,10 @@ function useAnaliseInadimplencia(empresaId?: string) {
         const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historicoContas);
         const nivelRisco = determinarNivelRisco(probabilidade);
         const fatoresRisco = gerarFatoresRisco(cliente, contas, historicoContas);
+
+        if (!historicoAvaliado) {
+          fatoresRisco.push('Sem cadastro de cliente: histórico não avaliado');
+        }
 
         // Refinamento por Ramo de Atividade (Engine 10/10)
         if (cliente.ramo_atividade && ['Construção', 'Varejo'].includes(cliente.ramo_atividade)) {
@@ -287,6 +315,7 @@ function useAnaliseInadimplencia(empresaId?: string) {
 
         clientesAnalise.push({
           id: clienteId,
+          clienteIdReal,
           nome: cliente.razao_social || 'Cliente não identificado',
           nomeFantasia: cliente.nome_fantasia,
           score: cliente.score,

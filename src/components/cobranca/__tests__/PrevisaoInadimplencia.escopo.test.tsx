@@ -194,6 +194,10 @@ describe('PrevisaoInadimplencia — escala do score e atraso no historico', () =
     );
 
     expect(await screen.findByText(/Score baixo \(250 de 1000\)/i)).toBeInTheDocument();
+    // Revisao da PR #404 (Devin): so o fator textual nao protege a
+    // classificacao -- os limites antigos deixariam este teste verde. Com score
+    // 250 a probabilidade e 30% (nivel medio); com 50/70/85 seria 0% e baixo.
+    expect(screen.getByText(/30% risco/i)).toBeInTheDocument();
   });
 
   it('score nulo e exibido como nao calculado, sem inventar 100', async () => {
@@ -212,6 +216,48 @@ describe('PrevisaoInadimplencia — escala do score e atraso no historico', () =
 
     expect(await screen.findByText(/Score não calculado para este cliente/i)).toBeInTheDocument();
     expect(screen.getByText(/Score: não calculado/i)).toBeInTheDocument();
+  });
+
+  it('titulo sem cadastro de cliente NAO derruba a previsao dos demais', async () => {
+    // Revisao da PR #404 (Codex P1 / Devin): a chave de agrupamento virava o
+    // nome digitado e ia para `.eq('cliente_id', ...)`, coluna uuid. Com o
+    // `throw` desta PR, um titulo assim abortava a analise de TODOS.
+    const semCadastro = {
+      ...PENDENTE,
+      id: 't2',
+      cliente_id: null,
+      cliente_nome: 'Loja Azul',
+      clientes: null,
+    };
+    // 1a chamada: pendencias (os dois titulos). 2a: historico do cliente COM
+    // cadastro. Nao pode existir 3a consulta de historico pelo nome.
+    const respostas = [
+      { data: [PENDENTE, semCadastro], error: null },
+      { data: [], error: null },
+    ];
+    let chamada = 0;
+    mockFrom.mockImplementation(() => builder(respostas[chamada++] ?? respostas[1]));
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <PrevisaoInadimplencia empresaId="e1" />
+      </Wrapper>
+    );
+
+    // os dois aparecem, e o sem cadastro diz que o historico nao foi avaliado
+    expect(await screen.findByText(/Cliente Um/i)).toBeInTheDocument();
+    expect(screen.getByText(/Loja Azul/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Sem cadastro de cliente: histórico não avaliado/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    // o filtro por cliente_id nunca recebe o nome digitado (a coluna e uuid).
+    // `whatsapp_conversas`, do cartao do cliente, tambem filtra por cliente_id:
+    // o que importa aqui e o VALOR, nunca 'Loja Azul'.
+    expect(filtros.some((f) => f.valor === 'Loja Azul')).toBe(false);
+    expect(
+      filtros.filter((f) => f.coluna === 'cliente_id' && f.valor === 'cli-1').length
+    ).toBeGreaterThan(0);
   });
 
   it('titulo pago com atraso conta como atraso no historico', async () => {
