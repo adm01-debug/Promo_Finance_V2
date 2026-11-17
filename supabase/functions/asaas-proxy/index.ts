@@ -17,7 +17,7 @@ import {
   withTimeout,
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
-import { exigirVinculoEmpresa, exigirPapel } from '../_shared/auth-guard.ts';
+import { exigirVinculoEmpresa, exigirPapel, empresasDoUsuario } from '../_shared/auth-guard.ts';
 import { lerConfigAsaas, resolverEncargo } from '../_shared/asaas-config.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -1133,8 +1133,16 @@ export const handler = async (req: Request) => {
         // asaas_payments pela FK — e cada empresa usa o próprio limite e o
         // próprio destinatário. Uma leitura global faria o destinatário de uma
         // empresa receber alerta disparado pelas falhas das outras.
+        //
+        // E só as empresas do chamador: esta ação é alcançável por usuário
+        // autenticado (nenhum cron a chama), e `configPorEmpresa` vem com
+        // service_role, então sem o recorte um usuário financeiro provocaria
+        // e-mail de alerta para cliente que ele não acessa (achado do Codex na
+        // PR #421).
+        const empresasDoChamador = new Set((await empresasDoUsuario(user.id)) ?? []);
         const desdeUmaHora = new Date(Date.now() - 3600000).toISOString();
         for (const [empresaId, cfg] of configPorEmpresa) {
+          if (!empresasDoChamador.has(empresaId)) continue;
           const temEmail = Boolean(cfg.alert_email_enabled && cfg.alert_email_address);
           const temWhatsapp = Boolean(cfg.alert_whatsapp_enabled && cfg.alert_whatsapp_number);
           if (!temEmail && !temWhatsapp) continue;
