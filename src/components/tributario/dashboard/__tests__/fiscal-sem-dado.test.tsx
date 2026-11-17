@@ -156,6 +156,40 @@ describe('benchmark setorial — sem carga e sem percentil', () => {
     expect(screen.queryByText(/Percentil estimado/)).not.toBeInTheDocument();
   });
 
+  it('empresa sem regime registrado nao recebe faixa de Simples', async () => {
+    // A funcao assumia Simples (`emp.regime_tributario || 'simples'`) e devolvia
+    // percentil e posicao como se o regime fosse conhecido. Em producao a unica
+    // empresa cadastrada tem `regime_tributario` NULL -- era o caminho real.
+    mockInvoke.mockResolvedValue({
+      data: {
+        empresa: { id: 'e1', razao_social: 'Acme', regime: '' },
+        carga_empresa_12m: 7.4,
+        benchmark: null,
+        posicao: null,
+        percentil: null,
+        diferenca_mediana: null,
+        motivo: 'regime_nao_registrado',
+        insights: [
+          'Regime tributário da empresa não está registrado: sem ele não existe faixa de comparação. Preencha o regime no cadastro da empresa.',
+        ],
+        atualizado_em: '2026-11-17T00:00:00Z',
+      },
+      error: null,
+    });
+    const Wrapper = wrapper();
+    render(
+      <Wrapper>
+        <BenchmarkSetorialCard empresaId="e1" />
+      </Wrapper>
+    );
+
+    expect(
+      await screen.findByText(/Regime tributário da empresa não está registrado/)
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Na mediana do setor')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Percentil estimado/)).not.toBeInTheDocument();
+  });
+
   it('percentil nulo (P25 = P75) esconde a régua em vez de mostrar zero', async () => {
     mockInvoke.mockResolvedValue({
       data: {

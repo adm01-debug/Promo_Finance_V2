@@ -5,6 +5,7 @@
 // ============================================
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import { porPrefixoMaisEspecifico, prefixosCnaeCandidatos } from '../_shared/cnae.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -190,18 +191,25 @@ export const handler = async (req: Request): Promise<Response> => {
         }
 
         // 4) Desvio vs benchmark setorial
-        if (empresa.cnae_principal && rbt12 > 0) {
-          const cnaePrefix = String(empresa.cnae_principal).slice(0, 4);
-          const { data: bench } = await withRetry(
+        const prefixosCnae = prefixosCnaeCandidatos(empresa.cnae_principal);
+        if (prefixosCnae.length > 0 && rbt12 > 0) {
+          // `cnae_prefix` e o PREFIXO; o CNAE da empresa e o codigo completo.
+          // O filtro anterior pedia `cnae_prefix ILIKE '<4 digitos>%'` e nunca
+          // casava com o seed de 2 digitos ('47', '10', '62', '69' em
+          // migrations/20260417155857_...sql:82-90): para o CNAE 1091102 o
+          // padrao '1091%' nao encontra a linha '10'. Resultado: o alerta de
+          // desvio vs benchmark setorial nunca disparava por este caminho.
+          const { data: benchRows } = await withRetry(
             () =>
               supabase
                 .from('benchmarks_setoriais')
-                .select('carga_media_pct, setor')
+                .select('carga_media_pct, setor, cnae_prefix')
                 .eq('regime', empresa.regime_tributario ?? 'simples_nacional')
-                .ilike('cnae_prefix', `${cnaePrefix}%`)
-                .limit(1),
+                .in('cnae_prefix', prefixosCnae),
             `benchmark_${empresa.id}`
           );
+          // mais especifico primeiro: 4781 antes de 47
+          const bench = porPrefixoMaisEspecifico(benchRows ?? []);
 
           if (bench && bench.length > 0) {
             const { data: ultimaApuracao } = await withRetry(
