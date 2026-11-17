@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a133ea066f` · branch `main` · 2026-11-17 00:43 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e93d744df6` · branch `main` · 2026-11-17 01:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `created_at` | default now() |
 | `feedback_conciliacao_ia` | `score_original` | default 0 |
 | `feedback_conciliacao_ia` | `created_by` | FK → users.id |
-| … +2411 linhas — lista completa em `context.json` | | |
+| … +2409 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 

@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a133ea066f` · branch `main` · 2026-11-17 00:43 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e93d744df6` · branch `main` · 2026-11-17 01:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -924,7 +924,7 @@ Middleware matcher (Next.js): nenhum
 | revoke | anon, authenticated, PUBLIC | execute | `profile_sensitive_fields_unchanged`, `confirmar_envio_cobranca`, `audit_trigger_generic`, `has_permission`, `check_catalogos_tributarios_invariants`, `recarregar_seeds_fiscais`, `detectar_duplicidades_financeiras` |
 | revoke | anon, public | execute | `profile_sensitive_fields_unchanged` |
 | revoke | authenticated | all | `refresh_mv_benchmark_setorial` |
-| revoke | authenticated | execute | `audit_trigger_generic`, `auto_vincular_empresa_padrao`, `backfill_empresa_id`, `capture_index_usage_snapshot`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `check_catalogos_tributarios_invariants`, `check_integrity_invariants`, `check_nfe_xml_path_invariants`, `cleanup_log_tables`, `cleanup_pgss_baseline`, `cleanup_rpc_observability_metrics`, `clear_login_attempts`, `compare_pg_stat_baseline`, `confirmar_conciliacao` … +79 |
+| revoke | authenticated | execute | `audit_trigger_generic`, `auto_vincular_empresa_padrao`, `backfill_empresa_id`, `capture_index_usage_snapshot`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `check_catalogos_tributarios_invariants`, `check_integrity_invariants`, `check_nfe_xml_path_invariants`, `cleanup_log_tables`, `cleanup_pgss_baseline`, `cleanup_rpc_observability_metrics`, `clear_login_attempts`, `compare_pg_stat_baseline`, `confirmar_conciliacao` … +78 |
 | revoke | authenticated | insert | `frontend_error_logs` |
 | revoke | authenticated | select, insert, update, delete | `cnpja_cache` |
 | revoke | authenticated | update | `elisao_creditos_auditoria`, `asaas_audit_trail` |

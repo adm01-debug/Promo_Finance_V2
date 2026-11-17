@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a133ea066fee7c7fa7f25325f6ff1d256c7c02e9` (2026-11-16T21:42:48-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e93d744df6329b4937422aef14c89f36fa94bc9d` (2026-11-16T22:32:46-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3860 |
 | arquivos_codigo | 2433 |
-| linhas_codigo | 433760 |
+| linhas_codigo | 433837 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -468,14 +468,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - .github/workflows/deno-tests.yml (14)
 - env.manifest.json (13)
 - supabase/config.toml (13)
-- supabase/functions/mcp-query/index.ts (12)
 - .github/workflows/supabase-linter.yml (11)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
+- supabase/functions/mcp-query/index.ts (11)
 - supabase/functions/gerar-pacote-evidencias/index.ts (10)
-- supabase/functions/n8n-callback/index.ts (10)
+- .github/workflows/functions-deploy.yml (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -627,6 +627,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-16 `e93d744` fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)
 - 2026-11-16 `a133ea0` feat(tributário): expõe as 5 estratégias de elisão catalogadas que o motor nunca avalia (#398)
 - 2026-11-16 `3ea2086` fix(db): destrava 4 dos 8 bloqueios da cadeia de migrations (#397)
 - 2026-11-16 `8f1767c` feat(db): rotina diária que marca contas a pagar/receber vencidas (#395)
@@ -641,7 +642,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-16 `1d6ef94` chore(db): versiona as 17 colunas que existem em produção e não na cadeia (#387)
 - 2026-11-16 `d9ff7e0` fix: alinha o vocabulário de forma de cobrança ao enum do banco (#386)
 - 2026-11-16 `38f4896` fix: projeção da Tesouraria usa valor residual, inclui parcial e respeita o filtro de empresa (#384)
-- 2026-11-16 `311bf35` fix: Fluxo de Caixa respeita a empresa selecionada, e dispensas de alerta por empresa (#383)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

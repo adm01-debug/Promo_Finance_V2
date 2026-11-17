@@ -18390,8 +18390,36 @@
   },
   "cron_job_logs": {
    "colunas": {
+    "completed_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "duration_ms": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "error_message": {
      "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "executed_at": {
+     "tipo": "timestamp with time zone",
      "nn": false,
      "pk": false,
      "default": null,
@@ -18418,6 +18446,13 @@
      "default": null,
      "ref": null
     },
+    "result": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "started_at": {
      "tipo": "timestamp with time zone",
      "nn": true,
@@ -18427,6 +18462,13 @@
     },
     "status": {
      "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "success": {
+     "tipo": "boolean",
      "nn": false,
      "pk": false,
      "default": null,
@@ -18462,14 +18504,7 @@
      "started_at",
      "finished_at"
     ],
-    "so_no_types": [
-     "completed_at",
-     "created_at",
-     "duration_ms",
-     "executed_at",
-     "result",
-     "success"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -20021,7 +20056,7 @@
   "elisao_regras_creditos": {
    "colunas": {
     "aliquota": {
-     "tipo": "numeric(9,6)",
+     "tipo": "numeric",
      "nn": false,
      "pk": false,
      "default": null,
@@ -20057,7 +20092,7 @@
     },
     "codigo": {
      "tipo": "text",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -20090,6 +20125,13 @@
      "default": null,
      "ref": null
     },
+    "fundamento_legal": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "id": {
      "tipo": "uuid",
      "nn": false,
@@ -20112,6 +20154,13 @@
      "ref": null
     },
     "ncm_prefixo": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "nome": {
      "tipo": "text",
      "nn": false,
      "pk": false,
@@ -20186,10 +20235,7 @@
      "aliquota_cofins_reducao",
      "fundamentacao_legal"
     ],
-    "so_no_types": [
-     "fundamento_legal",
-     "nome"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],

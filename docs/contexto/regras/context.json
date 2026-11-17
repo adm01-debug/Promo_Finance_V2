@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "a133ea066fee7c7fa7f25325f6ff1d256c7c02e9",
+  "sha": "e93d744df6329b4937422aef14c89f36fa94bc9d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 00:43 UTC",
+  "generated_at": "2026-11-17 01:33 UTC",
   "files_total": 3902,
   "code_files": 3533,
-  "code_lines": 502171
+  "code_lines": 502309
  },
  "version": "1.3.2",
- "facts_hash": "0c83f24d8b0ca913",
+ "facts_hash": "ecc6c0f147662d0e",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -17772,22 +17772,22 @@
       "src": "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql"
      },
      {
-      "name": "fundamento_legal",
-      "type": "string | null",
+      "name": "nome",
+      "type": "text",
       "fk": "",
       "generated": "",
-      "src": "src/integrations/supabase/types.ts"
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
+     },
+     {
+      "name": "fundamento_legal",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
      },
      {
       "name": "ncm",
       "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "nome",
-      "type": "string not null",
       "fk": "",
       "generated": "",
       "src": "src/integrations/supabase/types.ts"
@@ -28939,6 +28939,41 @@
       "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
      },
      {
+      "name": "executed_at",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
+     },
+     {
+      "name": "completed_at",
+      "type": "timestamp with time zone",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
+     },
+     {
+      "name": "duration_ms",
+      "type": "integer",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
+     },
+     {
+      "name": "result",
+      "type": "jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
+     },
+     {
+      "name": "success",
+      "type": "boolean",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
+     },
+     {
       "name": "error_message",
       "type": "text",
       "fk": "",
@@ -28946,46 +28981,11 @@
       "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
      },
      {
-      "name": "completed_at",
-      "type": "string | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
       "name": "created_at",
-      "type": "string not null",
+      "type": "timestamp with time zone NOT NULL DEFAULT now()",
       "fk": "",
       "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "duration_ms",
-      "type": "number | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "executed_at",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "result",
-      "type": "Json | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "success",
-      "type": "boolean | null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
+      "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
      }
     ],
     "constraints": [
@@ -44399,19 +44399,6 @@
      "validar_catalogos_tributarios"
     ]
    },
-   "faixa_simples_reparticao_valida": {
-    "args": "p_reparticao jsonb",
-    "returns": "boolean",
-    "lang": "sql",
-    "src": "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-    "security_definer": false,
-    "search_path": true,
-    "body": "SELECT COALESCE(( SELECT (ABS(SUM(COALESCE(v::numeric,0)) - 100.0) < 0.51) OR (ABS(SUM(COALESCE(v::numeric,0)) - 1.0) < 0.02) FROM jsonb_each_text(p_reparticao) j(k,v) ), false);",
-    "raises": [],
-    "tables": [
-     "jsonb_each_text"
-    ]
-   },
    "protocolo_st_ncm_autolink": {
     "args": "",
     "returns": "trigger",
@@ -45449,6 +45436,19 @@
     "raises": [],
     "tables": [
      "password_reset_tokens"
+    ]
+   },
+   "faixa_simples_reparticao_valida": {
+    "args": "p_reparticao jsonb",
+    "returns": "boolean",
+    "lang": "sql",
+    "src": "supabase/migrations/20260825250000_recreate_6_constraints.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "SELECT COALESCE(( SELECT (ABS(SUM(COALESCE(v::numeric,0)) - 100.0) < 0.51) OR (ABS(SUM(COALESCE(v::numeric,0)) - 1.0) < 0.02) FROM jsonb_each_text(p_reparticao) j(k,v) ), false);",
+    "raises": [],
+    "tables": [
+     "jsonb_each_text"
     ]
    },
    "sync_integration_secret_identifier": {
@@ -59838,14 +59838,6 @@
    {
     "kind": "revoke",
     "privs": "execute",
-    "object": "watch_cron_failures",
-    "objkind": "function",
-    "roles": "authenticated",
-    "src": "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql"
-   },
-   {
-    "kind": "revoke",
-    "privs": "execute",
     "object": "webhook_claim",
     "objkind": "function",
     "roles": "authenticated",
@@ -71084,7 +71076,7 @@
   {
    "module": "scripts",
    "files": 142,
-   "lines": 48569,
+   "lines": 48646,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -72804,7 +72796,7 @@
   {
    "module": "supabase/migrations",
    "files": 1029,
-   "lines": 79326,
+   "lines": 79387,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -95310,11 +95302,6 @@
    },
    {
     "table": "elisao_regras_creditos",
-    "column": "nome",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "elisao_regras_creditos",
     "column": "(tabela)",
     "rule": "constraint elisao_regras_creditos_aliquota_check CHECK (aliquota IS NULL OR (aliquota >= 0 AND aliquota <= 100))"
    },
@@ -100946,12 +100933,7 @@
    {
     "table": "cron_job_logs",
     "column": "created_at",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "cron_job_logs",
-    "column": "executed_at",
-    "rule": "obrigatório"
+    "rule": "default now()"
    },
    {
     "table": "cron_job_logs",
@@ -150734,19 +150716,6 @@
      "validar_catalogos_tributarios"
     ]
    },
-   "faixa_simples_reparticao_valida": {
-    "args": "p_reparticao jsonb",
-    "returns": "boolean",
-    "lang": "sql",
-    "src": "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-    "security_definer": false,
-    "search_path": true,
-    "body": "SELECT COALESCE(( SELECT (ABS(SUM(COALESCE(v::numeric,0)) - 100.0) < 0.51) OR (ABS(SUM(COALESCE(v::numeric,0)) - 1.0) < 0.02) FROM jsonb_each_text(p_reparticao) j(k,v) ), false);",
-    "raises": [],
-    "tables": [
-     "jsonb_each_text"
-    ]
-   },
    "protocolo_st_ncm_autolink": {
     "args": "",
     "returns": "trigger",
@@ -151784,6 +151753,19 @@
     "raises": [],
     "tables": [
      "password_reset_tokens"
+    ]
+   },
+   "faixa_simples_reparticao_valida": {
+    "args": "p_reparticao jsonb",
+    "returns": "boolean",
+    "lang": "sql",
+    "src": "supabase/migrations/20260825250000_recreate_6_constraints.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "SELECT COALESCE(( SELECT (ABS(SUM(COALESCE(v::numeric,0)) - 100.0) < 0.51) OR (ABS(SUM(COALESCE(v::numeric,0)) - 1.0) < 0.02) FROM jsonb_each_text(p_reparticao) j(k,v) ), false);",
+    "raises": [],
+    "tables": [
+     "jsonb_each_text"
     ]
    },
    "sync_integration_secret_identifier": {
@@ -170040,14 +170022,6 @@
    {
     "kind": "revoke",
     "privs": "execute",
-    "object": "watch_cron_failures",
-    "objkind": "function",
-    "roles": "authenticated",
-    "src": "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql"
-   },
-   {
-    "kind": "revoke",
-    "privs": "execute",
     "object": "webhook_claim",
     "objkind": "function",
     "roles": "authenticated",
@@ -180468,7 +180442,7 @@
   },
   "scripts/security/test_gates_shell.py": {
    "path": "scripts/security/test_gates_shell.py",
-   "lines": 589,
+   "lines": 666,
    "exports": [
     "def _rodar",
     "class _MiniRepo",
@@ -245108,7 +245082,7 @@
   },
   "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql": {
    "path": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-   "lines": 7307,
+   "lines": 7338,
    "errors": [
     " ELSE ",
     " END,\n    "
@@ -245192,7 +245166,7 @@
   },
   "supabase/migrations/20260825250000_recreate_6_constraints.sql": {
    "path": "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-   "lines": 60
+   "lines": 75
   },
   "supabase/migrations/20260826010000_restaurar_exec_sql_wrapper_e03.sql": {
    "path": "supabase/migrations/20260826010000_restaurar_exec_sql_wrapper_e03.sql",
@@ -245218,7 +245192,7 @@
   },
   "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql": {
    "path": "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
-   "lines": 143,
+   "lines": 151,
    "side_effects": [
     "notify_performance_alert_trigger"
    ]
@@ -245281,7 +245255,7 @@
   },
   "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql": {
    "path": "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql",
-   "lines": 79
+   "lines": 86
   },
   "supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql": {
    "path": "supabase/migrations/20260902180000_fix_nfe_vinculo_rpcs_sem_escopo.sql",
@@ -245851,10 +245825,24 @@
   }
  },
  "git": {
-  "sha": "a133ea066fee7c7fa7f25325f6ff1d256c7c02e9",
+  "sha": "e93d744df6329b4937422aef14c89f36fa94bc9d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e93d744",
+    "date": "2026-11-16",
+    "author": "adm01-debug",
+    "subject": "fix(db): fecha os 4 bloqueios reais da cadeia de migrations (4 -> 0) e o check_present que nunca reprovava (#399)",
+    "files": [
+     "scripts/security/test-migration-replay-safety.sh",
+     "scripts/security/test_gates_shell.py",
+     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+     "supabase/migrations/20260825250000_recreate_6_constraints.sql",
+     "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
+     "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql"
+    ]
+   },
    {
     "sha": "a133ea0",
     "date": "2026-11-16",
@@ -246210,18 +246198,25 @@
     "files": [
      "docs/agentes/inventario-branches-2026-11-16.md"
     ]
-   },
-   {
-    "sha": "149a836",
-    "date": "2026-11-16",
-    "author": "adm01-debug",
-    "subject": "fix(ci): guard security_invoker do prod-migrate aceita views Lalamove (ADR-001) e estrategias_elisao_catalogo (tabela em prod) (#333)",
-    "files": [
-     ".github/workflows/prod-migrate.yml"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    3
+   ],
+   [
+    "scripts/security/test_gates_shell.py",
+    2
+   ],
+   [
+    "supabase/migrations/20260825250000_recreate_6_constraints.sql",
+    2
+   ],
+   [
+    "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
+    2
+   ],
    [
     "supabase/migrations/20260825230000_initplan_rls_e67.sql",
     2
@@ -246239,10 +246234,6 @@
     2
    ],
    [
-    "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-    2
-   ],
-   [
     "supabase/migrations/20261116230000_backfill_empresa_id_partidas_contabeis.sql",
     2
    ],
@@ -246253,6 +246244,14 @@
    [
     "supabase/functions/gerar-sped-ecf/index.ts",
     2
+   ],
+   [
+    "scripts/security/test-migration-replay-safety.sh",
+    1
+   ],
+   [
+    "supabase/migrations/20260902170000_fix_rpcs_security_definer_sem_escopo.sql",
+    1
    ],
    [
     "src/pages/tributario/OportunidadesElisao.tsx",
@@ -246271,14 +246270,6 @@
     1
    ],
    [
-    "supabase/migrations/20260825250000_recreate_6_constraints.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
-    1
-   ],
-   [
     "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql",
     1
    ],
@@ -246288,18 +246279,6 @@
    ],
    [
     "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117010000_marcar_contas_vencidas.sql",
     1
    ]
   ]

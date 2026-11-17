@@ -997,7 +997,7 @@
   {
    "arquivo": "scripts/security/test-migration-replay-safety.sh",
    "descricao": null,
-   "linhas": 136,
+   "linhas": 186,
    "env": [],
    "npm_scripts": [],
    "workflows": [

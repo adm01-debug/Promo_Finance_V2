@@ -662,7 +662,7 @@
   {
    "arquivo": "scripts/security/test_gates_shell.py",
    "tipo": "pytest",
-   "linhas": 588,
+   "linhas": 665,
    "testa": [],
    "casos": 0
   },
