@@ -116,6 +116,11 @@ WHERE obt.empresa_id IS NULL
 -- termina em CURRENT_DATE + 90, e existe uma linha por (empresa, dia) para
 -- toda empresa cadastrada. Zero linhas = passou.
 --
+-- A exigência das 91 datas vale apenas quando há empresa visível: sem nenhuma
+-- (tabela vazia ou RLS filtrando tudo) a view corretamente devolve zero linha,
+-- e cobrar 91 datas ali seria falso alarme. Nesse caso o que se cobra é não
+-- vir linha nenhuma.
+--
 -- Este é o bloco que o bloco 1 não cobre: ele consulta
 -- `public.vw_fluxo_caixa` de verdade, então falha se a view estiver ausente,
 -- sem `empresa_id`/`dia`, ou com janela diferente da que este script descreve.
@@ -137,10 +142,22 @@ FROM (
     (SELECT count(*) FROM public.empresas)      AS empresas
   FROM public.vw_fluxo_caixa v
 ) z
-WHERE z.dias_distintos <> 91
-   OR z.primeiro_dia <> CURRENT_DATE
-   OR z.ultimo_dia <> CURRENT_DATE + 90
-   OR z.linhas <> z.empresas * 91;
+WHERE (
+  -- com pelo menos uma empresa visivel: a janela tem de estar completa
+  z.empresas > 0
+  AND (
+    z.dias_distintos <> 91
+    OR z.primeiro_dia <> CURRENT_DATE
+    OR z.ultimo_dia <> CURRENT_DATE + 90
+    OR z.linhas <> z.empresas * 91
+  )
+) OR (
+  -- sem empresa visivel (tabela vazia ou RLS filtrando tudo) a view
+  -- corretamente devolve zero linha; exigir 91 datas aqui seria falso alarme.
+  -- O que se cobra no caso vazio e justamente nao vir linha nenhuma.
+  z.empresas = 0
+  AND z.linhas <> 0
+);
 
 -- ---------------------------------------------------------------------------
 -- Bloco 3 — nenhuma linha inesperada em TODA a janela, não só nos dias
