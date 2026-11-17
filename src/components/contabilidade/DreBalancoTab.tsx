@@ -178,7 +178,10 @@ export function DreBalancoTab({ empresaId, ano }: Props) {
         open={drillDown.open}
         onOpenChange={(open) => handleSetDrillDown({ ...drillDown, open })}
       >
-        <DialogContent className="max-w-5xl border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2.5rem] p-0 overflow-hidden">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-5xl border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2.5rem] p-0 overflow-hidden"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
           <DialogHeader className="p-8 pb-4 relative z-10">
             <div className="flex items-center gap-4">

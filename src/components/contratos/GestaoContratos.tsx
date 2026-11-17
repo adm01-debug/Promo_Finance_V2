@@ -108,7 +108,7 @@ export function GestaoContratos() {
                 Novo Contrato
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent aria-describedby={undefined} className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Novo Contrato</DialogTitle>
               </DialogHeader>

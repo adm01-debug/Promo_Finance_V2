@@ -131,7 +131,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
               Novo Incentivo
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent aria-describedby={undefined} className="max-w-lg">
             <DialogHeader>
               <DialogTitle>
                 {editando ? 'Editar Incentivo' : 'Cadastrar Incentivo Fiscal'}

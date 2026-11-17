@@ -202,7 +202,7 @@ export function BlingEstoquePanel() {
       </Card>
 
       <Dialog open={showLancar} onOpenChange={setShowLancar}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Lançar Movimentação de Estoque</DialogTitle>
           </DialogHeader>
@@ -287,7 +287,7 @@ export function BlingEstoquePanel() {
       </Dialog>
 
       <Dialog open={showDeposito} onOpenChange={setShowDeposito}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Novo Depósito</DialogTitle>
           </DialogHeader>

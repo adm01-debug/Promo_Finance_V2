@@ -372,7 +372,7 @@ export function SecuritySettings() {
 
       {/* Dialog Adicionar IP */}
       <Dialog open={addIpDialogOpen} onOpenChange={setAddIpDialogOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Plus className="h-5 w-5" />

@@ -276,7 +276,7 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent aria-describedby={undefined} className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-primary/10">

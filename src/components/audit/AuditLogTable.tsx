@@ -116,7 +116,7 @@ function Row({ log, maskIpsEnabled }: { log: AuditLog; maskIpsEnabled: boolean }
               <Eye className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh]">
+          <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[80vh]">
             <DialogHeader>
               <DialogTitle>Detalhes do Log</DialogTitle>
             </DialogHeader>

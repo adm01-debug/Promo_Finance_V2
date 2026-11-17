@@ -38,7 +38,7 @@ export const KeyboardShortcutsDialog = forwardRef<HTMLButtonElement>(
         </Button>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent aria-describedby={undefined} className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Keyboard className="h-5 w-5 text-primary" />

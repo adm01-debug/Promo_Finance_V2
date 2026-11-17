@@ -113,7 +113,7 @@ export default function NotasFiscais() {
                 <Plus className="h-4 w-4" /> Emitir NF-e
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl">
+            <DialogContent aria-describedby={undefined} className="max-w-3xl">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" /> Emitir Nova NF-e

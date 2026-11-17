@@ -84,7 +84,10 @@ export function NovoLancamentoDialog({ empresaId, planoContas }: Props) {
           Novo Lançamento
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[3rem] p-0 overflow-hidden">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-4xl border-none bg-background/95 backdrop-blur-2xl shadow-3xl rounded-[3rem] p-0 overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
         <DialogHeader className="p-8 pb-0 relative z-10">
           <div className="flex items-center gap-4">

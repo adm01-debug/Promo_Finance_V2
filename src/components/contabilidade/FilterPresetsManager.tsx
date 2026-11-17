@@ -135,7 +135,10 @@ export function FilterPresetsManager<T extends object>({
       </DropdownMenu>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
+        <DialogContent
+          aria-describedby={undefined}
+          className="sm:max-w-md border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2rem]"
+        >
           <DialogHeader>
             <DialogTitle className="text-2xl font-black tracking-tight">
               Salvar Novo Preset

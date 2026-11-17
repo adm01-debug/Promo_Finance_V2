@@ -77,7 +77,7 @@ export function TemplatesTab({
                   Novo Template
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent aria-describedby={undefined} className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
                     {selectedTemplate ? 'Editar Template' : 'Novo Template'}

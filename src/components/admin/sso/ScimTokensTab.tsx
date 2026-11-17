@@ -214,7 +214,7 @@ export function ScimTokensTab() {
             if (!v) setIssued(null);
           }}
         >
-          <DialogContent>
+          <DialogContent aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>{issued ? 'Token gerado' : 'Novo token SCIM'}</DialogTitle>
             </DialogHeader>
