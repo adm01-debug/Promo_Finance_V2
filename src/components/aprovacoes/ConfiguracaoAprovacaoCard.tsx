@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import {
-  useConfiguracaoAprovacao,
+  useConfiguracaoAprovacaoEditavel,
   useUpdateConfiguracaoAprovacao,
   useFluxosNiveis,
 } from '@/hooks/useAprovacoes';
@@ -27,7 +27,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
 export const ConfiguracaoAprovacaoCard = () => {
-  const { data: config, isLoading: loadingConfig } = useConfiguracaoAprovacao();
+  const { data: config, isLoading: loadingConfig } = useConfiguracaoAprovacaoEditavel();
   const { data: niveis, isLoading: loadingNiveis } = useFluxosNiveis();
   const updateMutation = useUpdateConfiguracaoAprovacao();
 
@@ -57,9 +57,12 @@ export const ConfiguracaoAprovacaoCard = () => {
     if (!config) return;
     updateMutation.mutate({
       id: config.id,
-      // Sem a empresa, a gravacao atinge so a linha lida e a duplicata de mesmo
-      // valor volta a ser a escolhida: o limite salvo nao faz efeito.
+      // Empresa + valor original delimitam a FAIXA editada: as duplicatas dela
+      // andam juntas (senao o limite salvo nao faz efeito) e as faixas de outro
+      // patamar ficam intactas (senao o save apaga patamar que a tela nem
+      // mostra).
       empresa_id: config.empresa_id,
+      valor_minimo_original: config.valor_minimo_aprovacao,
       valor_minimo_aprovacao: parseFloat(valorMinimo) || 0,
       aprovadores_obrigatorios: parseInt(aprovadores) || 1,
       ativo,

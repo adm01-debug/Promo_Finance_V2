@@ -20,6 +20,7 @@ import {
   useComentariosAprovacao,
   useConfiguracaoAprovacao,
   useUpdateConfiguracaoAprovacao,
+  useConfiguracaoAprovacaoEditavel,
 } from '@/hooks/useAprovacoes';
 
 const makeWrapper = () => {
@@ -219,17 +220,18 @@ describe('useConfiguracaoAprovacao (alcada com varias faixas ativas)', () => {
   });
 });
 
-describe('useUpdateConfiguracaoAprovacao (gravacao coerente com a leitura)', () => {
+describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('grava em TODAS as linhas da empresa, nao so no id lido', async () => {
-    // Revisao da PR #400 (Devin e Codex): com duas faixas ativas de R$ 5.000,
-    // subir o limite para R$ 10.000 gravando so o id lido deixava a outra
-    // duplicata de 5.000 como a menor — a leitura voltava a escolher ela e o
-    // limite salvo nao fazia efeito, apesar do toast de sucesso.
-    const chain = buildChain({ data: [{ id: 'a' }], error: null });
+  it('grava nas duplicatas da faixa editada, e NAO nas outras faixas', async () => {
+    // Revisao da PR #400, duas rodadas. Round 2 (Devin/Codex): gravar so o id
+    // deixava a duplicata de 5.000 como a menor e o limite salvo nao fazia
+    // efeito. Round 3 (Devin): gravar a empresa inteira apagava as faixas de
+    // 50.000 e 999.999 -- perda de dado em producao. O escopo certo e a faixa:
+    // empresa + o valor que o painel carregou.
+    const chain = buildChain({ data: [{ id: 'a' }, { id: 'd' }], error: null });
     mockFrom.mockReturnValue(chain);
 
     const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
@@ -238,23 +240,25 @@ describe('useUpdateConfiguracaoAprovacao (gravacao coerente com a leitura)', () 
     result.current.mutate({
       id: 'a',
       empresa_id: 'e1',
+      valor_minimo_original: 5000,
       valor_minimo_aprovacao: 10000,
       aprovadores_obrigatorios: 1,
       ativo: true,
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockFrom).toHaveBeenCalledWith('configuracoes_aprovacao');
     expect(chain.update).toHaveBeenCalledWith({
       valor_minimo_aprovacao: 10000,
       aprovadores_obrigatorios: 1,
       ativo: true,
     });
     expect(chain.eq).toHaveBeenCalledWith('empresa_id', 'e1');
+    // delimita a faixa pelo valor ORIGINAL: as outras faixas nao sao tocadas
+    expect(chain.eq).toHaveBeenCalledWith('valor_minimo_aprovacao', 5000);
     expect(chain.eq).not.toHaveBeenCalledWith('id', 'a');
   });
 
-  it('desativar o workflow desativa a empresa inteira, nao uma faixa so', async () => {
+  it('desativar atinge a faixa editada, nao os outros patamares', async () => {
     const chain = buildChain({ data: [{ id: 'a' }], error: null });
     mockFrom.mockReturnValue(chain);
 
@@ -264,6 +268,7 @@ describe('useUpdateConfiguracaoAprovacao (gravacao coerente com a leitura)', () 
     result.current.mutate({
       id: 'a',
       empresa_id: 'e1',
+      valor_minimo_original: 5000,
       valor_minimo_aprovacao: 5000,
       aprovadores_obrigatorios: 1,
       ativo: false,
@@ -271,10 +276,10 @@ describe('useUpdateConfiguracaoAprovacao (gravacao coerente com a leitura)', () 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(chain.update).toHaveBeenCalledWith(expect.objectContaining({ ativo: false }));
-    expect(chain.eq).toHaveBeenCalledWith('empresa_id', 'e1');
+    expect(chain.eq).toHaveBeenCalledWith('valor_minimo_aprovacao', 5000);
   });
 
-  it('sem empresa_id (linha legada) mantem a gravacao por id', async () => {
+  it('sem empresa ou sem valor original, mantem a gravacao por id', async () => {
     const chain = buildChain({ data: [{ id: 'z' }], error: null });
     mockFrom.mockReturnValue(chain);
 
@@ -292,5 +297,42 @@ describe('useUpdateConfiguracaoAprovacao (gravacao coerente com a leitura)', () 
 
     expect(chain.eq).toHaveBeenCalledWith('id', 'z');
     expect(chain.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
+  });
+});
+
+describe('useConfiguracaoAprovacaoEditavel (painel nao fica trancado)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('acha a configuracao mesmo com TODAS as faixas inativas', async () => {
+    // Revisao da PR #400 (Devin): com a leitura efetiva (ativo=true), desativar
+    // o workflow deixava o painel sem registro e handleSave saia no
+    // `if (!config)` -- nao havia como reativar pela tela.
+    const chain = buildChain({
+      data: [
+        {
+          id: 'a',
+          empresa_id: 'e1',
+          valor_minimo_aprovacao: 5000,
+          aprovadores_obrigatorios: 1,
+          ativo: false,
+        },
+      ],
+      error: null,
+    });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useConfiguracaoAprovacaoEditavel('e1'), {
+      wrapper: makeWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).not.toBeNull();
+    expect(result.current.data?.ativo).toBe(false);
+    // o que garante a reativacao: nao filtra por ativo
+    expect(chain.eq).not.toHaveBeenCalledWith('ativo', true);
+    expect(chain.eq).toHaveBeenCalledWith('empresa_id', 'e1');
+    expect(chain.order).toHaveBeenCalledWith('valor_minimo_aprovacao', { ascending: true });
   });
 });
