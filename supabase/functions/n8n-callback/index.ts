@@ -169,7 +169,9 @@ async function executeAction(admin: HandlerDeps['admin'], body: CallbackBody): P
     case 'create_alert': {
       const severity = (asString(payload.severity) ?? 'warning').toLowerCase();
       if (!ALLOWED_ALERT_SEVERITY.has(severity)) {
-        throw new Error(`severity invalida: ${severity}`);
+        // O valor vem do payload do webhook: não ecoar na mensagem, que vai
+        // para log e para a resposta.
+        throw new Error('severity invalida');
       }
       return await insertSingle(admin, 'alerts', {
         type: asString(payload.type) ?? asString(payload.alert_type) ?? 'n8n_generated',
@@ -197,7 +199,9 @@ async function insertSingle(
   row: Record<string, unknown>
 ): Promise<unknown> {
   const { data, error } = await admin.from(table).insert(row).select().single();
-  if (error) throw error;
+  // O erro do supabase-js é objeto simples, não Error: sem envolver, quem trata
+  // com `e instanceof Error` perde a mensagem e registra 'unknown'.
+  if (error) throw new Error(mensagemErro(error));
   return data;
 }
 

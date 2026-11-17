@@ -124,12 +124,25 @@ Proxy: contar versões na tabela de controle.
 SELECT count(*) AS migrations_aplicadas
 FROM supabase_migrations.schema_migrations;
 
--- Conferir se a última migration está registrada
--- (substituir pelo timestamp mais recente do diretório supabase/migrations/):
+-- Última migration registrada no banco, sem timestamp cravado:
 SELECT version, statements IS NOT NULL AS tem_sql
 FROM supabase_migrations.schema_migrations
-WHERE version = '20261101200000';  -- ajustar para o timestamp mais recente
+WHERE version = (SELECT max(version) FROM supabase_migrations.schema_migrations);
 ```
+
+> **Limite desta consulta:** o máximo vem da própria tabela, não do diretório. Se a
+> última migration do repositório estiver **pendente**, a consulta devolve a anterior
+> sem acusar nada. Para detectar pendência é preciso comparar com o disco, o que SQL
+> puro não alcança — na raiz do repositório:
+>
+> ```bash
+> # maior timestamp em disco vs. maior registrado no banco
+> ls supabase/migrations/*.sql | sed 's#.*/##; s#_.*##' | sort | tail -1
+> ```
+>
+> Os dois valores têm de ser iguais. O replay completo
+> (`bash scripts/db/replay-migrations.sh`) é a verificação forte: aplica os 1034
+> arquivos num Postgres limpo e acusa qualquer um que não rode.
 
 > **Nota:** a query de `EXCEPT` entre `fs_migrations` e `schema_migrations` requer
 > acesso ao filesystem, o que não é possível via SQL puro. Mantenha o count acima como
@@ -163,20 +176,13 @@ ORDER BY ultima_falha DESC;
 Edge Functions sem guard de autenticação expõem endpoints sem proteção.  
 Esperado após Bloco D (Steps 33-48): **0** funções no terceiro balde.
 
-```sql
--- Proxy via config.toml: lista funções sem entrada no config (verify_jwt não declarado).
--- Para auditoria real, comparar o diretório supabase/functions/ com supabase/config.toml.
+Aqui a fonte de verdade é o código, não o banco: um `SELECT` que devolve texto
+dizendo "verificar manualmente" não é verificação. Rodar na raiz do repositório:
 
--- Funções declaradas no config.toml com verify_jwt = false e sem guard interno documentado:
--- Consultar manualmente ou via script:
---   grep -L 'exigirUsuario\|exigirPapel\|exigirChamadaInterna\|verify_jwt.*true' \
---        supabase/functions/*/index.ts | wc -l
-
--- Proxy no banco: edge functions deployadas (requer pg_net ou log de deploy):
-SELECT
-  'Verificar manualmente supabase/functions/*/index.ts' AS instrucao,
-  'grep -rL exigirUsuario\|exigirPapel\|exigirChamadaInterna supabase/functions/' AS comando_shell,
-  '0 arquivos sem guard' AS valor_esperado;
+```bash
+# Edge Functions sem nenhum guard de autenticação:
+grep -rL 'exigirUsuario\|exigirPapel\|exigirChamadaInterna' supabase/functions/*/index.ts | wc -l
+# Resultado esperado: 0
 ```
 
 ---
