@@ -17,8 +17,7 @@
  * dono pelo AGENTS.md 6.6. Esta tela mostra a falha; o reprocessamento vem na
  * PR da migration.
  */
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { AlertTriangle, Clock, Inbox, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -67,44 +66,61 @@ export function WebhookDlqPanel() {
   // "nenhum webhook em falha" com a fila cheia -- exatamente o silencio que
   // este painel vem acabar (achado P2 do Codex na PR #406). Entao a autorizacao
   // e verificada ANTES da consulta.
-  const { isAdmin } = useAuth();
-  const [limite, setLimite] = useState(PAGINA_DLQ);
+  // `isAdmin` do AuthProvider e `roleAtual ?? role` -- o papel da EMPRESA tem
+  // prioridade. A politica da fila usa `has_role(auth.uid(),'admin')`, que le
+  // `user_roles`, ou seja o papel GLOBAL. Usar isAdmin errava nos dois sentidos
+  // (achado 🔴 do Devin na PR #406): admin so da empresa passava pelo gate e
+  // recebia lista vazia da RLS -- "nenhuma falha" com a fila cheia --, e admin
+  // global com papel local menor era bloqueado sem precisar.
+  const { role } = useAuth();
+  const podeLerDlq = role === 'admin';
 
-  const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<{
-    linhas: DlqRow[];
-    total: number;
-  }>({
-    queryKey: ['webhook-dlq-abertos', limite],
-    queryFn: async () => {
-      // `count: 'exact'` para o contador nao mentir: `linhas.length` era o
-      // recorte, nao o total em aberto.
-      const { data, error, count } = await supabase
-        .from('webhook_dlq')
-        .select(
-          'id, source, event_type, external_id, error_message, attempts, first_failed_at, last_attempt_at, created_at',
-          { count: 'exact' }
-        )
-        .is('resolved_at', null)
-        .order('created_at', { ascending: false })
-        .limit(limite);
-      if (error) throw error;
-      const linhas = (data ?? []) as DlqRow[];
-      return { linhas, total: count ?? linhas.length };
-    },
-    enabled: isAdmin,
-    staleTime: 60_000,
-  });
+  // Paginacao por `range`, nao por `limit` crescente: o PostgREST corta a
+  // resposta em 1.000 linhas, entao aumentar o limite nunca traria a falha
+  // 1.001 -- "Carregar mais" repetiria as mesmas para sempre (achado do Devin).
+  const { data, isLoading, isError, error, refetch, isRefetching, fetchNextPage, hasNextPage } =
+    useInfiniteQuery({
+      queryKey: ['webhook-dlq-abertos'],
+      initialPageParam: 0,
+      queryFn: async ({ pageParam }) => {
+        const de = pageParam as number;
+        // `count: 'exact'` para o contador nao mentir: o tamanho da pagina era
+        // apresentado como total em aberto.
+        const { data, error, count } = await supabase
+          .from('webhook_dlq')
+          .select(
+            'id, source, event_type, external_id, error_message, attempts, first_failed_at, last_attempt_at, created_at',
+            { count: 'exact' }
+          )
+          .is('resolved_at', null)
+          .order('created_at', { ascending: false })
+          // `id` como desempate: sem ordem unica, janelas diferentes repetem e
+          // omitem linhas de mesmo `created_at`.
+          .order('id')
+          .range(de, de + PAGINA_DLQ - 1);
+        if (error) throw error;
+        return { linhas: (data ?? []) as DlqRow[], total: count ?? 0, de };
+      },
+      getNextPageParam: (ultima) => {
+        const lidas = ultima.de + ultima.linhas.length;
+        if (ultima.linhas.length === 0 || lidas >= ultima.total) return undefined;
+        return lidas;
+      },
+      enabled: podeLerDlq,
+      staleTime: 60_000,
+    });
 
-  const linhas = data?.linhas ?? [];
-  const total = data?.total ?? 0;
+  const linhas = (data?.pages ?? []).flatMap((p) => p.linhas);
+  const total = data?.pages?.[0]?.total ?? 0;
 
-  if (!isAdmin) {
+  if (!podeLerDlq) {
     return (
       <div className="rounded-lg border border-border bg-muted/30 p-3">
         <p className="text-xs font-medium">Fila de webhooks em falha: acesso restrito</p>
         <p className="text-[11px] text-muted-foreground mt-1">
-          Só administradores leem esta fila. Esta tela não mostra &quot;nenhuma falha&quot; para
-          quem não pode ler: pergunte a um administrador.
+          A leitura depende do papel global de administrador (o mesmo que a política do banco
+          exige), não do papel na empresa. Esta tela não mostra &quot;nenhuma falha&quot; para quem
+          não pode ler: peça a um administrador global.
         </p>
       </div>
     );
@@ -185,7 +201,7 @@ export function WebhookDlqPanel() {
               </p>
             </div>
           ))}
-          {total > linhas.length ? (
+          {hasNextPage ? (
             <div className="flex items-center justify-between gap-2">
               <p className="text-[10px] text-muted-foreground">
                 {`Mostrando ${linhas.length} de ${total} falhas em aberto.`}
@@ -194,7 +210,7 @@ export function WebhookDlqPanel() {
                 variant="outline"
                 size="sm"
                 className="h-7 text-[10px]"
-                onClick={() => setLimite((n) => n + PAGINA_DLQ)}
+                onClick={() => fetchNextPage()}
               >
                 Carregar mais
               </Button>
