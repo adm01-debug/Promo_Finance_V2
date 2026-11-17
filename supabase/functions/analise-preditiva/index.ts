@@ -67,6 +67,17 @@ serve(
         const tresMesesAtras = new Date(hoje);
         tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
 
+        // transacoes_bancarias não tem empresa_id: o escopo por empresa passa por
+        // conta_bancaria_id. Com o filtro antigo a consulta falhava (42703) e o
+        // erro de `transacoes` não era checado — a análise de IA rodava sem
+        // nenhuma transação bancária, em silêncio.
+        const { data: contasDaEmpresa, error: erroContas } = await supabase
+          .from('contas_bancarias')
+          .select('id')
+          .eq('empresa_id', empresaId);
+        if (erroContas) throw erroContas;
+        const idsContas = (contasDaEmpresa ?? []).map((c: { id: string }) => c.id);
+
         const [contasReceber, contasPagar, clientes, transacoes] = await Promise.all([
           supabase
             .from('contas_receber')
@@ -82,7 +93,7 @@ serve(
           supabase
             .from('transacoes_bancarias')
             .select('*')
-            .eq('empresa_id', empresaId)
+            .in('conta_bancaria_id', idsContas)
             .gte('data', tresMesesAtras.toISOString().split('T')[0])
             .order('data'),
         ]);
@@ -90,6 +101,7 @@ serve(
         if (contasReceber.error) throw contasReceber.error;
         if (contasPagar.error) throw contasPagar.error;
         if (clientes.error) throw clientes.error;
+        if (transacoes.error) throw transacoes.error;
 
         // Preparar contexto para a IA
         const hojeStr = hoje.toISOString().split('T')[0];
