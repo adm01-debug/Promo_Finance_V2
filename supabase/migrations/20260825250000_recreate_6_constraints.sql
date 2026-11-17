@@ -4,9 +4,19 @@
 -- ── C1: cnaes_codigo_formato_chk ────────────────────────────────────
 -- Bug: regex '^\d{2}\.\d{2}-\d/\d{2}$' esperava ponto (NN.NN-N/NN)
 -- Real: 100% dos dados usam formato NNNN-N/NN sem ponto
+-- Replay: 20260728122339 (linha 58) já cria a versão COM ponto e o DROP
+-- feito à mão em produção não ficou na cadeia (20260825240000 só tem
+-- comentários). DROP IF EXISTS torna a recriação idempotente; NOT VALID
+-- evita o scan nos 22 CNAEs com ponto semeados em 20260728120831 (linha
+-- 110+), que existem só no replay. Em produção: 66 linhas, todas sem
+-- ponto, constraint já convalidated = true.
+ALTER TABLE public.cnaes
+  DROP CONSTRAINT IF EXISTS cnaes_codigo_formato_chk;
+
 ALTER TABLE public.cnaes
   ADD CONSTRAINT cnaes_codigo_formato_chk
-  CHECK (codigo ~ '^[0-9]{4}-[0-9]/[0-9]{2}$');
+  CHECK (codigo ~ '^[0-9]{4}-[0-9]/[0-9]{2}$')
+  NOT VALID;
 
 -- ── C2: faixas_simples — corrigir função + add NOT VALID ─────────────
 -- Bug fn: chaves UPPERCASE + soma esperada 1.00; dados têm lowercase+100.00
