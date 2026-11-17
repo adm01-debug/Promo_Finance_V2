@@ -1,0 +1,65 @@
+{
+  "types.log": {
+    "sha256LogCompleto": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92",
+    "linhasResultado": [
+      "$ tsc --noEmit"
+    ]
+  },
+  "lint.log": {
+    "sha256LogCompleto": "77e676bca3e6e9d84d031766b11844b9f8c74ea7df3a867a24f26564e8e2346a",
+    "linhasResultado": [
+      "✖ 13 problems (0 errors, 13 warnings)"
+    ]
+  },
+  "build.log": {
+    "sha256LogCompleto": "367ce13e2b0c1fdde8eab44b6fcd820a3ccd974a2f30a56d30f13a55f2af9249",
+    "linhasResultado": [
+      "$ vite build",
+      "error: script \"build\" exited with code 1"
+    ]
+  },
+  "build-configurado.log": {
+    "sha256LogCompleto": "f08ca62facafd2667e848bb4b3c0846f76ede8684746989fb8f519de7ba4d627",
+    "linhasResultado": [
+      "$ vite build",
+      "✓ built in 4.34s"
+    ]
+  },
+  "vitest.log": {
+    "sha256LogCompleto": "b7daf93f89ed0e3e75f68cb772caa5b7d92cce10d65990ea65aead00b985be43",
+    "linhasResultado": [
+      "[vite:react-swc] We recommend switching to `@vitejs/plugin-react` for improved performance as no swc plugins are used. More information at https://vite.dev/rolldown",
+      " Test Files  205 passed (205)",
+      "      Tests  2691 passed (2691)",
+      "   Duration  82.61s (transform 3.82s, setup 26.65s, import 15.30s, tests 33.62s, environment 57.05s)"
+    ]
+  },
+  "cobertura-global.log": {
+    "sha256LogCompleto": "27c5097074196d67a1ed17bda6120f25fab3181e10664a3d81de98a8a2e28499",
+    "linhasResultado": [
+      "[vite:react-swc] We recommend switching to `@vitejs/plugin-react` for improved performance as no swc plugins are used. More information at https://vite.dev/rolldown",
+      " Test Files  205 passed (205)",
+      "      Tests  2691 passed (2691)",
+      "   Duration  81.36s (transform 2.87s, setup 23.72s, import 11.10s, tests 29.76s, environment 51.82s)",
+      "ERROR: Coverage for functions (11.03%) does not meet global threshold (18%)",
+      "ERROR: Coverage for branches (14.33%) does not meet global threshold (50%)",
+      "error: script \"test:coverage\" exited with code 1"
+    ]
+  },
+  "deno.log": {
+    "sha256LogCompleto": "0f446cba02b34918534720e93f3e0a52d8a495ff1f86f9c2b626f896a328ede2",
+    "linhasResultado": [
+      "ok | 160 passed (23 steps) | 0 failed (7s)"
+    ]
+  },
+  "gates-offline.log": {
+    "sha256LogCompleto": "d543523d9182b8e208427899322c77afc62cf74aaba2b128e39a515b97d38b14",
+    "linhasResultado": [
+      "ℹ tests 8",
+      "ℹ pass 8",
+      "ℹ fail 0",
+      "ℹ skipped 0",
+      "ℹ duration_ms 59.626619"
+    ]
+  }
+}
