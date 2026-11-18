@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 114,
+ "total": 115,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -175,6 +175,17 @@
    "env": [
     "CLAUDE_MD_BASE"
    ],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/check-colunas-select.mjs",
+   "descricao": "* Gate: nenhuma coluna inexistente em `.select()` / `.order()`.",
+   "linhas": 226,
+   "env": [],
    "npm_scripts": [],
    "workflows": [
     "ci.yml"

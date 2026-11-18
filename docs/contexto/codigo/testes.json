@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 478,
+ "total": 479,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 402
+  "unit": 403
  },
  "onde_ficam": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 110
+   "arquivos": 111
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -323,6 +323,15 @@
    "linhas": 172,
    "testa": [],
    "casos": 11
+  },
+  {
+   "arquivo": "scripts/ci/check-colunas-select.unit.mjs",
+   "tipo": "unit",
+   "linhas": 146,
+   "testa": [
+    "scripts/ci/check-colunas-select.mjs"
+   ],
+   "casos": 8
   },
   {
    "arquivo": "scripts/ci/fila-merge.unit.mjs",
@@ -4254,6 +4263,7 @@
   "scripts/automation.mjs": 1,
   "scripts/ci/actions-kpi.mjs": 1,
   "scripts/ci/audit-env.ts": 1,
+  "scripts/ci/check-colunas-select.mjs": 1,
   "scripts/ci/fila-merge.mjs": 1,
   "scripts/ci/gerar-matriz-edge-tabela.mjs": 1,
   "scripts/ci/github-settings-guard.mjs": 1,

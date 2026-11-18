@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f56d3076bbf45e3cb81c5de170fc1910433cb1e2",
+  "sha": "c72e283fff47c38a902fc36e4f37a859fe29db80",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-18 00:40 UTC",
-  "files_total": 3976,
-  "code_files": 3593,
-  "code_lines": 510854
+  "generated_at": "2026-11-18 00:42 UTC",
+  "files_total": 3978,
+  "code_files": 3595,
+  "code_lines": 511228
  },
  "version": "1.3.2",
- "facts_hash": "bd16846e8fc838a8",
+ "facts_hash": "a8dfad39d598b117",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -335,7 +335,7 @@
    ".ts": 1245,
    ".sql": 1118,
    ".tsx": 1115,
-   ".mjs": 63,
+   ".mjs": 65,
    ".py": 45,
    ".js": 8
   },
@@ -70112,8 +70112,8 @@
   },
   {
    "module": "scripts",
-   "files": 148,
-   "lines": 49241,
+   "files": 150,
+   "lines": 49615,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -70127,6 +70127,7 @@
     "bucket",
     "c",
     "comentada",
+    "companies",
     "constructor",
     "contacts",
     "contas",
@@ -70141,6 +70142,7 @@
     "existe",
     "f",
     "fantasma",
+    "faturamento_mensal",
     "fixture_table",
     "ghost_table",
     "ignorada",
@@ -70151,6 +70153,7 @@
     "profiles",
     "publico.g",
     "real",
+    "regime_decision_cache",
     "runtime_table",
     "segredos",
     "shared_nao_conta",
@@ -70189,6 +70192,8 @@
     "gerar.unit.mjs: AppRoutes, useContacts, Upload, useUploads, Depois, depoisDoGlob",
     "actions-kpi.mjs: duracaoMinutos, runsNaJanela, agregar, kpiPorArquivo, paginaTemMais, maisLentos",
     "audit-env.ts: Var, Leitura, Estado, Buscar, get, Config",
+    "check-colunas-select.mjs: EXCECOES, tiraEmbeds, normalizaColuna, catalogoDoTypes, paresDoArquivo",
+    "check-colunas-select.unit.mjs: Database",
     "fila-merge.mjs: checksObrigatorios, estadoDoCheck, classificar, decidir, confirmarCandidato, resolverDesconhecidos",
     "gerar-matriz-edge-tabela.mjs: extrairTabelas, montarMatriz, renderizar, main",
     "github-settings-guard.mjs: assinaturaDe, validarBaseline",
@@ -70213,9 +70218,7 @@
     "graph_quality.py: edges_of, validate_file_hashes, validate_freshness, validate_artifacts, community_label, quality_metrics",
     "run.py: command, atomic_write_json, load_config, profile_config, is_allowed_path, selected_names",
     "sql_inventory.py: split_statements, is_identifier_char, line_of, clean_name, skip_leading_trivia, balanced_arguments",
-    "test_benchmark.py: TesteBenchmark, TesteCasosDeBenchmark, TesteExecucaoBenchmark",
-    "test_code_references.py: TesteReferenciasCodigo, TesteExecucaoReferencias",
-    "test_edge_inventory.py: TesteInventarioEdge, TesteVerifyJwt"
+    "test_benchmark.py: TesteBenchmark, TesteCasosDeBenchmark, TesteExecucaoBenchmark"
    ],
    "docs": [
     "automation.mjs: !/usr/bin/env node",
@@ -70308,6 +70311,8 @@
     "scripts/ci/audit-env.unit.mjs",
     "scripts/ci/check-claude-md-integrity.mjs",
     "scripts/ci/check-claude-md-integrity.unit.mjs",
+    "scripts/ci/check-colunas-select.mjs",
+    "scripts/ci/check-colunas-select.unit.mjs",
     "scripts/ci/fila-merge.mjs",
     "scripts/ci/fila-merge.unit.mjs",
     "scripts/ci/gerar-matriz-edge-tabela.mjs",
@@ -70345,9 +70350,7 @@
     "scripts/edge-deploy/verify-remote.unit.mjs",
     "scripts/graphify/benchmark.py",
     "scripts/graphify/code_references.py",
-    "scripts/graphify/edge_inventory.py",
-    "scripts/graphify/graph_quality.py",
-    "scripts/graphify/run.py"
+    "scripts/graphify/edge_inventory.py"
    ]
   },
   {
@@ -176372,6 +176375,87 @@
     "r.escrever('docs/agentes/sistema.md', DOC(1).slice(0, Math.ceil(DOC(1).length * 0.8)));"
    ]
   },
+  "scripts/ci/check-colunas-select.mjs": {
+   "path": "scripts/ci/check-colunas-select.mjs",
+   "lines": 227,
+   "exports": [
+    "const EXCECOES",
+    "function tiraEmbeds",
+    "function normalizaColuna",
+    "function catalogoDoTypes",
+    "function paresDoArquivo"
+   ],
+   "tables": [
+    {
+     "table": "tabela",
+     "op": "ref"
+    }
+   ],
+   "dyn_from": 1,
+   "params": [
+    {
+     "name": "TYPES",
+     "value": "'src/integrations/supabase/types.ts'"
+    }
+   ],
+   "doc": "!/usr/bin/env node"
+  },
+  "scripts/ci/check-colunas-select.unit.mjs": {
+   "path": "scripts/ci/check-colunas-select.unit.mjs",
+   "lines": 147,
+   "exports": [
+    "type Database"
+   ],
+   "tables": [
+    {
+     "table": "faturamento_mensal",
+     "op": "ref"
+    },
+    {
+     "table": "regime_decision_cache",
+     "op": "ref"
+    },
+    {
+     "table": "faturamento_mensal",
+     "op": "select"
+    },
+    {
+     "table": "regime_decision_cache",
+     "op": "select"
+    },
+    {
+     "table": "faturamento_mensal",
+     "op": "select"
+    },
+    {
+     "table": "companies",
+     "op": "select"
+    },
+    {
+     "table": "faturamento_mensal",
+     "op": "ref"
+    }
+   ],
+   "table_cols": {
+    "faturamento_mensal": [
+     "receita_bruta",
+     "total_tributos",
+     "valor_impostos"
+    ],
+    "regime_decision_cache": [
+     "carga_pct",
+     "empresa_id",
+     "regime_recomendado"
+    ],
+    "companies": [
+     "razao_social"
+    ]
+   },
+   "rule_comments": [
+    "o `.order('mes')` da segunda cadeia nao pode ser atribuido a primeira"
+   ],
+   "doc": "Testes do gate de colunas de select/order. node --test scripts/ci/check-colunas-select.unit.mjs"
+  },
   "scripts/ci/fila-merge.mjs": {
    "path": "scripts/ci/fila-merge.mjs",
    "lines": 283,
@@ -245176,10 +245260,22 @@
   }
  },
  "git": {
-  "sha": "f56d3076bbf45e3cb81c5de170fc1910433cb1e2",
+  "sha": "c72e283fff47c38a902fc36e4f37a859fe29db80",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "c72e283",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "infra(ci): gate que barra coluna inexistente em select/order (#457)",
+    "files": [
+     ".github/workflows/ci.yml",
+     "scripts/automation.config.json",
+     "scripts/ci/check-colunas-select.mjs",
+     "scripts/ci/check-colunas-select.unit.mjs"
+    ]
+   },
    {
     "sha": "f56d307",
     "date": "2026-11-17",
@@ -245467,21 +245563,16 @@
      "scripts/db/replay-bootstrap.sql",
      "scripts/db/replay-migrations.sh"
     ]
-   },
-   {
-    "sha": "a45b5d8",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(ci): destrava o bun audit do advisory novo do picomatch (#434)",
-    "files": [
-     ".github/workflows/ci.yml"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     4
+   ],
+   [
+    "scripts/automation.config.json",
+    2
    ],
    [
     "bun.lock",
@@ -245494,6 +245585,18 @@
    [
     "supabase/functions/executar-fechamento-tributario/index.ts",
     2
+   ],
+   [
+    ".github/workflows/ci.yml",
+    1
+   ],
+   [
+    "scripts/ci/check-colunas-select.mjs",
+    1
+   ],
+   [
+    "scripts/ci/check-colunas-select.unit.mjs",
+    1
    ],
    [
     "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
@@ -245541,22 +245644,6 @@
    ],
    [
     "supabase/migrations/20261117211000_clientes_bitrix_ids.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
-    1
-   ],
-   [
-    "supabase/functions/_shared/carga-tributaria.test.ts",
-    1
-   ],
-   [
-    "supabase/functions/_shared/carga-tributaria.ts",
     1
    ]
   ]

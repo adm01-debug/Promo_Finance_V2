@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f56d3076bbf45e3cb81c5de170fc1910433cb1e2",
+  "commit": "c72e283fff47c38a902fc36e4f37a859fe29db80",
   "branch": "main",
-  "data_commit": "2026-11-17T21:32:54-03:00",
+  "data_commit": "2026-11-17T21:41:28-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "c72e283",
+    "data": "2026-11-17",
+    "assunto": "infra(ci): gate que barra coluna inexistente em select/order (#457)"
+   },
    {
     "sha": "f56d307",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "61b3838",
     "data": "2026-11-17",
     "assunto": "fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)"
-   },
-   {
-    "sha": "b982315",
-    "data": "2026-11-17",
-    "assunto": "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)"
    }
   ],
-  "arquivos_mudados_7d": 927,
+  "arquivos_mudados_7d": 929,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -189,7 +189,7 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 12
+    "mudancas": 13
    },
    {
     "pasta": "src/components/dashboard",
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 38
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 24
+    "mudancas": 25
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -274,10 +274,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": ".github/workflows/graphify.yml",
-    "mudancas": 8
-   },
-   {
     "arquivo": ".github/workflows/prod-migrate.yml",
     "mudancas": 8
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": "src/hooks/useContasPagarLogic.ts",
     "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/config.toml",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 215
+    "commits": 216
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3937,
-  "arquivos_codigo": 2474,
-  "linhas_codigo": 440624,
+  "arquivos_total": 3939,
+  "arquivos_codigo": 2476,
+  "linhas_codigo": 440996,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,9 +332,9 @@
   "tabelas": 321,
   "migrations": 1046,
   "cron_jobs": 22,
-  "testes": 478,
+  "testes": 479,
   "workflows": 19,
-  "scripts": 114,
+  "scripts": 115,
   "docs_md": 201
  },
  "por_pasta": {
@@ -499,8 +499,8 @@
    "linhas": 916
   },
   "scripts/ci": {
-   "arquivos": 19,
-   "linhas": 6387
+   "arquivos": 21,
+   "linhas": 6759
   },
   "scripts/data": {
    "arquivos": 3,
@@ -807,7 +807,7 @@
  ],
  "qualidade": {
   "any": 351,
-  "console_log": 226,
+  "console_log": 229,
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,
