@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cb9d5c80b2` · branch `main` · 2026-11-18 01:51 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `772e151dd4` · branch `main` · 2026-11-18 14:17 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4712,6 +4712,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 
 | Mensagem | Arquivo |
 |---|---|
+| Dependência não autorizada: ${nome} | `docs/auditoria-20260912/reproduzir-lacunas.cjs` |
 | Autenticação E2E rejeitada pelo Supabase Auth (HTTP ${response.status()}).  | `e2e/auth/auth.setup.ts` |
 | Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}). | `e2e/auth/logout-real.e2e.ts` |
 | falha fixture | `scripts/automation.unit.mjs` |
@@ -5011,8 +5012,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| Sem retorno da simulação | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +792 linhas — lista completa em `context.json` | |
+| … +793 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2003,
+ "nos": 2004,
  "arestas": 8464,
  "hubs": [
   {
@@ -225,6 +225,7 @@
   ]
  },
  "orfaos": [
+  "docs/auditoria-20260912/reproduzir-lacunas.cjs",
   "public/sw-push.js",
   "public/sw.js",
   "src/components/admin/FiscalHealthBadge.tsx",

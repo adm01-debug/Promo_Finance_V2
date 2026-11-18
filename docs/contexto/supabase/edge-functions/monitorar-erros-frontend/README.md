@@ -4,7 +4,7 @@
 |---|---|
 | nome | monitorar-erros-frontend |
 | status | ACTIVE |
-| versão | 112 |
+| versão | 113 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/monitorar-erros-frontend/index.ts |
 | import_map |  |

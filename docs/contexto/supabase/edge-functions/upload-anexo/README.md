@@ -4,7 +4,7 @@
 |---|---|
 | nome | upload-anexo |
 | status | ACTIVE |
-| versão | 95 |
+| versão | 96 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/upload-anexo/index.ts |
 | import_map |  |

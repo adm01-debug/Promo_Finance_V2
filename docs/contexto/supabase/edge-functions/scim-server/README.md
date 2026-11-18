@@ -4,7 +4,7 @@
 |---|---|
 | nome | scim-server |
 | status | ACTIVE |
-| versão | 106 |
+| versão | 107 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/scim-server/index.ts |
 | import_map |  |

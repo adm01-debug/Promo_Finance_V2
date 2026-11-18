@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cb9d5c80b2c0d3d86bc4cbc81f5e7f77fa76e64e` (2026-11-17T22:51:05-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `772e151dd4ebdc7a5d57c7a1b4531254b1084d13` (2026-11-18T11:00:08-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1120), Markdown (201), JavaScript (73), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2360), SQL (1120), Markdown (207), JavaScript (74), Python (45), JSON (42), Shell (28), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3941 |
-| arquivos_codigo | 2476 |
-| linhas_codigo | 441376 |
+| arquivos_total | 3950 |
+| arquivos_codigo | 2477 |
+| linhas_codigo | 441467 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 479 |
 | workflows | 19 |
 | scripts | 115 |
-| docs_md | 201 |
+| docs_md | 207 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -62,7 +62,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (14)
-- docs: docs (52), (raiz) (19), .github (2)
+- docs: docs (54), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
@@ -614,6 +614,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/QA_VALIDATION_REPORT.md` — QA Validation Report — Auditoria Exaustiva (123 linhas)
 - `docs/REAUDITORIA_FINAL.md` — Re-Auditoria Final — Plano 50 Etapas (141 linhas)
 - `docs/RECONCILIACAO_ONLINE_2026-08-31.md` — Reconciliação online — 2026-08-31 (137 linhas)
+- `docs/REMOTE_ONLY_MIGRATIONS_STRATEGY.md` — Estratégia para 5 migrations só no remoto (43 linhas)
+- `docs/REVISAO_PLANO_IMPLEMENTACOES_2026-09-12.md` — Revisão do plano e das implementações — 12/09/2026 (579 linhas)
 - `docs/RLS_MATRIZ_NEGATIVA.md` — Matriz RLS negativa — o que o banco DEVE negar (137 linhas)
 - `docs/RUNBOOK.md` — Runbook Operacional — Promo Finance (234 linhas)
 - `docs/SCENARIOS.md` — Scenario Harness (102 linhas)
@@ -625,10 +627,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/agentes (13), docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/evidencias (1)
+- subpastas de docs/: docs/agentes (13), docs/archive (12), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-18 `772e151` chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)
 - 2026-11-17 `cb9d5c8` chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)
 - 2026-11-17 `2d54fb1` chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)
 - 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
@@ -643,7 +646,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `ec4122e` fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)
 - 2026-11-17 `b75c138` feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)
 - 2026-11-17 `e1a239c` docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)
-- 2026-11-17 `f76fcd2` fix(bitrix): religa o sync e escopa busca e update por empresa (#447)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

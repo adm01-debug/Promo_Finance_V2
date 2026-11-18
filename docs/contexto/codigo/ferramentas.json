@@ -5,11 +5,11 @@
   "linguagens": [
    "TypeScript (2360)",
    "SQL (1120)",
-   "Markdown (201)",
-   "JavaScript (73)",
+   "Markdown (207)",
+   "JavaScript (74)",
    "Python (45)",
-   "JSON (41)",
-   "Shell (27)",
+   "JSON (42)",
+   "Shell (28)",
    "YAML (25)"
   ],
   "linguagem_principal": "TypeScript",
@@ -1138,6 +1138,16 @@
    "linhas": 137
   },
   {
+   "arquivo": "docs/REMOTE_ONLY_MIGRATIONS_STRATEGY.md",
+   "titulo": "Estratégia para 5 migrations só no remoto",
+   "linhas": 43
+  },
+  {
+   "arquivo": "docs/REVISAO_PLANO_IMPLEMENTACOES_2026-09-12.md",
+   "titulo": "Revisão do plano e das implementações — 12/09/2026",
+   "linhas": 579
+  },
+  {
    "arquivo": "docs/RLS_MATRIZ_NEGATIVA.md",
    "titulo": "Matriz RLS negativa — o que o banco DEVE negar",
    "linhas": 137
@@ -1200,7 +1210,7 @@
   },
   {
    "pasta": "docs/archive",
-   "arquivos_md": 9
+   "arquivos_md": 12
   },
   {
    "pasta": "docs/guides",
@@ -1236,6 +1246,10 @@
   },
   {
    "pasta": "docs/auditoria",
+   "arquivos_md": 1
+  },
+  {
+   "pasta": "docs/auditoria-20260912",
    "arquivos_md": 1
   },
   {

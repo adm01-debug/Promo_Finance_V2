@@ -4,7 +4,7 @@
 |---|---|
 | nome | verificar-conformidade-fiscal |
 | status | ACTIVE |
-| versão | 106 |
+| versão | 107 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/verificar-conformidade-fiscal/index.ts |
 | import_map |  |

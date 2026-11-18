@@ -4,7 +4,7 @@
 |---|---|
 | nome | health |
 | status | ACTIVE |
-| versão | 106 |
+| versão | 107 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/health/index.ts |
 | import_map |  |

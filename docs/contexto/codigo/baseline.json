@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "cb9d5c80b2c0d3d86bc4cbc81f5e7f77fa76e64e",
+  "commit": "772e151dd4ebdc7a5d57c7a1b4531254b1084d13",
   "branch": "main",
-  "data_commit": "2026-11-17T22:51:05-03:00",
+  "data_commit": "2026-11-18T11:00:08-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "772e151",
+    "data": "2026-11-18",
+    "assunto": "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)"
+   },
    {
     "sha": "cb9d5c8",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "a378486",
     "data": "2026-11-17",
     "assunto": "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)"
-   },
-   {
-    "sha": "1ccd853",
-    "data": "2026-11-17",
-    "assunto": "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)"
    }
   ],
-  "arquivos_mudados_7d": 935,
+  "arquivos_mudados_7d": 943,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 219
+    "commits": 220
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3941,
-  "arquivos_codigo": 2476,
-  "linhas_codigo": 441376,
+  "arquivos_total": 3950,
+  "arquivos_codigo": 2477,
+  "linhas_codigo": 441467,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -335,9 +335,13 @@
   "testes": 479,
   "workflows": 19,
   "scripts": 115,
-  "docs_md": 201
+  "docs_md": 207
  },
  "por_pasta": {
+  "docs/auditoria-20260912": {
+   "arquivos": 1,
+   "linhas": 91
+  },
   "e2e/alertas-preditivos.e2e.ts": {
    "arquivos": 1,
    "linhas": 8
@@ -807,7 +811,7 @@
  ],
  "qualidade": {
   "any": 351,
-  "console_log": 229,
+  "console_log": 232,
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,
