@@ -1,0 +1,33 @@
+-- Devolve ao papel `authenticated` o INSERT em `frontend_error_logs`.
+--
+-- Sintoma. A telemetria de erro do front nunca gravou nada: a tabela tem 0
+-- linhas e `max(created_at)` é nulo, embora
+-- `src/components/error/ErrorBoundary.tsx:46` e `src/main.tsx:14` persistam
+-- cada erro capturado. Todo insert de usuário logado falha com 42501.
+--
+-- Causa exata. A tabela tem RLS e DUAS policies de INSERT —
+-- `frontend_error_anon_insert` (TO anon) e `frontend_error_user_insert`
+-- (TO authenticated). Policy sozinha não basta: o Postgres exige também o
+-- privilégio de tabela. Conferido em produção antes desta migration:
+--   has_table_privilege('authenticated','public.frontend_error_logs','INSERT') = false
+--   has_table_privilege('authenticated','public.frontend_error_logs','SELECT') = true
+--   grants de `anon` nessa tabela = INSERT
+-- Ou seja: visitante anônimo podia registrar erro e usuário logado não — e
+-- todo usuário do sistema é logado. A assimetria confirma o defeito:
+-- `frontend_performance_logs`, que grava pelo mesmo caminho, tem INSERT para
+-- `authenticated` e funciona.
+--
+-- Procedência. O grant existia em
+-- `20261114150000_fix_grants_authenticated_audit.sql`, de uma branch de agente
+-- apagada em 16/11 (tag `arquivo/261116/claude_fix-grants-audit-logs-261114-1500`).
+-- Essa migration nunca entrou na `main` e o grant nunca foi aplicado. Os outros
+-- dois alvos dela já estão em produção por outra via e não são repetidos aqui:
+-- `audit_logs` tem INSERT+SELECT para `authenticated`, `planos_acao` tem os
+-- quatro privilégios.
+--
+-- Escopo. Só o privilégio que faltava. Não cria, altera nem remove policy,
+-- coluna ou linha; não toca `anon`; não concede UPDATE nem DELETE. O filtro de
+-- quem pode gravar o quê continua inteiro na policy `frontend_error_user_insert`,
+-- e a leitura segue restrita a admin pela policy de SELECT.
+
+GRANT INSERT ON public.frontend_error_logs TO authenticated;
