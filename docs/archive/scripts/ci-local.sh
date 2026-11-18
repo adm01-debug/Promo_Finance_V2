@@ -76,7 +76,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-cd "$(dirname "${BASH_SOURCE[0]}")/.."
+cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 ROOT=$(pwd)
 export ROOT
 
