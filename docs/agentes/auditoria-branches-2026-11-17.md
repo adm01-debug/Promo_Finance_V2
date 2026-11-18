@@ -385,3 +385,108 @@ reescritas foram conferidas pelo invariante de cada PR onde havia risco de segur
 do histórico completo passa 1045/1045. Não houve inspeção manual linha a linha das 19.906 linhas
 adicionadas nem das 7.097 removidas — o que foi feito está descrito acima, e é o que sustenta a
 conclusão.
+
+### 6.7 As 4 PRs do Dependabot — prova byte a byte
+
+A seção 2 (linha 29) deixou as quatro como "decisão de custo/major do dono", sem a
+conferência de conteúdo. Fechada aqui. Nenhuma delas tem código: o diff de cada uma é
+`package.json` + `bun.lock`, só strings de versão.
+
+| PR | estado | o que propunha | está na `main`? |
+|---|---|---|---|
+| #371 | fechada sem merge | 19 pacotes `@radix-ui/*` | **sim, idêntico** — as 19 versões propostas batem uma a uma com a `main` (entregues pela #460, `fee7c1da1`) |
+| #375 | **mergeada** | `mapbox-gl` 3.26.0 → 3.35.0 | sim — `"mapbox-gl": "^3.35.0"` |
+| #377 | **mergeada** | `i18next` 26.0.10 → 27.1.1 | sim — `"i18next": "^27.1.1"` |
+| #373 | fechada sem merge | `react` ^18.2.0 → ^19.3.1 e `@types/react` ^18.2.43 → ^19.3.0 | **não, e de propósito** |
+
+Por que a #373 não entra: ela sobe `react` para 19 e **não** sobe `react-dom`
+(`^18.2.0`) nem `@types/react-dom` (`^18.2.17`). `react-dom` precisa acompanhar o major
+de `react`; a proposta quebra por construção, não é "trabalho pela metade a terminar".
+Subir para React 19 corretamente é bump major com reteste das 2689 suítes e revisão de
+compatibilidade de shadcn/Radix — custo e arquitetura, portanto decisão do dono
+(AGENTS §6.6). O Dependabot reabre a PR quando houver nova versão; nada se perde ao
+mantê-la fechada.
+
+Branches das quatro: removidas pelo próprio GitHub no fechamento. Isso não apaga o
+conteúdo — `refs/pull/<n>/head` sobrevive e foi de lá que os diffs acima saíram
+(`gh api repos/.../pulls/<n>/files`), depois das branches já não existirem.
+
+### 6.8 As 79 tags de arquivo — conteúdo conferido, não só alcançabilidade
+
+A seção 1 provou que as 90 branches apagadas em 16/11 **voltam** (54 com tag, 36
+ancestrais da `main`). Isso é alcançabilidade, não incorporação: para as 54 ninguém
+havia comparado o conteúdo com a `main`. Fechado aqui, e o teste achou uma perda real.
+
+Método: para cada tag, `git diff --name-only --diff-filter=ACMR <merge-base> <tag>` e,
+para cada arquivo, `git cat-file -e origin/main:<arquivo>` — o que a tag toca e a `main`
+não tem. Depois, para cada ausente, o efeito em produção por query (método da 6.2).
+
+Universo: **79 tags** (77 em `arquivo/261116/`, mais `arquivo/automation-estado-real-261117`
+e `arquivo/diagnostico-actions-261116`, que estão fora daquele prefixo e por isso ficaram
+de fora da varredura anterior). **19 arquivos** ausentes da `main`, em 8 tags.
+
+| tag / arquivo | veredito | prova |
+|---|---|---|
+| `claude_chore-ddl-steps12-23` (7 migrations) | steps 12, 14, 19, 21 **já aplicados**; 15 e 16 **equivalentes**; 13 aplicado menos 1 linha | `pg_policies`, `reloptions`, `is_nullable`, `pg_index` |
+| `claude_fix-estorno-contabil-movimentacao` | `main` é **superset** (`20261116170000`) | `diff` do código: 0 linha órfã sem par |
+| `claude_fix-totais-movimentacoes-rpc` | aplicada | função existe com a assinatura exata |
+| `claude_fix-realtime-performance-alerts` | aplicada | `pg_publication_tables` |
+| `fix_codex-h111911` (guardrails) | invariante já garantida por `integration_secrets_chave_key UNIQUE` | `pg_index` |
+| `fix_codex-h111911` (`DashboardExecutivo.test.tsx`) | **sucedido** | afirmava `.in()`; a `main` tem 3 casos do comportamento atual |
+| `base44_setup` (3 arquivos) | obsoletos | zero referência em código; projeto usa `bun.lock` |
+| `claude_resolve-conflicting-prs` (3 migrations) | obsoletas | já julgadas na 6.2 |
+| `automation-estado-real-261117` | 1 commit, **0 arquivo ausente** | snapshot de telemetria |
+| `diagnostico-actions-261116` (8 workflows) | descartáveis por texto próprio | gatilho só em `claude/chore-diagnostico-actions-**`, branch inexistente; achado virou `sha_pinning_required=false` |
+| `claude_fix-grants-audit-logs-261114-1500` | **substituída** por migration posterior já na `main` | ver abaixo |
+
+**step15 e step16 não se perderam, apesar de 0 dos 18 índices existirem com os nomes da
+migration.** O teste por nome dá falso positivo: as 18 colunas estão indexadas com outros
+nomes (`idx_contas_pagar_centro_custo_id`, `idx_..._id_fk`). O teste correto é
+`pg_index.indkey[0]` — qual índice tem aquela coluna na frente. Criar os da migration
+agora produziria 18 índices duplicados: regressão, não recuperação.
+
+**A linha do step13 que não foi aplicada era errada.** Ele dropa
+`uq_nfe_rec_conta_pagar` como "duplicado"; o índice é UNIQUE parcial em
+`nfe_recebidas(conta_pagar_id) WHERE conta_pagar_id IS NOT NULL` — impede duas notas
+apontarem para a mesma conta a pagar, isto é, pagamento em dobro. O duplicado de verdade
+é `idx_nfe_recebidas_conta_pagar_id_fk`, não-único na mesma coluna. Produção manteve o
+certo; não dropar foi acerto.
+
+**O caso que eu li errado: o INSERT de `frontend_error_logs`.**
+`20261114150000_fix_grants_authenticated_audit.sql` pedia
+`GRANT SELECT, INSERT ON frontend_error_logs TO authenticated` e nunca entrou na `main`. Em
+produção, `has_table_privilege('authenticated', ..., 'INSERT')` é `false`, e a tabela tem 0
+linhas — eu concluí daí que a telemetria de erro nunca gravou por falta de privilégio, e
+apliquei o grant de tabela. **Errado, e foi revertido.**
+
+O privilégio existe **por coluna**. `20261116151000_grants_authenticated_audit_por_coluna.sql:27-31`,
+posterior àquela migration órfã e já na `main`, faz de propósito:
+
+```sql
+REVOKE INSERT ON public.frontend_error_logs FROM authenticated;
+GRANT INSERT (error_message, error_stack, url, user_agent, metadata, severity, user_id)
+  ON public.frontend_error_logs TO authenticated;
+```
+
+deixando `id` e `created_at` fora, com guarda própria que levanta exceção se virarem
+graváveis; `scripts/security/test-privilege-baseline.sql:329-333` reprova o build pelo mesmo
+motivo ("sequestro de partição"). As 7 colunas concedidas são exatamente o payload de
+`buildErrorRows` (`src/lib/telemetry.ts:125`). Ou seja: a migration órfã foi **substituída por
+uma versão mais restrita**, e `has_table_privilege(...,'INSERT') = false` é o estado desejado,
+não um defeito. Os outros dois alvos dela também estão na `main` pela mesma migration
+(`audit_logs` com `INSERT+SELECT`, `planos_acao` com os quatro).
+
+Lição de método, porque muda a leitura de qualquer auditoria de permissão: **`has_table_privilege`
+não prova ausência de privilégio** — é preciso `has_column_privilege` coluna por coluna. E 0
+linhas numa tabela de log não prova erro de escrita. A tabela vazia tem explicação, conferida
+depois: `frontend_performance_logs` — escrita pela **mesma** `flushQueues()`
+(`src/lib/telemetry.ts:204-236`), com a mesma exigência de sessão — tem **90.045 linhas**, a
+última de 2026-11-18 00:12 UTC. O pipeline funciona; `frontend_error_logs` está vazia porque
+nenhum erro está sendo capturado, que é o estado saudável. Apontado por Devin (🟥) e Codex (P1) na #465,
+que foi fechada e revertida em produção (grant de tabela removido, grant por coluna recriado,
+`id`/`created_at` de volta a não-graváveis, ledger de volta a 1046).
+
+Conclusão desta seção: dos 19 arquivos ausentes, **nenhum** era perda de trabalho — todos
+obsoletos, equivalentes, sucedidos ou substituídos por versão mais restrita, com prova por
+query em produção. O único candidato a perda, o grant de `frontend_error_logs`, era na verdade
+o contrário: aplicá-lo abria um furo que uma migration posterior havia fechado de propósito.
