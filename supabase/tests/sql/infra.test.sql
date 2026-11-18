@@ -58,9 +58,20 @@ SELECT cmp_ok(
 -- ---------------------------------------------------------------------------
 -- 3) Partição default deve existir
 -- ---------------------------------------------------------------------------
-SELECT has_table(
-  'public', 'audit_logs_default',
-  'audit_logs_default (partição default) deve existir'
+-- audit_logs_default so pode existir como PARTICAO ANEXADA de audit_logs
+-- (banco reconstruido pelas migrations, onde 20260711164339 particiona o pai).
+-- Como tabela comum solta ela e residuo -- foi o caso de producao, removido em
+-- 20261118003500 -- e nao pode voltar. O teste aceita os dois estados validos
+-- (ausente, ou particao de verdade) e reprova so o orfao.
+SELECT ok(
+  NOT EXISTS (
+    SELECT 1 FROM pg_class c
+    WHERE c.relnamespace = 'public'::regnamespace
+      AND c.relname = 'audit_logs_default'
+      AND c.relkind = 'r'
+      AND NOT c.relispartition
+  ),
+  'audit_logs_default, se existir, e particao anexada -- nunca tabela orfa (20261118003500)'
 );
 SELECT has_table(
   'public', 'frontend_error_logs_default',
