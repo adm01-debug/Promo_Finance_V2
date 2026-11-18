@@ -70,6 +70,8 @@ test('normalizaColuna trata alias, estrela, agregado e caminho jsonb', () => {
   assert.equal(normalizaColuna('*'), null);
   assert.equal(normalizaColuna('count'), null);
   assert.equal(normalizaColuna('decisao->recomendado'), 'decisao');
+  assert.equal(normalizaColuna('receita_bruta::text'), 'receita_bruta'); // cast nao vira coluna 'text'
+  assert.equal(normalizaColuna('total:valor_total::numeric'), 'valor_total'); // alias + cast
   assert.equal(normalizaColuna(''), null);
 });
 
@@ -130,4 +132,15 @@ test('tabela fora do types.ts e ignorada, nao reprovada', () => {
   const pares = paresDoArquivo(src, 'w.ts');
   assert.equal(pares.length, 1);
   assert.equal(catalogo.has('companies'), false);
+});
+
+test('todos os select() de um mesmo from entram no gate, nao so o primeiro', () => {
+  const src = [
+    "const q = supa.from('faturamento_mensal');",
+    "const r = flag",
+    "  ? q.select('receita_bruta')",
+    "  : q.select('coluna_que_nao_existe');",
+  ].join('\n');
+  const cols = paresDoArquivo(src, 'x.ts').map((p) => p.col).sort();
+  assert.deepEqual(cols, ['coluna_que_nao_existe', 'receita_bruta']);
 });

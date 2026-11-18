@@ -17,6 +17,19 @@
  * Contrato: sai 0 quando não há par desconhecido. Qualquer achado sai 1 com
  * arquivo:linha, tabela, coluna e as colunas que existem naquela tabela.
  *
+ * O que este gate NÃO cobre (apontado na review da #457; é análise por regex,
+ * não por AST — cada item abaixo é falso negativo, nunca falso positivo):
+ *   - `.from(variavel)` / `.from<T>(...)`: só literal `.from('tabela')` entra.
+ *   - lista de colunas em constante (`.select(COLUNAS)`): só literal entra.
+ *   - colunas dentro de embed (`clientes(nome, x)`): o embed é descartado.
+ *   - consulta dentro de comentário: é lida como código (pode gerar achado
+ *     falso se citar coluna inexistente — hoje não há caso).
+ *   - tabela ausente do types.ts: ignorada, não reprovada (types.ts atrasado).
+ *   - `scripts/`: fora de DIRS.
+ *   - EXCECOES: não expiram sozinhas se a coluna for removida do schema.
+ * Trocar por parser TypeScript resolve a maioria; fica para quando o types.ts
+ * voltar a ser regerado no CI.
+ *
  * Uso: node scripts/ci/check-colunas-select.mjs
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -65,6 +78,7 @@ const AGREGADOS = new Set(['count', 'sum', 'avg', 'min', 'max']);
 
 const RE_FROM = /\.from\(\s*['"]([a-z0-9_]+)['"]/g;
 const RE_SELECT = /\.select\(\s*(['"`])([\s\S]*?)\1/;
+const RE_SELECT_G = new RegExp(RE_SELECT.source, 'g');
 const RE_ORDER = /\.order\(\s*['"]([a-z0-9_.]+)['"]/g;
 
 /**
@@ -87,6 +101,7 @@ export function tiraEmbeds(lista) {
 export function normalizaColuna(item) {
   let c = item.trim();
   if (!c || c === '*') return null;
+  c = c.split('::')[0].trim(); // cast do PostgREST: coluna::text -> coluna
   if (c.includes(':')) c = c.split(':').pop().trim(); // alias:coluna
   c = c.split('->')[0].trim(); // caminho jsonb: decisao->recomendado
   c = c.split('.')[0].split('(')[0].trim(); // coluna.sub, função
@@ -121,8 +136,9 @@ export function paresDoArquivo(src, rel) {
     const tabela = m[1];
     const fim = i + 1 < froms.length ? froms[i + 1].index : src.length;
     const trecho = src.slice(m.index + m[0].length, Math.min(fim, m.index + 1600));
-    const sm = trecho.match(RE_SELECT);
-    if (sm) {
+    // Todos os .select() do trecho: um mesmo builder pode terminar em um
+    // select() por braço de ternário (ex.: src/hooks/useAprovacoes.ts:219-225).
+    for (const sm of trecho.matchAll(RE_SELECT_G)) {
       for (const item of tiraEmbeds(sm[2]).split(',')) {
         const col = normalizaColuna(item);
         if (col) pares.push({ tabela, col, rel, linha: linhaDe(m.index) });
