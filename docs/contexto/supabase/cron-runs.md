@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 10:00:01 | succeeded | 0.26 | 1 row |
+| 2026-11-18 09:00:00 | succeeded | 0.20 | 1 row |
 | 2026-11-18 08:00:00 | succeeded | 0.30 | 1 row |
-| 2026-11-18 07:00:00 | succeeded | 0.27 | 1 row |
-| 2026-11-18 06:00:00 | succeeded | 0.45 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-18 08:00:00 | succeeded | 0.37 | 1 row |
-| 2026-11-18 07:30:00 | succeeded | 0.30 | 1 row |
-| 2026-11-18 07:00:00 | succeeded | 0.32 | 1 row |
+| 2026-11-18 10:00:01 | succeeded | 0.31 | 1 row |
+| 2026-11-18 09:30:00 | succeeded | 0.49 | 1 row |
+| 2026-11-18 09:00:00 | succeeded | 0.32 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 09:45:00 | succeeded | 0.00 | 1 row |
+| 2026-11-18 08:45:00 | succeeded | 0.00 | 1 row |
 | 2026-11-18 07:45:00 | succeeded | 0.02 | 1 row |
-| 2026-11-18 06:45:00 | succeeded | 0.02 | 1 row |
-| 2026-11-18 05:45:00 | succeeded | 0.01 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 10:15:00 | succeeded | 0.04 | 1 row |
+| 2026-11-18 09:15:00 | succeeded | 0.06 | 1 row |
 | 2026-11-18 08:15:00 | succeeded | 0.04 | 1 row |
-| 2026-11-18 07:15:00 | succeeded | 0.10 | 1 row |
-| 2026-11-18 06:15:00 | succeeded | 0.06 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -159,9 +159,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 09:00:00 | failed | 0.05 | ERROR:  Sem permissão para esta empresa CONTEXT:  PL/pgSQL function processar_regua_cobranca(uuid,boolean) line 6 at RAISE  |
 | 2026-11-17 09:00:00 | failed | 0.02 | ERROR:  Sem permissão para esta empresa CONTEXT:  PL/pgSQL function processar_regua_cobranca(uuid,boolean) line 6 at RAISE  |
 | 2026-11-16 09:00:00 | failed | 0.06 | ERROR:  Sem permissão para esta empresa CONTEXT:  PL/pgSQL function processar_regua_cobranca(uuid,boolean) line 6 at RAISE  |
-| 2026-11-15 09:00:00 | failed | 0.03 | ERROR:  Sem permissão para esta empresa CONTEXT:  PL/pgSQL function processar_regua_cobranca(uuid,boolean) line 6 at RAISE  |
 
 
 ## 29 · pgss-weekly-baseline
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 10:10:00 | succeeded | 1.04 | 1 row |
+| 2026-11-18 09:10:00 | succeeded | 0.69 | 1 row |
 | 2026-11-18 08:10:00 | succeeded | 0.73 | 1 row |
-| 2026-11-18 07:10:00 | succeeded | 0.79 | 1 row |
-| 2026-11-18 06:10:00 | succeeded | 0.70 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-18 08:15:00 | succeeded | 0.02 | 1 row |
-| 2026-11-18 08:00:00 | succeeded | 0.08 | 1 row |
-| 2026-11-18 07:45:00 | succeeded | 0.02 | 1 row |
+| 2026-11-18 10:15:00 | succeeded | 0.03 | 1 row |
+| 2026-11-18 10:00:01 | succeeded | 0.03 | 1 row |
+| 2026-11-18 09:45:00 | succeeded | 0.03 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-18 08:20:00 | succeeded | 0.02 | 1 row |
-| 2026-11-18 08:19:00 | succeeded | 0.01 | 1 row |
-| 2026-11-18 08:18:00 | succeeded | 0.01 | 1 row |
+| 2026-11-18 10:17:00 | succeeded | 0.01 | 1 row |
+| 2026-11-18 10:16:00 | succeeded | 0.00 | 1 row |
+| 2026-11-18 10:15:00 | succeeded | 0.01 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 10:10:00 | succeeded | 0.18 | 1 row |
+| 2026-11-18 09:10:00 | succeeded | 0.08 | 1 row |
 | 2026-11-18 08:10:00 | succeeded | 0.09 | 1 row |
-| 2026-11-18 07:10:00 | succeeded | 0.11 | 1 row |
-| 2026-11-18 06:10:00 | succeeded | 0.14 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-18 08:00:00 | succeeded | 0.10 | 1 row |
-| 2026-11-18 07:30:00 | succeeded | 0.04 | 1 row |
-| 2026-11-18 07:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-18 10:00:01 | succeeded | 0.02 | 1 row |
+| 2026-11-18 09:30:00 | succeeded | 0.05 | 1 row |
+| 2026-11-18 09:00:00 | succeeded | 0.13 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,9 +250,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-18 09:30:00 | succeeded | 0.03 | 1 row |
+| 2026-11-18 08:30:00 | succeeded | 0.03 | 1 row |
 | 2026-11-18 07:30:00 | succeeded | 0.06 | 1 row |
-| 2026-11-18 06:30:00 | succeeded | 0.12 | 1 row |
-| 2026-11-18 05:30:00 | succeeded | 0.02 | 1 row |
 
 
 ## 43 · enviar-digest-conformidade-diario
@@ -268,9 +268,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-18 08:00:00 | succeeded | 0.11 | 1 row |
-| 2026-11-18 07:30:00 | succeeded | 0.04 | 1 row |
-| 2026-11-18 07:00:00 | succeeded | 0.04 | 1 row |
+| 2026-11-18 10:00:01 | succeeded | 0.02 | 1 row |
+| 2026-11-18 09:30:00 | succeeded | 0.03 | 1 row |
+| 2026-11-18 09:00:00 | succeeded | 0.04 | 1 row |
 
 
 ## 49 · marcar-contas-vencidas
