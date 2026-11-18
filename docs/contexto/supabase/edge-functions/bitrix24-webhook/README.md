@@ -4,9 +4,9 @@
 |---|---|
 | nome | bitrix24-webhook |
 | status | ACTIVE |
-| versão | 112 |
+| versão | 113 |
 | verify_jwt | não |
-| entrypoint | file:///app/supabase/functions/bitrix24-webhook/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bitrix24-webhook/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/bitrix24-webhook |
 | fonte no repo | `supabase/functions/bitrix24-webhook/` |

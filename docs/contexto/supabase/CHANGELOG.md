@@ -2,6 +2,12 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-18 01:17 UTC
+
+- **edge functions** alterado (17): `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `categorizar-despesa`, `conciliacao-ia`, `copilot-global`, `expert-agent`, `gerar-pdf-tributario`, `insights-relatorio`, `validate-ip-geo`, `whatsapp-webhook`
+- **functions** alterado (1): `public.rate_limit_check(_endpoint text, _ip inet, _limit integer, _window_seconds integer, _user_agent text)`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_14`
+
 ## 2026-11-18 00:40 UTC
 
 - **colunas** removido (167): `public.audit_logs_2026_01.action`, `public.audit_logs_2026_01.created_at`, `public.audit_logs_2026_01.details`, `public.audit_logs_2026_01.id`, `public.audit_logs_2026_01.ip_address`, `public.audit_logs_2026_01.new_data`, `public.audit_logs_2026_01.old_data`, `public.audit_logs_2026_01.record_id`, `public.audit_logs_2026_01.table_name`, `public.audit_logs_2026_01.user_agent`, `public.audit_logs_2026_01.user_email`, `public.audit_logs_2026_01.user_id`, `public.audit_logs_2026_02.action`, `public.audit_logs_2026_02.created_at`, `public.audit_logs_2026_02.details`, `public.audit_logs_2026_02.id`, `public.audit_logs_2026_02.ip_address`, `public.audit_logs_2026_02.new_data`, `public.audit_logs_2026_02.old_data`, `public.audit_logs_2026_02.record_id`, `public.audit_logs_2026_02.table_name`, `public.audit_logs_2026_02.user_agent`, `public.audit_logs_2026_02.user_email`, `public.audit_logs_2026_02.user_id`, `public.audit_logs_2026_03.action`, `public.audit_logs_2026_03.created_at`, `public.audit_logs_2026_03.details`, `public.audit_logs_2026_03.id`, `public.audit_logs_2026_03.ip_address`, `public.audit_logs_2026_03.new_data`, `public.audit_logs_2026_03.old_data`, `public.audit_logs_2026_03.record_id`, `public.audit_logs_2026_03.table_name`, `public.audit_logs_2026_03.user_agent`, `public.audit_logs_2026_03.user_email`, `public.audit_logs_2026_03.user_id`, `public.audit_logs_2026_04.action`, `public.audit_logs_2026_04.created_at`, `public.audit_logs_2026_04.details`, `public.audit_logs_2026_04.id` … (+127)

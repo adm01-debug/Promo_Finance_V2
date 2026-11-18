@@ -5,32 +5,32 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | slug | nome | status | versão | verify_jwt | entrypoint |
 |---|---|---|---|---|---|
 | aceitar-convite | aceitar-convite | ACTIVE | 108 | sim | file:///app/supabase/functions/aceitar-convite/index.ts |
-| analise-fluxo-ia | analise-fluxo-ia | ACTIVE | 111 | não | file:///app/supabase/functions/analise-fluxo-ia/index.ts |
-| analise-preditiva | analise-preditiva | ACTIVE | 105 | sim | file:///app/supabase/functions/analise-preditiva/index.ts |
-| analyze-document | analyze-document | ACTIVE | 110 | não | file:///app/supabase/functions/analyze-document/index.ts |
+| analise-fluxo-ia | analise-fluxo-ia | ACTIVE | 112 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/analise-fluxo-ia/index.ts |
+| analise-preditiva | analise-preditiva | ACTIVE | 106 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/analise-preditiva/index.ts |
+| analyze-document | analyze-document | ACTIVE | 111 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/analyze-document/index.ts |
 | api-keys-manage | api-keys-manage | ACTIVE | 96 | não | file:///app/supabase/functions/api-keys-manage/index.ts |
-| asaas-proxy | asaas-proxy | ACTIVE | 108 | não | file:///app/supabase/functions/asaas-proxy/index.ts |
-| asaas-webhook | asaas-webhook | ACTIVE | 111 | não | file:///app/supabase/functions/asaas-webhook/index.ts |
-| benchmarking-setorial | benchmarking-setorial | ACTIVE | 107 | não | file:///app/supabase/functions/benchmarking-setorial/index.ts |
+| asaas-proxy | asaas-proxy | ACTIVE | 109 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/asaas-proxy/index.ts |
+| asaas-webhook | asaas-webhook | ACTIVE | 112 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/asaas-webhook/index.ts |
+| benchmarking-setorial | benchmarking-setorial | ACTIVE | 108 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/benchmarking-setorial/index.ts |
 | bitrix24-sync | bitrix24-sync | ACTIVE | 111 | sim | file:///app/supabase/functions/bitrix24-sync/index.ts |
-| bitrix24-webhook | bitrix24-webhook | ACTIVE | 112 | não | file:///app/supabase/functions/bitrix24-webhook/index.ts |
-| bling-proxy | bling-proxy | ACTIVE | 105 | não | file:///app/supabase/functions/bling-proxy/index.ts |
-| bling-webhook | bling-webhook | ACTIVE | 106 | não | file:///app/supabase/functions/bling-webhook/index.ts |
+| bitrix24-webhook | bitrix24-webhook | ACTIVE | 113 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bitrix24-webhook/index.ts |
+| bling-proxy | bling-proxy | ACTIVE | 106 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bling-proxy/index.ts |
+| bling-webhook | bling-webhook | ACTIVE | 107 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bling-webhook/index.ts |
 | calcular-health-score-operacional | calcular-health-score-operacional | ACTIVE | 104 | sim | file:///app/supabase/functions/calcular-health-score-operacional/index.ts |
 | calcular-slo-metrics-diario | calcular-slo-metrics-diario | ACTIVE | 106 | sim | file:///app/supabase/functions/calcular-slo-metrics-diario/index.ts |
 | calculo-iva | calculo-iva | ACTIVE | 108 | sim | file:///app/supabase/functions/calculo-iva/index.ts |
-| categorizar-despesa | categorizar-despesa | ACTIVE | 110 | não | file:///app/supabase/functions/categorizar-despesa/index.ts |
+| categorizar-despesa | categorizar-despesa | ACTIVE | 111 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/categorizar-despesa/index.ts |
 | ci-security-gate-log | ci-security-gate-log | ACTIVE | 107 | não | file:///app/supabase/functions/ci-security-gate-log/index.ts |
 | cnpja-lookup | cnpja-lookup | ACTIVE | 104 | não | file:///app/supabase/functions/cnpja-lookup/index.ts |
 | comparar-benchmark-setorial | comparar-benchmark-setorial | ACTIVE | 108 | sim | file:///app/supabase/functions/comparar-benchmark-setorial/index.ts |
 | compare-schemas | compare-schemas | ACTIVE | 105 | não | file:///app/supabase/functions/compare-schemas/index.ts |
-| conciliacao-ia | conciliacao-ia | ACTIVE | 107 | sim | file:///app/supabase/functions/conciliacao-ia/index.ts |
+| conciliacao-ia | conciliacao-ia | ACTIVE | 108 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/conciliacao-ia/index.ts |
 | conciliacao-proxy | conciliacao-proxy | ACTIVE | 109 | sim | file:///app/supabase/functions/conciliacao-proxy/index.ts |
 | consulta-tributaria | consulta-tributaria | ACTIVE | 104 | sim | file:///app/supabase/functions/consulta-tributaria/index.ts |
 | contabilizar-evento | contabilizar-evento | ACTIVE | 110 | sim | file:///app/supabase/functions/contabilizar-evento/index.ts |
 | convidar-contador | convidar-contador | ACTIVE | 108 | sim | file:///app/supabase/functions/convidar-contador/index.ts |
 | convidar-usuario | convidar-usuario | ACTIVE | 97 | não | file:///app/supabase/functions/convidar-usuario/index.ts |
-| copilot-global | copilot-global | ACTIVE | 106 | sim | file:///app/supabase/functions/copilot-global/index.ts |
+| copilot-global | copilot-global | ACTIVE | 107 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/copilot-global/index.ts |
 | copilot-tributario | copilot-tributario | ACTIVE | 107 | sim | file:///app/supabase/functions/copilot-tributario/index.ts |
 | decidir-regime | decidir-regime | ACTIVE | 109 | não | file:///app/supabase/functions/decidir-regime/index.ts |
 | detectar-anomalias-financeiras | detectar-anomalias-financeiras | ACTIVE | 108 | sim | file:///app/supabase/functions/detectar-anomalias-financeiras/index.ts |
@@ -44,7 +44,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | executar-fechamento-tributario | executar-fechamento-tributario | ACTIVE | 104 | sim | file:///app/supabase/functions/executar-fechamento-tributario/index.ts |
 | executar-regua-cobranca | executar-regua-cobranca | ACTIVE | 110 | não | file:///app/supabase/functions/executar-regua-cobranca/index.ts |
 | executar-relatorios | executar-relatorios | ACTIVE | 108 | não | file:///app/supabase/functions/executar-relatorios/index.ts |
-| expert-agent | expert-agent | ACTIVE | 106 | não | file:///app/supabase/functions/expert-agent/index.ts |
+| expert-agent | expert-agent | ACTIVE | 107 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/expert-agent/index.ts |
 | exportar-sped-contribuicoes | exportar-sped-contribuicoes | ACTIVE | 109 | sim | file:///app/supabase/functions/exportar-sped-contribuicoes/index.ts |
 | external-data | external-data | ACTIVE | 112 | não | file:///app/supabase/functions/external-data/index.ts |
 | gerar-acoes-recomendadas | gerar-acoes-recomendadas | ACTIVE | 104 | sim | file:///app/supabase/functions/gerar-acoes-recomendadas/index.ts |
@@ -54,7 +54,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | gerar-dre-tributaria | gerar-dre-tributaria | ACTIVE | 111 | não | file:///app/supabase/functions/gerar-dre-tributaria/index.ts |
 | gerar-heatmap-tributario | gerar-heatmap-tributario | ACTIVE | 113 | não | file:///app/supabase/functions/gerar-heatmap-tributario/index.ts |
 | gerar-pacote-evidencias | gerar-pacote-evidencias | ACTIVE | 102 | sim | file:///app/supabase/functions/gerar-pacote-evidencias/index.ts |
-| gerar-pdf-tributario | gerar-pdf-tributario | ACTIVE | 107 | não | file:///app/supabase/functions/gerar-pdf-tributario/index.ts |
+| gerar-pdf-tributario | gerar-pdf-tributario | ACTIVE | 108 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-pdf-tributario/index.ts |
 | gerar-relatorio-anual | gerar-relatorio-anual | ACTIVE | 105 | sim | file:///app/supabase/functions/gerar-relatorio-anual/index.ts |
 | gerar-resumo-executivo-semanal | gerar-resumo-executivo-semanal | ACTIVE | 107 | sim | file:///app/supabase/functions/gerar-resumo-executivo-semanal/index.ts |
 | gerar-resumo-financeiro-diario | gerar-resumo-financeiro-diario | ACTIVE | 105 | sim | file:///app/supabase/functions/gerar-resumo-financeiro-diario/index.ts |
@@ -64,7 +64,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | get-mapbox-token | get-mapbox-token | ACTIVE | 104 | sim | file:///app/supabase/functions/get-mapbox-token/index.ts |
 | get-vapid-key | get-vapid-key | ACTIVE | 105 | não | file:///app/supabase/functions/get-vapid-key/index.ts |
 | health | health | ACTIVE | 104 | não | file:///app/supabase/functions/health/index.ts |
-| insights-relatorio | insights-relatorio | ACTIVE | 109 | não | file:///app/supabase/functions/insights-relatorio/index.ts |
+| insights-relatorio | insights-relatorio | ACTIVE | 110 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/insights-relatorio/index.ts |
 | log-sped-bitrix24 | log-sped-bitrix24 | ACTIVE | 108 | sim | file:///app/supabase/functions/log-sped-bitrix24/index.ts |
 | mcp-query | mcp-query | ACTIVE | 108 | não | file:///app/supabase/functions/mcp-query/index.ts |
 | monitor-health | monitor-health | ACTIVE | 90 | não | file:///app/supabase/functions/monitor-health/index.ts |
@@ -102,14 +102,14 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | sync-profile-to-bitrix | sync-profile-to-bitrix | ACTIVE | 111 | sim | file:///app/supabase/functions/sync-profile-to-bitrix/index.ts |
 | upload-anexo | upload-anexo | ACTIVE | 93 | sim | file:///app/supabase/functions/upload-anexo/index.ts |
 | validar-token-contador | validar-token-contador | ACTIVE | 108 | não | file:///app/supabase/functions/validar-token-contador/index.ts |
-| validate-ip-geo | validate-ip-geo | ACTIVE | 108 | não | file:///app/supabase/functions/validate-ip-geo/index.ts |
+| validate-ip-geo | validate-ip-geo | ACTIVE | 109 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/validate-ip-geo/index.ts |
 | verificar-conformidade-fiscal | verificar-conformidade-fiscal | ACTIVE | 104 | sim | file:///app/supabase/functions/verificar-conformidade-fiscal/index.ts |
 | webhook-replay | webhook-replay | ACTIVE | 110 | não | file:///app/supabase/functions/webhook-replay/index.ts |
 | webhook-retry-worker | webhook-retry-worker | ACTIVE | 106 | não | file:///app/supabase/functions/webhook-retry-worker/index.ts |
 | webhook-simulator | webhook-simulator | ACTIVE | 107 | sim | file:///app/supabase/functions/webhook-simulator/index.ts |
 | whatsapp-ai-analyzer | whatsapp-ai-analyzer | ACTIVE | 109 | sim | file:///app/supabase/functions/whatsapp-ai-analyzer/index.ts |
 | whatsapp-ia-proativo | whatsapp-ia-proativo | ACTIVE | 110 | não | file:///app/supabase/functions/whatsapp-ia-proativo/index.ts |
-| whatsapp-webhook | whatsapp-webhook | ACTIVE | 109 | não | file:///app/supabase/functions/whatsapp-webhook/index.ts |
+| whatsapp-webhook | whatsapp-webhook | ACTIVE | 110 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/whatsapp-webhook/index.ts |
 
 
 ## Secrets (apenas nomes)

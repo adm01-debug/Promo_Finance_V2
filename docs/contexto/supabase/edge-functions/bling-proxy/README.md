@@ -4,9 +4,9 @@
 |---|---|
 | nome | bling-proxy |
 | status | ACTIVE |
-| versão | 105 |
+| versão | 106 |
 | verify_jwt | não |
-| entrypoint | file:///app/supabase/functions/bling-proxy/index.ts |
+| entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/bling-proxy/index.ts |
 | import_map |  |
 | URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/bling-proxy |
 | fonte no repo | `supabase/functions/bling-proxy/` |
