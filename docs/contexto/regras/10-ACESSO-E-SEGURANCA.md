@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `18355ba1cd` · branch `main` · 2026-11-18 00:50 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d54fb13f6` · branch `main` · 2026-11-18 01:20 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -615,7 +615,6 @@
 - `recarregar_seeds_fiscais`
 - `record_failed_login`
 - `record_failed_login_v2`
-- `refresh_mv_benchmark_setorial`
 - `refresh_performance_alerts_weekly`
 - `registrar_auditoria_config`
 - `registrar_evento_cobranca`

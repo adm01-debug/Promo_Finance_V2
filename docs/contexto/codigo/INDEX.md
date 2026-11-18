@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `18355ba1cdd3a13c3bb2c7baac70f26b790cc542` (2026-11-17T21:49:59-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2d54fb13f655b57b0480a0e9cb157f661ad897fb` (2026-11-17T22:20:03-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1119), Markdown (201), JavaScript (73), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2360), SQL (1120), Markdown (201), JavaScript (73), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3940 |
+| arquivos_total | 3941 |
 | arquivos_codigo | 2476 |
 | linhas_codigo | 441056 |
 | rotas | 130 |
@@ -45,8 +45,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 992 |
 | hooks | 273 |
 | edge_functions | 106 |
-| tabelas | 321 |
-| migrations | 1047 |
+| tabelas | 320 |
+| migrations | 1048 |
 | cron_jobs | 22 |
 | testes | 479 |
 | workflows | 19 |
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `2d54fb1` chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)
 - 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
 - 2026-11-17 `c72e283` infra(ci): gate que barra coluna inexistente em select/order (#457)
 - 2026-11-17 `f56d307` chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `e1a239c` docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)
 - 2026-11-17 `f76fcd2` fix(bitrix): religa o sync e escopa busca e update por empresa (#447)
 - 2026-11-17 `1702166` fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)
-- 2026-11-17 `f9b3094` chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

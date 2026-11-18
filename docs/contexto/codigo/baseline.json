@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "18355ba1cdd3a13c3bb2c7baac70f26b790cc542",
+  "commit": "2d54fb13f655b57b0480a0e9cb157f661ad897fb",
   "branch": "main",
-  "data_commit": "2026-11-17T21:49:59-03:00",
+  "data_commit": "2026-11-17T22:20:03-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2d54fb1",
+    "data": "2026-11-17",
+    "assunto": "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)"
+   },
    {
     "sha": "18355ba",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "e9cd145",
     "data": "2026-11-17",
     "assunto": "fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)"
-   },
-   {
-    "sha": "8215f7d",
-    "data": "2026-11-17",
-    "assunto": "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)"
    }
   ],
-  "arquivos_mudados_7d": 933,
+  "arquivos_mudados_7d": 935,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 217
+    "commits": 218
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3940,
+  "arquivos_total": 3941,
   "arquivos_codigo": 2476,
   "linhas_codigo": 441056,
   "rotas": 130,
@@ -329,8 +329,8 @@
   "componentes": 992,
   "hooks": 273,
   "edge_functions": 106,
-  "tabelas": 321,
-  "migrations": 1047,
+  "tabelas": 320,
+  "migrations": 1048,
   "cron_jobs": 22,
   "testes": 479,
   "workflows": 19,

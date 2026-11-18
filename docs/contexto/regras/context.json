@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "18355ba1cdd3a13c3bb2c7baac70f26b790cc542",
+  "sha": "2d54fb13f655b57b0480a0e9cb157f661ad897fb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-18 00:50 UTC",
-  "files_total": 3979,
-  "code_files": 3596,
-  "code_lines": 511376
+  "generated_at": "2026-11-18 01:20 UTC",
+  "files_total": 3980,
+  "code_files": 3597,
+  "code_lines": 511478
  },
  "version": "1.3.2",
- "facts_hash": "8420d821aed87057",
+ "facts_hash": "dc2b8309ba57061a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1245,
-   ".sql": 1119,
+   ".sql": 1120,
    ".tsx": 1115,
    ".mjs": 65,
    ".py": 45,
@@ -40595,17 +40595,6 @@
      "v_user_email"
     ]
    },
-   "refresh_mv_benchmark_setorial": {
-    "args": "",
-    "returns": "void",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "BEGIN IF to_regclass('public.mv_benchmark_setorial') IS NULL THEN RETURN; END IF; BEGIN REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_benchmark_setorial; EXCEPTION WHEN feature_not_supported THEN REFRESH MATERIALIZED VIEW public.mv_benchmark_setorial; END; END;",
-    "raises": [],
-    "tables": []
-   },
    "fn_notificar_alerta_critico_push": {
     "args": "",
     "returns": "trigger",
@@ -50078,12 +50067,6 @@
   ],
   "cron_jobs": [
    {
-    "job": "refresh-benchmark-setorial-weekly",
-    "schedule": "0 3 * * 0",
-    "body": "SELECT public.refresh_mv_benchmark_setorial();",
-    "src": "supabase/migrations/20260418140233_7d5861e9-57bc-4df3-827b-b9fda80cc806.sql"
-   },
-   {
     "job": "capture-slow-queries",
     "schedule": "*/15 * * * *",
     "body": "SELECT public.capture_slow_queries(500);",
@@ -50211,10 +50194,6 @@
    }
   ],
   "views": {
-   "vw_notification_history_duplicates": {
-    "body": "WITH ranked AS ( SELECT nh.id, nh.user_id, nh.source, nh.source_ref, nh.channel, nh.title, nh.created_at, LAG(nh.created_at) OVER ( PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at ) AS prev_created_at FROM public.notification_history nh WHERE nh.source_ref IS NOT NULL ) SELECT id, user_id, source, source_ref, channel, title, created_at, prev_created_at, EXTRACT(EPOCH FROM (created_at - prev_created_at))::int AS seconds_since_prev FROM ranked WHERE prev_created_at IS NOT NULL AND created_at - prev_created_at < INTERVAL '60 seconds'",
-    "src": "supabase/migrations/20260423131500_b2ad6567-4dd5-4a44-ae7c-a1faa905b7e1.sql"
-   },
    "mv_performance_alerts_weekly": {
     "body": "WITH weekly AS ( SELECT date_trunc('week', created_at)::date AS week_start, source, severity, COUNT(*) AS alert_count, COUNT(DISTINCT alert_key) AS distinct_keys, ROUND(AVG(NULLIF(current_value, 0))::numeric, 2) AS avg_current_ms, ROUND(MAX(current_value)::numeric, 2) AS max_current_ms, ROUND(AVG(NULLIF(ratio, 0))::numeric, 2) AS avg_ratio, ROUND(MAX(ratio)::numeric, 2) AS max_ratio, SUM(COALESCE(sample_count, 0)) AS total_samples FROM public.performance_alerts WHERE created_at > now() - INTERVAL '90 days' GROUP BY 1, 2, 3 ) SELECT week_start, source, severity, alert_count, distinct_keys, avg_ …",
     "src": "supabase/migrations/20260712194623_6779ec03-860d-4d19-89b2-044aa6594ba8.sql"
@@ -50233,10 +50212,6 @@
    },
    "mcp_probe": {
     "body": "SELECT 1 AS probe, CURRENT_TIMESTAMP AS ts",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   "mv_benchmark_setorial": {
-    "body": "WITH carga AS ( SELECT vw_tributario_dashboard.regime_tributario AS regime, vw_tributario_dashboard.empresa_id, sum(vw_tributario_dashboard.total_tributos) AS total_12m FROM public.vw_tributario_dashboard WHERE ((vw_tributario_dashboard.ano IS NOT NULL) AND (vw_tributario_dashboard.mes IS NOT NULL) AND (((vw_tributario_dashboard.ano * 12) + vw_tributario_dashboard.mes) >= ((((EXTRACT(year FROM CURRENT_DATE))::integer * 12) + (EXTRACT(month FROM CURRENT_DATE))::integer) - 12))) GROUP BY vw_tributario_dashboard.regime_tributario, vw_tributario_dashboard.empresa_id ) SELECT regime, count(*) AS am …",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
    "orders_operator_view": {
@@ -50287,14 +50262,6 @@
     "body": "SELECT id AS empresa_id, 15.5 AS taxa_inadimplencia, 120 AS ticket_medio, 500 AS total_cobrancas_mes FROM public.empresas",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
-   "vw_rpc_hotspots": {
-    "body": "SELECT function_name, date_trunc('hour'::text, called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE (NOT success)) AS errors, round(avg(duration_ms), 2) AS avg_ms, round((percentile_cont((0.5)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) AS p50_ms, round((percentile_cont((0.95)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) AS p95_ms, round((percentile_cont((0.99)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) AS p99_ms, max(duration_ms) AS max_m …",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   "vw_rpc_slow_calls": {
-    "body": "SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE (called_at >= (now() - '24:00:00'::interval)) ORDER BY duration_ms DESC LIMIT 200",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
    "vw_saldos_contas": {
     "body": "SELECT gen_random_uuid() AS id, id AS empresa_id, 'Conta Corrente'::text AS nome_conta, 1000.00 AS saldo_atual, now() AS ultima_atualizacao FROM public.empresas",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
@@ -50314,6 +50281,22 @@
    "vw_fluxo_caixa": {
     "body": "SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, '1 day'::interval ) AS d(dia) LEFT JOIN ( SELECT empresa_id, data_vencimento AS dia, SUM(valor - COALESCE(valor_recebido, 0)) AS valor FROM public.contas_receber WHERE status IN ('pendente', 'parcial') AND deleted_at IS NULL GROUP BY 1, 2 ) r ON r.empresa_id = e.id AND r.dia = d.dia::date LEFT JOIN …",
     "src": "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
+   },
+   "mv_benchmark_setorial": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
+   },
+   "vw_notification_history_duplicates": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
+   },
+   "vw_rpc_hotspots": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
+   },
+   "vw_rpc_slow_calls": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
    }
   },
   "sources": [
@@ -51372,6 +51355,7 @@
    "supabase/migrations/20261117232000_indices_anti_duplicata_contas.sql",
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+   "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -71864,8 +71848,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1047,
-   "lines": 80870,
+   "files": 1048,
+   "lines": 80961,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -71959,7 +71943,7 @@
   {
    "module": "supabase/tests",
    "files": 8,
-   "lines": 3110,
+   "lines": 3121,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -147754,17 +147738,6 @@
      "v_user_email"
     ]
    },
-   "refresh_mv_benchmark_setorial": {
-    "args": "",
-    "returns": "void",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
-    "security_definer": true,
-    "search_path": true,
-    "body": "BEGIN IF to_regclass('public.mv_benchmark_setorial') IS NULL THEN RETURN; END IF; BEGIN REFRESH MATERIALIZED VIEW CONCURRENTLY public.mv_benchmark_setorial; EXCEPTION WHEN feature_not_supported THEN REFRESH MATERIALIZED VIEW public.mv_benchmark_setorial; END; END;",
-    "raises": [],
-    "tables": []
-   },
    "fn_notificar_alerta_critico_push": {
     "args": "",
     "returns": "trigger",
@@ -152226,10 +152199,6 @@
    }
   ],
   "db_views": {
-   "vw_notification_history_duplicates": {
-    "body": "WITH ranked AS ( SELECT nh.id, nh.user_id, nh.source, nh.source_ref, nh.channel, nh.title, nh.created_at, LAG(nh.created_at) OVER ( PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at ) AS prev_created_at FROM public.notification_history nh WHERE nh.source_ref IS NOT NULL ) SELECT id, user_id, source, source_ref, channel, title, created_at, prev_created_at, EXTRACT(EPOCH FROM (created_at - prev_created_at))::int AS seconds_since_prev FROM ranked WHERE prev_created_at IS NOT NULL AND created_at - prev_created_at < INTERVAL '60 seconds'",
-    "src": "supabase/migrations/20260423131500_b2ad6567-4dd5-4a44-ae7c-a1faa905b7e1.sql"
-   },
    "mv_performance_alerts_weekly": {
     "body": "WITH weekly AS ( SELECT date_trunc('week', created_at)::date AS week_start, source, severity, COUNT(*) AS alert_count, COUNT(DISTINCT alert_key) AS distinct_keys, ROUND(AVG(NULLIF(current_value, 0))::numeric, 2) AS avg_current_ms, ROUND(MAX(current_value)::numeric, 2) AS max_current_ms, ROUND(AVG(NULLIF(ratio, 0))::numeric, 2) AS avg_ratio, ROUND(MAX(ratio)::numeric, 2) AS max_ratio, SUM(COALESCE(sample_count, 0)) AS total_samples FROM public.performance_alerts WHERE created_at > now() - INTERVAL '90 days' GROUP BY 1, 2, 3 ) SELECT week_start, source, severity, alert_count, distinct_keys, avg_ …",
     "src": "supabase/migrations/20260712194623_6779ec03-860d-4d19-89b2-044aa6594ba8.sql"
@@ -152248,10 +152217,6 @@
    },
    "mcp_probe": {
     "body": "SELECT 1 AS probe, CURRENT_TIMESTAMP AS ts",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   "mv_benchmark_setorial": {
-    "body": "WITH carga AS ( SELECT vw_tributario_dashboard.regime_tributario AS regime, vw_tributario_dashboard.empresa_id, sum(vw_tributario_dashboard.total_tributos) AS total_12m FROM public.vw_tributario_dashboard WHERE ((vw_tributario_dashboard.ano IS NOT NULL) AND (vw_tributario_dashboard.mes IS NOT NULL) AND (((vw_tributario_dashboard.ano * 12) + vw_tributario_dashboard.mes) >= ((((EXTRACT(year FROM CURRENT_DATE))::integer * 12) + (EXTRACT(month FROM CURRENT_DATE))::integer) - 12))) GROUP BY vw_tributario_dashboard.regime_tributario, vw_tributario_dashboard.empresa_id ) SELECT regime, count(*) AS am …",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
    "orders_operator_view": {
@@ -152302,14 +152267,6 @@
     "body": "SELECT id AS empresa_id, 15.5 AS taxa_inadimplencia, 120 AS ticket_medio, 500 AS total_cobrancas_mes FROM public.empresas",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
    },
-   "vw_rpc_hotspots": {
-    "body": "SELECT function_name, date_trunc('hour'::text, called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE (NOT success)) AS errors, round(avg(duration_ms), 2) AS avg_ms, round((percentile_cont((0.5)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) AS p50_ms, round((percentile_cont((0.95)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) AS p95_ms, round((percentile_cont((0.99)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) AS p99_ms, max(duration_ms) AS max_m …",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
-   "vw_rpc_slow_calls": {
-    "body": "SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE (called_at >= (now() - '24:00:00'::interval)) ORDER BY duration_ms DESC LIMIT 200",
-    "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
-   },
    "vw_saldos_contas": {
     "body": "SELECT gen_random_uuid() AS id, id AS empresa_id, 'Conta Corrente'::text AS nome_conta, 1000.00 AS saldo_atual, now() AS ultima_atualizacao FROM public.empresas",
     "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
@@ -152329,6 +152286,22 @@
    "vw_fluxo_caixa": {
     "body": "SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, '1 day'::interval ) AS d(dia) LEFT JOIN ( SELECT empresa_id, data_vencimento AS dia, SUM(valor - COALESCE(valor_recebido, 0)) AS valor FROM public.contas_receber WHERE status IN ('pendente', 'parcial') AND deleted_at IS NULL GROUP BY 1, 2 ) r ON r.empresa_id = e.id AND r.dia = d.dia::date LEFT JOIN …",
     "src": "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
+   },
+   "mv_benchmark_setorial": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
+   },
+   "vw_notification_history_duplicates": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
+   },
+   "vw_rpc_hotspots": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
+   },
+   "vw_rpc_slow_calls": {
+    "body": "(definição fora das migrations — só em types.ts)",
+    "src": "src/integrations/supabase/types.ts"
    }
   },
   "pagination": [
@@ -161437,7 +161410,6 @@
    "recarregar_seeds_fiscais",
    "record_failed_login",
    "record_failed_login_v2",
-   "refresh_mv_benchmark_setorial",
    "refresh_performance_alerts_weekly",
    "registrar_auditoria_config",
    "registrar_evento_cobranca",
@@ -245239,6 +245211,10 @@
    ],
    "uses_service_role": true
   },
+  "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql": {
+   "path": "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
+   "lines": 91
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245305,7 +245281,7 @@
   },
   "supabase/tests/sql/infra.test.sql": {
    "path": "supabase/tests/sql/infra.test.sql",
-   "lines": 207,
+   "lines": 218,
    "is_test": true
   },
   "supabase/tests/sql/integrity_cycle.test.sql": {
@@ -245347,10 +245323,20 @@
   }
  },
  "git": {
-  "sha": "18355ba1cdd3a13c3bb2c7baac70f26b790cc542",
+  "sha": "2d54fb13f655b57b0480a0e9cb157f661ad897fb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "2d54fb1",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)",
+    "files": [
+     "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
+     "supabase/tests/sql/infra.test.sql"
+    ]
+   },
    {
     "sha": "18355ba",
     "date": "2026-11-17",
@@ -245641,15 +245627,6 @@
     "files": [
      "docs/agentes/auditoria-drift-banco-2026-11-17.md"
     ]
-   },
-   {
-    "sha": "6c6dec8",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(db): remove as 20 tabelas-resíduo do Lovable e seus objetos órfãos (#435)",
-    "files": [
-     "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -245668,6 +245645,14 @@
    [
     "supabase/functions/executar-fechamento-tributario/index.ts",
     2
+   ],
+   [
+    "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
+    1
+   ],
+   [
+    "supabase/tests/sql/infra.test.sql",
+    1
    ],
    [
     "supabase/functions/_shared/rate-limit.ts",
@@ -245723,14 +245708,6 @@
    ],
    [
     "src/components/tributario/historico/FaturamentoTab.tsx",
-    1
-   ],
-   [
-    "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/useHistoricoFinanceiro.ts",
     1
    ]
   ]

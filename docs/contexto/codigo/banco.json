@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1047,
+ "migrations": 1048,
  "seeds": [],
  "avisos": [
-  "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "198 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -279,7 +279,6 @@
   "drivers_safe_view",
   "extratos_bancarios_importados",
   "mcp_probe",
-  "mv_benchmark_setorial",
   "orders_operator_view",
   "orders_safe_view",
   "public",
@@ -298,9 +297,6 @@
   "vw_gastos_centro_custo",
   "vw_metricas_cobranca",
   "vw_monthly_summary",
-  "vw_notification_history_duplicates",
-  "vw_rpc_hotspots",
-  "vw_rpc_slow_calls",
   "vw_saldos_contas",
   "vw_totals_by_category",
   "vw_transferencias_painel",
@@ -496,7 +492,6 @@
   "recarregar_seeds_fiscais",
   "record_failed_login",
   "record_failed_login_v2",
-  "refresh_mv_benchmark_setorial",
   "refresh_performance_alerts_weekly",
   "registrar_auditoria_config",
   "registrar_decisao_elisao",
@@ -36378,19 +36373,6 @@
    ],
    "sem_rls": false,
    "nao_usada": false
-  },
-  "public": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
   },
   "push_subscriptions": {
    "colunas": {

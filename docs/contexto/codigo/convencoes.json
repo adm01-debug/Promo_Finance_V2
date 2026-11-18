@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)",
    "fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)",
    "infra(ci): gate que barra coluna inexistente em select/order (#457)",
    "chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)",
-   "fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)",
-   "docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)"
+   "fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `18355ba1cd` · branch `main` · 2026-11-18 00:50 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d54fb13f6` · branch `main` · 2026-11-18 01:20 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2417,13 +2417,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 
 | View | SELECT |
 |---|---|
-| `vw_notification_history_duplicates` | `WITH ranked AS ( SELECT nh.id, nh.user_id, nh.source, nh.source_ref, nh.channel, nh.title, nh.created_at, LAG(nh.created_at) OVER ( PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at ) AS prev_created_at FROM public.notification_history nh WHERE nh.source_ref IS NOT …` |
 | `mv_performance_alerts_weekly` | `WITH weekly AS ( SELECT date_trunc('week', created_at)::date AS week_start, source, severity, COUNT(*) AS alert_count, COUNT(DISTINCT alert_key) AS distinct_keys, ROUND(AVG(NULLIF(current_value, 0))::numeric, 2) AS avg_current_ms, ROUND(MAX(current_value)::numeric, 2) AS max_current_ms, ROUND(AVG(NU …` |
 | `vw_edge_health` | `SELECT l.function_name, COUNT(*)::bigint AS total_calls, COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500)::bigint AS error_count, ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500) / NULLIF(CO …` |
 | `drivers_safe_view` | `SELECT id, name, vehicle_type, status, rating, risk_score, risk_level, total_deliveries, completed_deliveries, failed_deliveries, cancelled_deliveries, success_rate, failure_rate, avg_delay_minutes, lalamove_id, vehicle_plate, photo_url, blacklisted, blacklist_reason, whitelisted, notes, last_active …` |
 | `extratos_bancarios_importados` | `SELECT id, user_id, conta_bancaria_id, data, descricao, valor, tipo, numero_documento, numero_documento_banco, codigo_transacao, arquivo_origem, importado_de, importado_em, linha_arquivo, hash_transacao, saldo, conciliado, created_at FROM public.extrato_bancario` |
 | `mcp_probe` | `SELECT 1 AS probe, CURRENT_TIMESTAMP AS ts` |
-| `mv_benchmark_setorial` | `WITH carga AS ( SELECT vw_tributario_dashboard.regime_tributario AS regime, vw_tributario_dashboard.empresa_id, sum(vw_tributario_dashboard.total_tributos) AS total_12m FROM public.vw_tributario_dashboard WHERE ((vw_tributario_dashboard.ano IS NOT NULL) AND (vw_tributario_dashboard.mes IS NOT NULL) …` |
 | `orders_operator_view` | `SELECT id, lalamove_id, status, pickup_address, delivery_address, CASE WHEN (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)) THEN customer_phone ELSE '***RESTRITO***'::text END AS customer_phone, customer_name, vehicle_type, total_cos …` |
 | `orders_safe_view` | `SELECT id, lalamove_id, status, vehicle_type, customer_name, CASE WHEN (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)) THEN customer_phone ELSE '***RESTRITO***'::text END AS customer_phone, pickup_address, delivery_address, total_cos …` |
 | `v_sefaz_observability` | `SELECT c.cnpj, c.ambiente, c.ultimo_nsu, c.max_nsu, c.ultima_consulta, c.ultimo_status, c.circuit_open, c.retry_count, c.next_run_at, (EXTRACT(epoch FROM (now() - c.ultima_consulta)))::integer AS seconds_since_last, COALESCE(n.nfe_24h, (0)::bigint) AS nfe_24h, COALESCE(n.nfe_7d, (0)::bigint) AS nfe_ …` |
@@ -2436,13 +2434,15 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `vw_fluxo_caixa_diario` | `SELECT gen_random_uuid() AS id, id AS empresa_id, (now())::date AS dia, 2500.00 AS entradas_reais, 1200.00 AS saidas_reais, 1300.00 AS saldo_final FROM public.empresas` |
 | `vw_gastos_centro_custo` | `SELECT id AS centro_custo_id, nome AS nome_centro_custo, empresa_id, 0.0 AS total_gasto FROM public.centros_custo` |
 | `vw_metricas_cobranca` | `SELECT id AS empresa_id, 15.5 AS taxa_inadimplencia, 120 AS ticket_medio, 500 AS total_cobrancas_mes FROM public.empresas` |
-| `vw_rpc_hotspots` | `SELECT function_name, date_trunc('hour'::text, called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE (NOT success)) AS errors, round(avg(duration_ms), 2) AS avg_ms, round((percentile_cont((0.5)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) …` |
-| `vw_rpc_slow_calls` | `SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE (called_at >= (now() - '24:00:00'::interval)) ORDER BY duration_ms DESC LIMIT 200` |
 | `vw_saldos_contas` | `SELECT gen_random_uuid() AS id, id AS empresa_id, 'Conta Corrente'::text AS nome_conta, 1000.00 AS saldo_atual, now() AS ultima_atualizacao FROM public.empresas` |
 | `vw_transferencias_painel` | `SELECT t.id, t.empresa_id, e.razao_social, t.asaas_id, t.valor, t.status, t.tipo_chave, CASE WHEN public.pode_ver_dado_sensivel() THEN t.chave_pix ELSE public.mascarar_chave_pix(t.chave_pix) END AS chave_pix, t.descricao, t.created_at, t.updated_at FROM (public.asaas_transfers t LEFT JOIN public.emp …` |
 | `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado'::text) AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, (0)::numeric) AS total_tributos, COALESCE(at_.total_tributos_novos, (0)::numeric) AS tributos_novos, COALESCE(at_.total_t …` |
 | `vw_webhooks_recentes` | `SELECT id, source AS endpoint, event_type AS evento, status AS status_code, created_at, error_message, attempts FROM public.webhooks_log wl ORDER BY created_at DESC LIMIT 100` |
 | `vw_fluxo_caixa` | `SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, …` |
+| `mv_benchmark_setorial` | `(definição fora das migrations — só em types.ts)` |
+| `vw_notification_history_duplicates` | `(definição fora das migrations — só em types.ts)` |
+| `vw_rpc_hotspots` | `(definição fora das migrations — só em types.ts)` |
+| `vw_rpc_slow_calls` | `(definição fora das migrations — só em types.ts)` |
 
 ### G.3 Funções de cálculo/decisão no código
 
