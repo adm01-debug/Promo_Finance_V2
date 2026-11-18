@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "2aa38510eff1df92f15e73fddde07eaca44b14d5",
+  "sha": "f56d3076bbf45e3cb81c5de170fc1910433cb1e2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-17 23:51 UTC",
+  "generated_at": "2026-11-18 00:40 UTC",
   "files_total": 3976,
   "code_files": 3593,
   "code_lines": 510854
@@ -245176,10 +245176,19 @@
   }
  },
  "git": {
-  "sha": "2aa38510eff1df92f15e73fddde07eaca44b14d5",
+  "sha": "f56d3076bbf45e3cb81c5de170fc1910433cb1e2",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f56d307",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)",
+    "files": [
+     "docs/agentes/auditoria-branches-2026-11-17.md"
+    ]
+   },
    {
     "sha": "2aa3851",
     "date": "2026-11-17",
@@ -245467,30 +245476,20 @@
     "files": [
      ".github/workflows/ci.yml"
     ]
-   },
-   {
-    "sha": "512c1e7",
-    "date": "2026-11-17",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump i18next from 26.0.10 to 27.1.1 (#377)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
-    3
+    4
    ],
    [
     "bun.lock",
-    3
+    2
    ],
    [
     "package.json",
-    3
+    2
    ],
    [
     "supabase/functions/executar-fechamento-tributario/index.ts",

@@ -6,146 +6,146 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 
 | métrica | valor |
 |---|---|
-| tamanho | 323.3 MB |
-| schema public | 162.9 MB |
+| tamanho | 325.0 MB |
+| schema public | 164.3 MB |
 
 
 ## Tabelas (ordenadas por tamanho)
 
 | tabela | linhas (~) | total | heap | índices | linhas mortas (~) | seq scans (~) | idx scans (~) | último autovacuum |
 |---|---|---|---|---|---|---|---|---|
-| public.edge_function_logs | ~160.7k | 47.7 MB | 22.9 MB | 24.8 MB | 0 | 0 | ~280 | 2026-11-17 |
-| public.frontend_performance_logs | ~88.9k | 34.6 MB | 27.3 MB | 7.3 MB | ~11.5k | ~10 | ~30 |  |
-| public.slow_query_alerts | ~17.1k | 21.0 MB | 18.0 MB | 3.0 MB | ~1.2k | 0 | ~270 |  |
+| public.edge_function_logs | ~172.5k | 49.0 MB | 23.6 MB | 25.3 MB | 0 | 0 | ~290 | 2026-11-17 |
+| public.frontend_performance_logs | ~88.9k | 34.9 MB | 27.5 MB | 7.4 MB | ~11.5k | ~10 | ~40 |  |
+| public.slow_query_alerts | ~17.1k | 21.0 MB | 18.0 MB | 3.0 MB | ~1.2k | 0 | ~280 |  |
 | public.index_usage_snapshots | ~49.6k | 15.1 MB | 8.5 MB | 6.6 MB | 0 | 0 | ~700 |  |
-| public.query_telemetry | ~13.8k | 13.7 MB | 10.0 MB | 3.6 MB | ~670 | 0 | ~590 |  |
+| public.query_telemetry | ~13.8k | 13.7 MB | 10.0 MB | 3.6 MB | ~670 | 0 | ~620 |  |
 | public.bloat_snapshots | ~21.6k | 5.5 MB | 3.0 MB | 2.4 MB | 0 | 0 | ~290 |  |
-| public.login_attempts | ~2.4k | 4.1 MB | 3.0 MB | 1.0 MB | 0 | ~1.4k | ~680 | 2026-11-17 |
-| public.performance_alerts | ~4.4k | 3.6 MB | 2.5 MB | 1.1 MB | ~200 | 0 | ~280 |  |
-| public.integrity_alerts | ~1.9k | 1.8 MB | 1.2 MB | 512.0 KB | 0 | ~3.5k | ~1.8k |  |
-| public.rate_limit_logs | ~1.4k | 704.0 KB | 512.0 KB | 160.0 KB | ~40 | ~20 | ~4.6k |  |
-| public.alertas | ~1.8k | 592.0 KB | 416.0 KB | 136.0 KB | 0 | ~188.7k | ~20 |  |
-| public.auth_logs | ~1.4k | 536.0 KB | 416.0 KB | 88.0 KB | 0 | ~20 | 0 |  |
-| public.contas_pagar | ~20 | 448.0 KB | 24.0 KB | 384.0 KB | ~20 | ~102.4k | ~87.8k |  |
-| public.audit_logs | ~420 | 424.0 KB | 288.0 KB | 104.0 KB | 0 | ~20 | ~680 |  |
-| public.cron_job_logs | ~600 | 416.0 KB | 208.0 KB | 168.0 KB | ~30 | ~20 | ~370 |  |
+| public.login_attempts | ~2.4k | 4.1 MB | 3.0 MB | 1.0 MB | ~2.4k | ~1.5k | ~720 | 2026-11-18 |
+| public.performance_alerts | ~4.4k | 3.6 MB | 2.5 MB | 1.1 MB | ~220 | 0 | ~300 |  |
+| public.integrity_alerts | ~1.9k | 1.8 MB | 1.2 MB | 512.0 KB | 0 | ~3.7k | ~1.9k |  |
+| public.rate_limit_logs | ~1.4k | 744.0 KB | 544.0 KB | 168.0 KB | ~50 | ~20 | ~4.9k |  |
+| public.alertas | ~1.8k | 592.0 KB | 416.0 KB | 136.0 KB | 0 | ~197.6k | ~20 |  |
+| public.auth_logs | ~1.4k | 552.0 KB | 432.0 KB | 88.0 KB | 0 | ~20 | 0 |  |
+| public.contas_pagar | ~20 | 448.0 KB | 24.0 KB | 384.0 KB | ~20 | ~105.8k | ~93.7k |  |
+| public.audit_logs | ~420 | 424.0 KB | 288.0 KB | 104.0 KB | 0 | ~20 | ~800 |  |
+| public.cron_job_logs | ~600 | 416.0 KB | 208.0 KB | 168.0 KB | ~30 | ~20 | ~390 |  |
 | public.pg_stat_statements_baseline | 0 | 408.0 KB | 0 B | 384.0 KB | 0 | ~20 | 0 |  |
-| public.contas_receber | ~20 | 400.0 KB | 16.0 KB | 352.0 KB | ~30 | ~25.4k | ~332.3k |  |
+| public.contas_receber | ~20 | 400.0 KB | 16.0 KB | 352.0 KB | ~30 | ~26.5k | ~350.6k |  |
 | public.movimentacoes | ~40 | 216.0 KB | 8.0 KB | 168.0 KB | 4 | ~50 | 0 |  |
 | public.partidas_contabeis | ~100 | 208.0 KB | 40.0 KB | 128.0 KB | 0 | ~20 | ~80 | 2026-11-16 |
-| public.clientes | ~10 | 192.0 KB | 8.0 KB | 160.0 KB | 0 | ~10k | ~1.4k |  |
-| public.aliquotas_interestaduais | ~700 | 184.0 KB | 72.0 KB | 80.0 KB | 2 | ~290 | 0 |  |
-| public.transacoes_bancarias | ~20 | 184.0 KB | 8.0 KB | 168.0 KB | 0 | ~800 | 0 |  |
+| public.clientes | ~10 | 192.0 KB | 8.0 KB | 160.0 KB | 0 | ~10.4k | ~1.5k |  |
+| public.aliquotas_interestaduais | ~700 | 184.0 KB | 72.0 KB | 80.0 KB | 2 | ~300 | 0 |  |
+| public.transacoes_bancarias | ~20 | 184.0 KB | 8.0 KB | 168.0 KB | 0 | ~830 | 0 |  |
 | public.lancamentos_contabeis | ~50 | 168.0 KB | 16.0 KB | 112.0 KB | ~20 | ~80 | ~80 |  |
-| public.boletos | 6 | 160.0 KB | 8.0 KB | 144.0 KB | 0 | ~7.5k | 0 |  |
-| public.fornecedores | 5 | 160.0 KB | 8.0 KB | 144.0 KB | 2 | ~46.9k | 0 |  |
-| public.nfe_recebidas | ~30 | 144.0 KB | 16.0 KB | 96.0 KB | 6 | ~70 | ~3.5k |  |
+| public.boletos | 6 | 160.0 KB | 8.0 KB | 144.0 KB | 0 | ~7.8k | 0 |  |
+| public.fornecedores | 5 | 160.0 KB | 8.0 KB | 144.0 KB | 2 | ~48.8k | 0 |  |
+| public.nfe_recebidas | ~30 | 144.0 KB | 16.0 KB | 96.0 KB | 6 | ~70 | ~3.7k |  |
 | public.notas_fiscais | 5 | 144.0 KB | 8.0 KB | 128.0 KB | 0 | ~20 | 0 |  |
-| public.aliquotas_iss_municipal | ~30 | 128.0 KB | 8.0 KB | 80.0 KB | 0 | ~290 | 0 |  |
+| public.aliquotas_iss_municipal | ~30 | 128.0 KB | 8.0 KB | 80.0 KB | 0 | ~300 | 0 |  |
 | public.eventos_contabilizacao_log | ~30 | 120.0 KB | 16.0 KB | 64.0 KB | 9 | ~20 | 9 |  |
-| public.categorias | 7 | 112.0 KB | 8.0 KB | 64.0 KB | 0 | ~20 | ~4.2k |  |
+| public.categorias | 7 | 112.0 KB | 8.0 KB | 64.0 KB | 0 | ~20 | ~4.4k |  |
 | public.historico_conciliacao_ia | 4 | 112.0 KB | 8.0 KB | 96.0 KB | 0 | ~40 | 0 |  |
-| public.itens_lista_iss | ~160 | 112.0 KB | 32.0 KB | 48.0 KB | 0 | ~20 | ~270 |  |
-| public.ncms | ~130 | 112.0 KB | 24.0 KB | 48.0 KB | 0 | ~20 | ~280 |  |
-| public.protocolos_st_ncms | ~20 | 112.0 KB | 16.0 KB | 64.0 KB | 0 | ~300 | 0 |  |
-| public.centros_custo | 8 | 96.0 KB | 8.0 KB | 48.0 KB | 0 | ~62k | ~323.1k |  |
-| public.creditos_tributarios | ~10 | 96.0 KB | 8.0 KB | 80.0 KB | 0 | ~500 | 0 |  |
+| public.itens_lista_iss | ~160 | 112.0 KB | 32.0 KB | 48.0 KB | 0 | ~20 | ~280 |  |
+| public.ncms | ~130 | 112.0 KB | 24.0 KB | 48.0 KB | 0 | ~20 | ~290 |  |
+| public.protocolos_st_ncms | ~20 | 112.0 KB | 16.0 KB | 64.0 KB | 0 | ~310 | 0 |  |
+| public.centros_custo | 8 | 96.0 KB | 8.0 KB | 48.0 KB | 0 | ~64.8k | ~341k |  |
+| public.creditos_tributarios | ~10 | 96.0 KB | 8.0 KB | 80.0 KB | 0 | ~530 | 0 |  |
 | public.pedidos_compra | 6 | 96.0 KB | 8.0 KB | 80.0 KB | 0 | ~20 | 0 |  |
 | public.plano_contas | ~10 | 96.0 KB | 8.0 KB | 64.0 KB | 0 | ~40 | 0 |  |
-| public.protocolos_st_ufs | ~80 | 96.0 KB | 8.0 KB | 48.0 KB | 0 | ~290 | 0 |  |
+| public.protocolos_st_ufs | ~80 | 96.0 KB | 8.0 KB | 48.0 KB | 0 | ~300 | 0 |  |
 | public.regua_cobranca_status | ~10 | 96.0 KB | 8.0 KB | 80.0 KB | 0 | ~40 | 0 |  |
-| public.saved_filter_subscriptions | 0 | 96.0 KB | 8.0 KB | 80.0 KB | 2 | ~30 | ~2.5k |  |
+| public.saved_filter_subscriptions | 0 | 96.0 KB | 8.0 KB | 80.0 KB | 2 | ~30 | ~2.6k |  |
 | public.transferencias | 6 | 96.0 KB | 8.0 KB | 80.0 KB | 0 | ~40 | 0 |  |
-| public.contas_bancarias | 8 | 88.0 KB | 16.0 KB | 32.0 KB | 3 | ~82.5k | ~48.1k |  |
-| public.faixas_simples_nacional | ~30 | 88.0 KB | 16.0 KB | 32.0 KB | 0 | ~290 | 0 |  |
-| public.alertas_tributarios | 6 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~350 | 0 |  |
+| public.contas_bancarias | 8 | 88.0 KB | 16.0 KB | 32.0 KB | 3 | ~86.2k | ~50.1k |  |
+| public.faixas_simples_nacional | ~30 | 88.0 KB | 16.0 KB | 32.0 KB | 0 | ~300 | 0 |  |
+| public.alertas_tributarios | 6 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~370 | 0 |  |
 | public.aliquotas_internas_uf | ~90 | 80.0 KB | 16.0 KB | 32.0 KB | 0 | ~20 | 2 |  |
-| public.bloqueios_duplicidade | 6 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~9.9k | 0 |  |
-| public.cnaes | ~70 | 80.0 KB | 16.0 KB | 32.0 KB | 0 | ~300 | 0 |  |
+| public.bloqueios_duplicidade | 6 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~10.4k | 0 |  |
+| public.cnaes | ~70 | 80.0 KB | 16.0 KB | 32.0 KB | 0 | ~320 | 0 |  |
 | public.conciliacoes | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~30 | 0 |  |
 | public.contratos | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~40 | 0 |  |
-| public.divergencias_conciliacao | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~7.5k | 0 |  |
-| public.elisao_creditos_auditoria | 4 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~80 | 0 |  |
+| public.divergencias_conciliacao | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~7.8k | 0 |  |
+| public.elisao_creditos_auditoria | 4 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~90 | 0 |  |
 | public.estrategias_elisao | ~20 | 80.0 KB | 16.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.extrato_bancario | ~20 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~20 | 0 |  |
 | public.historico_cobranca | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~30 | 0 |  |
 | public.negativacoes | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~30 | 0 |  |
 | public.protestos | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~30 | 0 |  |
-| public.regras_conciliacao | 4 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~530 | 0 |  |
+| public.regras_conciliacao | 4 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~550 | 0 |  |
 | public.retencao_politicas | ~60 | 80.0 KB | 16.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.solicitacoes_aprovacao | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~91.2k | 0 |  |
-| public.user_empresas | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~4.7M | ~223k |  |
+| public.solicitacoes_aprovacao | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~95.4k | 0 |  |
+| public.user_empresas | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~4.9M | ~233.1k |  |
 | public.anomalia_toast_eventos | 0 | 72.0 KB | 8.0 KB | 56.0 KB | 0 | ~30 | 0 |  |
-| public.webhooks_log | 0 | 72.0 KB | 8.0 KB | 56.0 KB | ~20 | ~2.1k | 0 |  |
+| public.webhooks_log | 0 | 72.0 KB | 8.0 KB | 56.0 KB | ~20 | ~2.2k | 0 |  |
 | public.alert_configurations | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | 0 |  |
 | public.apuracoes_irpj_csll | 2 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | 0 |  |
-| public.apuracoes_tributarias | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~260 | ~60 |  |
-| public.budgets | 8 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | ~170 |  |
-| public.faturamento_mensal | ~20 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~90 | 0 |  |
+| public.apuracoes_tributarias | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~270 | ~60 |  |
+| public.budgets | 8 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | ~180 |  |
+| public.faturamento_mensal | ~20 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~100 | 0 |  |
 | public.fechamentos_tributarios | 2 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~60 | 0 |  |
 | public.folha_pagamento | ~20 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~80 | 0 |  |
 | public.formas_pagamento | ~10 | 64.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.geo_blocks | 2 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | 0 |  |
-| public.integration_secrets | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~3.9k | 0 |  |
-| public.metas_financeiras | 6 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~200 | 0 |  |
+| public.integration_secrets | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~4k | 0 |  |
+| public.metas_financeiras | 6 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~210 | 0 |  |
 | public.oportunidades_elisao | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~80 | 0 |  |
-| public.profiles | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~33.9k | ~32.6k |  |
+| public.profiles | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~35.5k | ~34k |  |
 | public.regimes_simulados | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~120 | 0 |  |
-| public.regras_roteamento_financeiro | 6 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~31.9k | 0 |  |
+| public.regras_roteamento_financeiro | 6 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~33.4k | 0 |  |
 | public.sessoes_conciliacao | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | 0 |  |
-| public.ufs | ~30 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~290 | 0 |  |
+| public.ufs | ~30 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~300 | 0 |  |
 | public.user_filter_presets | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~20 | 0 |  |
 | public.execucoes_regua_cobranca | 0 | 56.0 KB | 8.0 KB | 40.0 KB | 0 | ~20 | 0 |  |
 | public.regua_cobranca_etapas | 6 | 56.0 KB | 8.0 KB | 48.0 KB | 0 | ~30 | 0 |  |
-| public.role_permissions | 1 | 56.0 KB | 8.0 KB | 48.0 KB | 0 | ~12.6k | 0 |  |
+| public.role_permissions | 1 | 56.0 KB | 8.0 KB | 48.0 KB | 0 | ~13.2k | 0 |  |
 | public.api_keys | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~20 | 0 |  |
 | public.benchmarks_setoriais | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~30 | ~20 |  |
 | public.beneficios_fiscais | 9 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.blocked_ips | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.1k | 0 |  |
+| public.blocked_ips | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.2k | 0 |  |
 | public.catalogos_fiscais_cargas | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.configuracoes_aprovacao | 6 | 48.0 KB | 8.0 KB | 32.0 KB | 3 | ~13.4k | ~2.7k |  |
+| public.configuracoes_aprovacao | 6 | 48.0 KB | 8.0 KB | 32.0 KB | 3 | ~13.9k | ~2.9k |  |
 | public.conformidade_snapshots | ~10 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~40 |  |
 | public.convites_contador | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~20 | 0 |  |
 | public.digest_envios_log | ~20 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.dispositivos_conhecidos | ~10 | 48.0 KB | 8.0 KB | 32.0 KB | ~30 | ~660 | 0 |  |
-| public.elisao_alertas | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~70 | 0 |  |
-| public.elisao_regras_creditos | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~220 |  |
-| public.elisao_tarefas_acionaveis | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~70 | 0 |  |
-| public.empresas | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~334.7k | 0 |  |
-| public.estrategias_elisao_catalogo | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~110 |  |
+| public.dispositivos_conhecidos | ~10 | 48.0 KB | 8.0 KB | 32.0 KB | ~20 | ~690 | 0 |  |
+| public.elisao_alertas | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~80 | 0 |  |
+| public.elisao_regras_creditos | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~230 |  |
+| public.elisao_tarefas_acionaveis | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~80 | 0 |  |
+| public.empresas | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~350.5k | 0 |  |
+| public.estrategias_elisao_catalogo | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~120 |  |
 | public.execucoes_cobranca | ~10 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.fila_cobrancas | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~40 | 0 |  |
 | public.glossario_tributario | ~30 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.health_scores_operacionais | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.historico_analises_preditivas | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.historico_score_saude | 6 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~190 | 0 |  |
+| public.historico_score_saude | 6 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~200 | 0 |  |
 | public.incentivos_fiscais | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.itens_pedido_compra | ~20 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~30 | 0 |  |
-| public.notas_fiscais_ocr | 3 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~240 | 0 |  |
-| public.operacoes_tributaveis | 8 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~260 | 0 |  |
-| public.permissions | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~12.6k | 0 |  |
+| public.notas_fiscais_ocr | 3 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~250 | 0 |  |
+| public.operacoes_tributaveis | 8 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~270 | 0 |  |
+| public.permissions | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~13.2k | 0 |  |
 | public.pix_templates | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.planos_acao | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 3 |  |
-| public.protocolos_st | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~5.3k |  |
-| public.recomendacoes_metas_ia | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~190 | 0 |  |
+| public.protocolos_st | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~5.5k |  |
+| public.recomendacoes_metas_ia | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~200 | 0 |  |
 | public.regimes_tributarios | 8 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.regras_contabilizacao_automatica | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 8 | ~20 | ~20 |  |
 | public.regras_duplicidade | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.regua_cobranca | 2 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~30 | 0 |  |
 | public.relatorios_tributarios_agendados | 3 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.1k | 0 |  |
 | public.retencoes_fonte | ~10 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.saved_filters | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~30 | ~2.5k |  |
+| public.saved_filters | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~30 | ~2.6k |  |
 | public.scim_tokens | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~30 | 0 |  |
 | public.security_alerts | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.sefaz_dfe_cursor | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.8k | 0 |  |
+| public.sefaz_dfe_cursor | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.9k | 0 |  |
 | public.split_payment_transacoes | 3 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.sso_providers | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.4k | 0 |  |
+| public.sso_providers | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~1.5k | 0 |  |
 | public.templates_cobranca | 6 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.user_anomalia_preferences | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~37.4k | 0 |  |
-| public.user_onboarding_progress | 2 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~13.1k | 0 |  |
-| public.user_roles | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~16.3M | 0 |  |
+| public.user_anomalia_preferences | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~39.2k | 0 |  |
+| public.user_onboarding_progress | 2 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~13.7k | 0 |  |
+| public.user_roles | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~17M | 0 |  |
 | public.user_sessions | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
-| public.vendedores | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~190 | 0 |  |
+| public.vendedores | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~200 | 0 |  |
 | public.webhook_simulation_results | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.webhook_simulation_runs | 4 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.acordos_parcelamento | 0 | 40.0 KB | 0 B | 32.0 KB | 0 | ~30 | 0 |  |
@@ -158,16 +158,14 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.new_device_alerts | 0 | 40.0 KB | 8.0 KB | 24.0 KB | 0 | ~20 | 0 |  |
 | public.nfe_eventos | 0 | 40.0 KB | 0 B | 32.0 KB | 0 | ~20 | 0 |  |
 | public.notification_history | 0 | 40.0 KB | 0 B | 32.0 KB | 0 | ~20 | 0 |  |
-| public.solicitacoes_lgpd | 0 | 40.0 KB | 0 B | 32.0 KB | 0 | ~20 | ~250 |  |
+| public.solicitacoes_lgpd | 0 | 40.0 KB | 0 B | 32.0 KB | 0 | ~20 | ~260 |  |
 | public.sso_user_groups | 0 | 40.0 KB | 0 B | 32.0 KB | 0 | ~20 | 0 |  |
-| public.alertas_preditivos | 6 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~190 | 0 |  |
-| public.allowed_ips | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~1.1k | 0 |  |
-| public.anomalias_detectadas | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~14.8k | 0 |  |
+| public.alertas_preditivos | 6 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~200 | 0 |  |
+| public.allowed_ips | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~1.2k | 0 |  |
+| public.anomalias_detectadas | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~15.5k | 0 |  |
 | public.asaas_payments | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~30 | 0 |  |
 | public.asaas_reconciliation_suggestions | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~30 | 0 |  |
 | public.asaas_transfers | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_05 | 6 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_07 | ~20 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.auditoria_tributaria | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.bling_webhook_events | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.ci_security_gate_events | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
@@ -176,7 +174,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.expert_conversations | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.fluxos_aprovacao_niveis | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~300 | 0 |  |
 | public.frontend_error_alert_state | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
-| public.historico_cobranca_whatsapp | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~76k | 0 |  |
+| public.historico_cobranca_whatsapp | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~79.6k | 0 |  |
 | public.historico_cobrancas_boletos | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.ip_whitelist | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.kpis_operacionais | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
@@ -185,7 +183,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.pagamentos_recorrentes | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 1 |  |
 | public.per_dcomp | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.prejuizos_fiscais | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
-| public.regime_decision_cache | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | ~510 |  |
+| public.regime_decision_cache | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | ~530 |  |
 | public.resumos_executivos_semanais | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.scim_setup_checklist | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.sso_role_mappings | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
@@ -195,7 +193,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.webhook_events | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.whatsapp_conversas | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.acessos_suspeitos | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | ~30 |  |
-| public.acoes_recomendadas | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~360 | 0 |  |
+| public.acoes_recomendadas | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~380 | 0 |  |
 | public.alerts | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.alerts_sent | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.anexos_financeiros | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
@@ -226,7 +224,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.organizacoes | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.overlay_rejeicoes_auditoria | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.parcelas_acordo | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
-| public.password_reset_requests | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~290 | 0 |  |
+| public.password_reset_requests | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~300 | 0 |  |
 | public.password_reset_tokens | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.portal_cliente_acessos | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.portal_cliente_tokens | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
@@ -248,18 +246,9 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.user_demonstrativo_preferences | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.user_devices | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
 | public.user_digest_preferences | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
-| public.verificacoes_conformidade | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~50 | 0 |  |
+| public.verificacoes_conformidade | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~60 | 0 |  |
 | public.webauthn_credentials | 0 | 24.0 KB | 0 B | 16.0 KB | 0 | ~20 | 0 |  |
-| public.allowed_countries | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~1.1k | 0 |  |
-| public.audit_logs_2026_01 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_02 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_03 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_04 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_06 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_08 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_09 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_2026_10 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.audit_logs_default | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
+| public.allowed_countries | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~1.2k | 0 |  |
 | public.auditoria_financeira | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
 | public.bitrix24_activities | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
 | public.bitrix24_stage_mappings | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
@@ -267,7 +256,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.bitrix_webhook_events | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
 | public.cnpja_cache | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
 | public.configuracoes_duplicidade | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
-| public.frontend_error_logs | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~80 | 0 |  |
+| public.frontend_error_logs | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~90 | 0 |  |
 | public.frontend_error_logs_2026_01 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
 | public.frontend_error_logs_2026_02 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
 | public.frontend_error_logs_2026_03 | 0 | 16.0 KB | 0 B | 8.0 KB | 0 | ~20 | 0 |  |
@@ -319,33 +308,34 @@ _nenhum_
 ## Consultas mais custosas (pg_stat_statements, desde o último reset)
 | role | chamadas (~) | total ms (~) | média ms | query |
 |---|---|---|---|---|
-| authenticated | ~38k | ~1.9M | 49.74 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."lido" = $1 LIMIT $2 OFFSET $3 ) , pgrst_source_count AS (SELECT $5 FROM "public"."alertas" WHERE "public"."alertas"."li` |
-| authenticated | ~36.7k | ~1.1M | 30.48 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
-| postgres | ~3.8k | ~663.2k | 174.16 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
-| authenticated | ~38k | ~156k | 4.11 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."tipo" = ANY ($1) AND "public"."alertas"."lido" = $2 LIMIT $3 OFFSET $4 ) , pgrst_source_count AS (SELECT $7 FROM "publi` |
-| authenticator | ~220 | ~126.2k | 573.75 | `SELECT name FROM pg_timezone_names` |
-| service_role | ~970 | ~120.6k | 124.68 | `WITH pgrst_source AS (SELECT pgrst_call.pgrst_scalar FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "sql" FROM json_to_record(pgrst_payload.json_data) AS _("sql" text) LIMIT $4) pgrst_body , LATERAL (SELECT` |
-| authenticated | ~24.8k | ~109.7k | 4.42 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
-| authenticated | ~260 | ~103.7k | 395.86 | `WITH pgrst_source AS ( SELECT "public"."vw_edge_health".* FROM "public"."vw_edge_health" LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_total, coalesce(json_agg(_postgr` |
-| postgres | ~30 | ~103.7k | 3141.35 | `SELECT public.watch_cron_failures($1,$2)` |
-| authenticated | ~12.6k | ~97.5k | 7.76 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
-| authenticated | ~1.8k | ~73.5k | 41.95 | `WITH pgrst_source AS ( SELECT "public"."v_sefaz_observability".* FROM "public"."v_sefaz_observability" ORDER BY "public"."v_sefaz_observability"."seconds_since_last" DESC NULLS FIRST LIMIT $1 OFFSET $2 ) SELECT $3::bigin` |
-| authenticated | ~10k | ~67.7k | 6.75 | `WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "p_empresa_id", "p_centro_custo_id" FROM json_to_record(pgrst_payload.json_data) AS _("p_empresa_id" uuid, "p_centr` |
-| authenticated | ~10k | ~67.6k | 6.74 | `WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "p_empresa_id", "p_centro_custo_id" FROM json_to_record(pgrst_payload.json_data) AS _("p_empresa_id" uuid, "p_centr` |
-| authenticated | ~12.6k | ~67.2k | 5.35 | `WITH pgrst_source AS ( SELECT "public"."contas_receber"."id", "public"."contas_receber"."data_vencimento", "public"."contas_receber"."data_recebimento", "public"."contas_receber"."cliente_nome", "public"."contas_receber"` |
-| postgres | ~30 | ~65.2k | 2037.07 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| authenticated | ~39.8k | ~2M | 49.82 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."lido" = $1 LIMIT $2 OFFSET $3 ) , pgrst_source_count AS (SELECT $5 FROM "public"."alertas" WHERE "public"."alertas"."li` |
+| authenticated | ~38.5k | ~1.2M | 30.53 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
+| postgres | ~3.9k | ~683.3k | 174.00 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
+| authenticated | ~39.8k | ~163.5k | 4.11 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."tipo" = ANY ($1) AND "public"."alertas"."lido" = $2 LIMIT $3 OFFSET $4 ) , pgrst_source_count AS (SELECT $7 FROM "publi` |
+| service_role | ~1k | ~140.8k | 134.32 | `WITH pgrst_source AS (SELECT pgrst_call.pgrst_scalar FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "sql" FROM json_to_record(pgrst_payload.json_data) AS _("sql" text) LIMIT $4) pgrst_body , LATERAL (SELECT` |
+| authenticator | ~230 | ~132.9k | 572.76 | `SELECT name FROM pg_timezone_names` |
+| postgres | ~30 | ~113.2k | 3329.95 | `SELECT public.watch_cron_failures($1,$2)` |
+| authenticated | ~25.3k | ~111.6k | 4.41 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
+| authenticated | ~270 | ~108k | 398.45 | `WITH pgrst_source AS ( SELECT "public"."vw_edge_health".* FROM "public"."vw_edge_health" LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_total, coalesce(json_agg(_postgr` |
+| authenticated | ~13.1k | ~101.5k | 7.77 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
+| authenticated | ~1.8k | ~77.6k | 42.03 | `WITH pgrst_source AS ( SELECT "public"."v_sefaz_observability".* FROM "public"."v_sefaz_observability" ORDER BY "public"."v_sefaz_observability"."seconds_since_last" DESC NULLS FIRST LIMIT $1 OFFSET $2 ) SELECT $3::bigin` |
+| authenticated | ~13.3k | ~71.3k | 5.37 | `WITH pgrst_source AS ( SELECT "public"."contas_receber"."id", "public"."contas_receber"."data_vencimento", "public"."contas_receber"."data_recebimento", "public"."contas_receber"."cliente_nome", "public"."contas_receber"` |
+| authenticated | ~10.5k | ~71k | 6.78 | `WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "p_empresa_id", "p_centro_custo_id" FROM json_to_record(pgrst_payload.json_data) AS _("p_empresa_id" uuid, "p_centr` |
+| authenticated | ~10.5k | ~70.8k | 6.76 | `WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "p_empresa_id", "p_centro_custo_id" FROM json_to_record(pgrst_payload.json_data) AS _("p_empresa_id" uuid, "p_centr` |
+| postgres | ~30 | ~65.7k | 1990.06 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
 
 
 ## Conexões
 | usuário | estado | n |
 |---|---|---|
-| authenticator | idle | 21 |
-| pgbouncer | idle | 1 |
+| authenticator | idle | 6 |
+| pgbouncer | idle | 2 |
 | postgres | active | 1 |
 | supabase_admin | active | 1 |
 | supabase_admin | idle | 8 |
 | supabase_admin |  | 2 |
 | supabase_auth_admin | idle | 1 |
+| supabase_storage_admin | idle | 1 |
 
 
 ## Saúde dos serviços
@@ -374,11 +364,11 @@ _nenhum_
   {
     "healthy": true,
     "info": {
-      "connected_cluster": 1,
+      "connected_cluster": 0,
       "db_connected": true,
       "healthy": true,
-      "node": "realtime@2600:1f1c:c90:ad01:2651:dacb:36b:599d",
-      "region": "us-west-1",
+      "node": "realtime@2600:1f18:67fc:ac02:dbdc:f2e1:acab:82b8",
+      "region": "us-east-1",
       "replication_connected": true
     },
     "name": "realtime",

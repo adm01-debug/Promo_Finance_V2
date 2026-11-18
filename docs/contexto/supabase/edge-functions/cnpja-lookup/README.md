@@ -4,7 +4,7 @@
 |---|---|
 | nome | cnpja-lookup |
 | status | ACTIVE |
-| versão | 102 |
+| versão | 104 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/cnpja-lookup/index.ts |
 | import_map |  |

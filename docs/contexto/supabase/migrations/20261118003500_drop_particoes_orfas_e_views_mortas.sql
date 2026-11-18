@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS public.audit_logs_2026_01..10, audit_logs_default; DROP VIEW IF EXISTS vw_notification_history_duplicates, vw_rpc_hotspots, vw_rpc_slow_calls; DROP FUNCTION IF EXISTS refresh_mv_benchmark_setorial(); DROP MATERIALIZED VIEW IF EXISTS mv_benchmark_setorial -- ver supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql

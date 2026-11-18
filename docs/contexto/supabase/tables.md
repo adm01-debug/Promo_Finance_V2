@@ -36,17 +36,6 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.asaas_sync_queue](tables/public/asaas_sync_queue.md) | table | sim | 2 | 10 | não |  |
 | [public.asaas_transfers](tables/public/asaas_transfers.md) | table | sim | 4 | 14 | não |  |
 | [public.audit_logs](tables/public/audit_logs.md) | table | sim | 3 | 12 | sim |  |
-| [public.audit_logs_2026_01](tables/public/audit_logs_2026_01.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_02](tables/public/audit_logs_2026_02.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_03](tables/public/audit_logs_2026_03.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_04](tables/public/audit_logs_2026_04.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_05](tables/public/audit_logs_2026_05.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_06](tables/public/audit_logs_2026_06.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_07](tables/public/audit_logs_2026_07.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_08](tables/public/audit_logs_2026_08.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_09](tables/public/audit_logs_2026_09.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_2026_10](tables/public/audit_logs_2026_10.md) | table | sim | 1 | 12 | não |  |
-| [public.audit_logs_default](tables/public/audit_logs_default.md) | table | sim | 1 | 12 | não |  |
 | [public.auditoria_financeira](tables/public/auditoria_financeira.md) | table | sim | 2 | 10 | não |  |
 | [public.auditoria_tributaria](tables/public/auditoria_tributaria.md) | table | sim | 1 | 17 | não |  |
 | [public.auth_logs](tables/public/auth_logs.md) | table | sim | 3 | 9 | não |  |

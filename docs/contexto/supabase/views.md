@@ -35,38 +35,6 @@ SELECT id,
    FROM extrato_bancario;
 ```
 
-## public.mv_benchmark_setorial (materialized)
-
-| campo | valor |
-|---|---|
-| owner | postgres |
-| security_invoker | n/a |
-| opções |  |
-| depende de | public.vw_tributario_dashboard |
-| populada | sim |
-| comentário |  |
-
-
-```sql
-WITH carga AS (
-         SELECT vw_tributario_dashboard.regime_tributario AS regime,
-            vw_tributario_dashboard.empresa_id,
-            sum(vw_tributario_dashboard.total_tributos) AS total_12m
-           FROM vw_tributario_dashboard
-          WHERE vw_tributario_dashboard.ano IS NOT NULL AND vw_tributario_dashboard.mes IS NOT NULL AND (vw_tributario_dashboard.ano * 12 + vw_tributario_dashboard.mes) >= (EXTRACT(year FROM CURRENT_DATE)::integer * 12 + EXTRACT(month FROM CURRENT_DATE)::integer - 12)
-          GROUP BY vw_tributario_dashboard.regime_tributario, vw_tributario_dashboard.empresa_id
-        )
- SELECT regime,
-    count(*) AS amostra,
-    percentile_cont(0.25::double precision) WITHIN GROUP (ORDER BY (total_12m::double precision)) AS p25,
-    percentile_cont(0.5::double precision) WITHIN GROUP (ORDER BY (total_12m::double precision)) AS mediana,
-    percentile_cont(0.75::double precision) WITHIN GROUP (ORDER BY (total_12m::double precision)) AS p75,
-    avg(total_12m) AS media,
-    now() AS atualizado_em
-   FROM carga
-  GROUP BY regime;
-```
-
 ## public.mv_performance_alerts_weekly (materialized)
 
 | campo | valor |
@@ -526,100 +494,6 @@ SELECT empresa_id,
     avg(COALESCE(data_recebimento, CURRENT_DATE) - data_vencimento) FILTER (WHERE status::text = 'recebido'::text) AS prazo_medio_recebimento
    FROM contas_receber cr
   GROUP BY empresa_id, (date_trunc('month'::text, data_vencimento::timestamp with time zone));
-```
-
-## public.vw_notification_history_duplicates (view)
-
-| campo | valor |
-|---|---|
-| owner | postgres |
-| security_invoker | sim |
-| opções | security_invoker=true |
-| depende de | public.notification_history |
-| populada | n/a |
-| comentário | Auditoria: pares de notificaÃ§Ãµes entregues no mesmo (user, source_ref, channel) em janela < 60s. Indica falha de dedup (ex.: realtime re-entregue apÃ³s refresh sem honrar last_seen_at). RLS via security_invoker â€” usuÃ¡rio sÃ³ vÃª o que jÃ¡ enxerga em notification_history. |
-
-
-```sql
-WITH ranked AS (
-         SELECT nh.id,
-            nh.user_id,
-            nh.source,
-            nh.source_ref,
-            nh.channel,
-            nh.title,
-            nh.created_at,
-            lag(nh.created_at) OVER (PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at) AS prev_created_at
-           FROM notification_history nh
-          WHERE nh.source_ref IS NOT NULL
-        )
- SELECT id,
-    user_id,
-    source,
-    source_ref,
-    channel,
-    title,
-    created_at,
-    prev_created_at,
-    EXTRACT(epoch FROM created_at - prev_created_at)::integer AS seconds_since_prev
-   FROM ranked
-  WHERE prev_created_at IS NOT NULL AND (created_at - prev_created_at) < '00:01:00'::interval;
-```
-
-## public.vw_rpc_hotspots (view)
-
-| campo | valor |
-|---|---|
-| owner | postgres |
-| security_invoker | sim |
-| opções | security_invoker=true |
-| depende de | public.rpc_observability_metrics |
-| populada | n/a |
-| comentário |  |
-
-
-```sql
-SELECT function_name,
-    date_trunc('hour'::text, called_at) AS bucket_hour,
-    count(*) AS calls,
-    count(*) FILTER (WHERE NOT success) AS errors,
-    round(avg(duration_ms), 2) AS avg_ms,
-    round(percentile_cont(0.5::double precision) WITHIN GROUP (ORDER BY (duration_ms::double precision))::numeric, 2) AS p50_ms,
-    round(percentile_cont(0.95::double precision) WITHIN GROUP (ORDER BY (duration_ms::double precision))::numeric, 2) AS p95_ms,
-    round(percentile_cont(0.99::double precision) WITHIN GROUP (ORDER BY (duration_ms::double precision))::numeric, 2) AS p99_ms,
-    max(duration_ms) AS max_ms
-   FROM rpc_observability_metrics
-  WHERE called_at >= (now() - '7 days'::interval)
-  GROUP BY function_name, (date_trunc('hour'::text, called_at));
-```
-
-## public.vw_rpc_slow_calls (view)
-
-| campo | valor |
-|---|---|
-| owner | postgres |
-| security_invoker | sim |
-| opções | security_invoker=true |
-| depende de | public.rpc_observability_metrics |
-| populada | n/a |
-| comentário |  |
-
-
-```sql
-SELECT id,
-    function_name,
-    caller_user_id,
-    caller_role,
-    duration_ms,
-    success,
-    error_sqlstate,
-    error_message,
-    meta,
-    called_at
-   FROM rpc_observability_metrics
-  WHERE called_at >= (now() - '24:00:00'::interval)
-  ORDER BY duration_ms DESC
- LIMIT 200;
 ```
 
 ## public.vw_saldos_contas (view)

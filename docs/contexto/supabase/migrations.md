@@ -1049,3 +1049,6 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261117224000 | [vw_fluxo_caixa_por_empresa](migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql) | 0 |
 | 20261117225000 | [indices_recuperados_da_445](migrations/20261117225000_indices_recuperados_da_445.sql) | 0 |
 | 20261117232000 | [indices_anti_duplicata_contas](migrations/20261117232000_indices_anti_duplicata_contas.sql) | 0 |
+| 20261118000000 | [versiona_vw_webhooks_recentes](migrations/20261118000000_versiona_vw_webhooks_recentes.sql) | 0 |
+| 20261118002000 | [rate_limit_check_atomico](migrations/20261118002000_rate_limit_check_atomico.sql) | 1 |
+| 20261118003500 | [drop_particoes_orfas_e_views_mortas](migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql) | 1 |

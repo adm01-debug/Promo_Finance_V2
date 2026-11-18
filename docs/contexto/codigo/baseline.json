@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2aa38510eff1df92f15e73fddde07eaca44b14d5",
+  "commit": "f56d3076bbf45e3cb81c5de170fc1910433cb1e2",
   "branch": "main",
-  "data_commit": "2026-11-17T20:50:33-03:00",
+  "data_commit": "2026-11-17T21:32:54-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f56d307",
+    "data": "2026-11-17",
+    "assunto": "chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)"
+   },
    {
     "sha": "2aa3851",
     "data": "2026-11-17",
@@ -126,11 +131,6 @@
     "sha": "b982315",
     "data": "2026-11-17",
     "assunto": "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)"
-   },
-   {
-    "sha": "9ae3a5f",
-    "data": "2026-11-17",
-    "assunto": "fix(db): aplica as 25 colunas que o código grava e nunca chegaram ao banco (#440)"
    }
   ],
   "arquivos_mudados_7d": 927,
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 39
+    "mudancas": 38
    },
    {
     "arquivo": "bun.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 214
+    "commits": 215
    },
    {
     "autor": "dependabot[bot]",

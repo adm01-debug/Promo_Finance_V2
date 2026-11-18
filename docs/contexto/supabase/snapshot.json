@@ -302,7 +302,7 @@
         "is_default": true,
         "name": "main",
         "persistent": false,
-        "status": "FUNCTIONS_DEPLOYED"
+        "status": "MIGRATIONS_FAILED"
       }
     ],
     "custom_hostname": null,
@@ -315,9 +315,9 @@
         "name": "aceitar-convite",
         "slug": "aceitar-convite",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -327,9 +327,9 @@
         "name": "analise-fluxo-ia",
         "slug": "analise-fluxo-ia",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 109
+        "version": 111
       },
       {
         "created_at": 1787655368587,
@@ -339,9 +339,9 @@
         "name": "analise-preditiva",
         "slug": "analise-preditiva",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -351,9 +351,9 @@
         "name": "analyze-document",
         "slug": "analyze-document",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1789232363492,
@@ -363,9 +363,9 @@
         "name": "api-keys-manage",
         "slug": "api-keys-manage",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 94
+        "version": 96
       },
       {
         "created_at": 1785325583131,
@@ -375,9 +375,9 @@
         "name": "asaas-proxy",
         "slug": "asaas-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -387,9 +387,9 @@
         "name": "asaas-webhook",
         "slug": "asaas-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 109
+        "version": 111
       },
       {
         "created_at": 1787655368587,
@@ -399,9 +399,9 @@
         "name": "benchmarking-setorial",
         "slug": "benchmarking-setorial",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -411,9 +411,9 @@
         "name": "bitrix24-sync",
         "slug": "bitrix24-sync",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 109
+        "version": 111
       },
       {
         "created_at": 1787655368587,
@@ -423,9 +423,9 @@
         "name": "bitrix24-webhook",
         "slug": "bitrix24-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 110
+        "version": 112
       },
       {
         "created_at": 1787655368587,
@@ -435,9 +435,9 @@
         "name": "bling-proxy",
         "slug": "bling-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -447,9 +447,9 @@
         "name": "bling-webhook",
         "slug": "bling-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -459,9 +459,9 @@
         "name": "calcular-health-score-operacional",
         "slug": "calcular-health-score-operacional",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -471,9 +471,9 @@
         "name": "calcular-slo-metrics-diario",
         "slug": "calcular-slo-metrics-diario",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -483,9 +483,9 @@
         "name": "calculo-iva",
         "slug": "calculo-iva",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -495,9 +495,9 @@
         "name": "categorizar-despesa",
         "slug": "categorizar-despesa",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -507,9 +507,9 @@
         "name": "ci-security-gate-log",
         "slug": "ci-security-gate-log",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -519,9 +519,9 @@
         "name": "cnpja-lookup",
         "slug": "cnpja-lookup",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1785349017739,
@@ -531,9 +531,9 @@
         "name": "comparar-benchmark-setorial",
         "slug": "comparar-benchmark-setorial",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -543,9 +543,9 @@
         "name": "compare-schemas",
         "slug": "compare-schemas",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -555,9 +555,9 @@
         "name": "conciliacao-ia",
         "slug": "conciliacao-ia",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -567,9 +567,9 @@
         "name": "conciliacao-proxy",
         "slug": "conciliacao-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -579,9 +579,9 @@
         "name": "consulta-tributaria",
         "slug": "consulta-tributaria",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -591,9 +591,9 @@
         "name": "contabilizar-evento",
         "slug": "contabilizar-evento",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -603,9 +603,9 @@
         "name": "convidar-contador",
         "slug": "convidar-contador",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1789217313886,
@@ -615,9 +615,9 @@
         "name": "convidar-usuario",
         "slug": "convidar-usuario",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 95
+        "version": 97
       },
       {
         "created_at": 1787655368587,
@@ -627,9 +627,9 @@
         "name": "copilot-global",
         "slug": "copilot-global",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -639,9 +639,9 @@
         "name": "copilot-tributario",
         "slug": "copilot-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787416826942,
@@ -651,9 +651,9 @@
         "name": "decidir-regime",
         "slug": "decidir-regime",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -663,9 +663,9 @@
         "name": "detectar-anomalias-financeiras",
         "slug": "detectar-anomalias-financeiras",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -675,9 +675,9 @@
         "name": "digest-silenciamentos-erro",
         "slug": "digest-silenciamentos-erro",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -687,9 +687,9 @@
         "name": "enviar-alerta-email",
         "slug": "enviar-alerta-email",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 109
+        "version": 111
       },
       {
         "created_at": 1787655368587,
@@ -699,9 +699,9 @@
         "name": "enviar-bitrix24-tributario",
         "slug": "enviar-bitrix24-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 101
+        "version": 103
       },
       {
         "created_at": 1787655368587,
@@ -711,9 +711,9 @@
         "name": "enviar-convite-organizacao",
         "slug": "enviar-convite-organizacao",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -723,9 +723,9 @@
         "name": "enviar-digest-conformidade",
         "slug": "enviar-digest-conformidade",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -735,9 +735,9 @@
         "name": "enviar-relatorios-tributarios-agendados",
         "slug": "enviar-relatorios-tributarios-agendados",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -747,9 +747,9 @@
         "name": "executar-analise-preditiva",
         "slug": "executar-analise-preditiva",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -759,9 +759,9 @@
         "name": "executar-fechamento-tributario",
         "slug": "executar-fechamento-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787410714411,
@@ -771,9 +771,9 @@
         "name": "executar-regua-cobranca",
         "slug": "executar-regua-cobranca",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -783,9 +783,9 @@
         "name": "executar-relatorios",
         "slug": "executar-relatorios",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -795,9 +795,9 @@
         "name": "expert-agent",
         "slug": "expert-agent",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655421259,
@@ -807,9 +807,9 @@
         "name": "exportar-sped-contribuicoes",
         "slug": "exportar-sped-contribuicoes",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1785267975129,
@@ -819,9 +819,9 @@
         "name": "external-data",
         "slug": "external-data",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 110
+        "version": 112
       },
       {
         "created_at": 1787655368587,
@@ -831,9 +831,9 @@
         "name": "gerar-acoes-recomendadas",
         "slug": "gerar-acoes-recomendadas",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -843,9 +843,9 @@
         "name": "gerar-alertas",
         "slug": "gerar-alertas",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -855,9 +855,9 @@
         "name": "gerar-alertas-dispatcher",
         "slug": "gerar-alertas-dispatcher",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -867,9 +867,9 @@
         "name": "gerar-alertas-tributarios",
         "slug": "gerar-alertas-tributarios",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1785349068086,
@@ -879,9 +879,9 @@
         "name": "gerar-dre-tributaria",
         "slug": "gerar-dre-tributaria",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 109
+        "version": 111
       },
       {
         "created_at": 1785349108621,
@@ -891,9 +891,9 @@
         "name": "gerar-heatmap-tributario",
         "slug": "gerar-heatmap-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 111
+        "version": 113
       },
       {
         "created_at": 1787655368587,
@@ -903,9 +903,9 @@
         "name": "gerar-pacote-evidencias",
         "slug": "gerar-pacote-evidencias",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 100
+        "version": 102
       },
       {
         "created_at": 1787655368587,
@@ -915,9 +915,9 @@
         "name": "gerar-pdf-tributario",
         "slug": "gerar-pdf-tributario",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -927,9 +927,9 @@
         "name": "gerar-relatorio-anual",
         "slug": "gerar-relatorio-anual",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -939,9 +939,9 @@
         "name": "gerar-resumo-executivo-semanal",
         "slug": "gerar-resumo-executivo-semanal",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -951,9 +951,9 @@
         "name": "gerar-resumo-financeiro-diario",
         "slug": "gerar-resumo-financeiro-diario",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -963,9 +963,9 @@
         "name": "gerar-snapshots-conformidade",
         "slug": "gerar-snapshots-conformidade",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -975,9 +975,9 @@
         "name": "gerar-sped-ecd",
         "slug": "gerar-sped-ecd",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -987,9 +987,9 @@
         "name": "gerar-sped-ecf",
         "slug": "gerar-sped-ecf",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -999,9 +999,9 @@
         "name": "get-mapbox-token",
         "slug": "get-mapbox-token",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -1011,9 +1011,9 @@
         "name": "get-vapid-key",
         "slug": "get-vapid-key",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -1023,9 +1023,9 @@
         "name": "health",
         "slug": "health",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -1035,9 +1035,9 @@
         "name": "insights-relatorio",
         "slug": "insights-relatorio",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -1047,9 +1047,9 @@
         "name": "log-sped-bitrix24",
         "slug": "log-sped-bitrix24",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1059,9 +1059,9 @@
         "name": "mcp-query",
         "slug": "mcp-query",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1794586833536,
@@ -1071,9 +1071,9 @@
         "name": "monitor-health",
         "slug": "monitor-health",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 88
+        "version": 90
       },
       {
         "created_at": 1787655368587,
@@ -1083,9 +1083,9 @@
         "name": "monitorar-erros-frontend",
         "slug": "monitorar-erros-frontend",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -1095,9 +1095,9 @@
         "name": "n8n-callback",
         "slug": "n8n-callback",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -1107,9 +1107,9 @@
         "name": "n8n-dispatch",
         "slug": "n8n-dispatch",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -1119,9 +1119,9 @@
         "name": "nfe-upload-certificado",
         "slug": "nfe-upload-certificado",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -1131,9 +1131,9 @@
         "name": "nfe-vinculo-proxy",
         "slug": "nfe-vinculo-proxy",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -1143,9 +1143,9 @@
         "name": "notify-performance-alert",
         "slug": "notify-performance-alert",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -1155,9 +1155,9 @@
         "name": "notify-saved-filter",
         "slug": "notify-saved-filter",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1785410693262,
@@ -1167,9 +1167,9 @@
         "name": "open-finance",
         "slug": "open-finance",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -1179,9 +1179,9 @@
         "name": "overlay-rejeicoes-auditoria",
         "slug": "overlay-rejeicoes-auditoria",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1785348804189,
@@ -1191,9 +1191,9 @@
         "name": "prever-carga-tributaria",
         "slug": "prever-carga-tributaria",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -1203,9 +1203,9 @@
         "name": "processar-fila-cobrancas",
         "slug": "processar-fila-cobrancas",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -1215,9 +1215,9 @@
         "name": "processar-nf-ocr",
         "slug": "processar-nf-ocr",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655426108,
@@ -1227,9 +1227,9 @@
         "name": "processar-solicitacao-lgpd",
         "slug": "processar-solicitacao-lgpd",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1239,9 +1239,9 @@
         "name": "projecao-reforma",
         "slug": "projecao-reforma",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -1251,9 +1251,9 @@
         "name": "relatorio-diario-anomalias",
         "slug": "relatorio-diario-anomalias",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1263,9 +1263,9 @@
         "name": "scim-server",
         "slug": "scim-server",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -1275,9 +1275,9 @@
         "name": "sefaz-dfe-dispatcher",
         "slug": "sefaz-dfe-dispatcher",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -1287,9 +1287,9 @@
         "name": "sefaz-dfe-puxar",
         "slug": "sefaz-dfe-puxar",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -1299,9 +1299,9 @@
         "name": "sefaz-manifestar",
         "slug": "sefaz-manifestar",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -1311,9 +1311,9 @@
         "name": "send-device-alert",
         "slug": "send-device-alert",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -1323,9 +1323,9 @@
         "name": "send-push-notification",
         "slug": "send-push-notification",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -1335,9 +1335,9 @@
         "name": "simular-presumido",
         "slug": "simular-presumido",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1347,9 +1347,9 @@
         "name": "simular-real",
         "slug": "simular-real",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 103
+        "version": 105
       },
       {
         "created_at": 1787655368587,
@@ -1359,9 +1359,9 @@
         "name": "simular-simples",
         "slug": "simular-simples",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -1371,9 +1371,9 @@
         "name": "sincronizar-anomalia-bitrix24",
         "slug": "sincronizar-anomalia-bitrix24",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 100
+        "version": 102
       },
       {
         "created_at": 1787655368587,
@@ -1383,9 +1383,9 @@
         "name": "sso-callback",
         "slug": "sso-callback",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -1395,9 +1395,9 @@
         "name": "sso-generate-metadata",
         "slug": "sso-generate-metadata",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1407,9 +1407,9 @@
         "name": "sso-initiate",
         "slug": "sso-initiate",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -1419,9 +1419,9 @@
         "name": "sso-logout",
         "slug": "sso-logout",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 100
+        "version": 102
       },
       {
         "created_at": 1787418259817,
@@ -1431,9 +1431,9 @@
         "name": "sso-test-login",
         "slug": "sso-test-login",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1443,9 +1443,9 @@
         "name": "sso-validate-config",
         "slug": "sso-validate-config",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -1455,9 +1455,9 @@
         "name": "sync-profile-to-bitrix",
         "slug": "sync-profile-to-bitrix",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 109
+        "version": 111
       },
       {
         "created_at": 1791907976432,
@@ -1467,9 +1467,9 @@
         "name": "upload-anexo",
         "slug": "upload-anexo",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 91
+        "version": 93
       },
       {
         "created_at": 1787655368587,
@@ -1479,9 +1479,9 @@
         "name": "validar-token-contador",
         "slug": "validar-token-contador",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1491,9 +1491,9 @@
         "name": "validate-ip-geo",
         "slug": "validate-ip-geo",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 106
+        "version": 108
       },
       {
         "created_at": 1787655368587,
@@ -1503,9 +1503,9 @@
         "name": "verificar-conformidade-fiscal",
         "slug": "verificar-conformidade-fiscal",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 102
+        "version": 104
       },
       {
         "created_at": 1787655368587,
@@ -1515,9 +1515,9 @@
         "name": "webhook-replay",
         "slug": "webhook-replay",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -1527,9 +1527,9 @@
         "name": "webhook-retry-worker",
         "slug": "webhook-retry-worker",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 104
+        "version": 106
       },
       {
         "created_at": 1787655368587,
@@ -1539,9 +1539,9 @@
         "name": "webhook-simulator",
         "slug": "webhook-simulator",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 105
+        "version": 107
       },
       {
         "created_at": 1787655368587,
@@ -1551,9 +1551,9 @@
         "name": "whatsapp-ai-analyzer",
         "slug": "whatsapp-ai-analyzer",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": true,
-        "version": 107
+        "version": 109
       },
       {
         "created_at": 1787655368587,
@@ -1563,9 +1563,9 @@
         "name": "whatsapp-ia-proativo",
         "slug": "whatsapp-ia-proativo",
         "status": "ACTIVE",
-        "updated_at": 1794956740260,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 108
+        "version": 110
       },
       {
         "created_at": 1787655368587,
@@ -1575,9 +1575,9 @@
         "name": "whatsapp-webhook",
         "slug": "whatsapp-webhook",
         "status": "ACTIVE",
-        "updated_at": 1794956729218,
+        "updated_at": 1794959574499,
         "verify_jwt": false,
-        "version": 107
+        "version": 109
       }
     ],
     "enabled": true,
@@ -8165,1722 +8165,6 @@
         "position": 12,
         "schema": "public",
         "table": "audit_logs",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": "gen_random_uuid()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": false,
-        "position": 1,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "action",
-        "nullable": false,
-        "position": 3,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "table_name",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "record_id",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "old_data",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "new_data",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "details",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "ip_address",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_agent",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_email",
-        "nullable": true,
-        "position": 11,
-        "schema": "public",
-        "table": "audit_logs_default",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": "now()",
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": false,
-        "position": 12,
-        "schema": "public",
-        "table": "audit_logs_default",
         "type": "timestamp with time zone"
       },
       {
@@ -29616,97 +27900,6 @@
         "schema": "public",
         "table": "movimentacoes",
         "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "regime",
-        "nullable": true,
-        "position": 1,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "amostra",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "bigint"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "p25",
-        "nullable": true,
-        "position": 3,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "double precision"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "mediana",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "double precision"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "p75",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "double precision"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "media",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "atualizado_em",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "mv_benchmark_setorial",
-        "type": "timestamp with time zone"
       },
       {
         "comment": null,
@@ -51346,370 +49539,6 @@
         "generated": null,
         "identity": null,
         "is_enum": false,
-        "name": "id",
-        "nullable": true,
-        "position": 1,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "user_id",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "source",
-        "nullable": true,
-        "position": 3,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "source_ref",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "channel",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "title",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "created_at",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "prev_created_at",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "seconds_since_prev",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "vw_notification_history_duplicates",
-        "type": "integer"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "function_name",
-        "nullable": true,
-        "position": 1,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "bucket_hour",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "calls",
-        "nullable": true,
-        "position": 3,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "bigint"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "errors",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "bigint"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "avg_ms",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "p50_ms",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "p95_ms",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "p99_ms",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "max_ms",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "vw_rpc_hotspots",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "id",
-        "nullable": true,
-        "position": 1,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "bigint"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "function_name",
-        "nullable": true,
-        "position": 2,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "caller_user_id",
-        "nullable": true,
-        "position": 3,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "uuid"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "caller_role",
-        "nullable": true,
-        "position": 4,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "duration_ms",
-        "nullable": true,
-        "position": 5,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "numeric"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "success",
-        "nullable": true,
-        "position": 6,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "boolean"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "error_sqlstate",
-        "nullable": true,
-        "position": 7,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "error_message",
-        "nullable": true,
-        "position": 8,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "text"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "meta",
-        "nullable": true,
-        "position": 9,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "jsonb"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
-        "name": "called_at",
-        "nullable": true,
-        "position": 10,
-        "schema": "public",
-        "table": "vw_rpc_slow_calls",
-        "type": "timestamp with time zone"
-      },
-      {
-        "comment": null,
-        "default": null,
-        "generated": null,
-        "identity": null,
-        "is_enum": false,
         "name": "empresa_id",
         "nullable": true,
         "position": 1,
@@ -54993,204 +52822,6 @@
         "ref_table": null,
         "schema": "public",
         "table": "audit_logs",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_01_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_02_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_03_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_04_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_05_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_06_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_07_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_08_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_09_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_2026_10_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "type": "PRIMARY KEY",
-        "validated": true
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "deferrable": false,
-        "definition": "PRIMARY KEY (id, created_at)",
-        "name": "audit_logs_default_pkey",
-        "on_delete": null,
-        "on_update": null,
-        "ref_columns": [],
-        "ref_schema": null,
-        "ref_table": null,
-        "schema": "public",
-        "table": "audit_logs_default",
         "type": "PRIMARY KEY",
         "validated": true
       },
@@ -76834,6 +74465,36 @@
         "volatility": "volatile"
       },
       {
+        "args": "_endpoint text, _ip inet, _limit integer, _window_seconds integer, _user_agent text",
+        "callers": {
+          "code": [],
+          "code_total_files": 0,
+          "cron": [],
+          "db": [],
+          "triggers": [],
+          "views": []
+        },
+        "comment": null,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "definition": null,
+        "definition_sha": "fc2e87bd5f9999c0",
+        "execute_api_roles": "service_role",
+        "execute_public": false,
+        "is_trigger_fn": false,
+        "kind": "function",
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "rate_limit_check",
+        "owner": "postgres",
+        "returns": "TABLE(permitido boolean, contagem integer)",
+        "schema": "public",
+        "security_definer": true,
+        "strict": false,
+        "volatility": "volatile"
+      },
+      {
         "args": "p_motivo text",
         "callers": {
           "code": [
@@ -76935,45 +74596,6 @@
         "name": "record_failed_login_v2",
         "owner": "postgres",
         "returns": "TABLE(is_locked boolean, lockout_seconds integer, attempt_count integer, is_suspicious boolean)",
-        "schema": "public",
-        "security_definer": true,
-        "strict": false,
-        "volatility": "volatile"
-      },
-      {
-        "args": "",
-        "callers": {
-          "code": [
-            {
-              "file": "supabase/migrations/20260418140233_7d5861e9-57bc-4df3-827b-b9fda80cc806.sql",
-              "hits": 1
-            },
-            {
-              "file": "supabase/migrations/20261116180000_refresh_mv_benchmark_grants_excecao_estreita.sql",
-              "hits": 2
-            }
-          ],
-          "code_total_files": 2,
-          "cron": [],
-          "db": [],
-          "triggers": [],
-          "views": []
-        },
-        "comment": null,
-        "config": [
-          "search_path=public, pg_catalog"
-        ],
-        "definition": null,
-        "definition_sha": "3460b5aed15f2462",
-        "execute_api_roles": "service_role",
-        "execute_public": false,
-        "is_trigger_fn": false,
-        "kind": "function",
-        "language": "plpgsql",
-        "leakproof": false,
-        "name": "refresh_mv_benchmark_setorial",
-        "owner": "postgres",
-        "returns": "void",
         "schema": "public",
         "security_definer": true,
         "strict": false,
@@ -80037,138 +77659,6 @@
           "grantee": "authenticated",
           "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
           "schema": "public",
-          "table": "audit_logs_2026_01"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_01"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_02"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_02"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_03"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_03"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_04"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_04"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_05"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_05"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_06"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_06"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_07"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_07"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_08"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_08"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_09"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_09"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_10"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_2026_10"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_default"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "audit_logs_default"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
           "table": "auditoria_financeira"
         },
         {
@@ -82995,42 +80485,6 @@
           "grantee": "authenticated",
           "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
           "schema": "public",
-          "table": "vw_notification_history_duplicates"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "vw_notification_history_duplicates"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "vw_rpc_hotspots"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "vw_rpc_hotspots"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "vw_rpc_slow_calls"
-        },
-        {
-          "grantee": "service_role",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
-          "table": "vw_rpc_slow_calls"
-        },
-        {
-          "grantee": "authenticated",
-          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
-          "schema": "public",
           "table": "vw_saldos_contas"
         },
         {
@@ -84502,171 +81956,6 @@
         "predicate": null,
         "schema": "public",
         "table": "audit_logs"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_01_pkey ON public.audit_logs_2026_01 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_01_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_01"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_02_pkey ON public.audit_logs_2026_02 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_02_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_02"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_03_pkey ON public.audit_logs_2026_03 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_03_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_03"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_04_pkey ON public.audit_logs_2026_04 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_04_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_04"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_05_pkey ON public.audit_logs_2026_05 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_05_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_05"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_06_pkey ON public.audit_logs_2026_06 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_06_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_06"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_07_pkey ON public.audit_logs_2026_07 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_07_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_07"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_08_pkey ON public.audit_logs_2026_08 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_08_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_08"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_09_pkey ON public.audit_logs_2026_09 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_09_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_09"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_2026_10_pkey ON public.audit_logs_2026_10 USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_2026_10_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_2026_10"
-      },
-      {
-        "columns": [
-          "id",
-          "created_at"
-        ],
-        "definition": "CREATE UNIQUE INDEX audit_logs_default_pkey ON public.audit_logs_default USING btree (id, created_at)",
-        "is_primary": true,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "audit_logs_default_pkey",
-        "predicate": null,
-        "schema": "public",
-        "table": "audit_logs_default"
       },
       {
         "columns": [
@@ -89664,20 +86953,6 @@
         "predicate": null,
         "schema": "public",
         "table": "movimentacoes"
-      },
-      {
-        "columns": [
-          "regime"
-        ],
-        "definition": "CREATE UNIQUE INDEX idx_mv_benchmark_regime ON public.mv_benchmark_setorial USING btree (regime)",
-        "is_primary": false,
-        "is_unique": true,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_mv_benchmark_regime",
-        "predicate": null,
-        "schema": "public",
-        "table": "mv_benchmark_setorial"
       },
       {
         "columns": [
@@ -100811,6 +98086,23 @@
         "name": "indices_anti_duplicata_contas",
         "statements": null,
         "version": "20261117232000"
+      },
+      {
+        "name": "versiona_vw_webhooks_recentes",
+        "statements": null,
+        "version": "20261118000000"
+      },
+      {
+        "name": "rate_limit_check_atomico",
+        "statements": 1,
+        "statements_sha": "e667646970a1e502",
+        "version": "20261118002000"
+      },
+      {
+        "name": "drop_particoes_orfas_e_views_mortas",
+        "statements": 1,
+        "statements_sha": "7b0df6fa60ad9bab",
+        "version": "20261118003500"
       }
     ],
     "policies": [
@@ -101881,138 +99173,6 @@
         "table": "audit_logs",
         "using": null,
         "with_check": "((user_id = ( SELECT ( SELECT auth.uid() AS uid) AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email'::text)))))"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_01",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_01",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_02",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_02",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_03",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_03",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_04",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_04",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_05",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_05",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_06",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_06",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_07",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_07",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_08",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_08",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_09",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_09",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_2026_10",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_2026_10",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "admin_only_audit_logs_default",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "audit_logs_default",
-        "using": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)",
-        "with_check": "has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)"
       },
       {
         "cmd": "SELECT",
@@ -108520,6 +105680,11 @@
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
           "table": "messages_2026_11_20"
+        },
+        {
+          "publication": "supabase_realtime_messages_publication",
+          "schema": "realtime",
+          "table": "messages_2026_11_21"
         }
       ]
     },
@@ -109377,171 +106542,6 @@
         "replica_identity": "default",
         "rls_enabled": true,
         "rls_forced": true,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_01",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_02",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_03",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_04",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_05",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_06",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_07",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_08",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_09",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_2026_10",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
-        "schema": "public"
-      },
-      {
-        "comment": null,
-        "from_extension": false,
-        "is_partition": false,
-        "kind": "table",
-        "name": "audit_logs_default",
-        "owner": "postgres",
-        "parent": null,
-        "partition_bound": null,
-        "partition_key": null,
-        "replica_identity": "default",
-        "rls_enabled": true,
-        "rls_forced": false,
         "schema": "public"
       },
       {
@@ -115458,20 +112458,6 @@
       },
       {
         "comment": null,
-        "definition": " WITH carga AS (\n         SELECT vw_tributario_dashboard.regime_tributario AS regime,\n            vw_tributario_dashboard.empresa_id,\n            sum(vw_tributario_dashboard.total_tributos) AS total_12m\n           FROM vw_tributario_dashboard\n          WHERE vw_tributario_dashboard.ano IS NOT NULL AND vw_tributario_dashboard.mes IS NOT NULL AND (vw_tributario_dashboard.ano * 12 + vw_tributario_dashboard.mes) >= (EXTRACT(year FROM CURRENT_DATE)::integer * 12 + EXTRACT(month FROM CURRENT_DATE)::integer - 12)\n          GROUP BY vw_tributario_dashboard.regime_tributario, vw_tributario_dashboard.empresa_id\n        )\n SELECT regime,\n    count(*) AS amostra,\n    percentile_cont(0.25::double precision) WITHIN GROUP (ORDER BY (total_12m::double precision)) AS p25,\n    percentile_cont(0.5::double precision) WITHIN GROUP (ORDER BY (total_12m::double precision)) AS mediana,\n    percentile_cont(0.75::double precision) WITHIN GROUP (ORDER BY (total_12m::double precision)) AS p75,\n    avg(total_12m) AS media,\n    now() AS atualizado_em\n   FROM carga\n  GROUP BY regime;",
-        "depends_on": [
-          "public.vw_tributario_dashboard"
-        ],
-        "kind": "materialized",
-        "name": "mv_benchmark_setorial",
-        "options": null,
-        "owner": "postgres",
-        "populated": true,
-        "schema": "public",
-        "security_invoker": false
-      },
-      {
-        "comment": null,
         "definition": " WITH weekly AS (\n         SELECT date_trunc('week'::text, performance_alerts.created_at)::date AS week_start,\n            performance_alerts.source,\n            performance_alerts.severity,\n            count(*) AS alert_count,\n            count(DISTINCT performance_alerts.alert_key) AS distinct_keys,\n            round(avg(NULLIF(performance_alerts.current_value, 0::numeric)), 2) AS avg_current_ms,\n            round(max(performance_alerts.current_value), 2) AS max_current_ms,\n            round(avg(NULLIF(performance_alerts.ratio, 0::numeric)), 2) AS avg_ratio,\n            round(max(performance_alerts.ratio), 2) AS max_ratio,\n            sum(COALESCE(performance_alerts.sample_count, 0)) AS total_samples\n           FROM performance_alerts\n          WHERE performance_alerts.created_at > (now() - '90 days'::interval)\n          GROUP BY (date_trunc('week'::text, performance_alerts.created_at)::date), performance_alerts.source, performance_alerts.severity\n        )\n SELECT week_start,\n    source,\n    severity,\n    alert_count,\n    distinct_keys,\n    avg_current_ms,\n    max_current_ms,\n    avg_ratio,\n    max_ratio,\n    total_samples,\n    round((alert_count::numeric - lag(alert_count) OVER (PARTITION BY source, severity ORDER BY week_start)::numeric) / NULLIF(lag(alert_count) OVER (PARTITION BY source, severity ORDER BY week_start), 0)::numeric * 100::numeric, 1) AS delta_pct_vs_prev_week,\n    now() AS refreshed_at\n   FROM weekly\n  ORDER BY week_start DESC, source, severity;",
         "depends_on": [
           "public.performance_alerts"
@@ -115680,54 +112666,6 @@
         ],
         "kind": "view",
         "name": "vw_metricas_cobranca",
-        "options": [
-          "security_invoker=true"
-        ],
-        "owner": "postgres",
-        "populated": null,
-        "schema": "public",
-        "security_invoker": true
-      },
-      {
-        "comment": "Auditoria: pares de notificaÃ§Ãµes entregues no mesmo (user, source_ref, channel) em janela < 60s. Indica falha de dedup (ex.: realtime re-entregue apÃ³s refresh sem honrar last_seen_at). RLS via security_invoker â€” usuÃ¡rio sÃ³ vÃª o que jÃ¡ enxerga em notification_history.",
-        "definition": " WITH ranked AS (\n         SELECT nh.id,\n            nh.user_id,\n            nh.source,\n            nh.source_ref,\n            nh.channel,\n            nh.title,\n            nh.created_at,\n            lag(nh.created_at) OVER (PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at) AS prev_created_at\n           FROM notification_history nh\n          WHERE nh.source_ref IS NOT NULL\n        )\n SELECT id,\n    user_id,\n    source,\n    source_ref,\n    channel,\n    title,\n    created_at,\n    prev_created_at,\n    EXTRACT(epoch FROM created_at - prev_created_at)::integer AS seconds_since_prev\n   FROM ranked\n  WHERE prev_created_at IS NOT NULL AND (created_at - prev_created_at) < '00:01:00'::interval;",
-        "depends_on": [
-          "public.notification_history"
-        ],
-        "kind": "view",
-        "name": "vw_notification_history_duplicates",
-        "options": [
-          "security_invoker=true"
-        ],
-        "owner": "postgres",
-        "populated": null,
-        "schema": "public",
-        "security_invoker": true
-      },
-      {
-        "comment": null,
-        "definition": " SELECT function_name,\n    date_trunc('hour'::text, called_at) AS bucket_hour,\n    count(*) AS calls,\n    count(*) FILTER (WHERE NOT success) AS errors,\n    round(avg(duration_ms), 2) AS avg_ms,\n    round(percentile_cont(0.5::double precision) WITHIN GROUP (ORDER BY (duration_ms::double precision))::numeric, 2) AS p50_ms,\n    round(percentile_cont(0.95::double precision) WITHIN GROUP (ORDER BY (duration_ms::double precision))::numeric, 2) AS p95_ms,\n    round(percentile_cont(0.99::double precision) WITHIN GROUP (ORDER BY (duration_ms::double precision))::numeric, 2) AS p99_ms,\n    max(duration_ms) AS max_ms\n   FROM rpc_observability_metrics\n  WHERE called_at >= (now() - '7 days'::interval)\n  GROUP BY function_name, (date_trunc('hour'::text, called_at));",
-        "depends_on": [
-          "public.rpc_observability_metrics"
-        ],
-        "kind": "view",
-        "name": "vw_rpc_hotspots",
-        "options": [
-          "security_invoker=true"
-        ],
-        "owner": "postgres",
-        "populated": null,
-        "schema": "public",
-        "security_invoker": true
-      },
-      {
-        "comment": null,
-        "definition": " SELECT id,\n    function_name,\n    caller_user_id,\n    caller_role,\n    duration_ms,\n    success,\n    error_sqlstate,\n    error_message,\n    meta,\n    called_at\n   FROM rpc_observability_metrics\n  WHERE called_at >= (now() - '24:00:00'::interval)\n  ORDER BY duration_ms DESC\n LIMIT 200;",
-        "depends_on": [
-          "public.rpc_observability_metrics"
-        ],
-        "kind": "view",
-        "name": "vw_rpc_slow_calls",
         "options": [
           "security_invoker=true"
         ],

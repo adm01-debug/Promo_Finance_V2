@@ -88,17 +88,6 @@ Uso e tamanho em `stats.md`.
 | public.audit_logs | idx_audit_logs_created_at | btree | created_at | não | sim |  |
 | public.audit_logs | idx_audit_logs_table | btree | table_name, created_at | não | sim |  |
 | public.audit_logs | idx_audit_logs_user_id | btree | user_id, created_at | não | sim |  |
-| public.audit_logs_2026_01 | audit_logs_2026_01_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_02 | audit_logs_2026_02_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_03 | audit_logs_2026_03_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_04 | audit_logs_2026_04_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_05 | audit_logs_2026_05_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_06 | audit_logs_2026_06_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_07 | audit_logs_2026_07_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_08 | audit_logs_2026_08_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_09 | audit_logs_2026_09_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_2026_10 | audit_logs_2026_10_pkey | btree | id, created_at | sim | sim |  |
-| public.audit_logs_default | audit_logs_default_pkey | btree | id, created_at | sim | sim |  |
 | public.auditoria_financeira | auditoria_financeira_pkey | btree | id | sim | sim |  |
 | public.auditoria_tributaria | auditoria_tributaria_pkey | btree | id | sim | sim |  |
 | public.auditoria_tributaria | idx_auditoria_trib_criado | btree | criado_em | não | sim |  |
@@ -451,7 +440,6 @@ Uso e tamanho em `stats.md`.
 | public.movimentacoes | idx_movimentacoes_empresa_id | btree | empresa_id | não | sim |  |
 | public.movimentacoes | idx_movimentacoes_empresa_id_fk | btree | empresa_id | não | sim |  |
 | public.movimentacoes | movimentacoes_pkey | btree | id | sim | sim |  |
-| public.mv_benchmark_setorial | idx_mv_benchmark_regime | btree | regime | sim | sim |  |
 | public.mv_performance_alerts_weekly | idx_mv_performance_alerts_weekly_pkey | btree | week_start, source, severity | sim | sim |  |
 | public.n8n_dispatch_logs | idx_n8n_dispatch_logs_config_id | btree | config_id | não | sim | `(config_id IS NOT NULL)` |
 | public.n8n_dispatch_logs | idx_n8n_dispatch_logs_config_id_fk | btree | config_id | não | sim |  |

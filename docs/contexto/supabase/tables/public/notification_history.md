@@ -10,7 +10,6 @@
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
-| usada por views | public.vw_notification_history_duplicates |
 
 
 ## Colunas

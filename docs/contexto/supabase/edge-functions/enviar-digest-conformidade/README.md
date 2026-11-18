@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-digest-conformidade |
 | status | ACTIVE |
-| versão | 106 |
+| versão | 108 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/enviar-digest-conformidade/index.ts |
 | import_map |  |

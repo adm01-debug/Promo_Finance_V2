@@ -4,7 +4,7 @@
 |---|---|
 | nome | exportar-sped-contribuicoes |
 | status | ACTIVE |
-| versão | 107 |
+| versão | 109 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/exportar-sped-contribuicoes/index.ts |
 | import_map |  |

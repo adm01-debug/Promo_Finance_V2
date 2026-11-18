@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2aa38510eff1df92f15e73fddde07eaca44b14d5` (2026-11-17T20:50:33-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f56d3076bbf45e3cb81c5de170fc1910433cb1e2` (2026-11-17T21:32:54-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -461,7 +461,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (39)
+- package.json (38)
 - bun.lock (33)
 - .github/workflows/ci.yml (24)
 - supabase/functions/asaas-proxy/index.ts (18)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `f56d307` chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)
 - 2026-11-17 `2aa3851` fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)
 - 2026-11-17 `6d521cd` docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)
 - 2026-11-17 `fee7c1d` chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `f9b3094` chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)
 - 2026-11-17 `2e8ac1d` infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)
 - 2026-11-17 `31bd09e` fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)
-- 2026-11-17 `9aa7ea6` chore: recupera e termina o trabalho da PR #442, de outro agente (#449)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
