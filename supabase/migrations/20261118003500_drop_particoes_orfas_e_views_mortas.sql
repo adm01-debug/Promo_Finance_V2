@@ -32,17 +32,41 @@
 -- escopo aprovado — listadas em "Próximos passos"), mv_performance_alerts_weekly
 -- (lida por get_performance_alerts_weekly e pelos testes de integridade).
 
-DROP TABLE IF EXISTS public.audit_logs_2026_01;
-DROP TABLE IF EXISTS public.audit_logs_2026_02;
-DROP TABLE IF EXISTS public.audit_logs_2026_03;
-DROP TABLE IF EXISTS public.audit_logs_2026_04;
-DROP TABLE IF EXISTS public.audit_logs_2026_05;
-DROP TABLE IF EXISTS public.audit_logs_2026_06;
-DROP TABLE IF EXISTS public.audit_logs_2026_07;
-DROP TABLE IF EXISTS public.audit_logs_2026_08;
-DROP TABLE IF EXISTS public.audit_logs_2026_09;
-DROP TABLE IF EXISTS public.audit_logs_2026_10;
-DROP TABLE IF EXISTS public.audit_logs_default;
+-- Apontado por Codex (P1) na #467: num banco reconstruído pelas migrations,
+-- 20260711164339:61-104 transforma `audit_logs` em particionada, cria as filhas
+-- mensais e MIGRA os registros para elas — lá, estas tabelas são partições
+-- reais e o pai só enxerga as linhas que estão nelas. Um DROP incondicional
+-- apagaria auditoria. Produção divergiu (pai comum, filhas órfãs e duplicadas),
+-- e é só esse caso que esta migration limpa: cada tabela só cai se NÃO for
+-- partição anexada (relispartition = false e sem linha em pg_inherits).
+-- Partição de verdade fica intocada e é registrada em NOTICE.
+DO $$
+DECLARE
+  v_nome text;
+  v_oid oid;
+BEGIN
+  FOREACH v_nome IN ARRAY ARRAY[
+    'audit_logs_2026_01','audit_logs_2026_02','audit_logs_2026_03','audit_logs_2026_04',
+    'audit_logs_2026_05','audit_logs_2026_06','audit_logs_2026_07','audit_logs_2026_08',
+    'audit_logs_2026_09','audit_logs_2026_10','audit_logs_default'
+  ] LOOP
+    SELECT c.oid INTO v_oid
+    FROM pg_class c
+    WHERE c.relnamespace = 'public'::regnamespace AND c.relname = v_nome AND c.relkind = 'r';
+
+    IF v_oid IS NULL THEN
+      CONTINUE;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM pg_class WHERE oid = v_oid AND relispartition)
+       OR EXISTS (SELECT 1 FROM pg_inherits WHERE inhrelid = v_oid) THEN
+      RAISE NOTICE 'mantida: public.% é partição anexada de audit_logs — não é resíduo', v_nome;
+      CONTINUE;
+    END IF;
+
+    EXECUTE format('DROP TABLE public.%I', v_nome);
+  END LOOP;
+END $$;
 
 DROP VIEW IF EXISTS public.vw_notification_history_duplicates;
 DROP VIEW IF EXISTS public.vw_rpc_hotspots;
