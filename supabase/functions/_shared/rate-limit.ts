@@ -50,39 +50,39 @@ export async function checkRateLimit(
 ): Promise<RateLimitResult> {
   const window = opts.windowSeconds ?? 60;
   const failureMode = opts.failureMode ?? 'open';
-  const since = new Date(Date.now() - window * 1000).toISOString();
 
   try {
-    const { count, error } = await supabase
-      .from('rate_limit_logs')
-      .select('*', { count: 'exact', head: true })
-      .eq('endpoint', opts.endpoint)
-      .eq('ip_address', opts.ip)
-      .gte('created_at', since);
+    // Contagem e registro num único RPC: `rate_limit_check` serializa as
+    // chamadas do mesmo (endpoint, ip) com pg_advisory_xact_lock. Fazer
+    // `select count(*)` e depois `insert` em requisições separadas deixava N
+    // chamadas simultâneas lerem o mesmo total e passarem todas, furando o
+    // limite por até N-1 (Devin 🔴 / Codex P2 na #438). Juntar as duas no
+    // cliente não resolveria: por MVCC, o count não vê insert concorrente não
+    // confirmado — a serialização tem de ser no banco.
+    const { data, error } = await supabase
+      .rpc('rate_limit_check', {
+        _endpoint: opts.endpoint,
+        _ip: opts.ip,
+        _limit: opts.limit,
+        _window_seconds: window,
+        _user_agent: opts.userAgent ?? null,
+      })
+      .maybeSingle();
 
-    if (error) {
-      console.warn(`[rate-limit] query error, fail-${failureMode}:`, error.message);
+    const linha = data as { permitido?: unknown; contagem?: unknown } | null;
+    if (error || !linha || typeof linha.permitido !== 'boolean') {
+      // Resposta ausente ou fora do contrato conta como indisponibilidade:
+      // em fail-open libera, em fail-closed nega com `unavailable` — nunca
+      // "bloqueado" silencioso por um payload inesperado.
+      console.warn(
+        `[rate-limit] rpc error, fail-${failureMode}:`,
+        error?.message ?? (linha ? 'resposta fora do contrato' : 'resposta vazia')
+      );
       return resultadoIndisponivel(failureMode, opts.limit);
     }
 
-    const currentCount = (count ?? 0) + 1;
-    const allowed = currentCount <= opts.limit;
-
-    // A inserção também é parte da defesa: ignorar seu erro faria um endpoint
-    // em modo fechado aceitar chamadas sem conseguir contabilizá-las.
-    const { error: erroRegistro } = await supabase.from('rate_limit_logs').insert({
-      endpoint: opts.endpoint,
-      ip_address: opts.ip,
-      user_agent: opts.userAgent ?? null,
-      blocked: !allowed,
-      request_count: 1,
-      window_start: since,
-      window_end: new Date().toISOString(),
-    });
-    if (erroRegistro) {
-      console.warn(`[rate-limit] insert error, fail-${failureMode}:`, erroRegistro.message);
-      return resultadoIndisponivel(failureMode, opts.limit);
-    }
+    const currentCount = Number(linha.contagem ?? 0);
+    const allowed = linha.permitido;
 
     return {
       allowed,
