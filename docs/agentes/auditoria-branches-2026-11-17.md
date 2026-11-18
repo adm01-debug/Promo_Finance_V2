@@ -410,3 +410,58 @@ mantê-la fechada.
 Branches das quatro: removidas pelo próprio GitHub no fechamento. Isso não apaga o
 conteúdo — `refs/pull/<n>/head` sobrevive e foi de lá que os diffs acima saíram
 (`gh api repos/.../pulls/<n>/files`), depois das branches já não existirem.
+
+### 6.8 As 79 tags de arquivo — conteúdo conferido, não só alcançabilidade
+
+A seção 1 provou que as 90 branches apagadas em 16/11 **voltam** (54 com tag, 36
+ancestrais da `main`). Isso é alcançabilidade, não incorporação: para as 54 ninguém
+havia comparado o conteúdo com a `main`. Fechado aqui, e o teste achou uma perda real.
+
+Método: para cada tag, `git diff --name-only --diff-filter=ACMR <merge-base> <tag>` e,
+para cada arquivo, `git cat-file -e origin/main:<arquivo>` — o que a tag toca e a `main`
+não tem. Depois, para cada ausente, o efeito em produção por query (método da 6.2).
+
+Universo: **79 tags** (77 em `arquivo/261116/`, mais `arquivo/automation-estado-real-261117`
+e `arquivo/diagnostico-actions-261116`, que estão fora daquele prefixo e por isso ficaram
+de fora da varredura anterior). **19 arquivos** ausentes da `main`, em 8 tags.
+
+| tag / arquivo | veredito | prova |
+|---|---|---|
+| `claude_chore-ddl-steps12-23` (7 migrations) | steps 12, 14, 19, 21 **já aplicados**; 15 e 16 **equivalentes**; 13 aplicado menos 1 linha | `pg_policies`, `reloptions`, `is_nullable`, `pg_index` |
+| `claude_fix-estorno-contabil-movimentacao` | `main` é **superset** (`20261116170000`) | `diff` do código: 0 linha órfã sem par |
+| `claude_fix-totais-movimentacoes-rpc` | aplicada | função existe com a assinatura exata |
+| `claude_fix-realtime-performance-alerts` | aplicada | `pg_publication_tables` |
+| `fix_codex-h111911` (guardrails) | invariante já garantida por `integration_secrets_chave_key UNIQUE` | `pg_index` |
+| `fix_codex-h111911` (`DashboardExecutivo.test.tsx`) | **sucedido** | afirmava `.in()`; a `main` tem 3 casos do comportamento atual |
+| `base44_setup` (3 arquivos) | obsoletos | zero referência em código; projeto usa `bun.lock` |
+| `claude_resolve-conflicting-prs` (3 migrations) | obsoletas | já julgadas na 6.2 |
+| `automation-estado-real-261117` | 1 commit, **0 arquivo ausente** | snapshot de telemetria |
+| `diagnostico-actions-261116` (8 workflows) | descartáveis por texto próprio | gatilho só em `claude/chore-diagnostico-actions-**`, branch inexistente; achado virou `sha_pinning_required=false` |
+| **`claude_fix-grants-audit-logs-261114-1500`** | **PERDA REAL — recuperada** | ver abaixo |
+
+**step15 e step16 não se perderam, apesar de 0 dos 18 índices existirem com os nomes da
+migration.** O teste por nome dá falso positivo: as 18 colunas estão indexadas com outros
+nomes (`idx_contas_pagar_centro_custo_id`, `idx_..._id_fk`). O teste correto é
+`pg_index.indkey[0]` — qual índice tem aquela coluna na frente. Criar os da migration
+agora produziria 18 índices duplicados: regressão, não recuperação.
+
+**A linha do step13 que não foi aplicada era errada.** Ele dropa
+`uq_nfe_rec_conta_pagar` como "duplicado"; o índice é UNIQUE parcial em
+`nfe_recebidas(conta_pagar_id) WHERE conta_pagar_id IS NOT NULL` — impede duas notas
+apontarem para a mesma conta a pagar, isto é, pagamento em dobro. O duplicado de verdade
+é `idx_nfe_recebidas_conta_pagar_id_fk`, não-único na mesma coluna. Produção manteve o
+certo; não dropar foi acerto.
+
+**A perda real: o INSERT de `frontend_error_logs`.** `20261114150000_fix_grants_authenticated_audit.sql`
+nunca entrou na `main`. A tabela tem RLS e a policy `frontend_error_user_insert`
+(`TO authenticated`), mas o privilégio de tabela faltava —
+`has_table_privilege('authenticated',...,'INSERT') = false`, enquanto `anon` tinha INSERT.
+Policy sem grant não grava: **0 linhas na tabela desde sempre**, com
+`src/components/error/ErrorBoundary.tsx:46` e `src/lib/telemetry.ts:224` gravando a cada
+erro. Visitante anônimo podia registrar erro e usuário logado não. A assimetria confirma:
+`frontend_performance_logs`, mesmo caminho, tem INSERT e funciona. Corrigido em
+`20261118000500_grant_insert_frontend_error_logs.sql`. Os outros dois alvos daquela
+migration já estavam em produção por outra via.
+
+Conclusão desta seção: de 19 arquivos ausentes, 18 eram obsoletos, equivalentes ou
+sucedidos, e 1 era perda de verdade — encontrada e aplicada.
