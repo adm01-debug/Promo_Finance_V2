@@ -58,11 +58,11 @@ SELECT cmp_ok(
 -- ---------------------------------------------------------------------------
 -- 3) Partição default deve existir
 -- ---------------------------------------------------------------------------
--- audit_logs_default só pode existir como PARTIÇÃO ANEXADA de audit_logs
--- (banco reconstruído pelas migrations, onde 20260711164339 particiona o pai).
--- Como tabela comum solta ela é resíduo — foi o caso de produção, removido em
--- 20261118003500 — e não pode voltar. O teste aceita os dois estados válidos
--- (ausente, ou partição de verdade) e reprova só o órfão.
+-- audit_logs_default so pode existir como PARTICAO ANEXADA de audit_logs
+-- (banco reconstruido pelas migrations, onde 20260711164339 particiona o pai).
+-- Como tabela comum solta ela e residuo -- foi o caso de producao, removido em
+-- 20261118003500 -- e nao pode voltar. O teste aceita os dois estados validos
+-- (ausente, ou particao de verdade) e reprova so o orfao.
 SELECT ok(
   NOT EXISTS (
     SELECT 1 FROM pg_class c
@@ -71,7 +71,7 @@ SELECT ok(
       AND c.relkind = 'r'
       AND NOT c.relispartition
   ),
-  'audit_logs_default, se existir, é partição anexada — nunca tabela órfã (20261118003500)'
+  'audit_logs_default, se existir, e particao anexada -- nunca tabela orfa (20261118003500)'
 );
 SELECT has_table(
   'public', 'frontend_error_logs_default',
