@@ -141,6 +141,13 @@ export type Database = {
             foreignKeyName: 'acoes_recomendadas_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'acoes_recomendadas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -256,6 +263,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'acordos_parcelamento_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'acordos_parcelamento_empresa_id_fkey';
@@ -377,6 +391,13 @@ export type Database = {
             foreignKeyName: 'alert_configurations_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'alert_configurations_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -452,6 +473,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'alertas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'alertas_empresa_id_fkey';
@@ -606,6 +634,13 @@ export type Database = {
             foreignKeyName: 'alertas_tributarios_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'alertas_tributarios_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -675,6 +710,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'alerts_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'alerts_empresa_id_fkey';
@@ -979,28 +1021,40 @@ export type Database = {
       anomalia_detection_runs: {
         Row: {
           created_at: string | null;
+          current_step: string | null;
           error_message: string | null;
+          finished_at: string | null;
           id: string;
           inseridas: number | null;
+          started_at: string | null;
           status: string | null;
+          step_index: number;
           trigger_source: string | null;
           triggered_by: string | null;
         };
         Insert: {
           created_at?: string | null;
+          current_step?: string | null;
           error_message?: string | null;
+          finished_at?: string | null;
           id?: string;
           inseridas?: number | null;
+          started_at?: string | null;
           status?: string | null;
+          step_index?: number;
           trigger_source?: string | null;
           triggered_by?: string | null;
         };
         Update: {
           created_at?: string | null;
+          current_step?: string | null;
           error_message?: string | null;
+          finished_at?: string | null;
           id?: string;
           inseridas?: number | null;
+          started_at?: string | null;
           status?: string | null;
+          step_index?: number;
           trigger_source?: string | null;
           triggered_by?: string | null;
         };
@@ -1229,6 +1283,13 @@ export type Database = {
             foreignKeyName: 'api_keys_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'api_keys_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -1447,6 +1508,13 @@ export type Database = {
             foreignKeyName: 'apuracoes_irpj_csll_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'apuracoes_irpj_csll_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -1605,6 +1673,13 @@ export type Database = {
             foreignKeyName: 'apuracoes_tributarias_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'apuracoes_tributarias_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -1632,6 +1707,9 @@ export type Database = {
           created_at: string;
           details: Json | null;
           id: string;
+          new_status: string | null;
+          previous_status: string | null;
+          user_id: string | null;
         };
         Insert: {
           action?: string | null;
@@ -1640,6 +1718,9 @@ export type Database = {
           created_at?: string;
           details?: Json | null;
           id?: string;
+          new_status?: string | null;
+          previous_status?: string | null;
+          user_id?: string | null;
         };
         Update: {
           action?: string | null;
@@ -1648,6 +1729,9 @@ export type Database = {
           created_at?: string;
           details?: Json | null;
           id?: string;
+          new_status?: string | null;
+          previous_status?: string | null;
+          user_id?: string | null;
         };
         Relationships: [
           {
@@ -1819,6 +1903,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'asaas_payment_links_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'asaas_payment_links_empresa_id_fkey';
@@ -2017,6 +2108,7 @@ export type Database = {
           asaas_payment_id: string | null;
           attempts: number | null;
           created_at: string;
+          error_history: Json | null;
           id: string;
           last_error: string | null;
           next_retry_at: string | null;
@@ -2028,6 +2120,7 @@ export type Database = {
           asaas_payment_id?: string | null;
           attempts?: number | null;
           created_at?: string;
+          error_history?: Json | null;
           id?: string;
           last_error?: string | null;
           next_retry_at?: string | null;
@@ -2039,6 +2132,7 @@ export type Database = {
           asaas_payment_id?: string | null;
           attempts?: number | null;
           created_at?: string;
+          error_history?: Json | null;
           id?: string;
           last_error?: string | null;
           next_retry_at?: string | null;
@@ -2068,7 +2162,9 @@ export type Database = {
           metadata: Json | null;
           status: string | null;
           tipo_chave: string | null;
+          transaction_receipt_url: string | null;
           updated_at: string;
+          user_id: string | null;
           valor: number | null;
         };
         Insert: {
@@ -2082,7 +2178,9 @@ export type Database = {
           metadata?: Json | null;
           status?: string | null;
           tipo_chave?: string | null;
+          transaction_receipt_url?: string | null;
           updated_at?: string;
+          user_id?: string | null;
           valor?: number | null;
         };
         Update: {
@@ -2096,507 +2194,14 @@ export type Database = {
           metadata?: Json | null;
           status?: string | null;
           tipo_chave?: string | null;
+          transaction_receipt_url?: string | null;
           updated_at?: string;
+          user_id?: string | null;
           valor?: number | null;
         };
         Relationships: [];
       };
       audit_logs: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_01: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_02: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_03: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_04: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_05: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_06: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_07: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_08: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_09: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_2026_10: {
-        Row: {
-          action: string;
-          created_at: string;
-          details: string | null;
-          id: string;
-          ip_address: string | null;
-          new_data: Json | null;
-          old_data: Json | null;
-          record_id: string | null;
-          table_name: string | null;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          details?: string | null;
-          id?: string;
-          ip_address?: string | null;
-          new_data?: Json | null;
-          old_data?: Json | null;
-          record_id?: string | null;
-          table_name?: string | null;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
-      };
-      audit_logs_default: {
         Row: {
           action: string;
           created_at: string;
@@ -2745,6 +2350,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'auditoria_tributaria_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'auditoria_tributaria_empresa_id_fkey';
@@ -2980,6 +2592,13 @@ export type Database = {
             foreignKeyName: 'bitrix_field_mappings_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'bitrix_field_mappings_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -3094,6 +2713,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bitrix_sync_logs_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'bitrix_sync_logs_empresa_id_fkey';
@@ -3551,6 +3177,13 @@ export type Database = {
             foreignKeyName: 'bloqueios_duplicidade_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'bloqueios_duplicidade_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -3745,6 +3378,13 @@ export type Database = {
             foreignKeyName: 'boletos_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'boletos_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -3805,6 +3445,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'budgets_company_id_fkey';
+            columns: ['company_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'budgets_company_id_fkey';
@@ -3974,6 +3621,13 @@ export type Database = {
             foreignKeyName: 'categorias_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'categorias_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -4119,6 +3773,8 @@ export type Database = {
       clientes: {
         Row: {
           ativo: boolean | null;
+          bitrix_company_id: string | null;
+          bitrix_contact_id: string | null;
           cidade: string | null;
           cnpj_cpf: string | null;
           contato: string | null;
@@ -4143,6 +3799,8 @@ export type Database = {
         };
         Insert: {
           ativo?: boolean | null;
+          bitrix_company_id?: string | null;
+          bitrix_contact_id?: string | null;
           cidade?: string | null;
           cnpj_cpf?: string | null;
           contato?: string | null;
@@ -4167,6 +3825,8 @@ export type Database = {
         };
         Update: {
           ativo?: boolean | null;
+          bitrix_company_id?: string | null;
+          bitrix_contact_id?: string | null;
           cidade?: string | null;
           cnpj_cpf?: string | null;
           contato?: string | null;
@@ -4269,6 +3929,24 @@ export type Database = {
           fetched_at?: string;
           situacao_cadastral?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      cnpja_rate_limit: {
+        Row: {
+          request_count: number;
+          user_id: string;
+          window_start: string;
+        };
+        Insert: {
+          request_count?: number;
+          user_id: string;
+          window_start: string;
+        };
+        Update: {
+          request_count?: number;
+          user_id?: string;
+          window_start?: string;
         };
         Relationships: [];
       };
@@ -4399,6 +4077,13 @@ export type Database = {
             foreignKeyName: 'configuracoes_aprovacao_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'configuracoes_aprovacao_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -4515,6 +4200,13 @@ export type Database = {
             foreignKeyName: 'conformidade_snapshots_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'conformidade_snapshots_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -4602,6 +4294,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contas_bancarias_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'contas_bancarias_empresa_id_fkey';
@@ -4776,6 +4475,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contas_pagar_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'contas_pagar_empresa_id_fkey';
@@ -4990,6 +4696,13 @@ export type Database = {
             foreignKeyName: 'contas_receber_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'contas_receber_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -5084,6 +4797,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contratos_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'contratos_empresa_id_fkey';
@@ -5217,6 +4937,13 @@ export type Database = {
             foreignKeyName: 'convites_contador_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'convites_contador_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -5326,6 +5053,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'creditos_tributarios_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'creditos_tributarios_empresa_id_fkey';
@@ -5450,6 +5184,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'custom_field_definitions_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'custom_field_definitions_empresa_id_fkey';
@@ -5587,6 +5328,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'darfs_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'darfs_empresa_id_fkey';
@@ -5892,6 +5640,13 @@ export type Database = {
             foreignKeyName: 'elisao_alertas_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'elisao_alertas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -5988,6 +5743,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'elisao_creditos_auditoria_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'elisao_creditos_auditoria_empresa_id_fkey';
@@ -6138,6 +5900,13 @@ export type Database = {
             foreignKeyName: 'elisao_simulacoes_regime_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'elisao_simulacoes_regime_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -6230,6 +5999,13 @@ export type Database = {
             foreignKeyName: 'elisao_tarefas_acionaveis_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'elisao_tarefas_acionaveis_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -6297,6 +6073,7 @@ export type Database = {
           estado: string | null;
           id: string;
           inscricao_estadual: string | null;
+          inscricao_municipal: string | null;
           is_padrao: boolean;
           logo_url: string | null;
           nome_fantasia: string | null;
@@ -6323,6 +6100,7 @@ export type Database = {
           estado?: string | null;
           id?: string;
           inscricao_estadual?: string | null;
+          inscricao_municipal?: string | null;
           is_padrao?: boolean;
           logo_url?: string | null;
           nome_fantasia?: string | null;
@@ -6349,6 +6127,7 @@ export type Database = {
           estado?: string | null;
           id?: string;
           inscricao_estadual?: string | null;
+          inscricao_municipal?: string | null;
           is_padrao?: boolean;
           logo_url?: string | null;
           nome_fantasia?: string | null;
@@ -6416,6 +6195,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'empresas_certificados_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'empresas_certificados_empresa_id_fkey';
@@ -6493,6 +6279,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'entregas_obrigacoes_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'entregas_obrigacoes_empresa_id_fkey';
@@ -6711,53 +6504,76 @@ export type Database = {
       execucoes_cobranca: {
         Row: {
           canal: string | null;
+          cliente_id: string | null;
           cliente_nome: string | null;
           conta_receber_id: string | null;
           created_at: string;
           destinatario: string | null;
           empresa_id: string | null;
+          erro_mensagem: string | null;
           etapa: string | null;
           id: string;
           mensagem: string | null;
+          metadata: Json | null;
           provider: string | null;
           status: string | null;
           user_id: string;
         };
         Insert: {
           canal?: string | null;
+          cliente_id?: string | null;
           cliente_nome?: string | null;
           conta_receber_id?: string | null;
           created_at?: string;
           destinatario?: string | null;
           empresa_id?: string | null;
+          erro_mensagem?: string | null;
           etapa?: string | null;
           id?: string;
           mensagem?: string | null;
+          metadata?: Json | null;
           provider?: string | null;
           status?: string | null;
           user_id?: string;
         };
         Update: {
           canal?: string | null;
+          cliente_id?: string | null;
           cliente_nome?: string | null;
           conta_receber_id?: string | null;
           created_at?: string;
           destinatario?: string | null;
           empresa_id?: string | null;
+          erro_mensagem?: string | null;
           etapa?: string | null;
           id?: string;
           mensagem?: string | null;
+          metadata?: Json | null;
           provider?: string | null;
           status?: string | null;
           user_id?: string;
         };
         Relationships: [
           {
+            foreignKeyName: 'execucoes_cobranca_cliente_id_fkey';
+            columns: ['cliente_id'];
+            isOneToOne: false;
+            referencedRelation: 'clientes';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'execucoes_cobranca_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'execucoes_cobranca_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'execucoes_cobranca_empresa_id_fkey';
@@ -6842,6 +6658,13 @@ export type Database = {
             foreignKeyName: 'execucoes_regua_cobranca_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'execucoes_regua_cobranca_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -6902,6 +6725,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'expert_conversations_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'expert_conversations_empresa_id_fkey';
@@ -7163,6 +6993,13 @@ export type Database = {
             foreignKeyName: 'faturamento_mensal_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'faturamento_mensal_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -7247,6 +7084,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fechamentos_tributarios_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'fechamentos_tributarios_empresa_id_fkey';
@@ -7339,6 +7183,7 @@ export type Database = {
           created_at: string | null;
           destinatario: string | null;
           empresa_id: string | null;
+          erro_mensagem: string | null;
           etapa: string | null;
           etapa_id: string | null;
           id: string;
@@ -7359,6 +7204,7 @@ export type Database = {
           created_at?: string | null;
           destinatario?: string | null;
           empresa_id?: string | null;
+          erro_mensagem?: string | null;
           etapa?: string | null;
           etapa_id?: string | null;
           id?: string;
@@ -7379,6 +7225,7 @@ export type Database = {
           created_at?: string | null;
           destinatario?: string | null;
           empresa_id?: string | null;
+          erro_mensagem?: string | null;
           etapa?: string | null;
           etapa_id?: string | null;
           id?: string;
@@ -7481,6 +7328,13 @@ export type Database = {
             foreignKeyName: 'fluxos_aprovacao_niveis_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'fluxos_aprovacao_niveis_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -7567,6 +7421,13 @@ export type Database = {
             foreignKeyName: 'folha_pagamento_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'folha_pagamento_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -7623,6 +7484,13 @@ export type Database = {
             foreignKeyName: 'formas_pagamento_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'formas_pagamento_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -7651,6 +7519,7 @@ export type Database = {
           contato: string | null;
           created_at: string | null;
           email: string | null;
+          empresa_id: string | null;
           endereco: string | null;
           estado: string | null;
           id: string;
@@ -7673,6 +7542,7 @@ export type Database = {
           contato?: string | null;
           created_at?: string | null;
           email?: string | null;
+          empresa_id?: string | null;
           endereco?: string | null;
           estado?: string | null;
           id?: string;
@@ -7695,6 +7565,7 @@ export type Database = {
           contato?: string | null;
           created_at?: string | null;
           email?: string | null;
+          empresa_id?: string | null;
           endereco?: string | null;
           estado?: string | null;
           id?: string;
@@ -7709,7 +7580,43 @@ export type Database = {
           updated_at?: string | null;
           user_id?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'fornecedores_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'empresas';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fornecedores_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'fornecedores_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa_diario';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'fornecedores_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_saldos_contas';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'fornecedores_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_tributario_dashboard';
+            referencedColumns: ['empresa_id'];
+          },
+        ];
       };
       frontend_error_alert_state: {
         Row: {
@@ -8411,6 +8318,13 @@ export type Database = {
             foreignKeyName: 'health_scores_operacionais_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'health_scores_operacionais_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -8566,6 +8480,13 @@ export type Database = {
             foreignKeyName: 'historico_cobranca_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'historico_cobranca_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -8589,7 +8510,11 @@ export type Database = {
         Row: {
           cliente_id: string | null;
           created_at: string | null;
+          created_by: string | null;
           empresa_id: string | null;
+          enviado_em: string | null;
+          ia_proxima_acao: string | null;
+          ia_resumo: string | null;
           id: string;
           lido_em: string | null;
           mensagem: string;
@@ -8599,7 +8524,11 @@ export type Database = {
         Insert: {
           cliente_id?: string | null;
           created_at?: string | null;
+          created_by?: string | null;
           empresa_id?: string | null;
+          enviado_em?: string | null;
+          ia_proxima_acao?: string | null;
+          ia_resumo?: string | null;
           id?: string;
           lido_em?: string | null;
           mensagem: string;
@@ -8609,7 +8538,11 @@ export type Database = {
         Update: {
           cliente_id?: string | null;
           created_at?: string | null;
+          created_by?: string | null;
           empresa_id?: string | null;
+          enviado_em?: string | null;
+          ia_proxima_acao?: string | null;
+          ia_resumo?: string | null;
           id?: string;
           lido_em?: string | null;
           mensagem?: string;
@@ -8630,6 +8563,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'historico_cobranca_whatsapp_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'historico_cobranca_whatsapp_empresa_id_fkey';
@@ -8844,6 +8784,13 @@ export type Database = {
             foreignKeyName: 'historico_score_saude_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'historico_score_saude_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -8922,6 +8869,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'incentivos_fiscais_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'incentivos_fiscais_empresa_id_fkey';
@@ -9282,6 +9236,13 @@ export type Database = {
             foreignKeyName: 'kpis_operacionais_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'kpis_operacionais_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -9548,6 +9509,13 @@ export type Database = {
             foreignKeyName: 'metas_financeiras_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'metas_financeiras_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -9606,6 +9574,7 @@ export type Database = {
       movimentacoes: {
         Row: {
           categoria_id: string | null;
+          centro_custo_id: string | null;
           conta_bancaria_id: string | null;
           conta_pagar_id: string | null;
           conta_receber_id: string | null;
@@ -9624,6 +9593,7 @@ export type Database = {
         };
         Insert: {
           categoria_id?: string | null;
+          centro_custo_id?: string | null;
           conta_bancaria_id?: string | null;
           conta_pagar_id?: string | null;
           conta_receber_id?: string | null;
@@ -9642,6 +9612,7 @@ export type Database = {
         };
         Update: {
           categoria_id?: string | null;
+          centro_custo_id?: string | null;
           conta_bancaria_id?: string | null;
           conta_pagar_id?: string | null;
           conta_receber_id?: string | null;
@@ -9667,6 +9638,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'movimentacoes_centro_custo_id_fkey';
+            columns: ['centro_custo_id'];
+            isOneToOne: false;
+            referencedRelation: 'centros_custo';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'movimentacoes_conta_bancaria_id_fkey';
             columns: ['conta_bancaria_id'];
             isOneToOne: false;
@@ -9686,6 +9664,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'movimentacoes_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'movimentacoes_empresa_id_fkey';
@@ -10144,6 +10129,13 @@ export type Database = {
             foreignKeyName: 'nfe_recebidas_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'nfe_recebidas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -10225,6 +10217,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notas_fiscais_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'notas_fiscais_empresa_id_fkey';
@@ -10346,6 +10345,13 @@ export type Database = {
             foreignKeyName: 'notas_fiscais_ocr_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'notas_fiscais_ocr_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -10417,6 +10423,7 @@ export type Database = {
           id: string;
           institution_id: string;
           permissions: string[] | null;
+          revoked_at: string | null;
           status: string;
           updated_at: string | null;
           user_id: string;
@@ -10427,6 +10434,7 @@ export type Database = {
           id?: string;
           institution_id: string;
           permissions?: string[] | null;
+          revoked_at?: string | null;
           status?: string;
           updated_at?: string | null;
           user_id: string;
@@ -10437,6 +10445,7 @@ export type Database = {
           id?: string;
           institution_id?: string;
           permissions?: string[] | null;
+          revoked_at?: string | null;
           status?: string;
           updated_at?: string | null;
           user_id?: string;
@@ -10535,6 +10544,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'operacoes_icms_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'operacoes_icms_empresa_id_fkey';
@@ -10737,6 +10753,13 @@ export type Database = {
             foreignKeyName: 'operacoes_tributaveis_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'operacoes_tributaveis_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -10857,6 +10880,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'oportunidades_elisao_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'oportunidades_elisao_empresa_id_fkey';
@@ -11153,6 +11183,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pagamentos_recorrentes_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'pagamentos_recorrentes_empresa_id_fkey';
@@ -11517,6 +11554,13 @@ export type Database = {
             foreignKeyName: 'per_dcomp_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'per_dcomp_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -11810,6 +11854,13 @@ export type Database = {
             foreignKeyName: 'plano_contas_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'plano_contas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12030,6 +12081,13 @@ export type Database = {
             foreignKeyName: 'prejuizos_fiscais_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'prejuizos_fiscais_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12058,6 +12116,7 @@ export type Database = {
           full_name: string | null;
           id: string;
           role: string | null;
+          telefone: string | null;
           updated_at: string;
           user_id: string | null;
         };
@@ -12069,6 +12128,7 @@ export type Database = {
           full_name?: string | null;
           id: string;
           role?: string | null;
+          telefone?: string | null;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -12080,6 +12140,7 @@ export type Database = {
           full_name?: string | null;
           id?: string;
           role?: string | null;
+          telefone?: string | null;
           updated_at?: string;
           user_id?: string | null;
         };
@@ -12162,6 +12223,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'projecoes_reforma_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'projecoes_reforma_empresa_id_fkey';
@@ -12493,6 +12561,13 @@ export type Database = {
             foreignKeyName: 'query_telemetry_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'query_telemetry_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12597,6 +12672,13 @@ export type Database = {
             foreignKeyName: 'recomendacoes_metas_ia_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'recomendacoes_metas_ia_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12659,6 +12741,13 @@ export type Database = {
             foreignKeyName: 'regime_decision_cache_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'regime_decision_cache_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12716,6 +12805,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'regimes_especiais_empresa_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'regimes_especiais_empresa_empresa_id_fkey';
@@ -12816,6 +12912,13 @@ export type Database = {
             foreignKeyName: 'regimes_simulados_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'regimes_simulados_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12878,6 +12981,13 @@ export type Database = {
             foreignKeyName: 'regimes_tributarios_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'regimes_tributarios_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -12900,6 +13010,7 @@ export type Database = {
       regras_conciliacao: {
         Row: {
           ativo: boolean | null;
+          categoria: string | null;
           categoria_id: string | null;
           created_at: string | null;
           created_by: string | null;
@@ -12917,6 +13028,7 @@ export type Database = {
         };
         Insert: {
           ativo?: boolean | null;
+          categoria?: string | null;
           categoria_id?: string | null;
           created_at?: string | null;
           created_by?: string | null;
@@ -12934,6 +13046,7 @@ export type Database = {
         };
         Update: {
           ativo?: boolean | null;
+          categoria?: string | null;
           categoria_id?: string | null;
           created_at?: string | null;
           created_by?: string | null;
@@ -13042,6 +13155,13 @@ export type Database = {
             foreignKeyName: 'regras_duplicidade_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'regras_duplicidade_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -13119,6 +13239,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'regras_roteamento_financeiro_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'regras_roteamento_financeiro_empresa_id_fkey';
@@ -13309,6 +13436,13 @@ export type Database = {
             foreignKeyName: 'regua_cobranca_status_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'regua_cobranca_status_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -13412,6 +13546,13 @@ export type Database = {
             foreignKeyName: 'relatorios_agendados_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'relatorios_agendados_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -13486,6 +13627,13 @@ export type Database = {
             foreignKeyName: 'relatorios_tributarios_agendados_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'relatorios_tributarios_agendados_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -13508,8 +13656,10 @@ export type Database = {
       resumos_executivos_semanais: {
         Row: {
           created_at: string | null;
+          destinatarios: string[];
           empresa_id: string | null;
           enviado_em: string | null;
+          erro_envio: string | null;
           id: string;
           kpis: Json | null;
           resumo_md: string;
@@ -13518,8 +13668,10 @@ export type Database = {
         };
         Insert: {
           created_at?: string | null;
+          destinatarios?: string[];
           empresa_id?: string | null;
           enviado_em?: string | null;
+          erro_envio?: string | null;
           id?: string;
           kpis?: Json | null;
           resumo_md: string;
@@ -13528,8 +13680,10 @@ export type Database = {
         };
         Update: {
           created_at?: string | null;
+          destinatarios?: string[];
           empresa_id?: string | null;
           enviado_em?: string | null;
+          erro_envio?: string | null;
           id?: string;
           kpis?: Json | null;
           resumo_md?: string;
@@ -13543,6 +13697,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'resumos_executivos_semanais_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'resumos_executivos_semanais_empresa_id_fkey';
@@ -13697,6 +13858,13 @@ export type Database = {
             foreignKeyName: 'retencoes_fonte_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'retencoes_fonte_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -13757,6 +13925,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'risk_rules_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'risk_rules_empresa_id_fkey';
@@ -13924,36 +14099,66 @@ export type Database = {
       saved_filter_subscriptions: {
         Row: {
           ativo: boolean;
-          canal: string;
+          canal: string | null;
           created_at: string;
-          filter_id: string;
-          frequencia: string;
+          filter_id: string | null;
+          frequencia: Database['public']['Enums']['subscription_frequencia'];
+          horario_preferido: string;
           id: string;
+          last_seen_at: string;
+          next_dispatch_at: string | null;
+          notify_email: boolean;
+          notify_inapp: boolean;
+          notify_push: boolean;
+          rate_limit_max: number;
+          rate_limit_window_min: number;
           saved_filter_id: string;
+          severidades_criticas: string[];
+          tipos_eventos_ativos: string[];
           ultimo_envio_em: string | null;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           ativo?: boolean;
-          canal?: string;
+          canal?: string | null;
           created_at?: string;
-          filter_id: string;
-          frequencia?: string;
+          filter_id?: string | null;
+          frequencia?: Database['public']['Enums']['subscription_frequencia'];
+          horario_preferido?: string;
           id?: string;
+          last_seen_at?: string;
+          next_dispatch_at?: string | null;
+          notify_email?: boolean;
+          notify_inapp?: boolean;
+          notify_push?: boolean;
+          rate_limit_max?: number;
+          rate_limit_window_min?: number;
           saved_filter_id: string;
+          severidades_criticas?: string[];
+          tipos_eventos_ativos?: string[];
           ultimo_envio_em?: string | null;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           ativo?: boolean;
-          canal?: string;
+          canal?: string | null;
           created_at?: string;
-          filter_id?: string;
-          frequencia?: string;
+          filter_id?: string | null;
+          frequencia?: Database['public']['Enums']['subscription_frequencia'];
+          horario_preferido?: string;
           id?: string;
+          last_seen_at?: string;
+          next_dispatch_at?: string | null;
+          notify_email?: boolean;
+          notify_inapp?: boolean;
+          notify_push?: boolean;
+          rate_limit_max?: number;
+          rate_limit_window_min?: number;
           saved_filter_id?: string;
+          severidades_criticas?: string[];
+          tipos_eventos_ativos?: string[];
           ultimo_envio_em?: string | null;
           updated_at?: string;
           user_id?: string;
@@ -14017,6 +14222,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'saved_filters_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'saved_filters_empresa_id_fkey';
@@ -14197,6 +14409,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'scim_tokens_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'scim_tokens_empresa_id_fkey';
@@ -14631,6 +14850,13 @@ export type Database = {
             foreignKeyName: 'simulacoes_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'simulacoes_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -14818,6 +15044,7 @@ export type Database = {
       solicitacoes_lgpd: {
         Row: {
           atendida_em: string | null;
+          atendida_por: string | null;
           created_at: string;
           empresa_id: string | null;
           id: string;
@@ -14832,6 +15059,7 @@ export type Database = {
         };
         Insert: {
           atendida_em?: string | null;
+          atendida_por?: string | null;
           created_at?: string;
           empresa_id?: string | null;
           id?: string;
@@ -14846,6 +15074,7 @@ export type Database = {
         };
         Update: {
           atendida_em?: string | null;
+          atendida_por?: string | null;
           created_at?: string;
           empresa_id?: string | null;
           id?: string;
@@ -14865,6 +15094,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'solicitacoes_lgpd_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'solicitacoes_lgpd_empresa_id_fkey';
@@ -14984,6 +15220,13 @@ export type Database = {
             foreignKeyName: 'sped_contabil_arquivos_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'sped_contabil_arquivos_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -15088,6 +15331,13 @@ export type Database = {
             foreignKeyName: 'split_payment_transacoes_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'split_payment_transacoes_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -15109,39 +15359,93 @@ export type Database = {
       };
       sso_login_attempts: {
         Row: {
+          app_redirect: string | null;
+          code_verifier_hash: string | null;
           context: Json | null;
           created_at: string | null;
+          duration_ms: number | null;
           email: string | null;
+          empresa_id: string | null;
           error_code: string | null;
           error_message: string | null;
           event_type: string;
+          expires_at: string | null;
           id: string;
           provider_id: string | null;
+          state: string | null;
           success: boolean | null;
         };
         Insert: {
+          app_redirect?: string | null;
+          code_verifier_hash?: string | null;
           context?: Json | null;
           created_at?: string | null;
+          duration_ms?: number | null;
           email?: string | null;
+          empresa_id?: string | null;
           error_code?: string | null;
           error_message?: string | null;
           event_type: string;
+          expires_at?: string | null;
           id?: string;
           provider_id?: string | null;
+          state?: string | null;
           success?: boolean | null;
         };
         Update: {
+          app_redirect?: string | null;
+          code_verifier_hash?: string | null;
           context?: Json | null;
           created_at?: string | null;
+          duration_ms?: number | null;
           email?: string | null;
+          empresa_id?: string | null;
           error_code?: string | null;
           error_message?: string | null;
           event_type?: string;
+          expires_at?: string | null;
           id?: string;
           provider_id?: string | null;
+          state?: string | null;
           success?: boolean | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'sso_login_attempts_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'empresas';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'sso_login_attempts_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'sso_login_attempts_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa_diario';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'sso_login_attempts_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_saldos_contas';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'sso_login_attempts_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_tributario_dashboard';
+            referencedColumns: ['empresa_id'];
+          },
+        ];
       };
       sso_providers: {
         Row: {
@@ -15259,6 +15563,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'sso_providers_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'sso_providers_empresa_id_fkey';
@@ -15495,6 +15806,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tax_audit_trail_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'tax_audit_trail_empresa_id_fkey';
@@ -15755,6 +16073,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'transferencias_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'transferencias_empresa_id_fkey';
@@ -16139,6 +16464,13 @@ export type Database = {
             foreignKeyName: 'user_empresas_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'user_empresas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -16202,6 +16534,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_filter_presets_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'user_filter_presets_empresa_id_fkey';
@@ -16422,6 +16761,13 @@ export type Database = {
             foreignKeyName: 'vendedores_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'vendedores_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -16488,6 +16834,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'verificacoes_conformidade_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'verificacoes_conformidade_empresa_id_fkey';
@@ -16875,6 +17228,13 @@ export type Database = {
             foreignKeyName: 'whatsapp_conversas_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'whatsapp_conversas_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -16974,18 +17334,6 @@ export type Database = {
           },
         ];
       };
-      mv_benchmark_setorial: {
-        Row: {
-          amostra: number | null;
-          atualizado_em: string | null;
-          media: number | null;
-          mediana: number | null;
-          p25: number | null;
-          p75: number | null;
-          regime: string | null;
-        };
-        Relationships: [];
-      };
       mv_performance_alerts_weekly: {
         Row: {
           alert_count: number | null;
@@ -17064,6 +17412,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'auditoria_tributaria_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'auditoria_tributaria_empresa_id_fkey';
@@ -17163,6 +17518,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contas_pagar_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'contas_pagar_empresa_id_fkey';
@@ -17284,6 +17646,13 @@ export type Database = {
             foreignKeyName: 'contas_receber_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'contas_receber_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -17352,6 +17721,13 @@ export type Database = {
             foreignKeyName: 'faturamento_mensal_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'faturamento_mensal_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -17400,6 +17776,13 @@ export type Database = {
             foreignKeyName: 'contas_receber_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'contas_receber_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -17433,42 +17816,13 @@ export type Database = {
       };
       vw_fluxo_caixa: {
         Row: {
-          data: string | null;
+          despesas_previstas: number | null;
+          dia: string | null;
           empresa_id: string | null;
+          receitas_previstas: number | null;
           saldo_dia: number | null;
-          total_creditos: number | null;
-          total_debitos: number | null;
         };
-        Relationships: [
-          {
-            foreignKeyName: 'movimentacoes_empresa_id_fkey';
-            columns: ['empresa_id'];
-            isOneToOne: false;
-            referencedRelation: 'empresas';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'movimentacoes_empresa_id_fkey';
-            columns: ['empresa_id'];
-            isOneToOne: false;
-            referencedRelation: 'vw_fluxo_caixa_diario';
-            referencedColumns: ['empresa_id'];
-          },
-          {
-            foreignKeyName: 'movimentacoes_empresa_id_fkey';
-            columns: ['empresa_id'];
-            isOneToOne: false;
-            referencedRelation: 'vw_saldos_contas';
-            referencedColumns: ['empresa_id'];
-          },
-          {
-            foreignKeyName: 'movimentacoes_empresa_id_fkey';
-            columns: ['empresa_id'];
-            isOneToOne: false;
-            referencedRelation: 'vw_tributario_dashboard';
-            referencedColumns: ['empresa_id'];
-          },
-        ];
+        Relationships: [];
       };
       vw_fluxo_caixa_diario: {
         Row: {
@@ -17511,6 +17865,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'empresas';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contas_pagar_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
           },
           {
             foreignKeyName: 'contas_pagar_empresa_id_fkey';
@@ -17559,6 +17920,13 @@ export type Database = {
             foreignKeyName: 'contas_receber_empresa_id_fkey';
             columns: ['empresa_id'];
             isOneToOne: false;
+            referencedRelation: 'vw_fluxo_caixa';
+            referencedColumns: ['empresa_id'];
+          },
+          {
+            foreignKeyName: 'contas_receber_empresa_id_fkey';
+            columns: ['empresa_id'];
+            isOneToOne: false;
             referencedRelation: 'vw_fluxo_caixa_diario';
             referencedColumns: ['empresa_id'];
           },
@@ -17577,49 +17945,6 @@ export type Database = {
             referencedColumns: ['empresa_id'];
           },
         ];
-      };
-      vw_notification_history_duplicates: {
-        Row: {
-          channel: string | null;
-          created_at: string | null;
-          id: string | null;
-          prev_created_at: string | null;
-          seconds_since_prev: number | null;
-          source: string | null;
-          source_ref: string | null;
-          title: string | null;
-          user_id: string | null;
-        };
-        Relationships: [];
-      };
-      vw_rpc_hotspots: {
-        Row: {
-          avg_ms: number | null;
-          bucket_hour: string | null;
-          calls: number | null;
-          errors: number | null;
-          function_name: string | null;
-          max_ms: number | null;
-          p50_ms: number | null;
-          p95_ms: number | null;
-          p99_ms: number | null;
-        };
-        Relationships: [];
-      };
-      vw_rpc_slow_calls: {
-        Row: {
-          called_at: string | null;
-          caller_role: string | null;
-          caller_user_id: string | null;
-          duration_ms: number | null;
-          error_message: string | null;
-          error_sqlstate: string | null;
-          function_name: string | null;
-          id: number | null;
-          meta: Json | null;
-          success: boolean | null;
-        };
-        Relationships: [];
       };
       vw_saldos_contas: {
         Row: {
@@ -17806,6 +18131,10 @@ export type Database = {
             Args: { p_domains: string[]; p_grace?: string; p_hour: string };
             Returns: number;
           };
+      cnpja_check_rate_limit: {
+        Args: { _max?: number; _user_id: string; _window_minutes?: number };
+        Returns: boolean;
+      };
       compare_pg_stat_baseline: {
         Args: { p_label?: string };
         Returns: {
@@ -18499,6 +18828,7 @@ export type Database = {
         Returns: undefined;
       };
       maintain_monthly_partitions: { Args: never; Returns: Json };
+      marcar_contas_vencidas: { Args: never; Returns: Json };
       mascarar_chave_pix: { Args: { p_chave: string }; Returns: string };
       monitor_table_bloat: { Args: never; Returns: Json };
       nfe_apply_manifestacao: {
@@ -18618,6 +18948,19 @@ export type Database = {
             Args: { p_column?: string; p_days?: number; p_table: string };
             Returns: number;
           };
+      rate_limit_check: {
+        Args: {
+          _endpoint: string;
+          _ip: unknown;
+          _limit: number;
+          _user_agent?: string;
+          _window_seconds?: number;
+        };
+        Returns: {
+          contagem: number;
+          permitido: boolean;
+        }[];
+      };
       recarregar_seeds_fiscais: { Args: { p_motivo?: string }; Returns: Json };
       record_failed_login: {
         Args: { p_email: string; p_ip_address?: unknown };
@@ -18981,6 +19324,7 @@ export type Database = {
         | 'EM_EXECUCAO'
         | 'CONCLUIDO'
         | 'CANCELADO';
+      subscription_frequencia: 'imediata' | 'horaria' | 'diaria';
       tipo_alerta_tributario:
         | 'vencimento_apuracao'
         | 'vencimento_darf'
@@ -19235,6 +19579,7 @@ export const Constants = {
         'CONCLUIDO',
         'CANCELADO',
       ],
+      subscription_frequencia: ['imediata', 'horaria', 'diaria'],
       tipo_alerta_tributario: [
         'vencimento_apuracao',
         'vencimento_darf',
