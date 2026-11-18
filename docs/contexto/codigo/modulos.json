@@ -8423,7 +8423,7 @@
    "modulo": "integrations/supabase",
    "arquivos": 2,
    "testes": 0,
-   "linhas": 19398,
+   "linhas": 19743,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9424,7 +9424,7 @@
    "modulo": "pages",
    "arquivos": 109,
    "testes": 1,
-   "linhas": 20752,
+   "linhas": 20727,
    "itens_menu": [
     "Action Matrix Audit",
     "Alertas",

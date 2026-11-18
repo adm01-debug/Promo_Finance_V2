@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d54fb13f6` · branch `main` · 2026-11-18 01:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cb9d5c80b2` · branch `main` · 2026-11-18 01:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -40,17 +40,6 @@
 | `asaas_sync_queue` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `asaas_transfers` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `audit_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
-| `audit_logs_2026_01` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_02` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_03` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_04` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_05` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_06` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_07` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_08` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_09` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_2026_10` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
-| `audit_logs_default` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | types.ts |
 | `auditoria_financeira` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `auditoria_tributaria` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
 | `auth_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -307,7 +296,18 @@
 | `tipo_alerta_tributario` (enum) | vencimento_apuracao, vencimento_darf, vencimento_obrigacao, prazo_credito, limite_compensacao, pendencia_conciliacao, inconsistencia_fiscal, atualizacao_legislacao, split_payment, retencao_pendente, nfe_rejeitada, saldo_negativo |  | banco |
 | `alert_severity` (enum) | INFO, WARNING, CRITICAL |  | banco |
 | `alert_type` (enum) | DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED |  | banco |
-| … +245 linhas — lista completa em `context.json` | | | |
+| `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
+| `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
+| `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
+| `regime_tributario_enum` (enum) | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO |  | banco |
+| `atividade_economica` (enum) | INDUSTRIA, COMERCIO, SERVICOS, MISTA |  | banco |
+| `uf_brasil` (enum) | AC, AL, AP, AM, BA, CE, DF, ES, GO, MA, MT, MS, MG, PA, PB, PR, PE, PI, RJ, RN, RS, RO, RR, SC, SP, SE, TO |  | banco |
+| `regiao_brasil` (enum) | NORTE, NORDESTE, CENTRO_OESTE, SUDESTE, SUL |  | banco |
+| `nivel_risco` (enum) | BAIXO, MEDIO, ALTO |  | banco |
+| `status_workflow` (enum) | IDENTIFICADO, EM_ANALISE, APROVADO, EM_EXECUCAO, CONCLUIDO, CANCELADO |  | banco |
+| `tipo_destinatario` (enum) | CONTRIBUINTE_REVENDA, CONTRIBUINTE_USO_CONSUMO, NAO_CONTRIBUINTE, EXTERIOR |  | banco |
+| `org_papel` (enum) | RESPONSAVEL, ADMIN, MEMBRO, LEITOR |  | banco |
+| … +234 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -532,7 +532,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 272/278 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- 261/267 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

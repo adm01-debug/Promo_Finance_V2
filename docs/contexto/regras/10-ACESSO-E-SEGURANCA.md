@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d54fb13f6` · branch `main` · 2026-11-18 01:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cb9d5c80b2` · branch `main` · 2026-11-18 01:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -49,17 +49,6 @@
 | `asaas_sync_queue` | enabled | authenticated: true<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM asaas_payments p WHERE ((p.id … | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM asaas_payments p WHERE ((p.id … | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM asaas_payments p WHERE ((p.id … | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM asaas_payments p WHERE ((p.id … |
 | `asaas_transfers` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))<br>public: empresa_acessivel(empresa_id) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))<br>public: empresa_acessivel(empresa_id) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
 | `audit_logs` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: ((user_id = ( SELECT (SELECT auth.uid()) AS uid)) AND ((user_email IS NULL) OR (user_email = ( SELECT (auth.jwt() ->> 'email' … | — | — |
-| `audit_logs_2026_01` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_02` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_03` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_04` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_05` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_06` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_07` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_08` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_09` | não verificado | ? | ? | ? | ? |
-| `audit_logs_2026_10` | não verificado | ? | ? | ? | ? |
-| `audit_logs_default` | não verificado | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `auditoria_financeira` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((SELECT auth.uid()) = user_id) | — | — |
 | `auditoria_tributaria` | enabled | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | — | — | — |
 | `auth_logs` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR has_role((SELECT auth.uid()), 'manager'::app_role) OR has_role((SELECT a … | — | — |
@@ -922,7 +911,7 @@ Middleware matcher (Next.js): nenhum
 ## Multi-tenancy
 
 - Chave de tenant: **`empresa_id`** presente em 131 tabela(s): `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `bitrix_oauth_tokens`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `security_alerts`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `bling_tokens`, `bling_sync_logs`, `bling_webhook_events`, `plano_contas`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `sso_login_attempts`, `sso_role_mappings`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `regua_cobranca_status`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `kpis_operacionais`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `overlay_rejeicoes_auditoria`, `simulacoes`, `simulacao_tributos_detalhados`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `asaas_payment_links`
-- Cobertura: 47% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
+- Cobertura: 49% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
 
 ## Soft delete (registros 'apagados' continuam na tabela — filtre!)
 
@@ -1239,17 +1228,6 @@ Middleware matcher (Next.js): nenhum
 | `webauthn_challenges` | `created_at` |
 | `asaas_payment_links` | `created_at`, `created_by` |
 | `estrategias_elisao_catalogo` | `created_at` |
-| `audit_logs_2026_01` | `created_at` |
-| `audit_logs_2026_02` | `created_at` |
-| `audit_logs_2026_03` | `created_at` |
-| `audit_logs_2026_04` | `created_at` |
-| `audit_logs_2026_05` | `created_at` |
-| `audit_logs_2026_06` | `created_at` |
-| `audit_logs_2026_07` | `created_at` |
-| `audit_logs_2026_08` | `created_at` |
-| `audit_logs_2026_09` | `created_at` |
-| `audit_logs_2026_10` | `created_at` |
-| `audit_logs_default` | `created_at` |
 | `frontend_error_logs_2026_01` | `created_at` |
 | `frontend_error_logs_2026_02` | `created_at` |
 | `frontend_error_logs_2026_03` | `created_at` |
@@ -1306,17 +1284,6 @@ Middleware matcher (Next.js): nenhum
 | `email_verifications` | `email` |
 | `mfa_sessions` | `ip_address` |
 | `user_devices` | `ip_address` |
-| `audit_logs_2026_01` | `ip_address` |
-| `audit_logs_2026_02` | `ip_address` |
-| `audit_logs_2026_03` | `ip_address` |
-| `audit_logs_2026_04` | `ip_address` |
-| `audit_logs_2026_05` | `ip_address` |
-| `audit_logs_2026_06` | `ip_address` |
-| `audit_logs_2026_07` | `ip_address` |
-| `audit_logs_2026_08` | `ip_address` |
-| `audit_logs_2026_09` | `ip_address` |
-| `audit_logs_2026_10` | `ip_address` |
-| `audit_logs_default` | `ip_address` |
 
 ## Colunas de dinheiro (tipo importa: numeric ✅ / float ❌)
 

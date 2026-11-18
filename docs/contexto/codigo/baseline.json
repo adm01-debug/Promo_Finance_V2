@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2d54fb13f655b57b0480a0e9cb157f661ad897fb",
+  "commit": "cb9d5c80b2c0d3d86bc4cbc81f5e7f77fa76e64e",
   "branch": "main",
-  "data_commit": "2026-11-17T22:20:03-03:00",
+  "data_commit": "2026-11-17T22:51:05-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cb9d5c8",
+    "data": "2026-11-17",
+    "assunto": "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)"
+   },
    {
     "sha": "2d54fb1",
     "data": "2026-11-17",
@@ -126,11 +131,6 @@
     "sha": "1ccd853",
     "data": "2026-11-17",
     "assunto": "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)"
-   },
-   {
-    "sha": "e9cd145",
-    "data": "2026-11-17",
-    "assunto": "fix(financeiro): corrige o escopo por empresa nas transações bancárias (#444)"
    }
   ],
   "arquivos_mudados_7d": 935,
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 25
+    "mudancas": 24
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -238,10 +238,6 @@
     "mudancas": 10
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 10
-   },
-   {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
     "mudancas": 10
    },
@@ -251,6 +247,10 @@
    },
    {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 9
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 218
+    "commits": 219
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3941,
   "arquivos_codigo": 2476,
-  "linhas_codigo": 441056,
+  "linhas_codigo": 441376,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -329,7 +329,7 @@
   "componentes": 992,
   "hooks": 273,
   "edge_functions": 106,
-  "tabelas": 320,
+  "tabelas": 310,
   "migrations": 1048,
   "cron_jobs": 22,
   "testes": 479,
@@ -656,7 +656,7 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 19436
+   "linhas": 19781
   },
   "src/lib": {
    "arquivos": 414,
@@ -668,7 +668,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46870
+   "linhas": 46845
   },
   "src/routes": {
    "arquivos": 16,
@@ -706,7 +706,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 19300
+   "linhas": 19645
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
@@ -1057,7 +1057,6 @@
    "simulacoes",
    "slo_metrics_diarias",
    "solicitacoes_aprovacao",
-   "solicitacoes_lgpd",
    "sped_contabil_arquivos",
    "sso_login_attempts",
    "sso_role_mappings",

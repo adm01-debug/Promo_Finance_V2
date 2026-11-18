@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d54fb13f6` · branch `main` · 2026-11-18 01:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cb9d5c80b2` · branch `main` · 2026-11-18 01:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2296 linhas — lista completa em `context.json` | | |
+| … +2262 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -2439,10 +2439,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado'::text) AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, (0)::numeric) AS total_tributos, COALESCE(at_.total_tributos_novos, (0)::numeric) AS tributos_novos, COALESCE(at_.total_t …` |
 | `vw_webhooks_recentes` | `SELECT id, source AS endpoint, event_type AS evento, status AS status_code, created_at, error_message, attempts FROM public.webhooks_log wl ORDER BY created_at DESC LIMIT 100` |
 | `vw_fluxo_caixa` | `SELECT e.id AS empresa_id, d.dia::date AS dia, COALESCE(r.valor, 0) AS receitas_previstas, COALESCE(p.valor, 0) AS despesas_previstas, COALESCE(r.valor, 0) - COALESCE(p.valor, 0) AS saldo_dia FROM public.empresas e CROSS JOIN generate_series( CURRENT_DATE::timestamp, (CURRENT_DATE + 90)::timestamp, …` |
-| `mv_benchmark_setorial` | `(definição fora das migrations — só em types.ts)` |
-| `vw_notification_history_duplicates` | `(definição fora das migrations — só em types.ts)` |
-| `vw_rpc_hotspots` | `(definição fora das migrations — só em types.ts)` |
-| `vw_rpc_slow_calls` | `(definição fora das migrations — só em types.ts)` |
 
 ### G.3 Funções de cálculo/decisão no código
 

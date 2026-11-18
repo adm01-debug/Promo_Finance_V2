@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2d54fb13f655b57b0480a0e9cb157f661ad897fb` (2026-11-17T22:20:03-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cb9d5c80b2c0d3d86bc4cbc81f5e7f77fa76e64e` (2026-11-17T22:51:05-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3941 |
 | arquivos_codigo | 2476 |
-| linhas_codigo | 441056 |
+| linhas_codigo | 441376 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -45,7 +45,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 992 |
 | hooks | 273 |
 | edge_functions | 106 |
-| tabelas | 320 |
+| tabelas | 310 |
 | migrations | 1048 |
 | cron_jobs | 22 |
 | testes | 479 |
@@ -448,7 +448,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
-- tabelas_com_drift_migration_vs_types: 155 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
+- tabelas_com_drift_migration_vs_types: 154 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
@@ -463,7 +463,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (36)
 - bun.lock (33)
-- .github/workflows/ci.yml (25)
+- .github/workflows/ci.yml (24)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
 - PENDENCIAS.md (11)
@@ -471,10 +471,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - scripts/generate-env-manifest.mjs (11)
 - supabase/functions/bling-proxy/index.ts (11)
 - .github/workflows/functions-deploy.yml (10)
-- src/hooks/useConciliacaoPage.ts (10)
 - supabase/functions/bitrix24-sync/index.ts (10)
 - .github/workflows/supabase-linter.yml (9)
 - scripts/security/test-canonical-db-gates.mjs (9)
+- src/hooks/useConciliacaoPage.ts (9)
 - supabase/functions/enviar-convite-organizacao/index.ts (9)
 
 ## Workflows
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `cb9d5c8` chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)
 - 2026-11-17 `2d54fb1` chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)
 - 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
 - 2026-11-17 `c72e283` infra(ci): gate que barra coluna inexistente em select/order (#457)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `b75c138` feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)
 - 2026-11-17 `e1a239c` docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)
 - 2026-11-17 `f76fcd2` fix(bitrix): religa o sync e escopa busca e update por empresa (#447)
-- 2026-11-17 `1702166` fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

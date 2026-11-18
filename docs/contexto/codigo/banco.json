@@ -6057,21 +6057,21 @@
    "criada_em": "20260422142421_3a78c9a0-e0e6-4099-85dc-3f0f346990f5.sql",
    "colunas_types": {
     "created_at": "string | null",
+    "current_step": "string | null",
     "error_message": "string | null",
+    "finished_at": "string | null",
     "id": "string",
     "inseridas": "number | null",
+    "started_at": "string | null",
     "status": "string | null",
+    "step_index": "number",
     "trigger_source": "string | null",
     "triggered_by": "string | null"
    },
    "drift": {
     "so_na_migration": [
-     "current_step",
-     "step_index",
      "total_steps",
      "candidatas",
-     "started_at",
-     "finished_at",
      "duration_ms"
     ],
     "so_no_types": []
@@ -7869,14 +7869,14 @@
     "asaas_payment_id": "string | null",
     "created_at": "string",
     "details": "Json | null",
-    "id": "string"
+    "id": "string",
+    "new_status": "string | null",
+    "previous_status": "string | null",
+    "user_id": "string | null"
    },
    "drift": {
     "so_na_migration": [
      "payment_id",
-     "previous_status",
-     "new_status",
-     "user_id",
      "ip_address"
     ],
     "so_no_types": []
@@ -9097,6 +9097,7 @@
     "asaas_payment_id": "string | null",
     "attempts": "number | null",
     "created_at": "string",
+    "error_history": "Json | null",
     "id": "string",
     "last_error": "string | null",
     "next_retry_at": "string | null",
@@ -9108,8 +9109,7 @@
     "so_na_migration": [
      "payment_id",
      "operation_type",
-     "max_attempts",
-     "error_history"
+     "max_attempts"
     ],
     "so_no_types": []
    },
@@ -9301,15 +9301,15 @@
     "metadata": "Json | null",
     "status": "string | null",
     "tipo_chave": "string | null",
+    "transaction_receipt_url": "string | null",
     "updated_at": "string",
+    "user_id": "string | null",
     "valor": "number | null"
    },
    "drift": {
     "so_na_migration": [
      "comprovante_url",
-     "transaction_receipt_url",
-     "last_error",
-     "user_id"
+     "last_error"
     ],
     "so_no_types": []
    },
@@ -9477,276 +9477,6 @@
    "sem_rls": false,
    "nao_usada": false
   },
-  "audit_logs_2026_01": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_02": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_03": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_04": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_05": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_06": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_07": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_08": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_09": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
-  "audit_logs_2026_10": {
-   "colunas": {},
-   "rls": false,
-   "policies": [],
-   "indices": [],
-   "fks": [],
-   "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
-  },
   "audit_logs_default": {
    "colunas": {},
    "rls": false,
@@ -9761,20 +9491,6 @@
    "indices": [],
    "fks": [],
    "criada_em": null,
-   "colunas_types": {
-    "action": "string",
-    "created_at": "string",
-    "details": "string | null",
-    "id": "string",
-    "ip_address": "string | null",
-    "new_data": "Json | null",
-    "old_data": "Json | null",
-    "record_id": "string | null",
-    "table_name": "string | null",
-    "user_agent": "string | null",
-    "user_email": "string | null",
-    "user_id": "string | null"
-   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -13935,6 +13651,8 @@
    "criada_em": "001_create_tables.sql",
    "colunas_types": {
     "ativo": "boolean | null",
+    "bitrix_company_id": "string | null",
+    "bitrix_contact_id": "string | null",
     "cidade": "string | null",
     "cnpj_cpf": "string | null",
     "contato": "string | null",
@@ -13967,8 +13685,6 @@
      "vendedor_id",
      "contato_financeiro_id",
      "asaas_customer_id",
-     "bitrix_contact_id",
-     "bitrix_company_id",
      "custom_fields",
      "serasa_score",
      "boa_vista_score",
@@ -14278,6 +13994,15 @@
    ],
    "fks": [],
    "criada_em": "20261117195500_restaura_cnpja_rate_limit.sql",
+   "colunas_types": {
+    "request_count": "number",
+    "user_id": "string",
+    "window_start": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -20141,6 +19866,7 @@
     "estado": "string | null",
     "id": "string",
     "inscricao_estadual": "string | null",
+    "inscricao_municipal": "string | null",
     "is_padrao": "boolean",
     "logo_url": "string | null",
     "nome_fantasia": "string | null",
@@ -20154,7 +19880,6 @@
     "so_na_migration": [
      "updated_at",
      "tipo_pessoa",
-     "inscricao_municipal",
      "numero",
      "complemento",
      "custom_fields"
@@ -21270,14 +20995,17 @@
    "criada_em": "20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
    "colunas_types": {
     "canal": "string | null",
+    "cliente_id": "string | null",
     "cliente_nome": "string | null",
     "conta_receber_id": "string | null",
     "created_at": "string",
     "destinatario": "string | null",
     "empresa_id": "string | null",
+    "erro_mensagem": "string | null",
     "etapa": "string | null",
     "id": "string",
     "mensagem": "string | null",
+    "metadata": "Json | null",
     "provider": "string | null",
     "status": "string | null",
     "user_id": "string"
@@ -21285,7 +21013,6 @@
    "drift": {
     "so_na_migration": [
      "fila_id",
-     "cliente_id",
      "provider_message_id",
      "entregue",
      "entregue_em",
@@ -21293,7 +21020,6 @@
      "lido_em",
      "respondido",
      "resposta",
-     "erro_mensagem",
      "updated_at",
      "regua_etapa_id",
      "mensagem_enviada",
@@ -21302,7 +21028,6 @@
      "resposta_cliente",
      "erro_detalhe",
      "custo",
-     "metadata",
      "created_by"
     ],
     "so_no_types": []
@@ -23015,6 +22740,7 @@
     "created_at": "string | null",
     "destinatario": "string | null",
     "empresa_id": "string | null",
+    "erro_mensagem": "string | null",
     "etapa": "string | null",
     "etapa_id": "string | null",
     "id": "string",
@@ -23032,7 +22758,6 @@
      "template_id",
      "mensagem_renderizada",
      "proxima_tentativa",
-     "erro_mensagem",
      "prioridade",
      "agendado_para",
      "processado_em",
@@ -23938,6 +23663,7 @@
     "contato": "string | null",
     "created_at": "string | null",
     "email": "string | null",
+    "empresa_id": "string | null",
     "endereco": "string | null",
     "estado": "string | null",
     "id": "string",
@@ -23965,7 +23691,6 @@
      "pix",
      "contato_nome",
      "contato_telefone",
-     "empresa_id",
      "contato_financeiro_id",
      "bitrix_company_id",
      "custom_fields"
@@ -25874,7 +25599,11 @@
    "colunas_types": {
     "cliente_id": "string | null",
     "created_at": "string | null",
+    "created_by": "string | null",
     "empresa_id": "string | null",
+    "enviado_em": "string | null",
+    "ia_proxima_acao": "string | null",
+    "ia_resumo": "string | null",
     "id": "string",
     "lido_em": "string | null",
     "mensagem": "string",
@@ -25887,12 +25616,8 @@
      "regua_id",
      "telefone",
      "erro_mensagem",
-     "enviado_em",
      "entregue_em",
-     "created_by",
-     "ia_sentimento",
-     "ia_resumo",
-     "ia_proxima_acao"
+     "ia_sentimento"
     ],
     "so_no_types": []
    },
@@ -28818,6 +28543,7 @@
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
     "categoria_id": "string | null",
+    "centro_custo_id": "string | null",
     "conta_bancaria_id": "string | null",
     "conta_pagar_id": "string | null",
     "conta_receber_id": "string | null",
@@ -28837,7 +28563,6 @@
    "drift": {
     "so_na_migration": [
      "data_competencia",
-     "centro_custo_id",
      "forma_pagamento_id",
      "numero_documento",
      "conciliada",
@@ -31162,6 +30887,7 @@
     "id": "string",
     "institution_id": "string",
     "permissions": "string[] | null",
+    "revoked_at": "string | null",
     "status": "string",
     "updated_at": "string | null",
     "user_id": "string"
@@ -31170,8 +30896,7 @@
     "so_na_migration": [
      "access_token",
      "refresh_token",
-     "expires_at",
-     "revoked_at"
+     "expires_at"
     ],
     "so_no_types": []
    },
@@ -35604,13 +35329,13 @@
     "full_name": "string | null",
     "id": "string",
     "role": "string | null",
+    "telefone": "string | null",
     "updated_at": "string",
     "user_id": "string | null"
    },
    "drift": {
     "so_na_migration": [
      "cargo",
-     "telefone",
      "ativo"
     ],
     "so_no_types": []
@@ -37808,6 +37533,7 @@
    "criada_em": "20260314162441_9f095912-29f5-4827-adc3-550e2aac353c.sql",
    "colunas_types": {
     "ativo": "boolean | null",
+    "categoria": "string | null",
     "categoria_id": "string | null",
     "created_at": "string | null",
     "created_by": "string | null",
@@ -37825,7 +37551,6 @@
    },
    "drift": {
     "so_na_migration": [
-     "categoria",
      "updated_at"
     ],
     "so_no_types": []
@@ -39219,8 +38944,10 @@
    "criada_em": "20260418143540_10bd7364-4c7c-4962-8a95-260d4cc151e1.sql",
    "colunas_types": {
     "created_at": "string | null",
+    "destinatarios": "string[]",
     "empresa_id": "string | null",
     "enviado_em": "string | null",
+    "erro_envio": "string | null",
     "id": "string",
     "kpis": "Json | null",
     "resumo_md": "string",
@@ -39229,8 +38956,6 @@
    },
    "drift": {
     "so_na_migration": [
-     "destinatarios",
-     "erro_envio",
      "modelo_ia",
      "updated_at"
     ],
@@ -40381,29 +40106,28 @@
    "criada_em": "20260422120756_9ff79b5f-4781-4825-9569-dffd8d06df9f.sql",
    "colunas_types": {
     "ativo": "boolean",
-    "canal": "string",
+    "canal": "string | null",
     "created_at": "string",
-    "filter_id": "string",
-    "frequencia": "string",
+    "filter_id": "string | null",
+    "frequencia": "Database['public']['Enums']['subscription_frequencia']",
+    "horario_preferido": "string",
     "id": "string",
+    "last_seen_at": "string",
+    "next_dispatch_at": "string | null",
+    "notify_email": "boolean",
+    "notify_inapp": "boolean",
+    "notify_push": "boolean",
+    "rate_limit_max": "number",
+    "rate_limit_window_min": "number",
     "saved_filter_id": "string",
+    "severidades_criticas": "string[]",
+    "tipos_eventos_ativos": "string[]",
     "ultimo_envio_em": "string | null",
     "updated_at": "string",
     "user_id": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "notify_inapp",
-     "notify_push",
-     "last_seen_at",
-     "horario_preferido",
-     "next_dispatch_at",
-     "notify_email",
-     "severidades_criticas",
-     "tipos_eventos_ativos",
-     "rate_limit_max",
-     "rate_limit_window_min"
-    ],
+    "so_na_migration": [],
     "so_no_types": [
      "filter_id"
     ]
@@ -42732,6 +42456,7 @@
    "criada_em": "20260418144137_f011cbc3-54a2-4dce-ab15-ab21a2398463.sql",
    "colunas_types": {
     "atendida_em": "string | null",
+    "atendida_por": "string | null",
     "created_at": "string",
     "empresa_id": "string | null",
     "id": "string",
@@ -42745,9 +42470,7 @@
     "user_id": "string"
    },
    "drift": {
-    "so_na_migration": [
-     "atendida_por"
-    ],
+    "so_na_migration": [],
     "so_no_types": []
    },
    "usada_no_front": 1,
@@ -43386,26 +43109,26 @@
    ],
    "criada_em": "20260421115901_ddfe6f1a-4ea1-40b8-9fb4-07d923b4a604.sql",
    "colunas_types": {
+    "app_redirect": "string | null",
+    "code_verifier_hash": "string | null",
     "context": "Json | null",
     "created_at": "string | null",
+    "duration_ms": "number | null",
     "email": "string | null",
+    "empresa_id": "string | null",
     "error_code": "string | null",
     "error_message": "string | null",
     "event_type": "string",
+    "expires_at": "string | null",
     "id": "string",
     "provider_id": "string | null",
+    "state": "string | null",
     "success": "boolean | null"
    },
    "drift": {
     "so_na_migration": [
      "ip_address",
-     "user_agent",
-     "duration_ms",
-     "state",
-     "code_verifier_hash",
-     "empresa_id",
-     "expires_at",
-     "app_redirect"
+     "user_agent"
     ],
     "so_no_types": []
    },
