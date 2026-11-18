@@ -50,3 +50,17 @@ DROP VIEW IF EXISTS public.vw_rpc_slow_calls;
 
 DROP FUNCTION IF EXISTS public.refresh_mv_benchmark_setorial();
 DROP MATERIALIZED VIEW IF EXISTS public.mv_benchmark_setorial;
+
+-- Apontado por Devin na #467: 20260418140233 agenda
+-- `refresh-benchmark-setorial-weekly` (domingo 03:00) chamando a função que
+-- sai acima. Em produção o job não existe (cron.job = 0 linhas para
+-- benchmark), mas num banco reconstruído pelas migrations ele seria criado e
+-- falharia toda semana por função inexistente. Mesma guarda da migration que
+-- o criou.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron')
+     AND EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'refresh-benchmark-setorial-weekly') THEN
+    PERFORM cron.unschedule('refresh-benchmark-setorial-weekly');
+  END IF;
+END $$;

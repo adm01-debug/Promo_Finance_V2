@@ -58,9 +58,13 @@ SELECT cmp_ok(
 -- ---------------------------------------------------------------------------
 -- 3) Partição default deve existir
 -- ---------------------------------------------------------------------------
-SELECT has_table(
+-- audit_logs nunca foi particionada de fato (pai relkind='r'); as 11 tabelas
+-- audit_logs_2026_*/_default eram comuns, vazias ou duplicatas exatas do pai, e
+-- saíram em 20261118003500 com autorização do dono. O teste passa a exigir a
+-- ausência, para que ninguém as recrie por engano.
+SELECT hasnt_table(
   'public', 'audit_logs_default',
-  'audit_logs_default (partição default) deve existir'
+  'audit_logs_default não deve existir (removida em 20261118003500)'
 );
 SELECT has_table(
   'public', 'frontend_error_logs_default',
