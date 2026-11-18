@@ -41,7 +41,7 @@
       "is_default": true,
       "name": "main",
       "persistent": false,
-      "status": "MIGRATIONS_FAILED"
+      "status": "FUNCTIONS_DEPLOYED"
     }
   ],
   "custom_hostname": null,
