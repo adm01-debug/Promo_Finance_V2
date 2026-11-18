@@ -2,10 +2,10 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ main ]
+    branches: [main]
   # Permite rodar o pipeline sob demanda — em especial a quarentena E2E, que
   # saiu do gatilho de PR e passou a depender de push em main ou deste dispatch.
   workflow_dispatch: {}
@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      security-events: write  # upload SARIF para o Code Scanning
+      security-events: write # upload SARIF para o Code Scanning
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -38,8 +38,8 @@ jobs:
 
       - name: Instalar gitleaks
         env:
-          GITLEAKS_VERSAO: "8.30.1"
-          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+          GITLEAKS_VERSAO: '8.30.1'
+          GITLEAKS_SHA256: '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb'
         run: |
           set -euo pipefail
           arquivo="gitleaks_${GITLEAKS_VERSAO}_linux_x64.tar.gz"
@@ -125,7 +125,7 @@ jobs:
         with:
           sarif_file: gitleaks.sarif
           category: gitleaks
-        continue-on-error: true  # não bloqueia se o sarif não foi gerado (baseline clean)
+        continue-on-error: true # não bloqueia se o sarif não foi gerado (baseline clean)
 
       - name: Publicar relatório
         if: failure()
@@ -240,6 +240,16 @@ jobs:
           git fetch --no-tags origin main
           CLAUDE_MD_BASE=FETCH_HEAD node scripts/ci/check-claude-md-integrity.mjs
 
+      - name: Colunas inexistentes em select/order
+        # PostgREST recusa o SELECT INTEIRO com 42703 quando uma coluna nao
+        # existe, e quase nenhum chamador checa `error`: o recurso morre em
+        # silencio. Em 17/11/2026 essa classe tinha derrubado cinco
+        # funcionalidades sem nenhum alarme. Oraculo: src/integrations/supabase/
+        # types.ts, que e gerado do schema — sem rede, sem credencial.
+        run: |
+          node --test scripts/ci/check-colunas-select.unit.mjs
+          node scripts/ci/check-colunas-select.mjs
+
       - name: Zod coverage gate (edge functions)
         # Falha se novas funções chegarem sem validatePayload (Zod).
         run: bash scripts/security/zod-coverage.sh
@@ -296,7 +306,6 @@ jobs:
             --output available \
             DATABASE_URL
 
-
       - name: Observability privileges guard (psql)
         # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
         # regredir privilégios EXECUTE para anon/PUBLIC/authenticated.
@@ -348,7 +357,6 @@ jobs:
             exit 1
           fi
           echo "✅ Gate #35 aprovado."
-
 
       - name: Registrar gates de banco como inconclusivos sem DATABASE_URL
         if: ${{ steps.db_url_preflight.outputs.available != 'true' }}
@@ -411,9 +419,6 @@ jobs:
           path: artifacts/security/function-privileges.*
           if-no-files-found: warn
           retention-days: 30
-
-
-
 
       - name: Type check
         run: bun run type-check
@@ -527,7 +532,7 @@ jobs:
     name: E2E Critical Gate
     # Secrets withheld em runs de dependabot — o job falharia no env-check.
     if: github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork
-    runs-on: ubuntu-24.04  # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
+    runs-on: ubuntu-24.04 # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
     timeout-minutes: 25
 
     steps:
@@ -579,7 +584,7 @@ jobs:
     name: E2E Destructive Logout
     if: github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork
     needs: [quality-gate, e2e-critical]
-    runs-on: ubuntu-24.04  # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
+    runs-on: ubuntu-24.04 # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -635,7 +640,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-financeiro:
     name: E2E Financeiro (offline)
-    runs-on: ubuntu-24.04  # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
+    runs-on: ubuntu-24.04 # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
     timeout-minutes: 20
 
     steps:
@@ -670,7 +675,7 @@ jobs:
     # merge; a cobertura segue intacta no push para main e no dispatch manual.
     if: ${{ !cancelled() && github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
-    runs-on: ubuntu-24.04  # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
+    runs-on: ubuntu-24.04 # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
