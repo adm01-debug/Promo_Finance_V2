@@ -100,25 +100,28 @@ Deno.test('rate limit fechado marca indisponibilidade também em exceção inesp
   assertEquals(result.retryAfterSeconds, 1);
 });
 
-Deno.test('rate limit trata resposta vazia ou fora do contrato como indisponibilidade', async () => {
-  const vazio = clienteRpc(async () => ({ data: null, error: null }));
-  const fechado = await checkRateLimit(vazio.supabase, {
-    endpoint: 'convidar-usuario',
-    ip: '127.0.0.1',
-    limit: 5,
-    failureMode: 'closed',
-  });
-  assertEquals(fechado.allowed, false);
-  assertEquals(fechado.unavailable, true);
+Deno.test(
+  'rate limit trata resposta vazia ou fora do contrato como indisponibilidade',
+  async () => {
+    const vazio = clienteRpc(async () => ({ data: null, error: null }));
+    const fechado = await checkRateLimit(vazio.supabase, {
+      endpoint: 'convidar-usuario',
+      ip: '127.0.0.1',
+      limit: 5,
+      failureMode: 'closed',
+    });
+    assertEquals(fechado.allowed, false);
+    assertEquals(fechado.unavailable, true);
 
-  // Payload que nao e o do RPC (ex.: mock generico de teste) nunca vira
-  // "bloqueado" silencioso: em fail-open libera.
-  const foraDoContrato = clienteRpc(async () => ({ data: { id: 'x', ok: true }, error: null }));
-  const aberto = await checkRateLimit(foraDoContrato.supabase, {
-    endpoint: 'legado',
-    ip: '127.0.0.1',
-    limit: 5,
-  });
-  assertEquals(aberto.allowed, true);
-  assertEquals(aberto.unavailable, false);
-});
+    // Payload que nao e o do RPC (ex.: mock generico de teste) nunca vira
+    // "bloqueado" silencioso: em fail-open libera.
+    const foraDoContrato = clienteRpc(async () => ({ data: { id: 'x', ok: true }, error: null }));
+    const aberto = await checkRateLimit(foraDoContrato.supabase, {
+      endpoint: 'legado',
+      ip: '127.0.0.1',
+      limit: 5,
+    });
+    assertEquals(aberto.allowed, true);
+    assertEquals(aberto.unavailable, false);
+  }
+);
