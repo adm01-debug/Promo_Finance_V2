@@ -3705,11 +3705,11 @@
   {
    "arquivo": "supabase/functions/_shared/rate-limit_test.ts",
    "tipo": "unit",
-   "linhas": 84,
+   "linhas": 127,
    "testa": [
     "supabase/functions/_shared/rate-limit.ts"
    ],
-   "casos": 4
+   "casos": 6
   },
   {
    "arquivo": "supabase/functions/_shared/resilience_test.ts",
@@ -3865,7 +3865,7 @@
   {
    "arquivo": "supabase/functions/bling-webhook/index.test.ts",
    "tipo": "unit",
-   "linhas": 273,
+   "linhas": 290,
    "testa": [
     "supabase/functions/bling-webhook/index.ts"
    ],

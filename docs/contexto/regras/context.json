@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "c72e283fff47c38a902fc36e4f37a859fe29db80",
+  "sha": "18355ba1cdd3a13c3bb2c7baac70f26b790cc542",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-18 00:42 UTC",
-  "files_total": 3978,
-  "code_files": 3595,
-  "code_lines": 511228
+  "generated_at": "2026-11-18 00:50 UTC",
+  "files_total": 3979,
+  "code_files": 3596,
+  "code_lines": 511376
  },
  "version": "1.3.2",
- "facts_hash": "a8dfad39d598b117",
+ "facts_hash": "8420d821aed87057",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1245,
-   ".sql": 1118,
+   ".sql": 1119,
    ".tsx": 1115,
    ".mjs": 65,
    ".py": 45,
@@ -43979,6 +43979,22 @@
      "v_count"
     ]
    },
+   "rate_limit_check": {
+    "args": "_endpoint text, _ip inet, _limit integer, _window_seconds integer DEFAULT 60, _user_agent text DEFAULT NULL",
+    "returns": "TABLE(permitido boolean, contagem integer)",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_since timestamptz; v_agora timestamptz := now(); v_total integer; v_permitido boolean; BEGIN IF _endpoint IS NULL OR _ip IS NULL OR _limit IS NULL THEN RAISE EXCEPTION 'rate_limit_check: _endpoint, _ip e _limit sao obrigatorios'; END IF; v_since := v_agora - make_interval(secs => GREATEST(COALESCE(_window_seconds, 60), 1)); PERFORM pg_advisory_xact_lock(hashtextextended(_endpoint || '|' || host(_ip), 0)); SELECT count(*) INTO v_total FROM public.rate_limit_logs WHERE endpoint = _endpoint AND ip_address = _ip AND created_at >= v_since; v_total := v_total + 1; v_permitido := v_total <= _limit; INSERT INTO public.rate_limit_logs (endpoint, ip_address, user_agent, blocked, request_coun …",
+    "raises": [
+     "rate_limit_check: _endpoint, _ip e _limit sao obrigatorios"
+    ],
+    "tables": [
+     "rate_limit_logs",
+     "v_total"
+    ]
+   },
    "exec_sql": {
     "args": "",
     "returns": "?",
@@ -51355,6 +51371,7 @@
    "supabase/migrations/20261117225000_indices_recuperados_da_445.sql",
    "supabase/migrations/20261117232000_indices_anti_duplicata_contas.sql",
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
+   "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -59528,6 +59545,30 @@
     "objkind": "table",
     "roles": "service_role",
     "src": "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "rate_limit_check",
+    "objkind": "function",
+    "roles": "PUBLIC",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "execute",
+    "object": "rate_limit_check",
+    "objkind": "function",
+    "roles": "authenticated, anon",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "rate_limit_check",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
    }
   ],
   "raises": [
@@ -60260,6 +60301,11 @@
     "function": "webhook_replay",
     "msg": "webhook % not found",
     "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "function": "rate_limit_check",
+    "msg": "rate_limit_check: _endpoint, _ip e _limit sao obrigatorios",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
    }
   ],
   "seed": [
@@ -62714,7 +62760,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -62750,7 +62795,6 @@
      "contas_receber",
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "transacoes_bancarias",
      "user_empresas",
      "user_roles"
@@ -62785,7 +62829,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -62851,7 +62894,6 @@
      "contas_receber",
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -62894,7 +62936,6 @@
      "asaas_transfers",
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -62926,7 +62967,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -63001,8 +63041,7 @@
     "auth": "PÚBLICA (verify_jwt=false em config.toml)",
     "tables": [
      "edge_function_logs",
-     "integration_secrets",
-     "rate_limit_logs"
+     "integration_secrets"
     ],
     "env": [
      "SUPABASE_SERVICE_ROLE_KEY",
@@ -63028,7 +63067,6 @@
     "tables": [
      "bling_tokens",
      "edge_function_logs",
-     "rate_limit_logs",
      "user_roles"
     ],
     "env": [
@@ -63060,8 +63098,7 @@
     "tables": [
      "alertas",
      "edge_function_logs",
-     "integration_secrets",
-     "rate_limit_logs"
+     "integration_secrets"
     ],
     "env": [
      "SUPABASE_SERVICE_ROLE_KEY",
@@ -63169,7 +63206,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -63308,7 +63344,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -63461,7 +63496,6 @@
      "edge_function_logs",
      "integration_secrets",
      "profiles",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -63489,7 +63523,6 @@
      "contas_receber",
      "edge_function_logs",
      "health_scores_operacionais",
-     "rate_limit_logs",
      "user_roles"
     ],
     "env": [
@@ -63957,7 +63990,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -64249,7 +64281,6 @@
     "tables": [
      "edge_function_logs",
      "empresas",
-     "rate_limit_logs",
      "user_empresas"
     ],
     "env": [
@@ -64531,7 +64562,6 @@
     "tables": [
      "edge_function_logs",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -65610,8 +65640,7 @@
     "auth": "PÚBLICA (verify_jwt=false em config.toml)",
     "tables": [
      "auth_logs",
-     "edge_function_logs",
-     "rate_limit_logs"
+     "edge_function_logs"
     ],
     "env": [
      "SUPABASE_SERVICE_ROLE_KEY",
@@ -65783,7 +65812,6 @@
      "edge_function_logs",
      "historico_cobranca_whatsapp",
      "integration_secrets",
-     "rate_limit_logs",
      "user_empresas",
      "user_roles"
     ],
@@ -65813,8 +65841,7 @@
      "asaas_audit_trail",
      "edge_function_logs",
      "execucoes_cobranca",
-     "integration_secrets",
-     "rate_limit_logs"
+     "integration_secrets"
     ],
     "env": [
      "SUPABASE_SERVICE_ROLE_KEY",
@@ -71577,7 +71604,7 @@
   {
    "module": "supabase/functions",
    "files": 235,
-   "lines": 51598,
+   "lines": 51658,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -71662,7 +71689,6 @@
     "protocolos_st_ufs",
     "push_subscriptions",
     "query_telemetry",
-    "rate_limit_logs",
     "recomendacoes_metas_ia",
     "regime_decision_cache",
     "regras_contabilizacao_automatica",
@@ -71838,8 +71864,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1046,
-   "lines": 80782,
+   "files": 1047,
+   "lines": 80870,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -73690,14 +73716,10 @@
    },
    "rate_limit_logs": {
     "select": [
-     "src/hooks/useRateLimitLogs.ts",
-     "supabase/functions/_shared/rate-limit.ts"
+     "src/hooks/useRateLimitLogs.ts"
     ],
     "delete": [
      "src/hooks/useRateLimitLogs.ts"
-    ],
-    "insert": [
-     "supabase/functions/_shared/rate-limit.ts"
     ]
    },
    "recomendacoes_metas_ia": {
@@ -75295,9 +75317,7 @@
     "created_at"
    ],
    "rate_limit_logs": [
-    "created_at",
-    "endpoint",
-    "ip_address"
+    "created_at"
    ],
    "recomendacoes_metas_ia": [
     "aplicada"
@@ -76289,6 +76309,10 @@
    ],
    "processar_regua_cobranca": [
     "src/hooks/useReguaCobranca.ts"
+   ],
+   "rate_limit_check": [
+    "supabase/functions/_shared/rate-limit.ts",
+    "supabase/functions/_shared/rate-limit_test.ts"
    ],
    "registrar_auditoria_config": [
     "src/hooks/useUserEmpresas.ts"
@@ -86316,6 +86340,10 @@
    {
     "file": "supabase/functions/_shared/rate-limit.ts",
     "text": "* Use `closed` em endpoints autenticados que não podem degradar sem limite. */"
+   },
+   {
+    "file": "supabase/functions/_shared/rate-limit.ts",
+    "text": "limite por até N-1 (Devin 🔴 / Codex P2 na #438). Juntar as duas no"
    },
    {
     "file": "supabase/functions/_shared/sql-write-guard.ts",
@@ -136041,6 +136069,10 @@
     "call": "asaas"
    },
    {
+    "file": "supabase/functions/_shared/rate-limit_test.ts",
+    "call": "asaas"
+   },
+   {
     "file": "supabase/functions/_shared/resilience.ts",
     "call": "asaas"
    },
@@ -136535,6 +136567,10 @@
    {
     "file": "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql",
     "call": "notify_push"
+   },
+   {
+    "file": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+    "call": "asaas"
    }
   ],
   "db_policies": [
@@ -151102,6 +151138,22 @@
      "v_count"
     ]
    },
+   "rate_limit_check": {
+    "args": "_endpoint text, _ip inet, _limit integer, _window_seconds integer DEFAULT 60, _user_agent text DEFAULT NULL",
+    "returns": "TABLE(permitido boolean, contagem integer)",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_since timestamptz; v_agora timestamptz := now(); v_total integer; v_permitido boolean; BEGIN IF _endpoint IS NULL OR _ip IS NULL OR _limit IS NULL THEN RAISE EXCEPTION 'rate_limit_check: _endpoint, _ip e _limit sao obrigatorios'; END IF; v_since := v_agora - make_interval(secs => GREATEST(COALESCE(_window_seconds, 60), 1)); PERFORM pg_advisory_xact_lock(hashtextextended(_endpoint || '|' || host(_ip), 0)); SELECT count(*) INTO v_total FROM public.rate_limit_logs WHERE endpoint = _endpoint AND ip_address = _ip AND created_at >= v_since; v_total := v_total + 1; v_permitido := v_total <= _limit; INSERT INTO public.rate_limit_logs (endpoint, ip_address, user_agent, blocked, request_coun …",
+    "raises": [
+     "rate_limit_check: _endpoint, _ip e _limit sao obrigatorios"
+    ],
+    "tables": [
+     "rate_limit_logs",
+     "v_total"
+    ]
+   },
    "exec_sql": {
     "args": "",
     "returns": "?",
@@ -152159,6 +152211,11 @@
     "function": "webhook_replay",
     "msg": "webhook % not found",
     "src": "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql"
+   },
+   {
+    "function": "rate_limit_check",
+    "msg": "rate_limit_check: _endpoint, _ip e _limit sao obrigatorios",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
    }
   ],
   "db_generated": [
@@ -161222,6 +161279,7 @@
    "supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql",
    "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
+   "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -161375,6 +161433,7 @@
    "provisionar_usuario",
    "provisionar_usuario_atual",
    "purge_old_rows",
+   "rate_limit_check",
    "recarregar_seeds_fiscais",
    "record_failed_login",
    "record_failed_login_v2",
@@ -169388,6 +169447,30 @@
     "objkind": "table",
     "roles": "service_role",
     "src": "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "rate_limit_check",
+    "objkind": "function",
+    "roles": "PUBLIC",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "execute",
+    "object": "rate_limit_check",
+    "objkind": "function",
+    "roles": "authenticated, anon",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "rate_limit_check",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
    }
   ],
   "guards": [
@@ -229037,23 +229120,9 @@
     "function checkRateLimit",
     "function rateLimitResponse"
    ],
-   "tables": [
-    {
-     "table": "rate_limit_logs",
-     "op": "select"
-    },
-    {
-     "table": "rate_limit_logs",
-     "op": "insert"
-    }
+   "rpc": [
+    "rate_limit_check"
    ],
-   "table_cols": {
-    "rate_limit_logs": [
-     "created_at",
-     "endpoint",
-     "ip_address"
-    ]
-   },
    "errors": [
     "Too Many Requests"
    ],
@@ -229061,7 +229130,8 @@
     "* Rate limit por IP + endpoint usando a tabela public.rate_limit_logs.",
     "do rate limiter — a validação de assinatura/HMAC continua sendo a",
     "ip, limit: 120, windowSeconds: 60 });",
-    "* Use `closed` em endpoints autenticados que não podem degradar sem limite. */"
+    "* Use `closed` em endpoints autenticados que não podem degradar sem limite. */",
+    "limite por até N-1 (Devin 🔴 / Codex P2 na #438). Juntar as duas no"
    ],
    "doc": "Rate limit por IP + endpoint usando a tabela public.rate_limit_logs. Estratégia: sliding window de 60 segundos, contagem por (endpoint, ip). Fail-open: se a consulta ao banco falhar, permitimos a requisição (não queremos derrubar webhooks legítimos por causa de indisponibilidade do rate limiter — a …",
    "side_effects": [
@@ -229070,7 +229140,13 @@
   },
   "supabase/functions/_shared/rate-limit_test.ts": {
    "path": "supabase/functions/_shared/rate-limit_test.ts",
-   "lines": 85
+   "lines": 128,
+   "rpc": [
+    "rate_limit_check"
+   ],
+   "side_effects": [
+    "asaas"
+   ]
   },
   "supabase/functions/_shared/resilience.ts": {
    "path": "supabase/functions/_shared/resilience.ts",
@@ -231816,10 +231892,13 @@
   },
   "supabase/functions/bling-webhook/index.test.ts": {
    "path": "supabase/functions/bling-webhook/index.test.ts",
-   "lines": 274,
+   "lines": 291,
    "is_test": true,
    "errors": [
     "indisponível"
+   ],
+   "rule_comments": [
+    "Rate limit indisponível: o próprio RPC falha (fetch lança), e o helper"
    ],
    "uses_service_role": true
   },
@@ -245152,6 +245231,14 @@
    ],
    "uses_service_role": true
   },
+  "supabase/migrations/20261118002000_rate_limit_check_atomico.sql": {
+   "path": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+   "lines": 88,
+   "side_effects": [
+    "asaas"
+   ],
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245260,10 +245347,22 @@
   }
  },
  "git": {
-  "sha": "c72e283fff47c38a902fc36e4f37a859fe29db80",
+  "sha": "18355ba1cdd3a13c3bb2c7baac70f26b790cc542",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "18355ba",
+    "date": "2026-11-17",
+    "author": "adm01-debug",
+    "subject": "fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)",
+    "files": [
+     "supabase/functions/_shared/rate-limit.ts",
+     "supabase/functions/_shared/rate-limit_test.ts",
+     "supabase/functions/bling-webhook/index.test.ts",
+     "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+    ]
+   },
    {
     "sha": "c72e283",
     "date": "2026-11-17",
@@ -245551,28 +245650,12 @@
     "files": [
      "supabase/migrations/20261117190000_drop_tabelas_residuo_lovable.sql"
     ]
-   },
-   {
-    "sha": "17a5777",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(db): harness de replay das migrations num Postgres local efêmero (#433)",
-    "files": [
-     "docs/agentes/replay-migrations-2026-11-17.md",
-     "scripts/automation.config.json",
-     "scripts/db/replay-bootstrap.sql",
-     "scripts/db/replay-migrations.sh"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     4
-   ],
-   [
-    "scripts/automation.config.json",
-    2
    ],
    [
     "bun.lock",
@@ -245587,7 +245670,27 @@
     2
    ],
    [
+    "supabase/functions/_shared/rate-limit.ts",
+    1
+   ],
+   [
+    "supabase/functions/_shared/rate-limit_test.ts",
+    1
+   ],
+   [
+    "supabase/functions/bling-webhook/index.test.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+    1
+   ],
+   [
     ".github/workflows/ci.yml",
+    1
+   ],
+   [
+    "scripts/automation.config.json",
     1
    ],
    [
@@ -245628,22 +245731,6 @@
    ],
    [
     "src/hooks/useHistoricoFinanceiro.ts",
-    1
-   ],
-   [
-    "src/components/bitrix/BitrixClientsTab.tsx",
-    1
-   ],
-   [
-    "src/hooks/useBitrix24.ts",
-    1
-   ],
-   [
-    "supabase/functions/bitrix24-sync/index.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261117211000_clientes_bitrix_ids.sql",
     1
    ]
   ]

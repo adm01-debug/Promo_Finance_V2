@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c72e283fff` · branch `main` · 2026-11-18 00:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `18355ba1cd` · branch `main` · 2026-11-18 00:50 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -308,7 +308,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 356 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 357 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -460,7 +460,7 @@
 - `supabase/functions/stress_test.ts`
 - `supabase/functions/sync-profile-to-bitrix/index.ts`
 - `supabase/functions/upload-anexo/index.ts`
-- … +206 (lista completa em `context.json`)
+- … +207 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -611,6 +611,7 @@
 - `provisionar_usuario`
 - `provisionar_usuario_atual`
 - `purge_old_rows`
+- `rate_limit_check`
 - `recarregar_seeds_fiscais`
 - `record_failed_login`
 - `record_failed_login_v2`
@@ -879,12 +880,12 @@ Middleware matcher (Next.js): nenhum
 | grant | postgres, service_role | execute | `notify_performance_alert_trigger`, `internal_job_secret` |
 | grant | public | execute | `is_ip_allowed_for_login`, `is_country_allowed_for_login` |
 | grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +142 |
-| grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +78 |
+| grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +79 |
 | grant | service_role | select | `mv_benchmark_setorial`, `v_table_bloat`, `mv_performance_alerts_weekly`, `estrategias_elisao_catalogo`, `mv_benchmark_setorial`, `vw_edge_health`, `vw_transferencias_painel`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel`, `estrategias_elisao_catalogo`, `vw_webhooks_recentes` |
 | grant | service_role | usage, select | `rpc_observability_metrics_id_seq` |
 | grant | service_role, authenticated | execute | `sefaz_cursor_advance` |
 | grant | service_role, postgres | execute | `refresh_performance_alerts_weekly` |
-| revoke | PUBLIC | all | `resolve_sso_providers_for_domain`, `profile_sensitive_fields_unchanged`, `capture_slow_queries`, `enqueue_webhook_retry`, `reprocess_dlq`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `audit_trigger_generic`, `capture_pg_stat_statements_baseline`, `compare_pg_stat_baseline`, `check_nfe_xml_path_invariants`, `resolve_sso_providers_for_domain`, `calcular_potencial_elisao`, `gerar_contas_recorrentes` … +6 |
+| revoke | PUBLIC | all | `resolve_sso_providers_for_domain`, `profile_sensitive_fields_unchanged`, `capture_slow_queries`, `enqueue_webhook_retry`, `reprocess_dlq`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `audit_trigger_generic`, `capture_pg_stat_statements_baseline`, `compare_pg_stat_baseline`, `check_nfe_xml_path_invariants`, `resolve_sso_providers_for_domain`, `calcular_potencial_elisao`, `gerar_contas_recorrentes` … +7 |
 | revoke | PUBLIC | execute | `run_daily_cleanup`, `run_daily_cleanup_with_logging`, `cleanup_expired_tokens`, `cleanup_old_login_attempts`, `cleanup_old_cron_logs`, `get_cron_jobs`, `get_cron_run_history`, `get_cron_run_history`, `clear_login_attempts`, `reset_failed_attempts`, `increment_failed_attempts`, `registrar_auditoria_config`, `log_audit`, `export_asaas_audit_csv`, `confirmar_conciliacao_manual` … +6 |
 | revoke | PUBLIC, anon | all | `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `get_performance_alerts_weekly`, `get_integrity_alerts`, `sefaz_cursor_advance`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `fn_balancete`, `fn_livro_razao`, `fn_norm_conta_codigo`, `fn_indices_contabeis` … +49 |
 | revoke | PUBLIC, anon | execute | `registrar_evento_receber`, `get_asaas_payment_stats`, `export_asaas_audit_csv`, `registrar_evento_receber`, `registrar_evento_cobranca`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `monitor_table_bloat`, `snapshot_table_bloat`, `refresh_performance_alerts_weekly`, `sefaz_run_observability_checks`, `log_rpc_observability_call`, `run_observability_rpc`, `cleanup_rpc_observability_metrics`, `webhook_replay` … +11 |
@@ -909,6 +910,7 @@ Middleware matcher (Next.js): nenhum
 | revoke | authenticated | update | `elisao_creditos_auditoria`, `asaas_audit_trail` |
 | revoke | authenticated | update, delete | `logs_baixa_automatica`, `logs_conciliacao_retroativa` |
 | revoke | authenticated | update, delete, truncate | `audit_logs`, `audit_logs`, `frontend_error_logs` |
+| revoke | authenticated, anon | execute | `rate_limit_check` |
 | revoke | public | all | `registrar_tentativa_sso` |
 
 ## Riscos de acesso detectados

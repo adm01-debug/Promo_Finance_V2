@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1046,
+ "migrations": 1047,
  "seeds": [],
  "avisos": [
   "197 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -492,6 +492,7 @@
   "provisionar_usuario",
   "provisionar_usuario_atual",
   "purge_old_rows",
+  "rate_limit_check",
   "recarregar_seeds_fiscais",
   "record_failed_login",
   "record_failed_login_v2",
@@ -36858,9 +36859,7 @@
     ]
    },
    "usada_no_front": 1,
-   "usada_em_edges": [
-    "_shared"
-   ],
+   "usada_em_edges": [],
    "triggers": [],
    "sem_rls": false,
    "nao_usada": false
@@ -49258,6 +49257,11 @@
   },
   {
    "nome": "processar_regua_cobranca",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
+   "nome": "rate_limit_check",
    "definida": true,
    "usada_em": 1
   },

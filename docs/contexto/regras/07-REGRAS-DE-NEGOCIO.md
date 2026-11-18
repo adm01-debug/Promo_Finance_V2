@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c72e283fff` · branch `main` · 2026-11-18 00:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `18355ba1cd` · branch `main` · 2026-11-18 00:50 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1067,6 +1067,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `reprocess_dlq` | Evento em processamento agora (webhooks_log %): aguarde o fim da tentativa atual. | `supabase/migrations/20261117053000_reprocess_dlq_reagenda_original.sql` |
 | `webhook_replay` | unauthorized: admin role required to replay webhooks | `supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql` |
 | `webhook_replay` | webhook % not found | `supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql` |
+| `rate_limit_check` | rate_limit_check: _endpoint, _ip e _limit sao obrigatorios | `supabase/migrations/20261118002000_rate_limit_check_atomico.sql` |
 
 ## E. Estados, máquinas de estado e transições
 
@@ -5541,6 +5542,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `enqueue(` | `supabase/functions/_shared/edge-observability.ts` |
 | `enqueue(` | `supabase/functions/_shared/edge-observability_test.ts` |
 | `asaas` | `supabase/functions/_shared/rate-limit.ts` |
+| `asaas` | `supabase/functions/_shared/rate-limit_test.ts` |
 | `asaas` | `supabase/functions/_shared/resilience.ts` |
 | `asaas` | `supabase/functions/_shared/resilience_test.ts` |
 | `notify` | `supabase/functions/_shared/sql-write-guard.ts` |
@@ -5665,6 +5667,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `notify_email` | `supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql` |
 | `notify_inapp` | `supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql` |
 | `notify_push` | `supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql` |
+| `asaas` | `supabase/migrations/20261118002000_rate_limit_check_atomico.sql` |
 
 ## N. Regras citadas em comentários do código
 
@@ -5970,4 +5973,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +426 linhas — lista completa em `context.json` | |
+| … +427 linhas — lista completa em `context.json` | |

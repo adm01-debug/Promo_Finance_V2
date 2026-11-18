@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "c72e283fff47c38a902fc36e4f37a859fe29db80",
+  "commit": "18355ba1cdd3a13c3bb2c7baac70f26b790cc542",
   "branch": "main",
-  "data_commit": "2026-11-17T21:41:28-03:00",
+  "data_commit": "2026-11-17T21:49:59-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "18355ba",
+    "data": "2026-11-17",
+    "assunto": "fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)"
+   },
    {
     "sha": "c72e283",
     "data": "2026-11-17",
@@ -126,14 +131,9 @@
     "sha": "8215f7d",
     "data": "2026-11-17",
     "assunto": "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)"
-   },
-   {
-    "sha": "61b3838",
-    "data": "2026-11-17",
-    "assunto": "fix(cnpja): restaura a tabela e a RPC de cota, religando a consulta de CNPJ (#438)"
    }
   ],
-  "arquivos_mudados_7d": 929,
+  "arquivos_mudados_7d": 933,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -152,12 +152,12 @@
     "mudancas": 29
    },
    {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 28
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 29
    },
    {
-    "pasta": "supabase/functions/_shared",
-    "mudancas": 27
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 28
    },
    {
     "pasta": "package.json",
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 37
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 216
+    "commits": 217
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3939,
+  "arquivos_total": 3940,
   "arquivos_codigo": 2476,
-  "linhas_codigo": 440996,
+  "linhas_codigo": 441056,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,7 +330,7 @@
   "hooks": 273,
   "edge_functions": 106,
   "tabelas": 321,
-  "migrations": 1046,
+  "migrations": 1047,
   "cron_jobs": 22,
   "testes": 479,
   "workflows": 19,
@@ -684,7 +684,7 @@
   },
   "supabase/functions": {
    "arquivos": 235,
-   "linhas": 51363
+   "linhas": 51423
   },
   "supabase/tests": {
    "arquivos": 2,

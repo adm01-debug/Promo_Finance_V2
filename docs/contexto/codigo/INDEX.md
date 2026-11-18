@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c72e283fff47c38a902fc36e4f37a859fe29db80` (2026-11-17T21:41:28-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `18355ba1cdd3a13c3bb2c7baac70f26b790cc542` (2026-11-17T21:49:59-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1118), Markdown (201), JavaScript (73), Python (45), JSON (41), Shell (27), YAML (25)
+- linguagens: TypeScript (2360), SQL (1119), Markdown (201), JavaScript (73), Python (45), JSON (41), Shell (27), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3939 |
+| arquivos_total | 3940 |
 | arquivos_codigo | 2476 |
-| linhas_codigo | 440996 |
+| linhas_codigo | 441056 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 321 |
-| migrations | 1046 |
+| migrations | 1047 |
 | cron_jobs | 22 |
 | testes | 479 |
 | workflows | 19 |
@@ -461,7 +461,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (37)
+- package.json (36)
 - bun.lock (33)
 - .github/workflows/ci.yml (25)
 - supabase/functions/asaas-proxy/index.ts (18)
@@ -629,6 +629,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
 - 2026-11-17 `c72e283` infra(ci): gate que barra coluna inexistente em select/order (#457)
 - 2026-11-17 `f56d307` chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)
 - 2026-11-17 `2aa3851` fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)
@@ -643,7 +644,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `f76fcd2` fix(bitrix): religa o sync e escopa busca e update por empresa (#447)
 - 2026-11-17 `1702166` fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)
 - 2026-11-17 `f9b3094` chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)
-- 2026-11-17 `2e8ac1d` infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
