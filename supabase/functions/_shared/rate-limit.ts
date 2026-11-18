@@ -69,16 +69,20 @@ export async function checkRateLimit(
       })
       .maybeSingle();
 
-    if (error || !data) {
+    const linha = data as { permitido?: unknown; contagem?: unknown } | null;
+    if (error || !linha || typeof linha.permitido !== 'boolean') {
+      // Resposta ausente ou fora do contrato conta como indisponibilidade:
+      // em fail-open libera, em fail-closed nega com `unavailable` — nunca
+      // "bloqueado" silencioso por um payload inesperado.
       console.warn(
         `[rate-limit] rpc error, fail-${failureMode}:`,
-        error?.message ?? 'resposta vazia'
+        error?.message ?? (linha ? 'resposta fora do contrato' : 'resposta vazia')
       );
       return resultadoIndisponivel(failureMode, opts.limit);
     }
 
-    const currentCount = Number((data as { contagem: number }).contagem);
-    const allowed = Boolean((data as { permitido: boolean }).permitido);
+    const currentCount = Number(linha.contagem ?? 0);
+    const allowed = linha.permitido;
 
     return {
       allowed,
