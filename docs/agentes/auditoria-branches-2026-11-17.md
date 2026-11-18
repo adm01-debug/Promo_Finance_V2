@@ -437,7 +437,7 @@ de fora da varredura anterior). **19 arquivos** ausentes da `main`, em 8 tags.
 | `claude_resolve-conflicting-prs` (3 migrations) | obsoletas | já julgadas na 6.2 |
 | `automation-estado-real-261117` | 1 commit, **0 arquivo ausente** | snapshot de telemetria |
 | `diagnostico-actions-261116` (8 workflows) | descartáveis por texto próprio | gatilho só em `claude/chore-diagnostico-actions-**`, branch inexistente; achado virou `sha_pinning_required=false` |
-| **`claude_fix-grants-audit-logs-261114-1500`** | **PERDA REAL — recuperada** | ver abaixo |
+| `claude_fix-grants-audit-logs-261114-1500` | **substituída** por migration posterior já na `main` | ver abaixo |
 
 **step15 e step16 não se perderam, apesar de 0 dos 18 índices existirem com os nomes da
 migration.** O teste por nome dá falso positivo: as 18 colunas estão indexadas com outros
@@ -452,16 +452,38 @@ apontarem para a mesma conta a pagar, isto é, pagamento em dobro. O duplicado d
 é `idx_nfe_recebidas_conta_pagar_id_fk`, não-único na mesma coluna. Produção manteve o
 certo; não dropar foi acerto.
 
-**A perda real: o INSERT de `frontend_error_logs`.** `20261114150000_fix_grants_authenticated_audit.sql`
-nunca entrou na `main`. A tabela tem RLS e a policy `frontend_error_user_insert`
-(`TO authenticated`), mas o privilégio de tabela faltava —
-`has_table_privilege('authenticated',...,'INSERT') = false`, enquanto `anon` tinha INSERT.
-Policy sem grant não grava: **0 linhas na tabela desde sempre**, com
-`src/components/error/ErrorBoundary.tsx:46` e `src/lib/telemetry.ts:224` gravando a cada
-erro. Visitante anônimo podia registrar erro e usuário logado não. A assimetria confirma:
-`frontend_performance_logs`, mesmo caminho, tem INSERT e funciona. Corrigido em
-`20261118000500_grant_insert_frontend_error_logs.sql`. Os outros dois alvos daquela
-migration já estavam em produção por outra via.
+**O caso que eu li errado: o INSERT de `frontend_error_logs`.**
+`20261114150000_fix_grants_authenticated_audit.sql` pedia
+`GRANT SELECT, INSERT ON frontend_error_logs TO authenticated` e nunca entrou na `main`. Em
+produção, `has_table_privilege('authenticated', ..., 'INSERT')` é `false`, e a tabela tem 0
+linhas — eu concluí daí que a telemetria de erro nunca gravou por falta de privilégio, e
+apliquei o grant de tabela. **Errado, e foi revertido.**
 
-Conclusão desta seção: de 19 arquivos ausentes, 18 eram obsoletos, equivalentes ou
-sucedidos, e 1 era perda de verdade — encontrada e aplicada.
+O privilégio existe **por coluna**. `20261116151000_grants_authenticated_audit_por_coluna.sql:27-31`,
+posterior àquela migration órfã e já na `main`, faz de propósito:
+
+```sql
+REVOKE INSERT ON public.frontend_error_logs FROM authenticated;
+GRANT INSERT (error_message, error_stack, url, user_agent, metadata, severity, user_id)
+  ON public.frontend_error_logs TO authenticated;
+```
+
+deixando `id` e `created_at` fora, com guarda própria que levanta exceção se virarem
+graváveis; `scripts/security/test-privilege-baseline.sql:329-333` reprova o build pelo mesmo
+motivo ("sequestro de partição"). As 7 colunas concedidas são exatamente o payload de
+`buildErrorRows` (`src/lib/telemetry.ts:125`). Ou seja: a migration órfã foi **substituída por
+uma versão mais restrita**, e `has_table_privilege(...,'INSERT') = false` é o estado desejado,
+não um defeito. Os outros dois alvos dela também estão na `main` pela mesma migration
+(`audit_logs` com `INSERT+SELECT`, `planos_acao` com os quatro).
+
+Lição de método, porque muda a leitura de qualquer auditoria de permissão: **`has_table_privilege`
+não prova ausência de privilégio** — é preciso `has_column_privilege` coluna por coluna. E 0
+linhas numa tabela de log não prova erro de escrita. O motivo real da tabela vazia segue sem
+causa provada, e é investigação, não correção. Apontado por Devin (🟥) e Codex (P1) na #465,
+que foi fechada e revertida em produção (grant de tabela removido, grant por coluna recriado,
+`id`/`created_at` de volta a não-graváveis, ledger de volta a 1046).
+
+Conclusão desta seção: dos 19 arquivos ausentes, **nenhum** era perda de trabalho — todos
+obsoletos, equivalentes, sucedidos ou substituídos por versão mais restrita, com prova por
+query em produção. O único candidato a perda, o grant de `frontend_error_logs`, era na verdade
+o contrário: aplicá-lo abria um furo que uma migration posterior havia fechado de propósito.
