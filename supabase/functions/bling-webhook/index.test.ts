@@ -35,7 +35,10 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
+    globalThis.fetch = async (url) =>
+      String(url).includes('/rpc/rate_limit_check')
+        ? new Response(JSON.stringify({ permitido: true, contagem: 1 }), { status: 200 })
+        : new Response(JSON.stringify([]), { status: 200 });
     try {
       const response = await handler(
         new Request('http://localhost/bling-webhook', {
@@ -66,6 +69,9 @@ Deno.test({
     setupMockEnv();
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
+      if (String(url).includes('/rpc/rate_limit_check')) {
+        return new Response(JSON.stringify({ permitido: true, contagem: 1 }), { status: 200 });
+      }
       if (String(url).includes('/rpc/webhook_claim')) {
         return new Response(
           JSON.stringify([
@@ -118,7 +124,10 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
+    globalThis.fetch = async (url) =>
+      String(url).includes('/rpc/rate_limit_check')
+        ? new Response(JSON.stringify({ permitido: true, contagem: 1 }), { status: 200 })
+        : new Response(JSON.stringify([]), { status: 200 });
     try {
       const response = await handler(
         new Request('http://localhost/bling-webhook', {
@@ -146,7 +155,10 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => new Response(JSON.stringify([]), { status: 200 });
+    globalThis.fetch = async (url) =>
+      String(url).includes('/rpc/rate_limit_check')
+        ? new Response(JSON.stringify({ permitido: true, contagem: 1 }), { status: 200 })
+        : new Response(JSON.stringify([]), { status: 200 });
     try {
       const response = await handler(
         new Request('http://localhost/bling-webhook', {
@@ -176,6 +188,8 @@ Deno.test({
   async fn() {
     setupMockEnv();
     const originalFetch = globalThis.fetch;
+    // Rate limit indisponível: o próprio RPC falha (fetch lança), e o helper
+    // em fail-closed tem de responder 503 com Retry-After.
     globalThis.fetch = async () => {
       throw new Error('indisponível');
     };
@@ -214,6 +228,9 @@ Deno.test({
     const originalFetch = globalThis.fetch;
     const urls: string[] = [];
     globalThis.fetch = async (input) => {
+      if (String(input).includes('/rpc/rate_limit_check')) {
+        return new Response(JSON.stringify({ permitido: true, contagem: 1 }), { status: 200 });
+      }
       const url = String(input);
       urls.push(url);
 
