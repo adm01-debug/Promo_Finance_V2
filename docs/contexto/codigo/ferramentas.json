@@ -5,11 +5,11 @@
   "linguagens": [
    "TypeScript (2360)",
    "SQL (1120)",
-   "Markdown (207)",
+   "Markdown (210)",
    "JavaScript (74)",
    "Python (45)",
    "JSON (42)",
-   "Shell (28)",
+   "Shell (29)",
    "YAML (25)"
   ],
   "linguagem_principal": "TypeScript",
@@ -1205,12 +1205,12 @@
  ],
  "docs_em_subpastas": [
   {
-   "pasta": "docs/agentes",
-   "arquivos_md": 13
+   "pasta": "docs/archive",
+   "arquivos_md": 15
   },
   {
-   "pasta": "docs/archive",
-   "arquivos_md": 12
+   "pasta": "docs/agentes",
+   "arquivos_md": 13
   },
   {
    "pasta": "docs/guides",

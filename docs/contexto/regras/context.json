@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "772e151dd4ebdc7a5d57c7a1b4531254b1084d13",
+  "sha": "1bdec674313769761fda831e445ec9f3914741af",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-18 14:17 UTC",
-  "files_total": 3989,
+  "generated_at": "2026-11-18 19:12 UTC",
+  "files_total": 3993,
   "code_files": 3598,
   "code_lines": 511545
  },
@@ -243961,10 +243961,22 @@
   }
  },
  "git": {
-  "sha": "772e151dd4ebdc7a5d57c7a1b4531254b1084d13",
+  "sha": "1bdec674313769761fda831e445ec9f3914741af",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1bdec67",
+    "date": "2026-11-18",
+    "author": "adm01-debug",
+    "subject": "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)",
+    "files": [
+     "docs/archive/mapa-integracao-20261112/EXECUCAO-29-10.md",
+     "docs/archive/mapa-integracao-20261112/IMPORTADOS.md",
+     "docs/archive/mapa-integracao-20261112/MAPA-INTEGRACAO.md",
+     "docs/archive/mapa-integracao-20261112/mesclar-prontos.sh"
+    ]
+   },
    {
     "sha": "772e151",
     "date": "2026-11-18",
@@ -244262,18 +244274,6 @@
     "files": [
      "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
     ]
-   },
-   {
-    "sha": "b982315",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(asaas): corrige nomes de coluna que anulavam a trilha de auditoria e a baixa da fila (#441)",
-    "files": [
-     "supabase/functions/asaas-proxy/index.ts",
-     "supabase/functions/asaas-webhook/index.ts",
-     "supabase/functions/processar-fila-cobrancas/index.ts",
-     "supabase/functions/whatsapp-webhook/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -244292,6 +244292,22 @@
    [
     "supabase/functions/executar-fechamento-tributario/index.ts",
     2
+   ],
+   [
+    "docs/archive/mapa-integracao-20261112/EXECUCAO-29-10.md",
+    1
+   ],
+   [
+    "docs/archive/mapa-integracao-20261112/IMPORTADOS.md",
+    1
+   ],
+   [
+    "docs/archive/mapa-integracao-20261112/MAPA-INTEGRACAO.md",
+    1
+   ],
+   [
+    "docs/archive/mapa-integracao-20261112/mesclar-prontos.sh",
+    1
    ],
    [
     "docs/REMOTE_ONLY_MIGRATIONS_STRATEGY.md",
@@ -244339,22 +244355,6 @@
    ],
    [
     "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
-    1
-   ],
-   [
-    "supabase/tests/sql/infra.test.sql",
-    1
-   ],
-   [
-    "supabase/functions/_shared/rate-limit.ts",
-    1
-   ],
-   [
-    "supabase/functions/_shared/rate-limit_test.ts",
-    1
-   ],
-   [
-    "supabase/functions/bling-webhook/index.test.ts",
     1
    ]
   ]

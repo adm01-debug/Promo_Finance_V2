@@ -4,7 +4,7 @@
 |---|---|
 | nome | get-vapid-key |
 | status | ACTIVE |
-| versão | 108 |
+| versão | 109 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/get-vapid-key/index.ts |
 | import_map |  |

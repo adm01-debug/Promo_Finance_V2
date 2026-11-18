@@ -4,7 +4,7 @@
 |---|---|
 | nome | decidir-regime |
 | status | ACTIVE |
-| versão | 112 |
+| versão | 113 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/decidir-regime/index.ts |
 | import_map |  |

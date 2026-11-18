@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "772e151dd4ebdc7a5d57c7a1b4531254b1084d13",
+  "commit": "1bdec674313769761fda831e445ec9f3914741af",
   "branch": "main",
-  "data_commit": "2026-11-18T11:00:08-03:00",
+  "data_commit": "2026-11-18T15:49:17-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1bdec67",
+    "data": "2026-11-18",
+    "assunto": "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)"
+   },
    {
     "sha": "772e151",
     "data": "2026-11-18",
@@ -126,14 +131,9 @@
     "sha": "4ba4b44",
     "data": "2026-11-17",
     "assunto": "fix(db): a coluna de empresas é `ativo`, não `ativa` (#446)"
-   },
-   {
-    "sha": "a378486",
-    "data": "2026-11-17",
-    "assunto": "infra(db): cria 63 índices declarados e ausentes nas tabelas financeiras (#445)"
    }
   ],
-  "arquivos_mudados_7d": 943,
+  "arquivos_mudados_7d": 707,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 220
+    "commits": 221
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3950,
+  "arquivos_total": 3954,
   "arquivos_codigo": 2477,
   "linhas_codigo": 441467,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 479,
   "workflows": 19,
   "scripts": 115,
-  "docs_md": 207
+  "docs_md": 210
  },
  "por_pasta": {
   "docs/auditoria-20260912": {
