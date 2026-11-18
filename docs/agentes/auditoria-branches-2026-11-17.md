@@ -478,8 +478,11 @@ não um defeito. Os outros dois alvos dela também estão na `main` pela mesma m
 
 Lição de método, porque muda a leitura de qualquer auditoria de permissão: **`has_table_privilege`
 não prova ausência de privilégio** — é preciso `has_column_privilege` coluna por coluna. E 0
-linhas numa tabela de log não prova erro de escrita. O motivo real da tabela vazia segue sem
-causa provada, e é investigação, não correção. Apontado por Devin (🟥) e Codex (P1) na #465,
+linhas numa tabela de log não prova erro de escrita. A tabela vazia tem explicação, conferida
+depois: `frontend_performance_logs` — escrita pela **mesma** `flushQueues()`
+(`src/lib/telemetry.ts:204-236`), com a mesma exigência de sessão — tem **90.045 linhas**, a
+última de 2026-11-18 00:12 UTC. O pipeline funciona; `frontend_error_logs` está vazia porque
+nenhum erro está sendo capturado, que é o estado saudável. Apontado por Devin (🟥) e Codex (P1) na #465,
 que foi fechada e revertida em produção (grant de tabela removido, grant por coluna recriado,
 `id`/`created_at` de volta a não-graváveis, ledger de volta a 1046).
 
