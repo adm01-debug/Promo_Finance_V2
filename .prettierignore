@@ -13,3 +13,8 @@ docs/GRAPHIFY_PLANO_50_ETAPAS.md
 # Gerados pelo estado-real.yml; os geradores comparam byte a byte (render-workflow-docs.mjs, gerar-matriz-edge-tabela.mjs)
 docs/ci/README.md
 docs/ci/MATRIZ_EDGE_TABELA.md
+
+# Gerados pelo gerador de conformidade; o --check compara byte a byte
+# (gerar-matriz-conformidade-contratos.mjs)
+docs/contract-conformance.json
+docs/contract-conformance-summary.md

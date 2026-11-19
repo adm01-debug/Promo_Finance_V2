@@ -1,0 +1,117 @@
+# Conformidade de Contratos — Edge Functions
+
+> Gerado por `node scripts/ci/gerar-matriz-conformidade-contratos.mjs` — não editar à mão.
+> Detalhe completo: `docs/contract-conformance.json`.
+
+**106 funções · 88 consomem body · 88 com validação (100%) · 34 com teste local (32.1%) · 34 tratam `invalid_json` · 5 com cobertura evidenciada de JSON malformado · 15 sem body detectável.**
+
+## Por função
+
+| Função | Body | Valida | 422 | invalid_json | Cobertura json inv. | Guard(s) | Teste |
+|---|---|---|---|---|---|---|---|
+| `aceitar-convite` | ✅ | ✅ | — | — | — | — | — |
+| `analise-fluxo-ia` | ✅ | ✅ | — | — | — | exigirUsuario | ✅ |
+| `analise-preditiva` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `analyze-document` | ✅ | ✅ | ✅ | ✅ | — | exigirUsuario | — |
+| `api-keys-manage` | ✅ | ✅ | — | — | — | — | ✅ |
+| `asaas-proxy` | ✅ | ✅ | ✅ | ✅ | ? | exigirVinculoEmpresa | ✅ |
+| `asaas-webhook` | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| `benchmarking-setorial` | ✅ | ✅ | ✅ | ✅ | — | exigirUsuario | — |
+| `bitrix24-sync` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `bitrix24-webhook` | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| `bling-proxy` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `bling-webhook` | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| `calcular-health-score-operacional` | ✅ | ✅ | — | — | — | — | — |
+| `calcular-slo-metrics-diario` | — | ✅ | — | — | — | — | — |
+| `calculo-iva` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `categorizar-despesa` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `ci-security-gate-log` | ✅ | ✅ | — | ✅ | ? | authorizeSharedSecret | ✅ |
+| `cnpja-lookup` | ✅ | ✅ | — | — | — | — | — |
+| `comparar-benchmark-setorial` | ✅ | ✅ | — | — | — | — | — |
+| `compare-schemas` | — | ✅ | — | — | — | — | — |
+| `conciliacao-ia` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `conciliacao-proxy` | ✅ | ✅ | — | ✅ | ? | — | ✅ |
+| `consulta-tributaria` | ✅ | ✅ | — | — | — | — | ✅ |
+| `contabilizar-evento` | ✅ | ✅ | — | — | — | — | — |
+| `convidar-contador` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `convidar-usuario` | ✅ | ✅ | — | — | — | — | ✅ |
+| `copilot-global` | ✅ | ✅ | — | — | — | — | — |
+| `copilot-tributario` | ✅ | ✅ | — | — | — | — | — |
+| `decidir-regime` | ✅ | ✅ | — | — | — | — | — |
+| `detectar-anomalias-financeiras` | ✅ | ✅ | — | — | — | — | — |
+| `digest-silenciamentos-erro` | ✅ | ✅ | ✅ | — | — | — | — |
+| `enviar-alerta-email` | ✅ | ✅ | ✅ | ✅ | ? | — | ✅ |
+| `enviar-bitrix24-tributario` | ✅ | ✅ | — | — | — | — | — |
+| `enviar-convite-organizacao` | ✅ | ✅ | — | — | — | — | — |
+| `enviar-digest-conformidade` | ✅ | ✅ | — | — | — | exigirVinculoEmpresa | — |
+| `enviar-relatorios-tributarios-agendados` | — | ✅ | — | — | — | — | — |
+| `executar-analise-preditiva` | — | ✅ | — | — | — | — | ✅ |
+| `executar-fechamento-tributario` | ✅ | ✅ | — | — | — | exigirVinculoEmpresa | — |
+| `executar-regua-cobranca` | ✅ | ✅ | — | — | — | — | ✅ |
+| `executar-relatorios` | ✅ | ✅ | — | — | — | — | — |
+| `expert-agent` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `exportar-sped-contribuicoes` | ✅ | ✅ | — | — | — | — | ✅ |
+| `external-data` | — | ✅ | — | — | — | — | — |
+| `gerar-acoes-recomendadas` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-alertas` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-alertas-dispatcher` | ✅ | ✅ | ✅ | — | — | — | — |
+| `gerar-alertas-tributarios` | — | ✅ | — | — | — | — | ✅ |
+| `gerar-dre-tributaria` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `gerar-heatmap-tributario` | ✅ | ✅ | — | — | — | exigirUsuario | ✅ |
+| `gerar-pacote-evidencias` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-pdf-tributario` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-relatorio-anual` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-resumo-executivo-semanal` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-resumo-financeiro-diario` | — | ✅ | — | — | — | — | — |
+| `gerar-snapshots-conformidade` | ✅ | ✅ | — | — | — | — | — |
+| `gerar-sped-ecd` | ✅ | ✅ | ✅ | ✅ | ? | — | ✅ |
+| `gerar-sped-ecf` | ✅ | ✅ | ✅ | ✅ | ? | — | ✅ |
+| `get-mapbox-token` | — | ✅ | — | — | — | — | — |
+| `get-vapid-key` | — | ✅ | — | — | — | — | — |
+| `health` | — | ✅ | — | — | — | exigirUsuario | — |
+| `insights-relatorio` | ✅ | ✅ | — | — | — | exigirUsuario | — |
+| `log-sped-bitrix24` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `mcp-query` | — | ✅ | — | — | — | — | ✅ |
+| `monitor-health` | — | ✅ | — | — | — | — | ✅ |
+| `monitorar-erros-frontend` | ✅ | ✅ | ✅ | — | — | — | — |
+| `n8n-callback` | ✅ | ✅ | — | ✅ | ? | — | ✅ |
+| `n8n-dispatch` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `nfe-upload-certificado` | ✅ | ✅ | ✅ | ✅ | — | exigirVinculoEmpresa | — |
+| `nfe-vinculo-proxy` | ✅ | ✅ | — | ✅ | ? | — | ✅ |
+| `notify-performance-alert` | ✅ | ✅ | — | ✅ | ? | guardInternal | ✅ |
+| `notify-saved-filter` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `open-finance` | ✅ | ✅ | — | — | — | exigirVinculoEmpresa | ✅ |
+| `overlay-rejeicoes-auditoria` | ✅ | ✅ | — | ✅ | — | — | — |
+| `prever-carga-tributaria` | ✅ | ✅ | — | — | — | — | — |
+| `processar-fila-cobrancas` | — | ✅ | — | — | — | — | — |
+| `processar-nf-ocr` | ✅ | ✅ | — | — | — | — | — |
+| `processar-solicitacao-lgpd` | ✅ | ✅ | ✅ | ✅ | ? | — | ✅ |
+| `projecao-reforma` | ✅ | ✅ | ✅ | ✅ | — | — | — |
+| `relatorio-diario-anomalias` | ✅ | ✅ | — | — | — | — | — |
+| `scim-server` | — | ✅ | — | — | — | — | — |
+| `sefaz-dfe-dispatcher` | — | ✅ | — | — | — | — | ✅ |
+| `sefaz-dfe-puxar` | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| `sefaz-manifestar` | ✅ | ✅ | — | ✅ | ? | — | ✅ |
+| `send-device-alert` | ✅ | ✅ | ✅ | ✅ | — | exigirUsuario | — |
+| `send-push-notification` | ✅ | ✅ | ✅ | ✅ | ? | — | ✅ |
+| `simular-presumido` | ✅ | ✅ | ✅ | ✅ | — | exigirUsuario | — |
+| `simular-real` | ✅ | ✅ | ✅ | ✅ | — | exigirUsuario | — |
+| `simular-simples` | ✅ | ✅ | ✅ | ✅ | — | exigirUsuario | — |
+| `sincronizar-anomalia-bitrix24` | ✅ | ✅ | — | — | — | — | — |
+| `sso-callback` | — | ✅ | — | — | — | — | ✅ |
+| `sso-generate-metadata` | ✅ | ✅ | — | — | — | — | — |
+| `sso-initiate` | ✅ | ✅ | — | — | — | — | — |
+| `sso-logout` | — | ✅ | — | — | — | — | — |
+| `sso-test-login` | ✅ | ✅ | — | — | — | — | ✅ |
+| `sso-validate-config` | ✅ | ✅ | — | — | — | — | — |
+| `sync-profile-to-bitrix` | ✅ | ✅ | — | ✅ | — | — | — |
+| `upload-anexo` | — | ✅ | — | — | — | exigirUsuario | — |
+| `validar-token-contador` | ✅ | ✅ | — | — | — | — | — |
+| `validate-ip-geo` | ✅ | ✅ | — | — | — | — | — |
+| `verificar-conformidade-fiscal` | ✅ | ✅ | — | — | — | — | — |
+| `webhook-replay` | ✅ | ✅ | ✅ | — | — | — | — |
+| `webhook-retry-worker` | ✅ | ✅ | ✅ | — | — | — | — |
+| `webhook-simulator` | ✅ | ✅ | — | — | — | — | ✅ |
+| `whatsapp-ai-analyzer` | ✅ | ✅ | — | — | — | — | — |
+| `whatsapp-ia-proativo` | ✅ | ✅ | ✅ | ✅ | ? | — | ✅ |
+| `whatsapp-webhook` | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
