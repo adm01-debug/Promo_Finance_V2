@@ -1,0 +1,2867 @@
+{
+  "gerado": "2026-11-19T15:38:34.016Z",
+  "funcoes": [
+    {
+      "funcao": "aceitar-convite",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "analise-fluxo-ia",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["auth_test.ts"]
+      }
+    },
+    {
+      "funcao": "analise-preditiva",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "analyze-document",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "api-keys-manage",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "asaas-proxy",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": ["exigirVinculoEmpresa"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["credit-risk.test.ts", "index.test.ts"]
+      }
+    },
+    {
+      "funcao": "asaas-webhook",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": true,
+        "versionado": true
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "benchmarking-setorial",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "bitrix24-sync",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "bitrix24-webhook",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": true,
+        "versionado": true
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "bling-proxy",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "bling-webhook",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": true,
+        "versionado": true
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "calcular-health-score-operacional",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "calcular-slo-metrics-diario",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "calculo-iva",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "categorizar-despesa",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "ci-security-gate-log",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["authorizeSharedSecret"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "cnpja-lookup",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "comparar-benchmark-setorial",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "compare-schemas",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "conciliacao-ia",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "conciliacao-proxy",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index_test.ts"]
+      }
+    },
+    {
+      "funcao": "consulta-tributaria",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "contabilizar-evento",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "convidar-contador",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "convidar-usuario",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "copilot-global",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "copilot-tributario",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "decidir-regime",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "detectar-anomalias-financeiras",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "digest-silenciamentos-erro",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "enviar-alerta-email",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "enviar-bitrix24-tributario",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "enviar-convite-organizacao",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "enviar-digest-conformidade",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirVinculoEmpresa"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "enviar-relatorios-tributarios-agendados",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "executar-analise-preditiva",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "executar-fechamento-tributario",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirVinculoEmpresa"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "executar-regua-cobranca",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["domain.test.ts"]
+      }
+    },
+    {
+      "funcao": "executar-relatorios",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "expert-agent",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "exportar-sped-contribuicoes",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["layout_test.ts"]
+      }
+    },
+    {
+      "funcao": "external-data",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-acoes-recomendadas",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-alertas",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-alertas-dispatcher",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-alertas-tributarios",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "gerar-dre-tributaria",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-heatmap-tributario",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "gerar-pacote-evidencias",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-pdf-tributario",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-relatorio-anual",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-resumo-executivo-semanal",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-resumo-financeiro-diario",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-snapshots-conformidade",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "gerar-sped-ecd",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["layout_test.ts"]
+      }
+    },
+    {
+      "funcao": "gerar-sped-ecf",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["layout_test.ts"]
+      }
+    },
+    {
+      "funcao": "get-mapbox-token",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "get-vapid-key",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "health",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "insights-relatorio",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "log-sped-bitrix24",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "mcp-query",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index_test.ts", "sql-policy_test.ts"]
+      }
+    },
+    {
+      "funcao": "monitor-health",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "monitorar-erros-frontend",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "n8n-callback",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "n8n-dispatch",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "nfe-upload-certificado",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": ["exigirVinculoEmpresa"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "nfe-vinculo-proxy",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index_test.ts"]
+      }
+    },
+    {
+      "funcao": "notify-performance-alert",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["guardInternal"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "notify-saved-filter",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "open-finance",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirVinculoEmpresa"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index_test.ts"]
+      }
+    },
+    {
+      "funcao": "overlay-rejeicoes-auditoria",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "prever-carga-tributaria",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "processar-fila-cobrancas",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "processar-nf-ocr",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "processar-solicitacao-lgpd",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["escrita.test.ts"]
+      }
+    },
+    {
+      "funcao": "projecao-reforma",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "relatorio-diario-anomalias",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "scim-server",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sefaz-dfe-dispatcher",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["policy_test.ts"]
+      }
+    },
+    {
+      "funcao": "sefaz-dfe-puxar",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sefaz-manifestar",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "send-device-alert",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "send-push-notification",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts"]
+      }
+    },
+    {
+      "funcao": "simular-presumido",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "simular-real",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "simular-simples",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sincronizar-anomalia-bitrix24",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sso-callback",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["build-profile-sync-delta.test.ts", "claims.test.ts"]
+      }
+    },
+    {
+      "funcao": "sso-generate-metadata",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sso-initiate",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": true,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sso-logout",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sso-test-login",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index.test.ts", "pipeline.test.ts"]
+      }
+    },
+    {
+      "funcao": "sso-validate-config",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "sync-profile-to-bitrix",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": true,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": true,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "upload-anexo",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": false,
+        "bodyCoberto": true,
+        "semBodyDetectavel": true
+      },
+      "auth": {
+        "guards": ["exigirUsuario"],
+        "quantos": 1
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "validar-token-contador",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "validate-ip-geo",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "verificar-conformidade-fiscal",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "webhook-replay",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "webhook-retry-worker",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "webhook-simulator",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["contract_test.ts"]
+      }
+    },
+    {
+      "funcao": "whatsapp-ai-analyzer",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": false
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": false,
+        "cobremInvalidJson": false,
+        "arquivos": []
+      }
+    },
+    {
+      "funcao": "whatsapp-ia-proativo",
+      "entradas": {
+        "body": false,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": false,
+        "jsonMalformado": false,
+        "versionado": false
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": false,
+        "arquivos": ["index_test.ts"]
+      }
+    },
+    {
+      "funcao": "whatsapp-webhook",
+      "entradas": {
+        "body": true,
+        "queryOuUrl": false,
+        "header": true
+      },
+      "validacao": {
+        "declaraSchema": true,
+        "bodyCoberto": true,
+        "semBodyDetectavel": false
+      },
+      "auth": {
+        "guards": [],
+        "quantos": 0
+      },
+      "contrato": {
+        "usa422": true,
+        "jsonMalformado": true,
+        "versionado": true
+      },
+      "testes": {
+        "existe": true,
+        "cobremInvalidJson": true,
+        "arquivos": ["index.test.ts"]
+      }
+    }
+  ]
+}
