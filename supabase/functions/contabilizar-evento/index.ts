@@ -18,8 +18,8 @@ function renderTemplate(tpl: string, data: Record<string, unknown>): string {
   return tpl.replace(/\{(\w+)\}/g, (_, k) => String(data[k] ?? ''));
 }
 
-Deno.serve(
-  withEdgeObservability('contabilizar-evento', async (req) => {
+export function handler(req: Request): Promise<Response> {
+  return withEdgeObservability('contabilizar-evento', async (req) => {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
       return new Response('ok', { headers: corsHeaders });
@@ -264,5 +264,7 @@ Deno.serve(
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  })
-);
+  })(req);
+}
+
+Deno.serve(handler);
