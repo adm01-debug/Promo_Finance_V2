@@ -4,6 +4,12 @@ import { handler } from './index.ts';
 const originalEnvGet = Deno.env.get;
 const originalFetch = globalThis.fetch;
 
+let chamadasRegistradas: Array<Record<string, unknown>> = [];
+
+function callsRegistradas(): Array<Record<string, unknown>> {
+  return chamadasRegistradas;
+}
+
 const UUID_A = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 const UUID_B = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 const UUID_C = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
@@ -63,6 +69,7 @@ function mockSupabase(layout: {
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const urlStr = String(input);
     const method = (init?.method ?? 'GET').toUpperCase();
+    const calls = chamadasRegistradas;
 
     // GET de usuário (auth.getUser)
     if (urlStr.includes('/auth/v1/user')) {
@@ -103,14 +110,19 @@ function mockSupabase(layout: {
 
     // POST log sem regra / erro / sucesso
     if (method === 'POST' && urlStr.includes('/rest/v1/eventos_contabilizacao_log')) {
+      calls.push({ tipo: 'log', body: JSON.parse(String(init?.body ?? '{}')) });
       return new Response('[]', { status: 201, headers: { 'Content-Type': 'application/json' } });
     }
 
     // INSERT lancamento (single select id)
     if (urlStr.includes('/rest/v1/lancamentos_contabeis')) {
-      if (method === 'DELETE') return new Response('[]', { status: 200 });
+      if (method === 'DELETE') {
+        calls.push({ tipo: 'delete-lancamento', url: urlStr });
+        return new Response('[]', { status: 200 });
+      }
       const body = parseReqBody(init);
       if (body && isInsertWithSelect(body)) {
+        calls.push({ tipo: 'lancamento', body });
         return new Response(JSON.stringify({ id: layout.lancamentoId ?? UUID_C }), {
           status: 201,
           headers: { 'Content-Type': 'application/json' },
@@ -131,6 +143,10 @@ function mockSupabase(layout: {
           { status: 400, headers: { 'Content-Type': 'application/json' } }
         );
       }
+      calls.push({
+        tipo: 'partidas',
+        body: parseReqBody(init),
+      });
       return new Response('[]', { status: 201 });
     }
 
@@ -157,6 +173,7 @@ function isInsertWithSelect(body: unknown): boolean {
 
 function runWithLayout(layout: Parameters<typeof mockSupabase>[0], fn: () => Promise<void>) {
   return async () => {
+    chamadasRegistradas = [];
     setupEnv();
     mockSupabase(layout);
     try {
@@ -273,6 +290,13 @@ Deno.test({
       const res = await handler(post(payloadBase()));
       assertEquals(res.status, 200);
       assertEquals((await res.json()).status, 'sem_regra');
+      const logSemRegra = callsRegistradas().find((c) => c.tipo === 'log')?.body as Record<
+        string,
+        unknown
+      >;
+      assertEquals(logSemRegra.status, 'sem_regra');
+      assertEquals(logSemRegra.evento, 'conta_pagar.manual');
+      assertEquals(logSemRegra.empresa_id, UUID_A);
     })();
   },
 });
@@ -304,6 +328,7 @@ Deno.test({
         assertEquals(body.status, 'simulado');
         assertEquals(body.valor, 150.0);
         assertEquals(body.regra.nome, 'Despesa operacional');
+        assertEquals(callsRegistradas().length, 0, 'dry_run não deve gravar nada');
       }
     )();
   },
@@ -338,6 +363,37 @@ Deno.test({
         assertEquals(body.status, 'sucesso');
         assertEquals(body.lancamento_id, UUID_C);
         assertEquals(body.regra.nome, 'Despesa operacional');
+
+        const calls = callsRegistradas();
+        const lancamento = calls.find((c) => c.tipo === 'lancamento')?.body as Record<
+          string,
+          unknown
+        >;
+        assertEquals(lancamento.empresa_id, UUID_A);
+        assertEquals(lancamento.origem, 'conta_pagar');
+        assertEquals(lancamento.origem_id, UUID_B);
+        assertEquals(lancamento.valor_total, 150.0);
+        assertStringIncludes(String(lancamento.historico), 'Conta de luz');
+        assertStringIncludes(String(lancamento.historico), '150.00');
+
+        const partidas = calls.find((c) => c.tipo === 'partidas')?.body as Array<
+          Record<string, unknown>
+        >;
+        assertEquals(partidas.length, 2);
+        assertEquals(partidas.map((p) => p.tipo).sort(), ['credito', 'debito']);
+        assertEquals(
+          partidas.every((p) => p.valor === 150),
+          true
+        );
+        assertEquals(
+          partidas.every((p) => p.lancamento_id === UUID_C),
+          true
+        );
+
+        const log = calls.find((c) => c.tipo === 'log')?.body as Record<string, unknown>;
+        assertEquals(log.status, 'sucesso');
+        assertEquals(log.lancamento_id, UUID_C);
+        assertEquals(log.regra_id, 'regra-1');
       }
     )();
   },
@@ -370,6 +426,14 @@ Deno.test({
         const res = await handler(post(payloadBase()));
         assertEquals(res.status, 500);
         assertStringIncludes(await res.text(), 'duplicate key');
+
+        const calls = callsRegistradas();
+        const hasDelete = calls.some((c) => c.tipo === 'delete-lancamento');
+        assertEquals(hasDelete, true, 'deveria compensar o lançamento após falha nas partidas');
+        const logErro = calls.filter((c) => c.tipo === 'log').map((c) => c.body);
+        assertEquals(logErro.length, 1);
+        assertEquals((logErro[0] as Record<string, unknown>).status, 'erro');
+        assertEquals((logErro[0] as Record<string, unknown>).regra_id, 'regra-1');
       }
     )();
   },
