@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "dd12c7de004763b709caec180386bb1f606c8e96",
+  "commit": "e6e6143427b4f82fe86133f0736f0430e4a4f12e",
   "branch": "main",
-  "data_commit": "2026-11-19T19:48:00-03:00",
+  "data_commit": "2026-11-19T20:54:03-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e6e6143",
+    "data": "2026-11-19",
+    "assunto": "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)"
+   },
    {
     "sha": "dd12c7d",
     "data": "2026-11-19",
@@ -126,14 +131,9 @@
     "sha": "31bd09e",
     "data": "2026-11-17",
     "assunto": "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)"
-   },
-   {
-    "sha": "9aa7ea6",
-    "data": "2026-11-17",
-    "assunto": "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)"
    }
   ],
-  "arquivos_mudados_7d": 687,
+  "arquivos_mudados_7d": 696,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -141,7 +141,11 @@
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 36
+    "mudancas": 37
+   },
+   {
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 30
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -156,16 +160,12 @@
     "mudancas": 29
    },
    {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 28
-   },
-   {
     "pasta": "package.json",
-    "mudancas": 24
+    "mudancas": 25
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 22
+    "mudancas": 23
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -173,7 +173,7 @@
    },
    {
     "pasta": "src/components/admin",
-    "mudancas": 19
+    "mudancas": 20
    },
    {
     "pasta": "src/hooks/__tests__",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 33
+    "mudancas": 34
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -234,10 +234,6 @@
     "mudancas": 11
    },
    {
-    "arquivo": ".github/workflows/functions-deploy.yml",
-    "mudancas": 10
-   },
-   {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
     "mudancas": 10
    },
@@ -248,6 +244,10 @@
    {
     "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 10
+   },
+   {
+    "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 9
    },
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 224
+    "commits": 225
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3959,
   "arquivos_codigo": 2480,
-  "linhas_codigo": 442327,
+  "linhas_codigo": 442338,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 998,
-   "linhas": 163922
+   "linhas": 163930
   },
   "src/config": {
    "arquivos": 1,
@@ -672,7 +672,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46845
+   "linhas": 46848
   },
   "src/routes": {
    "arquivos": 16,

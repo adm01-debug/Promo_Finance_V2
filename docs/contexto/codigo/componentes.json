@@ -8388,7 +8388,7 @@
     "OnboardingTour"
    ],
    "export_default": null,
-   "linhas": 119,
+   "linhas": 127,
    "dominio": "components/onboarding",
    "hooks_locais": [
     "useOnboardingProgress"
@@ -12581,7 +12581,7 @@
     "UnifiedRow"
    ],
    "export_default": null,
-   "linhas": 145,
+   "linhas": 148,
    "dominio": "pages/admin",
    "hooks_locais": [],
    "tabelas": [],

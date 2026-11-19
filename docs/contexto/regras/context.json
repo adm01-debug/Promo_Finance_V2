@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "dd12c7de004763b709caec180386bb1f606c8e96",
+  "sha": "e6e6143427b4f82fe86133f0736f0430e4a4f12e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-19 22:48 UTC",
+  "generated_at": "2026-11-19 23:55 UTC",
   "files_total": 3998,
   "code_files": 3601,
-  "code_lines": 512406
+  "code_lines": 512417
  },
  "version": "1.3.2",
- "facts_hash": "9f65b650cd5c66b3",
+ "facts_hash": "6c5803b3fc4de05c",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -47,12 +47,12 @@
     "in": "package.json"
    },
    "lucide-react": {
-    "version": "^0.294.0",
+    "version": "^0.577.0",
     "role": "Ícones Lucide",
     "in": "package.json"
    },
    "react": {
-    "version": "^18.2.0",
+    "version": "^19.3.1",
     "role": "Frontend React",
     "in": "package.json"
    },
@@ -69406,7 +69406,7 @@
   {
    "module": "src/components",
    "files": 998,
-   "lines": 164920,
+   "lines": 164928,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70209,7 +70209,7 @@
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47118,
+   "lines": 47121,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -191267,7 +191267,7 @@
   },
   "src/components/onboarding/OnboardingTour.tsx": {
    "path": "src/components/onboarding/OnboardingTour.tsx",
-   "lines": 120,
+   "lines": 128,
    "exports": [
     "function OnboardingTour"
    ]
@@ -223068,7 +223068,7 @@
   },
   "src/pages/admin/AuditSsoProfileSync.parts.tsx": {
    "path": "src/pages/admin/AuditSsoProfileSync.parts.tsx",
-   "lines": 146,
+   "lines": 149,
    "exports": [
     "function StatsCards",
     "function UnifiedRow"
@@ -244046,10 +244046,29 @@
   }
  },
  "git": {
-  "sha": "dd12c7de004763b709caec180386bb1f606c8e96",
+  "sha": "e6e6143427b4f82fe86133f0736f0430e4a4f12e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e6e6143",
+    "date": "2026-11-19",
+    "author": "adm01-debug",
+    "subject": "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)",
+    "files": [
+     "bun.lock",
+     "package.json",
+     "src/components/admin/anomalias-review-queue/ReviewActionsBar.tsx",
+     "src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx",
+     "src/components/expert/ExpertChatMessages.tsx",
+     "src/components/expert/ExpertPromptComposer.tsx",
+     "src/components/onboarding/OnboardingTour.tsx",
+     "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
+     "src/components/reforma-tributaria/irpj-csll/IRPJCSLLApuracoesTable.tsx",
+     "src/hooks/useCountUp.ts",
+     "src/pages/admin/AuditSsoProfileSync.parts.tsx"
+    ]
+   },
    {
     "sha": "dd12c7d",
     "date": "2026-11-19",
@@ -244362,23 +244381,20 @@
     "files": [
      "supabase/migrations/20261117204500_indices_financeiros_ausentes.sql"
     ]
-   },
-   {
-    "sha": "1ccd853",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(lgpd): anonimização de titular não surtia efeito nem fechava a solicitação (#439)",
-    "files": [
-     "supabase/functions/processar-solicitacao-lgpd/escrita.test.ts",
-     "supabase/functions/processar-solicitacao-lgpd/escrita.ts",
-     "supabase/functions/processar-solicitacao-lgpd/index.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     4
+   ],
+   [
+    "bun.lock",
+    3
+   ],
+   [
+    "package.json",
+    3
    ],
    [
     "supabase/functions/n8n-callback/index.ts",
@@ -244389,12 +244405,40 @@
     2
    ],
    [
-    "bun.lock",
-    2
+    "src/components/admin/anomalias-review-queue/ReviewActionsBar.tsx",
+    1
    ],
    [
-    "package.json",
-    2
+    "src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx",
+    1
+   ],
+   [
+    "src/components/expert/ExpertChatMessages.tsx",
+    1
+   ],
+   [
+    "src/components/expert/ExpertPromptComposer.tsx",
+    1
+   ],
+   [
+    "src/components/onboarding/OnboardingTour.tsx",
+    1
+   ],
+   [
+    "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
+    1
+   ],
+   [
+    "src/components/reforma-tributaria/irpj-csll/IRPJCSLLApuracoesTable.tsx",
+    1
+   ],
+   [
+    "src/hooks/useCountUp.ts",
+    1
+   ],
+   [
+    "src/pages/admin/AuditSsoProfileSync.parts.tsx",
+    1
    ],
    [
     "supabase/functions/contabilizar-evento/index.test.ts",
@@ -244418,42 +244462,6 @@
    ],
    [
     "supabase/functions/nfe-vinculo-proxy/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/nfe-vinculo-proxy/index_test.ts",
-    1
-   ],
-   [
-    "supabase/functions/notify-performance-alert/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/sefaz-dfe-puxar/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/sefaz-manifestar/index.ts",
-    1
-   ],
-   [
-    "supabase/functions/sync-profile-to-bitrix/index.ts",
-    1
-   ],
-   [
-    ".prettierignore",
-    1
-   ],
-   [
-    "docs/contract-conformance-summary.md",
-    1
-   ],
-   [
-    "docs/contract-conformance.json",
     1
    ]
   ]
