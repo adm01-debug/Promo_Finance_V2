@@ -14,8 +14,10 @@ import {
 
 // Body interface removed in favor of Zod schema
 
-function renderTemplate(tpl: string, data: Record<string, unknown>): string {
-  return tpl.replace(/\{(\w+)\}/g, (_, k) => String(data[k] ?? ''));
+function renderTemplate(tpl: string | null | undefined, data: Record<string, unknown>): string {
+  // Regra de automação sem historico_template (insert legado/null) cai no
+  // default histórico do schema ({descricao}) em vez de derrubar a função.
+  return (tpl ?? '{descricao}').replace(/\{(\w+)\}/g, (_, k) => String(data[k] ?? ''));
 }
 
 export function handler(req: Request): Promise<Response> {
