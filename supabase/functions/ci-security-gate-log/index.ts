@@ -5,6 +5,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
+import { VALIDATION_ERROR_CODE } from '../_shared/contract-response.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -64,7 +65,14 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch {
-      return res({ error: 'invalid_json' }, 400);
+      return res(
+        {
+          code: VALIDATION_ERROR_CODE,
+          message: 'JSON malformado',
+          fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+        },
+        422
+      );
     }
 
     const validation = await validateContract(bodySchema, raw);

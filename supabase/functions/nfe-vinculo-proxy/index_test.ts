@@ -63,7 +63,7 @@ Deno.test('nfe-vinculo-proxy: 405 em método diferente de POST', async () => {
   assertEquals(res.status, 405);
 });
 
-Deno.test('nfe-vinculo-proxy: 400 em JSON inválido', async () => {
+Deno.test('nfe-vinculo-proxy: 422 em JSON inválido', async () => {
   const { deps } = makeDeps();
   const res = await createHandler(deps)(
     new Request('http://x/', {
@@ -72,8 +72,8 @@ Deno.test('nfe-vinculo-proxy: 400 em JSON inválido', async () => {
       body: '{not-json',
     })
   );
-  assertEquals(res.status, 400);
-  assertEquals((await res.json()).error, 'Invalid JSON');
+  assertEquals(res.status, 422);
+  assertEquals((await res.json()).code, 'VALIDATION_ERROR');
 });
 
 Deno.test('nfe-vinculo-proxy: 422 quando nfeId não é UUID', async () => {

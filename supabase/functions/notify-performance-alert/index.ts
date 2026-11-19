@@ -4,6 +4,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna, type ChamadaInterna } from '../_shared/auth-guard.ts';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { VALIDATION_ERROR_CODE } from '../_shared/contract-response.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -57,7 +58,14 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch (error) {
-      return res({ error: error instanceof Error ? error.message : 'invalid_json' }, 400);
+      return res(
+        {
+          code: VALIDATION_ERROR_CODE,
+          message: 'JSON malformado',
+          fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+        },
+        422
+      );
     }
 
     const parsed = validatePayload(schema, raw, 'notify-performance-alert');
