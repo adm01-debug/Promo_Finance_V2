@@ -10,7 +10,7 @@ interface Props {
   onComentarioChange: (v: string) => void;
   onComentarioTocado: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
-  textareaRef: RefObject<HTMLTextAreaElement>;
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
   comentarioLength: number;
   mostrarErroComentario: boolean;
   erroComentario: string | null;

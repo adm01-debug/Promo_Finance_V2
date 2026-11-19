@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
+import { Joyride, STATUS, Step, type EventData } from 'react-joyride';
 import { useOnboardingProgress } from '@/hooks/useOnboardingProgress';
 
 const STEPS: Step[] = [
@@ -9,7 +9,7 @@ const STEPS: Step[] = [
     title: 'Bem-vindo ao Promo Finance!',
     content:
       'Vamos fazer um tour rápido de 8 passos pelos principais módulos. Você pode pular a qualquer momento.',
-    disableBeacon: true,
+    skipBeacon: true,
   },
   {
     target: '[data-tour="dashboard"]',
@@ -67,19 +67,25 @@ export function OnboardingTour() {
 
   const styles = useMemo(
     () => ({
-      options: {
-        primaryColor: 'hsl(var(--primary))',
-        zIndex: 10000,
-        arrowColor: 'hsl(var(--background))',
+      buttonPrimary: { backgroundColor: 'hsl(var(--primary))' },
+      buttonBack: { color: 'hsl(var(--foreground))' },
+      buttonSkip: { color: 'hsl(var(--foreground))' },
+      buttonClose: { color: 'hsl(var(--foreground))' },
+      tooltip: {
         backgroundColor: 'hsl(var(--background))',
-        textColor: 'hsl(var(--foreground))',
-        overlayColor: 'rgba(0,0,0,0.5)',
+        color: 'hsl(var(--foreground))',
+        borderRadius: 8,
+        zIndex: 10000,
       },
+      tooltipContent: { color: 'hsl(var(--foreground))' },
+      tooltipTitle: { color: 'hsl(var(--foreground))' },
+      arrow: { color: 'hsl(var(--background))' },
+      overlay: { backgroundColor: 'rgba(0,0,0,0.5)' },
     }),
     []
   );
 
-  const handleCallback = (data: CallBackProps) => {
+  const handleCallback = (data: EventData) => {
     const { status, index, type } = data;
     if (type === 'step:after') {
       completarEtapa(`step_${index}`);
@@ -100,12 +106,13 @@ export function OnboardingTour() {
       steps={STEPS}
       run={run}
       continuous
-      showProgress
-      showSkipButton
-      hideCloseButton
       scrollToFirstStep
-      disableScrolling={false}
       styles={styles}
+      options={{
+        showProgress: true,
+        buttons: ['back', 'primary', 'skip'],
+        skipScroll: false,
+      }}
       locale={{
         back: 'Voltar',
         close: 'Fechar',
@@ -113,7 +120,7 @@ export function OnboardingTour() {
         next: 'Próximo',
         skip: 'Pular tour',
       }}
-      callback={handleCallback}
+      onEvent={handleCallback}
     />
   );
 }

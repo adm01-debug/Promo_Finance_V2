@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface Props {
   parsing: boolean;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   onFile: (f: File | null) => void;
 }
 

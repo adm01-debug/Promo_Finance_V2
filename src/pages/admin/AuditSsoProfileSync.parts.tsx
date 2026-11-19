@@ -7,13 +7,13 @@ import { formatDate } from '@/lib/formatters';
 import { SSO_SYNC_FIELD_LABEL, type SsoSyncFieldKey } from '@/hooks/useLastSsoProfileSync';
 import type { EventKind, UnifiedEvent } from './AuditSsoProfileSync.helpers';
 
-const FIELD_ICON: Record<SsoSyncFieldKey, JSX.Element> = {
+const FIELD_ICON: Record<SsoSyncFieldKey, import('react/jsx-runtime').JSX.Element> = {
   full_name: <UserCircle className="h-3 w-3" />,
   avatar_url: <ImageIcon className="h-3 w-3" />,
   telefone: <Phone className="h-3 w-3" />,
 };
 
-const KIND_META: Record<EventKind, { label: string; icon: JSX.Element; className: string }> = {
+const KIND_META: Record<EventKind, { label: string; icon: import('react/jsx-runtime').JSX.Element; className: string }> = {
   jit: {
     label: 'JIT',
     icon: <UserPlus className="h-3 w-3" />,
