@@ -59,4 +59,11 @@ if [ ! -f "$OUT/allowed-public-tables.json" ]; then
   echo '[]' > "$OUT/allowed-public-tables.json"
 fi
 
+# --- allowed-anon-writes.json ----------------------------------------------
+# Excecoes explicitas de escrita para anon (formato "tabela:PRIVILEGE").
+# Preservada manualmente - nunca sobrescreve se ja existir.
+if [ ! -f "$OUT/allowed-anon-writes.json" ]; then
+  echo '[]' > "$OUT/allowed-anon-writes.json"
+fi
+
 echo "✅ baselines atualizados em $OUT"

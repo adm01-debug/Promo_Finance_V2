@@ -358,6 +358,17 @@ jobs:
           fi
           echo "✅ Gate #35 aprovado."
 
+      - name: Gate #26 — Drift de schema/policies vs baseline
+        # Falha o build se o banco real divergir dos baselines versionados
+        # (contagens de objetos, policies por tabela, RLS, security_invoker,
+        # grants de anon). Baselines regenerados por dump-baseline.sh.
+        if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
+        env:
+          PROD_DB_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client jq
+          bash scripts/ci/check-baseline-drift.sh
+
       - name: Registrar gates de banco como inconclusivos sem DATABASE_URL
         if: ${{ steps.db_url_preflight.outputs.available != 'true' }}
         run: |
@@ -365,7 +376,7 @@ jobs:
             echo "### Gates dependentes de DATABASE_URL"
             echo
             echo "- Status: inconclusivo"
-            echo "- Não executados nesta run: Observability privileges guard, Integridade dos catálogos tributários (pgTAP), Gate #35 — Governança de retenção."
+            echo "- Não executados nesta run: Observability privileges guard, Integridade dos catálogos tributários (pgTAP), Gate #35 — Governança de retenção, Gate #26 — Drift de schema/policies."
             echo "- Motivo: secret \`DATABASE_URL\` ausente. Nenhum desses gates deve ser interpretado como aprovado."
             echo
           } >> "$GITHUB_STEP_SUMMARY"
