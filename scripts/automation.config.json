@@ -190,6 +190,22 @@
       "reason": "Legado mantido no fluxo existente; referÃªncias literais: .github/workflows/estado-real.yml. O dispatcher nÃ£o executa esta operaÃ§Ã£o."
     },
     {
+      "id": "legacy-matriz-conformidade",
+      "kind": "legacy",
+      "files": ["scripts/ci/gerar-matriz-conformidade-contratos.mjs"],
+      "manual": ["node", "scripts/ci/gerar-matriz-conformidade-contratos.mjs"],
+      "triggers": ["manual"],
+      "reason": "Legado mantido no fluxo existente; gerador de docs/contract-conformance.json. O dispatcher nao executa esta operacao."
+    },
+    {
+      "id": "legacy-matriz-conformidade-test",
+      "kind": "legacy",
+      "files": ["scripts/ci/gerar-matriz-conformidade-contratos.unit.mjs"],
+      "manual": ["node", "--test", "scripts/ci/gerar-matriz-conformidade-contratos.unit.mjs"],
+      "triggers": ["manual"],
+      "reason": "Legado mantido no fluxo existente; suite de testes do gerador de conformidade. O dispatcher nao executa esta operacao."
+    },
+    {
       "id": "legacy-994952e408f1e7f6",
       "kind": "legacy",
       "files": ["scripts/ci/listar-excecoes-npm-nativo.py"],
