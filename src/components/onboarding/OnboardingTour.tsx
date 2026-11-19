@@ -112,6 +112,7 @@ export function OnboardingTour() {
         showProgress: true,
         buttons: ['back', 'primary', 'skip'],
         skipScroll: false,
+        zIndex: 10000,
       }}
       locale={{
         back: 'Voltar',
