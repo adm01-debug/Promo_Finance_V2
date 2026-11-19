@@ -4,7 +4,7 @@
 |---|---|
 | nome | bitrix24-sync |
 | status | ACTIVE |
-| versão | 117 |
+| versão | 118 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/bitrix24-sync/index.ts |
 | import_map |  |
