@@ -11111,6 +11111,7 @@
    "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/ci-security-gate-log/index.ts": [
+   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/contract-validator.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
@@ -11498,6 +11499,7 @@
    "supabase/functions/_shared/zod.ts"
   ],
   "supabase/functions/n8n-callback/index.ts": [
+   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
@@ -11533,6 +11535,7 @@
   ],
   "supabase/functions/notify-performance-alert/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/validation.ts"
@@ -11554,6 +11557,7 @@
    "supabase/functions/_shared/resilience.ts"
   ],
   "supabase/functions/overlay-rejeicoes-auditoria/index.ts": [
+   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
@@ -11631,6 +11635,7 @@
    "supabase/functions/_shared/zod.ts"
   ],
   "supabase/functions/sefaz-manifestar/index.ts": [
+   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/observability.ts",
@@ -11718,6 +11723,7 @@
    "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/sync-profile-to-bitrix/index.ts": [
+   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/contract-validator.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",

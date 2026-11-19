@@ -3670,7 +3670,7 @@
   {
    "arquivo": "supabase/functions/_shared/contract-coverage_test.ts",
    "tipo": "contrato",
-   "linhas": 280,
+   "linhas": 278,
    "testa": [],
    "casos": 8
   },

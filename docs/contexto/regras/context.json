@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "2f1f881c3e05a011d7ca42cd5a3dae8514e641c1",
+  "sha": "929f20dbc27ccaea6e0193b572c5099318687b62",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-19 16:17 UTC",
+  "generated_at": "2026-11-19 16:24 UTC",
   "files_total": 3997,
   "code_files": 3600,
-  "code_lines": 511885
+  "code_lines": 511963
  },
  "version": "1.3.2",
- "facts_hash": "9f85b04df895f7d6",
+ "facts_hash": "996003134cb96d96",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70570,7 +70570,7 @@
   {
    "module": "supabase/functions",
    "files": 235,
-   "lines": 51658,
+   "lines": 51736,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -227376,7 +227376,7 @@
   },
   "supabase/functions/_shared/contract-coverage_test.ts": {
    "path": "supabase/functions/_shared/contract-coverage_test.ts",
-   "lines": 281,
+   "lines": 279,
    "uses_service_role": true
   },
   "supabase/functions/_shared/contract-response.ts": {
@@ -230904,7 +230904,7 @@
   },
   "supabase/functions/ci-security-gate-log/index.ts": {
    "path": "supabase/functions/ci-security-gate-log/index.ts",
-   "lines": 187,
+   "lines": 195,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -231135,7 +231135,7 @@
   },
   "supabase/functions/conciliacao-proxy/index.ts": {
    "path": "supabase/functions/conciliacao-proxy/index.ts",
-   "lines": 135,
+   "lines": 143,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -235573,7 +235573,7 @@
   },
   "supabase/functions/n8n-callback/index.ts": {
    "path": "supabase/functions/n8n-callback/index.ts",
-   "lines": 259,
+   "lines": 267,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -235688,7 +235688,7 @@
   },
   "supabase/functions/nfe-vinculo-proxy/index.ts": {
    "path": "supabase/functions/nfe-vinculo-proxy/index.ts",
-   "lines": 156,
+   "lines": 164,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -235738,7 +235738,7 @@
   },
   "supabase/functions/notify-performance-alert/index.ts": {
    "path": "supabase/functions/notify-performance-alert/index.ts",
-   "lines": 204,
+   "lines": 212,
    "exports": [
     "interface HandlerDeps",
     "function createHandler"
@@ -235928,7 +235928,7 @@
   },
   "supabase/functions/overlay-rejeicoes-auditoria/index.ts": {
    "path": "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
-   "lines": 192,
+   "lines": 207,
    "tables": [
     {
      "table": "overlay_rejeicoes_auditoria",
@@ -237035,7 +237035,7 @@
   },
   "supabase/functions/sefaz-dfe-puxar/index.ts": {
    "path": "supabase/functions/sefaz-dfe-puxar/index.ts",
-   "lines": 579,
+   "lines": 586,
    "exports": [
     "type SefazFetch",
     "function runPuxador"
@@ -237212,7 +237212,7 @@
   },
   "supabase/functions/sefaz-manifestar/index.ts": {
    "path": "supabase/functions/sefaz-manifestar/index.ts",
-   "lines": 311,
+   "lines": 321,
    "exports": [
     "type SefazFetch",
     "interface ManifestarArgs",
@@ -238052,7 +238052,7 @@
   },
   "supabase/functions/sync-profile-to-bitrix/index.ts": {
    "path": "supabase/functions/sync-profile-to-bitrix/index.ts",
-   "lines": 307,
+   "lines": 315,
    "tables": [
     {
      "table": "bitrix_oauth_tokens",
@@ -244012,10 +244012,29 @@
   }
  },
  "git": {
-  "sha": "2f1f881c3e05a011d7ca42cd5a3dae8514e641c1",
+  "sha": "929f20dbc27ccaea6e0193b572c5099318687b62",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "929f20d",
+    "date": "2026-11-19",
+    "author": "adm01-debug",
+    "subject": "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)",
+    "files": [
+     "supabase/functions/_shared/contract-coverage_test.ts",
+     "supabase/functions/ci-security-gate-log/index.ts",
+     "supabase/functions/conciliacao-proxy/index.ts",
+     "supabase/functions/n8n-callback/index.ts",
+     "supabase/functions/nfe-vinculo-proxy/index.ts",
+     "supabase/functions/nfe-vinculo-proxy/index_test.ts",
+     "supabase/functions/notify-performance-alert/index.ts",
+     "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
+     "supabase/functions/sefaz-dfe-puxar/index.ts",
+     "supabase/functions/sefaz-manifestar/index.ts",
+     "supabase/functions/sync-profile-to-bitrix/index.ts"
+    ]
+   },
    {
     "sha": "2f1f881",
     "date": "2026-11-19",
@@ -244321,21 +244340,16 @@
      "supabase/functions/executar-analise-preditiva/index.ts",
      "supabase/functions/executar-fechamento-tributario/index.ts"
     ]
-   },
-   {
-    "sha": "8215f7d",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(sso): religa o login federado, hoje quebrado nas duas pontas (#443)",
-    "files": [
-     "supabase/migrations/20261117201000_sso_login_attempts_state.sql"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     4
+   ],
+   [
+    "supabase/functions/n8n-callback/index.ts",
+    2
    ],
    [
     "scripts/automation.config.json",
@@ -244354,6 +244368,46 @@
     2
    ],
    [
+    "supabase/functions/_shared/contract-coverage_test.ts",
+    1
+   ],
+   [
+    "supabase/functions/ci-security-gate-log/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/conciliacao-proxy/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/nfe-vinculo-proxy/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/nfe-vinculo-proxy/index_test.ts",
+    1
+   ],
+   [
+    "supabase/functions/notify-performance-alert/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/sefaz-dfe-puxar/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/sefaz-manifestar/index.ts",
+    1
+   ],
+   [
+    "supabase/functions/sync-profile-to-bitrix/index.ts",
+    1
+   ],
+   [
     ".prettierignore",
     1
    ],
@@ -244367,50 +244421,6 @@
    ],
    [
     "scripts/ci/gerar-matriz-conformidade-contratos.mjs",
-    1
-   ],
-   [
-    "scripts/ci/gerar-matriz-conformidade-contratos.unit.mjs",
-    1
-   ],
-   [
-    "docs/archive/mapa-integracao-20261112/EXECUCAO-29-10.md",
-    1
-   ],
-   [
-    "docs/archive/mapa-integracao-20261112/IMPORTADOS.md",
-    1
-   ],
-   [
-    "docs/archive/mapa-integracao-20261112/MAPA-INTEGRACAO.md",
-    1
-   ],
-   [
-    "docs/archive/mapa-integracao-20261112/mesclar-prontos.sh",
-    1
-   ],
-   [
-    "docs/REMOTE_ONLY_MIGRATIONS_STRATEGY.md",
-    1
-   ],
-   [
-    "docs/REVISAO_PLANO_IMPLEMENTACOES_2026-09-12.md",
-    1
-   ],
-   [
-    "docs/archive/analise-prs/validacao-exaustiva.md",
-    1
-   ],
-   [
-    "docs/archive/analise-prs/validacao-frontend.md",
-    1
-   ],
-   [
-    "docs/archive/analise-prs/validacao-sentry.md",
-    1
-   ],
-   [
-    "docs/archive/scripts/ci-local.sh",
     1
    ]
   ]

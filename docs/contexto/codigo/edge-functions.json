@@ -794,7 +794,7 @@
    "nome": "ci-security-gate-log",
    "entrada": "supabase/functions/ci-security-gate-log/index.ts",
    "arquivos": 1,
-   "linhas": 186,
+   "linhas": 194,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -813,6 +813,7 @@
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
+    "contract-response.ts",
     "contract-validator.ts",
     "cors.ts",
     "edge-observability.ts",
@@ -984,7 +985,7 @@
    "nome": "conciliacao-proxy",
    "entrada": "supabase/functions/conciliacao-proxy/index.ts",
    "arquivos": 1,
-   "linhas": 134,
+   "linhas": 142,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2803,7 +2804,7 @@
    "nome": "n8n-callback",
    "entrada": "supabase/functions/n8n-callback/index.ts",
    "arquivos": 1,
-   "linhas": 258,
+   "linhas": 266,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2820,6 +2821,7 @@
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
+    "contract-response.ts",
     "cors.ts",
     "edge-observability.ts",
     "erros.ts",
@@ -2921,7 +2923,7 @@
    "nome": "nfe-vinculo-proxy",
    "entrada": "supabase/functions/nfe-vinculo-proxy/index.ts",
    "arquivos": 1,
-   "linhas": 155,
+   "linhas": 163,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2957,7 +2959,7 @@
    "nome": "notify-performance-alert",
    "entrada": "supabase/functions/notify-performance-alert/index.ts",
    "arquivos": 1,
-   "linhas": 203,
+   "linhas": 211,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2979,6 +2981,7 @@
    ],
    "usa_shared": [
     "auth-guard.ts",
+    "contract-response.ts",
     "cors.ts",
     "edge-observability.ts",
     "validation.ts"
@@ -3090,7 +3093,7 @@
    "nome": "overlay-rejeicoes-auditoria",
    "entrada": "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
    "arquivos": 1,
-   "linhas": 191,
+   "linhas": 206,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3110,6 +3113,7 @@
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
+    "contract-response.ts",
     "cors.ts",
     "edge-observability.ts",
     "erros.ts",
@@ -3445,7 +3449,7 @@
    "nome": "sefaz-dfe-puxar",
    "entrada": "supabase/functions/sefaz-dfe-puxar/index.ts",
    "arquivos": 1,
-   "linhas": 578,
+   "linhas": 585,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3490,7 +3494,7 @@
    "nome": "sefaz-manifestar",
    "entrada": "supabase/functions/sefaz-manifestar/index.ts",
    "arquivos": 1,
-   "linhas": 310,
+   "linhas": 320,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3515,6 +3519,7 @@
     "www.portalfiscal.inf.br"
    ],
    "usa_shared": [
+    "contract-response.ts",
     "cors.ts",
     "edge-observability.ts",
     "manifestacao.ts",
@@ -3953,7 +3958,7 @@
    "nome": "sync-profile-to-bitrix",
    "entrada": "supabase/functions/sync-profile-to-bitrix/index.ts",
    "arquivos": 1,
-   "linhas": 306,
+   "linhas": 314,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3978,6 +3983,7 @@
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
+    "contract-response.ts",
     "contract-validator.ts",
     "cors.ts",
     "edge-observability.ts",

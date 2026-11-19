@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2f1f881c3e05a011d7ca42cd5a3dae8514e641c1` (2026-11-19T13:06:53-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `929f20dbc27ccaea6e0193b572c5099318687b62` (2026-11-19T13:24:25-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3958 |
 | arquivos_codigo | 2479 |
-| linhas_codigo | 441807 |
+| linhas_codigo | 441885 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -472,10 +472,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/bling-proxy/index.ts (11)
 - .github/workflows/functions-deploy.yml (10)
 - supabase/functions/bitrix24-sync/index.ts (10)
+- supabase/functions/n8n-callback/index.ts (10)
+- supabase/functions/sync-profile-to-bitrix/index.ts (10)
 - .github/workflows/supabase-linter.yml (9)
 - scripts/security/test-canonical-db-gates.mjs (9)
-- src/hooks/useConciliacaoPage.ts (9)
-- supabase/functions/enviar-convite-organizacao/index.ts (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -632,6 +632,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-19 `929f20d` fix: normalizar 400 invalid_json para envelope 422 canônico (#472)
 - 2026-11-19 `2f1f881` chore: matriz de conformidade de contratos das edge functions (#471)
 - 2026-11-18 `1bdec67` chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)
 - 2026-11-18 `772e151` chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)
@@ -646,7 +647,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `f17d2d4` docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)
 - 2026-11-17 `c862e68` docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)
 - 2026-11-17 `ed338a2` fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)
-- 2026-11-17 `ec4122e` fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

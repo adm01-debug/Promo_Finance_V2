@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)",
    "chore: matriz de conformidade de contratos das edge functions (#471)",
    "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)",
    "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)",
-   "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)",
-   "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)"
+   "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

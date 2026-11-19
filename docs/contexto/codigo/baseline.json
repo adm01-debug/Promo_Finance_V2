@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2f1f881c3e05a011d7ca42cd5a3dae8514e641c1",
+  "commit": "929f20dbc27ccaea6e0193b572c5099318687b62",
   "branch": "main",
-  "data_commit": "2026-11-19T13:06:53-03:00",
+  "data_commit": "2026-11-19T13:24:25-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "929f20d",
+    "data": "2026-11-19",
+    "assunto": "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)"
+   },
    {
     "sha": "2f1f881",
     "data": "2026-11-19",
@@ -126,14 +131,9 @@
     "sha": "5be2cfc",
     "data": "2026-11-17",
     "assunto": "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)"
-   },
-   {
-    "sha": "176877a",
-    "data": "2026-11-17",
-    "assunto": "infra(ci): exceção de licença para mapbox-gl no Dependency Review (#436)"
    }
   ],
-  "arquivos_mudados_7d": 685,
+  "arquivos_mudados_7d": 694,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -144,15 +144,15 @@
     "mudancas": 36
    },
    {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 30
+   },
+   {
     "pasta": "src/components/contas-receber",
     "mudancas": 29
    },
    {
     "pasta": "src/components/nfe",
-    "mudancas": 29
-   },
-   {
-    "pasta": "supabase/functions/_shared",
     "mudancas": 29
    },
    {
@@ -242,6 +242,14 @@
     "mudancas": 10
    },
    {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "mudancas": 10
+   },
+   {
     "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 9
    },
@@ -259,14 +267,6 @@
    },
    {
     "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 9
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 222
+    "commits": 223
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3958,
   "arquivos_codigo": 2479,
-  "linhas_codigo": 441807,
+  "linhas_codigo": 441885,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -688,7 +688,7 @@
   },
   "supabase/functions": {
    "arquivos": 235,
-   "linhas": 51423
+   "linhas": 51501
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -789,12 +789,12 @@
    "linhas": 697
   },
   {
-   "arquivo": "supabase/functions/executar-relatorios/index.ts",
-   "linhas": 582
+   "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",
+   "linhas": 585
   },
   {
-   "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",
-   "linhas": 578
+   "arquivo": "supabase/functions/executar-relatorios/index.ts",
+   "linhas": 582
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
