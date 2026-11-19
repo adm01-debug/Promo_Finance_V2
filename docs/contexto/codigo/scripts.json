@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 115,
+ "total": 116,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -216,6 +216,15 @@
    "workflows": [
     "auto-update-pr-branch.yml"
    ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/gerar-matriz-conformidade-contratos.mjs",
+   "descricao": "Matriz de Conformidade de Contratos das Edge Functions. Para cada função em supabase/functions/<funcao> (sem _shared, sem testes) cataloga:",
+   "linhas": 216,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
    "orfao": false
   },
   {

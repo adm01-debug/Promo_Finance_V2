@@ -4,7 +4,7 @@
 |---|---|
 | nome | convidar-contador |
 | status | ACTIVE |
-| versão | 112 |
+| versão | 113 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/convidar-contador/index.ts |
 | import_map |  |

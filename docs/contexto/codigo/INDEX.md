@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1bdec674313769761fda831e445ec9f3914741af` (2026-11-18T15:49:17-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2f1f881c3e05a011d7ca42cd5a3dae8514e641c1` (2026-11-19T13:06:53-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1120), Markdown (210), JavaScript (74), Python (45), JSON (42), Shell (29), YAML (25)
+- linguagens: TypeScript (2360), SQL (1120), Markdown (211), JavaScript (76), Python (45), JSON (43), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3954 |
-| arquivos_codigo | 2477 |
-| linhas_codigo | 441467 |
+| arquivos_total | 3958 |
+| arquivos_codigo | 2479 |
+| linhas_codigo | 441807 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,21 +48,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 310 |
 | migrations | 1048 |
 | cron_jobs | 22 |
-| testes | 479 |
+| testes | 480 |
 | workflows | 19 |
-| scripts | 115 |
-| docs_md | 210 |
+| scripts | 116 |
+| docs_md | 211 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (282), outro (111), co-localizado (*.test) (46)
+- testes: co-localizado (__tests__) (282), outro (112), co-localizado (*.test) (46)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
-- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (14)
-- docs: docs (54), (raiz) (19), .github (2)
+- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
+- docs: docs (55), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
@@ -625,12 +625,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/TESTING.md` — Guia de Testes (60 linhas)
 - `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (182 linhas)
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
+- `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
 - subpastas de docs/: docs/archive (15), docs/agentes (13), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-19 `2f1f881` chore: matriz de conformidade de contratos das edge functions (#471)
 - 2026-11-18 `1bdec67` chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)
 - 2026-11-18 `772e151` chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)
 - 2026-11-17 `cb9d5c8` chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)
@@ -645,7 +647,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `c862e68` docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)
 - 2026-11-17 `ed338a2` fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)
 - 2026-11-17 `ec4122e` fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)
-- 2026-11-17 `b75c138` feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

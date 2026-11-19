@@ -5,10 +5,10 @@
   "linguagens": [
    "TypeScript (2360)",
    "SQL (1120)",
-   "Markdown (210)",
-   "JavaScript (74)",
+   "Markdown (211)",
+   "JavaScript (76)",
    "Python (45)",
-   "JSON (42)",
+   "JSON (43)",
    "Shell (29)",
    "YAML (25)"
   ],
@@ -1191,6 +1191,11 @@
    "arquivo": "docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md",
    "titulo": "Validação de segurança dos gateways — 2026-08-27",
    "linhas": 49
+  },
+  {
+   "arquivo": "docs/contract-conformance-summary.md",
+   "titulo": "Conformidade de Contratos — Edge Functions",
+   "linhas": 117
   },
   {
    "arquivo": "docs/prod-readiness.md",

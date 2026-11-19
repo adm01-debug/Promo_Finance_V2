@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (282)",
-   "outro (111)",
+   "outro (112)",
    "co-localizado (*.test) (46)"
   ],
   "edge_functions": "supabase/functions",
@@ -30,10 +30,10 @@
   "scripts": [
    "scripts/integrity (17)",
    "scripts/security (16)",
-   "scripts/ci (14)"
+   "scripts/ci (15)"
   ],
   "docs": [
-   "docs (54)",
+   "docs (55)",
    "(raiz) (19)",
    ".github (2)"
   ]
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: matriz de conformidade de contratos das edge functions (#471)",
    "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)",
    "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)",
    "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)",
-   "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)",
-   "fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)"
+   "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -4,7 +4,7 @@
 |---|---|
 | nome | monitor-health |
 | status | ACTIVE |
-| versão | 94 |
+| versão | 95 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/monitor-health/index.ts |
 | import_map |  |
