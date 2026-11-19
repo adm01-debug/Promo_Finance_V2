@@ -1,7 +1,4 @@
-import {
-  assertEquals,
-  assertStringIncludes,
-} from 'https://deno.land/std@0.208.0/assert/mod.ts';
+import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.208.0/assert/mod.ts';
 import { handler } from './index.ts';
 
 const originalEnvGet = Deno.env.get;
@@ -70,7 +67,9 @@ function mockSupabase(layout: {
     // GET de usuário (auth.getUser)
     if (urlStr.includes('/auth/v1/user')) {
       if (layout.userExists === false) {
-        return new Response(JSON.stringify({ code: 'bad_jwt', msg: 'invalid token' }), { status: 401 });
+        return new Response(JSON.stringify({ code: 'bad_jwt', msg: 'invalid token' }), {
+          status: 401,
+        });
       }
       return new Response(JSON.stringify({ id: 'user-1' }), { status: 200 });
     }
@@ -92,7 +91,9 @@ function mockSupabase(layout: {
 
     // GET eventos_contabilizacao_log (maybeSingle / select id, lancamento_id)
     if (method === 'GET' && urlStr.includes('/rest/v1/eventos_contabilizacao_log')) {
-      return new Response(JSON.stringify(layout.logExistente ? [layout.logExistente] : []), { status: 200 });
+      return new Response(JSON.stringify(layout.logExistente ? [layout.logExistente] : []), {
+        status: 200,
+      });
     }
 
     // GET regras_contabilizacao_automatica (select *)
@@ -175,7 +176,9 @@ Deno.test({
     setupEnv();
     mockSupabase({ userExists: false });
     try {
-      const res = await handler(new Request('http://localhost/contabilizar-evento', { method: 'POST' }));
+      const res = await handler(
+        new Request('http://localhost/contabilizar-evento', { method: 'POST' })
+      );
       assertEquals(res.status, 401);
       assertStringIncludes(await res.text(), 'unauthorized');
     } finally {
@@ -223,14 +226,11 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-    await runWithLayout(
-      { isAdmin: false, papeis: [], vinculo: null },
-      async () => {
-        const res = await handler(post(payloadBase()));
-        assertEquals(res.status, 403);
-        assertStringIncludes(await res.text(), 'Sem permissão');
-      }
-    )();
+    await runWithLayout({ isAdmin: false, papeis: [], vinculo: null }, async () => {
+      const res = await handler(post(payloadBase()));
+      assertEquals(res.status, 403);
+      assertStringIncludes(await res.text(), 'Sem permissão');
+    })();
   },
 });
 
@@ -254,16 +254,13 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-    await runWithLayout(
-      { logExistente: { id: 'log-1', lancamento_id: UUID_D } },
-      async () => {
-        const res = await handler(post(payloadBase()));
-        assertEquals(res.status, 200);
-        const body = await res.json();
-        assertEquals(body.status, 'duplicado');
-        assertEquals(body.lancamento_id, UUID_D);
-      }
-    )();
+    await runWithLayout({ logExistente: { id: 'log-1', lancamento_id: UUID_D } }, async () => {
+      const res = await handler(post(payloadBase()));
+      assertEquals(res.status, 200);
+      const body = await res.json();
+      assertEquals(body.status, 'duplicado');
+      assertEquals(body.lancamento_id, UUID_D);
+    })();
   },
 });
 
@@ -272,14 +269,11 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-    await runWithLayout(
-      { regras: [], logExistente: null },
-      async () => {
-        const res = await handler(post(payloadBase()));
-        assertEquals(res.status, 200);
-        assertEquals((await res.json()).status, 'sem_regra');
-      }
-    )();
+    await runWithLayout({ regras: [], logExistente: null }, async () => {
+      const res = await handler(post(payloadBase()));
+      assertEquals(res.status, 200);
+      assertEquals((await res.json()).status, 'sem_regra');
+    })();
   },
 });
 
