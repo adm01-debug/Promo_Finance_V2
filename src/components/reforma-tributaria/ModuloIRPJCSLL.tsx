@@ -111,7 +111,7 @@ export function ModuloIRPJCSLL() {
   };
 
   const getStatusBadge = (status: string) => {
-    const badges: Record<string, JSX.Element> = {
+    const badges: Record<string, import('react/jsx-runtime').JSX.Element> = {
       rascunho: <Badge variant="outline">Rascunho</Badge>,
       calculado: <Badge variant="secondary">Calculado</Badge>,
       revisado: <Badge className="bg-primary">Revisado</Badge>,

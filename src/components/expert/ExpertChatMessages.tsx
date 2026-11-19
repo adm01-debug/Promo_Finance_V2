@@ -27,7 +27,7 @@ interface LocalMessage {
 
 interface ExpertChatMessagesProps {
   messages: LocalMessage[];
-  scrollRef: React.RefObject<HTMLDivElement>;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
   copiedId: string | null;
   executingActions: string | null;
   onCopy: (text: string, id: string) => void;
