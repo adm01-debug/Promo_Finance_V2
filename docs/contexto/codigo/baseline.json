@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "929f20dbc27ccaea6e0193b572c5099318687b62",
+  "commit": "dd12c7de004763b709caec180386bb1f606c8e96",
   "branch": "main",
-  "data_commit": "2026-11-19T13:24:25-03:00",
+  "data_commit": "2026-11-19T19:48:00-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "dd12c7d",
+    "data": "2026-11-19",
+    "assunto": "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)"
+   },
    {
     "sha": "929f20d",
     "data": "2026-11-19",
@@ -126,14 +131,9 @@
     "sha": "9aa7ea6",
     "data": "2026-11-17",
     "assunto": "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)"
-   },
-   {
-    "sha": "5be2cfc",
-    "data": "2026-11-17",
-    "assunto": "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)"
    }
   ],
-  "arquivos_mudados_7d": 694,
+  "arquivos_mudados_7d": 687,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -258,10 +258,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 9
    },
@@ -290,6 +286,10 @@
     "mudancas": 8
    },
    {
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 8
+   },
+   {
     "arquivo": "src/hooks/useContasPagarLogic.ts",
     "mudancas": 8
    },
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 223
+    "commits": 224
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3958,
-  "arquivos_codigo": 2479,
-  "linhas_codigo": 441885,
+  "arquivos_total": 3959,
+  "arquivos_codigo": 2480,
+  "linhas_codigo": 442327,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 310,
   "migrations": 1048,
   "cron_jobs": 22,
-  "testes": 480,
+  "testes": 481,
   "workflows": 19,
   "scripts": 116,
   "docs_md": 211
@@ -687,8 +687,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 235,
-   "linhas": 51501
+   "arquivos": 236,
+   "linhas": 51943
   },
   "supabase/tests": {
    "arquivos": 2,

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `929f20dbc27ccaea6e0193b572c5099318687b62` (2026-11-19T13:24:25-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `dd12c7de004763b709caec180386bb1f606c8e96` (2026-11-19T19:48:00-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2360), SQL (1120), Markdown (211), JavaScript (76), Python (45), JSON (43), Shell (29), YAML (25)
+- linguagens: TypeScript (2361), SQL (1120), Markdown (211), JavaScript (76), Python (45), JSON (43), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3958 |
-| arquivos_codigo | 2479 |
-| linhas_codigo | 441885 |
+| arquivos_total | 3959 |
+| arquivos_codigo | 2480 |
+| linhas_codigo | 442327 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 310 |
 | migrations | 1048 |
 | cron_jobs | 22 |
-| testes | 480 |
+| testes | 481 |
 | workflows | 19 |
 | scripts | 116 |
 | docs_md | 211 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (282), outro (112), co-localizado (*.test) (46)
+- testes: co-localizado (__tests__) (282), outro (112), co-localizado (*.test) (47)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -435,7 +435,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - env de integração (só nomes): ASAAS_API_KEY, ASAAS_WEBHOOK_TOKEN, BITRIX24_ACCESS_TOKEN, BITRIX24_CLIENT_ID, BITRIX24_CLIENT_SECRET, BLING_CLIENT_ID, BLING_CLIENT_SECRET, CI_GATE_LOG_SECRET, CNPJA_API_KEY, CONTADOR_INVITE_SECRET, CRON_DISPATCH_SECRET, EDGE_SENTRY_DSN, LOVABLE_API_KEY, MAPBOX_ACCESS_TOKEN, N8N_DISPATCH_SECRET, OPENAI_API_KEY, OPEN_FINANCE_CLIENT_ID, OPEN_FINANCE_CLIENT_SECRET, REGUA_CRON_SECRET, RESEND_API_KEY, RESEND_FROM, SEFAZ_CRON_SECRET, SENTRY_DSN, SENTRY_ENVIRONMENT, SLACK_WEBHOOK_URL, SUPABASE_JWT_SECRET, VITE_BLING_CLIENT_ID, VITE_SENTRY_DSN
 
 ## Permissões / papéis
-- papéis no código: user (24), system (19), alert (18), admin (16), status (13), assistant (5), region (5), AMBOS (4), ORIGEM (4), dialog (4), img (4), list (4), progressbar (4), DESTINO (3), financeiro (3), presentation (3), RESPONSAVEL (2), anon (2), authenticated (2), combobox (2), contador_readonly (2), group (2), separator (2), visualizador (2), MEMBRO (1), agent (1), button (1), checkbox (1), editor (1), link (1), listitem (1), note (1), operacional (1), radiogroup (1), root (1), service_role (1), sup (1), tool (1), treeitem (1)
+- papéis no código: user (24), system (19), alert (18), admin (16), status (13), assistant (5), region (5), AMBOS (4), ORIGEM (4), dialog (4), financeiro (4), img (4), list (4), progressbar (4), DESTINO (3), presentation (3), RESPONSAVEL (2), anon (2), authenticated (2), combobox (2), contador_readonly (2), group (2), separator (2), visualizador (2), MEMBRO (1), agent (1), button (1), checkbox (1), editor (1), link (1), listitem (1), note (1), operacional (1), radiogroup (1), root (1), service_role (1), sup (1), tool (1), treeitem (1)
 - enums de papel: app_role: admin|financeiro|operacional|visualizador|financeiro|operacional|visualizador|financeiro|operacional|visualizador|contador|viewer|manager|operator|viewer; org_papel: RESPONSAVEL|ADMIN|MEMBRO|LEITOR
 - guards: src/components/auth/EmpresaGuard.tsx, src/components/auth/ProtectedRoute.tsx, src/components/navigation/UnsavedGuardProvider.tsx · rotas protegidas: 120 · públicas: /__especimes, /*, /auth, /auth/corporate, /contador/:token, /convite/:token, /design-system-debug, /reset-password, /status, /theme-diagnostics
 - feature flags: ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS, ENABLE_PRODUCTION_SIMULATION_AUDIT, FEATURE_X, nova-tela, novo-inbox
@@ -632,6 +632,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-19 `dd12c7d` feat: suíte E2E de contrato contábil para contabilizar-evento (#473)
 - 2026-11-19 `929f20d` fix: normalizar 400 invalid_json para envelope 422 canônico (#472)
 - 2026-11-19 `2f1f881` chore: matriz de conformidade de contratos das edge functions (#471)
 - 2026-11-18 `1bdec67` chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)
@@ -646,7 +647,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `fee7c1d` chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)
 - 2026-11-17 `f17d2d4` docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)
 - 2026-11-17 `c862e68` docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)
-- 2026-11-17 `ed338a2` fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

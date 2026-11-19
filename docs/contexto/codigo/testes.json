@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 480,
+ "total": 481,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 404
+  "unit": 405
  },
  "onde_ficam": [
   {
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 46
+   "arquivos": 47
   },
   {
    "padrao": "e2e/",
@@ -3908,6 +3908,15 @@
    "casos": 12
   },
   {
+   "arquivo": "supabase/functions/contabilizar-evento/index.test.ts",
+   "tipo": "unit",
+   "linhas": 440,
+   "testa": [
+    "supabase/functions/contabilizar-evento/index.ts"
+   ],
+   "casos": 10
+  },
+  {
    "arquivo": "supabase/functions/convidar-usuario/index.test.ts",
    "tipo": "unit",
    "linhas": 177,
@@ -4627,6 +4636,7 @@
   "supabase/functions/ci-security-gate-log/index.ts": 1,
   "supabase/functions/conciliacao-proxy/index.ts": 1,
   "supabase/functions/consulta-tributaria/helpers.ts": 1,
+  "supabase/functions/contabilizar-evento/index.ts": 1,
   "supabase/functions/convidar-usuario/index.ts": 1,
   "supabase/functions/enviar-alerta-email/index.ts": 1,
   "supabase/functions/executar-analise-preditiva/index.ts": 1,
@@ -5020,7 +5030,6 @@
    "comparar-benchmark-setorial",
    "compare-schemas",
    "conciliacao-ia",
-   "contabilizar-evento",
    "convidar-contador",
    "copilot-global",
    "copilot-tributario",

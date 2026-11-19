@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `929f20dbc2` · branch `main` · 2026-11-19 16:24 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `dd12c7de00` · branch `main` · 2026-11-19 22:48 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -297,7 +297,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 357 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 358 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -384,6 +384,7 @@
 - `supabase/functions/compare-schemas/index.ts`
 - `supabase/functions/conciliacao-ia/index.ts`
 - `supabase/functions/conciliacao-proxy/index.ts`
+- `supabase/functions/contabilizar-evento/index.test.ts`
 - `supabase/functions/contabilizar-evento/index.ts`
 - `supabase/functions/convidar-contador/index.ts`
 - `supabase/functions/copilot-global/index.ts`
@@ -448,8 +449,7 @@
 - `supabase/functions/sso-test-login/index.ts`
 - `supabase/functions/stress_test.ts`
 - `supabase/functions/sync-profile-to-bitrix/index.ts`
-- `supabase/functions/upload-anexo/index.ts`
-- … +207 (lista completa em `context.json`)
+- … +208 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 

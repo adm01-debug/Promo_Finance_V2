@@ -23,7 +23,7 @@
   "testes": [
    "co-localizado (__tests__) (282)",
    "outro (112)",
-   "co-localizado (*.test) (46)"
+   "co-localizado (*.test) (47)"
   ],
   "edge_functions": "supabase/functions",
   "migrations": "supabase/migrations",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)",
    "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)",
    "chore: matriz de conformidade de contratos das edge functions (#471)",
    "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)",
-   "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)",
-   "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)"
+   "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -3,7 +3,7 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2360)",
+   "TypeScript (2361)",
    "SQL (1120)",
    "Markdown (211)",
    "JavaScript (76)",
@@ -1502,7 +1502,7 @@
    },
    {
     "host": "test.supabase.co",
-    "arquivos": 7
+    "arquivos": 8
    },
    {
     "host": "api.supabase.com",
@@ -2064,6 +2064,10 @@
     "ocorrencias": 4
    },
    {
+    "papel": "financeiro",
+    "ocorrencias": 4
+   },
+   {
     "papel": "img",
     "ocorrencias": 4
    },
@@ -2077,10 +2081,6 @@
    },
    {
     "papel": "DESTINO",
-    "ocorrencias": 3
-   },
-   {
-    "papel": "financeiro",
     "ocorrencias": 3
    },
    {
