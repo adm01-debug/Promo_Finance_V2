@@ -4,7 +4,7 @@
 |---|---|
 | nome | calcular-health-score-operacional |
 | status | ACTIVE |
-| versão | 109 |
+| versão | 110 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/calcular-health-score-operacional/index.ts |
 | import_map |  |
