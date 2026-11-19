@@ -13,7 +13,10 @@ const FIELD_ICON: Record<SsoSyncFieldKey, import('react/jsx-runtime').JSX.Elemen
   telefone: <Phone className="h-3 w-3" />,
 };
 
-const KIND_META: Record<EventKind, { label: string; icon: import('react/jsx-runtime').JSX.Element; className: string }> = {
+const KIND_META: Record<
+  EventKind,
+  { label: string; icon: import('react/jsx-runtime').JSX.Element; className: string }
+> = {
   jit: {
     label: 'JIT',
     icon: <UserPlus className="h-3 w-3" />,
