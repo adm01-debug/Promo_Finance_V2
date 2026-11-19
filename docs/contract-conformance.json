@@ -1,5 +1,5 @@
 {
-  "gerado": "2026-11-19T15:38:34.016Z",
+  "gerado": "2026-11-19T15:57:48.461Z",
   "funcoes": [
     {
       "funcao": "aceitar-convite",
@@ -24,7 +24,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -41,7 +41,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -51,8 +53,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["auth_test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "auth_test.ts"
+        ]
       }
     },
     {
@@ -68,7 +72,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -78,14 +84,14 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "analyze-document",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
@@ -95,17 +101,19 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -132,35 +140,42 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
       "funcao": "asaas-proxy",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": true,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirVinculoEmpresa"],
+        "guards": [
+          "exigirVinculoEmpresa"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["credit-risk.test.ts", "index.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "credit-risk.test.ts",
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -186,14 +201,16 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "evidenciado",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
       "funcao": "benchmarking-setorial",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
@@ -203,24 +220,26 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "bitrix24-sync",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": true,
         "header": true
       },
@@ -234,13 +253,13 @@
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -267,34 +286,36 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "evidenciado",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
       "funcao": "bling-proxy",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": true,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -321,8 +342,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "evidenciado",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -348,7 +371,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -375,7 +398,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -392,7 +415,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -402,7 +427,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -419,7 +444,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -429,7 +456,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -446,7 +473,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["authorizeSharedSecret"],
+        "guards": [
+          "authorizeSharedSecret"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -456,8 +485,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -483,7 +514,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -510,7 +541,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -537,7 +568,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -554,7 +585,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -564,7 +597,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -591,8 +624,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index_test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index_test.ts"
+        ]
       }
     },
     {
@@ -618,8 +653,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -645,7 +682,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -672,7 +709,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -699,8 +736,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -726,7 +765,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -753,7 +792,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -780,7 +819,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -807,7 +846,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -834,14 +873,14 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "enviar-alerta-email",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": false
       },
@@ -855,14 +894,16 @@
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -888,7 +929,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -915,7 +956,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -932,7 +973,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirVinculoEmpresa"],
+        "guards": [
+          "exigirVinculoEmpresa"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -942,7 +985,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -969,7 +1012,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -996,8 +1039,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -1013,7 +1058,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirVinculoEmpresa"],
+        "guards": [
+          "exigirVinculoEmpresa"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1023,7 +1070,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1050,8 +1097,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["domain.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "domain.test.ts"
+        ]
       }
     },
     {
@@ -1077,7 +1126,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1094,7 +1143,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1104,7 +1155,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1131,8 +1182,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["layout_test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "layout_test.ts"
+        ]
       }
     },
     {
@@ -1158,7 +1211,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1185,7 +1238,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1212,7 +1265,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1239,7 +1292,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1266,8 +1319,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -1283,7 +1338,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1293,7 +1350,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1310,7 +1367,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1320,8 +1379,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -1347,7 +1408,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1374,7 +1435,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1401,7 +1462,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1428,7 +1489,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1455,7 +1516,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1482,62 +1543,66 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "gerar-sped-ecd",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["layout_test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "layout_test.ts"
+        ]
       }
     },
     {
       "funcao": "gerar-sped-ecf",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["layout_test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "layout_test.ts"
+        ]
       }
     },
     {
@@ -1563,7 +1628,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1590,7 +1655,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1607,7 +1672,9 @@
         "semBodyDetectavel": true
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1617,7 +1684,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1634,7 +1701,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1644,34 +1713,34 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "log-sped-bitrix24",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1698,8 +1767,11 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index_test.ts", "sql-policy_test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index_test.ts",
+          "sql-policy_test.ts"
+        ]
       }
     },
     {
@@ -1725,8 +1797,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
@@ -1752,21 +1826,21 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "n8n-callback",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
@@ -1779,61 +1853,65 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
       "funcao": "n8n-dispatch",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "nfe-upload-certificado",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirVinculoEmpresa"],
+        "guards": [
+          "exigirVinculoEmpresa"
+        ],
         "quantos": 1
       },
       "contrato": {
         "usa422": true,
-        "jsonMalformado": false,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1860,8 +1938,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index_test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index_test.ts"
+        ]
       }
     },
     {
@@ -1877,7 +1957,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["guardInternal"],
+        "guards": [
+          "guardInternal"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1887,14 +1969,16 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
       "funcao": "notify-saved-filter",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
@@ -1908,13 +1992,13 @@
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1931,7 +2015,9 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirVinculoEmpresa"],
+        "guards": [
+          "exigirVinculoEmpresa"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -1941,8 +2027,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index_test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index_test.ts"
+        ]
       }
     },
     {
@@ -1968,7 +2056,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -1995,7 +2083,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2022,7 +2110,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2049,14 +2137,14 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "processar-solicitacao-lgpd",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
@@ -2070,40 +2158,42 @@
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["escrita.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "escrita.test.ts"
+        ]
       }
     },
     {
       "funcao": "projecao-reforma",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
       "validacao": {
         "declaraSchema": true,
         "bodyCoberto": true,
-        "semBodyDetectavel": true
+        "semBodyDetectavel": false
       },
       "auth": {
         "guards": [],
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2130,7 +2220,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2157,7 +2247,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2184,8 +2274,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["policy_test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "policy_test.ts"
+        ]
       }
     },
     {
@@ -2210,9 +2302,15 @@
         "versionado": false
       },
       "testes": {
-        "existe": false,
-        "cobremInvalidJson": false,
-        "arquivos": []
+        "existe": true,
+        "cobremInvalidJson": "evidenciado",
+        "arquivos": [
+          "__tests__/integration_test.ts",
+          "__tests__/parser_test.ts",
+          "__tests__/puller_test.ts",
+          "__tests__/soap_test.ts",
+          "__tests__/telemetry_concurrency_test.ts"
+        ]
       }
     },
     {
@@ -2237,15 +2335,17 @@
         "versionado": false
       },
       "testes": {
-        "existe": false,
-        "cobremInvalidJson": false,
-        "arquivos": []
+        "existe": true,
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "__tests__/payload_test.ts"
+        ]
       }
     },
     {
       "funcao": "send-device-alert",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": false
       },
@@ -2255,24 +2355,26 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "send-push-notification",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": false
       },
@@ -2286,20 +2388,22 @@
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     },
     {
       "funcao": "simular-presumido",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": false
       },
@@ -2309,24 +2413,26 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "simular-real",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": false
       },
@@ -2336,24 +2442,26 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "simular-simples",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": false
       },
@@ -2363,17 +2471,19 @@
         "semBodyDetectavel": false
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2400,7 +2510,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2427,8 +2537,11 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["build-profile-sync-delta.test.ts", "claims.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "build-profile-sync-delta.test.ts",
+          "claims.test.ts"
+        ]
       }
     },
     {
@@ -2454,7 +2567,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2481,7 +2594,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2508,7 +2621,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2535,8 +2648,11 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index.test.ts", "pipeline.test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "index.test.ts",
+          "pipeline.test.ts"
+        ]
       }
     },
     {
@@ -2562,7 +2678,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2589,7 +2705,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2606,7 +2722,9 @@
         "semBodyDetectavel": true
       },
       "auth": {
-        "guards": ["exigirUsuario"],
+        "guards": [
+          "exigirUsuario"
+        ],
         "quantos": 1
       },
       "contrato": {
@@ -2616,7 +2734,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2643,7 +2761,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2670,7 +2788,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2697,7 +2815,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2724,7 +2842,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2751,7 +2869,7 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
@@ -2778,8 +2896,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["contract_test.ts"]
+        "cobremInvalidJson": "sem-teste",
+        "arquivos": [
+          "contract_test.ts"
+        ]
       }
     },
     {
@@ -2805,14 +2925,14 @@
       },
       "testes": {
         "existe": false,
-        "cobremInvalidJson": false,
+        "cobremInvalidJson": "sem-teste",
         "arquivos": []
       }
     },
     {
       "funcao": "whatsapp-ia-proativo",
       "entradas": {
-        "body": false,
+        "body": true,
         "queryOuUrl": false,
         "header": true
       },
@@ -2826,14 +2946,16 @@
         "quantos": 0
       },
       "contrato": {
-        "usa422": false,
-        "jsonMalformado": false,
+        "usa422": true,
+        "jsonMalformado": true,
         "versionado": false
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": false,
-        "arquivos": ["index_test.ts"]
+        "cobremInvalidJson": "sem-evidencia",
+        "arquivos": [
+          "index_test.ts"
+        ]
       }
     },
     {
@@ -2859,8 +2981,10 @@
       },
       "testes": {
         "existe": true,
-        "cobremInvalidJson": true,
-        "arquivos": ["index.test.ts"]
+        "cobremInvalidJson": "evidenciado",
+        "arquivos": [
+          "index.test.ts"
+        ]
       }
     }
   ]
