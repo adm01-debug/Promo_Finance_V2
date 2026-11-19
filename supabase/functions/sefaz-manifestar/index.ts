@@ -20,6 +20,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validatePayload } from '../_shared/validation.ts';
+import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/contract-response.ts';
 import { loadCertificado, makeAdminClient, type CertificadoRow } from '../_shared/sefaz/pfx.ts';
 import {
   buildEnvEvento,
@@ -262,10 +263,19 @@ Deno.serve(
         justificativa: z.string().optional(),
       });
       const __c = validatePayload(ManifSchema, raw, 'sefaz-manifestar');
-      if (!__c.success) return res(400, { error: __c.error, details: __c.details });
+      if (!__c.success)
+        return res(422, {
+          code: VALIDATION_ERROR_CODE,
+          message: 'Payload inválido',
+          fields: normalizeValidationFields(__c.details ?? __c.error),
+        });
       body = __c.data as ManifestarArgs;
     } catch {
-      return res(400, { error: 'invalid_json' });
+      return res(422, {
+        code: VALIDATION_ERROR_CODE,
+        message: 'JSON malformado',
+        fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+      });
     }
 
     const admin = makeAdminClient();

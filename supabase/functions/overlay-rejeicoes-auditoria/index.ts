@@ -10,6 +10,7 @@
 // deploy). Escrita exige papel admin ou manager, checado no servidor.
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
+import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/contract-response.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro } from '../_shared/erros.ts';
@@ -90,11 +91,25 @@ Deno.serve(
       try {
         const parsed = BodySchema.safeParse(await req.json());
         if (!parsed.success) {
-          return res({ error: 'invalid_payload', detalhes: parsed.error.flatten() }, 400);
+          return res(
+            {
+              code: VALIDATION_ERROR_CODE,
+              message: 'Payload inválido',
+              fields: normalizeValidationFields(parsed.error),
+            },
+            422
+          );
         }
         body = parsed.data;
       } catch {
-        return res({ error: 'invalid_json' }, 400);
+        return res(
+          {
+            code: VALIDATION_ERROR_CODE,
+            message: 'JSON malformado',
+            fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+          },
+          422
+        );
       }
 
       if (body.acao === 'resolver') {

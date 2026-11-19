@@ -19,7 +19,10 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
-import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import {
+  createValidationErrorResponse,
+  VALIDATION_ERROR_CODE,
+} from '../_shared/contract-response.ts';
 
 const RequestBodySchema = z
   .object({
@@ -547,7 +550,11 @@ Deno.serve(
       const text = await req.text();
       if (text) payload = JSON.parse(text);
     } catch {
-      return res(400, { error: 'invalid_json' });
+      return res(422, {
+        code: VALIDATION_ERROR_CODE,
+        message: 'JSON malformado',
+        fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+      });
     }
     const parsedPayload = RequestBodySchema.safeParse(payload);
     if (!parsedPayload.success)

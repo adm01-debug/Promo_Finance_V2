@@ -5,6 +5,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
+import { VALIDATION_ERROR_CODE } from '../_shared/contract-response.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -72,7 +73,14 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = JSON.parse(new TextDecoder().decode(rawBytes));
     } catch {
-      return res({ error: 'invalid_json' }, 400);
+      return res(
+        {
+          code: VALIDATION_ERROR_CODE,
+          message: 'JSON malformado',
+          fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+        },
+        422
+      );
     }
 
     const parsed = validatePayload(schema, raw ?? {}, 'n8n-callback');

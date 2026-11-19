@@ -50,7 +50,15 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await req.json();
     } catch {
-      return json(400, { error: 'Invalid JSON' }, { reason: 'invalid_json' });
+      return json(
+        422,
+        {
+          code: VALIDATION_ERROR_CODE,
+          message: 'JSON malformado',
+          fields: [{ path: '$', message: 'JSON malformado', code: 'invalid_json' }],
+        },
+        { reason: 'invalid_json' }
+      );
     }
 
     const parsed = validatePayload(NfeVinculoProxySchema, raw, 'nfe-vinculo-proxy');
