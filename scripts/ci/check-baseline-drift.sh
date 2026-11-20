@@ -187,6 +187,25 @@ rm -f "$_anon_sql"
 [ -n "$ANON_BAD" ] && fail "grants indevidos para anon: $ANON_BAD" \
                    || ok "anon sem privilégios fora da allowlist"
 
+# Os grants esperados também precisam existir: uma REVOKE acidental deixa a
+# telemetria anônima quebrada sem que a consulta de "indevidos" acuse nada.
+ANON_MISSING="$(psql "$PROD_DB_URL" -A -t -v ON_ERROR_STOP=1 \
+  -v "allowed_writes_json=$ALLOWED_WRITES_JSON" <<'SQL'
+-- esperados_anon
+WITH esperados AS (
+  SELECT jsonb_array_elements_text(:'allowed_writes_json'::jsonb) AS exc
+)
+SELECT COALESCE(string_agg(e.exc, ','), '')
+FROM esperados e
+LEFT JOIN information_schema.role_table_grants g
+  ON g.table_schema='public' AND g.grantee='anon'
+  AND g.table_name || ':' || g.privilege_type = e.exc
+WHERE g.table_name IS NULL;
+SQL
+)" || consulta_falhou "grants esperados de anon"
+[ -n "$ANON_MISSING" ] && fail "grants esperados de anon ausentes: $ANON_MISSING" \
+                   || ok "grants esperados de anon presentes"
+
 echo "──"
 if [ "$FAILS" -gt 0 ]; then
   echo "::error::Gate #26 — $FAILS divergência(s) de baseline. Regere com scripts/integrity/dump-baseline.sh e commite no mesmo PR."

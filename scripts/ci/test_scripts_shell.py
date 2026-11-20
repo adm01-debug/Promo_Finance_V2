@@ -196,7 +196,8 @@ secoes = {
     "policies": "jsonb_object_agg",
     "rls": "relrowsecurity",
     "views": "security_invoker",
-    "anon": "role_table_grants",
+    "anon": "allowed_select",
+    "esperados_anon": "esperados AS",
 }
 for nome, marcador in secoes.items():
     if marcador in texto:
@@ -247,6 +248,7 @@ class BaselineDrift(Base):
             "PSQL_RLS": "\n",
             "PSQL_VIEWS": "\n",
             "PSQL_ANON": "\n",
+            "PSQL_ESPERADOS_ANON": "\n",
         }
         if url is not None:
             base["PROD_DB_URL"] = url
@@ -284,7 +286,7 @@ class BaselineDrift(Base):
         r = self.run_script()
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         chamadas = [json.loads(linha) for linha in self.registro.read_text().splitlines()]
-        self.assertEqual(len(chamadas), 5)
+        self.assertEqual(len(chamadas), 6)
         for args in chamadas:
             self.assertEqual(args[0], URL)
         self.assertNotIn("senha", r.stdout + r.stderr)
@@ -293,8 +295,8 @@ class BaselineDrift(Base):
     def test_allowlist_vai_como_variavel_psql(self):
         self.gravar_baseline(permitidas=["planos", "o'brien"])
         self.run_script()
-        ultima = json.loads(self.registro.read_text().splitlines()[-1])
-        valor = next(a for a in ultima if a.startswith("allowed_json="))
+        chamadas = [json.loads(linha) for linha in self.registro.read_text().splitlines()]
+        valor = next(a for c in chamadas for a in c if a.startswith("allowed_json="))
         self.assertEqual(json.loads(valor.split("=", 1)[1]), ["planos", "o'brien"])
 
     def test_drift_de_contagem_sai_1(self):
@@ -371,6 +373,21 @@ class BaselineDrift(Base):
         ultima = json.loads(self.registro.read_text().splitlines()[-1])
         valor = next(a for a in ultima if a.startswith("allowed_writes_json="))
         self.assertEqual(json.loads(valor.split("=", 1)[1]), ["a:INSERT", "o'brien:UPDATE"])
+
+    def test_grant_esperado_ausente_reprova(self):
+        # Regressão: REVOKE acidental do grant de telemetria de anon deixava o
+        # gate verde (a consulta de "indevidos" só acusa o que existe e não
+        # deveria existir). O esperado também precisa estar presente.
+        self.gravar_baseline(writes=["frontend_error_logs:INSERT"])
+        r = self.run_script(PSQL_ESPERADOS_ANON="frontend_error_logs:INSERT\n")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("grants esperados de anon ausentes: frontend_error_logs:INSERT", r.stdout)
+
+    def test_grant_esperado_presente_passa(self):
+        self.gravar_baseline(writes=["frontend_error_logs:INSERT"])
+        r = self.run_script(PSQL_ESPERADOS_ANON="\n")
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("grants esperados de anon presentes", r.stdout)
 
     def test_invariantes_estruturais(self):
         casos = {
