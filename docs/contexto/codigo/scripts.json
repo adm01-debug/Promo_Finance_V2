@@ -162,10 +162,12 @@
   {
    "arquivo": "scripts/ci/check-baseline-drift.sh",
    "descricao": "Gate #26 — Drift de schema/policies vs. baseline versionado. Compara o estado real do banco (PROD_DB_URL, somente leitura) com os",
-   "linhas": 186,
+   "linhas": 214,
    "env": [],
    "npm_scripts": [],
-   "workflows": [],
+   "workflows": [
+    "ci.yml"
+   ],
    "orfao": false
   },
   {
@@ -815,7 +817,7 @@
   {
    "arquivo": "scripts/integrity/dump-baseline.sh",
    "descricao": "dump-baseline.sh — Regera baselines JSON a partir de PROD_DB_URL. Grava em scripts/integrity/baseline/. NUNCA escreve em produção.",
-   "linhas": 62,
+   "linhas": 69,
    "env": [],
    "npm_scripts": [],
    "workflows": [],

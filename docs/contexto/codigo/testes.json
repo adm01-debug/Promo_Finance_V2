@@ -395,7 +395,7 @@
   {
    "arquivo": "scripts/ci/test_scripts_shell.py",
    "tipo": "pytest",
-   "linhas": 655,
+   "linhas": 687,
    "testa": [],
    "casos": 0
   },

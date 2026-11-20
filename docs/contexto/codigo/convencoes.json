@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: ativar Gate #26 de drift de schema/policies no CI (#475)",
    "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)",
    "fix: renderTemplate null-safe em contabilizar-evento (#476)",
    "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)",
-   "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)",
-   "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)"
+   "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

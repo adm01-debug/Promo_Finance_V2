@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b7e2355d531febfbd218b074134268b25db00f67",
+  "commit": "5c51f13354d15808794dd45178870bfde21ad296",
   "branch": "main",
-  "data_commit": "2026-11-20T08:11:01-03:00",
+  "data_commit": "2026-11-20T08:24:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5c51f13",
+    "data": "2026-11-20",
+    "assunto": "chore: ativar Gate #26 de drift de schema/policies no CI (#475)"
+   },
    {
     "sha": "b7e2355",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "1702166",
     "data": "2026-11-17",
     "assunto": "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)"
-   },
-   {
-    "sha": "f9b3094",
-    "data": "2026-11-17",
-    "assunto": "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)"
    }
   ],
-  "arquivos_mudados_7d": 697,
+  "arquivos_mudados_7d": 703,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -189,7 +189,7 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 13
+    "mudancas": 14
    },
    {
     "pasta": "src/components/dashboard",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 23
+    "mudancas": 24
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 227
+    "commits": 228
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3960,
+  "arquivos_total": 3961,
   "arquivos_codigo": 2481,
-  "linhas_codigo": 442446,
+  "linhas_codigo": 442478,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -504,7 +504,7 @@
   },
   "scripts/ci": {
    "arquivos": 23,
-   "linhas": 7099
+   "linhas": 7131
   },
   "scripts/data": {
    "arquivos": 3,
