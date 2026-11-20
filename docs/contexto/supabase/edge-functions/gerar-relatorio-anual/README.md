@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-relatorio-anual |
 | status | ACTIVE |
-| versão | 115 |
+| versão | 116 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/gerar-relatorio-anual/index.ts |
 | import_map |  |
