@@ -81,7 +81,13 @@ export default function Configuracoes() {
   const [tab, setTab] = useUrlTab('regua', CONFIG_TABS);
 
   // Preferências do Sistema — persistidas por usuário (achado #3)
-  const { preferencias, setPreferencias, salvar: salvarPreferencias } = usePreferenciasSistema();
+  const {
+    preferencias,
+    setPreferencias,
+    salvar: salvarPreferencias,
+    carregado,
+    falhaLeitura,
+  } = usePreferenciasSistema();
 
   const toggleEtapa = (id: string) => {
     setEtapas((prev) => prev.map((e) => (e.id === id ? { ...e, ativo: !e.ativo } : e)));
@@ -92,6 +98,16 @@ export default function Configuracoes() {
   };
 
   const savePreferencias = async () => {
+    if (!carregado) {
+      toast({
+        title: 'Preferências ainda carregando',
+        description: falhaLeitura
+          ? 'A leitura falhou. Aguarde e tente novamente.'
+          : 'Aguarde a leitura das preferências salvas.',
+        variant: falhaLeitura ? 'destructive' : 'default',
+      });
+      return;
+    }
     const { ok, erro } = await salvarPreferencias(preferencias);
     if (!ok) {
       toast({
@@ -351,6 +367,11 @@ export default function Configuracoes() {
 
         {/* Sistema */}
         <TabsContent value="sistema">
+          {falhaLeitura && (
+            <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              Não foi possível carregar suas preferências. Verifique sua conexão e tente novamente.
+            </div>
+          )}
           <SistemaTab
             preferencias={preferencias}
             onPreferenciasChange={setPreferencias}

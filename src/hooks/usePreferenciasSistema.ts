@@ -42,10 +42,12 @@ export function usePreferenciasSistema() {
   const { user } = useAuth();
   const [preferencias, setPreferencias] = useState<PreferenciasSistema>(PREFERENCIAS_DEFAULT);
   const [carregado, setCarregado] = useState(false);
+  const [falhaLeitura, setFalhaLeitura] = useState(false);
 
   useEffect(() => {
     let ativo = true;
     setCarregado(false);
+    setFalhaLeitura(false);
     if (!user) {
       setPreferencias(PREFERENCIAS_DEFAULT);
       setCarregado(true);
@@ -68,9 +70,12 @@ export function usePreferenciasSistema() {
         }) => {
           if (!ativo) return;
           if (error) {
-            console.warn('[usePreferenciasSistema] load falhou, usando defaults', error.message);
-            setPreferencias(PREFERENCIAS_DEFAULT);
-          } else if (data?.payload && typeof data.payload === 'object') {
+            console.warn('[usePreferenciasSistema] load falhou', error.message);
+            setFalhaLeitura(true);
+            // não marca carregado: salvar/editar permanecem bloqueados
+            return;
+          }
+          if (data?.payload && typeof data.payload === 'object') {
             setPreferencias({
               ...PREFERENCIAS_DEFAULT,
               ...(data.payload as Partial<PreferenciasSistema>),
@@ -89,6 +94,9 @@ export function usePreferenciasSistema() {
   const salvar = useCallback(
     async (novas: PreferenciasSistema): Promise<{ ok: boolean; erro?: string }> => {
       if (!user) return { ok: false, erro: 'Usuário não autenticado.' };
+      if (!carregado)
+        return { ok: false, erro: 'Preferências ainda carregando. Tente novamente em instantes.' };
+      const anterior = preferencias; // snapshot para revert no erro
       setPreferencias(novas); // otimista; revertido no erro
       const { error } = await supabase.from('user_preferences' as any).upsert(
         {
@@ -99,16 +107,13 @@ export function usePreferenciasSistema() {
         { onConflict: 'user_id,key' }
       );
       if (error) {
-        setPreferencias((prev) => {
-          // não há snapshot anterior confiável; mantém o estado atual e reporta erro
-          return prev;
-        });
+        setPreferencias(anterior);
         return { ok: false, erro: error.message };
       }
       return { ok: true };
     },
-    [user]
+    [user, carregado, preferencias]
   );
 
-  return { preferencias, setPreferencias, salvar, carregado };
+  return { preferencias, setPreferencias, salvar, carregado, falhaLeitura };
 }
