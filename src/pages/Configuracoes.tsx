@@ -39,6 +39,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
+import { usePreferenciasSistema } from '@/hooks/usePreferenciasSistema';
 import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
 import { SistemaTab } from '@/components/configuracoes/SistemaTab';
 import { TemplatesTab } from '@/components/configuracoes/TemplatesTab';
@@ -79,19 +80,14 @@ export default function Configuracoes() {
   const { toast } = useToast();
   const [tab, setTab] = useUrlTab('regua', CONFIG_TABS);
 
-  // Preferências do Sistema
-  const [preferencias, setPreferencias] = useState({
-    notificacoesEmail: true,
-    notificacoesPush: true,
-    alertasVencimento: 3,
-    alertasFluxoCaixa: true,
-    temaEscuro: false,
-    formatoData: 'dd/MM/yyyy',
-    formatoMoeda: 'BRL',
-    fusoHorario: 'America/Sao_Paulo',
-    backupAutomatico: true,
-    frequenciaBackup: 'diario',
-  });
+  // Preferências do Sistema — persistidas por usuário (achado #3)
+  const {
+    preferencias,
+    setPreferencias,
+    salvar: salvarPreferencias,
+    carregado,
+    falhaLeitura,
+  } = usePreferenciasSistema();
 
   const toggleEtapa = (id: string) => {
     setEtapas((prev) => prev.map((e) => (e.id === id ? { ...e, ativo: !e.ativo } : e)));
@@ -101,7 +97,26 @@ export default function Configuracoes() {
     });
   };
 
-  const savePreferencias = () => {
+  const savePreferencias = async () => {
+    if (!carregado) {
+      toast({
+        title: 'Preferências ainda carregando',
+        description: falhaLeitura
+          ? 'A leitura falhou. Aguarde e tente novamente.'
+          : 'Aguarde a leitura das preferências salvas.',
+        variant: falhaLeitura ? 'destructive' : 'default',
+      });
+      return;
+    }
+    const { ok, erro } = await salvarPreferencias(preferencias);
+    if (!ok) {
+      toast({
+        title: 'Erro ao salvar preferências',
+        description: erro ?? 'Não foi possível gravar suas configurações.',
+        variant: 'destructive',
+      });
+      return;
+    }
     toast({
       title: 'Preferências salvas',
       description: 'Suas configurações foram atualizadas com sucesso.',
@@ -352,6 +367,11 @@ export default function Configuracoes() {
 
         {/* Sistema */}
         <TabsContent value="sistema">
+          {falhaLeitura && (
+            <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              Não foi possível carregar suas preferências. Verifique sua conexão e tente novamente.
+            </div>
+          )}
           <SistemaTab
             preferencias={preferencias}
             onPreferenciasChange={setPreferencias}
