@@ -2,14 +2,14 @@
   "alertas": [
     {
       "detalhe": [
-        "enviar-digest-conformidade-horario (10.1% em 7d)",
+        "enviar-digest-conformidade-horario (8.9% em 7d)",
         "processar-regua-cobranca-diario (85.7% em 7d)"
       ],
       "tipo": "cron_falhando"
     },
     {
       "detalhe": [
-        "232055 linhas com mais de 7 dias"
+        "232194 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     }
@@ -21,10 +21,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 138608640,
-      "linhas": 244892,
+      "bytes": 138690560,
+      "linhas": 245035,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 232055
+      "mais_de_7_dias": 232194
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -244,10 +244,10 @@
         "execucoes_24h": 24,
         "execucoes_7d": 168,
         "falhas_24h": 0,
-        "falhas_7d": 17,
+        "falhas_7d": 15,
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
-        "taxa_falha_7d_pct": 10.1,
+        "taxa_falha_7d_pct": 8.9,
         "ultima_falha": "2026-11-13T15:30:00Z"
       },
       {
@@ -370,7 +370,7 @@
         ],
         "duracao_max_s_7d": 0,
         "execucoes_24h": 48,
-        "execucoes_7d": 301,
+        "execucoes_7d": 305,
         "falhas_24h": 0,
         "falhas_7d": 1,
         "nome": "monitor-health-check",
@@ -561,746 +561,746 @@
     "no_repo_sem_deploy": [],
     "publicadas": [
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "aceitar-convite",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 114
+        "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "analise-fluxo-ia",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 118
+        "versao": 121
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "analise-preditiva",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 112
+        "versao": 115
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "analyze-document",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 117
+        "versao": 120
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "api-keys-manage",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 102
+        "versao": 105
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "asaas-proxy",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 115
+        "versao": 118
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "asaas-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 118
+        "versao": 121
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "benchmarking-setorial",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 114
+        "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "bitrix24-sync",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 117
+        "versao": 120
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "bitrix24-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 119
+        "versao": 122
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "bling-proxy",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 112
+        "versao": 115
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "bling-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 113
+        "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "calcular-health-score-operacional",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 110
+        "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "calcular-slo-metrics-diario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 112
+        "versao": 115
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "calculo-iva",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 114
+        "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "categorizar-despesa",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 117
+        "versao": 120
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "ci-security-gate-log",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 113
+        "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "cnpja-lookup",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 110
+        "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "comparar-benchmark-setorial",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "compare-schemas",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "conciliacao-ia",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "conciliacao-proxy",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "consulta-tributaria",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 110
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "contabilizar-evento",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 116
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "convidar-contador",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "convidar-usuario",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 103
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "copilot-global",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "copilot-tributario",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "decidir-regime",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "detectar-anomalias-financeiras",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "digest-silenciamentos-erro",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "enviar-alerta-email",
-        "status": "ACTIVE",
-        "verify_jwt": false,
         "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "enviar-bitrix24-tributario",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 109
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "enviar-convite-organizacao",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "enviar-digest-conformidade",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "enviar-relatorios-tributarios-agendados",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 112
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "executar-analise-preditiva",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "compare-schemas",
         "status": "ACTIVE",
         "verify_jwt": false,
         "versao": 114
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "executar-fechamento-tributario",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "conciliacao-ia",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 110
+        "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "executar-regua-cobranca",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "conciliacao-proxy",
         "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 116
+        "verify_jwt": true,
+        "versao": 118
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "executar-relatorios",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "consulta-tributaria",
         "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "expert-agent",
-        "status": "ACTIVE",
-        "verify_jwt": false,
+        "verify_jwt": true,
         "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "exportar-sped-contribuicoes",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "contabilizar-evento",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 115
+        "versao": 119
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "external-data",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "convidar-contador",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "convidar-usuario",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 106
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "copilot-global",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 116
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "copilot-tributario",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 116
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "decidir-regime",
         "status": "ACTIVE",
         "verify_jwt": false,
         "versao": 118
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "gerar-acoes-recomendadas",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "detectar-anomalias-financeiras",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 110
+        "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "gerar-alertas",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "gerar-alertas-dispatcher",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "gerar-alertas-tributarios",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "gerar-dre-tributaria",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "digest-silenciamentos-erro",
         "status": "ACTIVE",
         "verify_jwt": false,
         "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "gerar-heatmap-tributario",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "enviar-alerta-email",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 120
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "enviar-bitrix24-tributario",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 112
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "enviar-convite-organizacao",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "enviar-digest-conformidade",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "enviar-relatorios-tributarios-agendados",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 115
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "executar-analise-preditiva",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "executar-fechamento-tributario",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 113
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "executar-regua-cobranca",
         "status": "ACTIVE",
         "verify_jwt": false,
         "versao": 119
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "executar-relatorios",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "expert-agent",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 116
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "exportar-sped-contribuicoes",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "external-data",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 121
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "gerar-acoes-recomendadas",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 113
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "gerar-alertas",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "gerar-alertas-dispatcher",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "gerar-alertas-tributarios",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "gerar-dre-tributaria",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 120
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "gerar-heatmap-tributario",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 122
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-pacote-evidencias",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 108
+        "versao": 111
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-pdf-tributario",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 114
+        "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-relatorio-anual",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 111
+        "versao": 114
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-resumo-executivo-semanal",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 113
+        "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-resumo-financeiro-diario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 111
+        "versao": 114
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-snapshots-conformidade",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 111
+        "versao": 114
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-sped-ecd",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 113
+        "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "gerar-sped-ecf",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 110
+        "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "get-mapbox-token",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 110
+        "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "get-vapid-key",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 111
+        "versao": 114
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "health",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 110
+        "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "insights-relatorio",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 116
+        "versao": 119
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "log-sped-bitrix24",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "mcp-query",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "monitor-health",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 96
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "monitorar-erros-frontend",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 116
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "n8n-callback",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 112
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "n8n-dispatch",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "nfe-upload-certificado",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "nfe-vinculo-proxy",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "notify-performance-alert",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "notify-saved-filter",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "open-finance",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "overlay-rejeicoes-auditoria",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "prever-carga-tributaria",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "processar-fila-cobrancas",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "processar-nf-ocr",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "processar-solicitacao-lgpd",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "projecao-reforma",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 116
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "relatorio-diario-anomalias",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "scim-server",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 110
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sefaz-dfe-dispatcher",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sefaz-dfe-puxar",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 116
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sefaz-manifestar",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "send-device-alert",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 110
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "send-push-notification",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 112
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "simular-presumido",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "simular-real",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 111
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "simular-simples",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 112
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sincronizar-anomalia-bitrix24",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 108
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sso-callback",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 110
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sso-generate-metadata",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sso-initiate",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 113
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sso-logout",
-        "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 108
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sso-test-login",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 114
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sso-validate-config",
-        "status": "ACTIVE",
-        "verify_jwt": true,
-        "versao": 115
-      },
-      {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "sync-profile-to-bitrix",
         "status": "ACTIVE",
         "verify_jwt": true,
         "versao": 117
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "upload-anexo",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "mcp-query",
         "status": "ACTIVE",
-        "verify_jwt": true,
+        "verify_jwt": false,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "monitor-health",
+        "status": "ACTIVE",
+        "verify_jwt": false,
         "versao": 99
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "validar-token-contador",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "monitorar-erros-frontend",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 114
+        "versao": 119
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "validate-ip-geo",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "n8n-callback",
         "status": "ACTIVE",
         "verify_jwt": false,
         "versao": 115
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "verificar-conformidade-fiscal",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "n8n-dispatch",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 110
+        "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "webhook-replay",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "nfe-upload-certificado",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "nfe-vinculo-proxy",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 114
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "notify-performance-alert",
         "status": "ACTIVE",
         "verify_jwt": false,
         "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "webhook-retry-worker",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "notify-saved-filter",
         "status": "ACTIVE",
-        "verify_jwt": false,
-        "versao": 112
+        "verify_jwt": true,
+        "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "webhook-simulator",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "open-finance",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 114
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "overlay-rejeicoes-auditoria",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 116
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "prever-carga-tributaria",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "processar-fila-cobrancas",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 114
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "processar-nf-ocr",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 114
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "processar-solicitacao-lgpd",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "projecao-reforma",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 119
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "relatorio-diario-anomalias",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "scim-server",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 113
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sefaz-dfe-dispatcher",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sefaz-dfe-puxar",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 119
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sefaz-manifestar",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 114
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "send-device-alert",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 113
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "send-push-notification",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 115
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "simular-presumido",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "simular-real",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 114
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "simular-simples",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 115
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sincronizar-anomalia-bitrix24",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 111
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sso-callback",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 113
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sso-generate-metadata",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sso-initiate",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 116
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sso-logout",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 111
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sso-test-login",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sso-validate-config",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "sync-profile-to-bitrix",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 120
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "upload-anexo",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 102
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "validar-token-contador",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 117
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "validate-ip-geo",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "verificar-conformidade-fiscal",
         "status": "ACTIVE",
         "verify_jwt": true,
         "versao": 113
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "whatsapp-ai-analyzer",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "webhook-replay",
         "status": "ACTIVE",
-        "verify_jwt": true,
+        "verify_jwt": false,
+        "versao": 119
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "webhook-retry-worker",
+        "status": "ACTIVE",
+        "verify_jwt": false,
         "versao": 115
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
-        "slug": "whatsapp-ia-proativo",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "webhook-simulator",
         "status": "ACTIVE",
-        "verify_jwt": false,
+        "verify_jwt": true,
         "versao": 116
       },
       {
-        "atualizada_em": "2026-11-19T16:26Z",
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "whatsapp-ai-analyzer",
+        "status": "ACTIVE",
+        "verify_jwt": true,
+        "versao": 118
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
+        "slug": "whatsapp-ia-proativo",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 119
+      },
+      {
+        "atualizada_em": "2026-11-20T00:23Z",
         "slug": "whatsapp-webhook",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 116
+        "versao": 119
       }
     ],
     "publicadas_sem_codigo_no_repo": []
@@ -1349,7 +1349,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-19T22:48:30Z",
+  "medido_em": "2026-11-20T00:40:20Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 262,
     "tabelas_em_types_ts": 262
@@ -1365,7 +1365,7 @@
     "postgres": "17.6",
     "tabelas_public": 262,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 357026963,
+    "tamanho_bytes": 358255763,
     "triggers_public": 171,
     "views_public": 18
   },
@@ -1881,9 +1881,9 @@
       }
     },
     {
-      "bytes": 581632,
+      "bytes": 589824,
       "citada_no_banco": true,
-      "linhas": 1567,
+      "linhas": 1595,
       "linhas_exatas": true,
       "nome": "auth_logs",
       "policies": 3,
@@ -2468,7 +2468,7 @@
     {
       "bytes": 516096,
       "citada_no_banco": true,
-      "linhas": 837,
+      "linhas": 844,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2571,9 +2571,9 @@
       }
     },
     {
-      "bytes": 56614912,
+      "bytes": 57270272,
       "citada_no_banco": true,
-      "linhas": 187055,
+      "linhas": 188601,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -3201,9 +3201,9 @@
       }
     },
     {
-      "bytes": 37969920,
+      "bytes": 38240256,
       "citada_no_banco": true,
-      "linhas": 92223,
+      "linhas": 92560,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3428,7 +3428,7 @@
     {
       "bytes": 1884160,
       "citada_no_banco": true,
-      "linhas": 2071,
+      "linhas": 2073,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3518,7 +3518,7 @@
     {
       "bytes": 4268032,
       "citada_no_banco": true,
-      "linhas": 2458,
+      "linhas": 2469,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -3968,7 +3968,7 @@
     {
       "bytes": 3801088,
       "citada_no_banco": true,
-      "linhas": 4295,
+      "linhas": 4297,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4208,7 +4208,7 @@
     {
       "bytes": 14344192,
       "citada_no_banco": true,
-      "linhas": 11919,
+      "linhas": 11931,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4223,7 +4223,7 @@
     {
       "bytes": 786432,
       "citada_no_banco": true,
-      "linhas": 1568,
+      "linhas": 1596,
       "linhas_exatas": true,
       "nome": "rate_limit_logs",
       "policies": 2,
@@ -4748,7 +4748,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 14006,
+      "linhas": 13959,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
