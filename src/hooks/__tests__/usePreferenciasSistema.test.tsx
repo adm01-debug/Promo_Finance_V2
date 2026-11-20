@@ -4,10 +4,14 @@
  * marcava como carregado. Salvar antes da leitura concluir (ou após falha)
  * sobrescrevia as preferências persistidas com os defaults.
  *
- * Estes testes fixam os três estados: carregando, leitura com registro,
- * leitura sem registro (legítimo) e erro de leitura.
+ * Fix (rodada 3): leitura migrada para TanStack Query — retry/refetchOnReconnect
+ * recuperam falha transitória sem remontar a página; erro mantém
+ * `falhaLeitura=true` e `carregado=false`; formulário editável durante a
+ * consulta e preservado em falha de gravação (sem rollback destrutivo).
  */
 import { act, renderHook, waitFor } from '@testing-library/react';
+import type { ReactNode } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PREFERENCIAS_DEFAULT, usePreferenciasSistema } from '../usePreferenciasSistema';
 
@@ -16,6 +20,12 @@ const mocks = vi.hoisted(() => ({
   maybeSingleResp: { data: null, error: null },
   upsertResp: { error: null } as { error: { message: string } | null },
   upsertPayloads: [] as unknown[],
+  // promessa controlada: quando ativo, o upsert fica pendente até o teste
+  // resolver (cobre edição durante a gravação).
+  upsertDeferred: null as null | {
+    promise: Promise<{ error: { message: string } | null }>;
+    resolve: (v: { error: { message: string } | null }) => void;
+  },
 }));
 
 vi.mock('@/hooks/useAuth', () => ({
@@ -30,8 +40,12 @@ vi.mock('@/integrations/supabase/client', () => ({
         select: () => builder,
         eq: () => builder,
         maybeSingle: () => Promise.resolve(mocks.maybeSingleResp),
-        upsert: (payload: unknown) => {
+        upsert: (payload: unknown): Promise<{ error: { message: string } | null }> => {
           mocks.upsertPayloads.push(payload);
+          if (mocks.upsertDeferred) {
+            // promessa controlada: fica pendente até o teste chamar .resolve
+            return mocks.upsertDeferred.promise;
+          }
           return Promise.resolve(mocks.upsertResp);
         },
       };
@@ -40,22 +54,30 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-describe('usePreferenciasSistema — estados de leitura', () => {
-  beforeEach(() => {
-    mocks.fromTable = '';
-    mocks.maybeSingleResp = { data: null, error: null };
-    mocks.upsertResp = { error: null };
-    mocks.upsertPayloads = [];
-  });
+let queryClient: QueryClient;
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
 
+beforeEach(() => {
+  // retry desligado no teste: recuperação é exercitada explicitamente via
+  // refetchQueries para não deixar timing de retry no teste
+  queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  mocks.fromTable = '';
+  mocks.maybeSingleResp = { data: null, error: null };
+  mocks.upsertResp = { error: null };
+  mocks.upsertPayloads = [];
+  mocks.upsertDeferred = null;
+});
+describe('usePreferenciasSistema — estados de leitura', () => {
   it('carregado=false enquanto a leitura está pendente', () => {
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     expect(result.current.carregado).toBe(false);
     expect(result.current.falhaLeitura).toBe(false);
   });
 
   it('carregado=true com os defaults quando não há registro', async () => {
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.carregado).toBe(true));
     expect(result.current.preferencias).toEqual(PREFERENCIAS_DEFAULT);
     expect(result.current.falhaLeitura).toBe(false);
@@ -66,7 +88,7 @@ describe('usePreferenciasSistema — estados de leitura', () => {
       data: { payload: { formatoData: 'yyyy-MM-dd', fusoHorario: 'America/Manaus' } },
       error: null,
     };
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.carregado).toBe(true));
     expect(result.current.preferencias.formatoData).toBe('yyyy-MM-dd');
     expect(result.current.preferencias.fusoHorario).toBe('America/Manaus');
@@ -76,22 +98,34 @@ describe('usePreferenciasSistema — estados de leitura', () => {
 
   it('erro de leitura marca falhaLeitura e NÃO marca carregado', async () => {
     mocks.maybeSingleResp = { data: null, error: { message: 'conexão indisponível' } };
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.falhaLeitura).toBe(true));
     expect(result.current.carregado).toBe(false);
+  });
+
+  it('falha transitória recupera via refetch sem remontar o formulário', async () => {
+    mocks.maybeSingleResp = { data: null, error: { message: 'rede' } };
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
+    await waitFor(() => expect(result.current.falhaLeitura).toBe(true));
+    expect(result.current.carregado).toBe(false);
+
+    // conexão volta → refetch (equivalente ao refetchOnReconnect do client)
+    mocks.maybeSingleResp = { data: null, error: null };
+    await act(async () => {
+      await queryClient.refetchQueries({ queryKey: ['user_preferences'] });
+    });
+    await waitFor(() => expect(result.current.carregado).toBe(true));
+    expect(result.current.falhaLeitura).toBe(false);
+
+    // salvar volta a funcionar sem remontagem
+    const res = await act(async () => result.current.salvar(PREFERENCIAS_DEFAULT));
+    expect(res.ok).toBe(true);
   });
 });
 
 describe('usePreferenciasSistema — salvamento', () => {
-  beforeEach(() => {
-    mocks.fromTable = '';
-    mocks.maybeSingleResp = { data: null, error: null };
-    mocks.upsertResp = { error: null };
-    mocks.upsertPayloads = [];
-  });
-
   it('recusa salvar enquanto carregado=false (leitura pendente ou falhou)', async () => {
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     const res = await act(async () =>
       result.current.salvar({ ...PREFERENCIAS_DEFAULT, temaEscuro: true })
     );
@@ -100,7 +134,7 @@ describe('usePreferenciasSistema — salvamento', () => {
   });
 
   it('grava o payload completo após a leitura concluir com sucesso', async () => {
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.carregado).toBe(true));
     const novas = { ...PREFERENCIAS_DEFAULT, temaEscuro: true };
     const res = await act(async () => result.current.salvar(novas));
@@ -112,18 +146,19 @@ describe('usePreferenciasSistema — salvamento', () => {
     expect(payload.payload).toEqual(novas);
   });
 
-  it('não grava nada na mesa quando a leitura falhou', async () => {
+  it('não grava nada quando a leitura falhou', async () => {
     mocks.maybeSingleResp = { data: null, error: { message: 'rpc down' } };
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.falhaLeitura).toBe(true));
     const res = await act(async () => result.current.salvar(PREFERENCIAS_DEFAULT));
     expect(res.ok).toBe(false);
+    expect(res.erro).toContain('falhou');
     expect(mocks.upsertPayloads).toHaveLength(0);
   });
 
   it('erro de upsert rejeita e reporta a mensagem', async () => {
     mocks.upsertResp = { error: { message: 'violação de RLS' } };
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.carregado).toBe(true));
     const res = await act(async () => result.current.salvar(PREFERENCIAS_DEFAULT));
     expect(res.ok).toBe(false);
@@ -132,16 +167,52 @@ describe('usePreferenciasSistema — salvamento', () => {
 
   it('falha de gravação preserva o formulário atual (edições posteriores ficam)', async () => {
     mocks.upsertResp = { error: { message: 'rede' } };
-    const { result } = renderHook(() => usePreferenciasSistema());
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
     await waitFor(() => expect(result.current.carregado).toBe(true));
     // usuário edita tema para escuro e salva; a gravação falha
-    act(() => result.current.setPreferencias((p) => ({ ...p, temaEscuro: true })));
+    act(() =>
+      result.current.setPreferencias((p) => ({ ...(p ?? PREFERENCIAS_DEFAULT), temaEscuro: true }))
+    );
     const res = await act(async () => result.current.salvar(result.current.preferencias));
     expect(res.ok).toBe(false);
     // o formulário NÃO foi descartado com defaults
     expect(result.current.preferencias.temaEscuro).toBe(true);
     // e edições feitas após o clique também permanecem
-    act(() => result.current.setPreferencias((p) => ({ ...p, fusoHorario: 'America/Manaus' })));
+    act(() =>
+      result.current.setPreferencias((p) => ({
+        ...(p ?? PREFERENCIAS_DEFAULT),
+        fusoHorario: 'America/Manaus',
+      }))
+    );
     expect(result.current.preferencias.fusoHorario).toBe('America/Manaus');
+  });
+
+  it('edições feitas DURANTE a gravação pendente não são descartadas na falha', async () => {
+    // promessa controlada: ativa o deferred do upsert
+    let resolver!: (v: { error: { message: string } | null }) => void;
+    const promise = new Promise<{ error: { message: string } | null }>((r) => {
+      resolver = r;
+    });
+    mocks.upsertDeferred = { promise, resolve: resolver };
+
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
+    await waitFor(() => expect(result.current.carregado).toBe(true));
+
+    const pendente = result.current.salvar(PREFERENCIAS_DEFAULT);
+    // gravação ainda pendente → usuário edita o formulário
+    act(() =>
+      result.current.setPreferencias((p) => ({
+        ...(p ?? PREFERENCIAS_DEFAULT),
+        temaEscuro: true,
+      }))
+    );
+    // resolve a gravação com erro
+    await act(async () => {
+      resolver({ error: { message: 'tls timeout' } });
+    });
+    const res = await pendente;
+    expect(res.ok).toBe(false);
+    // edição feita durante a pendência permanece no formulário
+    expect(result.current.preferencias.temaEscuro).toBe(true);
   });
 });
