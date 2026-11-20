@@ -164,6 +164,15 @@ export const useUpdateConfiguracaoAprovacao = () => {
       // Entao em vez de adivinhar, a gravacao RECUSA o que nao pode virar o
       // limite efetivo, e diz qual faixa esta no caminho. Nao perde dado, nao
       // precisa de transacao, e nunca anuncia sucesso para algo sem efeito.
+      // Quorum: a RPC aprovar_solicitacao_pagamento ainda nao exige multiplas
+      // assinaturas, entao >1 aqui seria um controle fantasma. Recusar com
+      // mensagem explicita em vez de persistir uma promessa que nao existe.
+      if ((config.aprovadores_obrigatorios ?? 1) > 1) {
+        throw new Error(
+          'Quorum acima de 1 ainda não é exigido pelo backend de aprovação. ' +
+            'O campo está bloqueado em 1 até o fluxo de múltiplas assinaturas ser implementado.'
+        );
+      }
       const porFaixa = config.empresa_id != null && config.valor_minimo_original != null;
 
       if (porFaixa) {

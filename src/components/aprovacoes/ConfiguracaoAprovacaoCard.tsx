@@ -46,16 +46,27 @@ export const ConfiguracaoAprovacaoCard = () => {
   useEffect(() => {
     if (config) {
       setValorMinimo(config.valor_minimo_aprovacao.toString());
-      setAprovadores(config.aprovadores_obrigatorios.toString());
+      // Quórum legado >1 era persistido pela tela antiga, mas o backend nunca
+      // exigiu múltiplas assinaturas. Normaliza para 1 no carregamento; sem
+      // isso a guarda de gravação bloquearia qualquer correção de limite ou
+      // desativação (campo readOnly impede reduzir na tela).
+      setAprovadores(
+        (config.aprovadores_obrigatorios ?? 1) > 1
+          ? '1'
+          : (config.aprovadores_obrigatorios ?? 1).toString()
+      );
       setAtivo(config.ativo);
     }
   }, [config]);
 
   useEffect(() => {
     if (!config) return;
+    const quorumLegado = (config.aprovadores_obrigatorios ?? 1) > 1;
     const changed =
       parseFloat(valorMinimo) !== config.valor_minimo_aprovacao ||
-      parseInt(aprovadores) !== config.aprovadores_obrigatorios ||
+      // Quórum legado normalizado para 1 não conta como mudança pendente:
+      // é só o valor que o backend efetivamente exige hoje.
+      (quorumLegado ? false : parseInt(aprovadores) !== config.aprovadores_obrigatorios) ||
       ativo !== config.ativo;
     setHasChanges(changed);
   }, [valorMinimo, aprovadores, ativo, config]);
@@ -184,11 +195,13 @@ export const ConfiguracaoAprovacaoCard = () => {
                 onChange={(e) => setAprovadores(e.target.value)}
                 className="py-6 text-xl font-bold bg-transparent border-2 border-border/50 focus:border-primary/50 transition-all"
                 min="1"
-                max="5"
+                max="1"
+                readOnly
               />
               <p className="text-xs text-muted-foreground">
-                Define quantos aprovadores independentes são necessários para liberar o pagamento no
-                nível inicial.
+                Uma assinatura libera o pagamento. Múltiplas assinaturas (quorum &gt; 1) ainda não
+                são exigidas pelo backend — o campo ficou bloqueado em 1 para a tela não prometer um
+                controle que não existe.
               </p>
             </div>
           </div>
