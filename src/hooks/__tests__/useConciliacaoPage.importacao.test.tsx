@@ -156,6 +156,16 @@ describe('useConciliacaoPage — importação de extrato', () => {
       event_type: 'reconciliation.failed',
       status: 'error',
     });
+    // A falha NÃO pode sair da fila de revisão nem inflar o relatório:
+    expect(result.current.importReport?.autoConciliadas).toBe(0);
+    expect(result.current.importReport?.valorAutoConciliado).toBe(0);
+    expect(result.current.importReport?.matchesAlta).toHaveLength(0);
+    expect(result.current.transacoes.find((transacao) => transacao.id === 'tx-1')?.conciliada).toBe(
+      false
+    );
+    expect(result.current.transacoesImportadas.some((transacao) => transacao.id === 'tx-1')).toBe(
+      true
+    );
   });
 
   it('continua apresentando o relatório se a auditoria do arquivo não puder ser persistida', async () => {

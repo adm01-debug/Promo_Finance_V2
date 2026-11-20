@@ -209,6 +209,7 @@ export async function aplicarConciliacoesAutomaticas(params: {
   autoConciliadas: number;
   valorAutoConciliado: number;
   matchesAlta: ImportReport['matchesAlta'];
+  idsPersistidos: string[];
 }> {
   const {
     transacoes,
@@ -220,6 +221,7 @@ export async function aplicarConciliacoesAutomaticas(params: {
     onResolverManual,
   } = params;
   const matchesAlta: ImportReport['matchesAlta'] = [];
+  const idsPersistidos: string[] = [];
   let autoConciliadas = 0;
   let valorAutoConciliado = 0;
 
@@ -237,20 +239,9 @@ export async function aplicarConciliacoesAutomaticas(params: {
         Math.abs(valorDiff) <= (config.tolerancia_centavos || TOLERANCIA_CENTAVOS);
 
       if (isWithinPennyTolerance) {
-        matchesAlta.push({ transacao, match: melhorMatch });
-        autoConciliadas++;
-        valorAutoConciliado += Math.abs(transacao.valor);
-        const idx = novasTransacoes.findIndex((t) => t.id === transacao.id);
-        if (idx >= 0) {
-          novasTransacoes[idx].conciliada = true;
-          novasTransacoes[idx].compensacao_valor = valorDiff;
-          novasTransacoes[idx].compensacao_motivo = 'Tolerância configurada';
-          novasTransacoes[idx].compensacao_classificacao = valorDiff > 0 ? 'Juros' : 'Desconto';
-          novasTransacoes[idx].compensacao_regra =
-            `Match automático IA (Tolerância R$ ${config.tolerancia_centavos})`;
-        }
-
-        // Efetivar conciliação automática no banco
+        // Efetivar conciliação automática no banco ANTES de marcar estado
+        // local: só contabiliza/marca o que realmente persistiu, para a
+        // falha continuar na fila de revisão em vez de sumir silenciosa.
         try {
           await confirmarConciliacao.mutateAsync({
             transacaoId: transacao.id,
@@ -263,6 +254,20 @@ export async function aplicarConciliacoesAutomaticas(params: {
             classificacao: valorDiff > 0 ? 'Juros' : 'Desconto',
             regra: `Aceite automático dentro da tolerância de R$ ${config.tolerancia_centavos}`,
           });
+
+          matchesAlta.push({ transacao, match: melhorMatch });
+          autoConciliadas++;
+          valorAutoConciliado += Math.abs(transacao.valor);
+          idsPersistidos.push(transacao.id);
+          const idx = novasTransacoes.findIndex((t) => t.id === transacao.id);
+          if (idx >= 0) {
+            novasTransacoes[idx].conciliada = true;
+            novasTransacoes[idx].compensacao_valor = valorDiff;
+            novasTransacoes[idx].compensacao_motivo = 'Tolerância configurada';
+            novasTransacoes[idx].compensacao_classificacao = valorDiff > 0 ? 'Juros' : 'Desconto';
+            novasTransacoes[idx].compensacao_regra =
+              `Match automático IA (Tolerância R$ ${config.tolerancia_centavos})`;
+          }
         } catch (err: unknown) {
           console.error('Erro na conciliação automática:', err);
 
@@ -302,7 +307,7 @@ export async function aplicarConciliacoesAutomaticas(params: {
     }
   }
 
-  return { autoConciliadas, valorAutoConciliado, matchesAlta };
+  return { autoConciliadas, valorAutoConciliado, matchesAlta, idsPersistidos };
 }
 
 export function filtrarTransacoes(params: {

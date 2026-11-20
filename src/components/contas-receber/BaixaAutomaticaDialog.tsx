@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, CheckCircle2, Loader2 } from 'lucide-react';
+import { Upload, CheckCircle2, Loader2, AlertTriangle, Info, Landmark } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useContasBancarias } from '@/hooks/useFinancialData';
 import { cn } from '@/lib/utils';
 import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx-parser';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,9 +47,11 @@ export function BaixaAutomaticaDialog({
   const [matches, setMatches] = useState<MatchResult[]>([]);
   const [unmatched, setUnmatched] = useState<TransacaoBancaria[]>([]);
   const [processing, setProcessing] = useState(false);
-  const [summary, setSuccessSummary] = useState({ processados: 0, valor: 0 });
+  const [summary, setSuccessSummary] = useState({ processados: 0, valor: 0, falhas: 0 });
+  const [contaBancariaId, setContaBancariaId] = useState('');
 
   const queryClient = useQueryClient();
+  const { data: contasBancarias = [] } = useContasBancarias(empresaId || undefined);
 
   const resetState = () => {
     setStep('upload');
@@ -49,6 +59,7 @@ export function BaixaAutomaticaDialog({
     setResultado(null);
     setMatches([]);
     setProcessing(false);
+    setContaBancariaId('');
   };
 
   const handleClose = () => {
@@ -130,9 +141,14 @@ export function BaixaAutomaticaDialog({
   };
 
   const handleConfirmBaixa = async () => {
+    if (!empresaId) {
+      toast.error('Selecione uma empresa antes de executar a baixa automática.');
+      return;
+    }
     setProcessing(true);
     let successCount = 0;
     let totalValue = 0;
+    let failCount = 0;
 
     try {
       for (const m of matches) {
@@ -145,14 +161,22 @@ export function BaixaAutomaticaDialog({
           })
           .eq('id', m.contaId);
 
-        if (!error) {
-          successCount++;
-          totalValue += m.valor;
+        if (error) {
+          failCount++;
+          toast.error(`Falha ao liquidar ${m.cliente}: ${error.message}`);
+          continue;
+        }
 
-          // Registra transação bancária confirmada para conciliação
-          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
-          await supabase.from('transacoes_bancarias').insert({
-            conta_bancaria_id: m.transacao.conta_bancaria_id || '',
+        successCount++;
+        totalValue += m.valor;
+
+        // Registra transação bancária confirmada para conciliação.
+        // OFX não traz a conta: usa o id escolhido no preview. Sem conta
+        // selecionada o lançamento bancário é pulado (padrão do
+        // RegistrarRecebimentoDialog), nunca grava '' em coluna uuid.
+        if (contaBancariaId) {
+          const { error: txError } = await supabase.from('transacoes_bancarias').insert({
+            conta_bancaria_id: contaBancariaId,
             data: toISOLocal(m.transacao.data),
             descricao: `BAIXA AUT LOTE: ${m.cliente} - ${m.transacao.descricao}`,
             valor: m.valor,
@@ -162,13 +186,26 @@ export function BaixaAutomaticaDialog({
             data_confirmacao: new Date().toISOString(),
           });
 
-          // Registra evidência no log
+          if (txError) {
+            failCount++;
+            toast.error(
+              `Falha ao registrar lançamento bancário de ${m.cliente}: ${txError.message}`
+            );
+          }
+        }
+
+        // Registra evidência no log
+        try {
           await registrarEventoFinanceiroOrThrow('receber', {
             contaId: m.contaId,
             tipo: 'baixa_automatica',
             mensagem: `Baixa automática realizada via arquivo: ${resultado?.extrato?.nomeArquivo}`,
             metadata: { transacao_banco: m.transacao } as unknown as Json,
           });
+        } catch {
+          // Falha de auditoria não cancela a baixa, mas não fica silenciosa
+          failCount++;
+          toast.error(`Falha ao registrar auditoria do título ${m.contaId}.`);
         }
       }
 
@@ -199,13 +236,18 @@ export function BaixaAutomaticaDialog({
               arquivo_nome: resultado?.extrato?.nomeArquivo ?? null,
               total_registros: resultado?.extrato?.transacoes.length || 0,
               sucesso_count: successCount,
-              falha_count: matches.length - successCount,
+              falha_count: failCount,
             },
           },
         ]);
       }
 
-      setSuccessSummary({ processados: successCount, valor: totalValue });
+      setSuccessSummary({ processados: successCount, valor: totalValue, falhas: failCount });
+      if (failCount > 0) {
+        toast.error(
+          `${failCount} ${failCount === 1 ? 'item não processado' : 'itens não processados'}.`
+        );
+      }
       queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       setStep('success');
     } catch (err: unknown) {
@@ -309,10 +351,42 @@ export function BaixaAutomaticaDialog({
           )}
 
           {step === 'preview' && (
-            <BaixaAutomaticaDialogCorrespondenciasAutomaticas
-              matches={matches}
-              unmatched={unmatched}
-            />
+            <motion.div key="preview" className="py-4 space-y-4">
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex gap-3">
+                <Info className="h-5 w-5 text-primary shrink-0" />
+                <p className="text-xs leading-relaxed">
+                  Revise as correspondências automáticas abaixo. As divergências (itens sem par
+                  correspondente) serão registradas como alertas para reprocessamento manual.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Landmark className="h-3 w-3" /> Conta Bancária de Destino
+                </p>
+                <Select value={contaBancariaId} onValueChange={setContaBancariaId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione a conta para registrar os lançamentos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {contasBancarias.map((cb) => (
+                      <SelectItem key={cb.id} value={cb.id}>
+                        {cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[10px] text-muted-foreground">
+                  Sem conta selecionada, os títulos são liquidados sem lançamento bancário de
+                  conciliação.
+                </p>
+              </div>
+
+              <BaixaAutomaticaDialogCorrespondenciasAutomaticas
+                matches={matches}
+                unmatched={unmatched}
+              />
+            </motion.div>
           )}
 
           {step === 'success' && (
@@ -325,6 +399,14 @@ export function BaixaAutomaticaDialog({
                 <p className="text-sm text-muted-foreground mt-1">
                   {summary.processados} títulos liquidados com sucesso.
                 </p>
+                {summary.falhas > 0 && (
+                  <p className="text-xs text-warning flex items-center justify-center gap-1 mt-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {summary.falhas}{' '}
+                    {summary.falhas === 1 ? 'item não processado' : 'itens não processados'} —
+                    confira os alertas.
+                  </p>
+                )}
                 <div className="mt-4 p-4 rounded-2xl bg-card/5 border border-white/5 inline-block">
                   <p className="text-[10px] uppercase font-black tracking-widest opacity-40">
                     Volume Recuperado

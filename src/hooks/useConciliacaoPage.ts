@@ -175,7 +175,7 @@ export function useConciliacaoPage() {
       // Buscar configurações da conta
       const config = await buscarConfigConciliacao(selectedBanco);
 
-      const { autoConciliadas, valorAutoConciliado, matchesAlta } =
+      const { autoConciliadas, valorAutoConciliado, matchesAlta, idsPersistidos } =
         await aplicarConciliacoesAutomaticas({
           transacoes: extrato.transacoes,
           matches,
@@ -187,10 +187,15 @@ export function useConciliacaoPage() {
         });
 
       setTransacoes((prev) => [...novasTransacoes, ...prev]);
+      // Só sai da fila de revisão quem realmente persistiu (aceite automático
+      // confirmado no banco); match alta que falhou permanece pendente.
       setTransacoesImportadas((prev) => [
         ...extrato.transacoes.filter((t) => {
           const s = matches.get(t.id);
-          return !s || s.length === 0 || s[0].confianca !== 'alta';
+          if (s && s.length > 0 && s[0].confianca === 'alta') {
+            return !idsPersistidos.includes(t.id);
+          }
+          return true;
         }),
         ...prev,
       ]);
@@ -200,7 +205,10 @@ export function useConciliacaoPage() {
       const valorPendente = extrato.transacoes
         .filter((t) => {
           const s = matches.get(t.id);
-          return !s || s.length === 0 || s[0].confianca !== 'alta';
+          if (s && s.length > 0 && s[0].confianca === 'alta') {
+            return !idsPersistidos.includes(t.id);
+          }
+          return true;
         })
         .reduce((sum, t) => sum + Math.abs(t.valor), 0);
 

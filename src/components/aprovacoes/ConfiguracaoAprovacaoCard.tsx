@@ -184,11 +184,13 @@ export const ConfiguracaoAprovacaoCard = () => {
                 onChange={(e) => setAprovadores(e.target.value)}
                 className="py-6 text-xl font-bold bg-transparent border-2 border-border/50 focus:border-primary/50 transition-all"
                 min="1"
-                max="5"
+                max="1"
+                readOnly
               />
               <p className="text-xs text-muted-foreground">
-                Define quantos aprovadores independentes são necessários para liberar o pagamento no
-                nível inicial.
+                Uma assinatura libera o pagamento. Múltiplas assinaturas (quorum &gt; 1) ainda não
+                são exigidas pelo backend — o campo ficou bloqueado em 1 para a tela não prometer um
+                controle que não existe.
               </p>
             </div>
           </div>
