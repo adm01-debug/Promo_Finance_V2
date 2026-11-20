@@ -1,0 +1,114 @@
+import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
+import { useAuth } from '@/hooks/useAuth';
+
+export interface PreferenciasSistema {
+  notificacoesEmail: boolean;
+  notificacoesPush: boolean;
+  alertasVencimento: number;
+  alertasFluxoCaixa: boolean;
+  temaEscuro: boolean;
+  formatoData: string;
+  formatoMoeda: string;
+  fusoHorario: string;
+  backupAutomatico: boolean;
+  frequenciaBackup: string;
+}
+
+export const PREFERENCIAS_DEFAULT: PreferenciasSistema = {
+  notificacoesEmail: true,
+  notificacoesPush: true,
+  alertasVencimento: 3,
+  alertasFluxoCaixa: true,
+  temaEscuro: false,
+  formatoData: 'dd/MM/yyyy',
+  formatoMoeda: 'BRL',
+  fusoHorario: 'America/Sao_Paulo',
+  backupAutomatico: true,
+  frequenciaBackup: 'diario',
+};
+
+const KEY = 'configuracoes.sistema';
+
+/**
+ * Preferências do painel "Configurações > Sistema" persistidas por usuário na
+ * tabela user_preferences (key/value JSONB). Achado #3 do inventário: antes a
+ * tela só exibia toast de sucesso e nada era gravado — no reload tudo voltava
+ * ao default. Com a tabela restaurada (migration 20261121000000), o load lê a
+ * chave do usuário e o save faz upsert; sem registro ainda, usa o default.
+ */
+export function usePreferenciasSistema() {
+  const { user } = useAuth();
+  const [preferencias, setPreferencias] = useState<PreferenciasSistema>(PREFERENCIAS_DEFAULT);
+  const [carregado, setCarregado] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    setCarregado(false);
+    if (!user) {
+      setPreferencias(PREFERENCIAS_DEFAULT);
+      setCarregado(true);
+      return;
+    }
+    // Tabela fora do typemap gerado (foi dropada em prod e está sendo
+    // restaurada pela migration 20261121000000) — cast any no builder.
+    const prefsTable = supabase.from('user_preferences' as any);
+    (prefsTable.select('payload') as any)
+      .eq('user_id', user.id)
+      .eq('key', KEY)
+      .maybeSingle()
+      .then(
+        ({
+          data,
+          error,
+        }: {
+          data: { payload?: unknown } | null;
+          error: { message: string } | null;
+        }) => {
+          if (!ativo) return;
+          if (error) {
+            console.warn('[usePreferenciasSistema] load falhou, usando defaults', error.message);
+            setPreferencias(PREFERENCIAS_DEFAULT);
+          } else if (data?.payload && typeof data.payload === 'object') {
+            setPreferencias({
+              ...PREFERENCIAS_DEFAULT,
+              ...(data.payload as Partial<PreferenciasSistema>),
+            });
+          } else {
+            setPreferencias(PREFERENCIAS_DEFAULT);
+          }
+          setCarregado(true);
+        }
+      );
+    return () => {
+      ativo = false;
+    };
+  }, [user?.id]);
+
+  const salvar = useCallback(
+    async (novas: PreferenciasSistema): Promise<{ ok: boolean; erro?: string }> => {
+      if (!user) return { ok: false, erro: 'Usuário não autenticado.' };
+      setPreferencias(novas); // otimista; revertido no erro
+      const { error } = await supabase.from('user_preferences' as any).upsert(
+        {
+          user_id: user.id,
+          key: KEY,
+          payload: novas as unknown as Json,
+        },
+        { onConflict: 'user_id,key' }
+      );
+      if (error) {
+        setPreferencias((prev) => {
+          // não há snapshot anterior confiável; mantém o estado atual e reporta erro
+          return prev;
+        });
+        return { ok: false, erro: error.message };
+      }
+      return { ok: true };
+    },
+    [user]
+  );
+
+  return { preferencias, setPreferencias, salvar, carregado };
+}
