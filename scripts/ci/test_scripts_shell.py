@@ -196,7 +196,8 @@ secoes = {
     "policies": "jsonb_object_agg",
     "rls": "relrowsecurity",
     "views": "security_invoker",
-    "anon": "role_table_grants",
+    "anon": "allowed_select",
+    "esperados_anon": "esperados AS",
 }
 for nome, marcador in secoes.items():
     if marcador in texto:
@@ -230,11 +231,12 @@ class BaselineDrift(Base):
         self.tmpdir = self.tmp / "tmpdir"
         self.tmpdir.mkdir()
 
-    def gravar_baseline(self, contagens=None, policies=None, permitidas=None):
+    def gravar_baseline(self, contagens=None, policies=None, permitidas=None, writes=None):
         contagens = contagens or {"tables": 10, "views": 2, "indexes": 30, "functions": 5, "policies": 7}
         (self.baseline / "schema-counts.json").write_text(json.dumps(contagens))
         (self.baseline / "expected-policies.json").write_text(json.dumps(policies or {"clientes": 3, "pedidos": 4}))
         (self.baseline / "allowed-public-tables.json").write_text(json.dumps(permitidas or ["planos"]))
+        (self.baseline / "allowed-anon-writes.json").write_text(json.dumps(writes or []))
 
     def run_script(self, *args, url=URL, **env):
         base = {
@@ -246,6 +248,7 @@ class BaselineDrift(Base):
             "PSQL_RLS": "\n",
             "PSQL_VIEWS": "\n",
             "PSQL_ANON": "\n",
+            "PSQL_ESPERADOS_ANON": "\n",
         }
         if url is not None:
             base["PROD_DB_URL"] = url
@@ -283,7 +286,7 @@ class BaselineDrift(Base):
         r = self.run_script()
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         chamadas = [json.loads(linha) for linha in self.registro.read_text().splitlines()]
-        self.assertEqual(len(chamadas), 5)
+        self.assertEqual(len(chamadas), 6)
         for args in chamadas:
             self.assertEqual(args[0], URL)
         self.assertNotIn("senha", r.stdout + r.stderr)
@@ -292,8 +295,8 @@ class BaselineDrift(Base):
     def test_allowlist_vai_como_variavel_psql(self):
         self.gravar_baseline(permitidas=["planos", "o'brien"])
         self.run_script()
-        ultima = json.loads(self.registro.read_text().splitlines()[-1])
-        valor = next(a for a in ultima if a.startswith("allowed_json="))
+        chamadas = [json.loads(linha) for linha in self.registro.read_text().splitlines()]
+        valor = next(a for c in chamadas for a in c if a.startswith("allowed_json="))
         self.assertEqual(json.loads(valor.split("=", 1)[1]), ["planos", "o'brien"])
 
     def test_drift_de_contagem_sai_1(self):
@@ -356,6 +359,35 @@ class BaselineDrift(Base):
         self.assertIn("policies.removed (1): pedidos", r.stdout)
         self.assertIn("policies.changed (1): clientes: 3 -> 2", r.stdout)
         self.assertNotIn("policies por tabela idênticas", r.stdout)
+
+    def test_escrita_anon_fora_da_allowlist_reprova(self):
+        # Grant INSERT de anon só é aceito com exceção explícita em allowed-anon-writes.json.
+        self.gravar_baseline(writes=[])
+        r = self.run_script(PSQL_ANON="clientes:INSERT\n")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("grants indevidos para anon: clientes:INSERT", r.stdout)
+
+    def test_allowlist_escrita_vai_como_variavel_psql(self):
+        self.gravar_baseline(writes=["a:INSERT", "o'brien:UPDATE"])
+        self.run_script()
+        ultima = json.loads(self.registro.read_text().splitlines()[-1])
+        valor = next(a for a in ultima if a.startswith("allowed_writes_json="))
+        self.assertEqual(json.loads(valor.split("=", 1)[1]), ["a:INSERT", "o'brien:UPDATE"])
+
+    def test_grant_esperado_ausente_reprova(self):
+        # Regressão: REVOKE acidental do grant de telemetria de anon deixava o
+        # gate verde (a consulta de "indevidos" só acusa o que existe e não
+        # deveria existir). O esperado também precisa estar presente.
+        self.gravar_baseline(writes=["frontend_error_logs:INSERT"])
+        r = self.run_script(PSQL_ESPERADOS_ANON="frontend_error_logs:INSERT\n")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("grants esperados de anon ausentes: frontend_error_logs:INSERT", r.stdout)
+
+    def test_grant_esperado_presente_passa(self):
+        self.gravar_baseline(writes=["frontend_error_logs:INSERT"])
+        r = self.run_script(PSQL_ESPERADOS_ANON="\n")
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("grants esperados de anon presentes", r.stdout)
 
     def test_invariantes_estruturais(self):
         casos = {

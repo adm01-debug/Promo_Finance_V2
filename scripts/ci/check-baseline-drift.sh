@@ -45,7 +45,7 @@ if ! [[ "$TOL" =~ ^[0-9]+$ ]]; then
   exit 2
 fi
 
-for base in schema-counts.json expected-policies.json allowed-public-tables.json; do
+for base in schema-counts.json expected-policies.json allowed-public-tables.json allowed-anon-writes.json; do
   jq -e . "$BASELINE/$base" >/dev/null 2>&1 || {
     echo "::error::baseline ausente ou JSON inválido: $BASELINE/$base"
     exit 2
@@ -163,20 +163,48 @@ VIEWS_BAD="$(psql "$PROD_DB_URL" -A -t -c "
                     || ok "todas as views com security_invoker"
 
 ALLOWED_JSON="$(cat "$BASELINE/allowed-public-tables.json")"
+ALLOWED_WRITES_JSON="$(cat "$BASELINE/allowed-anon-writes.json")"
 _anon_sql="$TMP/anon.sql"
 cat > "$_anon_sql" <<'SQL'
-WITH allowed AS (
+WITH allowed_select AS (
   SELECT jsonb_array_elements_text(:'allowed_json'::jsonb) AS tbl
+), allowed_write AS (
+  SELECT jsonb_array_elements_text(:'allowed_writes_json'::jsonb) AS exc
 )
 SELECT COALESCE(string_agg(DISTINCT table_name || ':' || privilege_type, ','), '')
-FROM information_schema.role_table_grants
+FROM information_schema.role_table_grants g
 WHERE table_schema='public' AND grantee='anon'
-  AND (privilege_type <> 'SELECT' OR table_name NOT IN (SELECT tbl FROM allowed));
+  AND NOT (
+    (g.privilege_type = 'SELECT' AND g.table_name IN (SELECT tbl FROM allowed_select))
+    OR (g.table_name || ':' || g.privilege_type IN (SELECT exc FROM allowed_write))
+  );
 SQL
-ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v ON_ERROR_STOP=1 -v "allowed_json=$ALLOWED_JSON" -f "$_anon_sql")" || consulta_falhou "grants de anon"
+ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v ON_ERROR_STOP=1 \
+  -v "allowed_json=$ALLOWED_JSON" \
+  -v "allowed_writes_json=$ALLOWED_WRITES_JSON" \
+  -f "$_anon_sql")" || consulta_falhou "grants de anon"
 rm -f "$_anon_sql"
 [ -n "$ANON_BAD" ] && fail "grants indevidos para anon: $ANON_BAD" \
                    || ok "anon sem privilégios fora da allowlist"
+
+# Os grants esperados também precisam existir: uma REVOKE acidental deixa a
+# telemetria anônima quebrada sem que a consulta de "indevidos" acuse nada.
+ANON_MISSING="$(psql "$PROD_DB_URL" -A -t -v ON_ERROR_STOP=1 \
+  -v "allowed_writes_json=$ALLOWED_WRITES_JSON" <<'SQL'
+-- esperados_anon
+WITH esperados AS (
+  SELECT jsonb_array_elements_text(:'allowed_writes_json'::jsonb) AS exc
+)
+SELECT COALESCE(string_agg(e.exc, ','), '')
+FROM esperados e
+LEFT JOIN information_schema.role_table_grants g
+  ON g.table_schema='public' AND g.grantee='anon'
+  AND g.table_name || ':' || g.privilege_type = e.exc
+WHERE g.table_name IS NULL;
+SQL
+)" || consulta_falhou "grants esperados de anon"
+[ -n "$ANON_MISSING" ] && fail "grants esperados de anon ausentes: $ANON_MISSING" \
+                   || ok "grants esperados de anon presentes"
 
 echo "──"
 if [ "$FAILS" -gt 0 ]; then
