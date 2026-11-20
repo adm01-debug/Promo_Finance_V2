@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "a406e993288309af5be66bf0001894cc4925ebd4",
+  "commit": "b7e2355d531febfbd218b074134268b25db00f67",
   "branch": "main",
-  "data_commit": "2026-11-19T21:21:42-03:00",
+  "data_commit": "2026-11-20T08:11:01-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b7e2355",
+    "data": "2026-11-20",
+    "assunto": "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)"
+   },
    {
     "sha": "a406e99",
     "data": "2026-11-19",
@@ -126,14 +131,9 @@
     "sha": "f9b3094",
     "data": "2026-11-17",
     "assunto": "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)"
-   },
-   {
-    "sha": "2e8ac1d",
-    "data": "2026-11-17",
-    "assunto": "infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)"
    }
   ],
-  "arquivos_mudados_7d": 696,
+  "arquivos_mudados_7d": 697,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 24
+    "mudancas": 23
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -262,10 +262,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": ".github/workflows/functions-deploy.yml",
-    "mudancas": 8
-   },
-   {
     "arquivo": ".github/workflows/prod-migrate.yml",
     "mudancas": 8
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": "supabase/functions/analise-preditiva/index.ts",
     "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 226
+    "commits": 227
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3959,
-  "arquivos_codigo": 2480,
-  "linhas_codigo": 442379,
+  "arquivos_total": 3960,
+  "arquivos_codigo": 2481,
+  "linhas_codigo": 442446,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 310,
   "migrations": 1048,
   "cron_jobs": 22,
-  "testes": 481,
+  "testes": 482,
   "workflows": 19,
   "scripts": 116,
   "docs_md": 211
@@ -639,8 +639,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 998,
-   "linhas": 163930
+   "arquivos": 999,
+   "linhas": 163997
   },
   "src/config": {
    "arquivos": 1,

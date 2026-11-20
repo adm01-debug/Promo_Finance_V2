@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a406e993288309af5be66bf0001894cc4925ebd4` (2026-11-19T21:21:42-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b7e2355d531febfbd218b074134268b25db00f67` (2026-11-20T08:11:01-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2361), SQL (1120), Markdown (211), JavaScript (76), Python (45), JSON (43), Shell (29), YAML (25)
+- linguagens: TypeScript (2362), SQL (1120), Markdown (211), JavaScript (76), Python (45), JSON (43), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3959 |
-| arquivos_codigo | 2480 |
-| linhas_codigo | 442379 |
+| arquivos_total | 3960 |
+| arquivos_codigo | 2481 |
+| linhas_codigo | 442446 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 310 |
 | migrations | 1048 |
 | cron_jobs | 22 |
-| testes | 481 |
+| testes | 482 |
 | workflows | 19 |
 | scripts | 116 |
 | docs_md | 211 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (237), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (282), outro (112), co-localizado (*.test) (47)
+- testes: co-localizado (__tests__) (283), outro (112), co-localizado (*.test) (47)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -463,7 +463,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (37)
 - bun.lock (34)
-- .github/workflows/ci.yml (24)
+- .github/workflows/ci.yml (23)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
 - PENDENCIAS.md (11)
@@ -632,6 +632,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-20 `b7e2355` fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)
 - 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
 - 2026-11-19 `e6e6143` feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)
 - 2026-11-19 `dd12c7d` feat: suíte E2E de contrato contábil para contabilizar-evento (#473)
@@ -646,7 +647,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `f56d307` chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)
 - 2026-11-17 `2aa3851` fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)
 - 2026-11-17 `6d521cd` docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)
-- 2026-11-17 `fee7c1d` chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

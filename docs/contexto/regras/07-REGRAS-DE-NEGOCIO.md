@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a406e99328` · branch `main` · 2026-11-20 00:43 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b7e2355d53` · branch `main` · 2026-11-20 11:12 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5071,7 +5071,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3605 testes em 316 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3608 testes em 317 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5349,6 +5349,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx` | 3 | WhatsAppHistoryIA — envio sem provedor · por padrao nao oferece campo de envio, e explica por que · com permitirEnvio o campo volta (para quando houver provedor) |
 | `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
 | `src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx` | 3 | monitor da SEFAZ não verifica em laço (regressão #423) · com status CONHECIDO verifica uma vez e respeita o intervalo · com status desconhecido não verifica nada e o rodapé não promete monitoramento |
+| `src/components/onboarding/__tests__/OnboardingTour.zIndex.test.tsx` | 3 | OnboardingTour — prioridade visual (zIndex) · passa options.zIndex=10000 para o Joyride (sobreposição do tour) · mantém styles.tooltip.zIndex=10000 (tooltip do tour) |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
@@ -5374,8 +5375,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
 | `src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx` | 2 | ProjectedCashFlowChart · usa o valor residual e inclui título parcial |
 | `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
-| `src/hooks/usePerDcomp.safety.test.ts` | 2 | transmissão PER/DCOMP · falha fechada sem gerar recibo ou alterar créditos |
-| … +16 linhas — lista completa em `context.json` | | |
+| … +17 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

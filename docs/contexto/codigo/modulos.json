@@ -4301,7 +4301,7 @@
   {
    "modulo": "components/onboarding",
    "arquivos": 3,
-   "testes": 0,
+   "testes": 1,
    "linhas": 943,
    "itens_menu": [],
    "telas": [],

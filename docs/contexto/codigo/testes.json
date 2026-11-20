@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 481,
+ "total": 482,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 405
+  "unit": 406
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 282
+   "arquivos": 283
   },
   {
    "padrao": "outro",
@@ -1141,6 +1141,15 @@
     "src/components/nfe/nfe-types.ts"
    ],
    "casos": 4
+  },
+  {
+   "arquivo": "src/components/onboarding/__tests__/OnboardingTour.zIndex.test.tsx",
+   "tipo": "unit",
+   "linhas": 67,
+   "testa": [
+    "src/components/onboarding/OnboardingTour.tsx"
+   ],
+   "casos": 2
   },
   {
    "arquivo": "src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts",
@@ -4356,6 +4365,7 @@
   "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx": 1,
   "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx": 1,
   "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx": 1,
+  "src/components/onboarding/OnboardingTour.tsx": 1,
   "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts": 1,
   "src/components/reforma-tributaria/AnimatedCounter.tsx": 1,
   "src/components/reforma-tributaria/EmptyStateTributario.tsx": 1,

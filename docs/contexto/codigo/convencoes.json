@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (282)",
+   "co-localizado (__tests__) (283)",
    "outro (112)",
    "co-localizado (*.test) (47)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)",
    "fix: renderTemplate null-safe em contabilizar-evento (#476)",
    "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)",
    "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)",
-   "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)",
-   "chore: matriz de conformidade de contratos das edge functions (#471)"
+   "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
