@@ -269,39 +269,82 @@ export async function aplicarConciliacoesAutomaticas(params: {
               `Match automático IA (Tolerância R$ ${config.tolerancia_centavos})`;
           }
         } catch (err: unknown) {
-          console.error('Erro na conciliação automática:', err);
-
-          // Alertar falha de conciliação automática
-          toast.error(`Falha na Conciliação Automática`, {
-            description: `A transação "${transacao.descricao}" não pôde ser conciliada automaticamente. Erro: ${(err instanceof Error ? err.message : '') || 'Erro no servidor'}`,
-            action: {
-              label: 'Resolver Manualmente',
-              onClick: () => onResolverManual(transacao.id),
-            },
-          });
-
-          // Registrar log de erro de conciliação no banco
-          if (selectedBanco) {
-            // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
-            await supabase.from('webhooks_log').insert({
-              event_type: 'reconciliation.failed',
-              status: 'error',
-              payload: {
-                transacao: {
-                  id: transacao.id,
-                  descricao: transacao.descricao,
-                  valor: transacao.valor,
-                },
-                match: {
-                  confianca: melhorMatch.confianca,
-                  lancamento_id: melhorMatch.lancamentoId,
-                  lancamento_tipo: melhorMatch.lancamentoTipo,
-                },
-                error: String(err instanceof Error ? err.message : err),
-              },
-              error_message: `Falha na conciliação automática: ${err instanceof Error ? err.message : String(err)}`,
-            });
+          // O proxy confirma a conciliação no banco e só depois o cliente
+          // registra o evento de auditoria. Se a auditoria falhar, a mutação
+          // rejeita MAS a conciliação já está gravada — marcar como não
+          // persistida reverteria a tela contra o banco e a transação voltava
+          // como pendente no relatório. Re-checa o estado persistido para
+          // distinguir falha de persistência (proxy) de falha de auditoria.
+          let persistida = false;
+          try {
+            const re = await supabase
+              .from('transacoes_bancarias')
+              .select('conciliada')
+              .eq('id', transacao.id)
+              .single();
+            persistida = Boolean(re.data?.conciliada);
+          } catch {
+            // Consulta de re-checagem falhou: não há informação melhor.
+            persistida = false;
           }
+
+          if (!persistida) {
+            console.error('Erro na conciliação automática:', err);
+
+            // Alertar falha de conciliação automática
+            toast.error(`Falha na Conciliação Automática`, {
+              description: `A transação "${transacao.descricao}" não pôde ser conciliada automaticamente. Erro: ${(err instanceof Error ? err.message : '') || 'Erro no servidor'}`,
+              action: {
+                label: 'Resolver Manualmente',
+                onClick: () => onResolverManual(transacao.id),
+              },
+            });
+
+            // Registrar log de erro de conciliação no banco
+            if (selectedBanco) {
+              // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
+              await supabase.from('webhooks_log').insert({
+                event_type: 'reconciliation.failed',
+                status: 'error',
+                payload: {
+                  transacao: {
+                    id: transacao.id,
+                    descricao: transacao.descricao,
+                    valor: transacao.valor,
+                  },
+                  match: {
+                    confianca: melhorMatch.confianca,
+                    lancamento_id: melhorMatch.lancamentoId,
+                    lancamento_tipo: melhorMatch.lancamentoTipo,
+                  },
+                  error: String(err instanceof Error ? err.message : err),
+                },
+                error_message: `Falha na conciliação automática: ${err instanceof Error ? err.message : String(err)}`,
+              });
+            }
+            continue;
+          }
+
+          // Conciliação confirmada no banco; falhou só a auditoria posterior.
+          // Conta como persistida (não volta à revisão) e registra o alerta
+          // do elo de auditoria, sem fingir que a conciliação não existe.
+          idsPersistidos.push(transacao.id);
+          matchesAlta.push({ transacao, match: melhorMatch });
+          autoConciliadas++;
+          valorAutoConciliado += Math.abs(transacao.valor);
+          const idx = novasTransacoes.findIndex((t) => t.id === transacao.id);
+          if (idx >= 0) {
+            novasTransacoes[idx].conciliada = true;
+            novasTransacoes[idx].compensacao_valor = valorDiff;
+            novasTransacoes[idx].compensacao_motivo = 'Tolerância configurada';
+            novasTransacoes[idx].compensacao_classificacao = valorDiff > 0 ? 'Juros' : 'Desconto';
+            novasTransacoes[idx].compensacao_regra =
+              `Match automático IA (Tolerância R$ ${config.tolerancia_centavos})`;
+          }
+          console.error('Auditoria da conciliação falhou (conciliação persistida):', err);
+          toast.error(`Conciliação gravada, auditoria falhou`, {
+            description: `A transação "${transacao.descricao}" foi conciliada no banco, mas o evento de auditoria não pôde ser registrado.`,
+          });
         }
       }
     }

@@ -47,7 +47,12 @@ export function BaixaAutomaticaDialog({
   const [matches, setMatches] = useState<MatchResult[]>([]);
   const [unmatched, setUnmatched] = useState<TransacaoBancaria[]>([]);
   const [processing, setProcessing] = useState(false);
-  const [summary, setSuccessSummary] = useState({ processados: 0, valor: 0, falhas: 0 });
+  const [summary, setSuccessSummary] = useState({
+    processados: 0,
+    valor: 0,
+    falhas: 0,
+    falhasAuxiliares: 0,
+  });
   const [contaBancariaId, setContaBancariaId] = useState('');
 
   const queryClient = useQueryClient();
@@ -149,6 +154,10 @@ export function BaixaAutomaticaDialog({
     let successCount = 0;
     let totalValue = 0;
     let failCount = 0;
+    // Etapas auxiliares (lançamento bancário/auditoria) falham SEM desfazer a
+    // liquidação — o título foi processado e não pode contar como "não
+    // processado" (dedupe por título: 1 líquidação = 1 falha máxima).
+    let auxFailCount = 0;
 
     try {
       for (const m of matches) {
@@ -187,7 +196,7 @@ export function BaixaAutomaticaDialog({
           });
 
           if (txError) {
-            failCount++;
+            auxFailCount++;
             toast.error(
               `Falha ao registrar lançamento bancário de ${m.cliente}: ${txError.message}`
             );
@@ -204,7 +213,7 @@ export function BaixaAutomaticaDialog({
           });
         } catch {
           // Falha de auditoria não cancela a baixa, mas não fica silenciosa
-          failCount++;
+          auxFailCount++;
           toast.error(`Falha ao registrar auditoria do título ${m.contaId}.`);
         }
       }
@@ -237,12 +246,18 @@ export function BaixaAutomaticaDialog({
               total_registros: resultado?.extrato?.transacoes.length || 0,
               sucesso_count: successCount,
               falha_count: failCount,
+              falhas_auxiliares: auxFailCount,
             },
           },
         ]);
       }
 
-      setSuccessSummary({ processados: successCount, valor: totalValue, falhas: failCount });
+      setSuccessSummary({
+        processados: successCount,
+        valor: totalValue,
+        falhas: failCount,
+        falhasAuxiliares: auxFailCount,
+      });
       if (failCount > 0) {
         toast.error(
           `${failCount} ${failCount === 1 ? 'item não processado' : 'itens não processados'}.`
@@ -403,8 +418,16 @@ export function BaixaAutomaticaDialog({
                   <p className="text-xs text-warning flex items-center justify-center gap-1 mt-1">
                     <AlertTriangle className="h-3 w-3" />
                     {summary.falhas}{' '}
-                    {summary.falhas === 1 ? 'item não processado' : 'itens não processados'} —
+                    {summary.falhas === 1 ? 'título não processado' : 'títulos não processados'} —
                     confira os alertas.
+                  </p>
+                )}
+                {summary.falhasAuxiliares > 0 && (
+                  <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
+                    <Info className="h-3 w-3" />
+                    {summary.falhasAuxiliares} etapa
+                    {summary.falhasAuxiliares === 1 ? ' auxiliar' : 's auxiliares'} com falha
+                    (lançamento bancário/auditoria) — veja os alertas.
                   </p>
                 )}
                 <div className="mt-4 p-4 rounded-2xl bg-card/5 border border-white/5 inline-block">
