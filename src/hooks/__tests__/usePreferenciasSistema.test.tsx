@@ -186,7 +186,11 @@ describe('usePreferenciasSistema — salvamento', () => {
     // cache atualizado com o payload confirmado (sem isso, reabrir a página
     // volta com valores antigos e um novo save regrava defaults — achado
     // Devin/Codex na #484)
-    const cached = queryClient.getQueryData(['user_preferences', 'user-abc', 'configuracoes.sistema']);
+    const cached = queryClient.getQueryData([
+      'user_preferences',
+      'user-abc',
+      'configuracoes.sistema',
+    ]);
     expect(cached).toEqual(novas);
   });
 
