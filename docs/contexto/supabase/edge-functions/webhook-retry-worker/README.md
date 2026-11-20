@@ -4,7 +4,7 @@
 |---|---|
 | nome | webhook-retry-worker |
 | status | ACTIVE |
-| versão | 115 |
+| versão | 116 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/webhook-retry-worker/index.ts |
 | import_map |  |

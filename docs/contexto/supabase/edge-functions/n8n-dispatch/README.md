@@ -4,7 +4,7 @@
 |---|---|
 | nome | n8n-dispatch |
 | status | ACTIVE |
-| versão | 116 |
+| versão | 117 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/n8n-dispatch/index.ts |
 | import_map |  |
