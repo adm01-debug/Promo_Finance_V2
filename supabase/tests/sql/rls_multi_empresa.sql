@@ -114,7 +114,7 @@ DECLARE
   -- admin-global: policy cujo único role é admin/super_admin (has_role(...'admin'::app_role)
   -- ou profiles.role = ANY(ARRAY['admin','super_admin'])) — admin enxerga o tenant inteiro,
   -- não vaza entre tenants distintos; aceito pelo gate canônico (EXPECTED_FIXED_POLICIES).
-  admin_scope text := '''admin''\s*::|'''super_admin''\s*::';
+  admin_scope text := '''admin''\s*::|''super_admin''\s*::';
   role_operacional text := 'financeiro|operacional|manager|operator|visualizador';
   debito_conhecido text[] := ARRAY[
     'overlay_rejeicoes_auditoria.Gestores atualizam auditoria de overlay',
