@@ -183,6 +183,11 @@ describe('usePreferenciasSistema — salvamento', () => {
     expect(payload.user_id).toBe('user-abc');
     expect(payload.key).toBe('configuracoes.sistema');
     expect(payload.payload).toEqual(novas);
+    // cache atualizado com o payload confirmado (sem isso, reabrir a página
+    // volta com valores antigos e um novo save regrava defaults — achado
+    // Devin/Codex na #484)
+    const cached = queryClient.getQueryData(['user_preferences', 'user-abc', 'configuracoes.sistema']);
+    expect(cached).toEqual(novas);
   });
 
   it('não grava nada quando a leitura falhou', async () => {

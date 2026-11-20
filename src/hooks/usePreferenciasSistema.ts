@@ -41,6 +41,7 @@ const KEY = 'configuracoes.sistema';
  */
 export function usePreferenciasSistema() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   // Leitura via TanStack Query (convenção do repo, AGENTS.md): retry com
   // backoff + refetchOnReconnect do queryClient global fazem a falha
@@ -163,9 +164,14 @@ export function usePreferenciasSistema() {
       if (error) {
         return { ok: false, erro: error.message };
       }
+      // Atualiza o cache com o payload confirmado: sem isso, o TanStack
+      // Query (refetchOnMount/focus desligados no queryClient global) volta
+      // com valores antigos ao reabrir a página e um novo save regrava defaults
+      // (achado Devin/Codex na #484).
+      queryClient.setQueryData(['user_preferences', user.id, KEY], novas);
       return { ok: true };
     },
-    [user, carregado, falhaLeitura]
+    [user, carregado, falhaLeitura, queryClient]
   );
 
   return {
