@@ -400,6 +400,45 @@ Deno.test({
 });
 
 Deno.test({
+  name: 'contabilizar-evento: 200 sucesso com regra sem historico_template',
+  sanitizeOps: false,
+  sanitizeResources: false,
+  async fn() {
+    await runWithLayout(
+      {
+        regras: [
+          {
+            id: 'regra-1',
+            nome: 'Regra sem template',
+            empresa_id: UUID_A,
+            tipo_evento: 'conta_pagar',
+            conta_debito_id: 'cc-debito',
+            conta_credito_id: 'cc-credito',
+            // historico_template ausente (insert legado / regra sem template)
+            prioridade: 10,
+            ativo: true,
+          },
+        ],
+        lancamentoId: UUID_C,
+      },
+      async () => {
+        const res = await handler(post(payloadBase()));
+        assertEquals(res.status, 200);
+        assertEquals((await res.json()).status, 'sucesso');
+
+        const calls = callsRegistradas();
+        const lancamento = calls.find((c) => c.tipo === 'lancamento')?.body as Record<
+          string,
+          unknown
+        >;
+        assertStringIncludes(String(lancamento.historico), 'Conta de luz');
+        assertEquals(String(lancamento.historico).includes('150.00'), false);
+      }
+    )();
+  },
+});
+
+Deno.test({
   name: 'contabilizar-evento: 500 registra log de erro quando partidas falham',
   sanitizeOps: false,
   sanitizeResources: false,
