@@ -15,7 +15,7 @@ export function useCountUp(
   const { duration = 1200, decimals = 2, enabled = true } = options;
   const [value, setValue] = useState(enabled ? 0 : target);
   const prevTarget = useRef(target);
-  const rafRef = useRef<number>();
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     if (!enabled) {

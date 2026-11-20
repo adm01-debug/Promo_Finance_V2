@@ -26,7 +26,7 @@ interface Apuracao {
 interface Props {
   apuracoesAno: Apuracao[];
   ano: number;
-  getStatusBadge: (status: string) => JSX.Element;
+  getStatusBadge: (status: string) => import('react/jsx-runtime').JSX.Element;
 }
 
 export function IRPJCSLLApuracoesTable({ apuracoesAno, ano, getStatusBadge }: Props) {
