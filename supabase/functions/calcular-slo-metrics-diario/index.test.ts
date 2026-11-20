@@ -1,5 +1,6 @@
 // Regressão: o upsert em slo_metrics_diarias precisa preencher `servico`
-// (TEXT NOT NULL sem default — drift de prod não versionado). Antes do fix o
+// (TEXT NOT NULL sem default, versionado em
+// migrations/20261120130000_add_servico_slo_metrics_diarias.sql). Sem o fix o
 // handler montava o payload sem a coluna e o banco retornava
 // "null value in column servico violates not-null constraint", transformado em
 // 500 pelo catch — a tabela ficava vazia e o SLO nunca era persistido.

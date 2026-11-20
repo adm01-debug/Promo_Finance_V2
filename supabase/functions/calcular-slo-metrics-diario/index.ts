@@ -73,8 +73,9 @@ async function coletarMetricas(
 /** Monta o payload do upsert em slo_metrics_diarias. Expor para teste direto. */
 export function montarUpsertSLO(metricas: MetricasSLO): Record<string, unknown> {
   return {
-    // `servico` é NOT NULL sem default (drift de prod não versionado). Esta
-    // edge é o único escritor da tabela, então o valor é fixo por serviço.
+    // `servico` é NOT NULL sem default; versionado em
+    // migrations/20261120130000_add_servico_slo_metrics_diarias.sql. Esta
+    // edge é o único escritor, então o valor é fixo por serviço.
     servico: 'geral',
     data: metricas.hoje,
     total_requisicoes: metricas.totalReq,
