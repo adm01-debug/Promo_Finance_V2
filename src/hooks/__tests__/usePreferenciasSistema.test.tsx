@@ -20,6 +20,10 @@ const mocks = vi.hoisted(() => ({
   maybeSingleResp: { data: null, error: null },
   upsertResp: { error: null } as { error: { message: string } | null },
   upsertPayloads: [] as unknown[],
+  maybeSingleDeferred: null as null | {
+    promise: Promise<{ data: unknown; error: { message: string } | null }>;
+    resolve: (v: { data: unknown; error: { message: string } | null }) => void;
+  },
   // promessa controlada: quando ativo, o upsert fica pendente até o teste
   // resolver (cobre edição durante a gravação).
   upsertDeferred: null as null | {
@@ -39,7 +43,12 @@ vi.mock('@/integrations/supabase/client', () => ({
       const builder: any = {
         select: () => builder,
         eq: () => builder,
-        maybeSingle: () => Promise.resolve(mocks.maybeSingleResp),
+        maybeSingle: () => {
+          if (mocks.maybeSingleDeferred) {
+            return mocks.maybeSingleDeferred.promise;
+          }
+          return Promise.resolve(mocks.maybeSingleResp);
+        },
         upsert: (payload: unknown): Promise<{ error: { message: string } | null }> => {
           mocks.upsertPayloads.push(payload);
           if (mocks.upsertDeferred) {
@@ -65,6 +74,7 @@ beforeEach(() => {
   queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   mocks.fromTable = '';
   mocks.maybeSingleResp = { data: null, error: null };
+  mocks.maybeSingleDeferred = null;
   mocks.upsertResp = { error: null };
   mocks.upsertPayloads = [];
   mocks.upsertDeferred = null;
@@ -120,6 +130,35 @@ describe('usePreferenciasSistema — estados de leitura', () => {
     // salvar volta a funcionar sem remontagem
     const res = await act(async () => result.current.salvar(PREFERENCIAS_DEFAULT));
     expect(res.ok).toBe(true);
+  });
+
+  it('edição durante a leitura pendente NÃO é sobrescrita quando a leitura chega', async () => {
+    // leitura fica pendente (rede lenta) enquanto o usuário já edita
+    let resolver!: (v: { data: unknown; error: { message: string } | null }) => void;
+    const promise = new Promise<{ data: unknown; error: { message: string } | null }>((r) => {
+      resolver = r;
+    });
+    mocks.maybeSingleDeferred = { promise, resolve: resolver };
+    // dados persistidos no banco que o usuário NÃO tocou
+    const persistido = { formatoData: 'yyyy-MM-dd', fusoHorario: 'America/Manaus' };
+
+    const { result } = renderHook(() => usePreferenciasSistema(), { wrapper });
+    // ainda pendente → usuário edita o tema
+    act(() =>
+      result.current.setPreferencias((p) => ({ ...(p ?? PREFERENCIAS_DEFAULT), temaEscuro: true }))
+    );
+    expect(result.current.preferencias.temaEscuro).toBe(true);
+
+    // a leitura chega com payload persistido
+    await act(async () => {
+      resolver({ data: { payload: persistido }, error: null });
+    });
+    await waitFor(() => expect(result.current.carregado).toBe(true));
+
+    // edição do usuário preservada; demais campos = dados autoritativos do banco
+    expect(result.current.preferencias.temaEscuro).toBe(true);
+    expect(result.current.preferencias.formatoData).toBe('yyyy-MM-dd');
+    expect(result.current.preferencias.fusoHorario).toBe('America/Manaus');
   });
 });
 

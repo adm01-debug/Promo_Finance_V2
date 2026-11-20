@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/hooks/useAuth';
@@ -79,15 +79,42 @@ export function usePreferenciasSistema() {
   // antes da leitura concluir), sem sobrescrever o que ele editar: o merge
   // do payload só acontece no primeiro resultado de sucesso.
   const [formulario, setFormulario] = useState<PreferenciasSistema | null>(null);
+  // Campos que o usuário tocou antes da leitura concluir (ou em qualquer
+  // momento): só eles são preservados no merge com o resultado do banco.
+  // Sem isso, uma edição durante a consulta criaria o formulário a partir dos
+  // defaults e o save sobrescreveria valores persistidos nos demais campos
+  // (achado Devin/Codex no review da PR #484).
+  const [camposEditados, setCamposEditados] = useState<Set<keyof PreferenciasSistema>>(
+    () => new Set()
+  );
   useEffect(() => {
     // usuário trocou → recomeça do zero
     setFormulario(null);
+    setCamposEditados(() => new Set());
   }, [user?.id]);
   useEffect(() => {
-    if (query.isSuccess && formulario === null) {
-      setFormulario(query.data);
-    }
-  }, [query.isSuccess, query.data, formulario]);
+    if (!query.isSuccess) return;
+    setFormulario((anterior) => {
+      if (anterior !== null) {
+        // leitura chegou (ou refetch pós-falha) após edição do usuário:
+        // base = dados autoritativos do banco + só os campos que ele tocou.
+        const mesclado: PreferenciasSistema = {
+          ...PREFERENCIAS_DEFAULT,
+          ...(query.data ?? {}),
+        };
+        const editados: Record<string, unknown> = {};
+        for (const chave of camposEditados) {
+          editados[chave] = anterior[chave];
+        }
+        Object.assign(mesclado, editados);
+        return mesclado;
+      }
+      return {
+        ...PREFERENCIAS_DEFAULT,
+        ...(query.data ?? {}),
+      };
+    });
+  }, [query.isSuccess, query.data, camposEditados]);
 
   const preferenciasVisiveis = formulario ?? preferencias;
 
@@ -97,7 +124,19 @@ export function usePreferenciasSistema() {
     (acao: PreferenciasSistema | ((p: PreferenciasSistema) => PreferenciasSistema)) => {
       setFormulario((anterior) => {
         const base = anterior ?? PREFERENCIAS_DEFAULT;
-        return typeof acao === 'function' ? acao(base) : acao;
+        const proximo = typeof acao === 'function' ? acao(base) : acao;
+        // marca apenas os campos realmente alterados (para o merge pós-leitura)
+        const alterados = (Object.keys(proximo) as (keyof PreferenciasSistema)[]).filter(
+          (chave) => proximo[chave] !== base[chave]
+        );
+        if (alterados.length > 0) {
+          setCamposEditados((prev) => {
+            const novo = new Set(prev);
+            alterados.forEach((chave) => novo.add(chave));
+            return novo;
+          });
+        }
+        return proximo;
       });
     },
     []
