@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "574c46c8c31e6cb06aafc5ee00320928b8253bee",
+  "commit": "3a239d181d406506db5302543816dcc78593c7c0",
   "branch": "main",
-  "data_commit": "2026-11-20T16:23:48-03:00",
+  "data_commit": "2026-11-20T17:30:56-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "3a239d1",
+    "data": "2026-11-20",
+    "assunto": "docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)"
+   },
    {
     "sha": "574c46c",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "b75c138",
     "data": "2026-11-17",
     "assunto": "feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)"
-   },
-   {
-    "sha": "e1a239c",
-    "data": "2026-11-17",
-    "assunto": "docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)"
    }
   ],
-  "arquivos_mudados_7d": 436,
+  "arquivos_mudados_7d": 418,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 230
+    "commits": 231
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3963,
+  "arquivos_total": 3964,
   "arquivos_codigo": 2481,
   "linhas_codigo": 442478,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 482,
   "workflows": 19,
   "scripts": 116,
-  "docs_md": 213
+  "docs_md": 214
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

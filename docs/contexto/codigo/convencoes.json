@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)",
    "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)",
    "docs: preserva auditoria planejado x implementado (20/11) (#480)",
    "chore: ativar Gate #26 de drift de schema/policies no CI (#475)",
-   "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)",
-   "fix: renderTemplate null-safe em contabilizar-evento (#476)"
+   "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

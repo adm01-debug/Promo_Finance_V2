@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2362)",
    "SQL (1120)",
-   "Markdown (213)",
+   "Markdown (214)",
    "JavaScript (76)",
    "Python (45)",
    "JSON (44)",
@@ -1265,6 +1265,10 @@
   },
   {
    "pasta": "docs/evidencias",
+   "arquivos_md": 1
+  },
+  {
+   "pasta": "docs/receitafederal",
    "arquivos_md": 1
   }
  ],

@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "574c46c8c31e6cb06aafc5ee00320928b8253bee",
+  "sha": "3a239d181d406506db5302543816dcc78593c7c0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-20 20:16 UTC",
-  "files_total": 4002,
+  "generated_at": "2026-11-20 21:14 UTC",
+  "files_total": 4003,
   "code_files": 3602,
   "code_lines": 512558
  },
@@ -244075,10 +244075,19 @@
   }
  },
  "git": {
-  "sha": "574c46c8c31e6cb06aafc5ee00320928b8253bee",
+  "sha": "3a239d181d406506db5302543816dcc78593c7c0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "3a239d1",
+    "date": "2026-11-20",
+    "author": "adm01-debug",
+    "subject": "docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)",
+    "files": [
+     "docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md"
+    ]
+   },
    {
     "sha": "574c46c",
     "date": "2026-11-20",
@@ -244399,21 +244408,6 @@
     "files": [
      "supabase/migrations/20261117225000_indices_recuperados_da_445.sql"
     ]
-   },
-   {
-    "sha": "31bd09e",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)",
-    "files": [
-     "supabase/functions/_shared/carga-tributaria.test.ts",
-     "supabase/functions/_shared/carga-tributaria.ts",
-     "supabase/functions/comparar-benchmark-setorial/index.ts",
-     "supabase/functions/copilot-global/index.ts",
-     "supabase/functions/detectar-anomalias-financeiras/index.ts",
-     "supabase/functions/executar-fechamento-tributario/index.ts",
-     "supabase/functions/gerar-dre-tributaria/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -244444,6 +244438,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
+    1
    ],
    [
     "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md",
@@ -244491,10 +244489,6 @@
    ],
    [
     "src/components/expert/ExpertChatMessages.tsx",
-    1
-   ],
-   [
-    "src/components/expert/ExpertPromptComposer.tsx",
     1
    ]
   ]
