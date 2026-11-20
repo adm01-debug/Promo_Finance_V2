@@ -1535,7 +1535,7 @@
     "ConfiguracaoAprovacaoCard"
    ],
    "export_default": null,
-   "linhas": 296,
+   "linhas": 309,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
     "useAuth",
@@ -5546,9 +5546,11 @@
     "BaixaAutomaticaDialog"
    ],
    "export_default": null,
-   "linhas": 366,
+   "linhas": 477,
    "dominio": "components/contas-receber",
-   "hooks_locais": [],
+   "hooks_locais": [
+    "useContasBancarias"
+   ],
    "tabelas": [
     "alertas",
     "contas_receber",
@@ -8827,7 +8829,7 @@
     "DashboardReformaTributaria"
    ],
    "export_default": "DashboardReformaTributaria",
-   "linhas": 308,
+   "linhas": 309,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -11930,7 +11932,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 168,
+   "usado_por": 169,
    "orfao": false
   },
   {

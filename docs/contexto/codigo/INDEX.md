@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `3a239d181d406506db5302543816dcc78593c7c0` (2026-11-20T17:30:56-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `72a08b51b7a7cc758c00d84d7911daab288fe9b0` (2026-11-20T18:18:48-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3964 |
 | arquivos_codigo | 2481 |
-| linhas_codigo | 442478 |
+| linhas_codigo | 442741 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -473,7 +473,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/bitrix24-sync/index.ts (10)
 - supabase/functions/n8n-callback/index.ts (10)
 - supabase/functions/sync-profile-to-bitrix/index.ts (10)
-- .github/workflows/supabase-linter.yml (9)
+- src/hooks/useConciliacaoPage.ts (9)
 - supabase/functions/enviar-convite-organizacao/index.ts (9)
 - supabase/functions/executar-fechamento-tributario/index.ts (9)
 
@@ -633,6 +633,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-20 `72a08b5` fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)
 - 2026-11-20 `3a239d1` docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)
 - 2026-11-20 `574c46c` docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)
 - 2026-11-20 `d7e6b41` docs: preserva auditoria planejado x implementado (20/11) (#480)
@@ -647,7 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-18 `772e151` chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)
 - 2026-11-17 `cb9d5c8` chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)
 - 2026-11-17 `2d54fb1` chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)
-- 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

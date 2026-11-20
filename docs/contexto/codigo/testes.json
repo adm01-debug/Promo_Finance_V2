@@ -1441,11 +1441,11 @@
   {
    "arquivo": "src/hooks/__tests__/useAprovacoes.test.tsx",
    "tipo": "unit",
-   "linhas": 500,
+   "linhas": 525,
    "testa": [
     "src/hooks/useAprovacoes.ts"
    ],
-   "casos": 16
+   "casos": 17
   },
   {
    "arquivo": "src/hooks/__tests__/useBulkActions.test.ts",
@@ -1496,11 +1496,11 @@
   {
    "arquivo": "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
    "tipo": "unit",
-   "linhas": 227,
+   "linhas": 275,
    "testa": [
     "src/hooks/useConciliacaoPage.ts"
    ],
-   "casos": 13
+   "casos": 14
   },
   {
    "arquivo": "src/hooks/__tests__/useConciliacaoPage.mutations.test.tsx",

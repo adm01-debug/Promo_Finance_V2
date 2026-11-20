@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "3a239d181d406506db5302543816dcc78593c7c0",
+  "commit": "72a08b51b7a7cc758c00d84d7911daab288fe9b0",
   "branch": "main",
-  "data_commit": "2026-11-20T17:30:56-03:00",
+  "data_commit": "2026-11-20T18:18:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "72a08b5",
+    "data": "2026-11-20",
+    "assunto": "fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)"
+   },
    {
     "sha": "3a239d1",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "ec4122e",
     "data": "2026-11-17",
     "assunto": "fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)"
-   },
-   {
-    "sha": "b75c138",
-    "data": "2026-11-17",
-    "assunto": "feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)"
    }
   ],
-  "arquivos_mudados_7d": 418,
+  "arquivos_mudados_7d": 420,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -145,15 +145,15 @@
    },
    {
     "pasta": "src/components/reforma-tributaria",
+    "mudancas": 31
+   },
+   {
+    "pasta": "src/components/contas-receber",
     "mudancas": 30
    },
    {
     "pasta": "supabase/functions/_shared",
     "mudancas": 30
-   },
-   {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 29
    },
    {
     "pasta": "src/components/nfe",
@@ -172,12 +172,12 @@
     "mudancas": 22
    },
    {
-    "pasta": "src/components/admin",
-    "mudancas": 20
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 21
    },
    {
-    "pasta": "src/hooks/__tests__",
-    "mudancas": 19
+    "pasta": "src/components/admin",
+    "mudancas": 20
    },
    {
     "pasta": "src/lib/tributario",
@@ -246,7 +246,7 @@
     "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/supabase-linter.yml",
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 9
    },
    {
@@ -259,6 +259,10 @@
    },
    {
     "arquivo": ".github/workflows/prod-migrate.yml",
+    "mudancas": 8
+   },
+   {
+    "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 8
    },
    {
@@ -282,10 +286,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 8
-   },
-   {
     "arquivo": "src/hooks/useContasPagarLogic.ts",
     "mudancas": 8
    },
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 231
+    "commits": 232
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3964,
   "arquivos_codigo": 2481,
-  "linhas_codigo": 442478,
+  "linhas_codigo": 442741,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 999,
-   "linhas": 163997
+   "linhas": 164122
   },
   "src/config": {
    "arquivos": 1,
@@ -652,7 +652,7 @@
   },
   "src/hooks": {
    "arquivos": 319,
-   "linhas": 46784
+   "linhas": 46874
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -664,7 +664,7 @@
   },
   "src/lib": {
    "arquivos": 414,
-   "linhas": 54878
+   "linhas": 54926
   },
   "src/main.tsx": {
    "arquivos": 1,

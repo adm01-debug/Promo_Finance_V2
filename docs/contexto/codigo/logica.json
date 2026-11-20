@@ -1482,7 +1482,7 @@
     "persistirExtratoImportado"
    ],
    "export_default": null,
-   "linhas": 377,
+   "linhas": 425,
    "tabelas": [
     "contas_bancarias",
     "transacoes_bancarias",

@@ -3276,6 +3276,8 @@
    "src/components/ui/button.tsx",
    "src/components/ui/dialog.tsx",
    "src/components/ui/progress.tsx",
+   "src/components/ui/select.tsx",
+   "src/hooks/useFinancialData.ts",
    "src/integrations/supabase/client.ts",
    "src/integrations/supabase/types.ts",
    "src/lib/financeiro/registrarEvento.ts",

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `3a239d181d` · branch `main` · 2026-11-20 21:14 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `72a08b51b7` · branch `main` · 2026-11-20 21:19 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5012,7 +5012,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +793 linhas — lista completa em `context.json` | |
+| … +800 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5071,7 +5071,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3608 testes em 317 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3610 testes em 317 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5117,8 +5117,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/contabil/__tests__/balancete-utils.test.ts` | 22 | round2 · elimina ruído de ponto flutuante · splitSaldo · classifica saldo positivo como devedor … |
 | `src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts` | 22 | detectarDeliberacaoLucros · é aplicável dentro da janela com saldo e sem ata registrada · não é aplicável após 31/12/2025 · não é aplicável quando a ata já foi registrada … |
 | `src/components/admin/telemetry/__tests__/performance-alerts-deeplink.test.ts` | 21 | performance-alerts-deeplink · isSeverity · aceita valores válidos · rejeita valores inválidos … |
+| `src/hooks/__tests__/useAprovacoes.test.tsx` | 21 | useComentariosAprovacao (contrato real user_id/comentario) · busca comentarios com select simples (sem embed profiles — FK inexistente) · propaga erro do supabase · useConfiguracaoAprovacao (alcada com varias faixas ativas) … |
 | `src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts` | 21 | detectarJCP · deve identificar oportunidade aplicável para empresa Lucro Real com PL e lucro positivos · deve limitar JCP a 50% do lucro se o limite do PL for superior · não deve ser aplicável para empresas fora do Lucro Real … |
-| `src/hooks/__tests__/useAprovacoes.test.tsx` | 20 | useComentariosAprovacao (contrato real user_id/comentario) · busca comentarios com select simples (sem embed profiles — FK inexistente) · propaga erro do supabase · useConfiguracaoAprovacao (alcada com varias faixas ativas) … |
 | `src/lib/__tests__/barcode-parser.test.ts` | 19 | Barcode Parser · parseBoleto · código inválido com poucos dígitos retorna erros · 44 dígitos é reconhecido como código de barras … |
 | `src/lib/tributario/__tests__/conformidade-fiscal.test.ts` | 19 | classificarConformidade · mapeia as quatro faixas nos limites exatos · calcularConformidade — casos unitários · retorna 100 para conjunto vazio (sem obrigações, sem risco) … |
 | `src/components/reforma-tributaria/__tests__/KPIComparativo.test.tsx` | 18 | KPIComparativo · Cálculo de variação · exibe variação positiva · exibe variação negativa … |
@@ -5128,13 +5128,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/currency.test.ts` | 18 | Currency Utilities - Robustness & Regression · Floating Point Precision · deve somar valores decimais corretamente evitando erros de precisão IEEE 754 · deve lidar com somas complexas com muitos decimais … |
 | `src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx` | 17 | NavigationTributaria · Renderização de grupos · renderiza grupos na versão mobile · Badge de alertas dinâmico … |
 | `src/hooks/__tests__/savedFiltersValidation.test.ts` | 17 | savedFiltersValidation > isAppRole · aceita os 4 papéis canônicos · rejeita valor inválido %p · savedFiltersValidation > normalizeRoles … |
+| `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 17 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
 | `src/lib/__tests__/cfc-validator.test.ts` | 17 | validarFormatoCFC · aceita 4 níveis · aceita 5 níveis com subconta 1-3 dígitos · rejeita formatos inválidos … |
 | `src/lib/__tests__/csv-importer.test.ts` | 17 | csv-importer — faturamento · parse UTF-8 com separador  · parse com separador  · parse com separador TAB … |
 | `src/lib/__tests__/ofx-parser-xlsx-valor.test.ts` | 17 | parseExcel — valor monetario BRL · nao perde a grandeza de 1.234,56 (antes virava 1.234) · preserva a grandeza do negativo e o classifica como debito · rejeita celula nao numerica em vez de criar transacao NaN … |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
-| `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 16 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
 | `src/lib/__tests__/sped-generator.test.ts` | 16 | SPED Generator · gerarEFD_IBS_CBS · gera arquivo com registro inicial 0000 · gera arquivo com registro final 9999 … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
@@ -5699,6 +5699,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * { "<tabela>": <linhas removidas> } — apenas chaves numéricas do resultado. */ | `src/components/admin/telemetry/RetentionHistoryPanel.tsx` |
 | o que foi purgado por tabela — antes essa informação existia apenas dentro de | `src/components/admin/telemetry/RetentionHistoryPanel.tsx` |
 | Ajuste para prazo desde emissão | `src/components/analytics/BenchmarkingSetorial.tsx` |
+| isso a guarda de gravação bloquearia qualquer correção de limite ou | `src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx` |
 | andam juntas (senao o limite salvo nao faz efeito) e as faixas de outro | `src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx` |
 | Valor Mínimo */} | `src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx` |
 | DIALOG: Estorno de Cobrança ASAAS | `src/components/asaas/EstornoDialog.tsx` |
@@ -5729,6 +5730,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | As listas sao normalizadas para o shape minimo nao-nulo que ele consome. | `src/components/contas-pagar/ContaPagarForm.tsx` |
 | Delta apenas com dado real do mês anterior (sem simulação decorativa) | `src/components/contas-pagar/ContasPagarKPIs.tsx` |
 | Show "Request Approval" button if approval is required but not granted */} | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
+| liquidação — o título foi processado e não pode contar como "não | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | mexer no form — resposta tardia da conta A não pode pisar na conta B. | `src/components/contas-receber/ContaReceberForm.tsx` |
 | bloqueado no Safari (ativação transitória expira no fetch assíncrono). | `src/components/contas-receber/DrawerAnexosTab.tsx` |
 | Juros/Multa Calculator for overdue */} | `src/components/contas-receber/DrawerDetailsTab.tsx` |
@@ -5967,6 +5969,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ---------- DRE (apenas período) ---------- | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
-| de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
-| // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +428 linhas — lista completa em `context.json` | |
+| … +430 linhas — lista completa em `context.json` | |

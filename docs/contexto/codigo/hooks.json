@@ -1559,7 +1559,7 @@
     "useUpdateFluxoNivel",
     "useVerificarAprovacaoNecessaria"
    ],
-   "linhas": 521,
+   "linhas": 530,
    "dominio": "hooks",
    "tabelas": [
     "aprovacao_comentarios",
@@ -2683,7 +2683,7 @@
    "hooks_exportados": [
     "useConciliacaoPage"
    ],
-   "linhas": 457,
+   "linhas": 465,
    "dominio": "hooks",
    "tabelas": [
     "alertas",
@@ -3773,7 +3773,7 @@
    "edges": [],
    "hooks_internos": [],
    "canais_realtime": [],
-   "usado_por": 53,
+   "usado_por": 54,
    "usado_por_arquivos": [
     "src/components/admin/sso/ScimTokensTab.tsx",
     "src/components/clientes/ClienteDetailDialog.tsx",
@@ -3790,6 +3790,7 @@
     "src/components/contas-pagar/ContaPagarForm.tsx",
     "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
     "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+    "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "src/components/contas-receber/ContaReceberForm.tsx",
     "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
     "src/components/demonstrativos/FluxoCaixaContabil.tsx",
@@ -3803,8 +3804,7 @@
     "src/components/relatorios/RelatoriosAgendados.tsx",
     "src/components/tesouraria/ConsolidacaoMultiCNPJ.tsx",
     "src/components/tesouraria/FluxoInterEmpresas.tsx",
-    "src/components/tesouraria/MatrizCNPJBanco.tsx",
-    "src/components/tesouraria/TesourariaCentralizada.tsx"
+    "src/components/tesouraria/MatrizCNPJBanco.tsx"
    ],
    "coberto_por_testes": 0
   },
