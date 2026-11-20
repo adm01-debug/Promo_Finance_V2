@@ -27,18 +27,18 @@
 
 ## Fase 1 — Infraestrutura da integração
 
-| #   | Etapa                                                                 | Checklist de conclusão                                                                               | Teste de validação                                                   |
-| --- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| 9   | Criar client HTTP compartilhado (`src/lib/tributario/rfb-client.ts`)  | client com baseURL configurável por env, timeout 10s, retry com backoff, logging estruturado         | `vitest run src/lib/tributario/__tests__/rfb-client.test.ts` -> 100% |
-| 10  | Centralizar segredos/credenciais em variáveis de ambiente             | nenhuma chave em código ou docs; apenas `RFB_*` no `.env.example`                                    | `gitleaks detect` sem leak                                           |
-| 11  | Criar edge function proxy `rfb-proxy` (chamada server-side, sem CORS) | `supabase/functions/rfb-proxy/index.ts` autentica por `exigirChamadaInterna` e repassa à calculadora | `functions-deploy.yml` deploya `rfb-proxy` verde                     |
-| 12  | Adicionar rate limiting no proxy                                      | limite por conta/segundo configurável; 429 com `Retry-After`                                         | teste de carga: burst de 100 req → máx. X aceitas                    |
-| 13  | Observabilidade ponta a ponta (correlation id RFB → app)              | `correlationHeaders` propagados do request original até o log da calculadora                         | log JSON com `request_id` idêntico no app e na edge                  |
-| 14  | Tabela de cache de resultados de cálculo (idempotência)               | `rfc_resultados_calculo` com hash do payload, TTL, RLS service_role                                  | query dedupe retorna mesmo `request_id` para payload igual           |
-| 15  | Health-check das 3 calculadoras no app                                | endpoint `/api/integracao/rfb/health` agrega `/live` e `/ready`                                      | monitor alerta se qualquer serviço degradado por 2 ciclos            |
-| 16  | Rollout com feature flag por empresa                                  | flag `faturas`/`feature_flags` `rfb_calculo` por `empresa_id`; fallback imediato                     | fluxo com flag off → uso do motor local 100%                         |
-| 17  | Documentar runbook de integração                                      | `docs/RUNBOOK.md` ganha seção RFB (primeiros erros VSN-/REG-, como pingar cada serviço)              | `actionlint` nos workflows e revisão do doc                          |
-| 18  | Garantir disponibilidade offline (calculadoras embarcam SQLite)       | testes de modo offline do app usam perfil `versao/status`                                            | `GET /versao/status` retorna perfil offline coerente                 |
+| #   | Etapa                                                                              | Checklist de conclusão                                                                                                                                                  | Teste de validação                                                   |
+| --- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 9   | Criar client HTTP compartilhado (`src/lib/tributario/rfb-client.ts`)               | client com baseURL configurável por env, timeout 10s, retry com backoff, logging estruturado                                                                            | `vitest run src/lib/tributario/__tests__/rfb-client.test.ts` -> 100% |
+| 10  | Centralizar segredos/credenciais em variáveis de ambiente                          | nenhuma chave em código ou docs; apenas `RFB_*` no `.env.example`                                                                                                       | `gitleaks detect` sem leak                                           |
+| 11  | Criar edge function proxy `rfb-proxy` (intermediário server-side do app, com CORS) | `supabase/functions/rfb-proxy/index.ts` autentica por `exigirInternaOuUsuario` e cria sessão server-side na calculadora, sem expor credencial privilegiada ao navegador | `functions-deploy.yml` deploya `rfb-proxy` verde                     |
+| 12  | Adicionar rate limiting no proxy                                                   | limite por conta/segundo configurável; 429 com `Retry-After`                                                                                                            | teste de carga: burst de 100 req → máx. X aceitas                    |
+| 13  | Observabilidade ponta a ponta (correlation id RFB → app)                           | `correlationHeaders` propagados do request original até o log da calculadora                                                                                            | log JSON com `request_id` idêntico no app e na edge                  |
+| 14  | Tabela de cache de resultados de cálculo (idempotência)                            | `rfc_resultados_calculo` com hash do payload, TTL, RLS service_role                                                                                                     | query dedupe retorna mesmo `request_id` para payload igual           |
+| 15  | Health-check das 3 calculadoras no app                                             | endpoint `/api/integracao/rfb/health` agrega `/live` e `/ready`                                                                                                         | monitor alerta se qualquer serviço degradado por 2 ciclos            |
+| 16  | Rollout com feature flag por empresa                                               | flag `faturas`/`feature_flags` `rfb_calculo` por `empresa_id`; fallback imediato                                                                                        | fluxo com flag off → uso do motor local 100%                         |
+| 17  | Documentar runbook de integração                                                   | `docs/RUNBOOK.md` ganha seção RFB (primeiros erros VSN-/REG-, como pingar cada serviço)                                                                                 | `actionlint` nos workflows e revisão do doc                          |
+| 18  | Garantir disponibilidade offline (calculadoras embarcam SQLite)                    | testes de modo offline do app usam perfil `versao/status`                                                                                                               | `GET /versao/status` retorna perfil offline coerente                 |
 
 ## Fase 2 — CBS no Regime Geral
 
@@ -55,14 +55,14 @@
 
 ## Fase 3 — CBS no Simples Nacional
 
-| #   | Etapa                                                            | Checklist de conclusão                                                                       | Teste de validação                                           |
-| --- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| 27  | Implementar `POST /calculadora/observabilidade/simples-nacional` | `simular-simples.ts` delega CBS/IBS via RFB; anexos respeitados                              | teste oficial (exemplos.md Simples) retorna valor esperado   |
-| 28  | Sincronizar catálogo de atividades Simples                       | `GET /calculadora/simples-nacional/atividades?data=` → tabela local de CNAE/anexo/cClassTrib | job diário grava `atividades_rfb`; contagem sobe             |
-| 29  | Fator R integrado (anexo V vs VI)                                | `fator-r.ts` usa dados da atividade vigente da RFB + folha local                             | teste: fator R < 0.28 → anexo V                              |
-| 30  | RBT12 oficial                                                    | `rbt12.ts` calculado sobre receitas; comparado com regra RFB                                 | teste de simulação: faixa do anexo coincide                  |
-| 31  | Tratamento de erros `VSN-*`                                      | tradução PT-BR + proposta de correção                                                        | teste: `GET .../erros?codigo=VSN-001` retorna motivo legível |
-| 32  | Campos do Simples no PDF do relatório                            | `relatorio-pdf.ts` incorpora CBS/IBS do Simples calculados pela RFB                          | PDF gerado contém valores da API                             |
+| #   | Etapa                                                            | Checklist de conclusão                                                                                            | Teste de validação                                           |
+| --- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| 27  | Implementar `POST /calculadora/observabilidade/simples-nacional` | `simular-simples.ts` delega CBS/IBS via RFB; anexos respeitados                                                   | teste oficial (exemplos.md Simples) retorna valor esperado   |
+| 28  | Sincronizar catálogo de atividades Simples                       | `GET /calculadora/simples-nacional/atividades?data=` → tabela local de CNAE/anexo/cClassTrib                      | job diário grava `atividades_rfb`; contagem sobe             |
+| 29  | Fator R integrado (limite 0,28: anexo III vs V)                  | `fator-r.ts` usa dados da atividade vigente da RFB + folha local, mantendo a regra atual (III ≥ 0,28 \| V < 0,28) | teste: fator R >= 0.28 → anexo III; fator R < 0.28 → anexo V |
+| 30  | RBT12 oficial                                                    | `rbt12.ts` calculado sobre receitas; comparado com regra RFB                                                      | teste de simulação: faixa do anexo coincide                  |
+| 31  | Tratamento de erros `VSN-*`                                      | tradução PT-BR + proposta de correção                                                                             | teste: `GET .../erros?codigo=VSN-001` retorna motivo legível |
+| 32  | Campos do Simples no PDF do relatório                            | `relatorio-pdf.ts` incorpora CBS/IBS do Simples calculados pela RFB                                               | PDF gerado contém valores da API                             |
 
 ## Fase 4 — IBS
 
@@ -85,11 +85,11 @@
 
 ## Fase 6 — Simples Nacional (complementos)
 
-| #   | Etapa                                         | Checklist de conclusão                                                              | Teste de validação                                     |
-| --- | --------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 42  | Consulta de atividade por código com vigência | `GET /calculadora/simples-nacional/atividades/{codigo}?data=` alimenta autocomplete | teste: código válido retorna descrição vigente         |
-| 43  | Painel de anexos real (I-VI)                  | `DashboardReformaTributaria` exibe anexo vigente por empresa                        | E2E: empresa com CNAE conhecido mostra anexo correto   |
-| 44  | Dobramento de faixas no Simples               | cálculo por faixa (0-100%, 100-200%, +200%) confere com RFB                         | teste: faturamento acima de 2x limite → dobra aplicada |
+| #   | Etapa                                            | Checklist de conclusão                                                              | Teste de validação                                     |
+| --- | ------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 42  | Consulta de atividade por código com vigência    | `GET /calculadora/simples-nacional/atividades/{codigo}?data=` alimenta autocomplete | teste: código válido retorna descrição vigente         |
+| 43  | Painel de anexos real (I-V, tipo `AnexoSimples`) | `DashboardReformaTributaria` exibe anexo vigente por empresa (I-V, sem VI)          | E2E: empresa com CNAE conhecido mostra anexo correto   |
+| 44  | Dobramento de faixas no Simples                  | cálculo por faixa (0-100%, 100-200%, +200%) confere com RFB                         | teste: faturamento acima de 2x limite → dobra aplicada |
 
 ## Fase 7 — Regime Geral / Base de cálculo unificada
 
@@ -131,26 +131,26 @@
 
 ## Fase 11 — Ponta a ponta, governança e operação
 
-| #   | Etapa                                              | Checklist de conclusão                                                             | Teste de validação                                |
-| --- | -------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------- |
-| 63  | E2E do cálculo (UI → edge → calculadora)           | testes Cypress cobrem simulações simples/real/presumido contra RFB                 | `cypress run` verde                               |
-| 64  | E2E do DANFSE                                      | geração de PDF ponta a ponta                                                       | artefato PDF verificado                           |
-| 65  | Testes de carga (simples + regime)                 | k6 com cenários reais; p95 < limite definido                                       | relatório de carga anexado                        |
-| 66  | Falha controlada (chaos): derrubar uma calculadora | app degrada para motor local sem 5xx                                               | smoke test pós-falha verde                        |
-| 67  | Métricas SLO de integração                         | `calcular-slo-metrics-diario` inclui disponibilidade RFB                           | dashboard SLO mostra disponibilidade              |
-| 68  | Alertas de degradação                              | `gerar-alertas-tributarios` cobre indisponibilidade RFB                            | alerta disparado em falha simulada                |
-| 69  | Atualizar INVENTARIO_FUNCIONALIDADES               | módulo RFB documentado como integração oficial                                     | documento atualizado e mergeado                   |
-| 70  | Auditoria RLS/segurança do proxy                   | `rfb-proxy` só acessível por service_role/usuário autenticado                      | `supabase db lint` + revisão de policies          |
-| 71  | Backup das tabelas RFB locais                      | snapshot diário `atividades_rfb`, `ncm_rfb`                                        | restore validado em staging                       |
-| 72  | Runbook de incidente RFB                           | doc de runbook com passos de mitigação                                             | drill de incidente executado                      |
-| 73  | Versão final dos ADRs                              | ADRs 0001-0006 registrados (topologia, contrato, erro, cache, segurança, operação) | ADRs presentes                                    |
-| 74  | Revisão de custos (infra das 3 calculadoras)       | estimativa mensal registrada e aprovada                                            | relatório de custo assinado                       |
-| 75  | Treinamento/roster                                 | time conhece a integração; documentação acessível                                  | 1-pager de onboarding linkado                     |
-| 76  | Monitorar mudanças upstream RFB (delta de versão)  | workflow semanal compara tags dos repos RFB                                        | PR de bump de tag aberto quando houver            |
-| 77  | Regressão de moeda: arredondamento em centavos     | todas somas finais em centavos (inteiro)                                           | teste: soma de itens == total com centavos exatos |
-| 78  | Idempotência de jobs de sincronização              | jobs de sync RB (atividades, NCM) são idempotentes                                 | rerun não duplica registros                       |
-| 79  | Perfis de empresa (regime misto)                   | empresa com múltiplas atividades escolhe anexo predominante                        | teste: função escolhe anexo de maior receita      |
-| 80  | Excel de conferência (spreadsheet)                 | planilha de validação comparando módulo local vs RFB                               | célula de divergência = 0                         |
+| #   | Etapa                                              | Checklist de conclusão                                                                                                             | Teste de validação                                |
+| --- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 63  | E2E do cálculo (UI → edge → calculadora)           | testes Cypress cobrem simulações simples/real/presumido contra RFB                                                                 | `cypress run` verde                               |
+| 64  | E2E do DANFSE                                      | geração de PDF ponta a ponta                                                                                                       | artefato PDF verificado                           |
+| 65  | Testes de carga (simples + regime)                 | k6 com cenários reais; p95 < limite definido                                                                                       | relatório de carga anexado                        |
+| 66  | Falha controlada (chaos): derrubar uma calculadora | app degrada para motor local sem 5xx                                                                                               | smoke test pós-falha verde                        |
+| 67  | Métricas SLO de integração                         | `calcular-slo-metrics-diario` inclui disponibilidade RFB                                                                           | dashboard SLO mostra disponibilidade              |
+| 68  | Alertas de degradação                              | `gerar-alertas-tributarios` cobre indisponibilidade RFB                                                                            | alerta disparado em falha simulada                |
+| 69  | Atualizar INVENTARIO_FUNCIONALIDADES               | módulo RFB documentado como integração oficial                                                                                     | documento atualizado e mergeado                   |
+| 70  | Auditoria RLS/segurança do proxy                   | `rfb-proxy` autentica usuário via `exigirInternaOuUsuario` (JWT do app) e só repassa a chamada a credencial de serviço server-side | `supabase db lint` + revisão de policies          |
+| 71  | Backup das tabelas RFB locais                      | snapshot diário `atividades_rfb`, `ncm_rfb`                                                                                        | restore validado em staging                       |
+| 72  | Runbook de incidente RFB                           | doc de runbook com passos de mitigação                                                                                             | drill de incidente executado                      |
+| 73  | Versão final dos ADRs                              | ADRs 0001-0006 registrados (topologia, contrato, erro, cache, segurança, operação)                                                 | ADRs presentes                                    |
+| 74  | Revisão de custos (infra das 3 calculadoras)       | estimativa mensal registrada e aprovada                                                                                            | relatório de custo assinado                       |
+| 75  | Treinamento/roster                                 | time conhece a integração; documentação acessível                                                                                  | 1-pager de onboarding linkado                     |
+| 76  | Monitorar mudanças upstream RFB (delta de versão)  | workflow semanal compara tags dos repos RFB                                                                                        | PR de bump de tag aberto quando houver            |
+| 77  | Regressão de moeda: arredondamento em centavos     | todas somas finais em centavos (inteiro)                                                                                           | teste: soma de itens == total com centavos exatos |
+| 78  | Idempotência de jobs de sincronização              | jobs de sync RB (atividades, NCM) são idempotentes                                                                                 | rerun não duplica registros                       |
+| 79  | Perfis de empresa (regime misto)                   | empresa com múltiplas atividades escolhe anexo predominante                                                                        | teste: função escolhe anexo de maior receita      |
+| 80  | Excel de conferência (spreadsheet)                 | planilha de validação comparando módulo local vs RFB                                                                               | célula de divergência = 0                         |
 
 ## Fase 12 — Onboarding e documentação contínua
 
