@@ -1064,7 +1064,7 @@
    "nome": "contabilizar-evento",
    "entrada": "supabase/functions/contabilizar-evento/index.ts",
    "arquivos": 1,
-   "linhas": 270,
+   "linhas": 272,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"

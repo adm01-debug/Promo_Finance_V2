@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e6e6143427b4f82fe86133f0736f0430e4a4f12e",
+  "commit": "a406e993288309af5be66bf0001894cc4925ebd4",
   "branch": "main",
-  "data_commit": "2026-11-19T20:54:03-03:00",
+  "data_commit": "2026-11-19T21:21:42-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a406e99",
+    "data": "2026-11-19",
+    "assunto": "fix: renderTemplate null-safe em contabilizar-evento (#476)"
+   },
    {
     "sha": "e6e6143",
     "data": "2026-11-19",
@@ -126,11 +131,6 @@
     "sha": "2e8ac1d",
     "data": "2026-11-17",
     "assunto": "infra(db): recupera 43 dos 67 índices que a #445 deixou de fora (#453)"
-   },
-   {
-    "sha": "31bd09e",
-    "data": "2026-11-17",
-    "assunto": "fix(edge): corrige 5 colunas inexistentes em select/order de Edge Functions (#450)"
    }
   ],
   "arquivos_mudados_7d": 696,
@@ -246,10 +246,6 @@
     "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/functions-deploy.yml",
-    "mudancas": 9
-   },
-   {
     "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 9
    },
@@ -264,6 +260,10 @@
    {
     "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
     "mudancas": 9
+   },
+   {
+    "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 8
    },
    {
     "arquivo": ".github/workflows/prod-migrate.yml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 225
+    "commits": 226
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3959,
   "arquivos_codigo": 2480,
-  "linhas_codigo": 442338,
+  "linhas_codigo": 442379,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -688,7 +688,7 @@
   },
   "supabase/functions": {
    "arquivos": 236,
-   "linhas": 51943
+   "linhas": 51984
   },
   "supabase/tests": {
    "arquivos": 2,

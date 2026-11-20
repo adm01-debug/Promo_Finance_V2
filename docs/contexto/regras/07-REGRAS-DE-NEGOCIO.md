@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e6e6143427` · branch `main` · 2026-11-19 23:55 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a406e99328` · branch `main` · 2026-11-20 00:43 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5969,4 +5969,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
 | de fato" (cota zero do rateio de acordo com 100% de desconto ou | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | // A deteccao NAO pode ser so "tem uma coluna a mais": virgula sobrando no | `src/lib/ofx-parser/csv.ts` |
-| … +427 linhas — lista completa em `context.json` | |
+| … +428 linhas — lista completa em `context.json` | |

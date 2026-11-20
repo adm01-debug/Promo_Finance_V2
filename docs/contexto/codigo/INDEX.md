@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e6e6143427b4f82fe86133f0736f0430e4a4f12e` (2026-11-19T20:54:03-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a406e993288309af5be66bf0001894cc4925ebd4` (2026-11-19T21:21:42-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3959 |
 | arquivos_codigo | 2480 |
-| linhas_codigo | 442338 |
+| linhas_codigo | 442379 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -473,9 +473,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/bitrix24-sync/index.ts (10)
 - supabase/functions/n8n-callback/index.ts (10)
 - supabase/functions/sync-profile-to-bitrix/index.ts (10)
-- .github/workflows/functions-deploy.yml (9)
 - .github/workflows/supabase-linter.yml (9)
 - scripts/security/test-canonical-db-gates.mjs (9)
+- supabase/functions/enviar-convite-organizacao/index.ts (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -632,6 +632,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
 - 2026-11-19 `e6e6143` feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)
 - 2026-11-19 `dd12c7d` feat: suíte E2E de contrato contábil para contabilizar-evento (#473)
 - 2026-11-19 `929f20d` fix: normalizar 400 invalid_json para envelope 422 canônico (#472)
@@ -646,7 +647,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `2aa3851` fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)
 - 2026-11-17 `6d521cd` docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)
 - 2026-11-17 `fee7c1d` chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)
-- 2026-11-17 `f17d2d4` docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

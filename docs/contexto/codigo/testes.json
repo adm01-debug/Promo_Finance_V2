@@ -3910,11 +3910,11 @@
   {
    "arquivo": "supabase/functions/contabilizar-evento/index.test.ts",
    "tipo": "unit",
-   "linhas": 440,
+   "linhas": 479,
    "testa": [
     "supabase/functions/contabilizar-evento/index.ts"
    ],
-   "casos": 10
+   "casos": 11
   },
   {
    "arquivo": "supabase/functions/convidar-usuario/index.test.ts",
