@@ -6,7 +6,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 
 | métrica | valor |
 |---|---|
-| tamanho | 346.7 MB |
+| tamanho | 347.0 MB |
 | schema public | 174.5 MB |
 
 
@@ -14,17 +14,17 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 
 | tabela | linhas (~) | total | heap | índices | linhas mortas (~) | seq scans (~) | idx scans (~) | último autovacuum |
 |---|---|---|---|---|---|---|---|---|
-| public.edge_function_logs | ~189.8k | 56.1 MB | 27.7 MB | 28.3 MB | 0 | 0 | ~360 | 2026-11-17 |
+| public.edge_function_logs | ~189.8k | 56.1 MB | 27.7 MB | 28.4 MB | 0 | 0 | ~360 | 2026-11-17 |
 | public.frontend_performance_logs | ~88.9k | 36.9 MB | 29.3 MB | 7.5 MB | ~12.3k | ~10 | ~70 |  |
-| public.slow_query_alerts | ~14.1k | 21.0 MB | 18.0 MB | 3.0 MB | ~2k | 0 | ~510 | 2026-11-18 |
+| public.slow_query_alerts | ~14.1k | 21.0 MB | 18.0 MB | 3.0 MB | ~2.1k | 0 | ~510 | 2026-11-18 |
 | public.index_usage_snapshots | ~49.6k | 15.7 MB | 8.8 MB | 6.8 MB | 0 | 0 | ~3k |  |
 | public.query_telemetry | ~11.3k | 13.7 MB | 10.0 MB | 3.7 MB | ~1.4k | 0 | ~1.2k | 2026-11-18 |
 | public.bloat_snapshots | ~21.6k | 5.7 MB | 3.2 MB | 2.5 MB | ~520 | 0 | ~1.6k |  |
 | public.login_attempts | ~2.5k | 4.1 MB | 3.0 MB | 1.0 MB | 0 | ~1.7k | ~840 | 2026-11-20 |
-| public.performance_alerts | ~4.3k | 3.6 MB | 2.5 MB | 1.1 MB | ~380 | 2 | ~6.2k | 2026-11-18 |
+| public.performance_alerts | ~4.3k | 3.6 MB | 2.5 MB | 1.1 MB | ~390 | 2 | ~6.3k | 2026-11-18 |
 | public.integrity_alerts | ~1.9k | 1.8 MB | 1.3 MB | 528.0 KB | 0 | ~4.3k | ~2.3k |  |
 | public.rate_limit_logs | ~1.6k | 784.0 KB | 576.0 KB | 168.0 KB | 0 | ~30 | ~5.3k | 2026-11-20 |
-| public.alertas | ~1.8k | 600.0 KB | 424.0 KB | 136.0 KB | 0 | ~227k | ~30 |  |
+| public.alertas | ~1.8k | 600.0 KB | 424.0 KB | 136.0 KB | 0 | ~227.1k | ~30 |  |
 | public.auth_logs | ~1.6k | 584.0 KB | 456.0 KB | 88.0 KB | 0 | ~30 | 0 | 2026-11-20 |
 | public.cron_job_logs | ~830 | 528.0 KB | 296.0 KB | 192.0 KB | ~40 | ~20 | ~440 |  |
 | public.contas_pagar | ~20 | 448.0 KB | 24.0 KB | 384.0 KB | ~20 | ~118.1k | ~113.9k |  |
@@ -33,7 +33,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.contas_receber | ~20 | 400.0 KB | 16.0 KB | 352.0 KB | ~30 | ~29.9k | ~414.1k |  |
 | public.movimentacoes | ~40 | 216.0 KB | 8.0 KB | 168.0 KB | 4 | ~60 | 0 |  |
 | public.partidas_contabeis | ~100 | 208.0 KB | 40.0 KB | 128.0 KB | 0 | ~20 | ~80 | 2026-11-16 |
-| public.clientes | ~10 | 192.0 KB | 8.0 KB | 160.0 KB | 0 | ~11.7k | ~1.9k |  |
+| public.clientes | ~10 | 192.0 KB | 8.0 KB | 160.0 KB | 0 | ~11.8k | ~1.9k |  |
 | public.aliquotas_interestaduais | ~700 | 184.0 KB | 72.0 KB | 80.0 KB | 2 | ~440 | 0 |  |
 | public.transacoes_bancarias | ~20 | 184.0 KB | 8.0 KB | 168.0 KB | 0 | ~970 | 0 |  |
 | public.lancamentos_contabeis | ~50 | 168.0 KB | 16.0 KB | 112.0 KB | ~20 | ~90 | ~80 |  |
@@ -74,7 +74,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.regras_conciliacao | 4 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~650 | 0 |  |
 | public.retencao_politicas | ~60 | 80.0 KB | 16.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.solicitacoes_aprovacao | ~10 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~109.7k | 0 |  |
-| public.user_empresas | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~5.6M | ~268.5k |  |
+| public.user_empresas | 0 | 80.0 KB | 8.0 KB | 64.0 KB | 0 | ~5.6M | ~268.6k |  |
 | public.anomalia_toast_eventos | 0 | 72.0 KB | 8.0 KB | 56.0 KB | 0 | ~40 | 0 |  |
 | public.webhooks_log | 0 | 72.0 KB | 8.0 KB | 56.0 KB | ~20 | ~6.1k | 0 |  |
 | public.alert_configurations | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~30 | 0 |  |
@@ -86,10 +86,10 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.folha_pagamento | ~20 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~100 | 0 |  |
 | public.formas_pagamento | ~10 | 64.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | 0 |  |
 | public.geo_blocks | 2 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~30 | 0 |  |
-| public.integration_secrets | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~11.3k | 0 |  |
+| public.integration_secrets | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~11.4k | 0 |  |
 | public.metas_financeiras | 6 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~340 | 0 |  |
 | public.oportunidades_elisao | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~100 | 0 |  |
-| public.profiles | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~40.7k | ~39k |  |
+| public.profiles | 3 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~40.7k | ~39.1k |  |
 | public.regimes_simulados | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~140 | 0 |  |
 | public.regras_roteamento_financeiro | 6 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~38.6k | 0 |  |
 | public.sessoes_conciliacao | 4 | 64.0 KB | 8.0 KB | 48.0 KB | 0 | ~30 | 0 |  |
@@ -111,7 +111,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.elisao_alertas | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~90 | 0 |  |
 | public.elisao_regras_creditos | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~20 | ~270 |  |
 | public.elisao_tarefas_acionaveis | 5 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~90 | 0 |  |
-| public.empresas | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~402.4k | 0 |  |
+| public.empresas | 1 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~402.5k | 0 |  |
 | public.estrategias_elisao_catalogo | 0 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~30 | ~130 |  |
 | public.execucoes_cobranca | ~10 | 48.0 KB | 8.0 KB | 32.0 KB | 0 | ~30 | 0 |  |
 | public.fila_cobrancas | 0 | 48.0 KB | 0 B | 40.0 KB | 0 | ~50 | 0 |  |
@@ -175,7 +175,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.fluxos_aprovacao_niveis | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~350 | 0 |  |
 | public.frontend_error_alert_state | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
 | public.frontend_error_logs | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 7 | ~240 | 0 |  |
-| public.historico_cobranca_whatsapp | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~91.4k | 0 |  |
+| public.historico_cobranca_whatsapp | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~91.5k | 0 |  |
 | public.historico_cobrancas_boletos | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.ip_whitelist | 0 | 32.0 KB | 8.0 KB | 16.0 KB | 0 | ~20 | 0 |  |
 | public.kpis_operacionais | 0 | 32.0 KB | 0 B | 24.0 KB | 0 | ~20 | 0 |  |
@@ -309,26 +309,26 @@ _nenhum_
 | role | chamadas (~) | total ms (~) | média ms | query |
 |---|---|---|---|---|
 | authenticated | ~45.7k | ~2.3M | 49.68 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."lido" = $1 LIMIT $2 OFFSET $3 ) , pgrst_source_count AS (SELECT $5 FROM "public"."alertas" WHERE "public"."alertas"."li` |
-| postgres | ~11.4k | ~1.9M | 168.73 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
+| postgres | ~11.5k | ~1.9M | 168.69 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
 | authenticated | ~44.2k | ~1.4M | 30.58 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
-| service_role | ~1.2k | ~292.6k | 247.17 | `WITH pgrst_source AS (SELECT pgrst_call.pgrst_scalar FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "sql" FROM json_to_record(pgrst_payload.json_data) AS _("sql" text) LIMIT $4) pgrst_body , LATERAL (SELECT` |
-| postgres | ~100 | ~204.6k | 2108.89 | `SELECT public.watch_cron_failures($1,$2)` |
-| authenticated | ~45.7k | ~189.7k | 4.15 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."tipo" = ANY ($1) AND "public"."alertas"."lido" = $2 LIMIT $3 OFFSET $4 ) , pgrst_source_count AS (SELECT $7 FROM "publi` |
+| service_role | ~1.2k | ~295.6k | 249.26 | `WITH pgrst_source AS (SELECT pgrst_call.pgrst_scalar FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "sql" FROM json_to_record(pgrst_payload.json_data) AS _("sql" text) LIMIT $4) pgrst_body , LATERAL (SELECT` |
+| postgres | ~100 | ~205.4k | 2095.99 | `SELECT public.watch_cron_failures($1,$2)` |
+| authenticated | ~45.7k | ~189.8k | 4.15 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" WHERE "public"."alertas"."tipo" = ANY ($1) AND "public"."alertas"."lido" = $2 LIMIT $3 OFFSET $4 ) , pgrst_source_count AS (SELECT $7 FROM "publi` |
 | authenticator | ~260 | ~151.7k | 590.18 | `SELECT name FROM pg_timezone_names` |
 | authenticated | ~310 | ~119.9k | 386.86 | `WITH pgrst_source AS ( SELECT "public"."vw_edge_health".* FROM "public"."vw_edge_health" LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_total, coalesce(json_agg(_postgr` |
 | authenticated | ~27.3k | ~119.7k | 4.39 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
 | authenticated | ~15k | ~117.8k | 7.83 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
-| postgres | ~100 | ~114.9k | 1197.25 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
-| postgres | ~190 | ~95.8k | 493.89 | `SELECT public.detect_query_regressions()` |
+| postgres | ~100 | ~115.2k | 1187.24 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| postgres | ~200 | ~96.7k | 493.18 | `SELECT public.detect_query_regressions()` |
 | authenticated | ~2.1k | ~90.1k | 42.34 | `WITH pgrst_source AS ( SELECT "public"."v_sefaz_observability".* FROM "public"."v_sefaz_observability" ORDER BY "public"."v_sefaz_observability"."seconds_since_last" DESC NULLS FIRST LIMIT $1 OFFSET $2 ) SELECT $3::bigin` |
-| postgres | ~11.4k | ~83.8k | 7.33 | `SELECT table_schema AS schema, table_name AS "table", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.role_table_grants WHERE grantee NOT IN ($3, $4, $5, $6, $7, $8, ` |
-| authenticated | ~11.8k | ~82.8k | 7.04 | `WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "p_empresa_id", "p_centro_custo_id" FROM json_to_record(pgrst_payload.json_data) AS _("p_empresa_id" uuid, "p_centr` |
+| postgres | ~11.5k | ~84.6k | 7.33 | `SELECT table_schema AS schema, table_name AS "table", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.role_table_grants WHERE grantee NOT IN ($3, $4, $5, $6, $7, $8, ` |
+| authenticated | ~11.8k | ~82.9k | 7.05 | `WITH pgrst_source AS (SELECT "pgrst_call".* FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SELECT "p_empresa_id", "p_centro_custo_id" FROM json_to_record(pgrst_payload.json_data) AS _("p_empresa_id" uuid, "p_centr` |
 
 
 ## Conexões
 | usuário | estado | n |
 |---|---|---|
-| authenticator | idle | 13 |
+| authenticator | idle | 17 |
 | pgbouncer | idle | 1 |
 | postgres | active | 1 |
 | supabase_admin | idle | 2 |
@@ -364,8 +364,8 @@ _nenhum_
       "connected_cluster": 0,
       "db_connected": false,
       "healthy": true,
-      "node": "realtime@2600:1f1c:c90:ad00:ce17:d85e:38e6:185d",
-      "region": "us-west-1",
+      "node": "realtime@2600:1f18:67fc:ac01:ec13:807a:afb7:9cc1",
+      "region": "us-east-1",
       "replication_connected": false
     },
     "name": "realtime",
