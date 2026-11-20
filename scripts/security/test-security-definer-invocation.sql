@@ -163,7 +163,16 @@ BEGIN
         END;
       ELSE
         v_expect := 'allow(not 42501)';
-        v_status := CASE WHEN v_sqlstate <> '42501' THEN 'PASS' ELSE 'FAIL' END;
+        -- 42501 em service_role também pode vir de guarda do corpo (ex.:
+        -- auth.uid() IS NULL em funções anti-spoofing), não só da ACL. Quando o
+        -- EXECUTE existe, o 42501 é da guarda da função → PASS (o gate estático
+        -- já cobre a ACL em test-observability-privileges.sql).
+        v_status := CASE
+          WHEN v_sqlstate <> '42501' THEN 'PASS'
+          WHEN v_sqlstate = '42501'
+               AND has_function_privilege(r.column1, c.proc_oid, 'EXECUTE') THEN 'PASS'
+          ELSE 'FAIL'
+        END;
       END IF;
 
       INSERT INTO _invocation_results(categoria, fn, role_name, sqlstate, expectation, status, message)
