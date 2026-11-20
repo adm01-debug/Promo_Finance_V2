@@ -129,4 +129,19 @@ describe('usePreferenciasSistema — salvamento', () => {
     expect(res.ok).toBe(false);
     expect(res.erro).toContain('violação de RLS');
   });
+
+  it('falha de gravação preserva o formulário atual (edições posteriores ficam)', async () => {
+    mocks.upsertResp = { error: { message: 'rede' } };
+    const { result } = renderHook(() => usePreferenciasSistema());
+    await waitFor(() => expect(result.current.carregado).toBe(true));
+    // usuário edita tema para escuro e salva; a gravação falha
+    act(() => result.current.setPreferencias((p) => ({ ...p, temaEscuro: true })));
+    const res = await act(async () => result.current.salvar(result.current.preferencias));
+    expect(res.ok).toBe(false);
+    // o formulário NÃO foi descartado com defaults
+    expect(result.current.preferencias.temaEscuro).toBe(true);
+    // e edições feitas após o clique também permanecem
+    act(() => result.current.setPreferencias((p) => ({ ...p, fusoHorario: 'America/Manaus' })));
+    expect(result.current.preferencias.fusoHorario).toBe('America/Manaus');
+  });
 });

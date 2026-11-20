@@ -96,8 +96,6 @@ export function usePreferenciasSistema() {
       if (!user) return { ok: false, erro: 'Usuário não autenticado.' };
       if (!carregado)
         return { ok: false, erro: 'Preferências ainda carregando. Tente novamente em instantes.' };
-      const anterior = preferencias; // snapshot para revert no erro
-      setPreferencias(novas); // otimista; revertido no erro
       const { error } = await supabase.from('user_preferences' as any).upsert(
         {
           user_id: user.id,
@@ -107,12 +105,11 @@ export function usePreferenciasSistema() {
         { onConflict: 'user_id,key' }
       );
       if (error) {
-        setPreferencias(anterior);
         return { ok: false, erro: error.message };
       }
       return { ok: true };
     },
-    [user, carregado, preferencias]
+    [user, carregado]
   );
 
   return { preferencias, setPreferencias, salvar, carregado, falhaLeitura };
