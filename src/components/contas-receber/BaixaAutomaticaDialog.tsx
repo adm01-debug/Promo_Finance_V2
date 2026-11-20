@@ -170,8 +170,9 @@ export function BaixaAutomaticaDialog({
             // Mesmo padrão do RegistrarRecebimentoDialog: grava a conta
             // escolhida também no título, para o filtro de contas a receber
             // por banco (useContasReceberPaginated) continuar encontrando o
-            // título liquidado. Nunca grava '' em coluna uuid.
-            conta_bancaria_id: contaBancariaId || null,
+            // título liquidado. Só quando há conta selecionada — sem seleção
+            // preserva o vínculo anterior (nunca grava '' em coluna uuid).
+            ...(contaBancariaId ? { conta_bancaria_id: contaBancariaId } : {}),
           })
           .eq('id', m.contaId);
 
