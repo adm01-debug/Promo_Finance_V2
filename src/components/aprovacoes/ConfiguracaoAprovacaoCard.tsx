@@ -50,7 +50,11 @@ export const ConfiguracaoAprovacaoCard = () => {
       // exigiu múltiplas assinaturas. Normaliza para 1 no carregamento; sem
       // isso a guarda de gravação bloquearia qualquer correção de limite ou
       // desativação (campo readOnly impede reduzir na tela).
-      setAprovadores((config.aprovadores_obrigatorios ?? 1) > 1 ? '1' : (config.aprovadores_obrigatorios ?? 1).toString());
+      setAprovadores(
+        (config.aprovadores_obrigatorios ?? 1) > 1
+          ? '1'
+          : (config.aprovadores_obrigatorios ?? 1).toString()
+      );
       setAtivo(config.ativo);
     }
   }, [config]);
