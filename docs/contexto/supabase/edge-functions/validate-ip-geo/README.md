@@ -4,7 +4,7 @@
 |---|---|
 | nome | validate-ip-geo |
 | status | ACTIVE |
-| versão | 123 |
+| versão | 124 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/validate-ip-geo/index.ts |
 | import_map |  |

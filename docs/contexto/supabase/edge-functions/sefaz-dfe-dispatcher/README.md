@@ -4,7 +4,7 @@
 |---|---|
 | nome | sefaz-dfe-dispatcher |
 | status | ACTIVE |
-| versão | 123 |
+| versão | 124 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/sefaz-dfe-dispatcher/index.ts |
 | import_map |  |

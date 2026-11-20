@@ -4,7 +4,7 @@
 |---|---|
 | nome | calculo-iva |
 | status | ACTIVE |
-| versão | 122 |
+| versão | 123 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/calculo-iva/index.ts |
 | import_map |  |
