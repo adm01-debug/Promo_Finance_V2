@@ -295,13 +295,13 @@ jobs:
         # Etapa 46: bloqueia erros de lint.
         run: bun run lint
 
-      - name: Preflight dos gates com DATABASE_URL
+      - name: Preflight dos gates com PROD_DB_URL
         id: db_url_preflight
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.PROD_DB_URL }}
         run: |
           bash scripts/ci/require-env.sh \
-            --label "Quality Gate — DATABASE_URL" \
+            --label "Quality Gate — PROD_DB_URL" \
             --mode summary \
             --output available \
             DATABASE_URL
@@ -309,10 +309,10 @@ jobs:
       - name: Observability privileges guard (psql)
         # Falha o pipeline se alguma função SECURITY DEFINER de observabilidade
         # regredir privilégios EXECUTE para anon/PUBLIC/authenticated.
-        # Requer secret DATABASE_URL apontando para o Postgres do Supabase.
+        # Requer secret PROD_DB_URL apontando para o Postgres do Supabase.
         if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.PROD_DB_URL }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
@@ -327,7 +327,7 @@ jobs:
         # carregadas por seeds. Falha o build em qualquer "not ok".
         if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.PROD_DB_URL }}
         run: |
           set -euo pipefail
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
@@ -346,7 +346,7 @@ jobs:
         # coluna temporal inexistente.
         if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.PROD_DB_URL }}
         run: |
           set -euo pipefail
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
@@ -364,20 +364,20 @@ jobs:
         # grants de anon). Baselines regenerados por dump-baseline.sh.
         if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
-          PROD_DB_URL: ${{ secrets.DATABASE_URL }}
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client jq
           bash scripts/ci/check-baseline-drift.sh
 
-      - name: Registrar gates de banco como inconclusivos sem DATABASE_URL
+      - name: Registrar gates de banco como inconclusivos sem PROD_DB_URL
         if: ${{ steps.db_url_preflight.outputs.available != 'true' }}
         run: |
           {
-            echo "### Gates dependentes de DATABASE_URL"
+            echo "### Gates dependentes de PROD_DB_URL"
             echo
             echo "- Status: inconclusivo"
             echo "- Não executados nesta run: Observability privileges guard, Integridade dos catálogos tributários (pgTAP), Gate #35 — Governança de retenção, Gate #26 — Drift de schema/policies."
-            echo "- Motivo: secret \`DATABASE_URL\` ausente. Nenhum desses gates deve ser interpretado como aprovado."
+            echo "- Motivo: secret \`PROD_DB_URL\` ausente. Nenhum desses gates deve ser interpretado como aprovado."
             echo
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -418,7 +418,7 @@ jobs:
         # Não falha o build — o gate acima já cobre regressões.
         if: ${{ steps.db_url_preflight.outputs.available == 'true' }}
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.PROD_DB_URL }}
           OUT_DIR: ./artifacts/security
         run: bash scripts/security/export-function-privileges.sh
 
