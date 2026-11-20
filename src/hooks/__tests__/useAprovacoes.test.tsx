@@ -292,13 +292,38 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
       id: 'z',
       empresa_id: null,
       valor_minimo_aprovacao: 7000,
-      aprovadores_obrigatorios: 2,
+      aprovadores_obrigatorios: 1,
       ativo: true,
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(chain.eq).toHaveBeenCalledWith('id', 'z');
     expect(chain.eq).not.toHaveBeenCalledWith('empresa_id', expect.anything());
+  });
+  it('recusa gravar quorum acima de 1 (backend ainda nao exige multiplas assinaturas)', async () => {
+    // Achado #6 do inventário: aprovadores_obrigatorios > 1 era um controle
+    // fantasma — a RPC aprovar_solicitacao_pagamento desconhecia quorum e a
+    // primeira assinatura aprovava. Recusar com mensagem explicita em vez de
+    // persistir uma promessa que o backend não cumpre.
+    const consulta = buildChain({ data: [{ valor_minimo_aprovacao: 5000 }], error: null });
+    mockFrom.mockReturnValue(consulta);
+
+    const { result } = renderHook(() => useUpdateConfiguracaoAprovacao(), {
+      wrapper: makeWrapper(),
+    });
+    result.current.mutate({
+      id: 'a',
+      empresa_id: 'e1',
+      valor_minimo_original: 5000,
+      valor_minimo_aprovacao: 5000,
+      aprovadores_obrigatorios: 2,
+      ativo: true,
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(String(result.current.error?.message)).toMatch(/bloqueado em 1/i);
+    // recusou ANTES de qualquer consulta/gravação
+    expect(consulta.update).not.toHaveBeenCalled();
   });
   it('recusa subir o limite acima de outra faixa ativa, em vez de nao fazer efeito', async () => {
     // Revisao da PR #400, round 6 (Codex): salvar 100.000 atualizava as
@@ -343,7 +368,7 @@ describe('useUpdateConfiguracaoAprovacao (gravacao na faixa editada)', () => {
       empresa_id: 'e1',
       valor_minimo_original: 5000,
       valor_minimo_aprovacao: 50000,
-      aprovadores_obrigatorios: 2,
+      aprovadores_obrigatorios: 1,
       ativo: true,
     });
 
