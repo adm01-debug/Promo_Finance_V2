@@ -33,7 +33,7 @@
    "scripts/ci (15)"
   ],
   "docs": [
-   "docs (55)",
+   "docs (56)",
    "(raiz) (19)",
    ".github (2)"
   ]
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)",
    "docs: preserva auditoria planejado x implementado (20/11) (#480)",
    "chore: ativar Gate #26 de drift de schema/policies no CI (#475)",
    "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)",
-   "fix: renderTemplate null-safe em contabilizar-evento (#476)",
-   "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)"
+   "fix: renderTemplate null-safe em contabilizar-evento (#476)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

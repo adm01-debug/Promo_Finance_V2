@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d7e6b41ff377b701e35979d202fdd48611280922` (2026-11-20T14:09:36-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `574c46c8c31e6cb06aafc5ee00320928b8253bee` (2026-11-20T16:23:48-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2362), SQL (1120), Markdown (212), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
+- linguagens: TypeScript (2362), SQL (1120), Markdown (213), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3962 |
+| arquivos_total | 3963 |
 | arquivos_codigo | 2481 |
 | linhas_codigo | 442478 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 482 |
 | workflows | 19 |
 | scripts | 116 |
-| docs_md | 212 |
+| docs_md | 213 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -62,7 +62,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
-- docs: docs (55), (raiz) (19), .github (2)
+- docs: docs (56), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
@@ -609,6 +609,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md` — Auditoria funcional e financeira — plano de melhorias em 100 etapas (160 linhas)
 - `docs/PLANO_EXCELENCIA_10_10.md` — Plano de Excelência 10/10 — Promo Finance (72 linhas)
 - `docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md` — Plano de Melhorias e Correções — 50 Etapas (741 linhas)
+- `docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md` — PLANO — Incorporação do RTC (Regime Tributário de Caixa) ao módulo tributário do Promo_Finance_V2 (176 linhas)
 - `docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md` — Plano de correções e melhorias — GitHub Workflows (100 etapas) (192 linhas)
 - `docs/QA_EXHAUSTIVE_REPORT.md` — Relatório QA Exaustivo — 2026-07-22 (68 linhas)
 - `docs/QA_VALIDATION_REPORT.md` — QA Validation Report — Auditoria Exaustiva (123 linhas)
@@ -632,6 +633,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-20 `574c46c` docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)
 - 2026-11-20 `d7e6b41` docs: preserva auditoria planejado x implementado (20/11) (#480)
 - 2026-11-20 `5c51f13` chore: ativar Gate #26 de drift de schema/policies no CI (#475)
 - 2026-11-20 `b7e2355` fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)
@@ -646,7 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `2d54fb1` chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)
 - 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
 - 2026-11-17 `c72e283` infra(ci): gate que barra coluna inexistente em select/order (#457)
-- 2026-11-17 `f56d307` chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

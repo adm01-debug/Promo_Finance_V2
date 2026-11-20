@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "d7e6b41ff377b701e35979d202fdd48611280922",
+  "sha": "574c46c8c31e6cb06aafc5ee00320928b8253bee",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-20 17:13 UTC",
-  "files_total": 4001,
+  "generated_at": "2026-11-20 20:16 UTC",
+  "files_total": 4002,
   "code_files": 3602,
   "code_lines": 512558
  },
@@ -244075,10 +244075,19 @@
   }
  },
  "git": {
-  "sha": "d7e6b41ff377b701e35979d202fdd48611280922",
+  "sha": "574c46c8c31e6cb06aafc5ee00320928b8253bee",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "574c46c",
+    "date": "2026-11-20",
+    "author": "adm01-debug",
+    "subject": "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)",
+    "files": [
+     "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md"
+    ]
+   },
    {
     "sha": "d7e6b41",
     "date": "2026-11-20",
@@ -244405,17 +244414,6 @@
      "supabase/functions/executar-fechamento-tributario/index.ts",
      "supabase/functions/gerar-dre-tributaria/index.ts"
     ]
-   },
-   {
-    "sha": "9aa7ea6",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore: recupera e termina o trabalho da PR #442, de outro agente (#449)",
-    "files": [
-     "docs/DB_HEALTH.md",
-     "supabase/functions/n8n-callback/index.ts",
-     "vite.config.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -244444,12 +244442,12 @@
     2
    ],
    [
-    "supabase/functions/n8n-callback/index.ts",
+    "scripts/automation.config.json",
     2
    ],
    [
-    "scripts/automation.config.json",
-    2
+    "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md",
+    1
    ],
    [
     "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md",

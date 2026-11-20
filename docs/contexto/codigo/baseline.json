@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d7e6b41ff377b701e35979d202fdd48611280922",
+  "commit": "574c46c8c31e6cb06aafc5ee00320928b8253bee",
   "branch": "main",
-  "data_commit": "2026-11-20T14:09:36-03:00",
+  "data_commit": "2026-11-20T16:23:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "574c46c",
+    "data": "2026-11-20",
+    "assunto": "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)"
+   },
    {
     "sha": "d7e6b41",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "e1a239c",
     "data": "2026-11-17",
     "assunto": "docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)"
-   },
-   {
-    "sha": "f76fcd2",
-    "data": "2026-11-17",
-    "assunto": "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)"
    }
   ],
-  "arquivos_mudados_7d": 444,
+  "arquivos_mudados_7d": 436,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 229
+    "commits": 230
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3962,
+  "arquivos_total": 3963,
   "arquivos_codigo": 2481,
   "linhas_codigo": 442478,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 482,
   "workflows": 19,
   "scripts": 116,
-  "docs_md": 212
+  "docs_md": 213
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

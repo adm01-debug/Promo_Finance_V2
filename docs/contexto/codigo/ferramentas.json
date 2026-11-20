@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2362)",
    "SQL (1120)",
-   "Markdown (212)",
+   "Markdown (213)",
    "JavaScript (76)",
    "Python (45)",
    "JSON (44)",
@@ -1112,6 +1112,11 @@
    "arquivo": "docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md",
    "titulo": "Plano de Melhorias e Correções — 50 Etapas",
    "linhas": 741
+  },
+  {
+   "arquivo": "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md",
+   "titulo": "PLANO — Incorporação do RTC (Regime Tributário de Caixa) ao módulo tributário do Promo_Finance_V2",
+   "linhas": 176
   },
   {
    "arquivo": "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md",
