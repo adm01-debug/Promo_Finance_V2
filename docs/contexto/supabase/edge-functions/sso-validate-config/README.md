@@ -4,7 +4,7 @@
 |---|---|
 | nome | sso-validate-config |
 | status | ACTIVE |
-| versão | 116 |
+| versão | 118 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/sso-validate-config/index.ts |
 | import_map |  |
