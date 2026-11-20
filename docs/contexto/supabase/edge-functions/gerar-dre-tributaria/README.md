@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-dre-tributaria |
 | status | ACTIVE |
-| versão | 122 |
+| versão | 123 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/gerar-dre-tributaria/index.ts |
 | import_map |  |

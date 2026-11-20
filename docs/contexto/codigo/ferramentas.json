@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2362)",
    "SQL (1120)",
-   "Markdown (211)",
+   "Markdown (212)",
    "JavaScript (76)",
    "Python (45)",
    "JSON (44)",
@@ -1231,6 +1231,10 @@
    "arquivos_md": 5
   },
   {
+   "pasta": "docs/auditoria",
+   "arquivos_md": 2
+  },
+  {
    "pasta": "docs/auditoria-financeira-20260910",
    "arquivos_md": 2
   },
@@ -1248,10 +1252,6 @@
   },
   {
    "pasta": "docs/adr",
-   "arquivos_md": 1
-  },
-  {
-   "pasta": "docs/auditoria",
    "arquivos_md": 1
   },
   {

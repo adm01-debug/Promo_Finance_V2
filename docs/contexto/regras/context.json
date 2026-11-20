@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "5c51f13354d15808794dd45178870bfde21ad296",
+  "sha": "d7e6b41ff377b701e35979d202fdd48611280922",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-20 11:31 UTC",
-  "files_total": 4000,
+  "generated_at": "2026-11-20 17:13 UTC",
+  "files_total": 4001,
   "code_files": 3602,
   "code_lines": 512558
  },
@@ -244075,10 +244075,19 @@
   }
  },
  "git": {
-  "sha": "5c51f13354d15808794dd45178870bfde21ad296",
+  "sha": "d7e6b41ff377b701e35979d202fdd48611280922",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d7e6b41",
+    "date": "2026-11-20",
+    "author": "adm01-debug",
+    "subject": "docs: preserva auditoria planejado x implementado (20/11) (#480)",
+    "files": [
+     "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md"
+    ]
+   },
    {
     "sha": "5c51f13",
     "date": "2026-11-20",
@@ -244407,15 +244416,6 @@
      "supabase/functions/n8n-callback/index.ts",
      "vite.config.ts"
     ]
-   },
-   {
-    "sha": "5be2cfc",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat(db): restaura 5 colunas declaradas que o código lê e produção não tinha (#451)",
-    "files": [
-     "supabase/migrations/20261117220000_colunas_declaradas_classe_select.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -244450,6 +244450,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md",
+    1
    ],
    [
     "scripts/ci/check-baseline-drift.sh",
@@ -244493,10 +244497,6 @@
    ],
    [
     "src/components/expert/ExpertPromptComposer.tsx",
-    1
-   ],
-   [
-    "src/components/onboarding/OnboardingTour.tsx",
     1
    ]
   ]

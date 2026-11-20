@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5c51f13354d15808794dd45178870bfde21ad296` (2026-11-20T08:24:48-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d7e6b41ff377b701e35979d202fdd48611280922` (2026-11-20T14:09:36-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2362), SQL (1120), Markdown (211), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
+- linguagens: TypeScript (2362), SQL (1120), Markdown (212), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3961 |
+| arquivos_total | 3962 |
 | arquivos_codigo | 2481 |
 | linhas_codigo | 442478 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 482 |
 | workflows | 19 |
 | scripts | 116 |
-| docs_md | 211 |
+| docs_md | 212 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -474,8 +474,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/n8n-callback/index.ts (10)
 - supabase/functions/sync-profile-to-bitrix/index.ts (10)
 - .github/workflows/supabase-linter.yml (9)
-- scripts/security/test-canonical-db-gates.mjs (9)
 - supabase/functions/enviar-convite-organizacao/index.ts (9)
+- supabase/functions/executar-fechamento-tributario/index.ts (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -628,10 +628,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (861 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (15), docs/agentes (13), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria (1), docs/auditoria-20260912 (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (15), docs/agentes (13), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-20 `d7e6b41` docs: preserva auditoria planejado x implementado (20/11) (#480)
 - 2026-11-20 `5c51f13` chore: ativar Gate #26 de drift de schema/policies no CI (#475)
 - 2026-11-20 `b7e2355` fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)
 - 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
@@ -646,7 +647,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-17 `18355ba` fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)
 - 2026-11-17 `c72e283` infra(ci): gate que barra coluna inexistente em select/order (#457)
 - 2026-11-17 `f56d307` chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)
-- 2026-11-17 `2aa3851` fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

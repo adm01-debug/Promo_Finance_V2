@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5c51f13354d15808794dd45178870bfde21ad296",
+  "commit": "d7e6b41ff377b701e35979d202fdd48611280922",
   "branch": "main",
-  "data_commit": "2026-11-20T08:24:48-03:00",
+  "data_commit": "2026-11-20T14:09:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d7e6b41",
+    "data": "2026-11-20",
+    "assunto": "docs: preserva auditoria planejado x implementado (20/11) (#480)"
+   },
    {
     "sha": "5c51f13",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "f76fcd2",
     "data": "2026-11-17",
     "assunto": "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)"
-   },
-   {
-    "sha": "1702166",
-    "data": "2026-11-17",
-    "assunto": "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)"
    }
   ],
-  "arquivos_mudados_7d": 703,
+  "arquivos_mudados_7d": 444,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -250,10 +250,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 9
    },
@@ -271,6 +267,10 @@
    },
    {
     "arquivo": "scripts/automation.config.json",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 8
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 228
+    "commits": 229
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3961,
+  "arquivos_total": 3962,
   "arquivos_codigo": 2481,
   "linhas_codigo": 442478,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 482,
   "workflows": 19,
   "scripts": 116,
-  "docs_md": 211
+  "docs_md": 212
  },
  "por_pasta": {
   "docs/auditoria-20260912": {
