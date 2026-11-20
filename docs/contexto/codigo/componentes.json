@@ -13628,9 +13628,10 @@
     "Configuracoes"
    ],
    "export_default": "Configuracoes",
-   "linhas": 398,
+   "linhas": 418,
    "dominio": "pages",
    "hooks_locais": [
+    "usePreferenciasSistema",
     "useToast",
     "useUrlTab"
    ],

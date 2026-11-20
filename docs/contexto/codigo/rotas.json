@@ -6116,6 +6116,7 @@
     "useMutation",
     "useOnboardingProgress",
     "useOpenFinance",
+    "usePreferenciasSistema",
     "usePushNotifications",
     "useQuery",
     "useQueryClient",
@@ -6136,6 +6137,7 @@
     "useDeleteContrato",
     "useOnboardingProgress",
     "useOpenFinance",
+    "usePreferenciasSistema",
     "usePushNotifications",
     "useToast",
     "useUpdateContrato",
@@ -6157,6 +6159,7 @@
     "regras_conciliacao",
     "security_settings",
     "user_onboarding_progress",
+    "user_preferences",
     "webauthn_credentials"
    ],
    "rpcs": [
@@ -6179,7 +6182,7 @@
     "list",
     "progressbar"
    ],
-   "arquivos_puxados": 68
+   "arquivos_puxados": 69
   },
   {
    "protegida": true,

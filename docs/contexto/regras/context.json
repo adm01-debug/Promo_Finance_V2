@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "72a08b51b7a7cc758c00d84d7911daab288fe9b0",
+  "sha": "cab2bf4c02e6c0d4b10fc51107102dbea3ae4706",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-20 21:19 UTC",
-  "files_total": 4003,
-  "code_files": 3602,
-  "code_lines": 512821
+  "generated_at": "2026-11-20 23:28 UTC",
+  "files_total": 4006,
+  "code_files": 3605,
+  "code_lines": 513338
  },
  "version": "1.3.2",
- "facts_hash": "b9c8f8c01eb4ca66",
+ "facts_hash": "4df702a9b2264322",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,9 +332,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1246,
-   ".sql": 1120,
-   ".tsx": 1116,
+   ".ts": 1247,
+   ".sql": 1121,
+   ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
    ".js": 8,
@@ -28146,6 +28146,58 @@
     "comment": "",
     "origin": "migration"
    },
+   "user_preferences": {
+    "columns": [
+     {
+      "name": "id",
+      "type": "UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+     },
+     {
+      "name": "user_id",
+      "type": "UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE",
+      "fk": "users.id ON DELETE CASCADE",
+      "generated": "",
+      "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+     },
+     {
+      "name": "key",
+      "type": "TEXT NOT NULL",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+     },
+     {
+      "name": "payload",
+      "type": "JSONB NOT NULL DEFAULT '{}'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+     },
+     {
+      "name": "updated_at",
+      "type": "TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+     }
+    ],
+    "constraints": [
+     "UNIQUE(user_id, key)"
+    ],
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "frontend_error_logs_2026_01": {
     "columns": [
      {
@@ -36543,6 +36595,46 @@
     "using": "user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')",
     "check": "",
     "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+   },
+   {
+    "name": "preferencias_sistema_select_own",
+    "table": "user_preferences",
+    "cmd": "SELECT",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id",
+    "check": "",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "preferencias_sistema_insert_own",
+    "table": "user_preferences",
+    "cmd": "INSERT",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "",
+    "check": "auth.uid() = user_id",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "preferencias_sistema_update_own",
+    "table": "user_preferences",
+    "cmd": "UPDATE",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id",
+    "check": "auth.uid() = user_id",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "preferencias_sistema_delete_own",
+    "table": "user_preferences",
+    "cmd": "DELETE",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id",
+    "check": "",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    }
   ],
   "triggers": [
@@ -39182,6 +39274,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
+   },
+   {
+    "name": "tr_user_preferences_updated_at",
+    "when": "BEFORE UPDATE",
+    "table": "user_preferences",
+    "function": "handle_updated_at",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    }
   ],
   "functions": {
@@ -50329,6 +50430,7 @@
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
+   "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -50588,7 +50690,8 @@
    "webauthn_challenges": "enabled",
    "asaas_payment_links": "enabled",
    "estrategias_elisao_catalogo": "enabled",
-   "cnpja_rate_limit": "enabled"
+   "cnpja_rate_limit": "enabled",
+   "user_preferences": "enabled"
   },
   "grants": [
    {
@@ -58526,6 +58629,14 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "all",
+    "object": "user_preferences",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    }
   ],
   "raises": [
@@ -59933,7 +60044,7 @@
      "get_cron_run_history",
      "toggle_cron_job"
     ],
-    "deps_count": 67
+    "deps_count": 68
    },
    {
     "path": "",
@@ -67836,6 +67947,10 @@
     "file": "src/hooks/usePreValidacaoSped.ts"
    },
    {
+    "name": "usePreferenciasSistema",
+    "file": "src/hooks/usePreferenciasSistema.ts"
+   },
+   {
     "name": "usePrefetchRoutes",
     "file": "src/hooks/usePrefetchRoutes.ts"
    },
@@ -69674,8 +69789,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 319,
-   "lines": 47193,
+   "files": 321,
+   "lines": 47645,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -70209,7 +70324,7 @@
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47121,
+   "lines": 47141,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -70830,8 +70945,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1048,
-   "lines": 80961,
+   "files": 1049,
+   "lines": 81006,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -75736,7 +75851,8 @@
     "user_empresas",
     "user_anomalia_preferences",
     "user_demonstrativo_preferences",
-    "user_digest_preferences"
+    "user_digest_preferences",
+    "user_preferences"
    ],
    "empresas": [
     "contas_pagar",
@@ -75928,6 +76044,7 @@
    "user_devices",
    "user_onboarding_progress",
    "user_passkeys",
+   "user_preferences",
    "webauthn_challenges",
    "webhook_events"
   ],
@@ -82065,6 +82182,10 @@
     "msg": "🚨 ${overBudget.length} centro(s) estouraram o orçamento!"
    },
    {
+    "file": "src/pages/Configuracoes.tsx",
+    "msg": "Erro ao salvar preferências"
+   },
+   {
     "file": "src/pages/Expert.tsx",
     "msg": "Erro ao criar conversa"
    },
@@ -83971,6 +84092,10 @@
    {
     "file": "src/hooks/usePreValidacaoSped.ts",
     "text": "Pré-validação de dados antes de gerar SPED ECD/ECF."
+   },
+   {
+    "file": "src/hooks/usePreferenciasSistema.ts",
+    "text": "marca apenas os campos realmente alterados (para o merge pós-leitura)"
    },
    {
     "file": "src/hooks/usePushNotifications.ts",
@@ -98899,6 +99024,41 @@
     "table": "cnpja_rate_limit",
     "column": "(tabela)",
     "rule": "PRIMARY KEY (user_id, window_start)"
+   },
+   {
+    "table": "user_preferences",
+    "column": "id",
+    "rule": "PK; default gen_random_uuid()"
+   },
+   {
+    "table": "user_preferences",
+    "column": "user_id",
+    "rule": "obrigatório; FK → users.id ON DELETE CASCADE"
+   },
+   {
+    "table": "user_preferences",
+    "column": "key",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "user_preferences",
+    "column": "payload",
+    "rule": "default '{}'"
+   },
+   {
+    "table": "user_preferences",
+    "column": "created_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "user_preferences",
+    "column": "updated_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "user_preferences",
+    "column": "(tabela)",
+    "rule": "UNIQUE(user_id, key)"
    },
    {
     "table": "frontend_error_logs_2026_01",
@@ -123982,6 +124142,62 @@
     "name": "não dispara query sem usuário logado (enabled=false)"
    },
    {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "usePreferenciasSistema — estados de leitura"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "carregado=false enquanto a leitura está pendente"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "carregado=true com os defaults quando não há registro"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "carrega o payload salvo mesclado aos defaults"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "erro de leitura marca falhaLeitura e NÃO marca carregado"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "falha transitória recupera via refetch sem remontar o formulário"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "edição durante a leitura pendente NÃO é sobrescrita quando a leitura chega"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "usePreferenciasSistema — salvamento"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "recusa salvar enquanto carregado=false (leitura pendente ou falhou)"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "grava o payload completo após a leitura concluir com sucesso"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "não grava nada quando a leitura falhou"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "erro de upsert rejeita e reporta a mensagem"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "falha de gravação preserva o formulário atual (edições posteriores ficam)"
+   },
+   {
+    "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    "name": "edições feitas DURANTE a gravação pendente não são descartadas na falha"
+   },
+   {
     "file": "src/hooks/__tests__/useQueuedMessage.test.tsx",
     "name": "useQueuedMessage"
    },
@@ -143562,6 +143778,46 @@
     "using": "user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')",
     "check": "",
     "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
+   },
+   {
+    "name": "preferencias_sistema_select_own",
+    "table": "user_preferences",
+    "cmd": "SELECT",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id",
+    "check": "",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "preferencias_sistema_insert_own",
+    "table": "user_preferences",
+    "cmd": "INSERT",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "",
+    "check": "auth.uid() = user_id",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "preferencias_sistema_update_own",
+    "table": "user_preferences",
+    "cmd": "UPDATE",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id",
+    "check": "auth.uid() = user_id",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "preferencias_sistema_delete_own",
+    "table": "user_preferences",
+    "cmd": "DELETE",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id",
+    "check": "",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    }
   ],
   "db_triggers": [
@@ -146201,6 +146457,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
+   },
+   {
+    "name": "tr_user_preferences_updated_at",
+    "when": "BEFORE UPDATE",
+    "table": "user_preferences",
+    "function": "handle_updated_at",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    }
   ],
   "db_functions": {
@@ -159458,6 +159723,21 @@
      "authenticated: (((SELECT auth.uid()) = user_id) OR has_role((SELECT auth.uid()), 'admin'::app_role))"
     ]
    },
+   "user_preferences": {
+    "rls": "enabled",
+    "SELECT": [
+     "public: auth.uid() = user_id"
+    ],
+    "INSERT": [
+     "public: auth.uid() = user_id"
+    ],
+    "UPDATE": [
+     "public: auth.uid() = user_id"
+    ],
+    "DELETE": [
+     "public: auth.uid() = user_id"
+    ]
+   },
    "user_roles": {
     "rls": "enabled",
     "SELECT": [
@@ -168208,6 +168488,14 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "all",
+    "object": "user_preferences",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    }
   ],
   "guards": [
@@ -170954,6 +171242,10 @@
     "created_at"
    ],
    "cnpja_rate_limit": [],
+   "user_preferences": [
+    "created_at",
+    "updated_at"
+   ],
    "frontend_error_logs_2026_01": [
     "created_at"
    ],
@@ -172880,7 +173172,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "261/267 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "262/268 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -204102,6 +204394,21 @@
     "const tolPct = receitaDre * 0.01; // 1% de tolerância para arredondamento e classificação"
    ]
   },
+  "src/hooks/usePreferenciasSistema.ts": {
+   "path": "src/hooks/usePreferenciasSistema.ts",
+   "lines": 185,
+   "exports": [
+    "interface PreferenciasSistema",
+    "const PREFERENCIAS_DEFAULT",
+    "function usePreferenciasSistema"
+   ],
+   "rule_comments": [
+    "marca apenas os campos realmente alterados (para o merge pós-leitura)"
+   ],
+   "hooks": [
+    "usePreferenciasSistema"
+   ]
+  },
   "src/hooks/usePrefetchRoutes.ts": {
    "path": "src/hooks/usePrefetchRoutes.ts",
    "lines": 185,
@@ -207849,6 +208156,28 @@
     "lista organizações quando há usuário logado",
     "propaga erro da listagem",
     "não dispara query sem usuário logado (enabled=false)"
+   ]
+  },
+  "src/hooks/__tests__/usePreferenciasSistema.test.tsx": {
+   "path": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+   "lines": 267,
+   "is_test": true,
+   "doc": "Regressão identificada no review da PR #484: o hook expõe `carregado` mas a página não bloqueava edição/salvamento durante a leitura, e erro de leitura marcava como carregado. Salvar antes da leitura concluir (ou após falha) sobrescrevia as preferências persistidas com os defaults. Fix (rodada 3): l …",
+   "tests": [
+    "usePreferenciasSistema — estados de leitura",
+    "carregado=false enquanto a leitura está pendente",
+    "carregado=true com os defaults quando não há registro",
+    "carrega o payload salvo mesclado aos defaults",
+    "erro de leitura marca falhaLeitura e NÃO marca carregado",
+    "falha transitória recupera via refetch sem remontar o formulário",
+    "edição durante a leitura pendente NÃO é sobrescrita quando a leitura chega",
+    "usePreferenciasSistema — salvamento",
+    "recusa salvar enquanto carregado=false (leitura pendente ou falhou)",
+    "grava o payload completo após a leitura concluir com sucesso",
+    "não grava nada quando a leitura falhou",
+    "erro de upsert rejeita e reporta a mensagem",
+    "falha de gravação preserva o formulário atual (edições posteriores ficam)",
+    "edições feitas DURANTE a gravação pendente não são descartadas na falha"
    ]
   },
   "src/hooks/__tests__/useQueuedMessage.test.tsx": {
@@ -221672,12 +222001,15 @@
   },
   "src/pages/Configuracoes.tsx": {
    "path": "src/pages/Configuracoes.tsx",
-   "lines": 399,
+   "lines": 419,
    "exports": [
     "function Configuracoes"
    ],
    "navigates": [
     "/asaas"
+   ],
+   "errors": [
+    "Erro ao salvar preferências"
    ],
    "percents": [
     "<span>Atual: 20%</span>",
@@ -244032,6 +244364,10 @@
    "path": "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
    "lines": 91
   },
+  "supabase/migrations/20261121000000_restaura_user_preferences.sql": {
+   "path": "supabase/migrations/20261121000000_restaura_user_preferences.sql",
+   "lines": 45
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -244140,10 +244476,22 @@
   }
  },
  "git": {
-  "sha": "72a08b51b7a7cc758c00d84d7911daab288fe9b0",
+  "sha": "cab2bf4c02e6c0d4b10fc51107102dbea3ae4706",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "cab2bf4",
+    "date": "2026-11-20",
+    "author": "adm01-debug",
+    "subject": "fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)",
+    "files": [
+     "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+     "src/hooks/usePreferenciasSistema.ts",
+     "src/pages/Configuracoes.tsx",
+     "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+    ]
+   },
    {
     "sha": "72a08b5",
     "date": "2026-11-20",
@@ -244470,30 +244818,12 @@
     "files": [
      "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
     ]
-   },
-   {
-    "sha": "f9b3094",
-    "date": "2026-11-17",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump mapbox-gl from 3.26.0 to 3.35.0 (#375)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     4
-   ],
-   [
-    "bun.lock",
-    3
-   ],
-   [
-    "package.json",
-    3
    ],
    [
     ".github/workflows/ci.yml",
@@ -244508,8 +244838,32 @@
     2
    ],
    [
+    "bun.lock",
+    2
+   ],
+   [
+    "package.json",
+    2
+   ],
+   [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+    1
+   ],
+   [
+    "src/hooks/usePreferenciasSistema.ts",
+    1
+   ],
+   [
+    "src/pages/Configuracoes.tsx",
+    1
+   ],
+   [
+    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
+    1
    ],
    [
     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
@@ -244545,22 +244899,6 @@
    ],
    [
     "docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
-    1
-   ],
-   [
-    "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md",
-    1
-   ],
-   [
-    "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md",
-    1
-   ],
-   [
-    "scripts/ci/check-baseline-drift.sh",
-    1
-   ],
-   [
-    "scripts/ci/test_scripts_shell.py",
     1
    ]
   ]

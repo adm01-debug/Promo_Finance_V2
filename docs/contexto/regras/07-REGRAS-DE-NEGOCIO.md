@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `72a08b51b7` · branch `main` · 2026-11-20 21:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cab2bf4c02` · branch `main` · 2026-11-20 23:28 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `simulacoes` | simulacoes_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
-| … +514 linhas — lista completa em `context.json` | | | | | | |
+| … +518 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2262 linhas — lista completa em `context.json` | | |
+| … +2269 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -916,6 +916,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_validar_partidas_dobradas | AFTER INSERT OR UPDATE OR DELETE | `partidas_contabeis` | `validar_partidas_dobradas` |  |
 | trg_sincronizar_conta_partida | BEFORE INSERT OR UPDATE OF CONTA_ID, CONTA_CONTABIL_ID | `partidas_contabeis` | `sincronizar_conta_partida` |  |
 | trg_contabilizar_movimentacao | AFTER INSERT | `movimentacoes` | `contabilizar_movimentacao` |  |
+| tr_user_preferences_updated_at | BEFORE UPDATE | `user_preferences` | `handle_updated_at` |  |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -5012,7 +5013,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +800 linhas — lista completa em `context.json` | |
+| … +801 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5071,7 +5072,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3610 testes em 317 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3624 testes em 318 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5150,6 +5151,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 15 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/hooks/useBoletos.validation.test.ts` | 14 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 14 | registrarPagamento · grava data_pagamento e valor_pago na parcela · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  … |
+| `src/hooks/__tests__/usePreferenciasSistema.test.tsx` | 14 | usePreferenciasSistema — estados de leitura · carregado=false enquanto a leitura está pendente · carregado=true com os defaults quando não há registro · carrega o payload salvo mesclado aos defaults … |
 | `src/lib/__tests__/collection-engine.test.ts` | 14 | collection-engine :: calculateCollectionStage · retorna null para status pago ou cancelado · classifica como PREVENTIVA quando ainda não venceu · classifica como LEMBRETE entre 0 e 5 dias de atraso … |
 | `src/lib/__tests__/edge-function-error.test.ts` | 14 | EdgeFunctionError flags · classifica status em auth/forbidden/client/server · normalizeEdgeError · usa mensagem do body quando presente em FunctionsHttpError … |
 | `src/lib/contabil/__tests__/termos-livro.test.ts` | 14 | formatarDataIso · converte ISO para dd/MM/yyyy · não altera entrada inválida · dataPorExtenso … |
@@ -5374,8 +5376,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx` | 2 | DashboardFiltersHeader · expõe nomes acessíveis para os filtros do dashboard |
 | `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
 | `src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx` | 2 | ProjectedCashFlowChart · usa o valor residual e inclui título parcial |
-| `src/hooks/useApiKeys.test.ts` | 2 | useRevokeApiKey · restringe a revogação à empresa recebida, além do identificador |
-| … +17 linhas — lista completa em `context.json` | | |
+| … +18 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5860,6 +5861,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | do usuário no servidor — o cliente nunca decide sobre permissão. | `src/hooks/useOverlayRejeicoesAuditoria.ts` |
 | Snapshot anterior para auditoria (apenas em UPDATE) | `src/hooks/usePlanoContas.ts` |
 | Pré-validação de dados antes de gerar SPED ECD/ECF. | `src/hooks/usePreValidacaoSped.ts` |
+| marca apenas os campos realmente alterados (para o merge pós-leitura) | `src/hooks/usePreferenciasSistema.ts` |
 | Request permission first | `src/hooks/usePushNotifications.ts` |
 | Fetch rate limit logs | `src/hooks/useRateLimitLogs.ts` |
 | limite do cache de ids | `src/hooks/useRealtimeAuditToasts.ts` |
@@ -5968,5 +5970,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Preenchido apenas quando `valor === null`. */ | `src/lib/contabil/indices.types.ts` |
 | ---------- DRE (apenas período) ---------- | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
-| fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
-| … +430 linhas — lista completa em `context.json` | |
+| … +431 linhas — lista completa em `context.json` | |

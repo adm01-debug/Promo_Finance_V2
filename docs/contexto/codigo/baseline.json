@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "72a08b51b7a7cc758c00d84d7911daab288fe9b0",
+  "commit": "cab2bf4c02e6c0d4b10fc51107102dbea3ae4706",
   "branch": "main",
-  "data_commit": "2026-11-20T18:18:48-03:00",
+  "data_commit": "2026-11-20T20:28:02-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cab2bf4",
+    "data": "2026-11-20",
+    "assunto": "fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)"
+   },
    {
     "sha": "72a08b5",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "ed338a2",
     "data": "2026-11-17",
     "assunto": "fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)"
-   },
-   {
-    "sha": "ec4122e",
-    "data": "2026-11-17",
-    "assunto": "fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)"
    }
   ],
-  "arquivos_mudados_7d": 420,
+  "arquivos_mudados_7d": 424,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -173,7 +173,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 21
+    "mudancas": 22
    },
    {
     "pasta": "src/components/admin",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 232
+    "commits": 233
    },
    {
     "autor": "dependabot[bot]",
@@ -318,21 +318,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3964,
-  "arquivos_codigo": 2481,
-  "linhas_codigo": 442741,
+  "arquivos_total": 3967,
+  "arquivos_codigo": 2483,
+  "linhas_codigo": 443211,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 128,
   "componentes": 992,
-  "hooks": 273,
+  "hooks": 274,
   "edge_functions": 106,
-  "tabelas": 310,
-  "migrations": 1048,
+  "tabelas": 311,
+  "migrations": 1049,
   "cron_jobs": 22,
-  "testes": 482,
+  "testes": 483,
   "workflows": 19,
   "scripts": 116,
   "docs_md": 214
@@ -651,8 +651,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 319,
-   "linhas": 46874
+   "arquivos": 321,
+   "linhas": 47324
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -672,7 +672,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46848
+   "linhas": 46868
   },
   "src/routes": {
    "arquivos": 16,
@@ -810,7 +810,7 @@
   }
  ],
  "qualidade": {
-  "any": 351,
+  "any": 355,
   "console_log": 237,
   "ts_ignore": 2,
   "eslint_disable": 1,

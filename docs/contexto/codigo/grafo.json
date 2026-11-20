@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2005,
- "arestas": 8472,
+ "nos": 2006,
+ "arestas": 8476,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -22,7 +22,7 @@
   },
   {
    "arquivo": "src/integrations/supabase/client.ts",
-   "importado_por": 312
+   "importado_por": 313
   },
   {
    "arquivo": "src/lib/formatters.ts",
@@ -58,7 +58,7 @@
   },
   {
    "arquivo": "src/hooks/useAuth.tsx",
-   "importado_por": 106
+   "importado_por": 107
   },
   {
    "arquivo": "supabase/functions/_shared/cors.ts",
@@ -134,7 +134,7 @@
   },
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "importado_por": 38
+   "importado_por": 39
   },
   {
    "arquivo": "src/lib/supabase-dynamic.ts",

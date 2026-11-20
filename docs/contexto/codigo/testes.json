@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 482,
+ "total": 483,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 406
+  "unit": 407
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 283
+   "arquivos": 284
   },
   {
    "padrao": "outro",
@@ -1709,6 +1709,15 @@
     "src/hooks/useOrganizacoes.ts"
    ],
    "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
+   "tipo": "unit",
+   "linhas": 266,
+   "testa": [
+    "src/hooks/usePreferenciasSistema.ts"
+   ],
+   "casos": 12
   },
   {
    "arquivo": "src/hooks/__tests__/useQueuedMessage.test.tsx",
@@ -4441,6 +4450,7 @@
   "src/hooks/usePerDcomp.ts": 1,
   "src/hooks/usePixTemplates.ts": 1,
   "src/hooks/usePlanoContas.ts": 1,
+  "src/hooks/usePreferenciasSistema.ts": 1,
   "src/hooks/useQueuedMessage.ts": 1,
   "src/hooks/useRegrasConciliacao.ts": 1,
   "src/hooks/useRetencoesFonte.ts": 1,

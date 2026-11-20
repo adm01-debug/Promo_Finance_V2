@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `72a08b51b7` · branch `main` · 2026-11-20 21:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cab2bf4c02` · branch `main` · 2026-11-20 23:28 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -262,6 +262,7 @@
 | `user_filter_presets` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `user_onboarding_progress` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `user_passkeys` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
+| `user_preferences` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `user_roles` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `user_sessions` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `vendedores` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -306,8 +307,7 @@
 | `nivel_risco` (enum) | BAIXO, MEDIO, ALTO |  | banco |
 | `status_workflow` (enum) | IDENTIFICADO, EM_ANALISE, APROVADO, EM_EXECUCAO, CONCLUIDO, CANCELADO |  | banco |
 | `tipo_destinatario` (enum) | CONTRIBUINTE_REVENDA, CONTRIBUINTE_USO_CONSUMO, NAO_CONTRIBUINTE, EXTERIOR |  | banco |
-| `org_papel` (enum) | RESPONSAVEL, ADMIN, MEMBRO, LEITOR |  | banco |
-| … +234 linhas — lista completa em `context.json` | | | |
+| … +235 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -532,7 +532,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 261/267 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- 262/268 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 273,
+ "total": 274,
  "hooks": [
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
@@ -1878,7 +1878,7 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 106,
+   "usado_por": 107,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",
@@ -5230,6 +5230,32 @@
     "src/components/clientes/PortalClientePanel.tsx"
    ],
    "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePreferenciasSistema.ts",
+   "hooks_exportados": [
+    "usePreferenciasSistema"
+   ],
+   "linhas": 184,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_preferences"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Configuracoes.tsx"
+   ],
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/usePrefetchRoutes.ts",

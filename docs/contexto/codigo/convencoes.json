@@ -11,7 +11,7 @@
    "src/hooks (2)"
   ],
   "hooks": [
-   "src/hooks (237)",
+   "src/hooks (238)",
    "src/components (27)",
    "src/pages (5)"
   ],
@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (283)",
+   "co-localizado (__tests__) (284)",
    "outro (112)",
    "co-localizado (*.test) (47)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)",
    "fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)",
    "docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)",
    "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)",
-   "docs: preserva auditoria planejado x implementado (20/11) (#480)",
-   "chore: ativar Gate #26 de drift de schema/policies no CI (#475)"
+   "docs: preserva auditoria planejado x implementado (20/11) (#480)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -7238,6 +7238,11 @@
    "src/hooks/useDemonstrativosContabeis.ts",
    "src/hooks/useLancamentosContabeis.ts"
   ],
+  "src/hooks/usePreferenciasSistema.ts": [
+   "src/hooks/useAuth.tsx",
+   "src/integrations/supabase/client.ts",
+   "src/integrations/supabase/types.ts"
+  ],
   "src/hooks/usePrefetchRoutes.ts": [
    "src/hooks/useAlertas.ts",
    "src/pages/Alertas.tsx",
@@ -8838,6 +8843,7 @@
    "src/components/ui/switch.tsx",
    "src/components/ui/tabs.tsx",
    "src/hooks/use-toast.ts",
+   "src/hooks/usePreferenciasSistema.ts",
    "src/hooks/useUrlTab.ts",
    "src/pages/Configuracoes.constants.ts",
    "src/pages/Configuracoes.parts.tsx"

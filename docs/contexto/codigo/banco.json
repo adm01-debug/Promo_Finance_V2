@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1048,
+ "migrations": 1049,
  "seeds": [],
  "avisos": [
   "198 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -46811,6 +46811,85 @@
    "triggers": [],
    "sem_rls": false,
    "nao_usada": true
+  },
+  "user_preferences": {
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "payload": {
+     "tipo": "jsonb",
+     "nn": true,
+     "pk": false,
+     "default": "'{}'",
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": "auth"
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "preferencias_sistema_delete_own",
+     "comando": "delete",
+     "para": "public",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "preferencias_sistema_insert_own",
+     "comando": "insert",
+     "para": "public",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "preferencias_sistema_select_own",
+     "comando": "select",
+     "para": "public",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "preferencias_sistema_update_own",
+     "comando": "update",
+     "para": "public",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [],
+   "fks": [
+    "user_id->auth"
+   ],
+   "criada_em": "20261121000000_restaura_user_preferences.sql",
+   "usada_no_front": 1,
+   "usada_em_edges": [],
+   "triggers": [
+    "tr_user_preferences_updated_at",
+    "update_user_preferences_updated_at"
+   ],
+   "sem_rls": false,
+   "nao_usada": false
   },
   "user_roles": {
    "colunas": {
