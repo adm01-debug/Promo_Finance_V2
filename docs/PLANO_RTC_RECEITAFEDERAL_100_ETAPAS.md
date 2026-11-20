@@ -1,4 +1,4 @@
-﻿# PLANO — Incorporação do RTC (Regime Tributário de Caixa) ao módulo tributário do Promo_Finance_V2
+# PLANO — Incorporação do RTC (Regime Tributário de Caixa) ao módulo tributário do Promo_Finance_V2
 
 **Fonte oficial:** org `ReceitaFederal` (3 repositórios públicos, MIT)
 - `calculadora-rtc-regime-regular` — motor de cálculo CBS/IBS/Imposto Seletivo do regime geral (Java 25 / Spring Boot 4 / SQLite + Flyway, 36 tabelas, 43k linhas no schema inicial + 72 migrations de manutenção). Cálculo dirigido por **expressões** (JEXL3) em `TRATAMENTO_TRIBUTARIO`; API de dados abertos completa (UF, municípios, CST/cClassTrib, NCM, NBS, alíquotas de referência, redutores, transferências, grupos DF-e).
@@ -16,7 +16,7 @@
 2. Sem **CST/cClassTrib** no banco — impossível aplicar reduções, créditos, monofasia, diferimento, compras governamentais conforme a LC 214/2025.
 3. Sem **NBS** e sem **tratamentos tributários por expressão** — o motor PF2 não calcula por fórmula oficial.
 4. Sem **DANFSE** (PDF) nem integração com os serviços oficiais.
-5. Simples Nacional com faixas, mas **sem fator R/anexos por atividade** e **sem alíquotas efetivas (PGDAS-D)**.
+5. Simples Nacional já calcula fator R e alíquota efetiva (`simples-nacional.ts:29-37,62-80`), mas **o anexo é escolhido manualmente** — falta catálogo de atividades por CNAE/anexo, alíquotas oficiais repartidas por ano e a **integração PGDAS-D (alíquotas efetivas RBT12)**.
 
 **Critérios de aceite globais (valem para todas as fases):**
 - Nenhuma regressão: catálogos e funções atuais continuam passando (`validar_catalogos_tributarios`, pgTAP, RLS multi-empresa).
@@ -76,8 +76,8 @@ Toda escrita = migration idempotente. Nenhuma exclusão de coluna/tabela existen
 | 33 | Implementar **split payment simplificado** | Decomposição do valor da operação | Teste de soma fechada |
 | 34 | Implementar **cálculo do Imposto Seletivo** (ad valorem + específico) | Tabelas AD_VALOREM/AD_REM por produto/serviço | Teste bebida alcoólica e fumo |
 | 35 | Integrar **base de cálculo unificada** (NF-e/NFC-e e NFS-e) no motor | Função `baseCalculoUnificada` espelhando o contrato oficial | Testes de bem e serviço (exemplos docs) |
-| 36 | Implementar **cálculo do Simples com fator R e anexos** | Resolução de anexo por atividade; fator R; faixa | Teste com atividade anexo III |
-| 37 | Implementar **alíquotas efetivas PGDAS-D** (leitura de `aliquotas_efetivas_simples`) | Sem dado → fallback tabela pré-carregada com aviso | Teste com e sem alíquota efetiva |
+| 36 | **Estender** a calculadora Simples existente com **catálogo de atividades/anexo** (o fator R e a troca III/V já existem em `simples-nacional.ts:62-80`; falta resolver anexo por CNAE) | Resolução de anexo por atividade; mantém fator R atual | Teste com atividade anexo III |
+| 37 | **Integrar alíquotas efetivas PGDAS-D** (leitura de `aliquotas_efetivas_simples`), reutilizando `calcularAliquotaEfetiva` existente (`simples-nacional.ts:29-37`) | Sem dado → fallback tabela pré-carregada com aviso | Teste com e sem alíquota efetiva |
 | 38 | Criar **memória de cálculo** oficial (rastreabilidade) | Saída com parâmetros, expressões e fontes usadas | Teste: cada número rastreável |
 | 39 | **Observabilidade** (códigos REG-/VSN- com descrição) | Catálogo de erros por item; endpoint de descrição | Teste de 1 código REG-011 e 1 VSN- |
 | 40 | Regressão: comparar resultado do motor PF2 vs calculadora oficial (mesma operação) | Relatório de convergência por amostra | Script de diff de JSONs de cálculo |
@@ -111,7 +111,7 @@ Toda escrita = migration idempotente. Nenhuma exclusão de coluna/tabela existen
 | 60 | Seletor de **alíquotas de referência** por UF/município/período | UI com data base | E2E |
 | 61 | **Simulador de Imposto Seletivo** (ad valorem/específico) | UI com memória de cálculo | E2E |
 | 62 | **Simulador de compras governamentais** (redutores) | UI com seleção de ente | E2E |
-| 63 | **Simples**: exibir anexo, fator R e alíquota efetiva na calculadora | UI integrada ao motor | E2E |
+| 63 | **Simples**: exibir catálogo de anexo por atividade + alíquota efetiva PGDAS-D na calculadora (fator R/anexo III-V já exibidos) | UI integrada ao motor estendido | E2E |
 | 64 | **Dashboard Reforma Tributária** com dados oficiais (alíquotas vigentes) | KPIs derivados do catálogo | E2E |
 | 65 | **DANFSE**: botão de geração na NFS-e | Fluxo XML→PDF com download | E2E + validação PDF |
 | 66 | **ConciliacaoTributariaPanel** com IBS/CBS/IS novos | Painel concilia os novos tributos | E2E |
@@ -125,7 +125,7 @@ Toda escrita = migration idempotente. Nenhuma exclusão de coluna/tabela existen
 |---|-------|------------------------|--------------------|
 | 71 | Compatibilizar `faixas_simples_nacional` com dados oficiais por anexo/ano | Dados idênticos à fonte | Query diff |
 | 72 | Atividades do Simples (catálogo de atividades com anexo/fator R) | Tabela carregada e consultável por data | pgTAP |
-| 73 | Resolução de anexo e fator R na calculadora | Motor usa catálogo de atividades | Teste |
+| 73 | Resolução de anexo por catálogo de atividades na calculadora (complementa o fator R existente) | Motor usa catálogo de atividades | Teste |
 | 74 | Regime de apuração IBS/CBS no Simples (regular vs SN) | Motor decide `tpRegimeIBSCBS` | Teste |
 | 75 | Alíquotas efetivas: schema + ingestão (preparo PGDAS-D) | `aliquotas_efetivas_simples` pronta | pgTAP |
 | 76 | Job de ingestão MDD/PGDAS-D (quando publicado) | Cron com idempotência e alerta de falha | Simulação de run |
