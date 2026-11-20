@@ -156,6 +156,54 @@ describe('useConciliacaoPage — importação de extrato', () => {
       event_type: 'reconciliation.failed',
       status: 'error',
     });
+    // A falha NÃO pode sair da fila de revisão nem inflar o relatório:
+    expect(result.current.importReport?.autoConciliadas).toBe(0);
+    expect(result.current.importReport?.valorAutoConciliado).toBe(0);
+    expect(result.current.importReport?.matchesAlta).toHaveLength(0);
+    expect(result.current.transacoes.find((transacao) => transacao.id === 'tx-1')?.conciliada).toBe(
+      false
+    );
+    expect(result.current.transacoesImportadas.some((transacao) => transacao.id === 'tx-1')).toBe(
+      true
+    );
+  });
+
+  it('não reverte conciliação cuja persistência foi confirmada no banco (falha só de auditoria)', async () => {
+    // O proxy grava a conciliação e só depois o cliente registra o evento de
+    // auditoria. Se a auditoria falhar, a mutação rejeita MAS o banco já
+    // confirmou — a transação não pode voltar à revisão como pendente.
+    mocks.supabase.singleResp.contas_bancarias = {
+      data: { configuracoes_conciliacao: { tolerancia_centavos: 0.05, aceite_automatico: true } },
+      error: null,
+    };
+    vi.mocked(mocks.matcher.encontrarTodosMatches).mockReturnValue(
+      makeMatchAltaConfianca('receber')
+    );
+    mocks.supabase.singleResp.transacoes_bancarias = {
+      data: { id: 'tx-1', conciliada: true },
+      error: null,
+    };
+    vi.mocked(mocks.mutations.confirmarConciliacao.mutateAsync).mockRejectedValue(
+      new Error('auditoria offline')
+    );
+    const { result } = renderHook(() => useConciliacaoPage(), { wrapper });
+    act(() => result.current.setSelectedBanco('bank-1'));
+    await act(async () => result.current.handleImportSuccess(makeExtrato()));
+    // Soma como conciliada automaticamente mesmo com a falha de auditoria:
+    expect(result.current.importReport?.autoConciliadas).toBe(1);
+    expect(result.current.importReport?.matchesAlta).toHaveLength(1);
+    expect(result.current.transacoes.find((transacao) => transacao.id === 'tx-1')?.conciliada).toBe(
+      true
+    );
+    // E sai da fila de revisão (não volta como pendente):
+    expect(result.current.transacoesImportadas.some((transacao) => transacao.id === 'tx-1')).toBe(
+      false
+    );
+    // O erro de auditoria continua visível (não silencioso):
+    expect(mocks.toasts.error).toHaveBeenCalledWith(
+      'Conciliação gravada, auditoria falhou',
+      expect.any(Object)
+    );
   });
 
   it('continua apresentando o relatório se a auditoria do arquivo não puder ser persistida', async () => {

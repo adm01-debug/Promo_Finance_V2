@@ -67,6 +67,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
         'per-dcomp': '/tributario/per-dcomp',
         retencoes: '/tributario/retencoes',
         'fechamento-mensal': '/tributario/fechamento-mensal',
+        obrigacoes: '/tributario/obrigacoes',
       };
 
       if (routeMap[tabId]) {
