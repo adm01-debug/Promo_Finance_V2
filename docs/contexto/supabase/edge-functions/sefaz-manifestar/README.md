@@ -4,7 +4,7 @@
 |---|---|
 | nome | sefaz-manifestar |
 | status | ACTIVE |
-| versão | 129 |
+| versão | 132 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/sefaz-manifestar/index.ts |
 | import_map |  |

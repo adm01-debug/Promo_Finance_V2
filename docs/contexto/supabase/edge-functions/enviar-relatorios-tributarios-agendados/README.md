@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-relatorios-tributarios-agendados |
 | status | ACTIVE |
-| versão | 130 |
+| versão | 133 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/enviar-relatorios-tributarios-agendados/index.ts |
 | import_map |  |

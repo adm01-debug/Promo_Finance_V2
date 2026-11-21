@@ -4,7 +4,7 @@
 |---|---|
 | nome | executar-fechamento-tributario |
 | status | ACTIVE |
-| versão | 128 |
+| versão | 131 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/executar-fechamento-tributario/index.ts |
 | import_map |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-pacote-evidencias |
 | status | ACTIVE |
-| versão | 126 |
+| versão | 129 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/gerar-pacote-evidencias/index.ts |
 | import_map |  |
