@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d1fc1cf810cff5e91fc52810075c110ed591bbe6",
+  "sha": "d11416f8b9529d55ed86babd4ddbb366ce24978c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 22:47 UTC",
+  "generated_at": "2026-11-21 22:59 UTC",
   "files_total": 4025,
   "code_files": 3615,
-  "code_lines": 514830
+  "code_lines": 514907
  },
  "version": "1.3.2",
- "facts_hash": "b06826a0cea25dab",
+ "facts_hash": "c45946708e8e31a5",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -69658,7 +69658,7 @@
   {
    "module": "src/components",
    "files": 999,
-   "lines": 165239,
+   "lines": 165263,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70266,7 +70266,7 @@
   {
    "module": "src/lib",
    "files": 418,
-   "lines": 55702,
+   "lines": 55755,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -122077,6 +122077,26 @@
    },
    {
     "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+    "name": "Selo "
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+    "name": "exibe selo quando origem="
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+    "name": "não exibe selo quando origem="
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+    "name": "não exibe selo quando origem não informada"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+    "name": "gatilho é focável via teclado (tabIndex=0)"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
     "name": "className customizado"
    },
    {
@@ -128933,7 +128953,15 @@
    },
    {
     "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
-    "name": "todas as linhas declaram origem e fundamento"
+    "name": "todas as linhas declaram origem e fundamento (CBS e IBS)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2027/2028: IBS é "
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2026 e 2029+: origem e origemIbs coincidem (ambos lei em 2026, ambos simulado de 2029+)"
    },
    {
     "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
@@ -192710,7 +192738,7 @@
   },
   "src/components/reforma-tributaria/GlossarioTooltip.tsx": {
    "path": "src/components/reforma-tributaria/GlossarioTooltip.tsx",
-   "lines": 146,
+   "lines": 148,
    "exports": [
     "function GlossarioTooltip"
    ],
@@ -193162,7 +193190,7 @@
   },
   "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx": {
    "path": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
-   "lines": 108,
+   "lines": 130,
    "is_test": true,
    "tests": [
     "GlossarioTooltip",
@@ -193185,6 +193213,11 @@
     "Ícone Info",
     "exibe ícone por padrão",
     "oculta ícone quando showIcon=false",
+    "Selo ",
+    "exibe selo quando origem=",
+    "não exibe selo quando origem=",
+    "não exibe selo quando origem não informada",
+    "gatilho é focável via teclado (tabIndex=0)",
     "className customizado",
     "aplica className ao wrapper",
     "aplica className em termo desconhecido"
@@ -214616,7 +214649,7 @@
   },
   "src/lib/reforma-tributaria/cronograma-oficial.ts": {
    "path": "src/lib/reforma-tributaria/cronograma-oficial.ts",
-   "lines": 173,
+   "lines": 204,
    "exports": [
     "type OrigemValor",
     "interface LinhaCronograma",
@@ -214700,7 +214733,7 @@
   },
   "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts": {
    "path": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
-   "lines": 69,
+   "lines": 91,
    "is_test": true,
    "tests": [
     "cronograma-oficial",
@@ -214712,7 +214745,9 @@
     "2033: regime pleno, todos os residuais zerados",
     "antes de 2026: nenhum tributo novo, residuais 100%",
     "após 2033: mantém o regime pleno (sem extrapolar residual negativo)",
-    "todas as linhas declaram origem e fundamento"
+    "todas as linhas declaram origem e fundamento (CBS e IBS)",
+    "2027/2028: IBS é ",
+    "2026 e 2029+: origem e origemIbs coincidem (ambos lei em 2026, ambos simulado de 2029+)"
    ]
   },
   "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts": {
@@ -245027,10 +245062,24 @@
   }
  },
  "git": {
-  "sha": "d1fc1cf810cff5e91fc52810075c110ed591bbe6",
+  "sha": "d11416f8b9529d55ed86babd4ddbb366ce24978c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d11416f",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)",
+    "files": [
+     "src/components/reforma-tributaria/CronogramaTransicao.tsx",
+     "src/components/reforma-tributaria/GlossarioTooltip.tsx",
+     "src/components/reforma-tributaria/ResultadoTributos.tsx",
+     "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+     "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+     "src/lib/reforma-tributaria/cronograma-oficial.ts"
+    ]
+   },
    {
     "sha": "d1fc1cf",
     "date": "2026-11-21",
@@ -245377,25 +245426,6 @@
      "supabase/functions/contabilizar-evento/index.test.ts",
      "supabase/functions/contabilizar-evento/index.ts"
     ]
-   },
-   {
-    "sha": "929f20d",
-    "date": "2026-11-19",
-    "author": "adm01-debug",
-    "subject": "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)",
-    "files": [
-     "supabase/functions/_shared/contract-coverage_test.ts",
-     "supabase/functions/ci-security-gate-log/index.ts",
-     "supabase/functions/conciliacao-proxy/index.ts",
-     "supabase/functions/n8n-callback/index.ts",
-     "supabase/functions/nfe-vinculo-proxy/index.ts",
-     "supabase/functions/nfe-vinculo-proxy/index_test.ts",
-     "supabase/functions/notify-performance-alert/index.ts",
-     "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
-     "supabase/functions/sefaz-dfe-puxar/index.ts",
-     "supabase/functions/sefaz-manifestar/index.ts",
-     "supabase/functions/sync-profile-to-bitrix/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -245406,6 +245436,26 @@
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
+    2
+   ],
+   [
+    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
+    2
+   ],
+   [
+    "src/components/reforma-tributaria/ResultadoTributos.tsx",
+    2
+   ],
+   [
+    "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    2
+   ],
+   [
+    "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    2
    ],
    [
     "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
@@ -245458,26 +245508,6 @@
    [
     "supabase/functions/contabilizar-evento/index.ts",
     2
-   ],
-   [
-    "src/pages/tributario/ProjecaoReforma.tsx",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/ResultadoTributos.tsx",
-    1
-   ],
-   [
-    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
-    1
    ]
   ]
  }

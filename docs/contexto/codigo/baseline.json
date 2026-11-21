@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d1fc1cf810cff5e91fc52810075c110ed591bbe6",
+  "commit": "d11416f8b9529d55ed86babd4ddbb366ce24978c",
   "branch": "main",
-  "data_commit": "2026-11-21T19:45:09-03:00",
+  "data_commit": "2026-11-21T19:54:14-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d11416f",
+    "data": "2026-11-21",
+    "assunto": "fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)"
+   },
    {
     "sha": "d1fc1cf",
     "data": "2026-11-21",
@@ -126,25 +131,20 @@
     "sha": "d7e6b41",
     "data": "2026-11-20",
     "assunto": "docs: preserva auditoria planejado x implementado (20/11) (#480)"
-   },
-   {
-    "sha": "5c51f13",
-    "data": "2026-11-20",
-    "assunto": "chore: ativar Gate #26 de drift de schema/policies no CI (#475)"
    }
   ],
-  "arquivos_mudados_7d": 477,
+  "arquivos_mudados_7d": 478,
   "pastas_mais_mudadas_30d": [
+   {
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 41
+   },
    {
     "pasta": "src/pages/tributario",
     "mudancas": 41
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 37
-   },
-   {
-    "pasta": "src/components/reforma-tributaria",
     "mudancas": 37
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 249
+    "commits": 250
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3986,
   "arquivos_codigo": 2489,
-  "linhas_codigo": 443895,
+  "linhas_codigo": 443972,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 999,
-   "linhas": 164240
+   "linhas": 164264
   },
   "src/config": {
    "arquivos": 2,
@@ -664,7 +664,7 @@
   },
   "src/lib": {
    "arquivos": 418,
-   "linhas": 55284
+   "linhas": 55337
   },
   "src/main.tsx": {
    "arquivos": 1,

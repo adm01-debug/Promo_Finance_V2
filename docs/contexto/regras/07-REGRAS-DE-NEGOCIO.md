@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d1fc1cf810` · branch `main` · 2026-11-21 22:47 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d11416f8b9` · branch `main` · 2026-11-21 22:59 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5070,7 +5070,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3661 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3668 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5093,6 +5093,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/conformidade-historico.test.ts` | 29 | competenciaValida · aceita apenas AAAA-MM válido · construirHistorico · retorna série vazia sem itens … |
 | `src/components/contas-receber/__tests__/ContasReceberKPIs.test.tsx` | 28 | ContasReceberKPIs · Gap #4 - Comparativo temporal · exibe variação positiva com seta para cima · exibe variação negativa corretamente … |
 | `src/components/reforma-tributaria/__tests__/EmptyStateTributario.test.tsx` | 28 | EmptyStateTributario · Tipo: apuracoes · exibe título correto · exibe botão primário Criar Apuração … |
+| `src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx` | 28 | GlossarioTooltip · Termos conhecidos · renderiza termo CBS com dashed underline · renderiza termo IBS … |
 | `src/lib/__tests__/plano-contas-csv-importer.test.ts` | 28 | parsePlanoContasCsv — cabeçalho e formato · rejeita arquivo vazio · rejeita cabeçalho sem colunas obrigatórias · aceita  … |
 | `src/lib/tributario/__tests__/ipi-iss.test.ts` | 28 | TIPI — catálogo · não possui NCM duplicado e todos têm 8 dígitos · normaliza NCM com máscara · IPI … |
 | `src/lib/tributario/__tests__/cobertura-extra.test.ts` | 27 | fator-r — calcularFolha12m · retorna 0 com histórico vazio · soma os 12 meses anteriores quando há histórico completo · proporcionaliza para empresa em início de atividade … |
@@ -5105,7 +5106,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/organizacoes/__tests__/convites.test.ts` | 25 | convites: token e validade · gera token hexadecimal de 64 caracteres · gera tokens distintos em 500 execuções (sem colisão) · respeita gerador determinístico injetado … |
 | `src/lib/sso/__tests__/consistency.test.ts` | 25 | validateSSOConfig — happy path · configuração consistente: nenhum issue · summarizeIssues: hasBlocker=false quando sem erros · claim_mapping … |
 | `src/lib/tributario/__tests__/overlay-ncm.test.ts` | 24 | normalizarAliquotaIpi · aceita fração, percentual e string com vírgula · trata 1 como 100% em fração e 100 como 100% em percentual · rejeita valores não numéricos, negativos e nulos … |
-| `src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx` | 23 | GlossarioTooltip · Termos conhecidos · renderiza termo CBS com dashed underline · renderiza termo IBS … |
 | `src/components/reforma-tributaria/__tests__/HeroKPIs.test.tsx` | 23 | HeroKPIs · Renderização dos cards · exibe carga tributária efetiva · exibe alíquotas CBS e IBS como badges … |
 | `src/lib/__tests__/ofx-parser.test.ts` | 23 | OFX/CSV Parser · parseOFX · arquivo vazio retorna erro · arquivo sem transações retorna erro … |
 | `src/lib/tributario/__tests__/darf-consolidacao.test.ts` | 23 | darf/tabelas — calendário · reconhece fins de semana e feriados nacionais · antecipa sempre para um dia útil · não possui códigos de receita duplicados … |
@@ -5178,6 +5178,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/filterHydrationTelemetry.test.ts` | 12 | filterHydrationTelemetry · registra evento com timestamp ISO · filtra falhas via getHydrationFailures · mantém buffer FIFO limitado a 100 eventos … |
 | `src/lib/__tests__/sefaz-rejection-monitor.test.ts` | 12 | sefaz-rejection-monitor · retorna null quando não há rejeições suficientes · gera alerta tipo aviso ao atingir limite mínimo · gera alerta crítico ao atingir limite superior … |
 | `src/lib/__tests__/sefaz-sem-status-fabricado.test.ts` | 12 | SEFAZ não fabrica status (F11) · sem nada gravado, o status é desconhecido — não  · status gravado sem lastCheck não vira 01/01/1970 · registro gravado pela versão que sorteava status é descartado na leitura … |
+| `src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts` | 12 | cronograma-oficial · 2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100% · 2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028) · 2026 e 2027-2028: IBS total (UF+Mun) é 0,1% … |
 | `src/lib/sso/__tests__/sandbox-csv.test.ts` | 12 | parseBulkCsv · parse cabeçalho + groups com pipe · detecta delimitador ; · reporta erro quando faltam colunas … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-ncm.test.ts` | 12 | coerência NCM — catálogo espelho · não acusa divergência quando o banco espelha a TIPI · catálogo vazio acusa todos os NCMs da TIPI como ausentes · coerência NCM — detecção de drift … |
 | `src/lib/tributario/__tests__/serie-comparativa.test.ts` | 12 | comparativo temporal — utilitários · formata rótulos do eixo e tolera lixo · gera dataKeys válidas e únicas · comparativo temporal — casos de borda … |
@@ -5204,7 +5205,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/anomalia-routes.test.ts` | 10 | anomalia-routes · getEntidadeUrl · fallback para drill-down quando faltam dados · roteia %s → %s … |
 | `src/lib/__tests__/format-filter-value.test.ts` | 10 | formatFilterValue · valores vazios viram travessão · booleans · números pt-BR … |
 | `src/lib/__tests__/sso-slo-state.test.ts` | 10 | sso-slo-state · persiste e recupera snapshot com timestamp · readSloFailure retorna null quando vazio · readSloFailure retorna null para JSON inválido … |
-| `src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts` | 10 | cronograma-oficial · 2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100% · 2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028) · 2026 e 2027-2028: IBS total (UF+Mun) é 0,1% … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-ufs.test.ts` | 10 | coerência das UFs entre catálogo e motor ICMS · cobre as 27 unidades federativas · não acusa divergência quando o catálogo espelha o motor · detecta alíquota interna divergente (regressão MA/PI/RN) … |
 | `src/lib/tributario/__tests__/sanitizacao-parametros.test.ts` | 10 | sanitizarParametros — domínio legal dos parâmetros · limita percentuais ao intervalo [0, 100] · renormaliza o mix quando serviços + indústria + revenda excede 100% · neutraliza NaN, Infinity e valores negativos … |
 | `src/lib/tributario/__tests__/validador-ncm-cst.test.ts` | 10 | validarConsistenciaNcmCst · retorna score 100 para NCM/CST consistentes (comércio comum) · penaliza NCM monofásico (medicamentos 3004) com CST divergente · aceita CSTs válidos para monofásicos (04/06/60/060) … |

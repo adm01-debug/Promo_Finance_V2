@@ -1182,11 +1182,11 @@
   {
    "arquivo": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
    "tipo": "unit",
-   "linhas": 107,
+   "linhas": 129,
    "testa": [
     "src/components/reforma-tributaria/GlossarioTooltip.tsx"
    ],
-   "casos": 17
+   "casos": 21
   },
   {
    "arquivo": "src/components/reforma-tributaria/__tests__/HeroKPIs.test.tsx",
@@ -2537,12 +2537,12 @@
   {
    "arquivo": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
    "tipo": "unit",
-   "linhas": 68,
+   "linhas": 90,
    "testa": [
     "src/config/reforma-tributaria.ts",
     "src/lib/reforma-tributaria/cronograma-oficial.ts"
    ],
-   "casos": 9
+   "casos": 11
   },
   {
    "arquivo": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
