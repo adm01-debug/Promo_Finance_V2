@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)",
    "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)",
    "chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)",
    "chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)",
-   "fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)",
-   "fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)"
+   "fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

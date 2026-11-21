@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "b28b64bd8b85e375df55764b0edce8bab68c3195",
+  "sha": "21ecbbc6d2adc6d645dd121fb861dd26609567c1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 12:40 UTC",
+  "generated_at": "2026-11-21 12:57 UTC",
   "files_total": 4010,
   "code_files": 3609,
-  "code_lines": 513709
+  "code_lines": 513706
  },
  "version": "1.3.2",
- "facts_hash": "5b3ab67f82f059cb",
+ "facts_hash": "deda6b6bdd8cc9b9",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -13673,7 +13673,7 @@
       "type": "TEXT NOT NULL DEFAULT 'geral'",
       "fk": "",
       "generated": "",
-      "src": "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql"
+      "src": "supabase/migrations/20261120130000_ledger_reconciliado.sql"
      },
      {
       "name": "created_at",
@@ -50501,7 +50501,7 @@
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
-   "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
+   "supabase/migrations/20261120130000_ledger_reconciliado.sql",
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
@@ -71053,7 +71053,7 @@
   {
    "module": "supabase/migrations",
    "files": 1052,
-   "lines": 81288,
+   "lines": 81285,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -244587,9 +244587,9 @@
    "path": "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
    "lines": 91
   },
-  "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql": {
-   "path": "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
-   "lines": 19
+  "supabase/migrations/20261120130000_ledger_reconciliado.sql": {
+   "path": "supabase/migrations/20261120130000_ledger_reconciliado.sql",
+   "lines": 16
   },
   "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql": {
    "path": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
@@ -244713,10 +244713,20 @@
   }
  },
  "git": {
-  "sha": "b28b64bd8b85e375df55764b0edce8bab68c3195",
+  "sha": "21ecbbc6d2adc6d645dd121fb861dd26609567c1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "21ecbbc",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)",
+    "files": [
+     "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
+     "supabase/migrations/20261120130000_ledger_reconciliado.sql"
+    ]
+   },
    {
     "sha": "b28b64b",
     "date": "2026-11-21",
@@ -245044,23 +245054,16 @@
      "scripts/db/test-vw-fluxo-caixa.sql",
      "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
     ]
-   },
-   {
-    "sha": "b75c138",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "feat(tributario): tela de faturamento passa a gravar o imposto do mês (#456)",
-    "files": [
-     "src/components/tributario/historico/FaturamentoTab.tsx",
-     "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
-     "src/hooks/useHistoricoFinanceiro.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     3
+   ],
+   [
+    "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
+    2
    ],
    [
     ".github/workflows/ci.yml",
@@ -245087,6 +245090,10 @@
     2
    ],
    [
+    "supabase/migrations/20261120130000_ledger_reconciliado.sql",
+    1
+   ],
+   [
     "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
     1
    ],
@@ -245100,10 +245107,6 @@
    ],
    [
     "supabase/functions/calcular-slo-metrics-diario/index.ts",
-    1
-   ],
-   [
-    "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
     1
    ],
    [
@@ -245132,10 +245135,6 @@
    ],
    [
     "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
     1
    ]
   ]

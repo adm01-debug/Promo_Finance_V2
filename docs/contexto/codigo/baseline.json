@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b28b64bd8b85e375df55764b0edce8bab68c3195",
+  "commit": "21ecbbc6d2adc6d645dd121fb861dd26609567c1",
   "branch": "main",
-  "data_commit": "2026-11-21T09:39:52-03:00",
+  "data_commit": "2026-11-21T09:56:34-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "21ecbbc",
+    "data": "2026-11-21",
+    "assunto": "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)"
+   },
    {
     "sha": "b28b64b",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "6d521cd",
     "data": "2026-11-17",
     "assunto": "docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)"
-   },
-   {
-    "sha": "fee7c1d",
-    "data": "2026-11-17",
-    "assunto": "chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)"
    }
   ],
-  "arquivos_mudados_7d": 424,
+  "arquivos_mudados_7d": 425,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 35
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -215,7 +215,7 @@
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 13
+    "mudancas": 12
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -226,12 +226,12 @@
     "mudancas": 11
    },
    {
-    "arquivo": "scripts/generate-env-manifest.mjs",
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 11
+    "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 10
    },
    {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 236
+    "commits": 237
    },
    {
     "autor": "dependabot[bot]",
