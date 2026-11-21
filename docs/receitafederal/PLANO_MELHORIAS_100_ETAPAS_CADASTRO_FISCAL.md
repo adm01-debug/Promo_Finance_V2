@@ -75,7 +75,7 @@
 | 38 | Badge de situação cadastral | `src/components/shared/SituacaoCadastralBadge.tsx` | [ ] ATIVA verde; SUSPENSA/INAPTA laranja; BAIXADA/NULA vermelho [ ] tooltip com data da consulta e origem | screenshot E2E |
 | 39 | Badge na lista de fornecedores | `src/pages/fornecedores/FornecedoresTableRow.tsx` | [ ] lê de `cnpja_cache` via join ou campo denormalizado (decidir na etapa 68) | E2E |
 | 40 | Badge no detalhe do cliente | `src/components/clientes/ClienteDetailDialog.tsx` | [ ] idem | E2E |
-| 41 | Reconsulta manual | `BotaoBuscarCnpj` | [ ] botão "Atualizar" ignora cache (`force: true` no payload; edge respeita rate limit) | request real com `cached:false` |
+| 41 | Reconsulta manual (ponta a ponta) | `BotaoBuscarCnpj.tsx`, `src/hooks/useCnpjaLookup.ts`, `supabase/functions/cnpja-lookup/index.ts` | [ ] botão "Atualizar" chama o hook com `{ force: true }` [ ] hook repassa `force` no body [ ] edge: `force === true` pula a leitura de `cnpja_cache`, **mantém** o rate limit e sobrescreve o cache ao gravar | request real com `cached:false`; teste da edge: `force` → provedor chamado mesmo com cache válido |
 | 42 | Onboarding tributário usa o componente | `src/pages/tributario/OnboardingTributario.parts.tsx` | [ ] substitui chamada direta ao hook pelo componente; comportamento igual | E2E `onboarding` |
 
 ## Fase 4 — Resiliência das integrações (43-54) `[DeHor]`
@@ -178,7 +178,7 @@
 8 depende só da decisão do Joaquim (etapa 91)
 9 fecha tudo
 ```
-Paralelismo: fases podem andar em paralelo **exceto** nos pares abaixo, que compartilham arquivo e por isso seguem a regra 3 do `docs/agentes/fluxo-git.md` (PR aberta tocando o mesmo arquivo → parar e avisar; **a segunda etapa só começa depois da primeira mergeada** — rebase não substitui a espera): `nfe-vinculo-proxy/index.ts` (47 → 60), `sefaz-dfe-puxar/index.ts` (48 → 61), `useImportacaoXMLNFe.ts` (58 → 88), `useNfeRecebidas.ts` (59 → 52), `useCnpjaLookup.ts` (12 → 30 → 52), `cnpja-lookup/index.ts` (12+13 → 14 → 26 → 27), `_shared/resilience.ts` (29 → 43 → 44 → 50). Antes de abrir qualquer PR, o agente confere com `gh pr list` se há PR aberta nos arquivos da etapa. Fase 3 depende de 1 e 2; Fase 6 depende de 3; etapa 46 só começa depois da 25 mergeada.
+Paralelismo: fases podem andar em paralelo **exceto** nos pares abaixo, que compartilham arquivo e por isso seguem a regra 3 do `docs/agentes/fluxo-git.md` (PR aberta tocando o mesmo arquivo → parar e avisar; **a segunda etapa só começa depois da primeira mergeada** — rebase não substitui a espera): `nfe-vinculo-proxy/index.ts` (47 → 60), `sefaz-dfe-puxar/index.ts` (48 → 61), `useImportacaoXMLNFe.ts` (58 → 88), `useNfeRecebidas.ts` (59 → 52), `useCnpjaLookup.ts` (12 → 30 → 52), `cnpja-lookup/index.ts` (12+13 → 14 → 26 → 27), `_shared/resilience.ts` (29 → 43 → 44 → 50). Antes de **iniciar** qualquer etapa (não só antes de abrir a PR), o agente consulta os arquivos das PRs abertas via `github_graphql` (`pullRequests(states: OPEN) { files { path } }`), conforme `docs/agentes/fluxo-git.md:14-19`; se algum arquivo da etapa aparecer, para e avisa. Fase 3 depende de 1 e 2; Fase 6 depende de 3; etapa 46 só começa depois da 25 mergeada.
 
 ## Riscos registrados
 
