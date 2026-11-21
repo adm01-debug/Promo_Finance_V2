@@ -3,22 +3,107 @@
 -- Fonte: cron.job WHERE active=true de produção (regenerado em 2026-11-21).
 --
 -- Placeholder substituído por envsubst no wrapper migrate-cron-jobs.sh:
---   ${PROJECT_REF} → ref do projeto destino (usado no host das edges)
+--   PROJECT_REF → ref do projeto destino (usado no host das edges)
 --
--- Idempotente: cada job é desagendado (se existir) antes de recriar.
+-- Idempotente: cada job gerenciado é desagendado (se existir) antes de
+-- recriar. Jobs do destino fora desta lista são PRESERVADOS (contrato do
+-- staging-migrate: nunca desagendar o que não pertence a esta lista).
 -- Requer extensão pg_cron.
 
 BEGIN;
 
--- 0. Remove todos os crons existentes no destino: staging espelha prod de
---    forma determinística (sem jobs órfãos de migrações antigas).
-DO $$
-DECLARE j record;
+-- ---------------------------------------------------------------------------
+-- 0. Recria funcoes resolvedoras com URL do DESTINO (referencias de prod)
+-- ---------------------------------------------------------------------------
+-- As migrations 20260822115000 e 20260913120000 gravam a URL de PROD no corpo
+-- das funcoes SECURITY DEFINER que os crons de HTTP chamam. Em staging isso
+-- faz o projeto novo chamar as edges de prod com credenciais locais. Como o
+-- Supabase nao expoe o project ref via current_setting, estas definicoes sao
+-- recriadas aqui com o ref do projeto destino (placeholder PROJECT_REF).
+-- Em prod este script nao roda: as migrations originais continuam corretas.
+
+CREATE OR REPLACE FUNCTION public.invocar_regua_cobranca(p_dry_run boolean DEFAULT false)
+RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, vault, net, extensions
+AS $$
+DECLARE
+  v_cron_secret text;
+  v_request_id bigint;
 BEGIN
-  FOR j IN SELECT jobname FROM cron.job LOOP
-    PERFORM cron.unschedule(j.jobname);
-  END LOOP;
-END $$;
+  SELECT decrypted_secret
+    INTO v_cron_secret
+    FROM vault.decrypted_secrets
+   WHERE name = 'regua_cron_secret'
+   LIMIT 1;
+
+  IF v_cron_secret IS NULL OR length(v_cron_secret) < 32 THEN
+    RAISE EXCEPTION 'Secret regua_cron_secret ausente ou inválido no Vault';
+  END IF;
+
+  SELECT net.http_post(
+    url := 'https://${PROJECT_REF}.supabase.co/functions/v1/executar-regua-cobranca',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-cron-secret', v_cron_secret
+    ),
+    body := jsonb_build_object('dry_run', p_dry_run),
+    timeout_milliseconds := 30000
+  ) INTO v_request_id;
+
+  RETURN v_request_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.invocar_digest_silenciamentos()
+RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_catalog, extensions
+AS $$
+DECLARE
+  v_request_id bigint;
+BEGIN
+  SELECT net.http_post(
+    url := 'https://${PROJECT_REF}.supabase.co/functions/v1/digest-silenciamentos-erro',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-cron-secret', public.segredo_cron('internal_jobs')
+    ),
+    body := jsonb_build_object('janelaHoras', 168, 'minIntervaloHoras', 144),
+    timeout_milliseconds := 30000
+  ) INTO v_request_id;
+
+  RETURN v_request_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.invocar_digest_conformidade()
+RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_catalog, extensions
+AS $$
+DECLARE
+  v_request_id bigint;
+BEGIN
+  SELECT net.http_post(
+    url := 'https://${PROJECT_REF}.supabase.co/functions/v1/enviar-digest-conformidade',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      -- apikey so atravessa o gateway (verify_jwt=true); quem autoriza de fato
+      -- e o x-cron-secret conferido dentro da funcao.
+      'apikey', public.chave_anon_vault(),
+      'x-cron-secret', public.segredo_cron('conformidade_cron')
+    ),
+    body := jsonb_build_object('severidadeMinima', 'baixa', 'limite', 300),
+    timeout_milliseconds := 30000
+  ) INTO v_request_id;
+
+  RETURN v_request_id;
+END;
+$$;
 
 -- Helper: unschedule seguro (sem erro se o job não existir)
 CREATE OR REPLACE FUNCTION pg_temp.safe_unschedule(p_name text)
@@ -149,6 +234,8 @@ SELECT cron.schedule(
 );
 
 -- 18. gerar-snapshots-conformidade-mensal — snapshot mensal de conformidade (edge)
+--     verify_jwt=true na edge: o gateway exige JWT válido além do
+--     x-cron-secret conferido no handler (padrão de invocar_digest_conformidade).
 SELECT pg_temp.safe_unschedule('gerar-snapshots-conformidade-mensal');
 SELECT cron.schedule(
   'gerar-snapshots-conformidade-mensal', '0 4 5 * *',
@@ -156,6 +243,7 @@ SELECT cron.schedule(
     url := 'https://${PROJECT_REF}.supabase.co/functions/v1/gerar-snapshots-conformidade',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
+      'apikey', public.chave_anon_vault(),
       'x-cron-secret', (SELECT valor FROM public.integration_secrets WHERE chave = 'conformidade_cron' LIMIT 1)
     ),
     body := jsonb_build_object('meses', 3, 'regime', 'real')

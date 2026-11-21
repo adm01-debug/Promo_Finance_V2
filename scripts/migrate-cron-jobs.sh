@@ -72,7 +72,12 @@ echo "📄 SQL renderizado: $OUT"
 if [[ $DRY_RUN -eq 1 ]]; then
   echo "🧪 DRY-RUN — nenhuma alteração aplicada. Preview abaixo:"
   echo "------------------------------------------------------------"
-  sed -n '1,60p' "$OUT"
+  sed -n '1,24p' "$OUT"
+  echo "..."
+  FIRST=$(grep -n '^SELECT cron.schedule(' "$OUT" | head -1 | cut -d: -f1)
+  if [[ -n "$FIRST" ]]; then
+    sed -n "${FIRST},$((FIRST+24))p" "$OUT"
+  fi
   echo "... (truncado) ..."
   exit 0
 fi
