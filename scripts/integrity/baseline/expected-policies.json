@@ -260,5 +260,7 @@
   "webhook_simulation_results": 1,
   "webhook_simulation_runs": 2,
   "webhooks_log": 2,
-  "whatsapp_conversas": 1
+  "whatsapp_conversas": 1,
+  "user_preferences": 4,
+  "aprovacao_assinaturas": 2
 }
