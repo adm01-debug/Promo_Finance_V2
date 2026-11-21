@@ -1,7 +1,6 @@
 import {
   AliquotasTransicao,
   CategoriaIS,
-  CONFIGURACOES_IS,
   FaseTransicao,
   REGIMES_ESPECIAIS,
   RegimeEspecial,
@@ -62,11 +61,8 @@ export function aplicarRegimeEspecial(
 
 /** Obtém alíquota do Imposto Seletivo */
 export function obterAliquotaIS(categoria?: CategoriaIS, aliquotaCustom?: number): number {
-  if (aliquotaCustom !== undefined) return aliquotaCustom;
   if (!categoria) return 0;
-
-  const config = CONFIGURACOES_IS.find((c) => c.categoria === categoria);
-  return config?.aliquotaBase || 0;
+  return aliquotaCustom ?? 0;
 }
 
 /** Verifica se operação é isenta/imune */

@@ -110,8 +110,17 @@ describe('calcularReformaTributaria', () => {
     );
   });
 
-  it('imposto seletivo aplica sobre categorias', () => {
-    const r = calcularReformaTributaria({ ...base, categoriaImpostoSeletivo: 'fumo' });
+  it('imposto seletivo aplica sobre categorias com alíquota informada pelo usuário', () => {
+    const r = calcularReformaTributaria({
+      ...base,
+      categoriaImpostoSeletivo: 'fumo',
+      aliquotaISCustomizada: 25,
+    });
     expect(r.tributos.find((t) => t.nome === 'Imposto Seletivo')!.valor).toBeCloseTo(250_000, 0);
+  });
+
+  it('categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria', () => {
+    const r = calcularReformaTributaria({ ...base, categoriaImpostoSeletivo: 'fumo' });
+    expect(r.tributos.find((t) => t.nome === 'Imposto Seletivo')!.valor).toBe(0);
   });
 });

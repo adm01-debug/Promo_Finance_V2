@@ -31,6 +31,8 @@ export type CampoInput = {
   anoReforma: number;
   categoriaSeletivo: 'nenhum' | 'bebidas_alcoolicas' | 'fumo' | 'veiculos' | 'bens_luxo';
   reducaoReforma: number;
+  /** LC 214/2025 ainda não fixou alíquota por categoria — usuário informa a sua. */
+  aliquotaISCustomizada: number;
 };
 
 export const ROTULO_ATIVIDADE: Record<AtividadePresumido, string> = {
@@ -72,6 +74,7 @@ export const DEFAULT_INPUT: CampoInput = {
   anoReforma: 2026,
   categoriaSeletivo: 'nenhum',
   reducaoReforma: 0,
+  aliquotaISCustomizada: 0,
 };
 
 export function buildInput(
@@ -129,6 +132,7 @@ export function buildInput(
       anoReferencia: f.anoReforma,
       regimeEspecialReducao: f.reducaoReforma,
       categoriaImpostoSeletivo: f.categoriaSeletivo,
+      aliquotaISCustomizada: f.categoriaSeletivo !== 'nenhum' ? f.aliquotaISCustomizada : undefined,
     },
   };
 }

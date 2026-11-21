@@ -55,7 +55,7 @@ export function simularComparativo(
 
   let isNovo = 0;
   if (dados.temProdutosIS && dados.categoriaIS) {
-    const aliquotaIS = obterAliquotaIS(dados.categoriaIS);
+    const aliquotaIS = obterAliquotaIS(dados.categoriaIS, dados.aliquotaISCustomizada);
     isNovo = faturamentoVendas * (aliquotaIS / 100) * 0.2;
     observacoes.push(`Imposto Seletivo aplicado: ${aliquotaIS}%`);
   }

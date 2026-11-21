@@ -2,11 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toISOLocal } from '@/lib/formatters';
-import {
-  ALIQUOTAS_TRANSICAO,
-  CONFIGURACOES_IS,
-  REGIMES_ESPECIAIS,
-} from '@/types/reforma-tributaria';
+import { ALIQUOTAS_TRANSICAO, REGIMES_ESPECIAIS } from '@/types/reforma-tributaria';
 
 export interface OperacaoTributavel {
   id: string;
@@ -111,6 +107,8 @@ export interface CreateOperacaoInput {
   valor_desconto?: number;
   valor_frete?: number;
   is_categoria?: string;
+  /** % do IS informada pelo usuário — a lei não fixa alíquota por categoria (LC 214/2025 arts. 393-400). */
+  is_aliquota_customizada?: number;
   regime_especial?: string;
   isento?: boolean;
   motivo_isencao?: string;
@@ -134,11 +132,11 @@ function obterAliquotasAno(ano: number) {
   };
 }
 
-// Função para obter alíquota IS
-function obterAliquotaIS(categoria?: string) {
+// Função para obter alíquota IS — a lei não fixa alíquota por categoria
+// (LC 214/2025 arts. 393-400); usa só o que o usuário informar.
+function obterAliquotaIS(categoria?: string, aliquotaCustomizada?: number) {
   if (!categoria) return 0;
-  const config = CONFIGURACOES_IS.find((c) => c.categoria === categoria);
-  return config?.aliquotaMaxima || 0;
+  return aliquotaCustomizada ?? 0;
 }
 
 // Função para obter redução de regime especial
@@ -219,7 +217,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
         ibs_valor = baseCalculo * ibs_aliquota;
 
         // IS (Imposto Seletivo)
-        is_aliquota = obterAliquotaIS(input.is_categoria);
+        is_aliquota = obterAliquotaIS(input.is_categoria, input.is_aliquota_customizada);
         is_valor = baseCalculo * is_aliquota;
 
         // Tributos residuais

@@ -88,6 +88,8 @@ export interface DadosSimulacao {
   regimeEspecial?: RegimeEspecial;
   temProdutosIS?: boolean;
   categoriaIS?: CategoriaIS;
+  /** LC 214/2025 ainda não fixou alíquota por categoria — usuário informa a sua. */
+  aliquotaISCustomizada?: number;
 }
 
 export interface ResultadoSimulacao {
