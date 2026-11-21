@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Calendar, CheckCircle2, Clock, ArrowRight, AlertCircle, Info } from 'lucide-react';
 import useReformaTributaria from '@/hooks/useReformaTributaria';
+import { obterLinhaCronograma } from '@/lib/reforma-tributaria/cronograma-oficial';
+import { GlossarioTooltip } from './GlossarioTooltip';
 
 const itemVariants = {
   hidden: { x: -20, opacity: 0 },
@@ -173,6 +175,7 @@ export function CronogramaTransicao() {
           {cronogramaTransicao.map((etapa, index) => {
             const info = getDescricaoFase(etapa.ano);
             const isAtual = etapa.ano === anoReferencia;
+            const linha = obterLinhaCronograma(etapa.ano);
 
             return (
               <motion.div
@@ -203,11 +206,27 @@ export function CronogramaTransicao() {
                     {/* Alíquotas */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center p-3 bg-primary/10 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">CBS</p>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          <GlossarioTooltip
+                            termo="CBS"
+                            origem={linha.origem}
+                            fundamento={linha.fundamento}
+                          >
+                            CBS
+                          </GlossarioTooltip>
+                        </p>
                         <p className="text-lg font-bold text-primary">{etapa.cbs}%</p>
                       </div>
                       <div className="text-center p-3 bg-success/10 rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">IBS</p>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          <GlossarioTooltip
+                            termo="IBS"
+                            origem={linha.origem}
+                            fundamento={linha.fundamento}
+                          >
+                            IBS
+                          </GlossarioTooltip>
+                        </p>
                         <p className="text-lg font-bold text-success">{etapa.ibs}%</p>
                       </div>
                       <div className="text-center p-3 bg-muted/50 rounded-lg">

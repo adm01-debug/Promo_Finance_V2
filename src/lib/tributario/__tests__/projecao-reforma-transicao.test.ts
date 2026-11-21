@@ -84,12 +84,21 @@ describe('projetarReforma — cálculos por ano', () => {
     expect(p.totalTributos).toBeCloseTo(p.cbs + p.ibs, 2);
   });
 
-  it('pico tributário identificado corretamente', () => {
+  it('pico tributário identificado corretamente, nunca em 2026 (art. 348 LC 214/2025)', () => {
     const r = projetarReforma(params);
+    const semBaseline2026 = r.projecoes.filter((p) => p.ano !== 2026);
     expect(r.picoTributario).toBeDefined();
+    expect(r.picoTributario.ano).not.toBe(2026);
     expect(r.picoTributario.totalTributos).toBeGreaterThanOrEqual(
-      Math.max(...r.projecoes.map((p) => p.totalTributos)) - 0.01
+      Math.max(...semBaseline2026.map((p) => p.totalTributos)) - 0.01
     );
+  });
+
+  it('2026 não soma CBS/IBS ao total (compensável/dispensado) — sem pico artificial', () => {
+    const r = projetarReforma(params);
+    const p2026 = r.projecoes.find((p) => p.ano === 2026)!;
+    expect(p2026.totalTributos).toBeCloseTo(p2026.pisCofins + p2026.icms + p2026.iss, 2);
+    expect(r.picoTributario.ano).not.toBe(2026);
   });
 
   it('faturamento zero retorna projeções com tributos zero', () => {

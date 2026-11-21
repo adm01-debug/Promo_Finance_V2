@@ -52,14 +52,20 @@ export default function ProjecaoReforma() {
 
   const projecao = useMemo(() => projetarReforma(params), [params]);
 
-  const dadosGrafico = projecao.projecoes.map((p) => ({
-    ano: p.ano,
-    'Carga Atual': Number(projecao.cargaAtual.toFixed(2)),
-    'Carga Projetada': Number(p.cargaEfetiva.toFixed(2)),
-    CBS: Number(((p.cbs / p.faturamento) * 100).toFixed(2)),
-    IBS: Number(((p.ibs / p.faturamento) * 100).toFixed(2)),
-    Antigos: Number((((p.pisCofins + p.icms + p.iss) / p.faturamento) * 100).toFixed(2)),
-  }));
+  const dadosGrafico = projecao.projecoes.map((p) => {
+    // 2026: CBS/IBS são compensáveis/dispensados (art. 348 LC 214/2025) e não
+    // entram em totalTributos/cargaEfetiva — a composição empilhada precisa
+    // refletir isso, senão soma mais do que a carga efetiva real do ano.
+    const cbsIbsContam = p.ano !== 2026;
+    return {
+      ano: p.ano,
+      'Carga Atual': Number(projecao.cargaAtual.toFixed(2)),
+      'Carga Projetada': Number(p.cargaEfetiva.toFixed(2)),
+      CBS: cbsIbsContam ? Number(((p.cbs / p.faturamento) * 100).toFixed(2)) : 0,
+      IBS: cbsIbsContam ? Number(((p.ibs / p.faturamento) * 100).toFixed(2)) : 0,
+      Antigos: Number((((p.pisCofins + p.icms + p.iss) / p.faturamento) * 100).toFixed(2)),
+    };
+  });
 
   const update = <K extends keyof ParametrosProjecao>(k: K, v: ParametrosProjecao[K]) =>
     setParams((p) => ({ ...p, [k]: v }));
@@ -177,6 +183,9 @@ export default function ProjecaoReforma() {
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Ano {projecao.picoTributario.ano} — {projecao.picoTributario.fase}
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              Compara só 2027 em diante — 2026 é ano-teste (CBS/IBS compensáveis)
             </p>
           </CardContent>
         </Card>
