@@ -122,9 +122,10 @@ export function calcularTributosReforma(
   const totalTributos = totalTributosNovos + totalTributosAntigos;
   const cargaTributariaPercentual = (totalTributos / valorBase) * 100;
 
-  const valorSplitPaymentCBS = anoReferencia >= 2026 ? valorCBS : 0;
-  const valorSplitPaymentIBS = anoReferencia >= 2029 ? valorIBS : 0;
-  const valorTotalSplitPayment = valorSplitPaymentCBS + valorSplitPaymentIBS;
+  // arts. 31-35 LC 214/2025: split payment desligado até ato conjunto CMN/BACEN
+  const valorSplitPaymentCBS = 0;
+  const valorSplitPaymentIBS = 0;
+  const valorTotalSplitPayment = 0;
 
   const valorLiquido = valorBase - totalTributos;
 

@@ -6,7 +6,7 @@ import {
   RegimeEspecial,
 } from '@/types/reforma-tributaria';
 import { obterLinhaCronograma } from './cronograma-oficial';
-import type { DadosOperacao } from './types';
+import type { DadosOperacao, ResultadoIsencao } from './types';
 
 /** Determina a fase de transição baseada no ano */
 export function determinarFaseTransicao(ano: number): FaseTransicao {
@@ -67,22 +67,61 @@ export function obterAliquotaIS(categoria?: CategoriaIS, aliquotaCustom?: number
   return aliquotaCustom ?? 0;
 }
 
-/** Verifica se operação é isenta/imune */
-export function verificarIsencao(dados: DadosOperacao): { isento: boolean; motivo?: string } {
+/**
+ * Verifica se operação é isenta ou imune.
+ * Etapa 29: lista explícita de CFOPs de exportação (série 7xxx) com manutencaoCredito.
+ */
+export function verificarIsencao(dados: DadosOperacao): ResultadoIsencao {
   if (dados.isExportacao) {
-    return { isento: true, motivo: 'Exportação - Imunidade constitucional' };
+    return {
+      isento: true,
+      motivo: 'Exportação — imunidade constitucional (art. 65 LC 214/2025)',
+      manutencaoCredito: true,
+    };
   }
 
-  const cfopsExportacao = ['7101', '7102', '7127', '7501', '7949'];
-  if (
-    cfopsExportacao.some(
-      (c) =>
-        dados.cfop.startsWith(c.substring(0, 1)) &&
-        dados.cfop.length === 4 &&
-        dados.cfop.startsWith('7')
-    )
-  ) {
-    return { isento: true, motivo: 'Exportação identificada pelo CFOP' };
+  // Lista explícita de CFOPs de exportação (série 7xxx — NF-e)
+  // Referência: Ajuste SINIEF 7/2005, Tabela B, códigos de operações com exterior
+  // 7651/7654: venda de combustível/lubrificante para o exterior (Convênio SINIEF 54/2000)
+  const cfopsExportacao = new Set([
+    '7101',
+    '7102',
+    '7103',
+    '7105',
+    '7106',
+    '7127',
+    '7129',
+    '7201',
+    '7202',
+    '7203',
+    '7205',
+    '7206',
+    '7211',
+    '7301',
+    '7302',
+    '7303',
+    '7304',
+    '7305',
+    '7306',
+    '7401',
+    '7501',
+    '7502',
+    '7503',
+    '7504',
+    '7551',
+    '7651',
+    '7654',
+    '7667',
+    '7930',
+    '7949',
+  ]);
+
+  if (dados.cfop.length === 4 && cfopsExportacao.has(dados.cfop)) {
+    return {
+      isento: true,
+      motivo: `Exportação identificada pelo CFOP ${dados.cfop} (art. 65 LC 214/2025)`,
+      manutencaoCredito: true,
+    };
   }
 
   return { isento: false };

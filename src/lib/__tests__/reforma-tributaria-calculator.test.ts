@@ -132,6 +132,18 @@ describe('Reforma Tributária Calculator', () => {
       const r = verificarIsencao({ ...dadosBase, cfop: '7101' });
       expect(r.isento).toBe(true);
     });
+
+    it('CFOP 7651 (combustível exportação) é isento', () => {
+      const r = verificarIsencao({ ...dadosBase, cfop: '7651' });
+      expect(r.isento).toBe(true);
+      expect(r.manutencaoCredito).toBe(true);
+    });
+
+    it('CFOP 7654 (lubrificante exportação) é isento', () => {
+      const r = verificarIsencao({ ...dadosBase, cfop: '7654' });
+      expect(r.isento).toBe(true);
+      expect(r.manutencaoCredito).toBe(true);
+    });
   });
 
   // ========================
@@ -165,11 +177,17 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.valorIBS).toBe(0);
     });
 
-    it('split payment CBS ativo a partir de 2026', () => {
+    it('split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)', () => {
       const r2025 = calcularTributosReforma(dadosVenda, 2025);
+      const r2026 = calcularTributosReforma(dadosVenda, 2026);
       const r2027 = calcularTributosReforma(dadosVenda, 2027);
       expect(r2025.valorSplitPaymentCBS).toBe(0);
-      expect(r2027.valorSplitPaymentCBS).toBeGreaterThanOrEqual(0);
+      expect(r2026.valorSplitPaymentCBS).toBe(0);
+      expect(r2027.valorSplitPaymentCBS).toBe(0);
+      expect(r2026.valorSplitPaymentIBS).toBe(0);
+      expect(r2027.valorSplitPaymentIBS).toBe(0);
+      expect(r2026.valorTotalSplitPayment).toBe(0);
+      expect(r2027.valorTotalSplitPayment).toBe(0);
     });
 
     it('carga tributária percentual é consistente', () => {

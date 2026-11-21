@@ -1,7 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Receipt, Landmark, AlertTriangle, ArrowRight, FileText, CheckCircle2 } from 'lucide-react';
+import {
+  Receipt,
+  Landmark,
+  AlertTriangle,
+  ArrowRight,
+  FileText,
+  CheckCircle2,
+  Info,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/formatters';
 import type { ResultadoCalculo } from '@/lib/reforma-tributaria-calculator';
 import { obterLinhaCronograma } from '@/lib/reforma-tributaria/cronograma-oficial';
@@ -15,6 +24,18 @@ interface Props {
 
 export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props) {
   const linha = obterLinhaCronograma(anoReferencia);
+
+  /**
+   * Carga efetiva a pagar.
+   * Em 2026 (ano-teste, art. 348 LC 214/2025): CBS (0,9%) e IBS (0,1%) são
+   * compensáveis com PIS/Cofins e, havendo saldo, com outros tributos federais.
+   * Não integram a carga efetiva a desembolsar.
+   * Para demais anos: totalTributosNovos + totalTributosAntigos.
+   */
+  const cargaEfetivaReais = resultado.cbsIbsCompensavel
+    ? resultado.totalTributosAntigos + resultado.valorIS
+    : resultado.totalTributosNovos + resultado.totalTributosAntigos;
+
   return (
     <div className="space-y-4">
       <Card>
@@ -40,10 +61,22 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
             </div>
           ) : (
             <>
+              {/* Aviso CBS/IBS compensáveis em 2026 */}
+              {resultado.cbsIbsCompensavel && (
+                <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800 flex items-start gap-2">
+                  <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-blue-700 dark:text-blue-300">
+                    <strong>2026 — ano-teste (art. 348 LC 214/2025):</strong> Quando recolhidos, CBS
+                    e IBS podem ser compensados com PIS/Cofins e, havendo saldo, com outros tributos
+                    federais. A simulação não inclui CBS/IBS na carga efetiva.
+                  </p>
+                </div>
+              )}
+
               {/* Tributos Novos */}
               <div className="space-y-3">
                 <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                  Tributos Novos (IBS/CBS)
+                  Tributos Novos (IBS/CBS){resultado.cbsIbsCompensavel ? ' — compensáveis' : ''}
                 </h4>
 
                 <div className="flex items-center justify-between p-3 bg-cbs/10 rounded-lg">
@@ -59,9 +92,19 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                     </GlossarioTooltip>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-cbs">{formatCurrency(resultado.valorCBS)}</p>
+                    <p
+                      className={cn(
+                        'font-semibold',
+                        resultado.cbsIbsCompensavel
+                          ? 'text-muted-foreground line-through'
+                          : 'text-cbs'
+                      )}
+                    >
+                      {formatCurrency(resultado.valorCBS)}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {resultado.aliquotaCBS.toFixed(2)}%
+                      {resultado.cbsIbsCompensavel ? ' (compensável)' : ''}
                     </p>
                   </div>
                 </div>
@@ -79,9 +122,19 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                     </GlossarioTooltip>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-ibs">{formatCurrency(resultado.valorIBS)}</p>
+                    <p
+                      className={cn(
+                        'font-semibold',
+                        resultado.cbsIbsCompensavel
+                          ? 'text-muted-foreground line-through'
+                          : 'text-ibs'
+                      )}
+                    >
+                      {formatCurrency(resultado.valorIBS)}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {resultado.aliquotaIBS.toFixed(2)}%
+                      {resultado.cbsIbsCompensavel ? ' (compensável)' : ''}
                     </p>
                   </div>
                 </div>
@@ -166,9 +219,13 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                 )}
                 <Separator />
                 <div className="flex justify-between text-lg">
-                  <span className="font-medium">Carga Tributária Total</span>
+                  <span className="font-medium">
+                    {resultado.cbsIbsCompensavel
+                      ? 'Carga Efetiva a Pagar (sem CBS/IBS)'
+                      : 'Carga Tributária Total'}
+                  </span>
                   <span className="font-bold text-primary">
-                    {formatCurrency(resultado.totalTributosNovos + resultado.totalTributosAntigos)}
+                    {formatCurrency(cargaEfetivaReais)}
                   </span>
                 </div>
                 <div className="flex justify-between">
