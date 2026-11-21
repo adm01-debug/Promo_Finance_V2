@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `aeefe2fe69` · branch `main` · 2026-11-21 18:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `794bb458fc` · branch `main` · 2026-11-21 19:54 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -307,7 +307,7 @@
 | `regiao_brasil` (enum) | NORTE, NORDESTE, CENTRO_OESTE, SUDESTE, SUL |  | banco |
 | `nivel_risco` (enum) | BAIXO, MEDIO, ALTO |  | banco |
 | `status_workflow` (enum) | IDENTIFICADO, EM_ANALISE, APROVADO, EM_EXECUCAO, CONCLUIDO, CANCELADO |  | banco |
-| … +236 linhas — lista completa em `context.json` | | | |
+| … +237 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `aeefe2fe696f67545c52a78d7c961d116fdad7bc` (2026-11-21T15:42:15-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `794bb458fc6d8e9741ca0cff081bb22a481689d8` (2026-11-21T16:53:29-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2366), SQL (1125), Markdown (217), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
+- linguagens: TypeScript (2369), SQL (1125), Markdown (217), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3977 |
-| arquivos_codigo | 2485 |
-| linhas_codigo | 443349 |
+| arquivos_total | 3980 |
+| arquivos_codigo | 2488 |
+| linhas_codigo | 443710 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 312 |
 | migrations | 1053 |
 | cron_jobs | 22 |
-| testes | 485 |
+| testes | 486 |
 | workflows | 19 |
 | scripts | 116 |
 | docs_md | 217 |
@@ -57,13 +57,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - telas: src/pages (127)
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (238), src/components (27), src/pages (5)
-- servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (285), outro (112), co-localizado (*.test) (48)
+- servicos_logica: src/lib (262), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (286), outro (112), co-localizado (*.test) (48)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
 - docs: docs (56), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (51%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
@@ -116,7 +116,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/export-contabil | 0 | 0 | 8 | 0 | 0 | 0 |
 | lib/ofx-parser | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/pdf-generator | 0 | 0 | 5 | 0 | 0 | 0 |
-| lib/reforma-tributaria | 0 | 0 | 5 | 0 | 0 | 0 |
+| lib/reforma-tributaria | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/sefaz-contingency | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/sped-generator | 0 | 0 | 5 | 0 | 0 | 0 |
@@ -453,7 +453,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
 - scripts_orfaos: 1 — ex.: scripts/db/test-vw-fluxo-caixa.sql
-- env_usadas_nao_declaradas: 4 — ex.: DEV, MODE, NODE_ENV
+- env_usadas_nao_declaradas: 6 — ex.: DEV, MODE, NODE_ENV
 - ciclos_de_import: 7
 - possiveis_segredos_no_codigo: 0
 
@@ -461,21 +461,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (35)
-- bun.lock (33)
+- package.json (34)
+- bun.lock (32)
 - .github/workflows/ci.yml (24)
-- supabase/functions/asaas-proxy/index.ts (17)
-- env.manifest.json (13)
+- supabase/functions/asaas-proxy/index.ts (16)
+- env.manifest.json (14)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (10)
 - supabase/functions/bitrix24-sync/index.ts (10)
-- supabase/functions/bling-proxy/index.ts (10)
 - supabase/functions/n8n-callback/index.ts (10)
 - supabase/functions/sync-profile-to-bitrix/index.ts (10)
-- supabase/functions/enviar-convite-organizacao/index.ts (9)
+- supabase/functions/bling-proxy/index.ts (9)
 - .github/workflows/prod-migrate.yml (8)
 - analise-prs/progresso.json (8)
+- scripts/automation.config.json (8)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -633,6 +633,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `794bb45` feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)
+- 2026-11-21 `9f993fd` chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)
 - 2026-11-21 `aeefe2f` docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)
 - 2026-11-21 `ea8ccc8` merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)
 - 2026-11-21 `ea32d18` fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)
@@ -646,8 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-20 `574c46c` docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)
 - 2026-11-20 `d7e6b41` docs: preserva auditoria planejado x implementado (20/11) (#480)
 - 2026-11-20 `5c51f13` chore: ativar Gate #26 de drift de schema/policies no CI (#475)
-- 2026-11-20 `b7e2355` fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)
-- 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

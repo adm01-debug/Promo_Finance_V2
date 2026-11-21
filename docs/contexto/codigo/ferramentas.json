@@ -3,7 +3,7 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2366)",
+   "TypeScript (2369)",
    "SQL (1125)",
    "Markdown (217)",
    "JavaScript (76)",
@@ -1329,6 +1329,8 @@
    "NODE_ENV",
    "SCENARIOS_COUNT",
    "VITE_BLING_CLIENT_ID",
+   "VITE_RT_REF_CBS",
+   "VITE_RT_REF_IBS",
    "VITE_SENTRY_DSN",
    "VITE_SUPABASE_PROJECT_ID",
    "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -1422,7 +1424,9 @@
    "DEV",
    "MODE",
    "NODE_ENV",
-   "SCENARIOS_COUNT"
+   "SCENARIOS_COUNT",
+   "VITE_RT_REF_CBS",
+   "VITE_RT_REF_IBS"
   ],
   "secrets_em_workflows": [
    "CI_GATE_LOG_SECRET",

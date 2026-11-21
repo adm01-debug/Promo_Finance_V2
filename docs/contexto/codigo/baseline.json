@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "aeefe2fe696f67545c52a78d7c961d116fdad7bc",
+  "commit": "794bb458fc6d8e9741ca0cff081bb22a481689d8",
   "branch": "main",
-  "data_commit": "2026-11-21T15:42:15-03:00",
+  "data_commit": "2026-11-21T16:53:29-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "794bb45",
+    "data": "2026-11-21",
+    "assunto": "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)"
+   },
+   {
+    "sha": "9f993fd",
+    "data": "2026-11-21",
+    "assunto": "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)"
+   },
    {
     "sha": "aeefe2f",
     "data": "2026-11-21",
@@ -121,19 +131,9 @@
     "sha": "2d54fb1",
     "data": "2026-11-17",
     "assunto": "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)"
-   },
-   {
-    "sha": "18355ba",
-    "data": "2026-11-17",
-    "assunto": "fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)"
-   },
-   {
-    "sha": "c72e283",
-    "data": "2026-11-17",
-    "assunto": "infra(ci): gate que barra coluna inexistente em select/order (#457)"
    }
   ],
-  "arquivos_mudados_7d": 436,
+  "arquivos_mudados_7d": 445,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 35
+    "mudancas": 34
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 33
+    "mudancas": 32
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -211,11 +211,11 @@
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 17
+    "mudancas": 16
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 13
+    "mudancas": 14
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -234,10 +234,6 @@
     "mudancas": 10
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 10
-   },
-   {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 10
    },
@@ -246,7 +242,7 @@
     "mudancas": 10
    },
    {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 9
    },
    {
@@ -266,11 +262,11 @@
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/n8n-dispatch/index.ts",
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 8
    },
    {
@@ -296,12 +292,16 @@
    {
     "arquivo": "src/hooks/useAcordosParcelamento.ts",
     "mudancas": 7
+   },
+   {
+    "arquivo": "src/lib/arquitetura/grafo-observado.json",
+    "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 239
+    "commits": 241
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3977,
-  "arquivos_codigo": 2485,
-  "linhas_codigo": 443349,
+  "arquivos_total": 3980,
+  "arquivos_codigo": 2488,
+  "linhas_codigo": 443710,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 312,
   "migrations": 1053,
   "cron_jobs": 22,
-  "testes": 485,
+  "testes": 486,
   "workflows": 19,
   "scripts": 116,
   "docs_md": 217
@@ -616,7 +616,7 @@
   },
   "scripts/test_migrate_cron_jobs.py": {
    "arquivos": 1,
-   "linhas": 380
+   "linhas": 468
   },
   "scripts/test_migrate_functions.py": {
    "arquivos": 1,
@@ -624,7 +624,7 @@
   },
   "scripts/test_staging_migrate.py": {
    "arquivos": 1,
-   "linhas": 374
+   "linhas": 377
   },
   "scripts/test_validate_all.py": {
    "arquivos": 1,
@@ -643,8 +643,8 @@
    "linhas": 164122
   },
   "src/config": {
-   "arquivos": 1,
-   "linhas": 112
+   "arquivos": 2,
+   "linhas": 142
   },
   "src/contexts": {
    "arquivos": 3,
@@ -663,8 +663,8 @@
    "linhas": 19781
   },
   "src/lib": {
-   "arquivos": 415,
-   "linhas": 54976
+   "arquivos": 417,
+   "linhas": 55216
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -1170,7 +1170,9 @@
    "DEV",
    "MODE",
    "NODE_ENV",
-   "SCENARIOS_COUNT"
+   "SCENARIOS_COUNT",
+   "VITE_RT_REF_CBS",
+   "VITE_RT_REF_IBS"
   ],
   "ciclos_de_import": 7,
   "possiveis_segredos_no_codigo": []

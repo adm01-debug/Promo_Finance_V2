@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 280,
+ "total": 282,
  "por_camada": {
-  "config": 1,
+  "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 261,
+  "lib": 262,
   "python": 14
  },
  "arquivos": [
@@ -645,6 +645,33 @@
     "pages"
    ],
    "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/config/reforma-tributaria.ts",
+   "camada": "config",
+   "exports": [
+    "REF_CBS_2027",
+    "REF_IBS"
+   ],
+   "export_default": null,
+   "linhas": 30,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS"
+   ],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/reforma-tributaria"
+   ],
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -3392,6 +3419,30 @@
    ],
    "coberto_por_testes": 0,
    "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+   "camada": "lib",
+   "exports": [
+    "CRONOGRAMA_OFICIAL",
+    "LinhaCronograma",
+    "OrigemValor",
+    "obterLinhaCronograma"
+   ],
+   "export_default": null,
+   "linhas": 172,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 1,
+   "orfao": true
   },
   {
    "arquivo": "src/lib/reforma-tributaria/regras.ts",

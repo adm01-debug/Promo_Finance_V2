@@ -7683,6 +7683,9 @@
    "src/lib/reforma-tributaria/types.ts",
    "src/types/reforma-tributaria.ts"
   ],
+  "src/lib/reforma-tributaria/cronograma-oficial.ts": [
+   "src/config/reforma-tributaria.ts"
+  ],
   "src/lib/reforma-tributaria/regras.ts": [
    "src/lib/reforma-tributaria/types.ts",
    "src/types/reforma-tributaria.ts"

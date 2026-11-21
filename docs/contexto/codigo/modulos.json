@@ -6294,9 +6294,9 @@
   },
   {
    "modulo": "config",
-   "arquivos": 1,
+   "arquivos": 2,
    "testes": 0,
-   "linhas": 112,
+   "linhas": 142,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -6310,6 +6310,8 @@
    "canais_realtime": [],
    "env": [
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -6334,6 +6336,7 @@
     "hooks/financial",
     "integrations/supabase",
     "lib",
+    "lib/reforma-tributaria",
     "pages"
    ],
    "depende_de_modulos": [],
@@ -9114,9 +9117,9 @@
   },
   {
    "modulo": "lib/reforma-tributaria",
-   "arquivos": 5,
-   "testes": 0,
-   "linhas": 532,
+   "arquivos": 6,
+   "testes": 1,
+   "linhas": 704,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9128,7 +9131,10 @@
    "rpcs": [],
    "buckets": [],
    "canais_realtime": [],
-   "env": [],
+   "env": [
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS"
+   ],
    "flags": [],
    "papeis": [],
    "diretos": {
@@ -9140,6 +9146,7 @@
     "lib"
    ],
    "depende_de_modulos": [
+    "config",
     "types"
    ],
    "pacotes_externos": []

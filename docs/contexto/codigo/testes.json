@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 485,
+ "total": 486,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 409
+  "unit": 410
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 285
+   "arquivos": 286
   },
   {
    "padrao": "outro",
@@ -733,7 +733,7 @@
   {
    "arquivo": "scripts/test_migrate_cron_jobs.py",
    "tipo": "pytest",
-   "linhas": 380,
+   "linhas": 468,
    "testa": [],
    "casos": 0
   },
@@ -747,7 +747,7 @@
   {
    "arquivo": "scripts/test_staging_migrate.py",
    "tipo": "pytest",
-   "linhas": 374,
+   "linhas": 377,
    "testa": [],
    "casos": 0
   },
@@ -2531,6 +2531,16 @@
     "src/lib/queryClient.ts"
    ],
    "casos": 3
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+   "tipo": "unit",
+   "linhas": 68,
+   "testa": [
+    "src/config/reforma-tributaria.ts",
+    "src/lib/reforma-tributaria/cronograma-oficial.ts"
+   ],
+   "casos": 9
   },
   {
    "arquivo": "src/lib/sso/__tests__/consistency.test.ts",
@@ -4417,6 +4427,7 @@
   "src/components/ui/tabs.tsx": 1,
   "src/components/ui/tooltip.tsx": 1,
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
+  "src/config/reforma-tributaria.ts": 1,
   "src/contexts/EmpresaScopeContext.tsx": 1,
   "src/contexts/useEmpresaScope.ts": 1,
   "src/hooks/anomaliaPreferencesValidation.ts": 1,
@@ -4529,6 +4540,7 @@
   "src/lib/queryClient.ts": 1,
   "src/lib/reforma-tributaria-calculator.ts": 1,
   "src/lib/reforma-tributaria/calcular-tributos.ts": 1,
+  "src/lib/reforma-tributaria/cronograma-oficial.ts": 1,
   "src/lib/reforma-tributaria/types.ts": 1,
   "src/lib/secure-random.ts": 1,
   "src/lib/sefaz-contingency/constants.ts": 1,

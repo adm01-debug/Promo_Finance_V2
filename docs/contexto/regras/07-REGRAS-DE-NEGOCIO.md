@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `aeefe2fe69` · branch `main` · 2026-11-21 18:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `794bb458fc` · branch `main` · 2026-11-21 19:54 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1652,6 +1652,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | OrgPapel | RESPONSAVEL \| ADMIN \| MEMBRO \| LEITOR | `src/lib/organizacoes/convites.ts` |
 | StatusConvite | PENDENTE \| UTILIZADO \| EXPIRADO | `src/lib/organizacoes/convites.ts` |
 | MotivoRecusaConvite | CONVITE_INEXISTENTE \| CONVITE_UTILIZADO \| CONVITE_EXPIRADO \| EMAIL_DIVERGENTE | `src/lib/organizacoes/convites.ts` |
+| OrigemValor | lei \| simulado | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | MOTIVOS_CONTINGENCIA | 'SEFAZ indisponível - manutenção programada', 'SEFAZ indisponível - problemas técnicos', 'Problemas de conectividade local', 'Timeout na comunicação com SEFAZ', 'Erro de certificado digital', 'Falha no webservice da SEFAZ', 'Contingência preventiva - evento especial', 'Outro motivo', | `src/lib/sefaz-contingency/constants.ts` |
 | ContingencyMode | normal \| SCAN \| DPEC \| FSDA \| SVCAN \| SVCRS \| offline | `src/lib/sefaz-contingency/types.ts` |
 | AppRole | admin \| financeiro \| operacional \| visualizador | `src/lib/sso/consistency.ts` |
@@ -3874,6 +3875,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `transition={{ delay: i * 0.1 }}` | `src/components/ui/skeleton.tsx` |
 | `transition={{ delay: rowIndex * 0.05 }}` | `src/components/ui/skeleton.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/vendedores/VendedorDashboard.tsx` |
+| `* 11,3%").` | `src/config/reforma-tributaria.ts` |
+| `* 15/12/2026 (ADCT, EC 132/2023). O TCU calculou e publicou 11,3% como` | `src/config/reforma-tributaria.ts` |
 | `.reduce((acc, d) => acc + d.valor * 0.02, 0); // 2% de desconto estimado` | `src/hooks/useAlertasPreditivos.ts` |
 | `dados.saldoAtual > dados.despesasPrevistas.reduce((acc, d) => acc + d.valor, 0) * 0.5` | `src/hooks/useAlertasPreditivos.ts` |
 | `impactoFinanceiro: (ap.total_geral \|\| 0) * 0.2,` | `src/hooks/useAuditoriaCompliance.ts` |
@@ -3943,6 +3946,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// de fato" (cota zero do rateio de acordo com 100% de desconto ou` | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | `const aliquotaIBSEstadual = aliquotaIBS * 0.75;` | `src/lib/reforma-tributaria/calcular-tributos.ts` |
 | `const aliquotaIBSMunicipal = aliquotaIBS * 0.25;` | `src/lib/reforma-tributaria/calcular-tributos.ts` |
+| `ibsMun: (REF_IBS * 0.1) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsMun: (REF_IBS * 0.2) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsMun: (REF_IBS * 0.3) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsMun: (REF_IBS * 0.4) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsUf: (REF_IBS * 0.1) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsUf: (REF_IBS * 0.2) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsUf: (REF_IBS * 0.3) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
+| `ibsUf: (REF_IBS * 0.4) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | `const cofinsAntigoDebito = dados.faturamentoAnual * 0.076;` | `src/lib/reforma-tributaria/simulador.ts` |
 | `const cofinsCreditoAntigo = baseCreditos * 0.076;` | `src/lib/reforma-tributaria/simulador.ts` |
 | `const icmsAntigo = faturamentoVendas * 0.18;` | `src/lib/reforma-tributaria/simulador.ts` |
@@ -4030,17 +4041,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `* 7% de Sul/Sudeste (exceto ES) para Norte/Nordeste/Centro-Oeste e ES;` | `src/lib/tributario/catalogos/painel.ts` |
 | `* alíquota de importado (4%, Resolução SF 13/2012).` | `src/lib/tributario/catalogos/painel.ts` |
 | `/** Regiões cujo destino recebe 7% quando a origem é Sul/Sudeste (exceto ES). */` | `src/lib/tributario/catalogos/painel.ts` |
-| `// 1ª quota sem juros; demais com SELIC acumulada + 1% no mês do pagamento.` | `src/lib/tributario/darf/consolidar.ts` |
-| `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
-| `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
-| `// Bonificação reduz base ICMS/PIS/COFINS — economia estimada de 2-9% sobre volume` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| `const economiaEstimada = aplicavel ? volumeEstimado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| `const volumeEstimado = faturamento * 0.05; // assume 5% potencial de bonificação` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| `economia_min: economiaEstimada * 0.5,` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| `economia_min: economiaEstimada * 0.9,` | `src/lib/tributario/elisao/detectar-deliberacao-lucros.ts` |
-| `* (valor do dinheiro no tempo), não como o valor cheio de 34% do investimento.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| `// Dedução antecipada em relação ao regime normal (10 anos, 10% a.a.):` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
-| … +186 linhas — lista completa em `context.json` | |
+| … +196 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -4132,6 +4133,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TTL_PADRAO_MS` | `7` | `src/lib/offline/fiscal-cache.ts` |
 | `DIAS_VALIDADE_CONVITE` | `7` | `src/lib/organizacoes/convites.ts` |
 | `BOM` | `'\uFEFF'` | `src/lib/pdf-generator/fluxo-caixa.ts` |
+| `FUNDAMENTO_PLENO` | `'ADCT (EC 132/2023) — regime definitivo a partir de 2033'` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | `SCIM_USER_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:User'` | `src/lib/scim/userTemplate.ts` |
 | `HEALTH_VERSAO` | `2` | `src/lib/sefaz-contingency/storage.ts` |
 | `BULK_MAX_USERS` | `200` | `src/lib/sso/sandbox-bulk-runner.ts` |
@@ -5013,7 +5015,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +801 linhas — lista completa em `context.json` | |
+| … +802 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5072,7 +5074,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3629 testes em 320 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3639 testes em 321 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5205,6 +5207,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/anomalia-routes.test.ts` | 10 | anomalia-routes · getEntidadeUrl · fallback para drill-down quando faltam dados · roteia %s → %s … |
 | `src/lib/__tests__/format-filter-value.test.ts` | 10 | formatFilterValue · valores vazios viram travessão · booleans · números pt-BR … |
 | `src/lib/__tests__/sso-slo-state.test.ts` | 10 | sso-slo-state · persiste e recupera snapshot com timestamp · readSloFailure retorna null quando vazio · readSloFailure retorna null para JSON inválido … |
+| `src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts` | 10 | cronograma-oficial · 2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100% · 2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028) · 2026 e 2027-2028: IBS total (UF+Mun) é 0,1% … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-ufs.test.ts` | 10 | coerência das UFs entre catálogo e motor ICMS · cobre as 27 unidades federativas · não acusa divergência quando o catálogo espelha o motor · detecta alíquota interna divergente (regressão MA/PI/RN) … |
 | `src/lib/tributario/__tests__/sanitizacao-parametros.test.ts` | 10 | sanitizarParametros — domínio legal dos parâmetros · limita percentuais ao intervalo [0, 100] · renormaliza o mix quando serviços + indústria + revenda excede 100% · neutraliza NaN, Infinity e valores negativos … |
 | `src/lib/tributario/__tests__/validador-ncm-cst.test.ts` | 10 | validarConsistenciaNcmCst · retorna score 100 para NCM/CST consistentes (comércio comum) · penaliza NCM monofásico (medicamentos 3004) com CST divergente · aceita CSTs válidos para monofásicos (04/06/60/060) … |
@@ -5375,8 +5378,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
 | `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
 | `src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx` | 2 | DashboardFiltersHeader · expõe nomes acessíveis para os filtros do dashboard |
-| `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
-| … +20 linhas — lista completa em `context.json` | | |
+| … +21 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5970,4 +5972,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Preenchido apenas quando `valor === null`. */ | `src/lib/contabil/indices.types.ts` |
 | ---------- DRE (apenas período) ---------- | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
-| … +431 linhas — lista completa em `context.json` | |
+| … +432 linhas — lista completa em `context.json` | |

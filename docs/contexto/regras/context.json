@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "aeefe2fe696f67545c52a78d7c961d116fdad7bc",
+  "sha": "794bb458fc6d8e9741ca0cff081bb22a481689d8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 18:42 UTC",
-  "files_total": 4016,
-  "code_files": 3611,
-  "code_lines": 513994
+  "generated_at": "2026-11-21 19:54 UTC",
+  "files_total": 4019,
+  "code_files": 3614,
+  "code_lines": 514644
  },
  "version": "1.3.2",
- "facts_hash": "ba1eacf6188a3652",
+ "facts_hash": "077240bd076477b0",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1249,
+   ".ts": 1252,
    ".sql": 1125,
    ".tsx": 1117,
    ".mjs": 67,
@@ -69345,7 +69345,7 @@
   {
    "module": "scripts",
    "files": 152,
-   "lines": 49994,
+   "lines": 50371,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -69870,11 +69870,12 @@
   },
   {
    "module": "src/config",
-   "files": 1,
-   "lines": 113,
+   "files": 2,
+   "lines": 144,
    "tables": [],
    "exports": [
-    "env.ts: Env, env, edgeFunctionUrl"
+    "env.ts: Env, env, edgeFunctionUrl",
+    "reforma-tributaria.ts: REF_CBS_2027, REF_IBS"
    ],
    "docs": [],
    "deps": [
@@ -69882,7 +69883,8 @@
    ],
    "imports_modules": [],
    "file_list": [
-    "src/config/env.ts"
+    "src/config/env.ts",
+    "src/config/reforma-tributaria.ts"
    ]
   },
   {
@@ -70250,8 +70252,8 @@
   },
   {
    "module": "src/lib",
-   "files": 415,
-   "lines": 55391,
+   "files": 417,
+   "lines": 55633,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -75350,6 +75352,12 @@
    "VITE_BLING_CLIENT_ID": [
     "src/config/env.ts"
    ],
+   "VITE_RT_REF_CBS": [
+    "src/config/reforma-tributaria.ts"
+   ],
+   "VITE_RT_REF_IBS": [
+    "src/config/reforma-tributaria.ts"
+   ],
    "VITE_SENTRY_DSN": [
     "src/config/env.ts"
    ],
@@ -78274,6 +78282,11 @@
     "file": "src/lib/organizacoes/convites.ts",
     "name": "MotivoRecusaConvite",
     "values": "CONVITE_INEXISTENTE | CONVITE_UTILIZADO | CONVITE_EXPIRADO | EMAIL_DIVERGENTE"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "name": "OrigemValor",
+    "values": "lei | simulado"
    },
    {
     "file": "src/lib/sefaz-contingency/constants.ts",
@@ -82179,6 +82192,10 @@
     "msg": "Permita pop-ups para gerar o PDF"
    },
    {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "msg": "[reforma-tributaria] Sem linha de cronograma para o ano ${ano}"
+   },
+   {
     "file": "src/lib/tributario/darf/vencimento.ts",
     "msg": "Mês inválido em "
    },
@@ -84693,6 +84710,10 @@
    {
     "file": "src/lib/organizacoes/convites.ts",
     "text": "ambiente um token de convite NÃO pode nascer de PRNG fraco — falha"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "text": "conformidade RT). Nenhum outro arquivo deve declarar sua própria tabela —"
    },
    {
     "file": "src/lib/scim/userTemplate.ts",
@@ -99675,6 +99696,11 @@
     "file": "src/lib/pdf-generator/fluxo-caixa.ts",
     "name": "BOM",
     "value": "'\\uFEFF'"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "name": "FUNDAMENTO_PLENO",
+    "value": "'ADCT (EC 132/2023) — regime definitivo a partir de 2033'"
    },
    {
     "file": "src/lib/scim/userTemplate.ts",
@@ -118770,6 +118796,14 @@
     "line": "transition={{ delay: index * 0.05 }}"
    },
    {
+    "file": "src/config/reforma-tributaria.ts",
+    "line": "* 11,3%\")."
+   },
+   {
+    "file": "src/config/reforma-tributaria.ts",
+    "line": "* 15/12/2026 (ADCT, EC 132/2023). O TCU calculou e publicou 11,3% como"
+   },
+   {
     "file": "src/hooks/useAlertasPreditivos.ts",
     "line": ".reduce((acc, d) => acc + d.valor * 0.02, 0); // 2% de desconto estimado"
    },
@@ -119044,6 +119078,38 @@
    {
     "file": "src/lib/reforma-tributaria/calcular-tributos.ts",
     "line": "const aliquotaIBSMunicipal = aliquotaIBS * 0.25;"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsMun: (REF_IBS * 0.1) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsMun: (REF_IBS * 0.2) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsMun: (REF_IBS * 0.3) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsMun: (REF_IBS * 0.4) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsUf: (REF_IBS * 0.1) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsUf: (REF_IBS * 0.2) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsUf: (REF_IBS * 0.3) / 2,"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "line": "ibsUf: (REF_IBS * 0.4) / 2,"
    },
    {
     "file": "src/lib/reforma-tributaria/simulador.ts",
@@ -128838,6 +128904,46 @@
    {
     "file": "src/lib/pdf-generator/__tests__/conciliacao.test.ts",
     "name": "gera tabela vazia sem quebrar quando dados vazios"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "cronograma-oficial"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100%"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2026 e 2027-2028: IBS total (UF+Mun) é 0,1%"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2026: IBS é só estadual (art. 343 LC 214/2025), sem parcela municipal"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2027 em diante: IBS é partido 50/50 entre UF e Município"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "2033: regime pleno, todos os residuais zerados"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "antes de 2026: nenhum tributo novo, residuais 100%"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "após 2033: mantém o regime pleno (sem extrapolar residual negativo)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    "name": "todas as linhas declaram origem e fundamento"
    },
    {
     "file": "src/lib/sso/__tests__/consistency.test.ts",
@@ -174600,7 +174706,7 @@
   },
   "scripts/migrate-cron-jobs.sql": {
    "path": "scripts/migrate-cron-jobs.sql",
-   "lines": 134
+   "lines": 420
   },
   "scripts/run-scenarios.ts": {
    "path": "scripts/run-scenarios.ts",
@@ -174735,7 +174841,7 @@
   },
   "scripts/test_migrate_cron_jobs.py": {
    "path": "scripts/test_migrate_cron_jobs.py",
-   "lines": 381,
+   "lines": 469,
    "exports": [
     "def troca",
     "class Base",
@@ -174749,6 +174855,9 @@
    ],
    "env": [
     "PF_TEST_PG_URL"
+   ],
+   "rule_comments": [
+    "literal e quebra chave_anon_vault(). Aplicar chave com \\n final deve"
    ],
    "doc": "!/usr/bin/env python3",
    "cron": [
@@ -174779,7 +174888,7 @@
   },
   "scripts/test_staging_migrate.py": {
    "path": "scripts/test_staging_migrate.py",
-   "lines": 375,
+   "lines": 378,
    "exports": [
     "class Base",
     "class TestArgumentos",
@@ -196471,6 +196580,22 @@
     }
    ]
   },
+  "src/config/reforma-tributaria.ts": {
+   "path": "src/config/reforma-tributaria.ts",
+   "lines": 31,
+   "exports": [
+    "const REF_CBS_2027",
+    "const REF_IBS"
+   ],
+   "env": [
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS"
+   ],
+   "percents": [
+    "* 11,3%\").",
+    "* 15/12/2026 (ADCT, EC 132/2023). O TCU calculou e publicou 11,3% como"
+   ]
+  },
   "src/contexts/EmpresaScopeContext.tsx": {
    "path": "src/contexts/EmpresaScopeContext.tsx",
    "lines": 195,
@@ -214420,6 +214545,44 @@
     }
    ]
   },
+  "src/lib/reforma-tributaria/cronograma-oficial.ts": {
+   "path": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+   "lines": 173,
+   "exports": [
+    "type OrigemValor",
+    "interface LinhaCronograma",
+    "const CRONOGRAMA_OFICIAL",
+    "function obterLinhaCronograma"
+   ],
+   "errors": [
+    "[reforma-tributaria] Sem linha de cronograma para o ano ${ano}"
+   ],
+   "enums": [
+    {
+     "name": "OrigemValor",
+     "values": "lei | simulado"
+    }
+   ],
+   "params": [
+    {
+     "name": "FUNDAMENTO_PLENO",
+     "value": "'ADCT (EC 132/2023) — regime definitivo a partir de 2033'"
+    }
+   ],
+   "rule_comments": [
+    "conformidade RT). Nenhum outro arquivo deve declarar sua própria tabela —"
+   ],
+   "percents": [
+    "ibsMun: (REF_IBS * 0.1) / 2,",
+    "ibsMun: (REF_IBS * 0.2) / 2,",
+    "ibsMun: (REF_IBS * 0.3) / 2,",
+    "ibsMun: (REF_IBS * 0.4) / 2,",
+    "ibsUf: (REF_IBS * 0.1) / 2,",
+    "ibsUf: (REF_IBS * 0.2) / 2,",
+    "ibsUf: (REF_IBS * 0.3) / 2,",
+    "ibsUf: (REF_IBS * 0.4) / 2,"
+   ]
+  },
   "src/lib/reforma-tributaria/regras.ts": {
    "path": "src/lib/reforma-tributaria/regras.ts",
    "lines": 108,
@@ -214464,6 +214627,23 @@
     "interface ResultadoCredito",
     "interface DadosSimulacao",
     "interface ResultadoSimulacao"
+   ]
+  },
+  "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts": {
+   "path": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+   "lines": 69,
+   "is_test": true,
+   "tests": [
+    "cronograma-oficial",
+    "2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100%",
+    "2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028)",
+    "2026 e 2027-2028: IBS total (UF+Mun) é 0,1%",
+    "2026: IBS é só estadual (art. 343 LC 214/2025), sem parcela municipal",
+    "2027 em diante: IBS é partido 50/50 entre UF e Município",
+    "2033: regime pleno, todos os residuais zerados",
+    "antes de 2026: nenhum tributo novo, residuais 100%",
+    "após 2033: mantém o regime pleno (sem extrapolar residual negativo)",
+    "todas as linhas declaram origem e fundamento"
    ]
   },
   "src/lib/scim/userTemplate.ts": {
@@ -244779,10 +244959,36 @@
   }
  },
  "git": {
-  "sha": "aeefe2fe696f67545c52a78d7c961d116fdad7bc",
+  "sha": "794bb458fc6d8e9741ca0cff081bb22a481689d8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "794bb45",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)",
+    "files": [
+     "env.manifest.json",
+     "src/config/reforma-tributaria.ts",
+     "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+     "src/lib/reforma-tributaria/cronograma-oficial.ts"
+    ]
+   },
+   {
+    "sha": "9f993fd",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)",
+    "files": [
+     "scripts/integrity/README.md",
+     "scripts/integrity/baseline/expected-crons.json",
+     "scripts/migrate-cron-jobs.sh",
+     "scripts/migrate-cron-jobs.sql",
+     "scripts/test_migrate_cron_jobs.py",
+     "scripts/test_staging_migrate.py"
+    ]
+   },
    {
     "sha": "aeefe2f",
     "date": "2026-11-21",
@@ -245114,25 +245320,6 @@
     "files": [
      "docs/agentes/auditoria-branches-2026-11-17.md"
     ]
-   },
-   {
-    "sha": "fee7c1d",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
-   },
-   {
-    "sha": "f17d2d4",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)",
-    "files": [
-     "docs/agentes/banco-inter-api.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245143,6 +245330,10 @@
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "env.manifest.json",
+    2
    ],
    [
     "scripts/integrity/baseline/expected-policies.json",
@@ -245161,14 +245352,6 @@
     2
    ],
    [
-    "bun.lock",
-    2
-   ],
-   [
-    "package.json",
-    2
-   ],
-   [
     "scripts/automation.config.json",
     2
    ],
@@ -245177,43 +245360,47 @@
     2
    ],
    [
+    "src/config/reforma-tributaria.ts",
+    1
+   ],
+   [
+    "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
+    1
+   ],
+   [
+    "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    1
+   ],
+   [
+    "scripts/integrity/README.md",
+    1
+   ],
+   [
+    "scripts/integrity/baseline/expected-crons.json",
+    1
+   ],
+   [
+    "scripts/migrate-cron-jobs.sh",
+    1
+   ],
+   [
+    "scripts/migrate-cron-jobs.sql",
+    1
+   ],
+   [
+    "scripts/test_migrate_cron_jobs.py",
+    1
+   ],
+   [
+    "scripts/test_staging_migrate.py",
+    1
+   ],
+   [
     "docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
     1
    ],
    [
     "docs/archive/README.md",
-    1
-   ],
-   [
-    "docs/receitafederal/ADR-003-AUDITORIA-RT-2026-11-21.md",
-    1
-   ],
-   [
-    "docs/receitafederal/FONTES_NORMATIVAS.md",
-    1
-   ],
-   [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    1
-   ],
-   [
-    "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
-    1
-   ],
-   [
-    "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    1
-   ],
-   [
-    "env.manifest.json",
-    1
-   ],
-   [
-    "scripts/security/export-function-privileges.sh",
-    1
-   ],
-   [
-    "scripts/security/test-observability-privileges.sql",
     1
    ]
   ]

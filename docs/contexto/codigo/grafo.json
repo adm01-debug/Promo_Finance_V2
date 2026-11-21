@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2006,
- "arestas": 8476,
+ "nos": 2008,
+ "arestas": 8477,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -279,6 +279,7 @@
   "src/hooks/useGlobalFilterSync.ts",
   "src/hooks/usePrefetchRoutes.tsx",
   "src/lib/arquitetura/escopo-empresa.ts",
+  "src/lib/reforma-tributaria/cronograma-oficial.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",
   "supabase/functions/external-data/validate_contract.ts",
   "supabase/functions/sso-test-login/mocks.ts"
@@ -345,6 +346,11 @@
    "importado_por": 3
   },
   {
+   "modulo": "config",
+   "depende_de": 0,
+   "importado_por": 12
+  },
+  {
    "modulo": "pages/tributario",
    "depende_de": 11,
    "importado_por": 1
@@ -358,11 +364,6 @@
    "modulo": "components/contabilidade",
    "depende_de": 10,
    "importado_por": 1
-  },
-  {
-   "modulo": "config",
-   "depende_de": 0,
-   "importado_por": 11
   },
   {
    "modulo": "components/auth",

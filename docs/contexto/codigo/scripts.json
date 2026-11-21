@@ -948,7 +948,7 @@
   {
    "arquivo": "scripts/migrate-cron-jobs.sh",
    "descricao": "scripts/migrate-cron-jobs.sh Wrapper: faz envsubst em migrate-cron-jobs.sql e aplica via psql no destino.",
-   "linhas": 96,
+   "linhas": 121,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -957,7 +957,7 @@
   {
    "arquivo": "scripts/migrate-cron-jobs.sql",
    "descricao": null,
-   "linhas": 133,
+   "linhas": 419,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
