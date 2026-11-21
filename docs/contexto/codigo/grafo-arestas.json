@@ -4938,10 +4938,12 @@
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/CronogramaTransicao.tsx": [
+   "src/components/reforma-tributaria/GlossarioTooltip.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/progress.tsx",
-   "src/hooks/useReformaTributaria.ts"
+   "src/hooks/useReformaTributaria.ts",
+   "src/lib/reforma-tributaria/cronograma-oficial.ts"
   ],
   "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts": [
    "src/hooks/useApuracoesTributarias.ts",
@@ -5050,7 +5052,9 @@
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/GlossarioTooltip.tsx": [
+   "src/components/ui/badge.tsx",
    "src/components/ui/tooltip.tsx",
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
    "src/lib/utils.ts"
   ],
   "src/components/reforma-tributaria/HeroKPIs.tsx": [
@@ -5188,11 +5192,13 @@
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/ResultadoTributos.tsx": [
+   "src/components/reforma-tributaria/GlossarioTooltip.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/separator.tsx",
    "src/lib/formatters.ts",
-   "src/lib/reforma-tributaria-calculator.ts"
+   "src/lib/reforma-tributaria-calculator.ts",
+   "src/lib/reforma-tributaria/cronograma-oficial.ts"
   ],
   "src/components/reforma-tributaria/RetencoesFonte.helpers.ts": [
    "src/hooks/useRetencoesFonte.ts"

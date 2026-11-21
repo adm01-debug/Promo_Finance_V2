@@ -3439,8 +3439,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 8,
    "usado_por_modulos": [
+    "components/reforma-tributaria",
     "lib/reforma-tributaria",
     "lib/tributario",
     "types/reforma-tributaria"

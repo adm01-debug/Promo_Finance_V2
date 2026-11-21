@@ -5138,7 +5138,7 @@
    "modulo": "components/reforma-tributaria",
    "arquivos": 66,
    "testes": 6,
-   "linhas": 11054,
+   "linhas": 11125,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -5236,6 +5236,7 @@
     "components/ui",
     "hooks",
     "lib",
+    "lib/reforma-tributaria",
     "types",
     "types/reforma-tributaria"
    ],
@@ -9151,6 +9152,7 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "components/reforma-tributaria",
     "lib",
     "lib/tributario",
     "types/reforma-tributaria"

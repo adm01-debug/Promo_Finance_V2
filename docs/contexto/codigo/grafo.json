@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 2008,
- "arestas": 8482,
+ "arestas": 8488,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -14,7 +14,7 @@
   },
   {
    "arquivo": "src/components/ui/badge.tsx",
-   "importado_por": 449
+   "importado_por": 450
   },
   {
    "arquivo": "src/lib/utils.ts",
@@ -365,12 +365,12 @@
    "importado_por": 1
   },
   {
-   "modulo": "components/auth",
-   "depende_de": 7,
+   "modulo": "components/reforma-tributaria",
+   "depende_de": 8,
    "importado_por": 3
   },
   {
-   "modulo": "components/reforma-tributaria",
+   "modulo": "components/auth",
    "depende_de": 7,
    "importado_por": 3
   },

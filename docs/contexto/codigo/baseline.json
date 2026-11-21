@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9aa15fe833652a20039fca0ebab53a907ae4750e",
+  "commit": "ab226acbb0f201598ddf53b822290e0656c201fd",
   "branch": "main",
-  "data_commit": "2026-11-21T19:12:44-03:00",
+  "data_commit": "2026-11-21T19:30:11-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ab226ac",
+    "data": "2026-11-21",
+    "assunto": "feat: selo \"simulado\" em CBS/IBS na UI (etapa 18 RT)"
+   },
+   {
+    "sha": "9cd4c84",
+    "data": "2026-11-21",
+    "assunto": "docs: plano 100 etapas RT/RFB e avaliações técnicas"
+   },
    {
     "sha": "9aa15fe",
     "data": "2026-11-21",
@@ -121,19 +131,9 @@
     "sha": "b7e2355",
     "data": "2026-11-20",
     "assunto": "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)"
-   },
-   {
-    "sha": "a406e99",
-    "data": "2026-11-19",
-    "assunto": "fix: renderTemplate null-safe em contabilizar-evento (#476)"
-   },
-   {
-    "sha": "e6e6143",
-    "data": "2026-11-19",
-    "assunto": "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)"
    }
   ],
-  "arquivos_mudados_7d": 472,
+  "arquivos_mudados_7d": 476,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -145,7 +145,7 @@
    },
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 34
+    "mudancas": 37
    },
    {
     "pasta": "src/components/contas-receber",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 246
+    "commits": 248
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3985,
+  "arquivos_total": 3986,
   "arquivos_codigo": 2489,
-  "linhas_codigo": 443800,
+  "linhas_codigo": 443871,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -335,7 +335,7 @@
   "testes": 487,
   "workflows": 20,
   "scripts": 116,
-  "docs_md": 219
+  "docs_md": 220
  },
  "por_pasta": {
   "docs/auditoria-20260912": {
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 999,
-   "linhas": 164169
+   "linhas": 164240
   },
   "src/config": {
    "arquivos": 2,

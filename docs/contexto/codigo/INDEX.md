@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9aa15fe833652a20039fca0ebab53a907ae4750e` (2026-11-21T19:12:44-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ab226acbb0f201598ddf53b822290e0656c201fd` (2026-11-21T19:30:11-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2370), SQL (1125), Markdown (219), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2370), SQL (1125), Markdown (220), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3985 |
+| arquivos_total | 3986 |
 | arquivos_codigo | 2489 |
-| linhas_codigo | 443800 |
+| linhas_codigo | 443871 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 487 |
 | workflows | 20 |
 | scripts | 116 |
-| docs_md | 219 |
+| docs_md | 220 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -630,10 +630,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (907 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/execucao-cline (5), docs/receitafederal (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/receitafederal (6), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `ab226ac` feat: selo "simulado" em CBS/IBS na UI (etapa 18 RT)
+- 2026-11-21 `9cd4c84` docs: plano 100 etapas RT/RFB e avaliações técnicas
 - 2026-11-21 `9aa15fe` fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)
 - 2026-11-21 `424bfe7` fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)
 - 2026-11-21 `1f4be40` fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)
@@ -647,8 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `ea8ccc8` merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)
 - 2026-11-21 `ea32d18` fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)
 - 2026-11-21 `21ecbbc` chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)
-- 2026-11-21 `b28b64b` fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)
-- 2026-11-21 `c3e421c` chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

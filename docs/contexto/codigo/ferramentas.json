@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2370)",
    "SQL (1125)",
-   "Markdown (219)",
+   "Markdown (220)",
    "JavaScript (76)",
    "JSON (45)",
    "Python (45)",
@@ -1252,11 +1252,11 @@
    "arquivos_md": 9
   },
   {
-   "pasta": "docs/execucao-cline",
-   "arquivos_md": 5
+   "pasta": "docs/receitafederal",
+   "arquivos_md": 6
   },
   {
-   "pasta": "docs/receitafederal",
+   "pasta": "docs/execucao-cline",
    "arquivos_md": 5
   },
   {

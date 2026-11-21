@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9aa15fe833652a20039fca0ebab53a907ae4750e",
+  "sha": "ab226acbb0f201598ddf53b822290e0656c201fd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 22:13 UTC",
-  "files_total": 4024,
+  "generated_at": "2026-11-21 22:31 UTC",
+  "files_total": 4025,
   "code_files": 3615,
-  "code_lines": 514735
+  "code_lines": 514806
  },
  "version": "1.3.2",
- "facts_hash": "e73bbe3fbc0c0cec",
+ "facts_hash": "133a254f32a07e2d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -61773,7 +61773,7 @@
      "registrar_auditoria_config",
      "registrar_nfe_com_creditos"
     ],
-    "deps_count": 193
+    "deps_count": 195
    },
    {
     "path": "/reset-password",
@@ -69658,7 +69658,7 @@
   {
    "module": "src/components",
    "files": 999,
-   "lines": 165168,
+   "lines": 165239,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -192517,7 +192517,7 @@
   },
   "src/components/reforma-tributaria/CronogramaTransicao.tsx": {
    "path": "src/components/reforma-tributaria/CronogramaTransicao.tsx",
-   "lines": 324,
+   "lines": 343,
    "exports": [
     "function CronogramaTransicao"
    ],
@@ -192706,7 +192706,7 @@
   },
   "src/components/reforma-tributaria/GlossarioTooltip.tsx": {
    "path": "src/components/reforma-tributaria/GlossarioTooltip.tsx",
-   "lines": 111,
+   "lines": 146,
    "exports": [
     "function GlossarioTooltip"
    ],
@@ -193030,7 +193030,7 @@
   },
   "src/components/reforma-tributaria/ResultadoTributos.tsx": {
    "path": "src/components/reforma-tributaria/ResultadoTributos.tsx",
-   "lines": 217,
+   "lines": 234,
    "exports": [
     "function ResultadoTributos"
    ]
@@ -245022,10 +245022,30 @@
   }
  },
  "git": {
-  "sha": "9aa15fe833652a20039fca0ebab53a907ae4750e",
+  "sha": "ab226acbb0f201598ddf53b822290e0656c201fd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ab226ac",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "feat: selo \"simulado\" em CBS/IBS na UI (etapa 18 RT)",
+    "files": [
+     "src/components/reforma-tributaria/CronogramaTransicao.tsx",
+     "src/components/reforma-tributaria/GlossarioTooltip.tsx",
+     "src/components/reforma-tributaria/ResultadoTributos.tsx"
+    ]
+   },
+   {
+    "sha": "9cd4c84",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "docs: plano 100 etapas RT/RFB e avaliações técnicas",
+    "files": [
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
+    ]
+   },
    {
     "sha": "9aa15fe",
     "date": "2026-11-21",
@@ -245374,35 +245394,6 @@
      "scripts/ci/gerar-matriz-conformidade-contratos.mjs",
      "scripts/ci/gerar-matriz-conformidade-contratos.unit.mjs"
     ]
-   },
-   {
-    "sha": "1bdec67",
-    "date": "2026-11-18",
-    "author": "adm01-debug",
-    "subject": "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)",
-    "files": [
-     "docs/archive/mapa-integracao-20261112/EXECUCAO-29-10.md",
-     "docs/archive/mapa-integracao-20261112/IMPORTADOS.md",
-     "docs/archive/mapa-integracao-20261112/MAPA-INTEGRACAO.md",
-     "docs/archive/mapa-integracao-20261112/mesclar-prontos.sh"
-    ]
-   },
-   {
-    "sha": "772e151",
-    "date": "2026-11-18",
-    "author": "adm01-debug",
-    "subject": "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)",
-    "files": [
-     "docs/REMOTE_ONLY_MIGRATIONS_STRATEGY.md",
-     "docs/REVISAO_PLANO_IMPLEMENTACOES_2026-09-12.md",
-     "docs/archive/analise-prs/validacao-exaustiva.md",
-     "docs/archive/analise-prs/validacao-frontend.md",
-     "docs/archive/analise-prs/validacao-sentry.md",
-     "docs/archive/scripts/ci-local.sh",
-     "docs/auditoria-20260912/PARIDADE_EDGE.md",
-     "docs/auditoria-20260912/evidencias.json",
-     "docs/auditoria-20260912/reproduzir-lacunas.cjs"
-    ]
    }
   ],
   "hot_files": [
@@ -245459,6 +245450,22 @@
     2
    ],
    [
+    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
+    1
+   ],
+   [
+    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
+    1
+   ],
+   [
+    "src/components/reforma-tributaria/ResultadoTributos.tsx",
+    1
+   ],
+   [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    1
+   ],
+   [
     "src/lib/reforma-tributaria/calcular-tributos.ts",
     1
    ],
@@ -245468,22 +245475,6 @@
    ],
    [
     "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
-    1
-   ],
-   [
-    "src/hooks/useOperacoesTributaveis.ts",
-    1
-   ],
-   [
-    "src/lib/reforma-tributaria/simulador.ts",
-    1
-   ],
-   [
-    "src/lib/reforma-tributaria/types.ts",
     1
    ]
   ]

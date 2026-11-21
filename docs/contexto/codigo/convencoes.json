@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: selo \"simulado\" em CBS/IBS na UI (etapa 18 RT)",
+   "docs: plano 100 etapas RT/RFB e avaliações técnicas",
    "fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)",
    "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)",
-   "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)",
-   "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura",
-   "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)"
+   "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
