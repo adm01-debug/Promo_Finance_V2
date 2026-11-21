@@ -1,7 +1,4 @@
 import {
-  ALIQUOTA_CBS_REFERENCIA,
-  ALIQUOTA_IBS_REFERENCIA,
-  ALIQUOTAS_TRANSICAO,
   AliquotasTransicao,
   CategoriaIS,
   CONFIGURACOES_IS,
@@ -9,6 +6,7 @@ import {
   REGIMES_ESPECIAIS,
   RegimeEspecial,
 } from '@/types/reforma-tributaria';
+import { obterLinhaCronograma } from './cronograma-oficial';
 import type { DadosOperacao } from './types';
 
 /** Determina a fase de transição baseada no ano */
@@ -26,29 +24,15 @@ export function determinarFaseTransicao(ano: number): FaseTransicao {
 
 /** Obtém as alíquotas de transição para um ano específico */
 export function obterAliquotasTransicao(ano: number): AliquotasTransicao {
-  const aliquotas = ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano);
-  if (aliquotas) return aliquotas;
-
-  if (ano > 2033) {
-    return {
-      ano,
-      cbs: ALIQUOTA_CBS_REFERENCIA,
-      ibs: ALIQUOTA_IBS_REFERENCIA,
-      icmsResidual: 0,
-      issResidual: 0,
-      pisResidual: 0,
-      cofinsResidual: 0,
-    };
-  }
-
+  const linha = obterLinhaCronograma(ano);
   return {
-    ano,
-    cbs: 0,
-    ibs: 0,
-    icmsResidual: 100,
-    issResidual: 100,
-    pisResidual: 100,
-    cofinsResidual: 100,
+    ano: linha.ano,
+    cbs: linha.cbs,
+    ibs: linha.ibsUf + linha.ibsMun,
+    icmsResidual: linha.icmsResidual,
+    issResidual: linha.issResidual,
+    pisResidual: linha.pisResidual,
+    cofinsResidual: linha.cofinsResidual,
   };
 }
 

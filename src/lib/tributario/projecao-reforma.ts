@@ -1,6 +1,8 @@
 // PROJEÇÃO REFORMA TRIBUTÁRIA 2026-2033
 // Cronograma de transição CBS + IBS + redução PIS/COFINS/ICMS/ISS
 
+import { CRONOGRAMA_OFICIAL } from '@/lib/reforma-tributaria/cronograma-oficial';
+
 export interface AliquotaTransicao {
   ano: number;
   /** % CBS aplicada nas vendas */
@@ -16,84 +18,32 @@ export interface AliquotaTransicao {
   fase: string;
 }
 
+const FASE_POR_ANO: Record<number, string> = {
+  2026: 'Teste — alíquotas simbólicas',
+  2027: 'CBS plena, IBS simbólica',
+  2028: 'CBS plena, IBS simbólica',
+  2029: 'IBS começa transição (10%)',
+  2030: 'IBS 20% / ICMS-ISS 80%',
+  2031: 'IBS 30% / ICMS-ISS 70%',
+  2032: 'IBS 40% / ICMS-ISS 60%',
+  2033: 'Sistema novo pleno',
+};
+
 /**
- * Cronograma oficial — EC 132/2023 + LC 214/2025.
+ * Derivado de `CRONOGRAMA_OFICIAL` (fonte única — etapa 7 do plano de
+ * conformidade RT). Não adicione valores aqui: edite
+ * `src/lib/reforma-tributaria/cronograma-oficial.ts`.
  * Os percentuais residuais representam a fração ainda devida do tributo antigo.
  */
-export const CRONOGRAMA_REFORMA: AliquotaTransicao[] = [
-  {
-    ano: 2026,
-    cbs: 0.9,
-    ibs: 0.1,
-    pisCofinsResidual: 100,
-    icmsResidual: 100,
-    issResidual: 100,
-    fase: 'Teste — alíquotas simbólicas',
-  },
-  {
-    ano: 2027,
-    cbs: 8.8,
-    ibs: 0.1,
-    pisCofinsResidual: 0,
-    icmsResidual: 100,
-    issResidual: 100,
-    fase: 'CBS plena, IBS simbólica',
-  },
-  {
-    ano: 2028,
-    cbs: 8.8,
-    ibs: 0.1,
-    pisCofinsResidual: 0,
-    icmsResidual: 100,
-    issResidual: 100,
-    fase: 'CBS plena, IBS simbólica',
-  },
-  {
-    ano: 2029,
-    cbs: 8.8,
-    ibs: 1.77,
-    pisCofinsResidual: 0,
-    icmsResidual: 90,
-    issResidual: 90,
-    fase: 'IBS começa transição (10%)',
-  },
-  {
-    ano: 2030,
-    cbs: 8.8,
-    ibs: 3.54,
-    pisCofinsResidual: 0,
-    icmsResidual: 80,
-    issResidual: 80,
-    fase: 'IBS 20% / ICMS-ISS 80%',
-  },
-  {
-    ano: 2031,
-    cbs: 8.8,
-    ibs: 5.31,
-    pisCofinsResidual: 0,
-    icmsResidual: 70,
-    issResidual: 70,
-    fase: 'IBS 30% / ICMS-ISS 70%',
-  },
-  {
-    ano: 2032,
-    cbs: 8.8,
-    ibs: 7.08,
-    pisCofinsResidual: 0,
-    icmsResidual: 60,
-    issResidual: 60,
-    fase: 'IBS 40% / ICMS-ISS 60%',
-  },
-  {
-    ano: 2033,
-    cbs: 8.8,
-    ibs: 17.7,
-    pisCofinsResidual: 0,
-    icmsResidual: 0,
-    issResidual: 0,
-    fase: 'Sistema novo pleno',
-  },
-];
+export const CRONOGRAMA_REFORMA: AliquotaTransicao[] = CRONOGRAMA_OFICIAL.map((linha) => ({
+  ano: linha.ano,
+  cbs: linha.cbs,
+  ibs: linha.ibsUf + linha.ibsMun,
+  pisCofinsResidual: linha.pisResidual,
+  icmsResidual: linha.icmsResidual,
+  issResidual: linha.issResidual,
+  fase: FASE_POR_ANO[linha.ano] ?? 'Transição',
+}));
 
 export interface ParametrosProjecao {
   faturamentoAnual: number;

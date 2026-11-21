@@ -1,5 +1,6 @@
 // REFORMA TRIBUTÁRIA — CBS/IBS transição 2026-2033
 
+import { obterLinhaCronograma } from '@/lib/reforma-tributaria/cronograma-oficial';
 import type { InputReforma, ResultadoRegime, LinhaMemoria, TributoDetalhe } from './types';
 
 interface FaseTransicao {
@@ -11,76 +12,18 @@ interface FaseTransicao {
   issResidual: number;
 }
 
-const CBS_ALVO = 0.088;
-const IBS_ALVO = 0.177;
-
-// Cronograma progressivo — LC 214/2025
-const CRONOGRAMA: Record<number, FaseTransicao> = {
-  2026: {
-    cbs: 0.009,
-    ibs: 0.001,
-    pisResidual: 1,
-    cofinsResidual: 1,
-    icmsResidual: 1,
-    issResidual: 1,
-  },
-  2027: {
-    cbs: CBS_ALVO,
-    ibs: 0.001,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 1,
-    issResidual: 1,
-  },
-  2028: {
-    cbs: CBS_ALVO,
-    ibs: 0.001,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 1,
-    issResidual: 1,
-  },
-  2029: {
-    cbs: CBS_ALVO,
-    ibs: IBS_ALVO * 0.1,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 0.9,
-    issResidual: 0.9,
-  },
-  2030: {
-    cbs: CBS_ALVO,
-    ibs: IBS_ALVO * 0.2,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 0.8,
-    issResidual: 0.8,
-  },
-  2031: {
-    cbs: CBS_ALVO,
-    ibs: IBS_ALVO * 0.3,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 0.7,
-    issResidual: 0.7,
-  },
-  2032: {
-    cbs: CBS_ALVO,
-    ibs: IBS_ALVO * 0.4,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 0.6,
-    issResidual: 0.6,
-  },
-  2033: {
-    cbs: CBS_ALVO,
-    ibs: IBS_ALVO,
-    pisResidual: 0,
-    cofinsResidual: 0,
-    icmsResidual: 0,
-    issResidual: 0,
-  },
-};
+/** Deriva a fase de transição (shape local, decimal) da fonte única (percentual). */
+function obterFase(ano: number): FaseTransicao {
+  const linha = obterLinhaCronograma(ano);
+  return {
+    cbs: linha.cbs / 100,
+    ibs: (linha.ibsUf + linha.ibsMun) / 100,
+    pisResidual: linha.pisResidual / 100,
+    cofinsResidual: linha.cofinsResidual / 100,
+    icmsResidual: linha.icmsResidual / 100,
+    issResidual: linha.issResidual / 100,
+  };
+}
 
 const IS_ALIQUOTAS: Record<NonNullable<InputReforma['categoriaImpostoSeletivo']>, number> = {
   nenhum: 0,
@@ -98,7 +41,7 @@ export function calcularReformaTributaria(input: InputReforma): ResultadoRegime 
   const memoria: LinhaMemoria[] = [];
   const alertas: string[] = [];
   const ano = input.anoReferencia;
-  const fase = CRONOGRAMA[ano] ?? CRONOGRAMA[ano >= 2033 ? 2033 : 2026];
+  const fase = obterFase(ano);
   const reducao = input.regimeEspecialReducao ?? 0;
 
   const receita = input.receitas.receitaBrutaAnual;
