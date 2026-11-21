@@ -12,6 +12,26 @@ export interface ConfiguracaoRegimeEspecial {
   origem: OrigemValor;
 }
 
+/**
+ * Aplica benefícios fiscais na ordem do art. 7º-A LC 214/2025:
+ * cada redução incide sobre a base remanescente após a redução anterior.
+ *
+ * @param reducoes - percentuais de redução a aplicar (ex.: [60, 30] = 60% sobre base, 30% sobre restante)
+ * @returns redução efetiva combinada em percentual (0–100)
+ *
+ * @example
+ * aplicarOrdemBeneficios([60, 30]) // => 72  (1 - 0.4 * 0.7) * 100
+ * aplicarOrdemBeneficios([100])    // => 100
+ * aplicarOrdemBeneficios([])       // => 0
+ */
+export function aplicarOrdemBeneficios(reducoes: number[]): number {
+  let base = 1;
+  for (const r of reducoes) {
+    base = base * (1 - r / 100);
+  }
+  return (1 - base) * 100;
+}
+
 export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'zona_franca_manaus',
@@ -49,8 +69,19 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     reducaoAliquotaCBS: 40,
     reducaoAliquotaIBS: 40,
     creditoIntegralMantido: true,
-    observacoes: 'Redução de 40% para imóveis residenciais',
+    observacoes: 'Redução de 40% para imóveis (regime geral)',
     fundamentoLegal: 'Art. 233 a 256 LC 214/2025',
+    origem: 'lei',
+  },
+  {
+    regime: 'locacao_imovel',
+    descricao: 'Locação e Cessão de Imóvel',
+    reducaoAliquotaCBS: 70,
+    reducaoAliquotaIBS: 70,
+    creditoIntegralMantido: true,
+    observacoes:
+      'Tratada como operação com bem (art. 3º §3º LC 227/2026) — redução de 70% para locação residencial',
+    fundamentoLegal: 'Art. 3º §3º LC 227/2026 c/c arts. 233 a 256 LC 214/2025',
     origem: 'lei',
   },
   {

@@ -46,6 +46,7 @@ export type RegimeEspecial =
   | 'combustiveis'
   | 'servicos_financeiros'
   | 'imobiliario'
+  | 'locacao_imovel' // LC 227/2026 art. 3º §3º — tratada como operação com bem
   | 'hotelaria'
   | 'bares_restaurantes'
   | 'parques_diversao'
