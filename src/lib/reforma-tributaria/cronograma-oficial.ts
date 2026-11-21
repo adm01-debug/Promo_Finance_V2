@@ -24,7 +24,8 @@ export interface LinhaCronograma {
 
 const FUNDAMENTO_2026 =
   'LC 214/2025 art. 343 — IBS 2026 é só alíquota estadual (0,1%), sem parcela municipal; ' +
-  'sem efeito arrecadatório, compensado com PIS/COFINS/ICMS/ISS (art. 348)';
+  'CBS/IBS de 2026 são compensados com PIS/COFINS devidos e, no que exceder, com outros ' +
+  'tributos federais ou ressarcimento (art. 348) — não compensam ICMS/ISS (tributos estaduais/municipais)';
 const FUNDAMENTO_TRANSICAO_IBS =
   'ADCT (EC 132/2023) — cronograma de substituição gradual de ICMS/ISS por IBS, 2029-2032';
 const FUNDAMENTO_PLENO = 'ADCT (EC 132/2023) — regime definitivo a partir de 2033';
