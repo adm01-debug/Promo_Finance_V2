@@ -59441,7 +59441,7 @@
           "domain"
         ],
         "deferrable": false,
-        "definition": "CHECK (domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe_sefaz'::text]))",
+        "definition": "CHECK (domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe'::text, 'nfe_sefaz'::text, 'tributario'::text]))",
         "name": "integrity_alerts_domain_check",
         "on_delete": null,
         "on_update": null,
@@ -62361,6 +62361,24 @@
         "schema": "public",
         "table": "protocolos_st_ncms",
         "type": "FOREIGN KEY",
+        "validated": true
+      },
+      {
+        "columns": [
+          "protocolo_id",
+          "ncm_codigo"
+        ],
+        "deferrable": false,
+        "definition": "UNIQUE (protocolo_id, ncm_codigo)",
+        "name": "protocolos_st_ncms_unq",
+        "on_delete": null,
+        "on_update": null,
+        "ref_columns": [],
+        "ref_schema": null,
+        "ref_table": null,
+        "schema": "public",
+        "table": "protocolos_st_ncms",
+        "type": "UNIQUE",
         "validated": true
       },
       {
@@ -67726,10 +67744,10 @@
         },
         "comment": null,
         "config": [
-          "search_path=public, extensions, pg_temp"
+          "search_path=public"
         ],
         "definition": null,
-        "definition_sha": "d0a8e8f000a943df",
+        "definition_sha": "ea10ac7602c0fecc",
         "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -67740,9 +67758,9 @@
         "owner": "postgres",
         "returns": "jsonb",
         "schema": "public",
-        "security_definer": false,
+        "security_definer": true,
         "strict": false,
-        "volatility": "stable"
+        "volatility": "volatile"
       },
       {
         "args": "",
@@ -72594,6 +72612,7 @@
             "public.backfill_empresa_id",
             "public.capture_pg_stat_statements_baseline",
             "public.capture_slow_queries",
+            "public.check_catalogos_tributarios_invariants",
             "public.claim_frontend_error_alerts",
             "public.compare_pg_stat_baseline",
             "public.definir_empresa_padrao",
@@ -76848,6 +76867,7 @@
           "code_total_files": 9,
           "cron": [],
           "db": [
+            "public.check_catalogos_tributarios_invariants",
             "public.get_catalogos_tributarios_health"
           ],
           "triggers": [],
@@ -89014,6 +89034,21 @@
       },
       {
         "columns": [
+          "protocolo_id",
+          "ncm_codigo"
+        ],
+        "definition": "CREATE UNIQUE INDEX protocolos_st_ncms_unq ON public.protocolos_st_ncms USING btree (protocolo_id, ncm_codigo)",
+        "is_primary": false,
+        "is_unique": true,
+        "is_valid": true,
+        "method": "btree",
+        "name": "protocolos_st_ncms_unq",
+        "predicate": null,
+        "schema": "public",
+        "table": "protocolos_st_ncms"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX protocolos_st_ufs_pkey ON public.protocolos_st_ufs USING btree (id)",
@@ -98544,6 +98579,12 @@
         "statements": 5,
         "statements_sha": "1a92cfc6bfedcde6",
         "version": "20261121093000"
+      },
+      {
+        "name": "alinhar_ddl_catalogos",
+        "statements": 6,
+        "statements_sha": "61ef66c559131203",
+        "version": "20261121103000"
       }
     ],
     "policies": [

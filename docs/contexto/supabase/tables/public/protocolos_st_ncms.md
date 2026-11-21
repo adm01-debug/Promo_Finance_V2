@@ -37,6 +37,7 @@
 | protocolos_st_ncms_ncm_id_fkey | FOREIGN KEY | `FOREIGN KEY (ncm_id) REFERENCES ncms(id)` | NO ACTION | NO ACTION | sim |
 | protocolos_st_ncms_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | protocolos_st_ncms_protocolo_id_fkey | FOREIGN KEY | `FOREIGN KEY (protocolo_id) REFERENCES protocolos_st(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
+| protocolos_st_ncms_unq | UNIQUE | `UNIQUE (protocolo_id, ncm_codigo)` |  |  | sim |
 | protocolos_st_ncms_vigencia_coerente | CHECK | `CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)` |  |  | sim |
 
 
@@ -48,6 +49,7 @@
 | idx_protocolos_st_ncms_protocolo_id_fk | btree | protocolo_id | não | sim |  | `CREATE INDEX idx_protocolos_st_ncms_protocolo_id_fk ON public.protocolos_st_ncms USING btree (protocolo_id)` |
 | idx_pst_ncms_codigo | btree | ncm_codigo | não | sim |  | `CREATE INDEX idx_pst_ncms_codigo ON public.protocolos_st_ncms USING btree (ncm_codigo)` |
 | protocolos_st_ncms_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX protocolos_st_ncms_pkey ON public.protocolos_st_ncms USING btree (id)` |
+| protocolos_st_ncms_unq | btree | protocolo_id, ncm_codigo | sim | sim |  | `CREATE UNIQUE INDEX protocolos_st_ncms_unq ON public.protocolos_st_ncms USING btree (protocolo_id, ncm_codigo)` |
 
 
 ## Policies (RLS)

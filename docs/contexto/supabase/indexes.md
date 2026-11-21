@@ -564,6 +564,7 @@ Uso e tamanho em `stats.md`.
 | public.protocolos_st_ncms | idx_protocolos_st_ncms_protocolo_id_fk | btree | protocolo_id | não | sim |  |
 | public.protocolos_st_ncms | idx_pst_ncms_codigo | btree | ncm_codigo | não | sim |  |
 | public.protocolos_st_ncms | protocolos_st_ncms_pkey | btree | id | sim | sim |  |
+| public.protocolos_st_ncms | protocolos_st_ncms_unq | btree | protocolo_id, ncm_codigo | sim | sim |  |
 | public.protocolos_st_ufs | protocolos_st_ufs_pkey | btree | id | sim | sim |  |
 | public.protocolos_st_ufs | protocolos_st_ufs_unique | btree | protocolo_id, uf | sim | sim |  |
 | public.push_subscriptions | push_subscriptions_pkey | btree | id | sim | sim |  |

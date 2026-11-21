@@ -1056,3 +1056,4 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261120235900 | [quorum_aprovacao_assinaturas](migrations/20261120235900_quorum_aprovacao_assinaturas.sql) | 9 |
 | 20261121000000 | [restaura_user_preferences](migrations/20261121000000_restaura_user_preferences.sql) | 8 |
 | 20261121093000 | [reconciliar_validar_catalogos_tributarios](migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql) | 5 |
+| 20261121103000 | [alinhar_ddl_catalogos](migrations/20261121103000_alinhar_ddl_catalogos.sql) | 6 |

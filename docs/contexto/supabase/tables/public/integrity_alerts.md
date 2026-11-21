@@ -37,7 +37,7 @@
 
 | nome | tipo | definição | on delete | on update | validada |
 |---|---|---|---|---|---|
-| integrity_alerts_domain_check | CHECK | `CHECK (domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe_sefaz'::text]))` |  |  | sim |
+| integrity_alerts_domain_check | CHECK | `CHECK (domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe'::text, 'nfe_sefaz'::text, 'tributario'::text]))` |  |  | sim |
 | integrity_alerts_domain_invariant_alert_hour_key | UNIQUE | `UNIQUE (domain, invariant, alert_hour)` |  |  | sim |
 | integrity_alerts_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | integrity_alerts_severity_check | CHECK | `CHECK (severity = ANY (ARRAY['info'::text, 'warning'::text, 'critical'::text]))` |  |  | sim |

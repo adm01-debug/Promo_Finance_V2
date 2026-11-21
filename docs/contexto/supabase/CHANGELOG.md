@@ -2,6 +2,14 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-21 15:14 UTC
+
+- **constraints** adicionado (1): `public.protocolos_st_ncms.protocolos_st_ncms_unq`
+- **constraints** alterado (1): `public.integrity_alerts.integrity_alerts_domain_check`
+- **functions** alterado (3): `public.check_catalogos_tributarios_invariants()`, `public.has_role(_user_id uuid, _role app_role)`, `public.validar_catalogos_tributarios()`
+- **indexes** adicionado (1): `public.protocolos_st_ncms_unq`
+- **migrations** adicionado (1): `20261121103000_alinhar_ddl_catalogos`
+
 ## 2026-11-21 14:14 UTC
 
 - **functions** alterado (3): `public.check_catalogos_tributarios_invariants()`, `public.has_role(_user_id uuid, _role app_role)`, `public.validar_catalogos_tributarios()`
