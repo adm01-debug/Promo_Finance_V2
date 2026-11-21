@@ -138,7 +138,9 @@ export function projetarReforma(params: ParametrosProjecao): {
     const pisCofins = faturamento * pisCofinsAtual * (ano.pisCofinsResidual / 100);
     const icms = baseComercio * icmsAtual * (ano.icmsResidual / 100);
     const iss = baseServicos * issAtual * (ano.issResidual / 100);
-    const total = cbs + ibs + pisCofins + icms + iss;
+    // 2026 é ano-teste (art. 343 LC 214/2025): CBS/IBS são compensáveis/dispensados
+    // (art. 348) e não se somam aos tributos antigos como carga adicional.
+    const total = ano.ano === 2026 ? pisCofins + icms + iss : cbs + ibs + pisCofins + icms + iss;
     const carga = faturamento > 0 ? (total / faturamento) * 100 : 0;
     return {
       ano: ano.ano,
@@ -159,9 +161,13 @@ export function projetarReforma(params: ParametrosProjecao): {
     (acc, p) => acc + (tributosAtuais - p.totalTributos),
     0
   );
-  const picoTributario = projecoes.reduce(
+  // 2026 nunca é o "pico": seu total é só o regime antigo (ver acima), igual à
+  // carga pré-reforma — não representa alta real da transição.
+  const candidatosPico = projecoes.filter((p) => p.ano !== 2026);
+  const basePico = candidatosPico.length > 0 ? candidatosPico : projecoes;
+  const picoTributario = basePico.reduce(
     (max, p) => (p.totalTributos > max.totalTributos ? p : max),
-    projecoes[0]
+    basePico[0]
   );
 
   return { cargaAtual, projecoes, economiaAcumulada, picoTributario };
