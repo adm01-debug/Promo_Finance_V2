@@ -4,6 +4,8 @@ import { Separator } from '@/components/ui/separator';
 import { Receipt, Landmark, AlertTriangle, ArrowRight, FileText, CheckCircle2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import type { ResultadoCalculo } from '@/lib/reforma-tributaria-calculator';
+import { obterLinhaCronograma } from '@/lib/reforma-tributaria/cronograma-oficial';
+import { GlossarioTooltip } from './GlossarioTooltip';
 
 interface Props {
   resultado: ResultadoCalculo;
@@ -12,6 +14,7 @@ interface Props {
 }
 
 export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props) {
+  const linha = obterLinhaCronograma(anoReferencia);
   return (
     <div className="space-y-4">
       <Card>
@@ -46,7 +49,14 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                 <div className="flex items-center justify-between p-3 bg-cbs/10 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Receipt className="h-4 w-4 text-cbs" />
-                    <span>CBS (Federal)</span>
+                    <GlossarioTooltip
+                      termo="CBS"
+                      origem={linha.origem}
+                      fundamento={linha.fundamento}
+                      showIcon={false}
+                    >
+                      CBS (Federal)
+                    </GlossarioTooltip>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-cbs">{formatCurrency(resultado.valorCBS)}</p>
@@ -59,7 +69,14 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                 <div className="flex items-center justify-between p-3 bg-ibs/10 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Landmark className="h-4 w-4 text-ibs" />
-                    <span>IBS (Est/Mun)</span>
+                    <GlossarioTooltip
+                      termo="IBS"
+                      origem={linha.origem}
+                      fundamento={linha.fundamento}
+                      showIcon={false}
+                    >
+                      IBS (Est/Mun)
+                    </GlossarioTooltip>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-ibs">{formatCurrency(resultado.valorIBS)}</p>
