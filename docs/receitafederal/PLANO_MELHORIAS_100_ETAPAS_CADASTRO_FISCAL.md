@@ -8,7 +8,7 @@
 
 - 1 etapa = 1 branch `claude/<tipo>-<slug>-<AAMMDD-HHMM>` a partir de `main` atualizado = 1 PR. Commit PT-BR com prefixo (`fix:`, `feat:`, `chore:`, `infra:`).
 - Checklist de conclusão é critério objetivo; a evidência é o que vai no corpo da PR (saída de comando, arquivo:linha, request real).
-- **⚠️ = regra 8** (migration em produção, CI/workflow, segredo, custo, dado destrutivo): PR fica aberta aguardando o Joaquim. As demais: squash-merge automático com CI verde.
+- **⚠️ = regra 8** do `docs/agentes/fluxo-git.md` (migration/DDL em produção, CI/workflows, segredos, Dockerfile/stack/Swarm/Traefik, deleção de dado, mudança de arquitetura ou custo, conflito com PR de outro agente): PR fica aberta aguardando o Joaquim. A marcação ⚠️ é um lembrete, não a regra: qualquer etapa que cair em um desses casos durante a execução segue a regra 8 mesmo sem ⚠️. As demais: squash-merge automático com CI verde.
 - Gates por PR: `npm run type-check`, `npm run lint`, `vitest run` dos arquivos tocados; edge function → `deno test`; migration → `supabase db lint` + `schema-drift.yml`.
 - Nenhuma etapa reescreve módulo inteiro; cada uma é diff mínimo. Nada de "aproveitei e também…".
 - Fontes normativas: IN RFB 2.229/2024 (CNPJ alfanumérico, vigência jul/2026); NT SEFAZ 2011.002 (DV da chave de acesso, módulo 11 pesos 2-9); Res. BCB (séries SGS 11 Selic e 433 IPCA; PTAX OData); Lei 9.430/96 art. 61 (multa de mora 0,33%/dia até 20% + juros Selic).
@@ -32,11 +32,11 @@
 |---|---|---|---|---|
 | 6 | `normalizarCNPJ()` preservando letras | `src/lib/brazilian-validators/cnpj.ts` | [ ] remove só `.`, `/`, `-` e espaços; mantém `A-Z`; upper-case [ ] `normalizarCNPJ('12.ABC.345/01DE-35') === '12ABC34501DE35'` | teste unitário |
 | 7 | `validateCNPJAlfanumerico()` | mesmo arquivo | [ ] 12 posições `[A-Z0-9]`, 2 DVs numéricos [ ] valor do caractere = `charCode − 48` (`'A'=17 … 'Z'=42`) [ ] pesos `[5,4,3,2,9,8,7,6,5,4,3,2]` e `[6,5,4,3,2,9,8,7,6,5,4,3,2]` [ ] rejeita 14 caracteres iguais | teste com o exemplo da IN RFB 2.229 e 10 casos gerados |
-| 8 | `validateCNPJ()` vira dispatcher | mesmo arquivo | [ ] só dígitos → algoritmo atual [ ] com letras → alfanumérico [ ] `replace(/\D/g,'')` removido da entrada | `grep -n "\\D" cnpj.ts` só em `formatCNPJ` legado |
+| 8 | `validateCNPJ()` vira dispatcher controlado pela flag | mesmo arquivo + `src/hooks/useFeatureFlag.ts` | [ ] só dígitos → algoritmo atual [ ] com letras e flag `cnpj_alfanumerico` **ligada** → alfanumérico [ ] com letras e flag **desligada** → inválido com motivo `formato_nao_habilitado` (rollback = flag off) [ ] `replace(/\D/g,'')` removido da entrada | teste com flag on/off; `grep -n "\\D" cnpj.ts` só em `formatCNPJ` legado |
 | 9 | `formatCNPJ()` aceita letras | mesmo arquivo | [ ] `12ABC34501DE35` → `12.ABC.345/01DE-35` [ ] `generateCNPJ()` inalterado (continua numérico) | teste |
 | 10 | `validateCPFOrCNPJ` / `formatCPFOrCNPJ` | `src/lib/brazilian-validators/documento.ts` | [ ] usa `normalizarCNPJ` antes de decidir 11 × 14 [ ] CPF continua só dígitos | teste |
 | 11 | Máscara de input aceita letras | `src/lib/masks*` (`maskCnpjCpf`) | [ ] quando o valor tem letra, aplica máscara CNPJ alfanumérica; não apaga letras [ ] `maxLength` 18 mantido | teste + `tsc` |
-| 12 | Edge `cnpja-lookup`: `sanitizeCnpj`/`isValidCnpj` | `supabase/functions/cnpja-lookup/index.ts:22-30` | [ ] usa normalização alfanumérica [ ] valida DV (hoje só checa `length === 14`) [ ] mensagem PT-BR distinta para "DV inválido" | `deno test` |
+| 12 | Edge `cnpja-lookup` e hook `useCnpjaLookup`: parar de apagar letras | `supabase/functions/cnpja-lookup/index.ts:22-30`, `src/hooks/useCnpjaLookup.ts:48` (`cleaned = cnpj.replace(/\D/g,'')`) | [ ] hook e edge usam a normalização da etapa 6 [ ] edge valida DV (hoje só checa `length === 14`) e respeita a flag por empresa (desligada → 400 `formato_nao_habilitado`) [ ] mensagem PT-BR distinta para "DV inválido" | `deno test` + teste do hook verificando que o payload enviado contém o CNPJ alfanumérico |
 | 13 | Schema zod do payload | `supabase/functions/_shared/validation.ts` (`CnpjaLookupSchema`) | [ ] regex `^[A-Z0-9.\-/ ]{14,18}$` [ ] teste de contrato existente ajustado | `deno test validation_test.ts` |
 | 14 | Chamada à CNPJá com CNPJ alfanumérico | `cnpja-lookup/index.ts` (`fetchCnpjaWithRetry`) | [ ] URL monta com o CNPJ normalizado (letras preservadas) [ ] request real a 1 CNPJ alfanumérico de homologação ou documentado "CNPJá não suporta" com a resposta | corpo da PR com status/resposta |
 | 15 | Constraints de banco ⚠️ | migration conforme inventário da etapa 2 | [ ] colunas de CNPJ sem `CHECK (cnpj ~ '^\d{14}$')` ou equivalente [ ] `cnpja_cache.cnpj` aceita `[A-Z0-9]{14}` [ ] sem perda de dado | `supabase db lint` + query antes/depois |
@@ -59,7 +59,7 @@
 | 27 | Rate limit só conta chamada paga | `cnpja-lookup/index.ts`, `cnpja_check_rate_limit` | [ ] contador incrementa só quando a CNPJá é efetivamente chamada [ ] fallback grátis não consome cota do usuário | teste |
 | 28 | Cache registra origem | migration ⚠️ `cnpja_cache.origem text` | [ ] backfill `'cnpja'` [ ] TTL por origem: CNPJá 30 d, BrasilAPI 7 d (dados D-1 do dump RFB) | lint + query |
 | 29 | Kill-switch por provedor | `_shared/resilience.ts` (`integracaoDesativada`) | [ ] `INTEGRACOES_DESATIVADAS=cnpja` pula direto para BrasilAPI | teste |
-| 30 | Hook mostra origem | `src/hooks/useCnpjaLookup.ts` | [ ] toast "Dados via BrasilAPI (gratuito)" quando `origem !== 'cnpja'` [ ] tipo `CnpjaData.origem` | `tsc` |
+| 30 | Hook mostra origem | `src/hooks/useCnpjaLookup.ts` | [ ] toast nomeia o provedor que respondeu: `cnpja` → "CNPJá", `brasilapi` → "BrasilAPI (gratuito)", `receitaws` → "ReceitaWS (gratuito)" — mapa por valor, sem `!== 'cnpja'` [ ] tipo `CnpjaData.origem` | `tsc` + teste dos 3 valores |
 | 31 | Métrica de fallback | `_shared/edge-observability.ts` + `slo_metrics` | [ ] evento `cnpj_fallback_used` com `from`/`to` [ ] painel `CatalogosTributariosHealthPanel` ou telemetria existente mostra % por origem nos últimos 7 d | linha em `slo_metrics` |
 | 32 | Renomear edge function? **Não.** | — | [ ] decisão registrada: manter nome `cnpja-lookup` para não quebrar clientes; README da função explica a cadeia | `supabase/functions/cnpja-lookup/README.md` |
 
@@ -114,7 +114,7 @@
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
-| 65 | Catálogo de achados | `src/lib/fornecedores/risco/achados.ts` | [ ] `situacao != ATIVA` (crítico), `BAIXADA/NULA` (crítico), `SUSPENSA/INAPTA` (alto), abertura < 6 meses (médio), MEI em compra > R$ X (médio), CNAE sem relação com brindes/gráfica/logística (baixo), sem dado de Simples (info) [ ] cada achado com `severidade`, `titulo`, `fundamento` | teste |
+| 65 | Catálogo de achados | `src/lib/fornecedores/risco/achados.ts` | [ ] **um único achado por situação cadastral**, mutuamente exclusivos: `BAIXADA/NULA` (crítico), `SUSPENSA/INAPTA` (alto), qualquer outra ≠ ATIVA (médio) — sem regra genérica "≠ ATIVA" sobreposta [ ] demais achados independentes: abertura < 6 meses (médio), MEI em compra > R$ X (médio), CNAE sem relação com brindes/gráfica/logística (baixo), sem dado de Simples (info) [ ] cada achado com `severidade`, `titulo`, `fundamento` | teste: empresa BAIXADA gera exatamente 1 achado de situação (score 60, não 20) |
 | 66 | Função pura de score | `src/lib/fornecedores/risco/score.ts` | [ ] base 100; crítico −40, alto −15, médio −5 [ ] clamp 0-100 [ ] faixas: ≥80 aprovar · 60-79 ressalvas · 30-59 investigar · <30 recusar | teste de propriedade: monotônico |
 | 67 | Lista de CNAEs "compatíveis" configurável | `src/config/fornecedores-cnae-compativeis.ts` | [ ] prefixos CNAE de brindes, gráfica, têxtil, embalagem, transporte [ ] override por env/flag | teste |
 | 68 | Colunas de risco no fornecedor ⚠️ | migration `fornecedores.risco_score int, risco_faixa text, risco_avaliado_em timestamptz, risco_achados jsonb` | [ ] nullable [ ] RLS existente cobre | lint |
@@ -172,13 +172,13 @@
 
 ```
 0 → 1 → 2 → 3 → 6
-     └→ 4 (independente de 1-3; só precisa de 0)
+     └→ 4 (43-45, 47-54 só precisam de 0; a etapa 46 depende da 25)
      └→ 5 (independente)
      └→ 7 (independente)
 8 depende só da decisão do Joaquim (etapa 91)
 9 fecha tudo
 ```
-Fases 1, 4, 5 e 7 podem andar em paralelo por agentes diferentes sem tocar nos mesmos arquivos. Fase 3 depende de 1 e 2; Fase 6 depende de 3.
+Paralelismo seguro: Fases 1, 5 e 7 não compartilham arquivos entre si. Fase 4 e Fase 5 **compartilham** `nfe-vinculo-proxy/index.ts` (etapas 47 e 60) e `sefaz-dfe-puxar/index.ts` (48 e 61): essas quatro etapas ficam com o mesmo agente, em sequência (47 → 60, 48 → 61), ou a segunda faz rebase sobre a primeira antes de abrir PR. Fase 3 depende de 1 e 2; Fase 6 depende de 3; etapa 46 só começa depois da 25 mergeada.
 
 ## Riscos registrados
 
