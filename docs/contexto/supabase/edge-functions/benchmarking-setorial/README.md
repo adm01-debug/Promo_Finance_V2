@@ -4,7 +4,7 @@
 |---|---|
 | nome | benchmarking-setorial |
 | status | ACTIVE |
-| versão | 137 |
+| versão | 142 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/benchmarking-setorial/index.ts |
 | import_map |  |

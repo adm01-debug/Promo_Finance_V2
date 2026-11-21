@@ -166,7 +166,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.notification_history](tables/public/notification_history.md) | table | sim | 1 | 12 | não |  |
 | [public.open_finance_consents](tables/public/open_finance_consents.md) | table | sim | 1 | 9 | não |  |
 | [public.operacoes_icms](tables/public/operacoes_icms.md) | table | sim | 1 | 26 | não |  |
-| [public.operacoes_tributaveis](tables/public/operacoes_tributaveis.md) | table | sim | 5 | 53 | não |  |
+| [public.operacoes_tributaveis](tables/public/operacoes_tributaveis.md) | table | sim | 5 | 54 | não |  |
 | [public.oportunidades_elisao](tables/public/oportunidades_elisao.md) | table | sim | 5 | 29 | não |  |
 | [public.organizacao_membros](tables/public/organizacao_membros.md) | table | sim | 2 | 9 | não |  |
 | [public.organizacoes](tables/public/organizacoes.md) | table | sim | 4 | 12 | não |  |

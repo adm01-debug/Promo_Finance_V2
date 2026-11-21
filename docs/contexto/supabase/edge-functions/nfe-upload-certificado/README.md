@@ -4,7 +4,7 @@
 |---|---|
 | nome | nfe-upload-certificado |
 | status | ACTIVE |
-| versão | 138 |
+| versão | 143 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/nfe-upload-certificado/index.ts |
 | import_map |  |

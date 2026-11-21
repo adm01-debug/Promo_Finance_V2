@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-snapshots-conformidade |
 | status | ACTIVE |
-| versão | 133 |
+| versão | 139 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/gerar-snapshots-conformidade/index.ts |
 | import_map |  |

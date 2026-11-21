@@ -69,6 +69,7 @@
 | 51 | `nome_contraparte` | `character varying(200)` | sim |  |  |  |
 | 52 | `documento_chave` | `text` | sim |  |  |  |
 | 53 | `erro_mensagem` | `text` | sim |  |  |  |
+| 54 | `is_aliquota_customizada` | `numeric` | não | `0` |  |  |
 
 
 ## Constraints
