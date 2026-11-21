@@ -71,8 +71,8 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                     <Landmark className="h-4 w-4 text-ibs" />
                     <GlossarioTooltip
                       termo="IBS"
-                      origem={linha.origem}
-                      fundamento={linha.fundamento}
+                      origem={linha.origemIbs}
+                      fundamento={linha.fundamentoIbs}
                       showIcon={false}
                     >
                       IBS (Est/Mun)

@@ -10,13 +10,14 @@ import type { OrigemValor } from '@/lib/reforma-tributaria/cronograma-oficial';
 const GLOSSARIO: Record<string, { titulo: string; descricao: string; fundamentoLegal?: string }> = {
   CBS: {
     titulo: 'Contribuição sobre Bens e Serviços',
-    descricao: 'Tributo federal que substitui PIS e COFINS. Alíquota de referência: 8,8%.',
+    descricao:
+      'Tributo federal que substitui PIS e COFINS. Alíquota de referência pendente de resolução do Senado (LC 214/2025, art. 347) — veja o valor aplicado no ano ao lado.',
     fundamentoLegal: 'LC 214/2025, Art. 1º',
   },
   IBS: {
     titulo: 'Imposto sobre Bens e Serviços',
     descricao:
-      'Tributo estadual/municipal que substitui ICMS e ISS. Alíquota de referência: 17,7%.',
+      'Tributo estadual/municipal que substitui ICMS e ISS. Alíquota de referência pendente de resolução do Senado (LC 214/2025, art. 349) — veja o valor aplicado no ano ao lado.',
     fundamentoLegal: 'LC 214/2025, Art. 1º',
   },
   IS: {
@@ -101,8 +102,9 @@ export function GlossarioTooltip({
       <Tooltip>
         <TooltipTrigger asChild>
           <span
+            tabIndex={0}
             className={cn(
-              'inline-flex items-center gap-1 cursor-help border-b border-dashed border-muted-foreground/40',
+              'inline-flex items-center gap-1 cursor-help border-b border-dashed border-muted-foreground/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring',
               className
             )}
           >

@@ -93,6 +93,28 @@ describe('GlossarioTooltip', () => {
     });
   });
 
+  describe('Selo "simulado" (etapa 18)', () => {
+    it('exibe selo quando origem="simulado"', () => {
+      render(<GlossarioTooltip termo="CBS" origem="simulado" fundamento="teste" />);
+      expect(screen.getByText('simulado')).toBeInTheDocument();
+    });
+
+    it('não exibe selo quando origem="lei"', () => {
+      render(<GlossarioTooltip termo="IBS" origem="lei" fundamento="teste" />);
+      expect(screen.queryByText('simulado')).not.toBeInTheDocument();
+    });
+
+    it('não exibe selo quando origem não informada', () => {
+      render(<GlossarioTooltip termo="CBS" />);
+      expect(screen.queryByText('simulado')).not.toBeInTheDocument();
+    });
+
+    it('gatilho é focável via teclado (tabIndex=0)', () => {
+      render(<GlossarioTooltip termo="CBS" origem="simulado" fundamento="teste" />);
+      expect(screen.getByText('CBS').closest('span')).toHaveAttribute('tabIndex', '0');
+    });
+  });
+
   describe('className customizado', () => {
     it('aplica className ao wrapper', () => {
       render(<GlossarioTooltip termo="CBS" className="font-bold" />);
