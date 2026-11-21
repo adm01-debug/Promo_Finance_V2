@@ -166,5 +166,5 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.check_catalogos_tributarios_invariants() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.check_catalogos_tributarios_invariants() TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.check_catalogos_tributarios_invariants() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.check_catalogos_tributarios_invariants() TO service_role;
