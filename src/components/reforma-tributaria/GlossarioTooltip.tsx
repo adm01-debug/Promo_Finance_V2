@@ -3,7 +3,9 @@
 
 import { Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import type { OrigemValor } from '@/lib/reforma-tributaria/cronograma-oficial';
 
 const GLOSSARIO: Record<string, { titulo: string; descricao: string; fundamentoLegal?: string }> = {
   CBS: {
@@ -73,11 +75,26 @@ interface Props {
   children?: React.ReactNode;
   className?: string;
   showIcon?: boolean;
+  /**
+   * Origem do valor exibido (ex: alíquota de um ano/regime — etapa 18 do
+   * plano de conformidade RT). Quando 'simulado', exibe selo "simulado" e o
+   * `fundamento` no tooltip, além da definição do termo.
+   */
+  origem?: OrigemValor;
+  fundamento?: string;
 }
 
-export function GlossarioTooltip({ termo, children, className, showIcon = true }: Props) {
+export function GlossarioTooltip({
+  termo,
+  children,
+  className,
+  showIcon = true,
+  origem,
+  fundamento,
+}: Props) {
   const info = GLOSSARIO[termo];
-  if (!info) return <span className={className}>{children || termo}</span>;
+  const isSimulado = origem === 'simulado';
+  if (!info && !fundamento) return <span className={className}>{children || termo}</span>;
 
   return (
     <TooltipProvider>
@@ -91,14 +108,32 @@ export function GlossarioTooltip({ termo, children, className, showIcon = true }
           >
             {children || termo}
             {showIcon && <Info className="h-3 w-3 text-muted-foreground" />}
+            {isSimulado && (
+              <Badge
+                variant="outline"
+                className="h-4 px-1.5 py-0 text-[9px] normal-case font-medium"
+              >
+                simulado
+              </Badge>
+            )}
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs p-3">
-          <p className="font-semibold text-sm">{info.titulo}</p>
-          <p className="text-xs text-muted-foreground mt-1">{info.descricao}</p>
-          {info.fundamentoLegal && (
+          {info && (
+            <>
+              <p className="font-semibold text-sm">{info.titulo}</p>
+              <p className="text-xs text-muted-foreground mt-1">{info.descricao}</p>
+            </>
+          )}
+          {info?.fundamentoLegal && (
             <p className="text-[10px] text-muted-foreground/70 mt-1.5 italic">
               📜 {info.fundamentoLegal}
+            </p>
+          )}
+          {fundamento && (
+            <p className="text-[10px] text-muted-foreground/70 mt-1.5 italic">
+              {isSimulado ? '⚠️ Simulado — ' : ''}
+              {fundamento}
             </p>
           )}
         </TooltipContent>
