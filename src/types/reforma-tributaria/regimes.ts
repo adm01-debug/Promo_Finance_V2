@@ -1,4 +1,5 @@
 import type { RegimeEspecial } from './enums';
+import type { OrigemValor } from '@/lib/reforma-tributaria/cronograma-oficial';
 
 export interface ConfiguracaoRegimeEspecial {
   regime: RegimeEspecial;
@@ -8,6 +9,7 @@ export interface ConfiguracaoRegimeEspecial {
   creditoIntegralMantido: boolean;
   observacoes: string;
   fundamentoLegal: string;
+  origem: OrigemValor;
 }
 
 export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
@@ -19,6 +21,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Manutenção dos benefícios até 2073',
     fundamentoLegal: 'Art. 446 a 460 LC 214/2025',
+    origem: 'lei',
   },
   {
     regime: 'combustiveis',
@@ -28,6 +31,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Regime monofásico com alíquotas específicas',
     fundamentoLegal: 'Art. 172 a 189 LC 214/2025',
+    origem: 'lei',
   },
   {
     regime: 'servicos_financeiros',
@@ -37,6 +41,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: false,
     observacoes: 'Base de cálculo diferenciada (margem)',
     fundamentoLegal: 'Art. 190 a 232 LC 214/2025',
+    origem: 'lei',
   },
   {
     regime: 'imobiliario',
@@ -46,6 +51,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Redução de 40% para imóveis residenciais',
     fundamentoLegal: 'Art. 233 a 256 LC 214/2025',
+    origem: 'lei',
   },
   {
     regime: 'hotelaria',
@@ -55,6 +61,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Redução de 40%',
     fundamentoLegal: 'Art. 257 a 259 LC 214/2025',
+    origem: 'lei',
   },
   {
     regime: 'bares_restaurantes',
@@ -64,6 +71,7 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Redução de 40%',
     fundamentoLegal: 'Art. 260 a 262 LC 214/2025',
+    origem: 'lei',
   },
   {
     regime: 'transporte_coletivo',
@@ -73,5 +81,36 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60%',
     fundamentoLegal: 'Art. 263 a 268 LC 214/2025',
+    origem: 'lei',
+  },
+  {
+    regime: 'saude',
+    descricao: 'Serviços de Saúde',
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
+    creditoIntegralMantido: true,
+    observacoes: 'Redução de 60% — serviços de saúde humana',
+    fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 4)',
+    origem: 'lei',
+  },
+  {
+    regime: 'educacao',
+    descricao: 'Serviços de Educação',
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
+    creditoIntegralMantido: true,
+    observacoes: 'Redução de 60% — serviços de educação',
+    fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 5)',
+    origem: 'lei',
+  },
+  {
+    regime: 'producoes_culturais',
+    descricao: 'Produções Culturais Nacionais',
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
+    creditoIntegralMantido: true,
+    observacoes: 'Redução de 60% — produções artísticas, culturais, jornalísticas',
+    fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 8)',
+    origem: 'lei',
   },
 ];
