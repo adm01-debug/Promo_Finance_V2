@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ea32d18b56b517bfb94ca45eb7323f087e163048` (2026-11-21T11:11:50-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ea8ccc8a62cd2c3453dddca3de8c00af1ccca93f` (2026-11-21T13:06:11-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -463,9 +463,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (35)
 - bun.lock (33)
-- .github/workflows/ci.yml (23)
-- supabase/functions/asaas-proxy/index.ts (18)
-- env.manifest.json (12)
+- .github/workflows/ci.yml (24)
+- supabase/functions/asaas-proxy/index.ts (17)
+- env.manifest.json (13)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - supabase/functions/bling-proxy/index.ts (11)
@@ -633,6 +633,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `ea8ccc8` merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)
 - 2026-11-21 `ea32d18` fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)
 - 2026-11-21 `21ecbbc` chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)
 - 2026-11-21 `b28b64b` fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)
@@ -647,7 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-20 `b7e2355` fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)
 - 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
 - 2026-11-19 `e6e6143` feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)
-- 2026-11-19 `dd12c7d` feat: suíte E2E de contrato contábil para contabilizar-evento (#473)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -298,9 +298,9 @@
    ],
    "secrets": [
     "CI_GATE_LOG_SECRET",
-    "DATABASE_URL",
     "E2E_USER_EMAIL",
     "E2E_USER_PASSWORD",
+    "PROD_DB_URL",
     "SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL",
@@ -1426,7 +1426,6 @@
   ],
   "secrets_em_workflows": [
    "CI_GATE_LOG_SECRET",
-   "DATABASE_URL",
    "E2E_USER_EMAIL",
    "E2E_USER_PASSWORD",
    "GITHUB_TOKEN",

@@ -1019,7 +1019,7 @@
   {
    "arquivo": "scripts/security/export-function-privileges.sh",
    "descricao": "============================================================================== Gera resumo de privilégios EXECUTE (função × role) em CSV e JSON.",
-   "linhas": 140,
+   "linhas": 139,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -1094,7 +1094,7 @@
   {
    "arquivo": "scripts/security/test-observability-privileges.sql",
    "descricao": null,
-   "linhas": 185,
+   "linhas": 184,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -1133,7 +1133,7 @@
   {
    "arquivo": "scripts/security/test-security-definer-invocation.sql",
    "descricao": null,
-   "linhas": 218,
+   "linhas": 226,
    "env": [],
    "npm_scripts": [],
    "workflows": [
