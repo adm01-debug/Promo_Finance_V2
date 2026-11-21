@@ -1,7 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Receipt, Landmark, AlertTriangle, ArrowRight, FileText, CheckCircle2, Info } from 'lucide-react';
+import {
+  Receipt,
+  Landmark,
+  AlertTriangle,
+  ArrowRight,
+  FileText,
+  CheckCircle2,
+  Info,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/formatters';
 import type { ResultadoCalculo } from '@/lib/reforma-tributaria-calculator';
@@ -58,9 +66,9 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                 <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800 flex items-start gap-2">
                   <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <p className="text-xs text-blue-700 dark:text-blue-300">
-                    <strong>2026 — ano-teste (art. 348 LC 214/2025):</strong> Quando recolhidos,
-                    CBS e IBS podem ser compensados com PIS/Cofins e, havendo saldo, com outros
-                    tributos federais. A simulação não inclui CBS/IBS na carga efetiva.
+                    <strong>2026 — ano-teste (art. 348 LC 214/2025):</strong> Quando recolhidos, CBS
+                    e IBS podem ser compensados com PIS/Cofins e, havendo saldo, com outros tributos
+                    federais. A simulação não inclui CBS/IBS na carga efetiva.
                   </p>
                 </div>
               )}
@@ -84,11 +92,19 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                     </GlossarioTooltip>
                   </div>
                   <div className="text-right">
-                    <p className={cn('font-semibold', resultado.cbsIbsCompensavel ? 'text-muted-foreground line-through' : 'text-cbs')}>
+                    <p
+                      className={cn(
+                        'font-semibold',
+                        resultado.cbsIbsCompensavel
+                          ? 'text-muted-foreground line-through'
+                          : 'text-cbs'
+                      )}
+                    >
                       {formatCurrency(resultado.valorCBS)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {resultado.aliquotaCBS.toFixed(2)}%{resultado.cbsIbsCompensavel ? ' (compensável)' : ''}
+                      {resultado.aliquotaCBS.toFixed(2)}%
+                      {resultado.cbsIbsCompensavel ? ' (compensável)' : ''}
                     </p>
                   </div>
                 </div>
@@ -106,11 +122,19 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                     </GlossarioTooltip>
                   </div>
                   <div className="text-right">
-                    <p className={cn('font-semibold', resultado.cbsIbsCompensavel ? 'text-muted-foreground line-through' : 'text-ibs')}>
+                    <p
+                      className={cn(
+                        'font-semibold',
+                        resultado.cbsIbsCompensavel
+                          ? 'text-muted-foreground line-through'
+                          : 'text-ibs'
+                      )}
+                    >
                       {formatCurrency(resultado.valorIBS)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {resultado.aliquotaIBS.toFixed(2)}%{resultado.cbsIbsCompensavel ? ' (compensável)' : ''}
+                      {resultado.aliquotaIBS.toFixed(2)}%
+                      {resultado.cbsIbsCompensavel ? ' (compensável)' : ''}
                     </p>
                   </div>
                 </div>

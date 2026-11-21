@@ -90,13 +90,15 @@ export function calcularTributosReforma(
   const aliquotaPISBase = 1.65;
   const aliquotaCOFINSBase = 7.6;
 
-  const icmsResidual = dados.tipoOperacao === 'venda'
-    ? valorBase * (aliquotaICMSBase / 100) * (aliquotasTransicao.icmsResidual / 100)
-    : 0;
+  const icmsResidual =
+    dados.tipoOperacao === 'venda'
+      ? valorBase * (aliquotaICMSBase / 100) * (aliquotasTransicao.icmsResidual / 100)
+      : 0;
 
-  const issResidual = dados.tipoOperacao === 'servico_prestado'
-    ? valorBase * (aliquotaISSBase / 100) * (aliquotasTransicao.issResidual / 100)
-    : 0;
+  const issResidual =
+    dados.tipoOperacao === 'servico_prestado'
+      ? valorBase * (aliquotaISSBase / 100) * (aliquotasTransicao.issResidual / 100)
+      : 0;
 
   const pisResidual = valorBase * (aliquotaPISBase / 100) * (aliquotasTransicao.pisResidual / 100);
   const cofinsResidual =
