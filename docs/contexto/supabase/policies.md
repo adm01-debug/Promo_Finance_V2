@@ -582,6 +582,10 @@ Visão consolidada (inclui `storage.objects` e `realtime.messages`); detalhes po
 | public.user_passkeys | Users can update own passkeys | UPDATE | PERMISSIVE | authenticated | `(( SELECT auth.uid() AS uid) = user_id)` | `(( SELECT auth.uid() AS uid) = user_id)` |
 | public.user_passkeys | Users can update their passkeys | UPDATE | PERMISSIVE | authenticated | `(( SELECT auth.uid() AS uid) = user_id)` |  |
 | public.user_passkeys | Users can view own passkeys | SELECT | PERMISSIVE | authenticated | `(( SELECT auth.uid() AS uid) = user_id)` |  |
+| public.user_preferences | preferencias_sistema_delete_own | DELETE | PERMISSIVE | public | `(auth.uid() = user_id)` |  |
+| public.user_preferences | preferencias_sistema_insert_own | INSERT | PERMISSIVE | public |  | `(auth.uid() = user_id)` |
+| public.user_preferences | preferencias_sistema_select_own | SELECT | PERMISSIVE | public | `(auth.uid() = user_id)` |  |
+| public.user_preferences | preferencias_sistema_update_own | UPDATE | PERMISSIVE | public | `(auth.uid() = user_id)` | `(auth.uid() = user_id)` |
 | public.user_roles | Admins can delete user roles | DELETE | PERMISSIVE | authenticated | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |  |
 | public.user_roles | Admins can insert user roles | INSERT | PERMISSIVE | authenticated |  | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |
 | public.user_roles | Admins can manage all roles | ALL | PERMISSIVE | authenticated | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` | `has_role(( SELECT auth.uid() AS uid), 'admin'::app_role)` |

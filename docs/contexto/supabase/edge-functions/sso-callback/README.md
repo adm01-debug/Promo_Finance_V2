@@ -4,7 +4,7 @@
 |---|---|
 | nome | sso-callback |
 | status | ACTIVE |
-| versão | 119 |
+| versão | 120 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/sso-callback/index.ts |
 | import_map |  |

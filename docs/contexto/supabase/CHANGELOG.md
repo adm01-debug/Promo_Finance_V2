@@ -2,6 +2,20 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-21 00:36 UTC
+
+- **colunas** adicionado (6): `public.user_preferences.created_at`, `public.user_preferences.id`, `public.user_preferences.key`, `public.user_preferences.payload`, `public.user_preferences.updated_at`, `public.user_preferences.user_id`
+- **constraints** adicionado (3): `public.user_preferences.user_preferences_pkey`, `public.user_preferences.user_preferences_user_id_fkey`, `public.user_preferences.user_preferences_user_id_key_key`
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** alterado (1): `public.handle_updated_at()`
+- **grants** adicionado (2): `public.user_preferences:authenticated`, `public.user_preferences:service_role`
+- **indexes** adicionado (2): `public.user_preferences_pkey`, `public.user_preferences_user_id_key_key`
+- **lints** adicionado (4): `policy_auth_fn_not_wrapped:public.user_preferences.preferencias_sistema_delete_own`, `policy_auth_fn_not_wrapped:public.user_preferences.preferencias_sistema_insert_own`, `policy_auth_fn_not_wrapped:public.user_preferences.preferencias_sistema_select_own`, `policy_auth_fn_not_wrapped:public.user_preferences.preferencias_sistema_update_own`
+- **migrations** adicionado (1): `20261121000000_restaura_user_preferences`
+- **policies (RLS)** adicionado (4): `public.user_preferences.preferencias_sistema_delete_own`, `public.user_preferences.preferencias_sistema_insert_own`, `public.user_preferences.preferencias_sistema_select_own`, `public.user_preferences.preferencias_sistema_update_own`
+- **tabelas** adicionado (1): `public.user_preferences`
+- **triggers** adicionado (1): `public.user_preferences.tr_user_preferences_updated_at`
+
 ## 2026-11-20 22:14 UTC
 
 - **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)

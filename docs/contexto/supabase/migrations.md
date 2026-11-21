@@ -1052,3 +1052,4 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261118000000 | [versiona_vw_webhooks_recentes](migrations/20261118000000_versiona_vw_webhooks_recentes.sql) | 0 |
 | 20261118002000 | [rate_limit_check_atomico](migrations/20261118002000_rate_limit_check_atomico.sql) | 1 |
 | 20261118003500 | [drop_particoes_orfas_e_views_mortas](migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql) | 1 |
+| 20261121000000 | [restaura_user_preferences](migrations/20261121000000_restaura_user_preferences.sql) | 8 |

@@ -252,6 +252,7 @@
 | public.user_filter_presets | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.user_onboarding_progress | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.user_passkeys | user_id | auth.users | id | CASCADE | NO ACTION |
+| public.user_preferences | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.user_roles | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.user_sessions | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.vendedores | empresa_id | public.empresas | id | NO ACTION | NO ACTION |

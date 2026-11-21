@@ -254,6 +254,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.user_filter_presets](tables/public/user_filter_presets.md) | table | sim | 2 | 10 | não |  |
 | [public.user_onboarding_progress](tables/public/user_onboarding_progress.md) | table | sim | 3 | 7 | não |  |
 | [public.user_passkeys](tables/public/user_passkeys.md) | table | sim | 7 | 11 | não |  |
+| [public.user_preferences](tables/public/user_preferences.md) | table | sim | 4 | 6 | não |  |
 | [public.user_roles](tables/public/user_roles.md) | table | sim | 5 | 10 | não |  |
 | [public.user_sessions](tables/public/user_sessions.md) | table | sim | 1 | 11 | não |  |
 | [public.vendedores](tables/public/vendedores.md) | table | sim | 1 | 8 | não |  |

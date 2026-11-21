@@ -4,7 +4,7 @@
 |---|---|
 | nome | bitrix24-webhook |
 | status | ACTIVE |
-| versão | 128 |
+| versão | 129 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/bitrix24-webhook/index.ts |
 | import_map |  |

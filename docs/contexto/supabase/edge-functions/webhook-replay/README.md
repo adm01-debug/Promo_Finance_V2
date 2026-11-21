@@ -4,7 +4,7 @@
 |---|---|
 | nome | webhook-replay |
 | status | ACTIVE |
-| versão | 125 |
+| versão | 126 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/webhook-replay/index.ts |
 | import_map |  |
