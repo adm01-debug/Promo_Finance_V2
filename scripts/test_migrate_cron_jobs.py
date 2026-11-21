@@ -222,7 +222,7 @@ class TestAplicacao(Base):
         self.assertEqual(r.returncode, 0, r.stderr)
         chamadas = self.psql_calls()
         self.assertEqual(len(chamadas), 5)
-        self.assertTrue(all(c.startswith("-X postgresql://stub/db") for c in chamadas), chamadas)
+        self.assertTrue(all(c.startswith("-X ") and c.endswith("postgresql://stub/db") for c in chamadas), chamadas)
         self.assertIn("-v ON_ERROR_STOP=1", chamadas[2])
         self.assertIn("-v vault_schema=1 -v vault_has=0", chamadas[2])
         self.assertIn(" -f ", chamadas[2])
@@ -435,7 +435,9 @@ class TestIntegracaoPostgresLocal(Base):
         # agora usa tr -d '\r\n' (remove só CR/LF — não letras).
         self._psql("-c", FAKE_VAULT)
         self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
-        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-teste.rn"})
+        # POSIXLY_CORRECT=1 reproduz o modo POSIX do GNU sed: se o trim via
+        # sed voltar, a chave seria truncada e o teste falha aqui.
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-teste.rn", "POSIXLY_CORRECT": "1"})
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-teste.rn")
 
