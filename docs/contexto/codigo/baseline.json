@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9fc35eeba490df4da502302784bf5b8b3ce1c20b",
+  "commit": "045482ea8aaf2ada0e20ae7ab342e092c53a6602",
   "branch": "main",
-  "data_commit": "2026-11-21T17:30:39-03:00",
+  "data_commit": "2026-11-21T17:40:49-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "045482e",
+    "data": "2026-11-21",
+    "assunto": "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura"
+   },
    {
     "sha": "9fc35ee",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "2f1f881",
     "data": "2026-11-19",
     "assunto": "chore: matriz de conformidade de contratos das edge functions (#471)"
-   },
-   {
-    "sha": "1bdec67",
-    "data": "2026-11-18",
-    "assunto": "chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)"
    }
   ],
-  "arquivos_mudados_7d": 457,
+  "arquivos_mudados_7d": 460,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -211,7 +211,7 @@
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 16
+    "mudancas": 15
    },
    {
     "arquivo": "env.manifest.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 242
+    "commits": 243
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3984,
-  "arquivos_codigo": 2488,
-  "linhas_codigo": 443543,
+  "arquivos_total": 3985,
+  "arquivos_codigo": 2489,
+  "linhas_codigo": 443726,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 312,
   "migrations": 1053,
   "cron_jobs": 22,
-  "testes": 486,
+  "testes": 487,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 219
@@ -663,8 +663,8 @@
    "linhas": 19781
   },
   "src/lib": {
-   "arquivos": 417,
-   "linhas": 55108
+   "arquivos": 418,
+   "linhas": 55249
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -684,7 +684,7 @@
   },
   "src/types": {
    "arquivos": 17,
-   "linhas": 958
+   "linhas": 1000
   },
   "supabase/functions": {
    "arquivos": 237,

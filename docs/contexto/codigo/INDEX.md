@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9fc35eeba490df4da502302784bf5b8b3ce1c20b` (2026-11-21T17:30:39-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `045482ea8aaf2ada0e20ae7ab342e092c53a6602` (2026-11-21T17:40:49-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2369), SQL (1125), Markdown (219), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2370), SQL (1125), Markdown (219), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3984 |
-| arquivos_codigo | 2488 |
-| linhas_codigo | 443543 |
+| arquivos_total | 3985 |
+| arquivos_codigo | 2489 |
+| linhas_codigo | 443726 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 312 |
 | migrations | 1053 |
 | cron_jobs | 22 |
-| testes | 486 |
+| testes | 487 |
 | workflows | 20 |
 | scripts | 116 |
 | docs_md | 219 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (238), src/components (27), src/pages (5)
 - servicos_logica: src/lib (262), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (286), outro (112), co-localizado (*.test) (48)
+- testes: co-localizado (__tests__) (287), outro (112), co-localizado (*.test) (48)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -464,7 +464,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (34)
 - bun.lock (32)
 - .github/workflows/ci.yml (24)
-- supabase/functions/asaas-proxy/index.ts (16)
+- supabase/functions/asaas-proxy/index.ts (15)
 - env.manifest.json (14)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `045482e` feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura
 - 2026-11-21 `9fc35ee` fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)
 - 2026-11-21 `5788349` chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)
 - 2026-11-21 `f22be43` infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `11779f6` chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)
 - 2026-11-20 `cab2bf4` fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)
 - 2026-11-20 `72a08b5` fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)
-- 2026-11-20 `3a239d1` docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

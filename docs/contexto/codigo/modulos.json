@@ -9126,7 +9126,7 @@
   {
    "modulo": "lib/reforma-tributaria",
    "arquivos": 6,
-   "testes": 1,
+   "testes": 2,
    "linhas": 688,
    "itens_menu": [],
    "telas": [],
@@ -12915,7 +12915,7 @@
    "modulo": "types/reforma-tributaria",
    "arquivos": 13,
    "testes": 0,
-   "linhas": 635,
+   "linhas": 677,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9fc35eeba490df4da502302784bf5b8b3ce1c20b",
+  "sha": "045482ea8aaf2ada0e20ae7ab342e092c53a6602",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 20:32 UTC",
-  "files_total": 4023,
-  "code_files": 3614,
-  "code_lines": 514477
+  "generated_at": "2026-11-21 20:41 UTC",
+  "files_total": 4024,
+  "code_files": 3615,
+  "code_lines": 514661
  },
  "version": "1.3.2",
- "facts_hash": "5875d9df2756df7d",
+ "facts_hash": "be59cd889071bce4",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1252,
+   ".ts": 1253,
    ".sql": 1125,
    ".tsx": 1117,
    ".mjs": 67,
@@ -70265,8 +70265,8 @@
   },
   {
    "module": "src/lib",
-   "files": 417,
-   "lines": 55525,
+   "files": 418,
+   "lines": 55667,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -70772,7 +70772,7 @@
   {
    "module": "src/types",
    "files": 17,
-   "lines": 975,
+   "lines": 1017,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
@@ -78740,7 +78740,7 @@
    {
     "file": "src/types/reforma-tributaria/enums.ts",
     "name": "RegimeEspecial",
-    "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | nenhum"
+    "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | saude | educacao | producoes_culturais | nenhum"
    },
    {
     "file": "supabase/functions/_shared/cnae.ts",
@@ -128921,6 +128921,74 @@
    {
     "file": "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
     "name": "todas as linhas declaram origem e fundamento"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "LinhaCronograma — shape e campos obrigatórios (etapa 13)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "todos os 10 campos obrigatórios presentes em cada linha"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "cobertura: há linhas para cada ano de 2026 a 2033"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2026 — ibsMun=0 (ano-teste, art. 343 LC 214/2025)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2027 e 2028 — ibsUf === ibsMun (split 50/50 UF/Mun)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2033 — residuais zerados (regime pleno, ADCT EC 132/2023)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2033 — ibsUf + ibsMun === REF_IBS (regime pleno)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2029-2032 — ICMS residuais decrescentes: 90/80/70/60"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2029-2032 — frações IBS são 10/20/30/40% de REF_IBS (ibsUf+ibsMun)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2029-2032 — PIS e COFINS zerados (substituídos por CBS)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "origem — cada linha tem valor válido (lei | simulado)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "2026 — origem lei (alíquota definida em texto de lei)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "obterLinhaCronograma — boundary"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "ano < 2026 — cbs, ibsUf e ibsMun retornam 0"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "ano < 2026 — residuais de ICMS/ISS/PIS/COFINS retornam 100"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "ano > 2033 — retorna regime pleno (ibsUf+ibsMun===REF_IBS, residuais=0)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "name": "ano dentro do cronograma retorna linha exata"
    },
    {
     "file": "src/lib/sso/__tests__/consistency.test.ts",
@@ -214624,6 +214692,30 @@
     "todas as linhas declaram origem e fundamento"
    ]
   },
+  "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts": {
+   "path": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+   "lines": 142,
+   "is_test": true,
+   "tests": [
+    "LinhaCronograma — shape e campos obrigatórios (etapa 13)",
+    "todos os 10 campos obrigatórios presentes em cada linha",
+    "cobertura: há linhas para cada ano de 2026 a 2033",
+    "2026 — ibsMun=0 (ano-teste, art. 343 LC 214/2025)",
+    "2027 e 2028 — ibsUf === ibsMun (split 50/50 UF/Mun)",
+    "2033 — residuais zerados (regime pleno, ADCT EC 132/2023)",
+    "2033 — ibsUf + ibsMun === REF_IBS (regime pleno)",
+    "2029-2032 — ICMS residuais decrescentes: 90/80/70/60",
+    "2029-2032 — frações IBS são 10/20/30/40% de REF_IBS (ibsUf+ibsMun)",
+    "2029-2032 — PIS e COFINS zerados (substituídos por CBS)",
+    "origem — cada linha tem valor válido (lei | simulado)",
+    "2026 — origem lei (alíquota definida em texto de lei)",
+    "obterLinhaCronograma — boundary",
+    "ano < 2026 — cbs, ibsUf e ibsMun retornam 0",
+    "ano < 2026 — residuais de ICMS/ISS/PIS/COFINS retornam 100",
+    "ano > 2033 — retorna regime pleno (ibsUf+ibsMun===REF_IBS, residuais=0)",
+    "ano dentro do cronograma retorna linha exata"
+   ]
+  },
   "src/lib/scim/userTemplate.ts": {
    "path": "src/lib/scim/userTemplate.ts",
    "lines": 162,
@@ -227712,7 +227804,7 @@
   },
   "src/types/reforma-tributaria/enums.ts": {
    "path": "src/types/reforma-tributaria/enums.ts",
-   "lines": 56,
+   "lines": 59,
    "exports": [
     "type RegimeTributario",
     "type TipoTributoNovo",
@@ -227754,7 +227846,7 @@
     },
     {
      "name": "RegimeEspecial",
-     "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | nenhum"
+     "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | saude | educacao | producoes_culturais | nenhum"
     }
    ],
    "doc": "Enums e types unions da reforma tributária."
@@ -227888,7 +227980,7 @@
   },
   "src/types/reforma-tributaria/regimes.ts": {
    "path": "src/types/reforma-tributaria/regimes.ts",
-   "lines": 78,
+   "lines": 117,
    "exports": [
     "interface ConfiguracaoRegimeEspecial",
     "const REGIMES_ESPECIAIS"
@@ -244906,10 +244998,21 @@
   }
  },
  "git": {
-  "sha": "9fc35eeba490df4da502302784bf5b8b3ce1c20b",
+  "sha": "045482ea8aaf2ada0e20ae7ab342e092c53a6602",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "045482e",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura",
+    "files": [
+     "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+     "src/types/reforma-tributaria/enums.ts",
+     "src/types/reforma-tributaria/regimes.ts"
+    ]
+   },
    {
     "sha": "9fc35ee",
     "date": "2026-11-21",
@@ -245264,31 +245367,19 @@
      "supabase/functions/bling-webhook/index.test.ts",
      "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
     ]
-   },
-   {
-    "sha": "c72e283",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "infra(ci): gate que barra coluna inexistente em select/order (#457)",
-    "files": [
-     ".github/workflows/ci.yml",
-     "scripts/automation.config.json",
-     "scripts/ci/check-colunas-select.mjs",
-     "scripts/ci/check-colunas-select.unit.mjs"
-    ]
    }
   ],
   "hot_files": [
-   [
-    ".github/workflows/ci.yml",
-    3
-   ],
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
    ],
    [
     "env.manifest.json",
+    2
+   ],
+   [
+    ".github/workflows/ci.yml",
     2
    ],
    [
@@ -245308,8 +245399,16 @@
     2
    ],
    [
-    "scripts/automation.config.json",
-    2
+    "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    1
+   ],
+   [
+    "src/types/reforma-tributaria/enums.ts",
+    1
+   ],
+   [
+    "src/types/reforma-tributaria/regimes.ts",
+    1
    ],
    [
     "src/hooks/__tests__/useCashbackSimulador.test.ts",
@@ -245349,14 +245448,6 @@
    ],
    [
     ".github/workflows/rfb-upstream-watch.yml",
-    1
-   ],
-   [
-    "docs/receitafederal/VERSOES_RFB.md",
-    1
-   ],
-   [
-    "docs/receitafederal/rfb-changelog-state.json",
     1
    ]
   ]

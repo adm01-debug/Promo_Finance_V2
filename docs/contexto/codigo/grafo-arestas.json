@@ -10917,6 +10917,7 @@
    "src/types/reforma-tributaria/enums.ts"
   ],
   "src/types/reforma-tributaria/regimes.ts": [
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
    "src/types/reforma-tributaria/enums.ts"
   ],
   "src/types/reforma-tributaria/simulacao.ts": [

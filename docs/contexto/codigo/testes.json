@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 486,
+ "total": 487,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 410
+  "unit": 411
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 286
+   "arquivos": 287
   },
   {
    "padrao": "outro",
@@ -2545,6 +2545,16 @@
    "casos": 9
   },
   {
+   "arquivo": "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+   "tipo": "unit",
+   "linhas": 141,
+   "testa": [
+    "src/config/reforma-tributaria.ts",
+    "src/lib/reforma-tributaria/cronograma-oficial.ts"
+   ],
+   "casos": 15
+  },
+  {
    "arquivo": "src/lib/sso/__tests__/consistency.test.ts",
    "tipo": "unit",
    "linhas": 150,
@@ -4431,7 +4441,7 @@
   "src/components/ui/tabs.tsx": 1,
   "src/components/ui/tooltip.tsx": 1,
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
-  "src/config/reforma-tributaria.ts": 5,
+  "src/config/reforma-tributaria.ts": 6,
   "src/contexts/EmpresaScopeContext.tsx": 1,
   "src/contexts/useEmpresaScope.ts": 1,
   "src/hooks/anomaliaPreferencesValidation.ts": 1,
@@ -4544,7 +4554,7 @@
   "src/lib/queryClient.ts": 1,
   "src/lib/reforma-tributaria-calculator.ts": 1,
   "src/lib/reforma-tributaria/calcular-tributos.ts": 1,
-  "src/lib/reforma-tributaria/cronograma-oficial.ts": 1,
+  "src/lib/reforma-tributaria/cronograma-oficial.ts": 2,
   "src/lib/reforma-tributaria/types.ts": 1,
   "src/lib/secure-random.ts": 1,
   "src/lib/sefaz-contingency/constants.ts": 1,

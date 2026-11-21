@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9fc35eeba4` · branch `main` · 2026-11-21 20:32 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `045482ea8a` · branch `main` · 2026-11-21 20:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1740,7 +1740,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | CategoriaIS | bebidas_alcoolicas \| bebidas_acucaradas \| produtos_fumigenos \| veiculos \| embarcacoes_aeronaves \| minerios \| combustiveis_fosseis \| concursos_prognosticos | `src/types/reforma-tributaria/enums.ts` |
 | StatusCreditoTributario | disponivel \| utilizado \| compensado \| expirado \| estornado \| transferido | `src/types/reforma-tributaria/enums.ts` |
 | TipoOperacao | venda \| compra \| servico_prestado \| servico_tomado \| importacao \| exportacao | `src/types/reforma-tributaria/enums.ts` |
-| RegimeEspecial | zona_franca_manaus \| combustiveis \| servicos_financeiros \| imobiliario \| hotelaria \| bares_restaurantes \| parques_diversao \| agencias_viagem \| transporte_coletivo \| sociedades_cooperativas \| nenhum | `src/types/reforma-tributaria/enums.ts` |
+| RegimeEspecial | zona_franca_manaus \| combustiveis \| servicos_financeiros \| imobiliario \| hotelaria \| bares_restaurantes \| parques_diversao \| agencias_viagem \| transporte_coletivo \| sociedades_cooperativas \| saude \| educacao \| producoes_culturais \| nenhum | `src/types/reforma-tributaria/enums.ts` |
 | REGIMES_CANONICOS | 'mei', 'simples_nacional', 'lucro_presumido', 'lucro_real', 'arbitrado', | `supabase/functions/_shared/cnae.ts` |
 | LogLevel | DEBUG = 'DEBUG', INFO = 'INFO', WARN = 'WARN', ERROR = 'ERROR', CRITICAL = 'CRITICAL', | `supabase/functions/_shared/logger.ts` |
 | TipoDetectado | pdf \| png \| jpeg \| zip \| gzip \| pfx \| pem \| xml \| texto \| exe \| elf \| macho \| wasm \| classe \| script \| webp \| desconhecido | `supabase/functions/_shared/magic-bytes.ts` |
@@ -5069,7 +5069,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3640 testes em 321 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3657 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5130,6 +5130,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/cfc-validator.test.ts` | 17 | validarFormatoCFC · aceita 4 níveis · aceita 5 níveis com subconta 1-3 dígitos · rejeita formatos inválidos … |
 | `src/lib/__tests__/csv-importer.test.ts` | 17 | csv-importer — faturamento · parse UTF-8 com separador  · parse com separador  · parse com separador TAB … |
 | `src/lib/__tests__/ofx-parser-xlsx-valor.test.ts` | 17 | parseExcel — valor monetario BRL · nao perde a grandeza de 1.234,56 (antes virava 1.234) · preserva a grandeza do negativo e o classifica como debito · rejeita celula nao numerica em vez de criar transacao NaN … |
+| `src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts` | 17 | LinhaCronograma — shape e campos obrigatórios (etapa 13) · todos os 10 campos obrigatórios presentes em cada linha · cobertura: há linhas para cada ano de 2026 a 2033 · 2026 — ibsMun=0 (ano-teste, art. 343 LC 214/2025) … |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
@@ -5372,8 +5373,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/executar-regua-cobranca/domain.test.ts` | 3 | normaliza dias, remove duplicados e rejeita valores inválidos · normaliza e limita canais ao contrato conhecido · calcula datas antes, no dia e depois do vencimento em UTC |
 | `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
-| `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
-| … +21 linhas — lista completa em `context.json` | | |
+| … +22 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

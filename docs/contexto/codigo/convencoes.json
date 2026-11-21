@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (286)",
+   "co-localizado (__tests__) (287)",
    "outro (112)",
    "co-localizado (*.test) (48)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura",
    "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)",
    "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)",
    "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)",
-   "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)",
-   "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)"
+   "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
