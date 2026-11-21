@@ -302,7 +302,7 @@
         "is_default": true,
         "name": "main",
         "persistent": false,
-        "status": "FUNCTIONS_DEPLOYED"
+        "status": "MIGRATIONS_FAILED"
       }
     ],
     "custom_hostname": null,
@@ -67712,9 +67712,13 @@
             {
               "file": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 5,
+          "code_total_files": 6,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -72583,7 +72587,7 @@
               "hits": 6
             }
           ],
-          "code_total_files": 195,
+          "code_total_files": 196,
           "cron": [],
           "db": [
             "public.auditar_acessos_cross_tenant",
@@ -76835,9 +76839,13 @@
             {
               "file": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
               "hits": 2
+            },
+            {
+              "file": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 8,
+          "code_total_files": 9,
           "cron": [],
           "db": [
             "public.get_catalogos_tributarios_health"
