@@ -78,7 +78,9 @@ describe('cronograma-oficial', () => {
   });
 
   it('2026 e 2029+: origem e origemIbs coincidem (ambos lei em 2026, ambos simulado de 2029+)', () => {
-    expect(obterLinhaCronograma(2026).origem).toBe(obterLinhaCronograma(2026).origemIbs);
+    const linha2026 = obterLinhaCronograma(2026);
+    expect(linha2026.origem).toBe('lei');
+    expect(linha2026.origemIbs).toBe('lei');
     for (const ano of [2029, 2030, 2031, 2032, 2033]) {
       const linha = obterLinhaCronograma(ano);
       expect(linha.origem).toBe('simulado');
