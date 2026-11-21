@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2a68642bd1924c2b9c44dc12482942a2b8ef96bc",
+  "commit": "9e6fc7bdc6b682a9693ec5e8ce413725d49a8305",
   "branch": "main",
-  "data_commit": "2026-11-21T20:27:33-03:00",
+  "data_commit": "2026-11-21T20:57:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9e6fc7b",
+    "data": "2026-11-21",
+    "assunto": "feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)"
+   },
    {
     "sha": "2a68642",
     "data": "2026-11-21",
@@ -126,11 +131,6 @@
     "sha": "72a08b5",
     "data": "2026-11-20",
     "assunto": "fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)"
-   },
-   {
-    "sha": "3a239d1",
-    "data": "2026-11-20",
-    "assunto": "docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)"
    }
   ],
   "arquivos_mudados_7d": 483,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 251
+    "commits": 252
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3990,
   "arquivos_codigo": 2492,
-  "linhas_codigo": 444348,
+  "linhas_codigo": 444380,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -684,7 +684,7 @@
   },
   "src/types": {
    "arquivos": 17,
-   "linhas": 995
+   "linhas": 1027
   },
   "supabase/functions": {
    "arquivos": 237,

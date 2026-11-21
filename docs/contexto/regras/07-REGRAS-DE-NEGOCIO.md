@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2a68642bd1` · branch `main` · 2026-11-21 23:28 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9e6fc7bdc6` · branch `main` · 2026-11-21 23:58 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1740,7 +1740,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | CategoriaIS | bebidas_alcoolicas \| bebidas_acucaradas \| produtos_fumigenos \| veiculos \| embarcacoes_aeronaves \| minerios \| combustiveis_fosseis \| concursos_prognosticos | `src/types/reforma-tributaria/enums.ts` |
 | StatusCreditoTributario | disponivel \| utilizado \| compensado \| expirado \| estornado \| transferido | `src/types/reforma-tributaria/enums.ts` |
 | TipoOperacao | venda \| compra \| servico_prestado \| servico_tomado \| importacao \| exportacao | `src/types/reforma-tributaria/enums.ts` |
-| RegimeEspecial | zona_franca_manaus \| combustiveis \| servicos_financeiros \| imobiliario \| hotelaria \| bares_restaurantes \| parques_diversao \| agencias_viagem \| transporte_coletivo \| sociedades_cooperativas \| saude \| educacao \| producoes_culturais \| nenhum | `src/types/reforma-tributaria/enums.ts` |
+| RegimeEspecial | zona_franca_manaus \| combustiveis \| servicos_financeiros \| imobiliario \| locacao_imovel | `src/types/reforma-tributaria/enums.ts` |
 | REGIMES_CANONICOS | 'mei', 'simples_nacional', 'lucro_presumido', 'lucro_real', 'arbitrado', | `supabase/functions/_shared/cnae.ts` |
 | LogLevel | DEBUG = 'DEBUG', INFO = 'INFO', WARN = 'WARN', ERROR = 'ERROR', CRITICAL = 'CRITICAL', | `supabase/functions/_shared/logger.ts` |
 | TipoDetectado | pdf \| png \| jpeg \| zip \| gzip \| pfx \| pem \| xml \| texto \| exe \| elf \| macho \| wasm \| classe \| script \| webp \| desconhecido | `supabase/functions/_shared/magic-bytes.ts` |
@@ -3541,6 +3541,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   valor === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
   ```
+- **aplicarOrdemBeneficios(reducoes: number[])** — `src/types/reforma-tributaria/regimes.ts`
+  ```
+  let base = 1; for (const r of reducoes) { base = base * (1 - r / 100); } return (1 - base) * 100;
+  ```
 - **normalizeValidationFields(error: unknown)** — `supabase/functions/_shared/contract-response.ts`
   ```
   if (isZodError(error)) return error.issues.map(normalizeIssue); if (Array.isArray(error)) { return error.flatMap((item) => { if (typeof item !== 'object' || item === null) return []; const candidate = item as Partial<ContractFieldError>; if (!candidate.message) return []; return [ { path: candidate.path ?? '$', message: candidate.message, code: candidate.code ?? 'custom', }, ]; }); } return [];
@@ -4066,7 +4070,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const economiaEstimada = aplicavel ? volumeEstimado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
 | `const volumeEstimado = faturamento * 0.05; // assume 5% potencial de bonificação` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
 | `economia_min: economiaEstimada * 0.5,` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| … +191 linhas — lista completa em `context.json` | |
+| … +193 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "2a68642bd1924c2b9c44dc12482942a2b8ef96bc",
+  "sha": "9e6fc7bdc6b682a9693ec5e8ce413725d49a8305",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 23:28 UTC",
+  "generated_at": "2026-11-21 23:58 UTC",
   "files_total": 4029,
   "code_files": 3619,
-  "code_lines": 515301
+  "code_lines": 515333
  },
  "version": "1.3.2",
- "facts_hash": "74347d85c2cb1ca1",
+ "facts_hash": "7fe05539cd31247d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70780,7 +70780,7 @@
   {
    "module": "src/types",
    "files": 17,
-   "lines": 1012,
+   "lines": 1044,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
@@ -70793,7 +70793,7 @@
     "obrigacoes.ts: ObrigacaoAcessoria, OBRIGACOES_ACESSORIAS_REFORMA",
     "operacoes.ts: OperacaoTributavel, ApuracaoTributaria",
     "plano-contas.ts: ContaContabilReforma, PLANO_CONTAS_REFORMA",
-    "regimes.ts: ConfiguracaoRegimeEspecial, REGIMES_ESPECIAIS",
+    "regimes.ts: ConfiguracaoRegimeEspecial, aplicarOrdemBeneficios, REGIMES_ESPECIAIS",
     "simulacao.ts: SimulacaoTributaria",
     "split-payment.ts: SplitPaymentConfig, TransacaoSplitPayment",
     "transicao.ts: AliquotasTransicao, ALIQUOTAS_TRANSICAO"
@@ -78753,7 +78753,7 @@
    {
     "file": "src/types/reforma-tributaria/enums.ts",
     "name": "RegimeEspecial",
-    "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | saude | educacao | producoes_culturais | nenhum"
+    "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | locacao_imovel"
    },
    {
     "file": "supabase/functions/_shared/cnae.ts",
@@ -116949,6 +116949,12 @@
     "body": "valor === '' || /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(valor);"
    },
    {
+    "file": "src/types/reforma-tributaria/regimes.ts",
+    "name": "aplicarOrdemBeneficios",
+    "params": "reducoes: number[]",
+    "body": "let base = 1; for (const r of reducoes) { base = base * (1 - r / 100); } return (1 - base) * 100;"
+   },
+   {
     "file": "supabase/functions/_shared/contract-response.ts",
     "name": "normalizeValidationFields",
     "params": "error: unknown",
@@ -120009,6 +120015,14 @@
    {
     "file": "src/pages/tributario/TabelasConsulta.tsx",
     "line": "<TableHead>INSS 11%</TableHead>"
+   },
+   {
+    "file": "src/types/reforma-tributaria/regimes.ts",
+    "line": "* @param reducoes - percentuais de redução a aplicar (ex.: [60, 30] = 60% sobre base, 30% sobre restante)"
+   },
+   {
+    "file": "src/types/reforma-tributaria/regimes.ts",
+    "line": "* aplicarOrdemBeneficios([60, 30]) // => 72 (1 - 0.4 * 0.7) * 100"
    },
    {
     "file": "src/types/reforma-tributaria/transicao.ts",
@@ -228022,7 +228036,7 @@
   },
   "src/types/reforma-tributaria/enums.ts": {
    "path": "src/types/reforma-tributaria/enums.ts",
-   "lines": 59,
+   "lines": 60,
    "exports": [
     "type RegimeTributario",
     "type TipoTributoNovo",
@@ -228064,7 +228078,7 @@
     },
     {
      "name": "RegimeEspecial",
-     "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | hotelaria | bares_restaurantes | parques_diversao | agencias_viagem | transporte_coletivo | sociedades_cooperativas | saude | educacao | producoes_culturais | nenhum"
+     "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | locacao_imovel"
     }
    ],
    "doc": "Enums e types unions da reforma tributária."
@@ -228198,10 +228212,22 @@
   },
   "src/types/reforma-tributaria/regimes.ts": {
    "path": "src/types/reforma-tributaria/regimes.ts",
-   "lines": 117,
+   "lines": 148,
    "exports": [
     "interface ConfiguracaoRegimeEspecial",
+    "function aplicarOrdemBeneficios",
     "const REGIMES_ESPECIAIS"
+   ],
+   "calc_fns": [
+    {
+     "name": "aplicarOrdemBeneficios",
+     "params": "reducoes: number[]",
+     "body": "let base = 1; for (const r of reducoes) { base = base * (1 - r / 100); } return (1 - base) * 100;"
+    }
+   ],
+   "percents": [
+    "* @param reducoes - percentuais de redução a aplicar (ex.: [60, 30] = 60% sobre base, 30% sobre restante)",
+    "* aplicarOrdemBeneficios([60, 30]) // => 72 (1 - 0.4 * 0.7) * 100"
    ]
   },
   "src/types/reforma-tributaria/simulacao.ts": {
@@ -245224,10 +245250,20 @@
   }
  },
  "git": {
-  "sha": "2a68642bd1924c2b9c44dc12482942a2b8ef96bc",
+  "sha": "9e6fc7bdc6b682a9693ec5e8ce413725d49a8305",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9e6fc7b",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)",
+    "files": [
+     "src/types/reforma-tributaria/enums.ts",
+     "src/types/reforma-tributaria/regimes.ts"
+    ]
+   },
    {
     "sha": "2a68642",
     "date": "2026-11-21",
@@ -245585,16 +245621,6 @@
     "files": [
      "src/components/onboarding/__tests__/OnboardingTour.zIndex.test.tsx"
     ]
-   },
-   {
-    "sha": "a406e99",
-    "date": "2026-11-19",
-    "author": "adm01-debug",
-    "subject": "fix: renderTemplate null-safe em contabilizar-evento (#476)",
-    "files": [
-     "supabase/functions/contabilizar-evento/index.test.ts",
-     "supabase/functions/contabilizar-evento/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -245621,6 +245647,14 @@
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/types/reforma-tributaria/enums.ts",
+    2
+   ],
+   [
+    "src/types/reforma-tributaria/regimes.ts",
+    2
    ],
    [
     "src/lib/reforma-tributaria/calcular-tributos.ts",
@@ -245668,14 +245702,6 @@
    ],
    [
     "src/lib/reforma-tributaria/cronograma-oficial.ts",
-    2
-   ],
-   [
-    "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-    2
-   ],
-   [
-    "src/lib/tributario/projecao-reforma.ts",
     2
    ]
   ]
