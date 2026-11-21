@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d11416f8b9` · branch `main` · 2026-11-21 22:59 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1a51242148` · branch `main` · 2026-11-21 23:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2274 linhas — lista completa em `context.json` | | |
+| … +2275 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -3959,7 +3959,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const issAntigo = faturamentoServicos * 0.05;` | `src/lib/reforma-tributaria/simulador.ts` |
 | `const pisAntigoDebito = dados.faturamentoAnual * 0.0165;` | `src/lib/reforma-tributaria/simulador.ts` |
 | `const pisCreditoAntigo = baseCreditos * 0.0165;` | `src/lib/reforma-tributaria/simulador.ts` |
-| `isNovo = faturamentoVendas * (aliquotaIS / 100) * 0.2;` | `src/lib/reforma-tributaria/simulador.ts` |
 | `<vICMS>${(dados.valorTotal * 0.18).toFixed(2)}</vICMS>` | `src/lib/sefaz-simulator/xml.ts` |
 | `<vICMS>${(item.valorTotal * 0.18).toFixed(2)}</vICMS>` | `src/lib/sefaz-simulator/xml.ts` |
 | `diffValor > lancamento.valor * 0.1` | `src/lib/transaction-matcher/matcher.ts` |
@@ -4042,7 +4041,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// Bonificação reduz base ICMS/PIS/COFINS — economia estimada de 2-9% sobre volume` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
 | `const economiaEstimada = aplicavel ? volumeEstimado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
 | `const volumeEstimado = faturamento * 0.05; // assume 5% potencial de bonificação` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| … +192 linhas — lista completa em `context.json` | |
+| `economia_min: economiaEstimada * 0.5,` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| … +191 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -5070,7 +5070,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3668 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3669 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5132,13 +5132,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/csv-importer.test.ts` | 17 | csv-importer — faturamento · parse UTF-8 com separador  · parse com separador  · parse com separador TAB … |
 | `src/lib/__tests__/ofx-parser-xlsx-valor.test.ts` | 17 | parseExcel — valor monetario BRL · nao perde a grandeza de 1.234,56 (antes virava 1.234) · preserva a grandeza do negativo e o classifica como debito · rejeita celula nao numerica em vez de criar transacao NaN … |
 | `src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts` | 17 | LinhaCronograma — shape e campos obrigatórios (etapa 13) · todos os 10 campos obrigatórios presentes em cada linha · cobertura: há linhas para cada ano de 2026 a 2033 · 2026 — ibsMun=0 (ano-teste, art. 343 LC 214/2025) … |
+| `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 17 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
 | `src/lib/__tests__/sped-generator.test.ts` | 16 | SPED Generator · gerarEFD_IBS_CBS · gera arquivo com registro inicial 0000 · gera arquivo com registro final 9999 … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
-| `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 16 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx` | 15 | AplicarDescontoDialog · Gap #12 - Aplicar desconto · renderiza dialog quando open=true · não renderiza quando conta é null … |
 | `src/components/contas-receber/__tests__/EnviarCobrancaDialog.test.tsx` | 15 | EnviarCobrancaDialog · Gap #2 - Enviar Cobrança funcional · renderiza dialog quando open=true · não renderiza quando conta é null … |
 | `src/components/ui/__tests__/button.test.tsx` | 15 | Button · renders with text · renders default variant with bg-acc (Vela) · renders destructive variant … |

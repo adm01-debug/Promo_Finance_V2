@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d11416f8b9529d55ed86babd4ddbb366ce24978c` (2026-11-21T19:54:14-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1a51242148ff726771de43a83d8166ee8b8b38d3` (2026-11-21T20:09:55-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2370), SQL (1125), Markdown (220), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2370), SQL (1126), Markdown (220), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3986 |
+| arquivos_total | 3987 |
 | arquivos_codigo | 2489 |
-| linhas_codigo | 443972 |
+| linhas_codigo | 444025 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 274 |
 | edge_functions | 106 |
 | tabelas | 312 |
-| migrations | 1053 |
+| migrations | 1054 |
 | cron_jobs | 22 |
 | testes | 487 |
 | workflows | 20 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `1a51242` feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)
 - 2026-11-21 `d11416f` fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)
 - 2026-11-21 `d1fc1cf` fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)
 - 2026-11-21 `ab226ac` feat: selo "simulado" em CBS/IBS na UI (etapa 18 RT)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `794bb45` feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)
 - 2026-11-21 `9f993fd` chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)
 - 2026-11-21 `aeefe2f` docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)
-- 2026-11-21 `ea8ccc8` merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

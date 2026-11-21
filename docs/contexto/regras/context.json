@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d11416f8b9529d55ed86babd4ddbb366ce24978c",
+  "sha": "1a51242148ff726771de43a83d8166ee8b8b38d3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 22:59 UTC",
-  "files_total": 4025,
-  "code_files": 3615,
-  "code_lines": 514907
+  "generated_at": "2026-11-21 23:10 UTC",
+  "files_total": 4026,
+  "code_files": 3616,
+  "code_lines": 514975
  },
  "version": "1.3.2",
- "facts_hash": "c45946708e8e31a5",
+ "facts_hash": "25c543c4fd2f6565",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,7 +341,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1253,
-   ".sql": 1125,
+   ".sql": 1126,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -7260,6 +7260,13 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20260728170640_5f70d392-005d-458f-80ba-f0e573ef414e.sql"
+     },
+     {
+      "name": "is_aliquota_customizada",
+      "type": "numeric NOT NULL DEFAULT 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql"
      },
      {
       "name": "municipio_destino",
@@ -50514,6 +50521,7 @@
    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
+   "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -69658,7 +69666,7 @@
   {
    "module": "src/components",
    "files": 999,
-   "lines": 165263,
+   "lines": 165266,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70266,7 +70274,7 @@
   {
    "module": "src/lib",
    "files": 418,
-   "lines": 55755,
+   "lines": 55787,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -70463,7 +70471,7 @@
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47164,
+   "lines": 47179,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -71085,8 +71093,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1053,
-   "lines": 81456,
+   "files": 1054,
+   "lines": 81474,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -89153,6 +89161,11 @@
     "table": "operacoes_tributaveis",
     "column": "updated_at",
     "rule": "default now()"
+   },
+   {
+    "table": "operacoes_tributaveis",
+    "column": "is_aliquota_customizada",
+    "rule": "default 0"
    },
    {
     "table": "split_payment_transacoes",
@@ -119122,10 +119135,6 @@
     "line": "const pisCreditoAntigo = baseCreditos * 0.0165;"
    },
    {
-    "file": "src/lib/reforma-tributaria/simulador.ts",
-    "line": "isNovo = faturamentoVendas * (aliquotaIS / 100) * 0.2;"
-   },
-   {
     "file": "src/lib/sefaz-simulator/xml.ts",
     "line": "<vICMS>${(dados.valorTotal * 0.18).toFixed(2)}</vICMS>"
    },
@@ -133094,6 +133103,10 @@
    {
     "file": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
     "name": "categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria"
+   },
+   {
+    "file": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+    "name": "categorias novas da LC 214/2025 aplicam alíquota na base de bens"
    },
    {
     "file": "src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts",
@@ -193486,7 +193499,7 @@
   },
   "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx": {
    "path": "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
-   "lines": 209,
+   "lines": 212,
    "exports": [
     "function SimuladorInputForm"
    ]
@@ -214705,7 +214718,7 @@
   },
   "src/lib/reforma-tributaria/simulador.ts": {
    "path": "src/lib/reforma-tributaria/simulador.ts",
-   "lines": 114,
+   "lines": 119,
    "exports": [
     "function simularComparativo"
    ],
@@ -214715,8 +214728,7 @@
     "const icmsAntigo = faturamentoVendas * 0.18;",
     "const issAntigo = faturamentoServicos * 0.05;",
     "const pisAntigoDebito = dados.faturamentoAnual * 0.0165;",
-    "const pisCreditoAntigo = baseCreditos * 0.0165;",
-    "isNovo = faturamentoVendas * (aliquotaIS / 100) * 0.2;"
+    "const pisCreditoAntigo = baseCreditos * 0.0165;"
    ]
   },
   "src/lib/reforma-tributaria/types.ts": {
@@ -218080,7 +218092,7 @@
   },
   "src/lib/tributario/calculadora/reforma-tributaria.ts": {
    "path": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-   "lines": 179,
+   "lines": 181,
    "exports": [
     "function calcularReformaTributaria"
    ],
@@ -218138,7 +218150,7 @@
   },
   "src/lib/tributario/calculadora/types.ts": {
    "path": "src/lib/tributario/calculadora/types.ts",
-   "lines": 188,
+   "lines": 197,
    "exports": [
     "interface InputMonofasico",
     "type Periodicidade",
@@ -218247,7 +218259,7 @@
   },
   "src/lib/tributario/calculadora/__tests__/regimes.test.ts": {
    "path": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-   "lines": 127,
+   "lines": 143,
    "is_test": true,
    "tests": [
     "calcularLucroPresumido",
@@ -218265,7 +218277,8 @@
     "2026: alíquotas teste 0,9% + 0,1%",
     "regime reduzido aplica desconto",
     "imposto seletivo aplica sobre categorias com alíquota informada pelo usuário",
-    "categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria"
+    "categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria",
+    "categorias novas da LC 214/2025 aplicam alíquota na base de bens"
    ]
   },
   "src/lib/tributario/catalogos/alertas.ts": {
@@ -225213,7 +225226,7 @@
   },
   "src/pages/tributario/CalculadoraTributaria.helpers.ts": {
    "path": "src/pages/tributario/CalculadoraTributaria.helpers.ts",
-   "lines": 139,
+   "lines": 148,
    "exports": [
     "type CampoInput",
     "const ROTULO_ATIVIDADE",
@@ -225224,7 +225237,7 @@
   },
   "src/pages/tributario/CalculadoraTributaria.parts.tsx": {
    "path": "src/pages/tributario/CalculadoraTributaria.parts.tsx",
-   "lines": 384,
+   "lines": 390,
    "exports": [
     "function ParametrosCard"
    ],
@@ -244954,6 +244967,10 @@
    "lines": 171,
    "uses_service_role": true
   },
+  "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql": {
+   "path": "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
+   "lines": 18
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245062,10 +245079,28 @@
   }
  },
  "git": {
-  "sha": "d11416f8b9529d55ed86babd4ddbb366ce24978c",
+  "sha": "1a51242148ff726771de43a83d8166ee8b8b38d3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1a51242",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)",
+    "files": [
+     "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
+     "src/hooks/useOperacoesTributaveis.ts",
+     "src/integrations/supabase/types.ts",
+     "src/lib/reforma-tributaria/simulador.ts",
+     "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+     "src/lib/tributario/calculadora/reforma-tributaria.ts",
+     "src/lib/tributario/calculadora/types.ts",
+     "src/pages/tributario/CalculadoraTributaria.helpers.ts",
+     "src/pages/tributario/CalculadoraTributaria.parts.tsx",
+     "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql"
+    ]
+   },
    {
     "sha": "d11416f",
     "date": "2026-11-21",
@@ -245416,19 +245451,17 @@
      "src/hooks/useCountUp.ts",
      "src/pages/admin/AuditSsoProfileSync.parts.tsx"
     ]
-   },
-   {
-    "sha": "dd12c7d",
-    "date": "2026-11-19",
-    "author": "adm01-debug",
-    "subject": "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)",
-    "files": [
-     "supabase/functions/contabilizar-evento/index.test.ts",
-     "supabase/functions/contabilizar-evento/index.ts"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+    3
+   ],
+   [
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    3
+   ],
    [
     "src/lib/reforma-tributaria/regras.ts",
     3
@@ -245436,6 +245469,30 @@
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
+    2
+   ],
+   [
+    "src/hooks/useOperacoesTributaveis.ts",
+    2
+   ],
+   [
+    "src/lib/reforma-tributaria/simulador.ts",
+    2
+   ],
+   [
+    "src/lib/tributario/calculadora/types.ts",
+    2
+   ],
+   [
+    "src/pages/tributario/CalculadoraTributaria.helpers.ts",
+    2
+   ],
+   [
+    "src/pages/tributario/CalculadoraTributaria.parts.tsx",
+    2
    ],
    [
     "src/components/reforma-tributaria/CronogramaTransicao.tsx",
@@ -245474,39 +245531,7 @@
     2
    ],
    [
-    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-    2
-   ],
-   [
-    "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    2
-   ],
-   [
     ".github/workflows/rfb-upstream-watch.yml",
-    2
-   ],
-   [
-    "env.manifest.json",
-    2
-   ],
-   [
-    ".github/workflows/ci.yml",
-    2
-   ],
-   [
-    "scripts/integrity/baseline/expected-policies.json",
-    2
-   ],
-   [
-    "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
-    2
-   ],
-   [
-    "supabase/functions/contabilizar-evento/index.test.ts",
-    2
-   ],
-   [
-    "supabase/functions/contabilizar-evento/index.ts",
     2
    ]
   ]

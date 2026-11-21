@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d11416f8b9` · branch `main` · 2026-11-21 22:59 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1a51242148` · branch `main` · 2026-11-21 23:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -174,7 +174,7 @@
 | `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 12 colunas | migration |
 | `open_finance_consents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `operacoes_icms` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
-| `operacoes_tributaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 53 colunas | migration |
+| `operacoes_tributaveis` | _(sem COMMENT ON TABLE — significado não documentado)_ | 54 colunas | migration |
 | `oportunidades_elisao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 29 colunas | migration |
 | `organizacao_membros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `organizacoes` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |

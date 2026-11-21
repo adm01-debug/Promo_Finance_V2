@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d11416f8b9529d55ed86babd4ddbb366ce24978c",
+  "commit": "1a51242148ff726771de43a83d8166ee8b8b38d3",
   "branch": "main",
-  "data_commit": "2026-11-21T19:54:14-03:00",
+  "data_commit": "2026-11-21T20:09:55-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1a51242",
+    "data": "2026-11-21",
+    "assunto": "feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)"
+   },
    {
     "sha": "d11416f",
     "data": "2026-11-21",
@@ -126,22 +131,17 @@
     "sha": "574c46c",
     "data": "2026-11-20",
     "assunto": "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)"
-   },
-   {
-    "sha": "d7e6b41",
-    "data": "2026-11-20",
-    "assunto": "docs: preserva auditoria planejado x implementado (20/11) (#480)"
    }
   ],
-  "arquivos_mudados_7d": 478,
+  "arquivos_mudados_7d": 479,
   "pastas_mais_mudadas_30d": [
    {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 41
+    "pasta": "src/pages/tributario",
+    "mudancas": 43
    },
    {
-    "pasta": "src/pages/tributario",
-    "mudancas": 41
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 42
    },
    {
     "pasta": "src/components/contabilidade",
@@ -161,7 +161,7 @@
    },
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 26
+    "mudancas": 29
    },
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 250
+    "commits": 251
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3986,
+  "arquivos_total": 3987,
   "arquivos_codigo": 2489,
-  "linhas_codigo": 443972,
+  "linhas_codigo": 444025,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,7 +330,7 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 312,
-  "migrations": 1053,
+  "migrations": 1054,
   "cron_jobs": 22,
   "testes": 487,
   "workflows": 20,
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 999,
-   "linhas": 164264
+   "linhas": 164267
   },
   "src/config": {
    "arquivos": 2,
@@ -660,11 +660,11 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 19781
+   "linhas": 19784
   },
   "src/lib": {
    "arquivos": 418,
-   "linhas": 55337
+   "linhas": 55369
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -672,7 +672,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46891
+   "linhas": 46906
   },
   "src/routes": {
    "arquivos": 16,
@@ -710,7 +710,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 19645
+   "linhas": 19648
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",

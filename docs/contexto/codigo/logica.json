@@ -822,7 +822,7 @@
     "TablesUpdate"
    ],
    "export_default": null,
-   "linhas": 19645,
+   "linhas": 19648,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3484,7 +3484,7 @@
     "simularComparativo"
    ],
    "export_default": null,
-   "linhas": 113,
+   "linhas": 118,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5108,7 +5108,7 @@
     "calcularReformaTributaria"
    ],
    "export_default": null,
-   "linhas": 178,
+   "linhas": 180,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5174,7 +5174,7 @@
     "TributoDetalhe"
    ],
    "export_default": null,
-   "linhas": 187,
+   "linhas": 196,
    "tabelas": [],
    "rpcs": [],
    "edges": [],

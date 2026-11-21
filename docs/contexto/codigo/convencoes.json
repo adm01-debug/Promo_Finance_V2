@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)",
    "fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)",
    "fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)",
    "feat: selo \"simulado\" em CBS/IBS na UI (etapa 18 RT)",
-   "docs: plano 100 etapas RT/RFB e avaliações técnicas",
-   "fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)"
+   "docs: plano 100 etapas RT/RFB e avaliações técnicas"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

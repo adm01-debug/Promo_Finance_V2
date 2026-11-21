@@ -3357,14 +3357,14 @@
   {
    "arquivo": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
    "tipo": "unit",
-   "linhas": 126,
+   "linhas": 142,
    "testa": [
     "src/config/reforma-tributaria.ts",
     "src/lib/tributario/calculadora/lucro-presumido.ts",
     "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "src/lib/tributario/calculadora/simples-nacional.ts"
    ],
-   "casos": 13
+   "casos": 14
   },
   {
    "arquivo": "src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts",

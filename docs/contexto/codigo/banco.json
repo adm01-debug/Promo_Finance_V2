@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1053,
+ "migrations": 1054,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -31389,6 +31389,13 @@
      "default": "0",
      "ref": null
     },
+    "is_aliquota_customizada": {
+     "tipo": "numeric",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
     "is_categoria": {
      "tipo": "text",
      "nn": false,
@@ -31653,6 +31660,7 @@
     "icms_valor": "number | null",
     "id": "string",
     "is_aliquota": "number | null",
+    "is_aliquota_customizada": "number | null",
     "is_categoria": "string | null",
     "is_valor": "number | null",
     "isento": "boolean | null",

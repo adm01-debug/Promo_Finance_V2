@@ -9398,7 +9398,7 @@
     "SimuladorInputForm"
    ],
    "export_default": null,
-   "linhas": 208,
+   "linhas": 211,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -14719,7 +14719,7 @@
     "ParametrosCard"
    ],
    "export_default": null,
-   "linhas": 383,
+   "linhas": 389,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
