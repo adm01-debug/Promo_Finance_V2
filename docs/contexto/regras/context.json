@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "c3e421c4696a3737f52789277b46268176f46a4a",
+  "sha": "b28b64bd8b85e375df55764b0edce8bab68c3195",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 11:49 UTC",
-  "files_total": 4009,
-  "code_files": 3608,
-  "code_lines": 513606
+  "generated_at": "2026-11-21 12:40 UTC",
+  "files_total": 4010,
+  "code_files": 3609,
+  "code_lines": 513709
  },
  "version": "1.3.2",
- "facts_hash": "8a74dc489f2acd82",
+ "facts_hash": "5b3ab67f82f059cb",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1248,
-   ".sql": 1123,
+   ".sql": 1124,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -41593,29 +41593,6 @@
      "runs"
     ]
    },
-   "validar_catalogos_tributarios": {
-    "args": "",
-    "returns": "TABLE(invariante text, severidade text, afetados bigint, detalhe text)",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260728124927_cb0098be-1361-4ade-bb52-729181fd57ca.sql",
-    "security_definer": false,
-    "search_path": true,
-    "body": "BEGIN RETURN QUERY WITH achados AS ( SELECT 'ufs_incompletas'::text AS inv, 'critical'::text AS sev, GREATEST(27 - (SELECT count(*) FROM public.ufs), 0)::bigint AS qtd, 'catálogo de UFs deve conter as 27 unidades federativas'::text AS det UNION ALL SELECT 'ufs_flag_fcp_incoerente', 'warning', (SELECT count(*) FROM public.ufs WHERE possui_fcp <> (aliquota_fcp > 0)), 'possui_fcp diverge de aliquota_fcp > 0' UNION ALL SELECT 'uf_sem_aliquota_interna_padrao', 'info', (SELECT count(*) FROM public.ufs u WHERE NOT EXISTS (SELECT 1 FROM public.aliquotas_internas_uf a WHERE a.uf = u.sigla AND a.categoria_produto IN ('GERAL','padrao'))), 'UF sem alíquota interna detalhada na categoria padrão' UNION AL …",
-    "raises": [],
-    "tables": [
-     "achados",
-     "aliquotas_interestaduais",
-     "aliquotas_internas_uf",
-     "aliquotas_iss_municipal",
-     "faixas_simples_nacional",
-     "itens_lista_iss",
-     "ncms",
-     "protocolos_st",
-     "protocolos_st_ncms",
-     "protocolos_st_ufs",
-     "ufs"
-    ]
-   },
    "check_catalogos_tributarios_invariants": {
     "args": "",
     "returns": "jsonb",
@@ -43135,6 +43112,29 @@
     "tables": [
      "rate_limit_logs",
      "v_total"
+    ]
+   },
+   "validar_catalogos_tributarios": {
+    "args": "",
+    "returns": "TABLE(invariante text, severidade text, afetados bigint, detalhe text)",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "BEGIN RETURN QUERY WITH achados AS ( SELECT 'ufs_incompletas'::text AS inv, 'critical'::text AS sev, GREATEST(27 - (SELECT count(*) FROM public.ufs), 0)::bigint AS qtd, 'catálogo de UFs deve conter as 27 unidades federativas'::text AS det UNION ALL SELECT 'ufs_flag_fcp_incoerente', 'warning', (SELECT count(*) FROM public.ufs WHERE possui_fcp <> (aliquota_fcp > 0)), 'possui_fcp diverge de aliquota_fcp > 0' UNION ALL SELECT 'uf_sem_aliquota_interna_padrao', 'info', (SELECT count(*) FROM public.ufs u WHERE NOT EXISTS (SELECT 1 FROM public.aliquotas_internas_uf a WHERE a.uf = u.sigla AND a.categoria_produto IN ('GERAL','padrao'))), 'UF sem alíquota interna detalhada na categoria padrão' UNION AL …",
+    "raises": [],
+    "tables": [
+     "achados",
+     "aliquotas_interestaduais",
+     "aliquotas_internas_uf",
+     "aliquotas_iss_municipal",
+     "faixas_simples_nacional",
+     "itens_lista_iss",
+     "ncms",
+     "protocolos_st",
+     "protocolos_st_ncms",
+     "protocolos_st_ufs",
+     "ufs"
     ]
    },
    "exec_sql": {
@@ -50504,6 +50504,7 @@
    "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
+   "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -58727,6 +58728,22 @@
     "objkind": "table",
     "roles": "authenticated",
     "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "validar_catalogos_tributarios",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "validar_catalogos_tributarios",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
    }
   ],
   "raises": [
@@ -71035,8 +71052,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1051,
-   "lines": 81185,
+   "files": 1052,
+   "lines": 81288,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -148862,29 +148879,6 @@
      "runs"
     ]
    },
-   "validar_catalogos_tributarios": {
-    "args": "",
-    "returns": "TABLE(invariante text, severidade text, afetados bigint, detalhe text)",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20260728124927_cb0098be-1361-4ade-bb52-729181fd57ca.sql",
-    "security_definer": false,
-    "search_path": true,
-    "body": "BEGIN RETURN QUERY WITH achados AS ( SELECT 'ufs_incompletas'::text AS inv, 'critical'::text AS sev, GREATEST(27 - (SELECT count(*) FROM public.ufs), 0)::bigint AS qtd, 'catálogo de UFs deve conter as 27 unidades federativas'::text AS det UNION ALL SELECT 'ufs_flag_fcp_incoerente', 'warning', (SELECT count(*) FROM public.ufs WHERE possui_fcp <> (aliquota_fcp > 0)), 'possui_fcp diverge de aliquota_fcp > 0' UNION ALL SELECT 'uf_sem_aliquota_interna_padrao', 'info', (SELECT count(*) FROM public.ufs u WHERE NOT EXISTS (SELECT 1 FROM public.aliquotas_internas_uf a WHERE a.uf = u.sigla AND a.categoria_produto IN ('GERAL','padrao'))), 'UF sem alíquota interna detalhada na categoria padrão' UNION AL …",
-    "raises": [],
-    "tables": [
-     "achados",
-     "aliquotas_interestaduais",
-     "aliquotas_internas_uf",
-     "aliquotas_iss_municipal",
-     "faixas_simples_nacional",
-     "itens_lista_iss",
-     "ncms",
-     "protocolos_st",
-     "protocolos_st_ncms",
-     "protocolos_st_ufs",
-     "ufs"
-    ]
-   },
    "check_catalogos_tributarios_invariants": {
     "args": "",
     "returns": "jsonb",
@@ -150404,6 +150398,29 @@
     "tables": [
      "rate_limit_logs",
      "v_total"
+    ]
+   },
+   "validar_catalogos_tributarios": {
+    "args": "",
+    "returns": "TABLE(invariante text, severidade text, afetados bigint, detalhe text)",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "BEGIN RETURN QUERY WITH achados AS ( SELECT 'ufs_incompletas'::text AS inv, 'critical'::text AS sev, GREATEST(27 - (SELECT count(*) FROM public.ufs), 0)::bigint AS qtd, 'catálogo de UFs deve conter as 27 unidades federativas'::text AS det UNION ALL SELECT 'ufs_flag_fcp_incoerente', 'warning', (SELECT count(*) FROM public.ufs WHERE possui_fcp <> (aliquota_fcp > 0)), 'possui_fcp diverge de aliquota_fcp > 0' UNION ALL SELECT 'uf_sem_aliquota_interna_padrao', 'info', (SELECT count(*) FROM public.ufs u WHERE NOT EXISTS (SELECT 1 FROM public.aliquotas_internas_uf a WHERE a.uf = u.sigla AND a.categoria_produto IN ('GERAL','padrao'))), 'UF sem alíquota interna detalhada na categoria padrão' UNION AL …",
+    "raises": [],
+    "tables": [
+     "achados",
+     "aliquotas_interestaduais",
+     "aliquotas_internas_uf",
+     "aliquotas_iss_municipal",
+     "faixas_simples_nacional",
+     "itens_lista_iss",
+     "ncms",
+     "protocolos_st",
+     "protocolos_st_ncms",
+     "protocolos_st_ufs",
+     "ufs"
     ]
    },
    "exec_sql": {
@@ -160459,6 +160476,7 @@
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
+   "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -168673,6 +168691,22 @@
     "objkind": "table",
     "roles": "authenticated",
     "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "validar_catalogos_tributarios",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "validar_catalogos_tributarios",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
    }
   ],
   "guards": [
@@ -244566,6 +244600,11 @@
    "path": "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "lines": 45
   },
+  "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql": {
+   "path": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
+   "lines": 103,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -244674,10 +244713,19 @@
   }
  },
  "git": {
-  "sha": "c3e421c4696a3737f52789277b46268176f46a4a",
+  "sha": "b28b64bd8b85e375df55764b0edce8bab68c3195",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b28b64b",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)",
+    "files": [
+     "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
+    ]
+   },
    {
     "sha": "c3e421c",
     "date": "2026-11-21",
@@ -245007,21 +245055,12 @@
      "src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx",
      "src/hooks/useHistoricoFinanceiro.ts"
     ]
-   },
-   {
-    "sha": "e1a239c",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "docs(agentes): fecha a auditoria de branches da sessão de 17/11 (#454)",
-    "files": [
-     "docs/agentes/auditoria-branches-2026-11-17.md"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
-    4
+    3
    ],
    [
     ".github/workflows/ci.yml",
@@ -245046,6 +245085,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
+    1
    ],
    [
     "docs/prod-readiness.md",
@@ -245093,10 +245136,6 @@
    ],
    [
     "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
-    1
-   ],
-   [
-    "src/hooks/__tests__/useAprovacoes.test.tsx",
     1
    ]
   ]

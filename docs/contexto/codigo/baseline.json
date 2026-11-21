@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "c3e421c4696a3737f52789277b46268176f46a4a",
+  "commit": "b28b64bd8b85e375df55764b0edce8bab68c3195",
   "branch": "main",
-  "data_commit": "2026-11-21T08:48:36-03:00",
+  "data_commit": "2026-11-21T09:39:52-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b28b64b",
+    "data": "2026-11-21",
+    "assunto": "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)"
+   },
    {
     "sha": "c3e421c",
     "data": "2026-11-21",
@@ -126,11 +131,6 @@
     "sha": "fee7c1d",
     "data": "2026-11-17",
     "assunto": "chore(deps): atualiza os 19 pacotes @radix-ui pendentes na #371 (#460)"
-   },
-   {
-    "sha": "f17d2d4",
-    "data": "2026-11-17",
-    "assunto": "docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)"
    }
   ],
   "arquivos_mudados_7d": 424,
@@ -262,14 +262,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "src/hooks/useContasPagarLogic.ts",
-    "mudancas": 8
-   },
-   {
     "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 8
    },
@@ -296,12 +288,20 @@
    {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 7
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "src/App.tsx",
+    "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 235
+    "commits": 236
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3970,
+  "arquivos_total": 3971,
   "arquivos_codigo": 2484,
   "linhas_codigo": 443299,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 312,
-  "migrations": 1051,
+  "migrations": 1052,
   "cron_jobs": 22,
   "testes": 484,
   "workflows": 19,
