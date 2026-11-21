@@ -4,9 +4,9 @@ export interface AliquotasTransicao {
   ano: number;
   cbs: number;
   ibs: number;
-  /** Fração do IBS devida ao estado — varia por ano (100% em 2026, 50/50 a partir de 2027). */
+  /** Alíquota (% da base) do IBS estadual — 0,1% em 2026 (100% do IBS), metade de `ibs` a partir de 2027. */
   ibsUf: number;
-  /** Fração do IBS devida ao município — 0% em 2026, 50/50 a partir de 2027. */
+  /** Alíquota (% da base) do IBS municipal — 0% em 2026, metade de `ibs` a partir de 2027. */
   ibsMun: number;
   icmsResidual: number;
   issResidual: number;
