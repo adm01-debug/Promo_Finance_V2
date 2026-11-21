@@ -60,7 +60,7 @@ export function simularComparativo(
     observacoes.push(`Imposto Seletivo aplicado: ${aliquotaIS}%`);
     if (dados.aliquotaISCustomizada) {
       observacoes.push(
-        'Al?quota do IS simulada (informada pelo usu?rio) ? a lei n?o fixa valor por categoria (LC 214/2025 arts. 393-400)'
+        'Alíquota do IS simulada (informada pelo usuário) — a lei não fixa valor por categoria (LC 214/2025 arts. 393-400)'
       );
     }
   }

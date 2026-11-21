@@ -94,12 +94,14 @@ export function calcularReformaTributaria(input: InputReforma): ResultadoRegime 
 
   const cat = input.categoriaImpostoSeletivo ?? 'nenhum';
   const isAliq = cat === 'nenhum' ? 0 : (input.aliquotaISCustomizada ?? 0) / 100;
-  const impostoSeletivo = receita * isAliq;
+    // IS incide sobre bens específicos — exclui serviços da base (LC 214/2025 arts. 393-400)
+    const baseSeletivo = receita * (1 - input.receitas.percentualServicos / 100);
+    const impostoSeletivo = baseSeletivo * isAliq;
   if (impostoSeletivo > 0) {
     push(memoria, {
       grupo: 'IS',
       descricao: `Imposto Seletivo (${cat})`,
-      base: receita,
+        base: baseSeletivo,
       aliquota: isAliq,
       valor: impostoSeletivo,
     });
@@ -151,7 +153,7 @@ export function calcularReformaTributaria(input: InputReforma): ResultadoRegime 
     {
       nome: 'Imposto Seletivo',
       valor: impostoSeletivo,
-      base: receita,
+          base: baseSeletivo,
       aliquotaEfetiva: isAliq,
       formula: `${(isAliq * 100).toFixed(1)}% (bens específicos)`,
     },
