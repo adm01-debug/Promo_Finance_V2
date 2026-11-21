@@ -20,6 +20,7 @@ export function SimuladorCenariosTributarios() {
   const [regimeEspecial, setRegimeEspecial] = useState<RegimeEspecial>('nenhum');
   const [temProdutosIS, setTemProdutosIS] = useState(false);
   const [categoriaIS, setCategoriaIS] = useState<CategoriaIS>('bebidas_alcoolicas');
+  const [aliquotaISCustomizada, setAliquotaISCustomizada] = useState(0);
 
   const [resultadosProjecao, setResultadosProjecao] = useState<
     { ano: number; resultado: ReturnType<typeof simularCenario> }[]
@@ -36,6 +37,7 @@ export function SimuladorCenariosTributarios() {
         regimeEspecial,
         temProdutosIS,
         categoriaIS: temProdutosIS ? categoriaIS : undefined,
+        aliquotaISCustomizada: temProdutosIS ? aliquotaISCustomizada : undefined,
       },
       anoReferencia
     );
@@ -48,6 +50,7 @@ export function SimuladorCenariosTributarios() {
     regimeEspecial,
     temProdutosIS,
     categoriaIS,
+    aliquotaISCustomizada,
     anoReferencia,
     simularCenario,
   ]);
@@ -62,6 +65,7 @@ export function SimuladorCenariosTributarios() {
       regimeEspecial,
       temProdutosIS,
       categoriaIS: temProdutosIS ? categoriaIS : undefined,
+      aliquotaISCustomizada: temProdutosIS ? aliquotaISCustomizada : undefined,
     };
 
     const resultados = await executarSimulacao(dados);
@@ -105,6 +109,8 @@ export function SimuladorCenariosTributarios() {
           setTemProdutosIS={setTemProdutosIS}
           categoriaIS={categoriaIS}
           setCategoriaIS={setCategoriaIS}
+          aliquotaISCustomizada={aliquotaISCustomizada}
+          setAliquotaISCustomizada={setAliquotaISCustomizada}
           regimesEspeciais={regimesEspeciais}
           isSimulando={isSimulando}
           onExecutarProjecao={handleExecutarProjecao}

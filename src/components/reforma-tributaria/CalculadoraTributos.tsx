@@ -275,7 +275,9 @@ export function CalculadoraTributos() {
                   min={0}
                   step="0.01"
                   value={aliquotaISCustomizada}
-                  onChange={(e) => setAliquotaISCustomizada(Number(e.target.value) || 0)}
+                  onChange={(e) =>
+                    setAliquotaISCustomizada(Math.max(0, Number(e.target.value) || 0))
+                  }
                 />
               </div>
             )}
