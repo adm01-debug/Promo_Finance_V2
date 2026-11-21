@@ -52,7 +52,6 @@ INSERT INTO _targets(fn, categoria) VALUES
   ('public.nfe_link_conta_pagar(p_nfe_id uuid, p_conta_pagar_id uuid)',   'nfe'),
   ('public.nfe_suggest_contas_pagar(p_nfe_id uuid)',                      'nfe'),
   ('public.nfe_unlink_conta_pagar(p_nfe_id uuid)',                        'nfe'),
-  ('public.confirmar_conciliacao(p_conciliacao_id uuid, p_user_id uuid, p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)', 'conciliacao'),
   ('public.confirmar_conciliacao_manual(p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)', 'conciliacao'),
   ('public.desfazer_conciliacao(p_conciliacao_id uuid, p_transacao_id uuid, p_user_id uuid)', 'conciliacao'),
   ('public.desfazer_conciliacao_manual(p_transacao_id uuid)',                                 'conciliacao'),
