@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (284)",
+   "co-localizado (__tests__) (285)",
    "outro (112)",
    "co-localizado (*.test) (48)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)",
    "merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)",
    "fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)",
    "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)",
-   "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)",
-   "chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)"
+   "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -3,9 +3,9 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2365)",
+   "TypeScript (2366)",
    "SQL (1125)",
-   "Markdown (214)",
+   "Markdown (217)",
    "JavaScript (76)",
    "Python (45)",
    "JSON (44)",
@@ -1217,7 +1217,7 @@
  "docs_em_subpastas": [
   {
    "pasta": "docs/archive",
-   "arquivos_md": 15
+   "arquivos_md": 16
   },
   {
    "pasta": "docs/agentes",
@@ -1234,6 +1234,10 @@
   {
    "pasta": "docs/runbooks",
    "arquivos_md": 5
+  },
+  {
+   "pasta": "docs/receitafederal",
+   "arquivos_md": 3
   },
   {
    "pasta": "docs/auditoria",
@@ -1265,10 +1269,6 @@
   },
   {
    "pasta": "docs/evidencias",
-   "arquivos_md": 1
-  },
-  {
-   "pasta": "docs/receitafederal",
    "arquivos_md": 1
   }
  ],

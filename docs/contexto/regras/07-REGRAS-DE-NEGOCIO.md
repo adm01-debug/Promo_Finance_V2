@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ea8ccc8a62` · branch `main` · 2026-11-21 16:06 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `aeefe2fe69` · branch `main` · 2026-11-21 18:42 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5072,7 +5072,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3625 testes em 319 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3629 testes em 320 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5328,6 +5328,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
 | `src/lib/__tests__/conciliacao-complex-e2e.test.ts` | 4 | E2E Complexo: Conciliação Multi-Conta e Multi-CNPJ · deve filtrar matches corretamente por contaBancariaId para evitar cross-account matching · deve lidar com múltiplos CNPJs (Empresas) no mesmo pool de lançamentos se necessário · deve gerar divergência corretamente para valores parciais |
+| `src/lib/__tests__/rt-snapshot-pre-correcao.test.ts` | 4 | baseline histórica pré-correção · motor 1: calcularTributosReforma (src/lib/reforma-tributaria) · motor 2: calcularReformaTributaria (src/lib/tributario/calculadora) · motor 3: projetarReforma (src/lib/tributario/projecao-reforma) |
 | `src/lib/__tests__/sso-error-messages.test.ts` | 4 | SSO_ERROR_MESSAGES · possui título, descrição e hint para todos os códigos · inferSsoErrorCode · inferindo  |
 | `src/lib/arquitetura/__tests__/snapshot-grafo.test.ts` | 4 | snapshot do grafo de arquitetura · lista de arestas está sincronizada com o código · contagem de imports analisados está sincronizada · resumo de drift está sincronizado e zerado |
 | `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
@@ -5375,8 +5376,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
 | `src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx` | 2 | DashboardFiltersHeader · expõe nomes acessíveis para os filtros do dashboard |
 | `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
-| `src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx` | 2 | ProjectedCashFlowChart · usa o valor residual e inclui título parcial |
-| … +19 linhas — lista completa em `context.json` | | |
+| … +20 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

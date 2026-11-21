@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ea8ccc8a62cd2c3453dddca3de8c00af1ccca93f",
+  "sha": "aeefe2fe696f67545c52a78d7c961d116fdad7bc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 16:06 UTC",
-  "files_total": 4011,
-  "code_files": 3610,
-  "code_lines": 513943
+  "generated_at": "2026-11-21 18:42 UTC",
+  "files_total": 4016,
+  "code_files": 3611,
+  "code_lines": 513994
  },
  "version": "1.3.2",
- "facts_hash": "8d760c49082cb35e",
+ "facts_hash": "ba1eacf6188a3652",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1248,
+   ".ts": 1249,
    ".sql": 1125,
    ".tsx": 1117,
    ".mjs": 67,
@@ -70250,8 +70250,8 @@
   },
   {
    "module": "src/lib",
-   "files": 414,
-   "lines": 55340,
+   "files": 415,
+   "lines": 55391,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -127562,6 +127562,22 @@
    {
     "file": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
     "name": "preserva exports históricos"
+   },
+   {
+    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+    "name": "baseline histórica pré-correção"
+   },
+   {
+    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+    "name": "motor 1: calcularTributosReforma (src/lib/reforma-tributaria)"
+   },
+   {
+    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+    "name": "motor 2: calcularReformaTributaria (src/lib/tributario/calculadora)"
+   },
+   {
+    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+    "name": "motor 3: projetarReforma (src/lib/tributario/projecao-reforma)"
    },
    {
     "file": "src/lib/__tests__/secure-random.test.ts",
@@ -212756,6 +212772,17 @@
     "preserva exports históricos"
    ]
   },
+  "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts": {
+   "path": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+   "lines": 51,
+   "is_test": true,
+   "tests": [
+    "baseline histórica pré-correção",
+    "motor 1: calcularTributosReforma (src/lib/reforma-tributaria)",
+    "motor 2: calcularReformaTributaria (src/lib/tributario/calculadora)",
+    "motor 3: projetarReforma (src/lib/tributario/projecao-reforma)"
+   ]
+  },
   "src/lib/__tests__/secure-random.test.ts": {
    "path": "src/lib/__tests__/secure-random.test.ts",
    "lines": 34,
@@ -244752,10 +244779,25 @@
   }
  },
  "git": {
-  "sha": "ea8ccc8a62cd2c3453dddca3de8c00af1ccca93f",
+  "sha": "aeefe2fe696f67545c52a78d7c961d116fdad7bc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "aeefe2f",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)",
+    "files": [
+     "docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
+     "docs/archive/README.md",
+     "docs/receitafederal/ADR-003-AUDITORIA-RT-2026-11-21.md",
+     "docs/receitafederal/FONTES_NORMATIVAS.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+     "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
+     "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
+    ]
+   },
    {
     "sha": "ea8ccc8",
     "date": "2026-11-21",
@@ -245091,15 +245133,6 @@
     "files": [
      "docs/agentes/banco-inter-api.md"
     ]
-   },
-   {
-    "sha": "c862e68",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)",
-    "files": [
-     "docs/agentes/auditoria-branches-2026-11-17.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245109,10 +245142,6 @@
    ],
    [
     "scripts/integrity/baseline/schema-counts.json",
-    3
-   ],
-   [
-    "docs/agentes/auditoria-branches-2026-11-17.md",
     3
    ],
    [
@@ -245144,6 +245173,38 @@
     2
    ],
    [
+    "docs/agentes/auditoria-branches-2026-11-17.md",
+    2
+   ],
+   [
+    "docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
+    1
+   ],
+   [
+    "docs/archive/README.md",
+    1
+   ],
+   [
+    "docs/receitafederal/ADR-003-AUDITORIA-RT-2026-11-21.md",
+    1
+   ],
+   [
+    "docs/receitafederal/FONTES_NORMATIVAS.md",
+    1
+   ],
+   [
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    1
+   ],
+   [
+    "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
+    1
+   ],
+   [
+    "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+    1
+   ],
+   [
     "env.manifest.json",
     1
    ],
@@ -245153,34 +245214,6 @@
    ],
    [
     "scripts/security/test-observability-privileges.sql",
-    1
-   ],
-   [
-    "scripts/security/test-security-definer-invocation.sql",
-    1
-   ],
-   [
-    "supabase/tests/sql/rls_multi_empresa.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261120130000_ledger_reconciliado.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
-    1
-   ],
-   [
-    "docs/prod-readiness.md",
-    1
-   ],
-   [
-    "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
     1
    ]
   ]

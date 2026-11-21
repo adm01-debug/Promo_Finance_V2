@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ea8ccc8a62cd2c3453dddca3de8c00af1ccca93f",
+  "commit": "aeefe2fe696f67545c52a78d7c961d116fdad7bc",
   "branch": "main",
-  "data_commit": "2026-11-21T13:06:11-03:00",
+  "data_commit": "2026-11-21T15:42:15-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "aeefe2f",
+    "data": "2026-11-21",
+    "assunto": "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)"
+   },
    {
     "sha": "ea8ccc8",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "c72e283",
     "data": "2026-11-17",
     "assunto": "infra(ci): gate que barra coluna inexistente em select/order (#457)"
-   },
-   {
-    "sha": "f56d307",
-    "data": "2026-11-17",
-    "assunto": "chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)"
    }
   ],
-  "arquivos_mudados_7d": 429,
+  "arquivos_mudados_7d": 436,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -189,7 +189,7 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 15
+    "mudancas": 14
    },
    {
     "pasta": "src/components/dashboard",
@@ -226,15 +226,15 @@
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 11
-   },
-   {
     "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 10
    },
    {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 10
    },
    {
@@ -266,19 +266,11 @@
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
-    "mudancas": 8
-   },
-   {
     "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 8
    },
    {
     "arquivo": "supabase/functions/n8n-dispatch/index.ts",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "supabase/functions/open-finance/index.ts",
     "mudancas": 8
    },
    {
@@ -295,6 +287,14 @@
    },
    {
     "arquivo": "src/App.tsx",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "src/hooks/useAcordosParcelamento.ts",
     "mudancas": 7
    }
   ],
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3972,
-  "arquivos_codigo": 2484,
-  "linhas_codigo": 443299,
+  "arquivos_total": 3977,
+  "arquivos_codigo": 2485,
+  "linhas_codigo": 443349,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,10 +332,10 @@
   "tabelas": 312,
   "migrations": 1053,
   "cron_jobs": 22,
-  "testes": 484,
+  "testes": 485,
   "workflows": 19,
   "scripts": 116,
-  "docs_md": 214
+  "docs_md": 217
  },
  "por_pasta": {
   "docs/auditoria-20260912": {
@@ -663,8 +663,8 @@
    "linhas": 19781
   },
   "src/lib": {
-   "arquivos": 414,
-   "linhas": 54926
+   "arquivos": 415,
+   "linhas": 54976
   },
   "src/main.tsx": {
    "arquivos": 1,

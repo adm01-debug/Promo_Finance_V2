@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ea8ccc8a62cd2c3453dddca3de8c00af1ccca93f` (2026-11-21T13:06:11-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `aeefe2fe696f67545c52a78d7c961d116fdad7bc` (2026-11-21T15:42:15-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2365), SQL (1125), Markdown (214), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
+- linguagens: TypeScript (2366), SQL (1125), Markdown (217), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3972 |
-| arquivos_codigo | 2484 |
-| linhas_codigo | 443299 |
+| arquivos_total | 3977 |
+| arquivos_codigo | 2485 |
+| linhas_codigo | 443349 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,17 +48,17 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 312 |
 | migrations | 1053 |
 | cron_jobs | 22 |
-| testes | 484 |
+| testes | 485 |
 | workflows | 19 |
 | scripts | 116 |
-| docs_md | 214 |
+| docs_md | 217 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (238), src/components (27), src/pages (5)
 - servicos_logica: src/lib (261), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (284), outro (112), co-localizado (*.test) (48)
+- testes: co-localizado (__tests__) (285), outro (112), co-localizado (*.test) (48)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -468,9 +468,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - env.manifest.json (13)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- supabase/functions/bling-proxy/index.ts (11)
 - scripts/generate-env-manifest.mjs (10)
 - supabase/functions/bitrix24-sync/index.ts (10)
+- supabase/functions/bling-proxy/index.ts (10)
 - supabase/functions/n8n-callback/index.ts (10)
 - supabase/functions/sync-profile-to-bitrix/index.ts (10)
 - supabase/functions/enviar-convite-organizacao/index.ts (9)
@@ -629,10 +629,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (907 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (15), docs/agentes (13), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1), docs/receitafederal (1)
+- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/receitafederal (3), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `aeefe2f` docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)
 - 2026-11-21 `ea8ccc8` merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)
 - 2026-11-21 `ea32d18` fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)
 - 2026-11-21 `21ecbbc` chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)
@@ -647,7 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-20 `5c51f13` chore: ativar Gate #26 de drift de schema/policies no CI (#475)
 - 2026-11-20 `b7e2355` fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)
 - 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
-- 2026-11-19 `e6e6143` feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
