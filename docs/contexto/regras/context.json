@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "045482ea8aaf2ada0e20ae7ab342e092c53a6602",
+  "sha": "1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 20:41 UTC",
+  "generated_at": "2026-11-21 20:51 UTC",
   "files_total": 4024,
   "code_files": 3615,
   "code_lines": 514661
@@ -244998,10 +244998,20 @@
   }
  },
  "git": {
-  "sha": "045482ea8aaf2ada0e20ae7ab342e092c53a6602",
+  "sha": "1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1f4be40",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)",
+    "files": [
+     ".github/workflows/rfb-upstream-watch.yml",
+     "docs/ci/README.md"
+    ]
+   },
    {
     "sha": "045482e",
     "date": "2026-11-21",
@@ -245355,24 +245365,16 @@
      "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
      "supabase/tests/sql/infra.test.sql"
     ]
-   },
-   {
-    "sha": "18355ba",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(edge): rate limit compartilhado atômico via RPC com advisory lock (#466)",
-    "files": [
-     "supabase/functions/_shared/rate-limit.ts",
-     "supabase/functions/_shared/rate-limit_test.ts",
-     "supabase/functions/bling-webhook/index.test.ts",
-     "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
-    ]
    }
   ],
   "hot_files": [
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    ".github/workflows/rfb-upstream-watch.yml",
+    2
    ],
    [
     "env.manifest.json",
@@ -245397,6 +245399,10 @@
    [
     "supabase/functions/contabilizar-evento/index.ts",
     2
+   ],
+   [
+    "docs/ci/README.md",
+    1
    ],
    [
     "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
@@ -245440,14 +245446,6 @@
    ],
    [
     "src/types/reforma-tributaria/transicao.ts",
-    1
-   ],
-   [
-    "docs/receitafederal/PLANO_MELHORIAS_100_ETAPAS_CADASTRO_FISCAL.md",
-    1
-   ],
-   [
-    ".github/workflows/rfb-upstream-watch.yml",
     1
    ]
   ]

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "045482ea8aaf2ada0e20ae7ab342e092c53a6602",
+  "commit": "1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0",
   "branch": "main",
-  "data_commit": "2026-11-21T17:40:49-03:00",
+  "data_commit": "2026-11-21T17:49:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1f4be40",
+    "data": "2026-11-21",
+    "assunto": "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)"
+   },
    {
     "sha": "045482e",
     "data": "2026-11-21",
@@ -126,11 +131,6 @@
     "sha": "929f20d",
     "data": "2026-11-19",
     "assunto": "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)"
-   },
-   {
-    "sha": "2f1f881",
-    "data": "2026-11-19",
-    "assunto": "chore: matriz de conformidade de contratos das edge functions (#471)"
    }
   ],
   "arquivos_mudados_7d": 460,
@@ -294,14 +294,14 @@
     "mudancas": 7
    },
    {
-    "arquivo": "src/lib/arquitetura/grafo-observado.json",
+    "arquivo": "supabase/functions/_shared/observability.ts",
     "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 243
+    "commits": 244
    },
    {
     "autor": "dependabot[bot]",

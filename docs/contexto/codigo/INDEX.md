@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `045482ea8aaf2ada0e20ae7ab342e092c53a6602` (2026-11-21T17:40:49-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0` (2026-11-21T17:49:48-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `1f4be40` fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)
 - 2026-11-21 `045482e` feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura
 - 2026-11-21 `9fc35ee` fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)
 - 2026-11-21 `5788349` chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `c3e421c` chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)
 - 2026-11-21 `11779f6` chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)
 - 2026-11-20 `cab2bf4` fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)
-- 2026-11-20 `72a08b5` fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
