@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "cab2bf4c02e6c0d4b10fc51107102dbea3ae4706",
+  "commit": "11779f6e484beb07b7f2bdbe99e6289e09286801",
   "branch": "main",
-  "data_commit": "2026-11-20T20:28:02-03:00",
+  "data_commit": "2026-11-21T08:30:57-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "11779f6",
+    "data": "2026-11-21",
+    "assunto": "chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)"
+   },
    {
     "sha": "cab2bf4",
     "data": "2026-11-20",
@@ -126,14 +131,9 @@
     "sha": "c862e68",
     "data": "2026-11-17",
     "assunto": "docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)"
-   },
-   {
-    "sha": "ed338a2",
-    "data": "2026-11-17",
-    "assunto": "fix(db): liga os 2 índices anti-duplicata de contas, isolados por empresa (#455)"
    }
   ],
-  "arquivos_mudados_7d": 424,
+  "arquivos_mudados_7d": 421,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 37
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 24
+    "mudancas": 23
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -246,23 +246,11 @@
     "mudancas": 10
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 8
-   },
-   {
-    "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 8
    },
    {
@@ -274,15 +262,11 @@
     "mudancas": 8
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 8
-   },
-   {
     "arquivo": "src/App.tsx",
     "mudancas": 8
    },
    {
-    "arquivo": "src/hooks/useAcordosParcelamento.ts",
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 8
    },
    {
@@ -290,18 +274,34 @@
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/analise-preditiva/index.ts",
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "arquivo": "supabase/functions/executar-fechamento-tributario/index.ts",
     "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/functions/n8n-dispatch/index.ts",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/functions/open-finance/index.ts",
+    "mudancas": 8
+   },
+   {
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 233
+    "commits": 234
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3967,
+  "arquivos_total": 3968,
   "arquivos_codigo": 2483,
   "linhas_codigo": 443211,
   "rotas": 130,
@@ -329,8 +329,8 @@
   "componentes": 992,
   "hooks": 274,
   "edge_functions": 106,
-  "tabelas": 311,
-  "migrations": 1049,
+  "tabelas": 312,
+  "migrations": 1050,
   "cron_jobs": 22,
   "testes": 483,
   "workflows": 19,

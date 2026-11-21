@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `cab2bf4c02` · branch `main` · 2026-11-20 23:28 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `11779f6e48` · branch `main` · 2026-11-21 11:31 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `simulacoes` | simulacoes_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
-| … +518 linhas — lista completa em `context.json` | | | | | | |
+| … +520 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2269 linhas — lista completa em `context.json` | | |
+| … +2274 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1035,11 +1035,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `segredo_cron` | Segredo interno "%" ausente ou fraco em integration_secrets | `supabase/migrations/20260913120000_corrige_credenciais_automacoes_internas.sql` |
 | `chave_anon_vault` | Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. | `supabase/migrations/20260913120000_corrige_credenciais_automacoes_internas.sql` |
 | `confirmar_conciliacao_manual` | transacao_nao_atualizada | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
-| `aprovar_solicitacao_pagamento` | not_authenticated | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
-| `aprovar_solicitacao_pagamento` | solicitacao_nao_pendente | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
-| `aprovar_solicitacao_pagamento` | solicitacao_sem_conta_pagar | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
-| `aprovar_solicitacao_pagamento` | conta_pagar_inacessivel | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
-| `aprovar_solicitacao_pagamento` | solicitacao_inacessivel | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
 | `gerar_darf_retencoes` | not_authenticated | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
 | `gerar_darf_retencoes` | forbidden_empresa_access | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
 | `gerar_darf_retencoes` | nenhuma_retencao_selecionada | `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` |
@@ -1069,6 +1064,11 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `webhook_replay` | unauthorized: admin role required to replay webhooks | `supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql` |
 | `webhook_replay` | webhook % not found | `supabase/migrations/20261117074000_webhook_replay_resolve_dlq.sql` |
 | `rate_limit_check` | rate_limit_check: _endpoint, _ip e _limit sao obrigatorios | `supabase/migrations/20261118002000_rate_limit_check_atomico.sql` |
+| `aprovar_solicitacao_pagamento` | not_authenticated | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
+| `aprovar_solicitacao_pagamento` | solicitacao_nao_pendente | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
+| `aprovar_solicitacao_pagamento` | solicitacao_sem_conta_pagar | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
+| `aprovar_solicitacao_pagamento` | conta_pagar_inacessivel | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
+| `aprovar_solicitacao_pagamento` | solicitacao_inacessivel | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
 
 ## E. Estados, máquinas de estado e transições
 

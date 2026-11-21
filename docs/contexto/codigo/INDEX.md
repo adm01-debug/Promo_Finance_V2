@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cab2bf4c02e6c0d4b10fc51107102dbea3ae4706` (2026-11-20T20:28:02-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `11779f6e484beb07b7f2bdbe99e6289e09286801` (2026-11-21T08:30:57-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2364), SQL (1121), Markdown (214), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
+- linguagens: TypeScript (2364), SQL (1122), Markdown (214), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3967 |
+| arquivos_total | 3968 |
 | arquivos_codigo | 2483 |
 | linhas_codigo | 443211 |
 | rotas | 130 |
@@ -45,8 +45,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 992 |
 | hooks | 274 |
 | edge_functions | 106 |
-| tabelas | 311 |
-| migrations | 1049 |
+| tabelas | 312 |
+| migrations | 1050 |
 | cron_jobs | 22 |
 | testes | 483 |
 | workflows | 19 |
@@ -461,9 +461,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (37)
+- package.json (36)
 - bun.lock (34)
-- .github/workflows/ci.yml (24)
+- .github/workflows/ci.yml (23)
 - supabase/functions/asaas-proxy/index.ts (18)
 - env.manifest.json (13)
 - PENDENCIAS.md (11)
@@ -473,9 +473,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/bitrix24-sync/index.ts (10)
 - supabase/functions/n8n-callback/index.ts (10)
 - supabase/functions/sync-profile-to-bitrix/index.ts (10)
-- src/hooks/useConciliacaoPage.ts (9)
 - supabase/functions/enviar-convite-organizacao/index.ts (9)
-- supabase/functions/executar-fechamento-tributario/index.ts (9)
+- .github/workflows/prod-migrate.yml (8)
+- analise-prs/progresso.json (8)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -633,6 +633,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `11779f6` chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)
 - 2026-11-20 `cab2bf4` fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)
 - 2026-11-20 `72a08b5` fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)
 - 2026-11-20 `3a239d1` docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)
@@ -647,7 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-19 `2f1f881` chore: matriz de conformidade de contratos das edge functions (#471)
 - 2026-11-18 `1bdec67` chore: arquiva docs de auditoria do ciclo de integracao (mapa 12/11 e execucao 29/10) (#470)
 - 2026-11-18 `772e151` chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)
-- 2026-11-17 `cb9d5c8` chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

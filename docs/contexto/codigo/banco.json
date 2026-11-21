@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1049,
+ "migrations": 1050,
  "seeds": [],
  "avisos": [
   "198 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -6768,6 +6768,70 @@
    ],
    "sem_rls": false,
    "nao_usada": false
+  },
+  "aprovacao_assinaturas": {
+   "colunas": {
+    "assinado_em": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "solicitacao_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": "solicitacoes_aprovacao"
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": "auth"
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "Aprovacoes visiveis para envolvidos e admins",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "Assinante registra propria assinatura",
+     "comando": "insert",
+     "para": "authenticated",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [
+    {
+     "nome": "idx_aprovacao_assinaturas_solicitacao",
+     "colunas": "solicitacao_id",
+     "unico": false
+    }
+   ],
+   "fks": [
+    "solicitacao_id->solicitacoes_aprovacao",
+    "user_id->auth"
+   ],
+   "criada_em": "20261120235900_quorum_aprovacao_assinaturas.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
   },
   "aprovacao_comentarios": {
    "colunas": {

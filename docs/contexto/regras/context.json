@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "cab2bf4c02e6c0d4b10fc51107102dbea3ae4706",
+  "sha": "11779f6e484beb07b7f2bdbe99e6289e09286801",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-20 23:28 UTC",
-  "files_total": 4006,
-  "code_files": 3605,
-  "code_lines": 513338
+  "generated_at": "2026-11-21 11:31 UTC",
+  "files_total": 4007,
+  "code_files": 3606,
+  "code_lines": 513498
  },
  "version": "1.3.2",
- "facts_hash": "4df702a9b2264322",
+ "facts_hash": "7a48ae4fa9099b42",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1247,
-   ".sql": 1121,
+   ".sql": 1122,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -28146,6 +28146,44 @@
     "comment": "",
     "origin": "migration"
    },
+   "aprovacao_assinaturas": {
+    "columns": [
+     {
+      "name": "id",
+      "type": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+     },
+     {
+      "name": "solicitacao_id",
+      "type": "uuid NOT NULL REFERENCES public.solicitacoes_aprovacao(id) ON DELETE CASCADE",
+      "fk": "solicitacoes_aprovacao.id ON DELETE CASCADE",
+      "generated": "",
+      "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+     },
+     {
+      "name": "user_id",
+      "type": "uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE",
+      "fk": "users.id ON DELETE CASCADE",
+      "generated": "",
+      "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+     },
+     {
+      "name": "assinado_em",
+      "type": "timestamptz NOT NULL DEFAULT now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+     }
+    ],
+    "constraints": [
+     "CONSTRAINT aprovacao_assinaturas_unica UNIQUE (solicitacao_id, user_id)"
+    ],
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "user_preferences": {
     "columns": [
      {
@@ -36597,6 +36635,26 @@
     "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
    },
    {
+    "name": "Assinante registra propria assinatura",
+    "table": "aprovacao_assinaturas",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "auth.uid() = user_id",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "name": "Aprovacoes visiveis para envolvidos e admins",
+    "table": "aprovacao_assinaturas",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id OR auth.uid() = (SELECT user_id FROM public.solicitacoes_aprovacao WHERE id = solicitacao_id) OR public.has_role(auth.uid(), 'admin')",
+    "check": "",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
     "name": "preferencias_sistema_select_own",
     "table": "user_preferences",
     "cmd": "SELECT",
@@ -42769,10 +42827,10 @@
     "args": "p_solicitacao_id uuid",
     "returns": "jsonb",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "DECLARE v_uid uuid := auth.uid(); v_conta_pagar_id uuid; v_fornecedor text; v_linhas integer; BEGIN IF v_uid IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; SELECT s.conta_pagar_id INTO v_conta_pagar_id FROM public.solicitacoes_aprovacao s WHERE s.id = p_solicitacao_id AND s.status = 'pendente' FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'solicitacao_nao_pendente' USING ERRCODE = 'P0002'; END IF; IF v_conta_pagar_id IS NULL THEN RAISE EXCEPTION 'solicitacao_sem_conta_pagar' USING ERRCODE = '22023'; END IF; UPDATE public.contas_pagar SET aprovado_por = v_uid, updated_at = now() WHERE id = v_conta_pagar_id RETURNING fornecedor_nome INTO v_fornecedor; GET DIA …",
+    "body": "DECLARE v_uid uuid := auth.uid(); v_conta_pagar_id uuid; v_empresa_id uuid; v_fornecedor text; v_linhas integer; v_assinaturas integer; v_quorum integer; BEGIN IF v_uid IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; SELECT s.conta_pagar_id, cp.empresa_id INTO v_conta_pagar_id, v_empresa_id FROM public.solicitacoes_aprovacao s LEFT JOIN public.contas_pagar cp ON cp.id = s.conta_pagar_id WHERE s.id = p_solicitacao_id AND s.status = 'pendente' FOR UPDATE OF s; IF NOT FOUND THEN RAISE EXCEPTION 'solicitacao_nao_pendente' USING ERRCODE = 'P0002'; END IF; IF v_conta_pagar_id IS NULL THEN RAISE EXCEPTION 'solicitacao_sem_conta_pagar' USING ERRCODE = '22023'; END I …",
     "raises": [
      "not_authenticated",
      "solicitacao_nao_pendente",
@@ -42781,10 +42839,15 @@
      "solicitacao_inacessivel"
     ],
     "tables": [
+     "OF",
+     "aprovacao_assinaturas",
+     "configuracoes_aprovacao",
      "contas_pagar",
      "solicitacoes_aprovacao",
+     "v_assinaturas",
      "v_conta_pagar_id",
-     "v_fornecedor"
+     "v_fornecedor",
+     "v_quorum"
     ]
    },
    "gerar_darf_retencoes": {
@@ -49153,6 +49216,14 @@
     "unique": true,
     "where": "",
     "src": "supabase/migrations/20261117232000_indices_anti_duplicata_contas.sql"
+   },
+   {
+    "name": "idx_aprovacao_assinaturas_solicitacao",
+    "table": "aprovacao_assinaturas",
+    "columns": "solicitacao_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
    }
   ],
   "cron_jobs": [
@@ -50430,6 +50501,7 @@
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
+   "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
@@ -50691,6 +50763,7 @@
    "asaas_payment_links": "enabled",
    "estrategias_elisao_catalogo": "enabled",
    "cnpja_rate_limit": "enabled",
+   "aprovacao_assinaturas": "enabled",
    "user_preferences": "enabled"
   },
   "grants": [
@@ -58631,6 +58704,22 @@
     "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
    },
    {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "aprovar_solicitacao_pagamento",
+    "objkind": "function",
+    "roles": "PUBLIC, anon",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "aprovar_solicitacao_pagamento",
+    "objkind": "function",
+    "roles": "authenticated, service_role",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
     "kind": "grant",
     "privs": "all",
     "object": "user_preferences",
@@ -59206,31 +59295,6 @@
     "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
    },
    {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "not_authenticated",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "solicitacao_nao_pendente",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "solicitacao_sem_conta_pagar",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "conta_pagar_inacessivel",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "solicitacao_inacessivel",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
     "function": "gerar_darf_retencoes",
     "msg": "not_authenticated",
     "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
@@ -59374,6 +59438,31 @@
     "function": "rate_limit_check",
     "msg": "rate_limit_check: _endpoint, _ip e _limit sao obrigatorios",
     "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "not_authenticated",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "solicitacao_nao_pendente",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "solicitacao_sem_conta_pagar",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "conta_pagar_inacessivel",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "solicitacao_inacessivel",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
    }
   ],
   "seed": [
@@ -70945,8 +71034,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1049,
-   "lines": 81006,
+   "files": 1050,
+   "lines": 81166,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -75852,6 +75941,7 @@
     "user_anomalia_preferences",
     "user_demonstrativo_preferences",
     "user_digest_preferences",
+    "aprovacao_assinaturas",
     "user_preferences"
    ],
    "empresas": [
@@ -75977,6 +76067,9 @@
    ],
    "lalamove_orders": [
     "bitrix24_activities"
+   ],
+   "solicitacoes_aprovacao": [
+    "aprovacao_assinaturas"
    ]
   },
   "tables_only_in_code": [
@@ -75988,6 +76081,7 @@
    "alert_configurations",
    "alerts",
    "alerts_sent",
+   "aprovacao_assinaturas",
    "bitrix24_activities",
    "bitrix24_stage_mappings",
    "bitrix24_tokens",
@@ -99024,6 +99118,31 @@
     "table": "cnpja_rate_limit",
     "column": "(tabela)",
     "rule": "PRIMARY KEY (user_id, window_start)"
+   },
+   {
+    "table": "aprovacao_assinaturas",
+    "column": "id",
+    "rule": "PK; default gen_random_uuid()"
+   },
+   {
+    "table": "aprovacao_assinaturas",
+    "column": "solicitacao_id",
+    "rule": "obrigatório; FK → solicitacoes_aprovacao.id ON DELETE CASCADE"
+   },
+   {
+    "table": "aprovacao_assinaturas",
+    "column": "user_id",
+    "rule": "obrigatório; FK → users.id ON DELETE CASCADE"
+   },
+   {
+    "table": "aprovacao_assinaturas",
+    "column": "assinado_em",
+    "rule": "default now()"
+   },
+   {
+    "table": "aprovacao_assinaturas",
+    "column": "(tabela)",
+    "rule": "CONSTRAINT aprovacao_assinaturas_unica UNIQUE (solicitacao_id, user_id)"
    },
    {
     "table": "user_preferences",
@@ -143780,6 +143899,26 @@
     "src": "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql"
    },
    {
+    "name": "Assinante registra propria assinatura",
+    "table": "aprovacao_assinaturas",
+    "cmd": "INSERT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "",
+    "check": "auth.uid() = user_id",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "name": "Aprovacoes visiveis para envolvidos e admins",
+    "table": "aprovacao_assinaturas",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "auth.uid() = user_id OR auth.uid() = (SELECT user_id FROM public.solicitacoes_aprovacao WHERE id = solicitacao_id) OR public.has_role(auth.uid(), 'admin')",
+    "check": "",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
     "name": "preferencias_sistema_select_own",
     "table": "user_preferences",
     "cmd": "SELECT",
@@ -149952,10 +150091,10 @@
     "args": "p_solicitacao_id uuid",
     "returns": "jsonb",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "DECLARE v_uid uuid := auth.uid(); v_conta_pagar_id uuid; v_fornecedor text; v_linhas integer; BEGIN IF v_uid IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; SELECT s.conta_pagar_id INTO v_conta_pagar_id FROM public.solicitacoes_aprovacao s WHERE s.id = p_solicitacao_id AND s.status = 'pendente' FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'solicitacao_nao_pendente' USING ERRCODE = 'P0002'; END IF; IF v_conta_pagar_id IS NULL THEN RAISE EXCEPTION 'solicitacao_sem_conta_pagar' USING ERRCODE = '22023'; END IF; UPDATE public.contas_pagar SET aprovado_por = v_uid, updated_at = now() WHERE id = v_conta_pagar_id RETURNING fornecedor_nome INTO v_fornecedor; GET DIA …",
+    "body": "DECLARE v_uid uuid := auth.uid(); v_conta_pagar_id uuid; v_empresa_id uuid; v_fornecedor text; v_linhas integer; v_assinaturas integer; v_quorum integer; BEGIN IF v_uid IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; SELECT s.conta_pagar_id, cp.empresa_id INTO v_conta_pagar_id, v_empresa_id FROM public.solicitacoes_aprovacao s LEFT JOIN public.contas_pagar cp ON cp.id = s.conta_pagar_id WHERE s.id = p_solicitacao_id AND s.status = 'pendente' FOR UPDATE OF s; IF NOT FOUND THEN RAISE EXCEPTION 'solicitacao_nao_pendente' USING ERRCODE = 'P0002'; END IF; IF v_conta_pagar_id IS NULL THEN RAISE EXCEPTION 'solicitacao_sem_conta_pagar' USING ERRCODE = '22023'; END I …",
     "raises": [
      "not_authenticated",
      "solicitacao_nao_pendente",
@@ -149964,10 +150103,15 @@
      "solicitacao_inacessivel"
     ],
     "tables": [
+     "OF",
+     "aprovacao_assinaturas",
+     "configuracoes_aprovacao",
      "contas_pagar",
      "solicitacoes_aprovacao",
+     "v_assinaturas",
      "v_conta_pagar_id",
-     "v_fornecedor"
+     "v_fornecedor",
+     "v_quorum"
     ]
    },
    "gerar_darf_retencoes": {
@@ -151151,31 +151295,6 @@
     "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
    },
    {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "not_authenticated",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "solicitacao_nao_pendente",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "solicitacao_sem_conta_pagar",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "conta_pagar_inacessivel",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
-    "function": "aprovar_solicitacao_pagamento",
-    "msg": "solicitacao_inacessivel",
-    "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
-   },
-   {
     "function": "gerar_darf_retencoes",
     "msg": "not_authenticated",
     "src": "supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql"
@@ -151319,6 +151438,31 @@
     "function": "rate_limit_check",
     "msg": "rate_limit_check: _endpoint, _ip e _limit sao obrigatorios",
     "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "not_authenticated",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "solicitacao_nao_pendente",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "solicitacao_sem_conta_pagar",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "conta_pagar_inacessivel",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "aprovar_solicitacao_pagamento",
+    "msg": "solicitacao_inacessivel",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
    }
   ],
   "db_generated": [
@@ -155994,6 +156138,17 @@
      "authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
    },
+   "aprovacao_assinaturas": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: auth.uid() = user_id OR auth.uid() = (SELECT user_id FROM public.solicitacoes_aprovacao WHERE id = solicitacao_id) OR public. …"
+    ],
+    "INSERT": [
+     "authenticated: auth.uid() = user_id"
+    ],
+    "UPDATE": [],
+    "DELETE": []
+   },
    "aprovacao_comentarios": {
     "rls": "enabled",
     "SELECT": [
@@ -160298,6 +160453,7 @@
    "supabase/migrations/20261117195500_restaura_cnpja_rate_limit.sql",
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
+   "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -168490,6 +168646,22 @@
     "src": "supabase/migrations/20261118002000_rate_limit_check_atomico.sql"
    },
    {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "aprovar_solicitacao_pagamento",
+    "objkind": "function",
+    "roles": "PUBLIC, anon",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "aprovar_solicitacao_pagamento",
+    "objkind": "function",
+    "roles": "authenticated, service_role",
+    "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
     "kind": "grant",
     "privs": "all",
     "object": "user_preferences",
@@ -171242,6 +171414,7 @@
     "created_at"
    ],
    "cnpja_rate_limit": [],
+   "aprovacao_assinaturas": [],
    "user_preferences": [
     "created_at",
     "updated_at"
@@ -173172,7 +173345,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "262/268 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "263/269 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -244364,6 +244537,11 @@
    "path": "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
    "lines": 91
   },
+  "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql": {
+   "path": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
+   "lines": 160,
+   "uses_service_role": true
+  },
   "supabase/migrations/20261121000000_restaura_user_preferences.sql": {
    "path": "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "lines": 45
@@ -244476,10 +244654,19 @@
   }
  },
  "git": {
-  "sha": "cab2bf4c02e6c0d4b10fc51107102dbea3ae4706",
+  "sha": "11779f6e484beb07b7f2bdbe99e6289e09286801",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "11779f6",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)",
+    "files": [
+     "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+    ]
+   },
    {
     "sha": "cab2bf4",
     "date": "2026-11-20",
@@ -244809,15 +244996,6 @@
      "supabase/functions/bitrix24-sync/index.ts",
      "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
     ]
-   },
-   {
-    "sha": "1702166",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(db): religa a assinatura de filtro salvo (sem apagar nenhuma coluna) (#448)",
-    "files": [
-     "supabase/migrations/20261117223000_converge_saved_filter_subscriptions.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -244848,6 +245026,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
+    1
    ],
    [
     "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
@@ -244895,10 +245077,6 @@
    ],
    [
     "src/lib/conciliacao-page-helpers.ts",
-    1
-   ],
-   [
-    "docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
     1
    ]
   ]
