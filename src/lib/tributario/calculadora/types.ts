@@ -131,7 +131,16 @@ export interface InputReforma {
   aliquotaCbsAlvo?: number; // decimal, default 0.088
   aliquotaIbsAlvo?: number; // decimal, default 0.177
   creditos?: number; // R$ base de créditos IVA
-  categoriaImpostoSeletivo?: 'nenhum' | 'bebidas_alcoolicas' | 'fumo' | 'veiculos' | 'bens_luxo';
+  categoriaImpostoSeletivo?:
+    | 'nenhum'
+    | 'bebidas_alcoolicas'
+    | 'bebidas_acucaradas'
+    | 'produtos_fumigenos'
+    | 'veiculos'
+    | 'embarcacoes_aeronaves'
+    | 'minerios'
+    | 'combustiveis_fosseis'
+    | 'concursos_prognosticos';
   /** % do IS informada pelo usuário — a lei não fixa alíquota por categoria (LC 214/2025 arts. 393-400). */
   aliquotaISCustomizada?: number;
 }

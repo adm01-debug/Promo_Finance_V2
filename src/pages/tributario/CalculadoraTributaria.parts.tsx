@@ -357,9 +357,15 @@ export function ParametrosCard({
                     <SelectContent>
                       <SelectItem value="nenhum">Nenhum</SelectItem>
                       <SelectItem value="bebidas_alcoolicas">Bebidas alcoólicas</SelectItem>
-                      <SelectItem value="fumo">Fumo</SelectItem>
+                      <SelectItem value="bebidas_acucaradas">Bebidas açucaradas</SelectItem>
+                      <SelectItem value="produtos_fumigenos">Produtos fumígenos</SelectItem>
                       <SelectItem value="veiculos">Veículos</SelectItem>
-                      <SelectItem value="bens_luxo">Bens de luxo</SelectItem>
+                      <SelectItem value="embarcacoes_aeronaves">Embarcações e aeronaves</SelectItem>
+                      <SelectItem value="minerios">Minérios</SelectItem>
+                      <SelectItem value="combustiveis_fosseis">Combustíveis fósseis</SelectItem>
+                      <SelectItem value="concursos_prognosticos">
+                        Concursos e prognósticos
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

@@ -177,7 +177,10 @@ export function SimuladorInputForm(props: SimuladorInputFormProps) {
                 <SelectItem value="bebidas_acucaradas">Bebidas Açucaradas</SelectItem>
                 <SelectItem value="produtos_fumigenos">Produtos Fumígenos</SelectItem>
                 <SelectItem value="veiculos">Veículos</SelectItem>
+                <SelectItem value="embarcacoes_aeronaves">Embarcações e Aeronaves</SelectItem>
+                <SelectItem value="minerios">Minérios</SelectItem>
                 <SelectItem value="combustiveis_fosseis">Combustíveis Fósseis</SelectItem>
+                <SelectItem value="concursos_prognosticos">Concursos e Prognósticos</SelectItem>
               </SelectContent>
             </Select>
           )}

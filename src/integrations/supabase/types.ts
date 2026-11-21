@@ -10604,6 +10604,7 @@ export type Database = {
           icms_valor: number | null;
           id: string;
           is_aliquota: number | null;
+          is_aliquota_customizada: number | null;
           is_categoria: string | null;
           is_valor: number | null;
           isento: boolean | null;
@@ -10659,6 +10660,7 @@ export type Database = {
           icms_valor?: number | null;
           id?: string;
           is_aliquota?: number | null;
+          is_aliquota_customizada?: number | null;
           is_categoria?: string | null;
           is_valor?: number | null;
           isento?: boolean | null;
@@ -10714,6 +10716,7 @@ export type Database = {
           icms_valor?: number | null;
           id?: string;
           is_aliquota?: number | null;
+          is_aliquota_customizada?: number | null;
           is_categoria?: string | null;
           is_valor?: number | null;
           isento?: boolean | null;
