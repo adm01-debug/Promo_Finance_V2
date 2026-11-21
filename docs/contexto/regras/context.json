@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "21ecbbc6d2adc6d645dd121fb861dd26609567c1",
+  "sha": "ea32d18b56b517bfb94ca45eb7323f087e163048",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 12:57 UTC",
-  "files_total": 4010,
-  "code_files": 3609,
-  "code_lines": 513706
+  "generated_at": "2026-11-21 14:12 UTC",
+  "files_total": 4011,
+  "code_files": 3610,
+  "code_lines": 513877
  },
  "version": "1.3.2",
- "facts_hash": "deda6b6bdd8cc9b9",
+ "facts_hash": "58b66fe7509ef634",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1248,
-   ".sql": 1124,
+   ".sql": 1125,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -21924,8 +21924,8 @@
     ],
     "constraints": [
      "UNIQUE (domain, invariant, alert_hour)",
-     "constraint integrity_alerts_domain_check CHECK ((domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe'::text, 'nfe_sefaz'::text, 'tributario'::text]))) NOT VALID",
-     "constraint integrity_alerts_severity_check CHECK ((severity = ANY (ARRAY['info'::text, 'warning'::text, 'critical'::text]))) NOT VALID"
+     "constraint integrity_alerts_severity_check CHECK ((severity = ANY (ARRAY['info'::text, 'warning'::text, 'critical'::text]))) NOT VALID",
+     "constraint integrity_alerts_domain_check CHECK ((domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe'::text, 'nfe_sefaz'::text, 'tributario'::text])))"
     ],
     "src": "supabase/migrations/20260722173817_3d8a2d6a-06b3-4eeb-bde3-93eeed3c6c06.sql",
     "comment": "",
@@ -24153,10 +24153,10 @@
      }
     ],
     "constraints": [
-     "constraint protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo)",
      "constraint protocolos_st_ncms_codigo_formato_chk CHECK ((ncm_codigo ~ '^[0-9]{8}$'::text)) NOT VALID",
      "constraint protocolos_st_ncms_vigencia_coerente CHECK (((vigente_ate IS NULL) OR (vigente_ate >= vigente_de))) NOT VALID",
-     "constraint protocolos_st_ncms_mva_range_chk CHECK (mva_original IS NULL OR mva_original >= 0)"
+     "constraint protocolos_st_ncms_mva_range_chk CHECK (mva_original IS NULL OR mva_original >= 0)",
+     "constraint protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo)"
     ],
     "src": "supabase/migrations/20260727190031_432a4b76-ee70-4633-abba-c5e5bc6a250a.sql",
     "comment": "",
@@ -41597,7 +41597,7 @@
     "args": "",
     "returns": "jsonb",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
     "security_definer": true,
     "search_path": true,
     "body": "DECLARE v_hour timestamptz := date_trunc('hour', now()); v_total integer := 0; v_critical integer := 0; v_warning integer := 0; v_info integer := 0; v_achados jsonb := '[]'::jsonb; v_failing text[] := '{}'; v_resolved integer := 0; v_notified integer := 0; r RECORD; BEGIN IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN RAISE EXCEPTION 'acesso negado: requer papel admin' USING ERRCODE = '42501'; END IF; IF NOT pg_try_advisory_xact_lock(hashtext('check_catalogos_tributarios_invariants')) THEN RETURN jsonb_build_object('skipped', true, 'reason', 'lock_held'); END IF; FOR r IN SELECT * FROM public.validar_catalogos_tributarios() LOOP v_total := v_total + 1; …",
@@ -50505,6 +50505,7 @@
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
+   "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -58744,6 +58745,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "check_catalogos_tributarios_invariants",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "check_catalogos_tributarios_invariants",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
    }
   ],
   "raises": [
@@ -58846,11 +58863,6 @@
     "function": "get_cron_jobs",
     "msg": "Acesso negado: apenas administradores podem visualizar automações.",
     "src": "supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql"
-   },
-   {
-    "function": "check_catalogos_tributarios_invariants",
-    "msg": "acesso negado: requer papel admin",
-    "src": "supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql"
    },
    {
     "function": "invocar_regua_cobranca",
@@ -59481,6 +59493,11 @@
     "function": "aprovar_solicitacao_pagamento",
     "msg": "solicitacao_inacessivel",
     "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "check_catalogos_tributarios_invariants",
+    "msg": "acesso negado: requer papel admin",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
    }
   ],
   "seed": [
@@ -71052,8 +71069,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1052,
-   "lines": 81285,
+   "files": 1053,
+   "lines": 81456,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -95810,12 +95827,12 @@
    {
     "table": "integrity_alerts",
     "column": "(tabela)",
-    "rule": "constraint integrity_alerts_domain_check CHECK ((domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe'::text, 'nfe_sefaz'::text, 'tributario'::text]))) NOT VALID"
+    "rule": "constraint integrity_alerts_severity_check CHECK ((severity = ANY (ARRAY['info'::text, 'warning'::text, 'critical'::text]))) NOT VALID"
    },
    {
     "table": "integrity_alerts",
     "column": "(tabela)",
-    "rule": "constraint integrity_alerts_severity_check CHECK ((severity = ANY (ARRAY['info'::text, 'warning'::text, 'critical'::text]))) NOT VALID"
+    "rule": "constraint integrity_alerts_domain_check CHECK ((domain = ANY (ARRAY['entrega'::text, 'screening'::text, 'financeiro'::text, 'nfe'::text, 'nfe_sefaz'::text, 'tributario'::text])))"
    },
    {
     "table": "empresas_certificados",
@@ -97155,11 +97172,6 @@
    {
     "table": "protocolos_st_ncms",
     "column": "(tabela)",
-    "rule": "constraint protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo)"
-   },
-   {
-    "table": "protocolos_st_ncms",
-    "column": "(tabela)",
     "rule": "constraint protocolos_st_ncms_codigo_formato_chk CHECK ((ncm_codigo ~ '^[0-9]{8}$'::text)) NOT VALID"
    },
    {
@@ -97171,6 +97183,11 @@
     "table": "protocolos_st_ncms",
     "column": "(tabela)",
     "rule": "constraint protocolos_st_ncms_mva_range_chk CHECK (mva_original IS NULL OR mva_original >= 0)"
+   },
+   {
+    "table": "protocolos_st_ncms",
+    "column": "(tabela)",
+    "rule": "constraint protocolos_st_ncms_unq UNIQUE (protocolo_id, ncm_codigo)"
    },
    {
     "table": "beneficios_fiscais",
@@ -148883,7 +148900,7 @@
     "args": "",
     "returns": "jsonb",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
     "security_definer": true,
     "search_path": true,
     "body": "DECLARE v_hour timestamptz := date_trunc('hour', now()); v_total integer := 0; v_critical integer := 0; v_warning integer := 0; v_info integer := 0; v_achados jsonb := '[]'::jsonb; v_failing text[] := '{}'; v_resolved integer := 0; v_notified integer := 0; r RECORD; BEGIN IF auth.uid() IS NOT NULL AND NOT public.has_role(auth.uid(), 'admin'::app_role) THEN RAISE EXCEPTION 'acesso negado: requer papel admin' USING ERRCODE = '42501'; END IF; IF NOT pg_try_advisory_xact_lock(hashtext('check_catalogos_tributarios_invariants')) THEN RETURN jsonb_build_object('skipped', true, 'reason', 'lock_held'); END IF; FOR r IN SELECT * FROM public.validar_catalogos_tributarios() LOOP v_total := v_total + 1; …",
@@ -150852,11 +150869,6 @@
     "src": "supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql"
    },
    {
-    "function": "check_catalogos_tributarios_invariants",
-    "msg": "acesso negado: requer papel admin",
-    "src": "supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql"
-   },
-   {
     "function": "invocar_regua_cobranca",
     "msg": "Secret regua_cron_secret ausente ou inválido no Vault",
     "src": "supabase/migrations/20260822115000_agendar_regua_cobranca.sql"
@@ -151485,6 +151497,11 @@
     "function": "aprovar_solicitacao_pagamento",
     "msg": "solicitacao_inacessivel",
     "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "function": "check_catalogos_tributarios_invariants",
+    "msg": "acesso negado: requer papel admin",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
    }
   ],
   "db_generated": [
@@ -160477,6 +160494,7 @@
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
+   "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -168707,6 +168725,22 @@
     "objkind": "function",
     "roles": "service_role",
     "src": "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "check_catalogos_tributarios_invariants",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "check_catalogos_tributarios_invariants",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
    }
   ],
   "guards": [
@@ -244605,6 +244639,11 @@
    "lines": 103,
    "uses_service_role": true
   },
+  "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql": {
+   "path": "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
+   "lines": 171,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -244713,10 +244752,20 @@
   }
  },
  "git": {
-  "sha": "21ecbbc6d2adc6d645dd121fb861dd26609567c1",
+  "sha": "ea32d18b56b517bfb94ca45eb7323f087e163048",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ea32d18",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)",
+    "files": [
+     "scripts/integrity/baseline/schema-counts.json",
+     "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
+    ]
+   },
    {
     "sha": "21ecbbc",
     "date": "2026-11-21",
@@ -245044,22 +245093,16 @@
     "files": [
      "supabase/migrations/20261117232000_indices_anti_duplicata_contas.sql"
     ]
-   },
-   {
-    "sha": "ec4122e",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(db): vw_fluxo_caixa ganha empresa_id e fica na projeção de 90 dias (#452)",
-    "files": [
-     "scripts/db/test-vw-fluxo-caixa.sql",
-     "supabase/migrations/20261117224000_vw_fluxo_caixa_por_empresa.sql"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/agentes/auditoria-branches-2026-11-17.md",
     3
+   ],
+   [
+    "scripts/integrity/baseline/schema-counts.json",
+    2
    ],
    [
     "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
@@ -245088,6 +245131,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
+    1
    ],
    [
     "supabase/migrations/20261120130000_ledger_reconciliado.sql",
@@ -245127,14 +245174,6 @@
    ],
    [
     "supabase/migrations/20261121000000_restaura_user_preferences.sql",
-    1
-   ],
-   [
-    "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
-    1
-   ],
-   [
-    "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     1
    ]
   ]

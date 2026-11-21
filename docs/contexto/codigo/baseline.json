@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "21ecbbc6d2adc6d645dd121fb861dd26609567c1",
+  "commit": "ea32d18b56b517bfb94ca45eb7323f087e163048",
   "branch": "main",
-  "data_commit": "2026-11-21T09:56:34-03:00",
+  "data_commit": "2026-11-21T11:11:50-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ea32d18",
+    "data": "2026-11-21",
+    "assunto": "fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)"
+   },
    {
     "sha": "21ecbbc",
     "data": "2026-11-21",
@@ -126,11 +131,6 @@
     "sha": "2aa3851",
     "data": "2026-11-17",
     "assunto": "fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)"
-   },
-   {
-    "sha": "6d521cd",
-    "data": "2026-11-17",
-    "assunto": "docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)"
    }
   ],
   "arquivos_mudados_7d": 425,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 237
+    "commits": 238
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3971,
+  "arquivos_total": 3972,
   "arquivos_codigo": 2484,
   "linhas_codigo": 443299,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 312,
-  "migrations": 1052,
+  "migrations": 1053,
   "cron_jobs": 22,
   "testes": 484,
   "workflows": 19,

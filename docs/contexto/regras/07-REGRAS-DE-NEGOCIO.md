@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `21ecbbc6d2` · branch `main` · 2026-11-21 12:57 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ea32d18b56` · branch `main` · 2026-11-21 14:12 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -942,7 +942,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `monitor_table_bloat` | access denied: admin role required | `supabase/migrations/20260723123522_d6b8d22c-f32c-4adb-b70d-34c526113dc6.sql` |
 | `lancamento_contabil_before_update` | Lançamento % está encerrado e não pode ser alterado | `supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql` |
 | `get_cron_jobs` | Acesso negado: apenas administradores podem visualizar automações. | `supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql` |
-| `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql` |
 | `invocar_regua_cobranca` | Secret regua_cron_secret ausente ou inválido no Vault | `supabase/migrations/20260822115000_agendar_regua_cobranca.sql` |
 | `get_retencao_politicas_status` | acesso negado: requer papel admin | `supabase/migrations/20260825100000_reconciliar_schema_completo.sql` |
 | `backfill_empresa_id` | backfill_empresa_id: acesso restrito a administradores | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
@@ -1069,6 +1068,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `aprovar_solicitacao_pagamento` | solicitacao_sem_conta_pagar | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
 | `aprovar_solicitacao_pagamento` | conta_pagar_inacessivel | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
 | `aprovar_solicitacao_pagamento` | solicitacao_inacessivel | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
+| `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql` |
 
 ## E. Estados, máquinas de estado e transições
 

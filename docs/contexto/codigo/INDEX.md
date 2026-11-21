@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `21ecbbc6d2adc6d645dd121fb861dd26609567c1` (2026-11-21T09:56:34-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ea32d18b56b517bfb94ca45eb7323f087e163048` (2026-11-21T11:11:50-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2365), SQL (1124), Markdown (214), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
+- linguagens: TypeScript (2365), SQL (1125), Markdown (214), JavaScript (76), Python (45), JSON (44), Shell (29), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3971 |
+| arquivos_total | 3972 |
 | arquivos_codigo | 2484 |
 | linhas_codigo | 443299 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 274 |
 | edge_functions | 106 |
 | tabelas | 312 |
-| migrations | 1052 |
+| migrations | 1053 |
 | cron_jobs | 22 |
 | testes | 484 |
 | workflows | 19 |
@@ -633,6 +633,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `ea32d18` fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)
 - 2026-11-21 `21ecbbc` chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)
 - 2026-11-21 `b28b64b` fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)
 - 2026-11-21 `c3e421c` chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)
@@ -647,7 +648,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-19 `a406e99` fix: renderTemplate null-safe em contabilizar-evento (#476)
 - 2026-11-19 `e6e6143` feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)
 - 2026-11-19 `dd12c7d` feat: suíte E2E de contrato contábil para contabilizar-evento (#473)
-- 2026-11-19 `929f20d` fix: normalizar 400 invalid_json para envelope 422 canônico (#472)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
