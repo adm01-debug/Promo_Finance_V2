@@ -4,7 +4,7 @@
 > `estado-real.yml` roda `--check` e abre PR quando este arquivo divergir do bloco
 > `# docs:` de cada workflow. Para mudar o que está aqui, mude o bloco no YAML.
 
-**19 workflows — 6 com bloco `# docs:`, 13 sem.**
+**20 workflows — 7 com bloco `# docs:`, 13 sem.**
 
 | Workflow | Arquivo | Gatilho | O que prova | Quando falha | Quem é avisado | Custo/sem (min) | Falha (7 d) |
 |---|---|---|---|---|---|---|---|
@@ -13,6 +13,7 @@
 | Contexto para agentes de IA (10 min) | [`contexto.yml`](../../.github/workflows/contexto.yml) | push em main que toque código, banco, scripts das automações ou docs/contexto/regras/manual/; a cada 10 min (minuto 7); dispatch | branch contexto com docs/contexto/{codigo,supabase,regras}/ regerados das três fontes de verdade (código em main, banco oficial bwwbeyolnnzppeuhgkcd, código+migrations+manual/) e docs/contexto/00-INDEX.md montado a partir dos manifests | falha fatal de produtor reprova o workflow; fontes com artefato publicam e as demais mantêm a última versão | ninguém (a branch contexto é a prova; errors.md em supabase/ lista seções com falha) | 7239.4 | 1.7% |
 | Estado real (CI e edge functions) | [`estado-real.yml`](../../.github/workflows/estado-real.yml) | segunda 11:38 UTC (08:38 BRT), push em main que toque workflows ou supabase/functions, e dispatch | docs/ci/README.md, docs/ci/MATRIZ_EDGE_TABELA.md e docs/ci/kpi.json refeitos do estado real (YAML dos workflows, .from() das edge functions, API do Actions) | o job fica vermelho e os docs gerados continuam como estavam | PR automation/estado-real quando algum doc divergir, e a issue [kpi-actions] com o custo semanal | 134.8 | 3.1% |
 | Inventário do estado real (semanal) | [`inventario-estado.yml`](../../.github/workflows/inventario-estado.yml) | agendado (segunda 09:41 UTC), push em main que toque rotas/menu/edges/types/scripts do inventário, PR que toque os scripts (só testes) e dispatch | branch `inventario` com inventario/estado/{banco,rotas,edges}.json refeitos do banco oficial (somente leitura) e do código em main | o job fica vermelho e a branch `inventario` mantém a última versão publicada | ninguém (a branch é a prova; `alertas` dentro de banco.json lista o que está fora do lugar) | 297 | 0% |
+| Vigilância de versões RFB (upstream watch) | [`rfb-upstream-watch.yml`](../../.github/workflows/rfb-upstream-watch.yml) | segunda ~06:23 BRT (09:23 UTC) e dispatch manual | compara a tag mais recente e o hash do CHANGELOG.md de cada repositório ReceitaFederal/calculadora-rtc-* contra docs/receitafederal/rfb-changelog-state.json | o job fica vermelho só se a API do GitHub ou o raw.githubusercontent.com estiverem inacessíveis ou o push da branch automation/rfb-upstream-watch for rejeitado; divergência de versão não é falha, é issue | issue com a label rfb-upstream quando tag ou CHANGELOG.md mudar, e PR automation/rfb-upstream-watch atualizando o state file | — | — |
 | Settings Guard | [`settings-guard.yml`](../../.github/workflows/settings-guard.yml) | agendado 1x/dia (07:19 UTC) e dispatch | o perímetro do GitHub (branch protection, merge, actions, environments) contra o baseline versionado | issue [settings-guard] aberta; sem escopo suficiente o guard reporta ponto cego em vez de falhar em silêncio | issue [settings-guard] | 3.9 | 0% |
 
 ## Detalhe
@@ -51,6 +52,13 @@
 - **O que prova:** branch `inventario` com inventario/estado/{banco,rotas,edges}.json refeitos do banco oficial (somente leitura) e do código em main
 - **Quando falha:** o job fica vermelho e a branch `inventario` mantém a última versão publicada
 - **Quem é avisado:** ninguém (a branch é a prova; `alertas` dentro de banco.json lista o que está fora do lugar)
+
+### Vigilância de versões RFB (upstream watch) (`rfb-upstream-watch.yml`)
+
+- **Gatilho:** segunda ~06:23 BRT (09:23 UTC) e dispatch manual
+- **O que prova:** compara a tag mais recente e o hash do CHANGELOG.md de cada repositório ReceitaFederal/calculadora-rtc-* contra docs/receitafederal/rfb-changelog-state.json
+- **Quando falha:** o job fica vermelho só se a API do GitHub ou o raw.githubusercontent.com estiverem inacessíveis ou o push da branch automation/rfb-upstream-watch for rejeitado; divergência de versão não é falha, é issue
+- **Quem é avisado:** issue com a label rfb-upstream quando tag ou CHANGELOG.md mudar, e PR automation/rfb-upstream-watch atualizando o state file
 
 ### Settings Guard (`settings-guard.yml`)
 

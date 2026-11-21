@@ -1,11 +1,8 @@
 # docs:
 #   gatilho: segunda ~06:23 BRT (09:23 UTC) e dispatch manual
-#   prova: compara a tag mais recente e o hash do CHANGELOG.md de cada repositório
-#     ReceitaFederal/calculadora-rtc-* contra docs/receitafederal/rfb-changelog-state.json
-#   falha: o job fica vermelho só se a API do GitHub ou o raw.githubusercontent.com
-#     estiverem inacessíveis; divergência de versão não é falha, é issue
-#   avisa: issue com a label rfb-upstream quando tag ou CHANGELOG.md mudar, e PR
-#     automation/rfb-upstream-watch atualizando o state file
+#   prova: compara a tag mais recente e o hash do CHANGELOG.md de cada repositório ReceitaFederal/calculadora-rtc-* contra docs/receitafederal/rfb-changelog-state.json
+#   falha: o job fica vermelho só se a API do GitHub ou o raw.githubusercontent.com estiverem inacessíveis ou o push da branch automation/rfb-upstream-watch for rejeitado; divergência de versão não é falha, é issue
+#   avisa: issue com a label rfb-upstream quando tag ou CHANGELOG.md mudar, e PR automation/rfb-upstream-watch atualizando o state file
 name: Vigilância de versões RFB (upstream watch)
 
 # Observa os 3 repositórios públicos ReceitaFederal/calculadora-rtc-* que o
