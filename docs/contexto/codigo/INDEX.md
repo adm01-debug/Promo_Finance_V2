@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ab226acbb0f201598ddf53b822290e0656c201fd` (2026-11-21T19:30:11-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d1fc1cf810cff5e91fc52810075c110ed591bbe6` (2026-11-21T19:45:09-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3986 |
 | arquivos_codigo | 2489 |
-| linhas_codigo | 443871 |
+| linhas_codigo | 443895 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `d1fc1cf` fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)
 - 2026-11-21 `ab226ac` feat: selo "simulado" em CBS/IBS na UI (etapa 18 RT)
 - 2026-11-21 `9cd4c84` docs: plano 100 etapas RT/RFB e avaliações técnicas
 - 2026-11-21 `9aa15fe` fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `aeefe2f` docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)
 - 2026-11-21 `ea8ccc8` merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)
 - 2026-11-21 `ea32d18` fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)
-- 2026-11-21 `21ecbbc` chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

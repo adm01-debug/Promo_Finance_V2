@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ab226acbb0f201598ddf53b822290e0656c201fd",
+  "commit": "d1fc1cf810cff5e91fc52810075c110ed591bbe6",
   "branch": "main",
-  "data_commit": "2026-11-21T19:30:11-03:00",
+  "data_commit": "2026-11-21T19:45:09-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d1fc1cf",
+    "data": "2026-11-21",
+    "assunto": "fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)"
+   },
    {
     "sha": "ab226ac",
     "data": "2026-11-21",
@@ -126,18 +131,13 @@
     "sha": "5c51f13",
     "data": "2026-11-20",
     "assunto": "chore: ativar Gate #26 de drift de schema/policies no CI (#475)"
-   },
-   {
-    "sha": "b7e2355",
-    "data": "2026-11-20",
-    "assunto": "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)"
    }
   ],
-  "arquivos_mudados_7d": 476,
+  "arquivos_mudados_7d": 477,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
-    "mudancas": 40
+    "mudancas": 41
    },
    {
     "pasta": "src/components/contabilidade",
@@ -160,11 +160,11 @@
     "mudancas": 29
    },
    {
-    "pasta": "package.json",
-    "mudancas": 24
+    "pasta": "src/lib/tributario",
+    "mudancas": 26
    },
    {
-    "pasta": "src/lib/tributario",
+    "pasta": "package.json",
     "mudancas": 24
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 248
+    "commits": 249
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3986,
   "arquivos_codigo": 2489,
-  "linhas_codigo": 443871,
+  "linhas_codigo": 443895,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -664,7 +664,7 @@
   },
   "src/lib": {
    "arquivos": 418,
-   "linhas": 55269
+   "linhas": 55284
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -672,7 +672,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46882
+   "linhas": 46891
   },
   "src/routes": {
    "arquivos": 16,

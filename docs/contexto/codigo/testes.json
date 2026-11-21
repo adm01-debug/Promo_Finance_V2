@@ -3153,12 +3153,12 @@
   {
    "arquivo": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
    "tipo": "unit",
-   "linhas": 100,
+   "linhas": 109,
    "testa": [
     "src/config/reforma-tributaria.ts",
     "src/lib/tributario/projecao-reforma.ts"
    ],
-   "casos": 11
+   "casos": 12
   },
   {
    "arquivo": "src/lib/tributario/__tests__/projecao-reforma.test.ts",

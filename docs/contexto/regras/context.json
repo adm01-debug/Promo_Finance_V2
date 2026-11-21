@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ab226acbb0f201598ddf53b822290e0656c201fd",
+  "sha": "d1fc1cf810cff5e91fc52810075c110ed591bbe6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 22:31 UTC",
+  "generated_at": "2026-11-21 22:47 UTC",
   "files_total": 4025,
   "code_files": 3615,
-  "code_lines": 514806
+  "code_lines": 514830
  },
  "version": "1.3.2",
- "facts_hash": "133a254f32a07e2d",
+ "facts_hash": "b06826a0cea25dab",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70266,7 +70266,7 @@
   {
    "module": "src/lib",
    "files": 418,
-   "lines": 55687,
+   "lines": 55702,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -70463,7 +70463,7 @@
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47155,
+   "lines": 47164,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -132313,7 +132313,11 @@
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-    "name": "pico tributário identificado corretamente"
+    "name": "pico tributário identificado corretamente, nunca em 2026 (art. 348 LC 214/2025)"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+    "name": "2026 não soma CBS/IBS ao total (compensável/dispensado) — sem pico artificial"
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
@@ -216215,7 +216219,7 @@
   },
   "src/lib/tributario/projecao-reforma.ts": {
    "path": "src/lib/tributario/projecao-reforma.ts",
-   "lines": 169,
+   "lines": 175,
    "exports": [
     "interface AliquotaTransicao",
     "const CRONOGRAMA_REFORMA",
@@ -217633,7 +217637,7 @@
   },
   "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts": {
    "path": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-   "lines": 101,
+   "lines": 110,
    "is_test": true,
    "doc": "============================================ TESTES — Transição CBS/IBS ano a ano (EC 132/2023) ============================================",
    "tests": [
@@ -217648,7 +217652,8 @@
     "2027 zera PIS/COFINS, CBS pleno",
     "2030 — ICMS reduzido a 80%, IBS em 3,54%",
     "2033 — só CBS+IBS, ICMS/ISS/PIS-COFINS = 0",
-    "pico tributário identificado corretamente",
+    "pico tributário identificado corretamente, nunca em 2026 (art. 348 LC 214/2025)",
+    "2026 não soma CBS/IBS ao total (compensável/dispensado) — sem pico artificial",
     "faturamento zero retorna projeções com tributos zero"
    ]
   },
@@ -225828,7 +225833,7 @@
   },
   "src/pages/tributario/ProjecaoReforma.tsx": {
    "path": "src/pages/tributario/ProjecaoReforma.tsx",
-   "lines": 360,
+   "lines": 369,
    "exports": [
     "function ProjecaoReforma"
    ],
@@ -245022,10 +245027,21 @@
   }
  },
  "git": {
-  "sha": "ab226acbb0f201598ddf53b822290e0656c201fd",
+  "sha": "d1fc1cf810cff5e91fc52810075c110ed591bbe6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d1fc1cf",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)",
+    "files": [
+     "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+     "src/lib/tributario/projecao-reforma.ts",
+     "src/pages/tributario/ProjecaoReforma.tsx"
+    ]
+   },
    {
     "sha": "ab226ac",
     "date": "2026-11-21",
@@ -245380,20 +245396,6 @@
      "supabase/functions/sefaz-manifestar/index.ts",
      "supabase/functions/sync-profile-to-bitrix/index.ts"
     ]
-   },
-   {
-    "sha": "2f1f881",
-    "date": "2026-11-19",
-    "author": "adm01-debug",
-    "subject": "chore: matriz de conformidade de contratos das edge functions (#471)",
-    "files": [
-     ".prettierignore",
-     "docs/contract-conformance-summary.md",
-     "docs/contract-conformance.json",
-     "scripts/automation.config.json",
-     "scripts/ci/gerar-matriz-conformidade-contratos.mjs",
-     "scripts/ci/gerar-matriz-conformidade-contratos.unit.mjs"
-    ]
    }
   ],
   "hot_files": [
@@ -245404,6 +245406,14 @@
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+    2
+   ],
+   [
+    "src/lib/tributario/projecao-reforma.ts",
+    2
    ],
    [
     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
@@ -245450,6 +245460,10 @@
     2
    ],
    [
+    "src/pages/tributario/ProjecaoReforma.tsx",
+    1
+   ],
+   [
     "src/components/reforma-tributaria/CronogramaTransicao.tsx",
     1
    ],
@@ -245463,18 +245477,6 @@
    ],
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
-    1
-   ],
-   [
-    "src/lib/reforma-tributaria/calcular-tributos.ts",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/CalculadoraTributos.tsx",
-    1
-   ],
-   [
-    "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
     1
    ]
   ]

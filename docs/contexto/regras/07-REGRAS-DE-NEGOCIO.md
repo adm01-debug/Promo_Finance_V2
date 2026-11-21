@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ab226acbb0` · branch `main` · 2026-11-21 22:31 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d1fc1cf810` · branch `main` · 2026-11-21 22:47 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5070,7 +5070,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3660 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3661 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5159,6 +5159,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/icms-nao-cumulativo.test.ts` | 14 | apurarIcmsNaoCumulativo · compensa o crédito das aquisições contra o débito das saídas · nunca devolve ICMS negativo: excedente vira saldo credor · não credita compras de empresa exclusivamente prestadora de serviços … |
 | `src/lib/tributario/__tests__/imunidade-exportacao.test.ts` | 14 | Lucro Presumido — imunidade das exportações · zera PIS/COFINS quando toda a receita é exportada · mantém IRPJ e CSLL integralmente devidos sobre a receita exportada · reduz PIS/COFINS proporcionalmente à fatia exportada … |
 | `src/lib/tributario/__tests__/pf-vinculada.test.ts` | 14 | Tributação PF vinculada — Lei 15.270/2025 · isenta IRPF até R$ 5.000/mês · aplica redutor linear entre R$ 5.000 e R$ 7.350 · não aplica IRPFM para renda total de R$ 480k … |
+| `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 14 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `supabase/functions/sso-test-login/pipeline.test.ts` | 14 | pipeline: JIT + role por grupo (usuário não existe) · pipeline: usuário JÁ existe → não provisiona · pipeline: auto_provision_users=false bloqueia JIT com motivo · pipeline: múltiplos grupos — primeiro match vence, demais  … |
 | `src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx` | 13 | AnimatedCounter · Renderização inicial · renderiza com classe tabular-nums · renderiza prefix … |
 | `src/components/ui/__tests__/badge.test.tsx` | 13 | Badge · renders with children · renders default variant with bg-acc (Vela) · renders secondary variant … |
@@ -5169,7 +5170,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/arquitetura/__tests__/escopo-querykey.test.ts` | 13 | detector de escopo de empresa · fatia blocos balanceados ignorando strings e comentários · extrai a queryKey de cada useQuery · acusa filtro por empresa_id sem empresa na chave … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-mva.test.ts` | 13 | coerência do catálogo de MVA/ST · não acusa divergência quando o catálogo está íntegro · acusa NCM sujeito à ST sem protocolo vigente · acusa MVA fora dos limites defensivos … |
 | `src/lib/tributario/__tests__/digest-conformidade.test.ts` | 13 | digest de conformidade — utilitários · escapa os cinco caracteres perigosos · normaliza severidades desconhecidas para baixa · formata competência e tolera formatos inesperados … |
-| `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 13 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `src/lib/tributario/__tests__/snapshot-normalizacao.test.ts` | 13 | normalizarParametrosSnapshot — contrato · rejeita payloads que não são objeto · rejeita snapshot sem faturamento anual finito · coage faturamento anual persistido como string numérica … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
 | `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 12 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
