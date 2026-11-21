@@ -53,6 +53,9 @@ Uso e tamanho em `stats.md`.
 | public.api_keys | api_keys_nome_unico_por_empresa | btree | empresa_id, name | sim | sim |  |
 | public.api_keys | api_keys_pkey | btree | id | sim | sim |  |
 | public.api_keys | idx_api_keys_empresa | btree | empresa_id, created_at | não | sim |  |
+| public.aprovacao_assinaturas | aprovacao_assinaturas_pkey | btree | id | sim | sim |  |
+| public.aprovacao_assinaturas | aprovacao_assinaturas_unica | btree | solicitacao_id, user_id | sim | sim |  |
+| public.aprovacao_assinaturas | idx_aprovacao_assinaturas_solicitacao | btree | solicitacao_id | não | sim |  |
 | public.aprovacao_comentarios | aprovacao_comentarios_pkey | btree | id | sim | sim |  |
 | public.aprovacao_comentarios | idx_aprovacao_comentarios_user_id_fk | btree | user_id | não | sim |  |
 | public.apuracoes_irpj_csll | apuracoes_irpj_csll_pkey | btree | id | sim | sim |  |

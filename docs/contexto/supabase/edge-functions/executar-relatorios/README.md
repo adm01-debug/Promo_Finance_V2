@@ -4,7 +4,7 @@
 |---|---|
 | nome | executar-relatorios |
 | status | ACTIVE |
-| versão | 124 |
+| versão | 125 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/executar-relatorios/index.ts |
 | import_map |  |

@@ -5,6 +5,7 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | severidade | código | objeto | detalhe |
 |---|---|---|---|
 | ALTA | secdef_mutable_search_path | public.gerar_lancamento_contabil_automatico() | SECURITY DEFINER sem `SET search_path`: vulnerável a sequestro de search_path. |
+| BAIXA | fk_without_index | public.aprovacao_assinaturas.aprovacao_assinaturas_user_id_fkey | FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.asaas_audit_trail.asaas_audit_trail_user_id_fkey | FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.asaas_transfers.asaas_transfers_user_id_fkey | FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.execucoes_cobranca.execucoes_cobranca_cliente_id_fkey | FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
@@ -22,6 +23,8 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | BAIXA | policy_auth_fn_not_wrapped | public.anexos_financeiros.anexos_financeiros_insercao_empresa | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.anexos_financeiros.anexos_financeiros_leitura_empresa | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.anexos_financeiros.anexos_financeiros_remocao_empresa | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.aprovacao_assinaturas.Aprovacoes visiveis para envolvidos e admins | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
+| BAIXA | policy_auth_fn_not_wrapped | public.aprovacao_assinaturas.Assinante registra propria assinatura | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.apuracoes_irpj_csll.Admin pode deletar apuracoes_irpj_csll | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.apuracoes_irpj_csll.Financeiro+ podem atualizar apuracoes_irpj_csll | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |
 | BAIXA | policy_auth_fn_not_wrapped | public.apuracoes_irpj_csll.Financeiro+ podem inserir apuracoes_irpj_csll | Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect. |

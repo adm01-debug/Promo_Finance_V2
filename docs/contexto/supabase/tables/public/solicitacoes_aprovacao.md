@@ -41,6 +41,13 @@
 | solicitacoes_aprovacao_solicitado_por_fkey | FOREIGN KEY | `FOREIGN KEY (solicitado_por) REFERENCES auth.users(id)` | NO ACTION | NO ACTION | sim |
 
 
+## Referenciada por (FKs de outras tabelas)
+
+| tabela | constraint | colunas | on delete |
+|---|---|---|---|
+| public.aprovacao_assinaturas | aprovacao_assinaturas_solicitacao_id_fkey | solicitacao_id | CASCADE |
+
+
 ## Índices
 
 | nome | método | colunas | único | válido | predicado | definição |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | executar-analise-preditiva |
 | status | ACTIVE |
-| versão | 124 |
+| versão | 125 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/executar-analise-preditiva/index.ts |
 | import_map |  |

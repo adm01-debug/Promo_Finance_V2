@@ -21,6 +21,8 @@
 | public.anomalia_toast_eventos | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.anomalias_detectadas | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.api_keys | empresa_id | public.empresas | id | CASCADE | NO ACTION |
+| public.aprovacao_assinaturas | solicitacao_id | public.solicitacoes_aprovacao | id | CASCADE | NO ACTION |
+| public.aprovacao_assinaturas | user_id | auth.users | id | CASCADE | NO ACTION |
 | public.aprovacao_comentarios | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.apuracoes_irpj_csll | created_by | auth.users | id | NO ACTION | NO ACTION |
 | public.apuracoes_irpj_csll | empresa_id | public.empresas | id | NO ACTION | NO ACTION |

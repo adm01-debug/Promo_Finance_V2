@@ -2,6 +2,19 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-21 12:20 UTC
+
+- **colunas** adicionado (4): `public.aprovacao_assinaturas.assinado_em`, `public.aprovacao_assinaturas.id`, `public.aprovacao_assinaturas.solicitacao_id`, `public.aprovacao_assinaturas.user_id`
+- **constraints** adicionado (4): `public.aprovacao_assinaturas.aprovacao_assinaturas_pkey`, `public.aprovacao_assinaturas.aprovacao_assinaturas_solicitacao_id_fkey`, `public.aprovacao_assinaturas.aprovacao_assinaturas_unica`, `public.aprovacao_assinaturas.aprovacao_assinaturas_user_id_fkey`
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** alterado (2): `public.aprovar_solicitacao_pagamento(p_solicitacao_id uuid)`, `public.has_role(_user_id uuid, _role app_role)`
+- **grants** adicionado (2): `public.aprovacao_assinaturas:authenticated`, `public.aprovacao_assinaturas:service_role`
+- **indexes** adicionado (3): `public.aprovacao_assinaturas_pkey`, `public.aprovacao_assinaturas_unica`, `public.idx_aprovacao_assinaturas_solicitacao`
+- **lints** adicionado (3): `fk_without_index:public.aprovacao_assinaturas.aprovacao_assinaturas_user_id_fkey`, `policy_auth_fn_not_wrapped:public.aprovacao_assinaturas.Aprovacoes visiveis para envolvidos e admins`, `policy_auth_fn_not_wrapped:public.aprovacao_assinaturas.Assinante registra propria assinatura`
+- **migrations** adicionado (1): `20261120235900_quorum_aprovacao_assinaturas`
+- **policies (RLS)** adicionado (2): `public.aprovacao_assinaturas.Aprovacoes visiveis para envolvidos e admins`, `public.aprovacao_assinaturas.Assinante registra propria assinatura`
+- **tabelas** adicionado (1): `public.aprovacao_assinaturas`
+
 ## 2026-11-21 01:16 UTC
 
 - **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_24`

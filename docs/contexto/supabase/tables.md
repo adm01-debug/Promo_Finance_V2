@@ -23,6 +23,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.anomalia_toast_eventos](tables/public/anomalia_toast_eventos.md) | table | sim | 2 | 12 | não |  |
 | [public.anomalias_detectadas](tables/public/anomalias_detectadas.md) | table | sim | 2 | 28 | sim |  |
 | [public.api_keys](tables/public/api_keys.md) | table | sim | 2 | 17 | não |  |
+| [public.aprovacao_assinaturas](tables/public/aprovacao_assinaturas.md) | table | sim | 2 | 4 | não |  |
 | [public.aprovacao_comentarios](tables/public/aprovacao_comentarios.md) | table | sim | 2 | 5 | não |  |
 | [public.apuracoes_irpj_csll](tables/public/apuracoes_irpj_csll.md) | table | sim | 5 | 52 | não |  |
 | [public.apuracoes_tributarias](tables/public/apuracoes_tributarias.md) | table | sim | 6 | 40 | não |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | asaas-proxy |
 | status | ACTIVE |
-| versão | 125 |
+| versão | 126 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/asaas-proxy/index.ts |
 | import_map |  |
