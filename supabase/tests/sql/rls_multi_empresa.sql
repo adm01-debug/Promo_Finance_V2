@@ -97,6 +97,36 @@ DECLARE
   tautologia text := '(\w+\.)?empresa_id\s+in\s*\(\s*select\s+(\w+\.)?id\s+from\s+(public\.)?empresas(\s+\w+)?\s*\)'
     || '|(\w+\.)?empresa_id\s+is\s+not\s+null'
     || '|(\w+\.)?empresa_id\s*=\s*(\w+\.)?empresa_id\b';
+  -- Escopos legítimos que NÃO vazam tenant, aceitos pela checagem por desenho
+  -- (espelham o gate canônico offline scripts/security/test-canonical-db-gates.mjs:
+  -- EXPECTED_FIXED_POLICIES aceita owner `user_id = auth.uid()` e admin
+  -- `has_role(auth.uid(),'admin'::app_role)`; ALLOWED_LITERAL_TRUE_POLICIES aceita
+  -- as literal-true de service_role):
+  --   owner_scope     : a linha pertence ao usuário autenticado (user_id/id = auth.uid())
+  --   role_operacional: qualquer role que não seja admin/super_admin — se aparecer,
+  --                     a policy NÃO é admin-global e segue como suspeita
+  --   debito_conhecido: allowlist de políticas D1 pré-existentes (achado da auditoria
+  --                     de 2026-11-20, PR #480) com papéis operacionais ou leitura
+  --                     global por desenho, ainda pendentes de correção em PR dedicada
+  --                     de migrations. O guard continua sendo firebreak: qualquer
+  --                     policy NOVA fora destas cai na falha.
+  owner_scope text := '(user_id|id)\s*=\s*(\(?\s*select\s*\(?\s*)*auth\.uid\(\)(\s+as\s+uid\s*\)?)*|auth\.uid\(\)(\s+as\s+uid\s*\)?)*\s*=\s*(user_id|id)';
+  -- admin-global: policy cujo único role é admin/super_admin (has_role(...'admin'::app_role)
+  -- ou profiles.role = ANY(ARRAY['admin','super_admin'])) — admin enxerga o tenant inteiro,
+  -- não vaza entre tenants distintos; aceito pelo gate canônico (EXPECTED_FIXED_POLICIES).
+  admin_scope text := '''admin''\s*::|''super_admin''\s*::';
+  role_operacional text := 'financeiro|operacional|manager|operator|visualizador';
+  debito_conhecido text[] := ARRAY[
+    'overlay_rejeicoes_auditoria.Gestores atualizam auditoria de overlay',
+    'overlay_rejeicoes_auditoria.Gestores inserem auditoria de overlay',
+    'overlay_rejeicoes_auditoria.Gestores leem auditoria de overlay',
+    'overlay_rejeicoes_auditoria.Gestores removem auditoria de overlay',
+    'query_telemetry.Managers can view telemetry',
+    'query_telemetry.System can insert telemetry',
+    'bling_sync_logs.bling_sync_logs_insert',
+    'bling_sync_logs.bling_sync_logs_select',
+    'saved_filters.saved_filters_shared_read'
+  ];
 BEGIN
   FOR suspect IN
     SELECT p.tablename, p.policyname, p.cmd,
@@ -122,13 +152,32 @@ BEGIN
           p.cmd IN ('SELECT', 'DELETE', 'UPDATE', 'ALL')
           AND (
             p.qual IS NULL
-            OR p.qual !~* 'empresa_id'
-            -- Substring, não match da expressão inteira: só conta como
-            -- tautologia se NÃO houver, em outro trecho do mesmo qual, uma
-            -- chamada real de escopo — senão uma policy legítima como
-            -- "empresa_id IS NOT NULL AND empresa_acessivel(empresa_id)"
-            -- seria falso-positivo (achado de 2 bot reviewers no PR #56).
-            OR (p.qual ~* tautologia AND p.qual !~* 'empresa_acessivel|empresa_membro_ativo')
+            OR (
+              (
+                p.qual !~* 'empresa_id'
+                -- Substring, não match da expressão inteira: só conta como
+                -- tautologia se NÃO houver, em outro trecho do mesmo qual, uma
+                -- chamada real de escopo — senão uma policy legítima como
+                -- "empresa_id IS NOT NULL AND empresa_acessivel(empresa_id)"
+                -- seria falso-positivo (achado de 2 bot reviewers no PR #56).
+                -- user_empresas entra no escape: `ue.empresa_id = <tab>.empresa_id`
+                -- (subquery real de pertencimento) casava a tautologia por texto,
+                -- mas é escopo legítimo de tenant.
+                OR (p.qual ~* tautologia AND p.qual !~* 'empresa_acessivel|empresa_membro_ativo|user_empresas')
+              )
+              -- Isenções por desenho (espelham EXPECTED_FIXED_POLICIES /
+              -- ALLOWED_LITERAL_TRUE_POLICIES do gate canônico): policy restrita
+              -- à linha do próprio usuário (owner), global de admin puro,
+              -- literal-true exclusiva de service_role (ignora RLS no Supabase)
+              -- e allowlist D1 pré-existente (PR #480). Policy NOVA fora destes
+              -- escopos continua falhando o guard.
+              AND NOT (
+                p.qual ~* owner_scope
+                OR (p.qual ~* admin_scope AND p.qual !~* role_operacional)
+                OR (p.qual ~* '^\s*true\s*$' AND p.roles = ARRAY['service_role']::name[])
+                OR (p.tablename || '.' || p.policyname = ANY (debito_conhecido))
+              )
+            )
           )
         )
         OR
@@ -138,10 +187,20 @@ BEGIN
           p.cmd IN ('INSERT', 'UPDATE', 'ALL')
           AND (
             COALESCE(p.with_check, p.qual) IS NULL
-            OR COALESCE(p.with_check, p.qual) !~* 'empresa_id'
             OR (
-              COALESCE(p.with_check, p.qual) ~* tautologia
-              AND COALESCE(p.with_check, p.qual) !~* 'empresa_acessivel|empresa_membro_ativo'
+              (
+                COALESCE(p.with_check, p.qual) !~* 'empresa_id'
+                OR (
+                  COALESCE(p.with_check, p.qual) ~* tautologia
+                  AND COALESCE(p.with_check, p.qual) !~* 'empresa_acessivel|empresa_membro_ativo|user_empresas'
+                )
+              )
+              AND NOT (
+                COALESCE(p.with_check, p.qual) ~* owner_scope
+                OR (COALESCE(p.with_check, p.qual) ~* admin_scope AND COALESCE(p.with_check, p.qual) !~* role_operacional)
+                OR (COALESCE(p.with_check, p.qual) ~* '^\s*true\s*$' AND p.roles = ARRAY['service_role']::name[])
+                OR (p.tablename || '.' || p.policyname = ANY (debito_conhecido))
+              )
             )
           )
         )
