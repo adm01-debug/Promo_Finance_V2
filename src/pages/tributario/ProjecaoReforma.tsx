@@ -184,6 +184,9 @@ export default function ProjecaoReforma() {
             <p className="text-xs text-muted-foreground mt-1">
               Ano {projecao.picoTributario.ano} — {projecao.picoTributario.fase}
             </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              Compara só 2027 em diante — 2026 é ano-teste (CBS/IBS compensáveis)
+            </p>
           </CardContent>
         </Card>
         <Card>
