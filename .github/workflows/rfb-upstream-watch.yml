@@ -1,0 +1,146 @@
+# docs:
+#   gatilho: segunda ~06:23 BRT (09:23 UTC) e dispatch manual
+#   prova: compara a tag mais recente e o hash do CHANGELOG.md de cada repositório
+#     ReceitaFederal/calculadora-rtc-* contra docs/receitafederal/rfb-changelog-state.json
+#   falha: o job fica vermelho só se a API do GitHub ou o raw.githubusercontent.com
+#     estiverem inacessíveis; divergência de versão não é falha, é issue
+#   avisa: issue com a label rfb-upstream quando tag ou CHANGELOG.md mudar, e PR
+#     automation/rfb-upstream-watch atualizando o state file
+name: Vigilância de versões RFB (upstream watch)
+
+# Observa os 3 repositórios públicos ReceitaFederal/calculadora-rtc-* que o
+# plano docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md
+# usa como fonte da calculadora oficial de CBS/IBS/IS. Nunca escreve em main
+# direto: abre PR (como estado-real.yml) com o state file atualizado.
+
+on:
+  schedule:
+    - cron: '23 9 * * 1' # segunda 09:23 UTC (06:23 BRT) — fora do minuto 0 e dos outros crons do repo
+  workflow_dispatch: {}
+
+concurrency:
+  group: rfb-upstream-watch
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Comparar tags e CHANGELOG.md upstream
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # branch do PR com o state file
+      pull-requests: write # abrir o PR
+      issues: write # issue rfb-upstream
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Comparar cada repositório RFB contra o state file
+        id: compare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE_FILE="docs/receitafederal/rfb-changelog-state.json"
+          REPOS=(calculadora-rtc-regime-regular calculadora-rtc-simples-nacional calculadora-rtc-gerador-danfse)
+          MUDOU="false"
+          RESUMO=""
+
+          for repo in "${REPOS[@]}"; do
+            tag_atual=$(gh api "repos/ReceitaFederal/${repo}/tags" --jq '.[0].name // "sem_tags"')
+            changelog=$(curl -sSfL "https://raw.githubusercontent.com/ReceitaFederal/${repo}/HEAD/CHANGELOG.md" || echo "")
+            hash_atual=$(printf '%s' "$changelog" | sha256sum | cut -d' ' -f1)
+
+            tag_antigo=$(jq -r --arg r "$repo" '.[$r].tag // ""' "$STATE_FILE")
+            hash_antigo=$(jq -r --arg r "$repo" '.[$r].changelog_sha256 // ""' "$STATE_FILE")
+
+            if [ "$tag_atual" != "$tag_antigo" ] || [ "$hash_atual" != "$hash_antigo" ]; then
+              MUDOU="true"
+              RESUMO="${RESUMO}- **${repo}**: tag \`${tag_antigo}\` → \`${tag_atual}\`"
+              if [ "$hash_atual" != "$hash_antigo" ]; then
+                RESUMO="${RESUMO} · CHANGELOG.md mudou"
+              fi
+              RESUMO="${RESUMO}"$'\n'
+            fi
+
+            jq --arg r "$repo" --arg t "$tag_atual" --arg h "$hash_atual" \
+              '.[$r] = {tag: $t, changelog_sha256: $h}' "$STATE_FILE" > "${STATE_FILE}.tmp"
+            mv "${STATE_FILE}.tmp" "$STATE_FILE"
+          done
+
+          echo "mudou=${MUDOU}" >> "$GITHUB_OUTPUT"
+          {
+            echo "resumo<<RFB_EOF"
+            printf '%s' "$RESUMO"
+            echo "RFB_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Abrir ou atualizar issue de divergência
+        if: steps.compare.outputs.mudou == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESUMO: ${{ steps.compare.outputs.resumo }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          TITULO="RFB upstream mudou — revisar docs/receitafederal/VERSOES_RFB.md"
+          gh label create rfb-upstream --color FBCA04 --description "Divergência de versão/CHANGELOG dos repos ReceitaFederal" 2>/dev/null || true
+          EXISTENTE=$(gh issue list --repo "$REPO" --label rfb-upstream --state open --json number --jq '.[0].number // ""')
+          CORPO=$(printf '%s\n\n%s\n' "$RESUMO" "Atualize \`docs/receitafederal/VERSOES_RFB.md\` após revisar o impacto (etapa 6 do plano de conformidade RT).")
+          if [ -n "$EXISTENTE" ]; then
+            gh issue comment "$EXISTENTE" --repo "$REPO" --body "$CORPO"
+          else
+            gh issue create --repo "$REPO" --title "$TITULO" --label rfb-upstream --body "$CORPO"
+          fi
+
+      - name: Publicar branch com o state file atualizado
+        if: steps.compare.outputs.mudou == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          BRANCH=automation/rfb-upstream-watch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add docs/receitafederal/rfb-changelog-state.json
+          git commit -m "chore(receitafederal): atualiza state de tags/CHANGELOG upstream RFB [auto]"
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          if git fetch "$REMOTE" "$BRANCH"; then
+            git push --force-with-lease="refs/heads/$BRANCH:$(git rev-parse FETCH_HEAD)" "$REMOTE" "$BRANCH"
+          else
+            git push "$REMOTE" "$BRANCH"
+          fi
+          echo "branch_pushed=true" >> "$GITHUB_ENV"
+
+      - name: Abrir PR do state file
+        if: steps.compare.outputs.mudou == 'true' && env.branch_pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -uo pipefail
+          BRANCH=automation/rfb-upstream-watch
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            echo "PR da branch $BRANCH já existe — apenas o commit foi atualizado."
+            exit 0
+          fi
+          PR_BODY=$(printf '%s\n\nrun: %s\n' "Atualiza o baseline de tags/CHANGELOG dos repositórios ReceitaFederal. Ver issue \`rfb-upstream\` para o que mudou." "$RUN_URL")
+          GH_ERR=$(mktemp)
+          if gh pr create --head "$BRANCH" --base main \
+            --title 'chore(receitafederal): atualiza state de versões upstream RFB' \
+            --body "$PR_BODY" 2>"$GH_ERR"; then
+            echo "PR criado."
+          elif grep -q "GitHub Actions is not permitted to create or approve pull requests" "$GH_ERR"; then
+            cat "$GH_ERR" >&2
+            echo "::warning::PR automático bloqueado pela configuração do repo. Branch '$BRANCH' publicada."
+          else
+            cat "$GH_ERR" >&2
+            exit 1
+          fi
