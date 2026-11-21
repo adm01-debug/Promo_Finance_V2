@@ -4,7 +4,7 @@
 |---|---|
 | nome | relatorio-diario-anomalias |
 | status | ACTIVE |
-| versão | 135 |
+| versão | 136 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/relatorio-diario-anomalias/index.ts |
 | import_map |  |

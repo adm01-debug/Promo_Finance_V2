@@ -4,7 +4,7 @@
 |---|---|
 | nome | processar-solicitacao-lgpd |
 | status | ACTIVE |
-| versão | 135 |
+| versão | 137 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/processar-solicitacao-lgpd/index.ts |
 | import_map |  |

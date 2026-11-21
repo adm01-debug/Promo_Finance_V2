@@ -4,7 +4,7 @@
 |---|---|
 | nome | asaas-webhook |
 | status | ACTIVE |
-| versão | 139 |
+| versão | 140 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/asaas-webhook/index.ts |
 | import_map |  |
