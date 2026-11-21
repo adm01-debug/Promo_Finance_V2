@@ -4,7 +4,7 @@
 |---|---|
 | nome | contabilizar-evento |
 | status | ACTIVE |
-| versão | 129 |
+| versão | 130 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/contabilizar-evento/index.ts |
 | import_map |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-convite-organizacao |
 | status | ACTIVE |
-| versão | 127 |
+| versão | 128 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/enviar-convite-organizacao/index.ts |
 | import_map |  |
