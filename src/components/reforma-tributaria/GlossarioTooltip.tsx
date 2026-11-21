@@ -109,7 +109,10 @@ export function GlossarioTooltip({
             {children || termo}
             {showIcon && <Info className="h-3 w-3 text-muted-foreground" />}
             {isSimulado && (
-              <Badge variant="outline" className="h-4 px-1.5 py-0 text-[9px] normal-case font-medium">
+              <Badge
+                variant="outline"
+                className="h-4 px-1.5 py-0 text-[9px] normal-case font-medium"
+              >
                 simulado
               </Badge>
             )}
