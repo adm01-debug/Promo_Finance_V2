@@ -1,0 +1,33 @@
+# ADR-003 — Auditoria do motor de Reforma Tributária (21/11/2026)
+
+**Status:** aceito. **Contexto:** `adm01-debug/Promo_Finance_V2@ea8ccc8`.
+**Plano de correção:** `docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md`.
+
+## Resumo
+
+O módulo `reforma-tributaria` calcula CBS/IBS/IS com constantes fabricadas (não existe fonte oficial para alguns dos números hoje publicados como se fossem definitivos), soma indevidamente tributos novos aos antigos em 2026, aplica split 75/25 em vez de 50/50 do IBS, liga split payment sem ato conjunto regulamentador e não tem modelo de dados para os grupos IBS/CBS/IS por item de nota. Os 9 achados abaixo foram verificados lendo o código listado (arquivo:linha), não inferidos.
+
+## Achados (regra oficial × código)
+
+| # | Regra oficial | Código hoje | Evidência | Corrigido na etapa |
+|---|---|---|---|---|
+| 1 | CBS de referência não tem valor fixado em lei para 2027+; TCU 2933/2026 estima ~11,2-11,3%, Senado decide até 15/12/2026 | `ALIQUOTA_CBS_REFERENCIA = 8.8` tratado como oficial e usado como valor de CBS para 2027-2033 inteiros | `src/types/reforma-tributaria/transicao.ts:23-87` (constante na linha 87, replicada em `ALIQUOTAS_TRANSICAO` 2027-2033); mesma constante em `src/lib/tributario/projecao-reforma.ts:35-89` | 7, 8, 10, 11, 12 |
+| 2 | ADCT art. 126: em 2026 CBS/IBS são teste de conformidade — PIS/COFINS/ICMS/ISS continuam sendo os únicos tributos efetivamente devidos (compensação integral, art. 348) | `calcularTributosReforma` soma `valorCBS + valorIBS` (tributos novos) a `icmsResidual/issResidual/pisResidual/cofinsResidual` (100% em 2026) no `totalTributos`, gerando carga tributária maior que a real | `src/lib/reforma-tributaria/calcular-tributos.ts:84,120-121` | 19, 20, 21 |
+| 3 | LC 214/2025: IBS é partilhado 50% UF / 50% Município (não 75/25) | `aliquotaIBSEstadual = aliquotaIBS * 0.75` / `aliquotaIBSMunicipal = aliquotaIBS * 0.25` | `src/lib/reforma-tributaria/calcular-tributos.ts:73-74` | 17 |
+| 4 | Split payment (retenção automática na liquidação) depende de Ato Conjunto RFB/CGIBS ainda não editado para produção geral; piloto previsto 15/10/2026, vigência plena facultativa B2B em 2º sem. 2027 | `valorSplitPaymentCBS = anoReferencia >= 2026 ? valorCBS : 0` liga retenção de CBS a partir de 2026; `SplitPaymentConfig.retencaoCBSAutomatica/retencaoIBSAutomatica` modelam retenção pelo próprio sistema, não pelo PSP (arts. 31-35) | `src/lib/reforma-tributaria/calcular-tributos.ts:123-125`; `src/types/reforma-tributaria/split-payment.ts:7-10` | 28, 91 |
+| 5 | Imunidade de exportação exige CFOP específico (7101, 7102, 7127, 7501, 7949, etc.), não "qualquer CFOP de 4 dígitos começando com 7" | `verificarIsencao` testa `dados.cfop.startsWith(c.substring(0,1))` — equivale a testar apenas o primeiro dígito, então qualquer CFOP `7xxx` (ex.: `7900`, que não é código real de exportação) é tratado como isento | `src/lib/reforma-tributaria/regras.ts:94-104` | 29 |
+| 6 | Imposto Seletivo (LC 214/2025 arts. 393-400) ainda não teve alíquotas regulamentadas por lei ordinária/decreto para a maior parte das categorias — não há "alíquota base" oficial vigente | `CONFIGURACOES_IS` define `aliquotaBase` fixa por categoria (ex.: bebidas alcoólicas 20%, veículos 1%) e `obterAliquotaIS` aplica esse valor por padrão quando o usuário não informa nada | `src/types/reforma-tributaria/imposto-seletivo.ts:11-68`; uso em `src/lib/reforma-tributaria/regras.ts:80-86` | 14 |
+| 7 | Reduções de alíquota por regime especial têm previsão/percentual próprios por LC 214/2025 e LC 227/2026 (ex.: não existe redução de 40% para "operações imobiliárias" com esse desenho; ZFM tem regras de manutenção de benefício, não isenção simples de 100% de CBS/IBS) | `REGIMES_ESPECIAIS` inclui `imobiliario` com `reducaoAliquotaCBS/IBS: 40` e `zona_franca_manaus` com `100/100`, sem lastro nos artigos corretos (233-268, 446-460) | `src/types/reforma-tributaria/regimes.ts:14-22,41-49` | 15, 16 |
+| 8 | Não-cumulatividade plena: o crédito do adquirente corresponde ao valor efetivamente destacado pelo fornecedor na operação de origem; a redução de alíquota é do fornecedor, não do regime especial do próprio comprador | `calcularCreditos` reduz o crédito do comprador aplicando `REGIMES_ESPECIAIS` do **próprio** `dados.regimeEspecial` (regime de quem compra), em vez de usar o valor destacado pelo fornecedor | `src/lib/reforma-tributaria/creditos.ts:17-25` | 27 |
+| 9 | ICMS/ISS/PIS/COFINS residuais usam a alíquota real da operação/empresa, que varia por UF, município, NCM e regime | Alíquotas base fixas no código: `aliquotaICMSBase = 18`, `aliquotaISSBase = 5`, `aliquotaPISBase = 1.65`, `aliquotaCOFINSBase = 7.6` | `src/lib/reforma-tributaria/calcular-tributos.ts:86-89` | 22 |
+
+## Achados estruturais (sem contra-exemplo numérico, mas sem suporte no código atual)
+
+- Não há base de cálculo oficial (vProd+vFrete+vSeg+vOutro−vDesc−vICMS−vFCP+vIS) — `calcularTributosReforma` usa `dados.valorOperacao` direto como base (`calcular-tributos.ts:50`). Corrigido na etapa 23.
+- Não há política de arredondamento — multiplicações float diretas (`calcular-tributos.ts:71-72,77,93,98,101,103`). Corrigido na etapa 24-25.
+- Não há modelo de itens de nota (grupo IBS/CBS/IS por item, totais = soma dos itens) — o cálculo é de uma única "operação" agregada, sem `notas_fiscais_itens`. Corrigido nas etapas 26, 32-40.
+- Não há coluna/enum de origem do crédito (`xml_destacado` vs `estimado`) nem campo `efeito_tributario` — `useImportacaoXMLNFe` usa `new Date().getFullYear()` para o ano de referência do crédito em vez do ano de emissão da NF-e (não lido linha a linha nesta auditoria; mapeado no plano, etapa 43).
+
+## Decisão
+
+Seguir o plano de 100 etapas fase a fase, começando por Fase 1-2 (fonte única de alíquotas + correção dos motores), que não dependem de banco nem infra e já eliminam os achados 1-9 acima. Fases 3 e 6 (banco e infraestrutura) ficam com PR aberta aguardando o dono, por envolverem migration em produção e Docker/Swarm/custo (regra 8).
