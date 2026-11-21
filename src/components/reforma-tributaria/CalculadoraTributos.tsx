@@ -64,6 +64,7 @@ export function CalculadoraTributos() {
   const [ncm, setNcm] = useState('');
   const [regimeEspecial, setRegimeEspecial] = useState<RegimeEspecial>('nenhum');
   const [categoriaIS, setCategoriaIS] = useState<CategoriaIS | undefined>();
+  const [aliquotaISCustomizada, setAliquotaISCustomizada] = useState<number>(0);
   const [isExportacao, setIsExportacao] = useState(false);
 
   // Cálculo em tempo real
@@ -77,6 +78,7 @@ export function CalculadoraTributos() {
       ncm: ncm || undefined,
       regimeEspecial,
       categoriaIS,
+      aliquotaISCustomizada: categoriaIS ? aliquotaISCustomizada : undefined,
       isExportacao,
     };
     return calcularTributos(dados);
@@ -89,6 +91,7 @@ export function CalculadoraTributos() {
     ncm,
     regimeEspecial,
     categoriaIS,
+    aliquotaISCustomizada,
     isExportacao,
     calcularTributos,
   ]);
@@ -255,11 +258,27 @@ export function CalculadoraTributos() {
                 <SelectItem value="nenhum">Não incide IS</SelectItem>
                 {impostosSeletivos.map((is) => (
                   <SelectItem key={is.categoria} value={is.categoria}>
-                    {is.descricao} ({is.aliquotaBase}%)
+                    {is.descricao} ({is.fundamentoLegal})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {categoriaIS && (
+              <div className="space-y-1">
+                <Label htmlFor="aliquota-is" className="text-xs text-muted-foreground">
+                  Alíquota do IS (%) — lei ainda não fixou valor por categoria, informe a alíquota
+                  aplicável
+                </Label>
+                <Input
+                  id="aliquota-is"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={aliquotaISCustomizada}
+                  onChange={(e) => setAliquotaISCustomizada(Number(e.target.value) || 0)}
+                />
+              </div>
+            )}
           </div>
 
           {/* Exportação */}

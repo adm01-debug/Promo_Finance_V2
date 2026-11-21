@@ -99,9 +99,9 @@ describe('Reforma Tributária Calculator', () => {
       expect(obterAliquotaIS('bebidas_alcoolicas', 25)).toBe(25);
     });
 
-    it('categoria válida retorna alíquota base', () => {
+    it('categoria sem alíquota customizada retorna 0 — lei não fixa alíquota por categoria', () => {
       const aliq = obterAliquotaIS('bebidas_alcoolicas');
-      expect(aliq).toBeGreaterThan(0);
+      expect(aliq).toBe(0);
     });
   });
 
@@ -190,10 +190,19 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.aliquotaIBSMunicipal).toBeCloseTo(r.aliquotaIBS * 0.25, 4);
     });
 
-    it('com IS (bebidas alcoólicas) adiciona imposto seletivo', () => {
-      const r = calcularTributosReforma({ ...dadosVenda, categoriaIS: 'bebidas_alcoolicas' }, 2033);
+    it('com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo', () => {
+      const r = calcularTributosReforma(
+        { ...dadosVenda, categoriaIS: 'bebidas_alcoolicas', aliquotaISCustomizada: 20 },
+        2033
+      );
       expect(r.valorIS).toBeGreaterThan(0);
       expect(r.aliquotaIS).toBeGreaterThan(0);
+    });
+
+    it('com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota', () => {
+      const r = calcularTributosReforma({ ...dadosVenda, categoriaIS: 'bebidas_alcoolicas' }, 2033);
+      expect(r.valorIS).toBe(0);
+      expect(r.aliquotaIS).toBe(0);
     });
   });
 
