@@ -50,6 +50,11 @@ fi
 if grep -Eq '\$\{?ANON_KEY\b' "$SRC" && [[ ! "$ANON_KEY" =~ ^[A-Za-z0-9._-]+$ ]]; then
   echo "ANON_KEY inválido — esperado JWT/chave publicável (letras, números, '.', '-' e '_')" >&2; exit 2
 fi
+# BUG 5 (Devin): quebra de linha final no secret entra no vault como caracter
+# literal e quebra chave_anon_vault() nos crons de conformidade. Trim só de
+# \r\n finais (o valor em si já foi validado como JWT publicável acima).
+ANON_KEY="$(printf '%s' "$ANON_KEY" | sed 's/[\r\n]*$//')"
+[ -n "$ANON_KEY" ] || { echo "ANON_KEY vazio após normalização" >&2; exit 2; }
 
 # Fonte da contagem esperada: o próprio SQL (nada de número fixo aqui).
 EXPECTED="$(grep -c '^SELECT cron\.schedule(' "$SRC" || true)"

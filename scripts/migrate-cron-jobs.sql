@@ -382,8 +382,6 @@ SELECT cron.schedule(
   ) AS request_id; $cron$
 );
 
-COMMIT;
-
 -- Validação inline: todos os 33 names presentes e ativos
 DO $$
 DECLARE v_count int;
@@ -396,6 +394,7 @@ BEGIN
   END IF;
   RAISE NOTICE '✅ 33 cron jobs registrados com sucesso.';
 END $$;
+
 -- 99. Provisiona anon_key no vault do destino (idempotente) quando presente.
 \getenv anon_key ANON_KEY
 \if :{?anon_key}
@@ -414,3 +413,7 @@ END $$;
 \else
   \echo 'WARN: ANON_KEY ausente no ambiente — anon_key do vault não provisionado'
 \endif
+
+COMMIT;
+
+

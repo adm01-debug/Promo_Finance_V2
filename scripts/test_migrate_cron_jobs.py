@@ -416,10 +416,31 @@ class TestIntegracaoPostgresLocal(Base):
         self._psql("-c", FAKE_VAULT)
         self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
         for _ in range(2):
-            r = self.run_script(env_extra={"DEST_DB_URL": self.url})
+            r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "eyJhbGciOi.J9-_x"})
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        # idempotente: 2 aplicações, 1 linha, valor atual = último enviado
         self.assertEqual(self._psql("-c", "SELECT count(*) FROM vault._secrets"), "1")
         self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "eyJhbGciOi.J9-_x")
+        # BUG 5: quebra de linha final no secret entra no vault como caracter
+        # literal e quebra chave_anon_vault(). Aplicar chave com \n final deve
+        # gravar a chave já normalizada (trim do wrapper).
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "sk-rotacionada.abc\n"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "sk-rotacionada.abc")
+
+    def test_rotaciona_anon_key_no_vault(self):
+        # ANÁLISE Devin: o teste de integração não comprova rotação — duas
+        # aplicações usavam o mesmo valor. Aqui a 2ª usa chave diferente e a
+        # única entrada passa a conter o novo valor (update idempotente).
+        self._psql("-c", FAKE_VAULT)
+        self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-v1.abc"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-v1.abc")
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-v2.def"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT count(*) FROM vault._secrets"), "1")
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-v2.def")
 
     def test_dry_run_nao_altera_o_banco(self):
         r = self.run_script("--dry-run", env_extra={"DEST_DB_URL": self.url})
