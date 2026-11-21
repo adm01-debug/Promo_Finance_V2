@@ -156,10 +156,19 @@ export function calcularReformaTributaria(input: InputReforma): ResultadoRegime 
       formula: `${(isAliq * 100).toFixed(1)}% (bens específicos)`,
     },
   ];
-  const totalTributos = tributos.reduce((s, t) => s + t.valor, 0);
+
+  // Etapa 20: em 2026, CBS e IBS compensáveis/dispensados (art. 348 LC 214/2025)
+  // Não compõem carga arrecadatória real no ano-teste
+  const cbsIbsCompensavel = ano === 2026;
+  const totalTributos = tributos.reduce(
+    (s, t) => (cbsIbsCompensavel && (t.nome === 'CBS' || t.nome === 'IBS') ? s : s + t.valor),
+    0
+  );
 
   if (ano === 2026)
-    alertas.push('Ano teste — CBS/IBS creditáveis, sem impacto arrecadatório real.');
+    alertas.push(
+      'Ano-teste (art. 343 LC 214/2025): CBS e IBS compensáveis/dispensados (art. 348) — não compõem carga arrecadatória real. Regime antigo mantido quase integralmente.'
+    );
   if (ano >= 2033) alertas.push('Regime definitivo: CBS+IBS substituíram PIS/COFINS/ICMS/ISS.');
 
   return {

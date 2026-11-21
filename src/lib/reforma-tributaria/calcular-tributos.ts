@@ -6,6 +6,7 @@ import {
   obterAliquotasTransicao,
   verificarIsencao,
 } from './regras';
+import { calcularComArredondamento } from './arredondamento';
 import type { DadosOperacao, ResultadoCalculo } from './types';
 
 /** Calcula todos os tributos da Reforma Tributária */
@@ -20,6 +21,9 @@ export function calcularTributosReforma(
   const isencao = verificarIsencao(dados);
   if (isencao.isento) {
     detalhamento.push(`Operação isenta: ${isencao.motivo}`);
+    if (isencao.manutencaoCredito) {
+      detalhamento.push('Manutenção de crédito CBS/IBS garantida (art. 65 LC 214/2025).');
+    }
     return {
       valorBase: dados.valorOperacao,
       aliquotaCBS: 0,
@@ -68,41 +72,57 @@ export function calcularTributosReforma(
     detalhamento.push(`Alíquota IBS após redução: ${aliquotaIBS.toFixed(2)}%`);
   }
 
-  const valorCBS = valorBase * (aliquotaCBS / 100);
-  const valorIBS = valorBase * (aliquotaIBS / 100);
+  // Etapa 25: arredondamento oficial ABNT NBR 5891 / NT 2025.002
+  const valorCBS = calcularComArredondamento(valorBase, aliquotaCBS);
+  const valorIBS = calcularComArredondamento(valorBase, aliquotaIBS);
   const { ibsUf, ibsMun } = aliquotasTransicao;
   const fracaoUf = ibsUf + ibsMun > 0 ? ibsUf / (ibsUf + ibsMun) : 0.5;
   const aliquotaIBSEstadual = aliquotaIBS * fracaoUf;
   const aliquotaIBSMunicipal = aliquotaIBS * (1 - fracaoUf);
 
   const aliquotaIS = obterAliquotaIS(dados.categoriaIS, dados.aliquotaISCustomizada);
-  const valorIS = valorBase * (aliquotaIS / 100);
+  const valorIS = calcularComArredondamento(valorBase, aliquotaIS);
 
   if (aliquotaIS > 0) {
     const isConfig = CONFIGURACOES_IS.find((c) => c.categoria === dados.categoriaIS);
     detalhamento.push(`Imposto Seletivo aplicado: ${isConfig?.descricao} - ${aliquotaIS}%`);
   }
 
+  // Etapa 19: 2026 — CBS e IBS compensáveis/dispensados (art. 348 LC 214/2025)
+  // totalTributosNovos inclui CBS+IBS+IS, mas carga efetiva em 2026 exclui CBS/IBS
+  const cbsIbsCompensavel = anoReferencia === 2026;
   const totalTributosNovos = valorCBS + valorIBS + valorIS;
 
-  const aliquotaICMSBase = 18;
-  const aliquotaISSBase = 5;
-  const aliquotaPISBase = 1.65;
-  const aliquotaCOFINSBase = 7.6;
+  if (cbsIbsCompensavel) {
+    detalhamento.push(
+      'CBS e IBS: compensáveis/dispensados em 2026 (art. 348 LC 214/2025) — não compõem carga efetiva.'
+    );
+  }
+
+  // Etapa 22: alíquotas dos tributos antigos vindas de DadosOperacao, com defaults históricos
+  const aliquotaICMSBase = dados.aliquotaICMS ?? 18;
+  const aliquotaISSBase = dados.aliquotaISS ?? 5;
+  const aliquotaPISBase = dados.aliquotaPIS ?? 1.65;
+  const aliquotaCOFINSBase = dados.aliquotaCOFINS ?? 7.6;
+
+  // Alíquota efetiva residual = alíquota_antiga × fração_residual (ambos em %)
+  const aliqIcmsEfetiva = (aliquotaICMSBase * aliquotasTransicao.icmsResidual) / 100;
+  const aliqIssEfetiva = (aliquotaISSBase * aliquotasTransicao.issResidual) / 100;
+  const aliqPisEfetiva = (aliquotaPISBase * aliquotasTransicao.pisResidual) / 100;
+  const aliqCofinsEfetiva = (aliquotaCOFINSBase * aliquotasTransicao.cofinsResidual) / 100;
 
   const icmsResidual =
     dados.tipoOperacao === 'venda'
-      ? valorBase * (aliquotaICMSBase / 100) * (aliquotasTransicao.icmsResidual / 100)
+      ? calcularComArredondamento(valorBase, aliqIcmsEfetiva)
       : 0;
 
   const issResidual =
     dados.tipoOperacao === 'servico_prestado'
-      ? valorBase * (aliquotaISSBase / 100) * (aliquotasTransicao.issResidual / 100)
+      ? calcularComArredondamento(valorBase, aliqIssEfetiva)
       : 0;
 
-  const pisResidual = valorBase * (aliquotaPISBase / 100) * (aliquotasTransicao.pisResidual / 100);
-  const cofinsResidual =
-    valorBase * (aliquotaCOFINSBase / 100) * (aliquotasTransicao.cofinsResidual / 100);
+  const pisResidual = calcularComArredondamento(valorBase, aliqPisEfetiva);
+  const cofinsResidual = calcularComArredondamento(valorBase, aliqCofinsEfetiva);
 
   const totalTributosAntigos = icmsResidual + issResidual + pisResidual + cofinsResidual;
 
@@ -119,16 +139,24 @@ export function calcularTributosReforma(
     }
   }
 
-  const totalTributos = totalTributosNovos + totalTributosAntigos;
-  const cargaTributariaPercentual = (totalTributos / valorBase) * 100;
+  // Etapa 19: carga efetiva em 2026 = antigos + IS (CBS/IBS são compensáveis, não impactam)
+  const cargaEfetiva = cbsIbsCompensavel
+    ? totalTributosAntigos + valorIS
+    : totalTributosNovos + totalTributosAntigos;
 
-  const valorSplitPaymentCBS = anoReferencia >= 2026 ? valorCBS : 0;
-  const valorSplitPaymentIBS = anoReferencia >= 2029 ? valorIBS : 0;
-  const valorTotalSplitPayment = valorSplitPaymentCBS + valorSplitPaymentIBS;
+  const cargaTributariaPercentual = valorBase > 0 ? (cargaEfetiva / valorBase) * 100 : 0;
 
-  const valorLiquido = valorBase - totalTributos;
+  // Etapa 28: split payment não vigente — aguarda ato conjunto CMN/BACEN (arts. 31-35 LC 214/2025)
+  const valorSplitPaymentCBS = 0;
+  const valorSplitPaymentIBS = 0;
+  const valorTotalSplitPayment = 0;
+  detalhamento.push(
+    'Split payment: não vigente (arts. 31-35 LC 214/2025 — aguarda ato conjunto CMN/BACEN).'
+  );
 
-  detalhamento.push(`Total tributos novos: R$ ${totalTributosNovos.toFixed(2)}`);
+  const valorLiquido = valorBase - cargaEfetiva;
+
+  detalhamento.push(`Total tributos novos (CBS+IBS+IS): R$ ${totalTributosNovos.toFixed(2)}`);
   detalhamento.push(`Carga tributária efetiva: ${cargaTributariaPercentual.toFixed(2)}%`);
 
   return {
@@ -143,6 +171,7 @@ export function calcularTributosReforma(
     valorIS,
     totalTributosNovos,
     cargaTributariaPercentual,
+    cbsIbsCompensavel,
     icmsResidual,
     issResidual,
     pisResidual,
