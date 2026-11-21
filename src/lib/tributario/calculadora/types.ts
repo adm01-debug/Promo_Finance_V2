@@ -132,6 +132,8 @@ export interface InputReforma {
   aliquotaIbsAlvo?: number; // decimal, default 0.177
   creditos?: number; // R$ base de créditos IVA
   categoriaImpostoSeletivo?: 'nenhum' | 'bebidas_alcoolicas' | 'fumo' | 'veiculos' | 'bens_luxo';
+  /** % do IS informada pelo usuário — a lei não fixa alíquota por categoria (LC 214/2025 arts. 393-400). */
+  aliquotaISCustomizada?: number;
 }
 
 export interface InputCalculadora {

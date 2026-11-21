@@ -25,14 +25,6 @@ function obterFase(ano: number): FaseTransicao {
   };
 }
 
-const IS_ALIQUOTAS: Record<NonNullable<InputReforma['categoriaImpostoSeletivo']>, number> = {
-  nenhum: 0,
-  bebidas_alcoolicas: 0.1,
-  fumo: 0.25,
-  veiculos: 0.05,
-  bens_luxo: 0.1,
-};
-
 function push(mem: LinhaMemoria[], linha: Omit<LinhaMemoria, 'ordem'>) {
   mem.push({ ordem: mem.length + 1, ...linha });
 }
@@ -101,7 +93,7 @@ export function calcularReformaTributaria(input: InputReforma): ResultadoRegime 
     push(memoria, { grupo: 'ISS', descricao: `ISS residual`, valor: issResidual });
 
   const cat = input.categoriaImpostoSeletivo ?? 'nenhum';
-  const isAliq = IS_ALIQUOTAS[cat];
+  const isAliq = cat === 'nenhum' ? 0 : (input.aliquotaISCustomizada ?? 0) / 100;
   const impostoSeletivo = receita * isAliq;
   if (impostoSeletivo > 0) {
     push(memoria, {

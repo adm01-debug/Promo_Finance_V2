@@ -363,6 +363,16 @@ export function ParametrosCard({
                     </SelectContent>
                   </Select>
                 </div>
+                {form.categoriaSeletivo !== 'nenhum' && (
+                  <NumberField
+                    label="Alíquota IS (%)"
+                    value={form.aliquotaISCustomizada}
+                    onChange={(v) => update('aliquotaISCustomizada', Math.max(0, v))}
+                    step={0.01}
+                    hint="LC 214/2025 ainda não fixou valor por categoria"
+                    className="col-span-2"
+                  />
+                )}
               </div>
             </TabsContent>
           </Accordion>

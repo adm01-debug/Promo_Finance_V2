@@ -38,6 +38,8 @@ interface SimuladorInputFormProps {
   setTemProdutosIS: (v: boolean) => void;
   categoriaIS: CategoriaIS;
   setCategoriaIS: (v: CategoriaIS) => void;
+  aliquotaISCustomizada: number;
+  setAliquotaISCustomizada: (v: number) => void;
   regimesEspeciais: RegimeEspecialItem[];
   isSimulando: boolean;
   onExecutarProjecao: () => void;
@@ -61,6 +63,8 @@ export function SimuladorInputForm(props: SimuladorInputFormProps) {
     setTemProdutosIS,
     categoriaIS,
     setCategoriaIS,
+    aliquotaISCustomizada,
+    setAliquotaISCustomizada,
     regimesEspeciais,
     isSimulando,
     onExecutarProjecao,
@@ -176,6 +180,22 @@ export function SimuladorInputForm(props: SimuladorInputFormProps) {
                 <SelectItem value="combustiveis_fosseis">Combustíveis Fósseis</SelectItem>
               </SelectContent>
             </Select>
+          )}
+
+          {temProdutosIS && (
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Alíquota IS (%)</Label>
+              <Input
+                type="number"
+                min={0}
+                step="0.01"
+                value={aliquotaISCustomizada}
+                onChange={(e) => setAliquotaISCustomizada(Math.max(0, Number(e.target.value) || 0))}
+              />
+              <p className="text-[10px] text-muted-foreground">
+                LC 214/2025 ainda não fixou valor por categoria
+              </p>
+            </div>
           )}
         </div>
 
