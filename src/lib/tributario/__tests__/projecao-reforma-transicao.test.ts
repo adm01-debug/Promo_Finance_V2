@@ -3,6 +3,9 @@
 // ============================================
 import { describe, it, expect } from 'vitest';
 import { projetarReforma, CRONOGRAMA_REFORMA } from '../projecao-reforma';
+import { REF_CBS_2027, REF_IBS } from '@/config/reforma-tributaria';
+
+const CBS_2027 = REF_CBS_2027 - 0.1; // fonte única: cronograma-oficial.ts
 
 const params = {
   faturamentoAnual: 1_000_000,
@@ -21,9 +24,9 @@ describe('Cronograma transição CBS/IBS', () => {
     expect(c.fase).toMatch(/Teste/);
   });
 
-  it('2027: CBS pleno 8,8%, PIS/COFINS extintos', () => {
+  it('2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos', () => {
     const c = CRONOGRAMA_REFORMA.find((c) => c.ano === 2027)!;
-    expect(c.cbs).toBe(8.8);
+    expect(c.cbs).toBe(CBS_2027);
     expect(c.pisCofinsResidual).toBe(0);
   });
 
@@ -34,17 +37,17 @@ describe('Cronograma transição CBS/IBS', () => {
     expect(c.ibs).toBe(1.77);
   });
 
-  it('2033: sistema novo pleno — IBS 17,7%, sem residuais', () => {
+  it('2033: sistema novo pleno — IBS = REF_IBS, CBS = REF_CBS_2027, sem residuais', () => {
     const c = CRONOGRAMA_REFORMA.find((c) => c.ano === 2033)!;
-    expect(c.ibs).toBe(17.7);
-    expect(c.cbs).toBe(8.8);
+    expect(c.ibs).toBe(REF_IBS);
+    expect(c.cbs).toBe(REF_CBS_2027);
     expect(c.icmsResidual).toBe(0);
     expect(c.issResidual).toBe(0);
   });
 
-  it('total CBS+IBS em 2033 ~ 26,5% (alíquota de referência)', () => {
+  it('total CBS+IBS em 2033 = REF_CBS_2027 + REF_IBS', () => {
     const c = CRONOGRAMA_REFORMA.find((c) => c.ano === 2033)!;
-    expect(c.cbs + c.ibs).toBeCloseTo(26.5, 1);
+    expect(c.cbs + c.ibs).toBeCloseTo(REF_CBS_2027 + REF_IBS, 1);
   });
 });
 
@@ -62,7 +65,7 @@ describe('projetarReforma — cálculos por ano', () => {
     const { projecoes } = projetarReforma(params);
     const p = projecoes.find((p) => p.ano === 2027)!;
     expect(p.pisCofins).toBe(0);
-    expect(p.cbs).toBeCloseTo(88_000, 0);
+    expect(p.cbs).toBeCloseTo(1_000_000 * (CBS_2027 / 100), 0);
   });
 
   it('2030 — ICMS reduzido a 80%, IBS em 3,54%', () => {

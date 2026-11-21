@@ -6,6 +6,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useCashbackSimulador } from '../useCashbackSimulador';
+import { REF_CBS_2027 } from '@/config/reforma-tributaria';
+
+const CBS_2027 = REF_CBS_2027 - 0.1; // fonte única: cronograma-oficial.ts
 
 const CONSUMO_CESTA_PADRAO = 800 + 200 + 120 + 80 + 150 + 100 + 200 + 500; // 2150
 const ANO_INICIAL = 2026;
@@ -75,11 +78,11 @@ describe('useCashbackSimulador', () => {
 
     act(() => result.current.setAno(2027));
 
-    expect(result.current.aliquotas.cbs).toBe(8.8);
+    expect(result.current.aliquotas.cbs).toBe(CBS_2027);
     const cesta = result.current.resumoMensal.porCategoria.find(
       (r) => r.categoria === 'cesta_basica'
     );
-    expect(cesta?.cbsPago).toBeCloseTo(800 * 0.088, 2);
+    expect(cesta?.cbsPago).toBeCloseTo(800 * (CBS_2027 / 100), 2);
     expect(result.current.resumoMensal.totalCashback).toBeGreaterThan(15.76);
   });
 
