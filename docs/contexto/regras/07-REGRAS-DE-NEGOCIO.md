@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1a51242148` · branch `main` · 2026-11-21 23:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2a68642bd1` · branch `main` · 2026-11-21 23:28 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3109,13 +3109,37 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   return code .split('') .map((char, i) => { const width = parseInt(char) % 2 === 0 ? 2 : 1; const isBlack = i % 2 === 0; return `<div style="width: ${width}px; height: 100%; background: ${isBlack ? '#000' : '#fff'};"></div>`; }) .join('');
   ```
+- **arredondar(valor: number, casas = 2)** — `src/lib/reforma-tributaria/arredondamento.ts`
+  ```
+  const fator = Math.pow(10, casas); const valorShift = valor * fator; const piso = Math.floor(valorShift); const resto = valorShift - piso; // Empate exato (x.5): arredonda para par if (Math.abs(resto - 0.5) < 1e-10) { return (piso % 2 === 0 ? piso : piso + 1) / fator; } return Math.round(valorShift) / fator;
+  ```
+- **arredondarBase(v: number)** — `src/lib/reforma-tributaria/arredondamento.ts`
+  ```
+  arredondar(v, 2);
+  ```
+- **arredondarAliquota(v: number)** — `src/lib/reforma-tributaria/arredondamento.ts`
+  ```
+  arredondar(v, 4);
+  ```
+- **calcularComArredondamento(base: number, aliquotaPercentual: number)** — `src/lib/reforma-tributaria/arredondamento.ts`
+  ```
+  const baseRound = arredondarBase(base); const aliqDecimal = arredondarAliquota(aliquotaPercentual / 100); return arredondar(baseRound * aliqDecimal, 2);
+  ```
+- **calcularBaseCalculo(campos: CamposBaseCalculo, anoReferencia: number)** — `src/lib/reforma-tributaria/base-calculo.ts`
+  ```
+  const avisos: string[] = []; // PIS/COFINS só deduzem em 2026 (ano-teste, art. 348 LC 214/2025) const vPIS = anoReferencia === 2026 ? (campos.vPIS ?? 0) : 0; const vCOFINS = anoReferencia === 2026 ? (campos.vCOFINS ?? 0) : 0; if (anoReferencia === 2026 && campos.vPIS === undefined && campos.vCOFINS === undefined) { avisos.push( '2026: vPIS/vCOFINS não informados — base pode estar ligeiramente acima do correto (art. 348 LC 214/2025).' ); } const baseRG = (campos.vProd ?? 0) + (campos.vFrete ?? 0) …
+  ```
 - **calcularCreditos(dados: DadosCredito)** — `src/lib/reforma-tributaria/creditos.ts`
   ```
-  const anoReferencia = dados.anoReferencia || new Date().getFullYear(); const aliquotas = obterAliquotasTransicao(anoReferencia); const restricoes: string[] = []; let aliquotaCBSCredito = aliquotas.cbs; let aliquotaIBSCredito = aliquotas.ibs; if (dados.regimeEspecial && dados.regimeEspecial !== 'nenhum') { const config = REGIMES_ESPECIAIS.find((r) => r.regime === dados.regimeEspecial); if (config && !config.creditoIntegralMantido) { aliquotaCBSCredito *= (100 - config.reducaoAliquotaCBS) / 100; a …
+  const anoReferencia = dados.anoReferencia ?? new Date().getFullYear(); const aliquotas = obterAliquotasTransicao(anoReferencia); const restricoes: string[] = []; // Alíquotas do ano da aquisição — base do crédito (art. 28 LC 214/2025) const aliquotaCBSCredito = aliquotas.cbs; const aliquotaIBSCredito = aliquotas.ibs; const creditoCBS = dados.valorAquisicao * (aliquotaCBSCredito / 100); const creditoIBS = dados.valorAquisicao * (aliquotaIBSCredito / 100); return { creditoCBS, creditoIBS, creditoT …
   ```
 - **aplicarRegimeEspecial(aliquotaCBS: number, aliquotaIBS: number, regime?: RegimeEspecial)** — `src/lib/reforma-tributaria/regras.ts`
   ```
   cbs: number; ibs: number
+  ```
+- **totalizarTributos(itens: ItemTributavel[])** — `src/lib/reforma-tributaria/totalizar.ts`
+  ```
+  let totalCBS = 0; let totalIBSUF = 0; let totalIBSMun = 0; let totalIS = 0; for (const item of itens) { totalCBS += item.valorCBS; if (item.valorIBSUF !== undefined && item.valorIBSMun !== undefined) { totalIBSUF += item.valorIBSUF; totalIBSMun += item.valorIBSMun; } else { // Sem split explícito: 50/50 como fallback conservador totalIBSUF += item.valorIBS / 2; totalIBSMun += item.valorIBS / 2; } totalIS += item.valorIS ?? 0; } const totalIBS = totalIBSUF + totalIBSMun; const totalGeral = totalC …
   ```
 - **validate(input: ScimUserInput)** — `src/lib/scim/userTemplate.ts`
   ```
@@ -5070,7 +5094,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3669 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3671 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5079,9 +5103,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/brazilian-validators.test.ts` | 76 | validateCPF · CPF válido · CPF válido sem formatação · CPF inválido - dígito errado … |
 | `src/pages/__tests__/AdminTelemetria.test.tsx` | 68 | formatDuration · formats 0ms · formats 1ms · formats 500ms … |
 | `src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx` | 61 | ContasReceberTableRow · Gap #14 - Coluna Empresa · mostra coluna empresa quando showEmpresa=true · não mostra coluna empresa quando showEmpresa=false … |
+| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 51 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
-| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 49 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
 | `src/lib/__tests__/cashflow-scenarios.test.ts` | 31 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
@@ -5968,4 +5992,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Preenchido apenas quando `valor === null`. */ | `src/lib/contabil/indices.types.ts` |
 | ---------- DRE (apenas período) ---------- | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
-| … +432 linhas — lista completa em `context.json` | |
+| … +437 linhas — lista completa em `context.json` | |

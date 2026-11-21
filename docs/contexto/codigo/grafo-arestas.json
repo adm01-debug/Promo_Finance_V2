@@ -5198,7 +5198,8 @@
    "src/components/ui/separator.tsx",
    "src/lib/formatters.ts",
    "src/lib/reforma-tributaria-calculator.ts",
-   "src/lib/reforma-tributaria/cronograma-oficial.ts"
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
+   "src/lib/utils.ts"
   ],
   "src/components/reforma-tributaria/RetencoesFonte.helpers.ts": [
    "src/hooks/useRetencoesFonte.ts"
@@ -7686,8 +7687,7 @@
   ],
   "src/lib/reforma-tributaria/creditos.ts": [
    "src/lib/reforma-tributaria/regras.ts",
-   "src/lib/reforma-tributaria/types.ts",
-   "src/types/reforma-tributaria.ts"
+   "src/lib/reforma-tributaria/types.ts"
   ],
   "src/lib/reforma-tributaria/cronograma-oficial.ts": [
    "src/config/reforma-tributaria.ts"

@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 282,
+ "total": 285,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 262,
+  "lib": 265,
   "python": 14
  },
  "arquivos": [
@@ -3375,13 +3375,60 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/reforma-tributaria/arredondamento.ts",
+   "camada": "lib",
+   "exports": [
+    "arredondar",
+    "arredondarAliquota",
+    "arredondarBase",
+    "calcularComArredondamento"
+   ],
+   "export_default": null,
+   "linhas": 41,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/base-calculo.ts",
+   "camada": "lib",
+   "exports": [
+    "CamposBaseCalculo",
+    "ResultadoBaseCalculo",
+    "calcularBaseCalculo"
+   ],
+   "export_default": null,
+   "linhas": 69,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
    "arquivo": "src/lib/reforma-tributaria/calcular-tributos.ts",
    "camada": "lib",
    "exports": [
     "calcularTributosReforma"
    ],
    "export_default": null,
-   "linhas": 159,
+   "linhas": 160,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3404,7 +3451,7 @@
     "calcularCreditos"
    ],
    "export_default": null,
-   "linhas": 39,
+   "linhas": 36,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3460,7 +3507,7 @@
     "verificarIsencao"
    ],
    "export_default": null,
-   "linhas": 89,
+   "linhas": 128,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3501,6 +3548,29 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/reforma-tributaria/totalizar.ts",
+   "camada": "lib",
+   "exports": [
+    "ItemTributavel",
+    "TotaisTributos",
+    "totalizarTributos"
+   ],
+   "export_default": null,
+   "linhas": 55,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
    "arquivo": "src/lib/reforma-tributaria/types.ts",
    "camada": "lib",
    "exports": [
@@ -3509,10 +3579,11 @@
     "DadosSimulacao",
     "ResultadoCalculo",
     "ResultadoCredito",
+    "ResultadoIsencao",
     "ResultadoSimulacao"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 155,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5108,7 +5179,7 @@
     "calcularReformaTributaria"
    ],
    "export_default": null,
-   "linhas": 180,
+   "linhas": 189,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -8343,7 +8414,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 313,
+   "usado_por": 314,
    "usado_por_modulos": [
     "components/admin",
     "components/alertas",

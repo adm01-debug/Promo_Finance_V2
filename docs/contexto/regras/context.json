@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "1a51242148ff726771de43a83d8166ee8b8b38d3",
+  "sha": "2a68642bd1924c2b9c44dc12482942a2b8ef96bc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 23:10 UTC",
-  "files_total": 4026,
-  "code_files": 3616,
-  "code_lines": 514975
+  "generated_at": "2026-11-21 23:28 UTC",
+  "files_total": 4029,
+  "code_files": 3619,
+  "code_lines": 515301
  },
  "version": "1.3.2",
- "facts_hash": "25c543c4fd2f6565",
+ "facts_hash": "74347d85c2cb1ca1",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1253,
+   ".ts": 1256,
    ".sql": 1126,
    ".tsx": 1117,
    ".mjs": 67,
@@ -69666,7 +69666,7 @@
   {
    "module": "src/components",
    "files": 999,
-   "lines": 165266,
+   "lines": 165323,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70273,8 +70273,8 @@
   },
   {
    "module": "src/lib",
-   "files": 418,
-   "lines": 55787,
+   "files": 421,
+   "lines": 56056,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -84739,8 +84739,28 @@
     "text": "ambiente um token de convite NÃO pode nascer de PRNG fraco — falha"
    },
    {
+    "file": "src/lib/reforma-tributaria/base-calculo.ts",
+    "text": "− vPIS − vCOFINS (apenas 2026, art. 348 LC 214/2025 — ano-teste)"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/base-calculo.ts",
+    "text": "* PIS destacado (deduzido apenas em 2026) */"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/base-calculo.ts",
+    "text": "* COFINS destacado (deduzido apenas em 2026) */"
+   },
+   {
     "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
     "text": "conformidade RT). Nenhum outro arquivo deve declarar sua própria tabela —"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/totalizar.ts",
+    "text": "* Regra obrigatória: vTotalTributos = Σ vCBS_item + Σ vIBS_item + Σ vIS_item"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/types.ts",
+    "text": "Neste caso NÃO compõem a carga tributária efetiva — apenas informativo."
    },
    {
     "file": "src/lib/scim/userTemplate.ts",
@@ -116281,16 +116301,52 @@
     "body": "return code .split('') .map((char, i) => { const width = parseInt(char) % 2 === 0 ? 2 : 1; const isBlack = i % 2 === 0; return `<div style=\"width: ${width}px; height: 100%; background: ${isBlack ? '#000' : '#fff'};\"></div>`; }) .join('');"
    },
    {
+    "file": "src/lib/reforma-tributaria/arredondamento.ts",
+    "name": "arredondar",
+    "params": "valor: number, casas = 2",
+    "body": "const fator = Math.pow(10, casas); const valorShift = valor * fator; const piso = Math.floor(valorShift); const resto = valorShift - piso; // Empate exato (x.5): arredonda para par if (Math.abs(resto - 0.5) < 1e-10) { return (piso % 2 === 0 ? piso : piso + 1) / fator; } return Math.round(valorShift) / fator;"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/arredondamento.ts",
+    "name": "arredondarBase",
+    "params": "v: number",
+    "body": "arredondar(v, 2);"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/arredondamento.ts",
+    "name": "arredondarAliquota",
+    "params": "v: number",
+    "body": "arredondar(v, 4);"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/arredondamento.ts",
+    "name": "calcularComArredondamento",
+    "params": "base: number, aliquotaPercentual: number",
+    "body": "const baseRound = arredondarBase(base); const aliqDecimal = arredondarAliquota(aliquotaPercentual / 100); return arredondar(baseRound * aliqDecimal, 2);"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/base-calculo.ts",
+    "name": "calcularBaseCalculo",
+    "params": "campos: CamposBaseCalculo, anoReferencia: number",
+    "body": "const avisos: string[] = []; // PIS/COFINS só deduzem em 2026 (ano-teste, art. 348 LC 214/2025) const vPIS = anoReferencia === 2026 ? (campos.vPIS ?? 0) : 0; const vCOFINS = anoReferencia === 2026 ? (campos.vCOFINS ?? 0) : 0; if (anoReferencia === 2026 && campos.vPIS === undefined && campos.vCOFINS === undefined) { avisos.push( '2026: vPIS/vCOFINS não informados — base pode estar ligeiramente acima do correto (art. 348 LC 214/2025).' ); } const baseRG = (campos.vProd ?? 0) + (campos.vFrete ?? 0) …"
+   },
+   {
     "file": "src/lib/reforma-tributaria/creditos.ts",
     "name": "calcularCreditos",
     "params": "dados: DadosCredito",
-    "body": "const anoReferencia = dados.anoReferencia || new Date().getFullYear(); const aliquotas = obterAliquotasTransicao(anoReferencia); const restricoes: string[] = []; let aliquotaCBSCredito = aliquotas.cbs; let aliquotaIBSCredito = aliquotas.ibs; if (dados.regimeEspecial && dados.regimeEspecial !== 'nenhum') { const config = REGIMES_ESPECIAIS.find((r) => r.regime === dados.regimeEspecial); if (config && !config.creditoIntegralMantido) { aliquotaCBSCredito *= (100 - config.reducaoAliquotaCBS) / 100; a …"
+    "body": "const anoReferencia = dados.anoReferencia ?? new Date().getFullYear(); const aliquotas = obterAliquotasTransicao(anoReferencia); const restricoes: string[] = []; // Alíquotas do ano da aquisição — base do crédito (art. 28 LC 214/2025) const aliquotaCBSCredito = aliquotas.cbs; const aliquotaIBSCredito = aliquotas.ibs; const creditoCBS = dados.valorAquisicao * (aliquotaCBSCredito / 100); const creditoIBS = dados.valorAquisicao * (aliquotaIBSCredito / 100); return { creditoCBS, creditoIBS, creditoT …"
    },
    {
     "file": "src/lib/reforma-tributaria/regras.ts",
     "name": "aplicarRegimeEspecial",
     "params": "aliquotaCBS: number, aliquotaIBS: number, regime?: RegimeEspecial",
     "body": "cbs: number; ibs: number"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/totalizar.ts",
+    "name": "totalizarTributos",
+    "params": "itens: ItemTributavel[]",
+    "body": "let totalCBS = 0; let totalIBSUF = 0; let totalIBSMun = 0; let totalIS = 0; for (const item of itens) { totalCBS += item.valorCBS; if (item.valorIBSUF !== undefined && item.valorIBSMun !== undefined) { totalIBSUF += item.valorIBSUF; totalIBSMun += item.valorIBSMun; } else { // Sem split explícito: 50/50 como fallback conservador totalIBSUF += item.valorIBS / 2; totalIBSMun += item.valorIBS / 2; } totalIS += item.valorIS ?? 0; } const totalIBS = totalIBSUF + totalIBSMun; const totalGeral = totalC …"
    },
    {
     "file": "src/lib/scim/userTemplate.ts",
@@ -127550,6 +127606,14 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "CFOP 7651 (combustível exportação) é isento"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "CFOP 7654 (lubrificante exportação) é isento"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     "name": "calcularTributosReforma"
    },
    {
@@ -127566,7 +127630,7 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "name": "split payment CBS ativo a partir de 2026"
+    "name": "split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)"
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
@@ -193075,7 +193139,7 @@
   },
   "src/components/reforma-tributaria/ResultadoTributos.tsx": {
    "path": "src/components/reforma-tributaria/ResultadoTributos.tsx",
-   "lines": 234,
+   "lines": 291,
    "exports": [
     "function ResultadoTributos"
    ]
@@ -212943,7 +213007,7 @@
   },
   "src/lib/__tests__/reforma-tributaria-calculator.test.ts": {
    "path": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-   "lines": 295,
+   "lines": 313,
    "is_test": true,
    "tests": [
     "Reforma Tributária Calculator",
@@ -212975,11 +213039,13 @@
     "operação normal não é isenta",
     "exportação é isenta",
     "CFOP 7xxx (exportação) é isento",
+    "CFOP 7651 (combustível exportação) é isento",
+    "CFOP 7654 (lubrificante exportação) é isento",
     "calcularTributosReforma",
     "operação normal calcula CBS e IBS",
     "exportação retorna tudo zero",
     "ano 2024 não tem tributos novos",
-    "split payment CBS ativo a partir de 2026",
+    "split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)",
     "carga tributária percentual é consistente",
     "detalhamento contém informações úteis",
     "IBS dividido 50% estadual 50% municipal (regime pleno, 2033)",
@@ -214639,16 +214705,71 @@
     "gera tabela vazia sem quebrar quando dados vazios"
    ]
   },
+  "src/lib/reforma-tributaria/arredondamento.ts": {
+   "path": "src/lib/reforma-tributaria/arredondamento.ts",
+   "lines": 42,
+   "exports": [
+    "function arredondar",
+    "const arredondarBase",
+    "const arredondarAliquota",
+    "function calcularComArredondamento"
+   ],
+   "doc": "Política de arredondamento RT — ABNT NBR 5891 / NT 2025.002 v1.51+ Regras: - Base de cálculo: 2 casas decimais - Alíquota efetiva: 4 casas decimais - Resultado tributário: 2 casas decimais (uma única operação) - Empate (x.5): arredonda para o par mais próximo (banker's rounding)",
+   "calc_fns": [
+    {
+     "name": "arredondar",
+     "params": "valor: number, casas = 2",
+     "body": "const fator = Math.pow(10, casas); const valorShift = valor * fator; const piso = Math.floor(valorShift); const resto = valorShift - piso; // Empate exato (x.5): arredonda para par if (Math.abs(resto - 0.5) < 1e-10) { return (piso % 2 === 0 ? piso : piso + 1) / fator; } return Math.round(valorShift) / fator;"
+    },
+    {
+     "name": "arredondarBase",
+     "params": "v: number",
+     "body": "arredondar(v, 2);"
+    },
+    {
+     "name": "arredondarAliquota",
+     "params": "v: number",
+     "body": "arredondar(v, 4);"
+    },
+    {
+     "name": "calcularComArredondamento",
+     "params": "base: number, aliquotaPercentual: number",
+     "body": "const baseRound = arredondarBase(base); const aliqDecimal = arredondarAliquota(aliquotaPercentual / 100); return arredondar(baseRound * aliqDecimal, 2);"
+    }
+   ]
+  },
+  "src/lib/reforma-tributaria/base-calculo.ts": {
+   "path": "src/lib/reforma-tributaria/base-calculo.ts",
+   "lines": 70,
+   "exports": [
+    "interface CamposBaseCalculo",
+    "interface ResultadoBaseCalculo",
+    "function calcularBaseCalculo"
+   ],
+   "rule_comments": [
+    "− vPIS − vCOFINS (apenas 2026, art. 348 LC 214/2025 — ano-teste)",
+    "* PIS destacado (deduzido apenas em 2026) */",
+    "* COFINS destacado (deduzido apenas em 2026) */"
+   ],
+   "doc": "Base de cálculo oficial IBS/CBS — NT 2025.002 v1.51+ / art. 11 LC 214/2025 baseRG = vProd + vFrete + vSeg + vOutro − vDesc − vICMS − vFCP − vPIS − vCOFINS (apenas 2026, art. 348 LC 214/2025 — ano-teste) + vIS (se incidente)",
+   "calc_fns": [
+    {
+     "name": "calcularBaseCalculo",
+     "params": "campos: CamposBaseCalculo, anoReferencia: number",
+     "body": "const avisos: string[] = []; // PIS/COFINS só deduzem em 2026 (ano-teste, art. 348 LC 214/2025) const vPIS = anoReferencia === 2026 ? (campos.vPIS ?? 0) : 0; const vCOFINS = anoReferencia === 2026 ? (campos.vCOFINS ?? 0) : 0; if (anoReferencia === 2026 && campos.vPIS === undefined && campos.vCOFINS === undefined) { avisos.push( '2026: vPIS/vCOFINS não informados — base pode estar ligeiramente acima do correto (art. 348 LC 214/2025).' ); } const baseRG = (campos.vProd ?? 0) + (campos.vFrete ?? 0) …"
+    }
+   ]
+  },
   "src/lib/reforma-tributaria/calcular-tributos.ts": {
    "path": "src/lib/reforma-tributaria/calcular-tributos.ts",
-   "lines": 160,
+   "lines": 161,
    "exports": [
     "function calcularTributosReforma"
    ]
   },
   "src/lib/reforma-tributaria/creditos.ts": {
    "path": "src/lib/reforma-tributaria/creditos.ts",
-   "lines": 40,
+   "lines": 37,
    "exports": [
     "function calcularCreditos"
    ],
@@ -214656,7 +214777,7 @@
     {
      "name": "calcularCreditos",
      "params": "dados: DadosCredito",
-     "body": "const anoReferencia = dados.anoReferencia || new Date().getFullYear(); const aliquotas = obterAliquotasTransicao(anoReferencia); const restricoes: string[] = []; let aliquotaCBSCredito = aliquotas.cbs; let aliquotaIBSCredito = aliquotas.ibs; if (dados.regimeEspecial && dados.regimeEspecial !== 'nenhum') { const config = REGIMES_ESPECIAIS.find((r) => r.regime === dados.regimeEspecial); if (config && !config.creditoIntegralMantido) { aliquotaCBSCredito *= (100 - config.reducaoAliquotaCBS) / 100; a …"
+     "body": "const anoReferencia = dados.anoReferencia ?? new Date().getFullYear(); const aliquotas = obterAliquotasTransicao(anoReferencia); const restricoes: string[] = []; // Alíquotas do ano da aquisição — base do crédito (art. 28 LC 214/2025) const aliquotaCBSCredito = aliquotas.cbs; const aliquotaIBSCredito = aliquotas.ibs; const creditoCBS = dados.valorAquisicao * (aliquotaCBSCredito / 100); const creditoIBS = dados.valorAquisicao * (aliquotaIBSCredito / 100); return { creditoCBS, creditoIBS, creditoT …"
     }
    ]
   },
@@ -214700,7 +214821,7 @@
   },
   "src/lib/reforma-tributaria/regras.ts": {
    "path": "src/lib/reforma-tributaria/regras.ts",
-   "lines": 90,
+   "lines": 129,
    "exports": [
     "function determinarFaseTransicao",
     "function obterAliquotasTransicao",
@@ -214731,16 +214852,40 @@
     "const pisCreditoAntigo = baseCreditos * 0.0165;"
    ]
   },
+  "src/lib/reforma-tributaria/totalizar.ts": {
+   "path": "src/lib/reforma-tributaria/totalizar.ts",
+   "lines": 56,
+   "exports": [
+    "interface ItemTributavel",
+    "interface TotaisTributos",
+    "function totalizarTributos"
+   ],
+   "rule_comments": [
+    "* Regra obrigatória: vTotalTributos = Σ vCBS_item + Σ vIBS_item + Σ vIS_item"
+   ],
+   "doc": "Totalização de tributos — evita rejeição 1091 (NT 2025.002) Regra obrigatória: vTotalTributos = Σ vCBS_item + Σ vIBS_item + Σ vIS_item NUNCA aplique a alíquota sobre a soma das bases — diverge por arredondamento.",
+   "calc_fns": [
+    {
+     "name": "totalizarTributos",
+     "params": "itens: ItemTributavel[]",
+     "body": "let totalCBS = 0; let totalIBSUF = 0; let totalIBSMun = 0; let totalIS = 0; for (const item of itens) { totalCBS += item.valorCBS; if (item.valorIBSUF !== undefined && item.valorIBSMun !== undefined) { totalIBSUF += item.valorIBSUF; totalIBSMun += item.valorIBSMun; } else { // Sem split explícito: 50/50 como fallback conservador totalIBSUF += item.valorIBS / 2; totalIBSMun += item.valorIBS / 2; } totalIS += item.valorIS ?? 0; } const totalIBS = totalIBSUF + totalIBSMun; const totalGeral = totalC …"
+    }
+   ]
+  },
   "src/lib/reforma-tributaria/types.ts": {
    "path": "src/lib/reforma-tributaria/types.ts",
-   "lines": 119,
+   "lines": 156,
    "exports": [
     "interface DadosOperacao",
+    "interface ResultadoIsencao",
     "interface ResultadoCalculo",
     "interface DadosCredito",
     "interface ResultadoCredito",
     "interface DadosSimulacao",
     "interface ResultadoSimulacao"
+   ],
+   "rule_comments": [
+    "Neste caso NÃO compõem a carga tributária efetiva — apenas informativo."
    ]
   },
   "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts": {
@@ -218092,7 +218237,7 @@
   },
   "src/lib/tributario/calculadora/reforma-tributaria.ts": {
    "path": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-   "lines": 181,
+   "lines": 190,
    "exports": [
     "function calcularReformaTributaria"
    ],
@@ -245079,10 +245224,28 @@
   }
  },
  "git": {
-  "sha": "1a51242148ff726771de43a83d8166ee8b8b38d3",
+  "sha": "2a68642bd1924c2b9c44dc12482942a2b8ef96bc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "2a68642",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação",
+    "files": [
+     "src/components/reforma-tributaria/ResultadoTributos.tsx",
+     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+     "src/lib/reforma-tributaria/arredondamento.ts",
+     "src/lib/reforma-tributaria/base-calculo.ts",
+     "src/lib/reforma-tributaria/calcular-tributos.ts",
+     "src/lib/reforma-tributaria/creditos.ts",
+     "src/lib/reforma-tributaria/regras.ts",
+     "src/lib/reforma-tributaria/totalizar.ts",
+     "src/lib/reforma-tributaria/types.ts",
+     "src/lib/tributario/calculadora/reforma-tributaria.ts"
+    ]
+   },
    {
     "sha": "1a51242",
     "date": "2026-11-21",
@@ -245432,43 +245595,40 @@
      "supabase/functions/contabilizar-evento/index.test.ts",
      "supabase/functions/contabilizar-evento/index.ts"
     ]
-   },
-   {
-    "sha": "e6e6143",
-    "date": "2026-11-19",
-    "author": "adm01-debug",
-    "subject": "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)",
-    "files": [
-     "bun.lock",
-     "package.json",
-     "src/components/admin/anomalias-review-queue/ReviewActionsBar.tsx",
-     "src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx",
-     "src/components/expert/ExpertChatMessages.tsx",
-     "src/components/expert/ExpertPromptComposer.tsx",
-     "src/components/onboarding/OnboardingTour.tsx",
-     "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
-     "src/components/reforma-tributaria/irpj-csll/IRPJCSLLApuracoesTable.tsx",
-     "src/hooks/useCountUp.ts",
-     "src/pages/admin/AuditSsoProfileSync.parts.tsx"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "src/lib/reforma-tributaria/regras.ts",
+    4
+   ],
+   [
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    4
+   ],
+   [
+    "src/components/reforma-tributaria/ResultadoTributos.tsx",
+    3
+   ],
+   [
+    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    3
+   ],
    [
     "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
     3
    ],
    [
-    "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    3
-   ],
-   [
-    "src/lib/reforma-tributaria/regras.ts",
-    3
-   ],
-   [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/lib/reforma-tributaria/calcular-tributos.ts",
+    2
+   ],
+   [
+    "src/lib/reforma-tributaria/types.ts",
+    2
    ],
    [
     "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
@@ -245503,10 +245663,6 @@
     2
    ],
    [
-    "src/components/reforma-tributaria/ResultadoTributos.tsx",
-    2
-   ],
-   [
     "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
     2
    ],
@@ -245520,18 +245676,6 @@
    ],
    [
     "src/lib/tributario/projecao-reforma.ts",
-    2
-   ],
-   [
-    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    2
-   ],
-   [
-    "src/types/reforma-tributaria/transicao.ts",
-    2
-   ],
-   [
-    ".github/workflows/rfb-upstream-watch.yml",
     2
    ]
   ]
