@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `11779f6e48` · branch `main` · 2026-11-21 11:31 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `c3e421c469` · branch `main` · 2026-11-21 11:49 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5072,7 +5072,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3624 testes em 318 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3625 testes em 319 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5376,7 +5376,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx` | 2 | DashboardFiltersHeader · expõe nomes acessíveis para os filtros do dashboard |
 | `src/components/pagamentos-recorrentes/__tests__/pagamento-recorrente-model.test.ts` | 2 | tipoCobrancaOptions · oferece exatamente os valores do enum tipo_cobranca do banco |
 | `src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx` | 2 | ProjectedCashFlowChart · usa o valor residual e inclui título parcial |
-| … +18 linhas — lista completa em `context.json` | | |
+| … +19 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

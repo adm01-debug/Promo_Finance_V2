@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1050,
+ "migrations": 1051,
  "seeds": [],
  "avisos": [
   "198 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -41952,6 +41952,13 @@
      "default": "0",
      "ref": null
     },
+    "servico": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'geral'",
+     "ref": null
+    },
     "taxa_erro_pct": {
      "tipo": "numeric",
      "nn": true,
@@ -42030,7 +42037,6 @@
      "disponibilidade",
      "error_rate",
      "id",
-     "servico",
      "total_requests"
     ]
    },

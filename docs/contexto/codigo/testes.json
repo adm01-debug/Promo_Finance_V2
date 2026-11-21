@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 483,
+ "total": 484,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 407
+  "unit": 408
  },
  "onde_ficam": [
   {
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 47
+   "arquivos": 48
   },
   {
    "padrao": "e2e/",
@@ -3899,6 +3899,15 @@
    "casos": 7
   },
   {
+   "arquivo": "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
+   "tipo": "unit",
+   "linhas": 41,
+   "testa": [
+    "supabase/functions/calcular-slo-metrics-diario/index.ts"
+   ],
+   "casos": 1
+  },
+  {
    "arquivo": "supabase/functions/ci-security-gate-log/index.test.ts",
    "tipo": "unit",
    "linhas": 128,
@@ -4652,6 +4661,7 @@
   "supabase/functions/benchmarking-setorial/index.ts": 1,
   "supabase/functions/bitrix24-webhook/index.ts": 1,
   "supabase/functions/bling-webhook/index.ts": 1,
+  "supabase/functions/calcular-slo-metrics-diario/index.ts": 1,
   "supabase/functions/categorizar-despesa/index.ts": 1,
   "supabase/functions/ci-security-gate-log/index.ts": 1,
   "supabase/functions/conciliacao-proxy/index.ts": 1,
@@ -5043,7 +5053,6 @@
    "bitrix24-sync",
    "bling-proxy",
    "calcular-health-score-operacional",
-   "calcular-slo-metrics-diario",
    "calculo-iva",
    "categorizar-despesa",
    "cnpja-lookup",

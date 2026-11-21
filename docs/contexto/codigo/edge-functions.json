@@ -694,7 +694,7 @@
    "nome": "calcular-slo-metrics-diario",
    "entrada": "supabase/functions/calcular-slo-metrics-diario/index.ts",
    "arquivos": 1,
-   "linhas": 121,
+   "linhas": 168,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -723,7 +723,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": true,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "calculo-iva",

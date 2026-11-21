@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "11779f6e484beb07b7f2bdbe99e6289e09286801",
+  "sha": "c3e421c4696a3737f52789277b46268176f46a4a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 11:31 UTC",
-  "files_total": 4007,
-  "code_files": 3606,
-  "code_lines": 513498
+  "generated_at": "2026-11-21 11:49 UTC",
+  "files_total": 4009,
+  "code_files": 3608,
+  "code_lines": 513606
  },
  "version": "1.3.2",
- "facts_hash": "7a48ae4fa9099b42",
+ "facts_hash": "8a74dc489f2acd82",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,8 +332,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1247,
-   ".sql": 1122,
+   ".ts": 1248,
+   ".sql": 1123,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -13669,6 +13669,13 @@
       "src": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql"
      },
      {
+      "name": "servico",
+      "type": "TEXT NOT NULL DEFAULT 'geral'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql"
+     },
+     {
       "name": "created_at",
       "type": "string not null",
       "fk": "",
@@ -13691,13 +13698,6 @@
      },
      {
       "name": "id",
-      "type": "string not null",
-      "fk": "",
-      "generated": "",
-      "src": "src/integrations/supabase/types.ts"
-     },
-     {
-      "name": "servico",
       "type": "string not null",
       "fk": "",
       "generated": "",
@@ -50501,6 +50501,7 @@
    "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql",
    "supabase/migrations/20261118002000_rate_limit_check_atomico.sql",
    "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
+   "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121000000_restaura_user_preferences.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
@@ -70773,8 +70774,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 236,
-   "lines": 52220,
+   "files": 237,
+   "lines": 52309,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -71034,8 +71035,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1050,
-   "lines": 81166,
+   "files": 1051,
+   "lines": 81185,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -91876,17 +91877,17 @@
    },
    {
     "table": "slo_metrics_diarias",
+    "column": "servico",
+    "rule": "default 'geral'"
+   },
+   {
+    "table": "slo_metrics_diarias",
     "column": "created_at",
     "rule": "obrigatório"
    },
    {
     "table": "slo_metrics_diarias",
     "column": "id",
-    "rule": "obrigatório"
-   },
-   {
-    "table": "slo_metrics_diarias",
-    "column": "servico",
     "rule": "obrigatório"
    },
    {
@@ -134055,6 +134056,10 @@
    {
     "file": "supabase/functions/asaas-proxy/credit-risk.test.ts",
     "name": "classifica as fronteiras de risco"
+   },
+   {
+    "file": "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
+    "name": "payload do upsert preenche servico e todas as colunas obrigatorias"
    },
    {
     "file": "supabase/functions/ci-security-gate-log/index.test.ts",
@@ -231417,10 +231422,21 @@
    ],
    "uses_service_role": true
   },
+  "supabase/functions/calcular-slo-metrics-diario/index.test.ts": {
+   "path": "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
+   "lines": 42,
+   "is_test": true,
+   "doc": "Regressão: o upsert em slo_metrics_diarias precisa preencher `servico` (TEXT NOT NULL sem default, versionado em migrations/20261120130000_add_servico_slo_metrics_diarias.sql). Sem o fix o handler montava o payload sem a coluna e o banco retornava \"null value in column servico violates not-null cons …",
+   "tests": [
+    "payload do upsert preenche servico e todas as colunas obrigatorias"
+   ]
+  },
   "supabase/functions/calcular-slo-metrics-diario/index.ts": {
    "path": "supabase/functions/calcular-slo-metrics-diario/index.ts",
-   "lines": 122,
+   "lines": 169,
    "exports": [
+    "interface MetricasSLO",
+    "function montarUpsertSLO",
     "const handler"
    ],
    "rpc": [
@@ -244537,6 +244553,10 @@
    "path": "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
    "lines": 91
   },
+  "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql": {
+   "path": "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
+   "lines": 19
+  },
   "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql": {
    "path": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "lines": 160,
@@ -244654,10 +244674,22 @@
   }
  },
  "git": {
-  "sha": "11779f6e484beb07b7f2bdbe99e6289e09286801",
+  "sha": "c3e421c4696a3737f52789277b46268176f46a4a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "c3e421c",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)",
+    "files": [
+     "docs/prod-readiness.md",
+     "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
+     "supabase/functions/calcular-slo-metrics-diario/index.ts",
+     "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql"
+    ]
+   },
    {
     "sha": "11779f6",
     "date": "2026-11-21",
@@ -244984,18 +245016,6 @@
     "files": [
      "docs/agentes/auditoria-branches-2026-11-17.md"
     ]
-   },
-   {
-    "sha": "f76fcd2",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(bitrix): religa o sync e escopa busca e update por empresa (#447)",
-    "files": [
-     "src/components/bitrix/BitrixClientsTab.tsx",
-     "src/hooks/useBitrix24.ts",
-     "supabase/functions/bitrix24-sync/index.ts",
-     "supabase/migrations/20261117211000_clientes_bitrix_ids.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -245026,6 +245046,22 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "docs/prod-readiness.md",
+    1
+   ],
+   [
+    "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
+    1
+   ],
+   [
+    "supabase/functions/calcular-slo-metrics-diario/index.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
+    1
    ],
    [
     "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
@@ -245061,22 +245097,6 @@
    ],
    [
     "src/hooks/__tests__/useAprovacoes.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
-    1
-   ],
-   [
-    "src/hooks/useAprovacoes.ts",
-    1
-   ],
-   [
-    "src/hooks/useConciliacaoPage.ts",
-    1
-   ],
-   [
-    "src/lib/conciliacao-page-helpers.ts",
     1
    ]
   ]

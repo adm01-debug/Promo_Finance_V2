@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "11779f6e484beb07b7f2bdbe99e6289e09286801",
+  "commit": "c3e421c4696a3737f52789277b46268176f46a4a",
   "branch": "main",
-  "data_commit": "2026-11-21T08:30:57-03:00",
+  "data_commit": "2026-11-21T08:48:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "c3e421c",
+    "data": "2026-11-21",
+    "assunto": "chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)"
+   },
    {
     "sha": "11779f6",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "f17d2d4",
     "data": "2026-11-17",
     "assunto": "docs(agentes): levantamento da API do Banco Inter e plano de integração (#459)"
-   },
-   {
-    "sha": "c862e68",
-    "data": "2026-11-17",
-    "assunto": "docs(agentes): fecha a auditoria com o veredito de cada branch restante (#458)"
    }
   ],
-  "arquivos_mudados_7d": 421,
+  "arquivos_mudados_7d": 424,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -262,10 +262,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": "src/App.tsx",
-    "mudancas": 8
-   },
-   {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 8
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": ".github/workflows/supabase-linter.yml",
     "mudancas": 7
+   },
+   {
+    "arquivo": "analise-prs/RELATORIO_PRS.md",
+    "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 234
+    "commits": 235
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3968,
-  "arquivos_codigo": 2483,
-  "linhas_codigo": 443211,
+  "arquivos_total": 3970,
+  "arquivos_codigo": 2484,
+  "linhas_codigo": 443299,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,9 +330,9 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 312,
-  "migrations": 1050,
+  "migrations": 1051,
   "cron_jobs": 22,
-  "testes": 483,
+  "testes": 484,
   "workflows": 19,
   "scripts": 116,
   "docs_md": 214
@@ -687,8 +687,8 @@
    "linhas": 1020
   },
   "supabase/functions": {
-   "arquivos": 236,
-   "linhas": 51984
+   "arquivos": 237,
+   "linhas": 52072
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -810,7 +810,7 @@
   }
  ],
  "qualidade": {
-  "any": 355,
+  "any": 356,
   "console_log": 237,
   "ts_ignore": 2,
   "eslint_disable": 1,
