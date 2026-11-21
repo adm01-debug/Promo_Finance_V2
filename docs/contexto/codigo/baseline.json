@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f22be434f9012b9ec42cd31989729f433959e277",
+  "commit": "5788349561ec1edeafed4c553960f8ca7b3f538c",
   "branch": "main",
-  "data_commit": "2026-11-21T17:03:49-03:00",
+  "data_commit": "2026-11-21T17:12:46-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5788349",
+    "data": "2026-11-21",
+    "assunto": "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)"
+   },
    {
     "sha": "f22be43",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "772e151",
     "data": "2026-11-18",
     "assunto": "chore: preserva trabalho de agentes encontrado em backups/lixeira (#469)"
-   },
-   {
-    "sha": "cb9d5c8",
-    "data": "2026-11-17",
-    "assunto": "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)"
    }
   ],
-  "arquivos_mudados_7d": 448,
+  "arquivos_mudados_7d": 449,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 241
+    "commits": 242
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3983,
+  "arquivos_total": 3984,
   "arquivos_codigo": 2488,
   "linhas_codigo": 443710,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 486,
   "workflows": 20,
   "scripts": 116,
-  "docs_md": 218
+  "docs_md": 219
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

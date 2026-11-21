@@ -4,7 +4,7 @@
 |---|---|
 | nome | n8n-callback |
 | status | ACTIVE |
-| versão | 126 |
+| versão | 130 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/n8n-callback/index.ts |
 | import_map |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | executar-regua-cobranca |
 | status | ACTIVE |
-| versão | 130 |
+| versão | 134 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/executar-regua-cobranca/index.ts |
 | import_map |  |

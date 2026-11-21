@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2369)",
    "SQL (1125)",
-   "Markdown (218)",
+   "Markdown (219)",
    "JavaScript (76)",
    "JSON (45)",
    "Python (45)",
@@ -1256,12 +1256,12 @@
    "arquivos_md": 5
   },
   {
-   "pasta": "docs/runbooks",
+   "pasta": "docs/receitafederal",
    "arquivos_md": 5
   },
   {
-   "pasta": "docs/receitafederal",
-   "arquivos_md": 4
+   "pasta": "docs/runbooks",
+   "arquivos_md": 5
   },
   {
    "pasta": "docs/auditoria",

@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "f22be434f9012b9ec42cd31989729f433959e277",
+  "sha": "5788349561ec1edeafed4c553960f8ca7b3f538c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 20:06 UTC",
-  "files_total": 4022,
+  "generated_at": "2026-11-21 20:16 UTC",
+  "files_total": 4023,
   "code_files": 3614,
   "code_lines": 514644
  },
@@ -244972,10 +244972,19 @@
   }
  },
  "git": {
-  "sha": "f22be434f9012b9ec42cd31989729f433959e277",
+  "sha": "5788349561ec1edeafed4c553960f8ca7b3f538c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5788349",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)",
+    "files": [
+     "docs/receitafederal/PLANO_MELHORIAS_100_ETAPAS_CADASTRO_FISCAL.md"
+    ]
+   },
    {
     "sha": "f22be43",
     "date": "2026-11-21",
@@ -245326,15 +245335,6 @@
     "files": [
      "docs/agentes/auditoria-branches-2026-11-17.md"
     ]
-   },
-   {
-    "sha": "2aa3851",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "fix(db): versiona vw_webhooks_recentes com a definição de produção e GRANT (#463)",
-    "files": [
-     "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -245369,6 +245369,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "docs/receitafederal/PLANO_MELHORIAS_100_ETAPAS_CADASTRO_FISCAL.md",
+    1
    ],
    [
     ".github/workflows/rfb-upstream-watch.yml",
@@ -245412,10 +245416,6 @@
    ],
    [
     "scripts/test_migrate_cron_jobs.py",
-    1
-   ],
-   [
-    "scripts/test_staging_migrate.py",
     1
    ]
   ]

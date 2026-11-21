@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-bitrix24-tributario |
 | status | ACTIVE |
-| versão | 123 |
+| versão | 127 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/enviar-bitrix24-tributario/index.ts |
 | import_map |  |
