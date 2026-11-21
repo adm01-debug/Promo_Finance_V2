@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)",
    "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)",
    "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura",
    "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)",
-   "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)",
-   "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)"
+   "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

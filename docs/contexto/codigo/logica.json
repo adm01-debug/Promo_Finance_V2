@@ -3459,7 +3459,7 @@
     "verificarIsencao"
    ],
    "export_default": null,
-   "linhas": 91,
+   "linhas": 87,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3511,7 +3511,7 @@
     "ResultadoSimulacao"
    ],
    "export_default": null,
-   "linhas": 116,
+   "linhas": 118,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5107,7 +5107,7 @@
     "calcularReformaTributaria"
    ],
    "export_default": null,
-   "linhas": 186,
+   "linhas": 178,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5173,7 +5173,7 @@
     "TributoDetalhe"
    ],
    "export_default": null,
-   "linhas": 185,
+   "linhas": 187,
    "tabelas": [],
    "rpcs": [],
    "edges": [],

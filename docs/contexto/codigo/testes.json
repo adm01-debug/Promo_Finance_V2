@@ -2218,11 +2218,11 @@
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
    "tipo": "unit",
-   "linhas": 279,
+   "linhas": 288,
    "testa": [
     "src/lib/reforma-tributaria-calculator.ts"
    ],
-   "casos": 38
+   "casos": 39
   },
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
@@ -3357,14 +3357,14 @@
   {
    "arquivo": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
    "tipo": "unit",
-   "linhas": 117,
+   "linhas": 126,
    "testa": [
     "src/config/reforma-tributaria.ts",
     "src/lib/tributario/calculadora/lucro-presumido.ts",
     "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "src/lib/tributario/calculadora/simples-nacional.ts"
    ],
-   "casos": 12
+   "casos": 13
   },
   {
    "arquivo": "src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts",

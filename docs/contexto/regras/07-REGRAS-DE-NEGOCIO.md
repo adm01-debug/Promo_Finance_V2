@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `1f4be40d3c` · branch `main` · 2026-11-21 20:51 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `424bfe74d3` · branch `main` · 2026-11-21 21:32 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2357,6 +2357,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `numeroFinal` | type=number | `src/components/nfe/InutilizacaoNFe.tsx` |
 | `value` | type=number | `src/components/quick-create/QuickCreateModal.tsx` |
 | `valor` | type=number | `src/components/reforma-tributaria/CalculadoraTributos.tsx` |
+| `aliquota-is` | type=number, min=0, step=0.01 | `src/components/reforma-tributaria/CalculadoraTributos.tsx` |
 | `xml-input` | accept=.xml, multiple | `src/components/reforma-tributaria/ImportacaoXMLPanel.tsx` |
 | `sub-rate-max` | max, type=number, min=1, max=100 | `src/components/shared/SubscriptionPopover.tsx` |
 | `sub-rate-window` | type=number, min=1, max=1440 | `src/components/shared/SubscriptionPopover.tsx` |
@@ -5069,7 +5070,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3657 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3659 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5080,7 +5081,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx` | 61 | ContasReceberTableRow · Gap #14 - Coluna Empresa · mostra coluna empresa quando showEmpresa=true · não mostra coluna empresa quando showEmpresa=false … |
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
-| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 47 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
+| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 48 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
 | `src/lib/__tests__/cashflow-scenarios.test.ts` | 31 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
@@ -5137,6 +5138,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sped-generator.test.ts` | 16 | SPED Generator · gerarEFD_IBS_CBS · gera arquivo com registro inicial 0000 · gera arquivo com registro final 9999 … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
+| `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 16 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx` | 15 | AplicarDescontoDialog · Gap #12 - Aplicar desconto · renderiza dialog quando open=true · não renderiza quando conta é null … |
 | `src/components/contas-receber/__tests__/EnviarCobrancaDialog.test.tsx` | 15 | EnviarCobrancaDialog · Gap #2 - Enviar Cobrança funcional · renderiza dialog quando open=true · não renderiza quando conta é null … |
 | `src/components/ui/__tests__/button.test.tsx` | 15 | Button · renders with text · renders default variant with bg-acc (Vela) · renders destructive variant … |
@@ -5146,7 +5148,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/irpj-csll.test.ts` | 15 | IRPJ/CSLL — Lucro Real · aplica 15% + adicional 10% sobre o excedente trimestral · não gera adicional quando a base fica no limite de R$ 20 mil/mês · respeita a trava de 30% na compensação de prejuízo … |
 | `src/lib/tributario/__tests__/overlay-monofasico.test.ts` | 15 | aplicarOverlayMonofasico · não gera override quando o banco confirma o catálogo embarcado · registra inclusão de NCM não coberto pelo motor · registra exclusão de NCM classificado pelo motor … |
 | `src/lib/tributario/__tests__/robustness-consistency.test.ts` | 15 | Testes de Robustez e Casos de Borda Tributários · Valores Extremos e Arredondamentos · deve lidar com faturamento zero corretamente · deve lidar com margem de lucro de 100% corretamente … |
-| `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 15 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/hooks/useBoletos.validation.test.ts` | 14 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 14 | registrarPagamento · grava data_pagamento e valor_pago na parcela · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  … |
 | `src/hooks/__tests__/usePreferenciasSistema.test.tsx` | 14 | usePreferenciasSistema — estados de leitura · carregado=false enquanto a leitura está pendente · carregado=true com os defaults quando não há registro · carrega o payload salvo mesclado aos defaults … |

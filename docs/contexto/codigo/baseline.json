@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0",
+  "commit": "424bfe74d31cde5de0aede45ce704dfbf7b01f65",
   "branch": "main",
-  "data_commit": "2026-11-21T17:49:48-03:00",
+  "data_commit": "2026-11-21T18:32:08-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "424bfe7",
+    "data": "2026-11-21",
+    "assunto": "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)"
+   },
    {
     "sha": "1f4be40",
     "data": "2026-11-21",
@@ -126,18 +131,13 @@
     "sha": "dd12c7d",
     "data": "2026-11-19",
     "assunto": "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)"
-   },
-   {
-    "sha": "929f20d",
-    "data": "2026-11-19",
-    "assunto": "fix: normalizar 400 invalid_json para envelope 422 canônico (#472)"
    }
   ],
-  "arquivos_mudados_7d": 460,
+  "arquivos_mudados_7d": 471,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
-    "mudancas": 38
+    "mudancas": 40
    },
    {
     "pasta": "src/components/contabilidade",
@@ -145,7 +145,7 @@
    },
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 31
+    "mudancas": 34
    },
    {
     "pasta": "src/components/contas-receber",
@@ -164,6 +164,10 @@
     "mudancas": 24
    },
    {
+    "pasta": "src/lib/tributario",
+    "mudancas": 24
+   },
+   {
     "pasta": "src/hooks/__tests__",
     "mudancas": 23
    },
@@ -174,10 +178,6 @@
    {
     "pasta": "src/components/contas-pagar",
     "mudancas": 22
-   },
-   {
-    "pasta": "src/lib/tributario",
-    "mudancas": 21
    },
    {
     "pasta": "src/components/admin",
@@ -193,7 +193,7 @@
    },
    {
     "pasta": "src/lib/__tests__",
-    "mudancas": 13
+    "mudancas": 14
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 244
+    "commits": 245
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3985,
   "arquivos_codigo": 2489,
-  "linhas_codigo": 443726,
+  "linhas_codigo": 443784,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 999,
-   "linhas": 164122
+   "linhas": 164169
   },
   "src/config": {
    "arquivos": 2,
@@ -652,7 +652,7 @@
   },
   "src/hooks": {
    "arquivos": 321,
-   "linhas": 47327
+   "linhas": 47325
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -664,7 +664,7 @@
   },
   "src/lib": {
    "arquivos": 418,
-   "linhas": 55249
+   "linhas": 55259
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -672,7 +672,7 @@
   },
   "src/pages": {
    "arquivos": 273,
-   "linhas": 46868
+   "linhas": 46882
   },
   "src/routes": {
    "arquivos": 16,
@@ -684,7 +684,7 @@
   },
   "src/types": {
    "arquivos": 17,
-   "linhas": 1000
+   "linhas": 989
   },
   "supabase/functions": {
    "arquivos": 237,

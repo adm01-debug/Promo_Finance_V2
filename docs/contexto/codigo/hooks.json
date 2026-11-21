@@ -4850,7 +4850,7 @@
    "hooks_exportados": [
     "useOperacoesTributaveis"
    ],
-   "linhas": 437,
+   "linhas": 435,
    "dominio": "hooks",
    "tabelas": [
     "notas_fiscais",

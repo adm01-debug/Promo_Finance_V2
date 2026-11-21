@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0",
+  "sha": "424bfe74d31cde5de0aede45ce704dfbf7b01f65",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 20:51 UTC",
+  "generated_at": "2026-11-21 21:32 UTC",
   "files_total": 4024,
   "code_files": 3615,
-  "code_lines": 514661
+  "code_lines": 514719
  },
  "version": "1.3.2",
- "facts_hash": "be59cd889071bce4",
+ "facts_hash": "c6795ee93700b0b0",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -69658,7 +69658,7 @@
   {
    "module": "src/components",
    "files": 999,
-   "lines": 165121,
+   "lines": 165168,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -69929,7 +69929,7 @@
   {
    "module": "src/hooks",
    "files": 321,
-   "lines": 47648,
+   "lines": 47646,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -70266,7 +70266,7 @@
   {
    "module": "src/lib",
    "files": 418,
-   "lines": 55667,
+   "lines": 55677,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -70463,7 +70463,7 @@
   {
    "module": "src/pages",
    "files": 273,
-   "lines": 47141,
+   "lines": 47155,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -70772,7 +70772,7 @@
   {
    "module": "src/types",
    "files": 17,
-   "lines": 1017,
+   "lines": 1006,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
@@ -77484,6 +77484,11 @@
     "file": "src/components/reforma-tributaria/CalculadoraTributos.tsx",
     "field": "valor",
     "rules": "type=number"
+   },
+   {
+    "file": "src/components/reforma-tributaria/CalculadoraTributos.tsx",
+    "field": "aliquota-is",
+    "rules": "type=number, min=0, step=0.01"
    },
    {
     "file": "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
@@ -127496,7 +127501,7 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "name": "categoria válida retorna alíquota base"
+    "name": "categoria sem alíquota customizada retorna 0 — lei não fixa alíquota por categoria"
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
@@ -127548,7 +127553,11 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "name": "com IS (bebidas alcoólicas) adiciona imposto seletivo"
+    "name": "com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota"
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
@@ -133044,7 +133053,11 @@
    },
    {
     "file": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-    "name": "imposto seletivo aplica sobre categorias"
+    "name": "imposto seletivo aplica sobre categorias com alíquota informada pelo usuário"
+   },
+   {
+    "file": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+    "name": "categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria"
    },
    {
     "file": "src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts",
@@ -192451,7 +192464,7 @@
   },
   "src/components/reforma-tributaria/CalculadoraTributos.tsx": {
    "path": "src/components/reforma-tributaria/CalculadoraTributos.tsx",
-   "lines": 287,
+   "lines": 308,
    "exports": [
     "function CalculadoraTributos"
    ],
@@ -192459,6 +192472,10 @@
     {
      "field": "valor",
      "rules": "type=number"
+    },
+    {
+     "field": "aliquota-is",
+     "rules": "type=number, min=0, step=0.01"
     }
    ],
    "doc": "CALCULADORA DE TRIBUTOS IBS/CBS/IS Cálculo em tempo real para operações",
@@ -193059,7 +193076,7 @@
   },
   "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx": {
    "path": "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
-   "lines": 122,
+   "lines": 128,
    "exports": [
     "function SimuladorCenariosTributarios"
    ],
@@ -193428,7 +193445,7 @@
   },
   "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx": {
    "path": "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
-   "lines": 189,
+   "lines": 209,
    "exports": [
     "function SimuladorInputForm"
    ]
@@ -203909,7 +203926,7 @@
   },
   "src/hooks/useOperacoesTributaveis.ts": {
    "path": "src/hooks/useOperacoesTributaveis.ts",
-   "lines": 438,
+   "lines": 436,
    "exports": [
     "interface OperacaoTributavel",
     "interface CreateOperacaoInput",
@@ -212872,7 +212889,7 @@
   },
   "src/lib/__tests__/reforma-tributaria-calculator.test.ts": {
    "path": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-   "lines": 280,
+   "lines": 289,
    "is_test": true,
    "tests": [
     "Reforma Tributária Calculator",
@@ -212899,7 +212916,7 @@
     "obterAliquotaIS",
     "sem categoria retorna 0",
     "alíquota customizada tem prioridade",
-    "categoria válida retorna alíquota base",
+    "categoria sem alíquota customizada retorna 0 — lei não fixa alíquota por categoria",
     "verificarIsencao",
     "operação normal não é isenta",
     "exportação é isenta",
@@ -212912,7 +212929,8 @@
     "carga tributária percentual é consistente",
     "detalhamento contém informações úteis",
     "IBS dividido 75% estadual 25% municipal",
-    "com IS (bebidas alcoólicas) adiciona imposto seletivo",
+    "com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo",
+    "com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota",
     "calcularCreditos",
     "calcula créditos CBS e IBS",
     "não-cumulatividade plena ativa",
@@ -214631,7 +214649,7 @@
   },
   "src/lib/reforma-tributaria/regras.ts": {
    "path": "src/lib/reforma-tributaria/regras.ts",
-   "lines": 92,
+   "lines": 88,
    "exports": [
     "function determinarFaseTransicao",
     "function obterAliquotasTransicao",
@@ -214665,7 +214683,7 @@
   },
   "src/lib/reforma-tributaria/types.ts": {
    "path": "src/lib/reforma-tributaria/types.ts",
-   "lines": 117,
+   "lines": 119,
    "exports": [
     "interface DadosOperacao",
     "interface ResultadoCalculo",
@@ -218021,7 +218039,7 @@
   },
   "src/lib/tributario/calculadora/reforma-tributaria.ts": {
    "path": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-   "lines": 187,
+   "lines": 179,
    "exports": [
     "function calcularReformaTributaria"
    ],
@@ -218079,7 +218097,7 @@
   },
   "src/lib/tributario/calculadora/types.ts": {
    "path": "src/lib/tributario/calculadora/types.ts",
-   "lines": 186,
+   "lines": 188,
    "exports": [
     "interface InputMonofasico",
     "type Periodicidade",
@@ -218188,7 +218206,7 @@
   },
   "src/lib/tributario/calculadora/__tests__/regimes.test.ts": {
    "path": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-   "lines": 118,
+   "lines": 127,
    "is_test": true,
    "tests": [
     "calcularLucroPresumido",
@@ -218205,7 +218223,8 @@
     "2033: apenas CBS+IBS, sem resíduos",
     "2026: alíquotas teste 0,9% + 0,1%",
     "regime reduzido aplica desconto",
-    "imposto seletivo aplica sobre categorias"
+    "imposto seletivo aplica sobre categorias com alíquota informada pelo usuário",
+    "categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria"
    ]
   },
   "src/lib/tributario/catalogos/alertas.ts": {
@@ -225153,7 +225172,7 @@
   },
   "src/pages/tributario/CalculadoraTributaria.helpers.ts": {
    "path": "src/pages/tributario/CalculadoraTributaria.helpers.ts",
-   "lines": 135,
+   "lines": 139,
    "exports": [
     "type CampoInput",
     "const ROTULO_ATIVIDADE",
@@ -225164,7 +225183,7 @@
   },
   "src/pages/tributario/CalculadoraTributaria.parts.tsx": {
    "path": "src/pages/tributario/CalculadoraTributaria.parts.tsx",
-   "lines": 374,
+   "lines": 384,
    "exports": [
     "function ParametrosCard"
    ],
@@ -227853,7 +227872,7 @@
   },
   "src/types/reforma-tributaria/imposto-seletivo.ts": {
    "path": "src/types/reforma-tributaria/imposto-seletivo.ts",
-   "lines": 69,
+   "lines": 58,
    "exports": [
     "interface ConfiguracaoIS",
     "const CONFIGURACOES_IS"
@@ -244998,10 +245017,32 @@
   }
  },
  "git": {
-  "sha": "1f4be40d3cd2315e8fac96093b7e9ccf02a4b3d0",
+  "sha": "424bfe74d31cde5de0aede45ce704dfbf7b01f65",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "424bfe7",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)",
+    "files": [
+     "src/components/reforma-tributaria/CalculadoraTributos.tsx",
+     "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
+     "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
+     "src/hooks/useOperacoesTributaveis.ts",
+     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+     "src/lib/reforma-tributaria/regras.ts",
+     "src/lib/reforma-tributaria/simulador.ts",
+     "src/lib/reforma-tributaria/types.ts",
+     "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+     "src/lib/tributario/calculadora/reforma-tributaria.ts",
+     "src/lib/tributario/calculadora/types.ts",
+     "src/pages/tributario/CalculadoraTributaria.helpers.ts",
+     "src/pages/tributario/CalculadoraTributaria.parts.tsx",
+     "src/types/reforma-tributaria/imposto-seletivo.ts"
+    ]
+   },
    {
     "sha": "1f4be40",
     "date": "2026-11-21",
@@ -245355,22 +245396,24 @@
      "src/integrations/supabase/types.ts",
      "src/pages/EmpresasConteudo.tsx"
     ]
-   },
-   {
-    "sha": "2d54fb1",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)",
-    "files": [
-     "supabase/migrations/20261118003500_drop_particoes_orfas_e_views_mortas.sql",
-     "supabase/tests/sql/infra.test.sql"
-    ]
    }
   ],
   "hot_files": [
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/lib/reforma-tributaria/regras.ts",
+    2
+   ],
+   [
+    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+    2
+   ],
+   [
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    2
    ],
    [
     ".github/workflows/rfb-upstream-watch.yml",
@@ -245401,51 +245444,39 @@
     2
    ],
    [
-    "docs/ci/README.md",
+    "src/components/reforma-tributaria/CalculadoraTributos.tsx",
     1
    ],
    [
-    "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
+    "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
     1
    ],
    [
-    "src/types/reforma-tributaria/enums.ts",
+    "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
     1
    ],
    [
-    "src/types/reforma-tributaria/regimes.ts",
+    "src/hooks/useOperacoesTributaveis.ts",
     1
    ],
    [
-    "src/hooks/__tests__/useCashbackSimulador.test.ts",
+    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     1
    ],
    [
-    "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
+    "src/lib/reforma-tributaria/simulador.ts",
     1
    ],
    [
-    "src/lib/reforma-tributaria/regras.ts",
+    "src/lib/reforma-tributaria/types.ts",
     1
    ],
    [
-    "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+    "src/lib/tributario/calculadora/types.ts",
     1
    ],
    [
-    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-    1
-   ],
-   [
-    "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    1
-   ],
-   [
-    "src/lib/tributario/projecao-reforma.ts",
-    1
-   ],
-   [
-    "src/types/reforma-tributaria/transicao.ts",
+    "src/pages/tributario/CalculadoraTributaria.helpers.ts",
     1
    ]
   ]

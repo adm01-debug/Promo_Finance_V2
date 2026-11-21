@@ -8713,7 +8713,7 @@
     "CalculadoraTributos"
    ],
    "export_default": "CalculadoraTributos",
-   "linhas": 286,
+   "linhas": 307,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useReformaTributaria"
@@ -9398,7 +9398,7 @@
     "SimuladorInputForm"
    ],
    "export_default": null,
-   "linhas": 188,
+   "linhas": 208,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -9426,7 +9426,7 @@
     "SimuladorCenariosTributarios"
    ],
    "export_default": "SimuladorCenariosTributarios",
-   "linhas": 121,
+   "linhas": 127,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useReformaTributaria"
@@ -14719,7 +14719,7 @@
     "ParametrosCard"
    ],
    "export_default": null,
-   "linhas": 373,
+   "linhas": 383,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
