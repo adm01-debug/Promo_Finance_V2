@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5788349561ec1edeafed4c553960f8ca7b3f538c` (2026-11-21T17:12:46-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9fc35eeba490df4da502302784bf5b8b3ce1c20b` (2026-11-21T17:30:39-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3984 |
 | arquivos_codigo | 2488 |
-| linhas_codigo | 443710 |
+| linhas_codigo | 443543 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `9fc35ee` fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)
 - 2026-11-21 `5788349` chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)
 - 2026-11-21 `f22be43` infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)
 - 2026-11-21 `794bb45` feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-20 `cab2bf4` fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)
 - 2026-11-20 `72a08b5` fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)
 - 2026-11-20 `3a239d1` docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)
-- 2026-11-20 `574c46c` docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

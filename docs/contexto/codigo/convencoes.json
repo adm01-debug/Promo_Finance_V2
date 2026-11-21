@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)",
    "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)",
    "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)",
    "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)",
-   "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)",
-   "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)"
+   "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

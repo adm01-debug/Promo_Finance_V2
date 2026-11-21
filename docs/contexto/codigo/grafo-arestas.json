@@ -7687,6 +7687,7 @@
    "src/config/reforma-tributaria.ts"
   ],
   "src/lib/reforma-tributaria/regras.ts": [
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
    "src/lib/reforma-tributaria/types.ts",
    "src/types/reforma-tributaria.ts"
   ],
@@ -7861,6 +7862,7 @@
    "src/lib/tributario/monofasico/index.ts"
   ],
   "src/lib/tributario/calculadora/reforma-tributaria.ts": [
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
    "src/lib/tributario/calculadora/types.ts"
   ],
   "src/lib/tributario/calculadora/simples-nacional.ts": [
@@ -8234,6 +8236,9 @@
   ],
   "src/lib/tributario/pis-cofins/tabelas.ts": [
    "src/lib/tributario/pis-cofins/types.ts"
+  ],
+  "src/lib/tributario/projecao-reforma.ts": [
+   "src/lib/reforma-tributaria/cronograma-oficial.ts"
   ],
   "src/lib/tributario/rbt12.ts": [
    "src/lib/tributario/types.ts"
@@ -10916,6 +10921,9 @@
   ],
   "src/types/reforma-tributaria/simulacao.ts": [
    "src/types/reforma-tributaria/enums.ts"
+  ],
+  "src/types/reforma-tributaria/transicao.ts": [
+   "src/lib/reforma-tributaria/cronograma-oficial.ts"
   ],
   "src/types/tipo-cobranca-rotulo.ts": [
    "src/types/financial.ts"

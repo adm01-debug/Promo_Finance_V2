@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 2008,
- "arestas": 8477,
+ "arestas": 8481,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -279,7 +279,6 @@
   "src/hooks/useGlobalFilterSync.ts",
   "src/hooks/usePrefetchRoutes.tsx",
   "src/lib/arquitetura/escopo-empresa.ts",
-  "src/lib/reforma-tributaria/cronograma-oficial.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",
   "supabase/functions/external-data/validate_contract.ts",
   "supabase/functions/sso-test-login/mocks.ts"

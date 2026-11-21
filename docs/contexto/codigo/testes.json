@@ -1459,8 +1459,9 @@
   {
    "arquivo": "src/hooks/__tests__/useCashbackSimulador.test.ts",
    "tipo": "unit",
-   "linhas": 127,
+   "linhas": 130,
    "testa": [
+    "src/config/reforma-tributaria.ts",
     "src/hooks/useCashbackSimulador.ts"
    ],
    "casos": 8
@@ -2226,11 +2227,12 @@
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
    "tipo": "unit",
-   "linhas": 16,
+   "linhas": 24,
    "testa": [
+    "src/config/reforma-tributaria.ts",
     "src/types/reforma-tributaria.ts"
    ],
-   "casos": 1
+   "casos": 2
   },
   {
    "arquivo": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
@@ -3141,8 +3143,9 @@
   {
    "arquivo": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
    "tipo": "unit",
-   "linhas": 97,
+   "linhas": 100,
    "testa": [
+    "src/config/reforma-tributaria.ts",
     "src/lib/tributario/projecao-reforma.ts"
    ],
    "casos": 11
@@ -3344,8 +3347,9 @@
   {
    "arquivo": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
    "tipo": "unit",
-   "linhas": 113,
+   "linhas": 117,
    "testa": [
+    "src/config/reforma-tributaria.ts",
     "src/lib/tributario/calculadora/lucro-presumido.ts",
     "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "src/lib/tributario/calculadora/simples-nacional.ts"
@@ -4427,7 +4431,7 @@
   "src/components/ui/tabs.tsx": 1,
   "src/components/ui/tooltip.tsx": 1,
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
-  "src/config/reforma-tributaria.ts": 1,
+  "src/config/reforma-tributaria.ts": 5,
   "src/contexts/EmpresaScopeContext.tsx": 1,
   "src/contexts/useEmpresaScope.ts": 1,
   "src/hooks/anomaliaPreferencesValidation.ts": 1,

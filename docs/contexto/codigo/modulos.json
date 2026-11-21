@@ -5206,6 +5206,8 @@
    "env": [
     "DEV",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -5844,6 +5846,8 @@
    "env": [
     "DEV",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -7605,6 +7609,8 @@
     "DEV",
     "MODE",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -8576,6 +8582,8 @@
    "env": [
     "DEV",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -9119,7 +9127,7 @@
    "modulo": "lib/reforma-tributaria",
    "arquivos": 6,
    "testes": 1,
-   "linhas": 704,
+   "linhas": 688,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9143,7 +9151,9 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
-    "lib"
+    "lib",
+    "lib/tributario",
+    "types/reforma-tributaria"
    ],
    "depende_de_modulos": [
     "config",
@@ -9362,7 +9372,7 @@
    "modulo": "lib/tributario",
    "arquivos": 118,
    "testes": 79,
-   "linhas": 16876,
+   "linhas": 16769,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9389,6 +9399,8 @@
    "env": [
     "DEV",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -9426,7 +9438,8 @@
     "pages/tributario"
    ],
    "depende_de_modulos": [
-    "integrations/supabase"
+    "integrations/supabase",
+    "lib/reforma-tributaria"
    ],
    "pacotes_externos": [
     "jspdf",
@@ -10207,6 +10220,8 @@
     "DEV",
     "MODE",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -11881,6 +11896,8 @@
    "env": [
     "DEV",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -12742,6 +12759,8 @@
     "DEV",
     "MODE",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -12840,7 +12859,10 @@
    "rpcs": [],
    "buckets": [],
    "canais_realtime": [],
-   "env": [],
+   "env": [
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS"
+   ],
    "flags": [],
    "papeis": [],
    "diretos": {
@@ -12893,7 +12915,7 @@
    "modulo": "types/reforma-tributaria",
    "arquivos": 13,
    "testes": 0,
-   "linhas": 697,
+   "linhas": 635,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -12905,7 +12927,10 @@
    "rpcs": [],
    "buckets": [],
    "canais_realtime": [],
-   "env": [],
+   "env": [
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS"
+   ],
    "flags": [],
    "papeis": [],
    "diretos": {
@@ -12917,7 +12942,9 @@
     "components/reforma-tributaria",
     "types"
    ],
-   "depende_de_modulos": [],
+   "depende_de_modulos": [
+    "lib/reforma-tributaria"
+   ],
    "pacotes_externos": []
   }
  ]

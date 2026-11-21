@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5788349561` · branch `main` · 2026-11-21 20:16 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9fc35eeba4` · branch `main` · 2026-11-21 20:32 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3254,7 +3254,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **calcularReformaTributaria(input: InputReforma)** — `src/lib/tributario/calculadora/reforma-tributaria.ts`
   ```
-  const memoria: LinhaMemoria[] = []; const alertas: string[] = []; const ano = input.anoReferencia; const fase = CRONOGRAMA[ano] ?? CRONOGRAMA[ano >= 2033 ? 2033 : 2026]; const reducao = input.regimeEspecialReducao ?? 0; const receita = input.receitas.receitaBrutaAnual; const creditos = input.creditos ?? 0; const cbsAliq = (input.aliquotaCbsAlvo ?? fase.cbs) * (1 - reducao); const ibsAliq = (input.aliquotaIbsAlvo ?? fase.ibs) * (1 - reducao); const cbsDebito = receita * cbsAliq; const ibsDebito = …
+  const memoria: LinhaMemoria[] = []; const alertas: string[] = []; const ano = input.anoReferencia; const fase = obterFase(ano); const reducao = input.regimeEspecialReducao ?? 0; const receita = input.receitas.receitaBrutaAnual; const creditos = input.creditos ?? 0; const cbsAliq = (input.aliquotaCbsAlvo ?? fase.cbs) * (1 - reducao); const ibsAliq = (input.aliquotaIbsAlvo ?? fase.ibs) * (1 - reducao); const cbsDebito = receita * cbsAliq; const ibsDebito = receita * ibsAliq; const cbsCredito = cre …
   ```
 - **calcularAliquotaEfetiva(rbt12: number, faixas: FaixaSimples[])** — `src/lib/tributario/calculadora/simples-nacional.ts`
   ```
@@ -4024,10 +4024,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `const cofinsAntigo = receita * 0.076 * fase.cofinsResidual;` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
 | `const issResidual = receita * 0.05 * fase.issResidual * (input.receitas.percentualServicos / 100);` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
 | `const pisAntigo = receita * 0.0165 * fase.pisResidual;` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
-| `ibs: IBS_ALVO * 0.1,` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
-| `ibs: IBS_ALVO * 0.2,` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
-| `ibs: IBS_ALVO * 0.3,` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
-| `ibs: IBS_ALVO * 0.4,` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
 | `receita * 0.18 * fase.icmsResidual * (1 - input.receitas.percentualServicos / 100);` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
 | `if (input.rbt12 > LIMITE_ANUAL * 0.9) {` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `csrfSofrido?: number; // PIS+COFINS+CSLL 4,65% na fonte` | `src/lib/tributario/calculadora/types.ts` |
@@ -4041,7 +4037,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `* 7% de Sul/Sudeste (exceto ES) para Norte/Nordeste/Centro-Oeste e ES;` | `src/lib/tributario/catalogos/painel.ts` |
 | `* alíquota de importado (4%, Resolução SF 13/2012).` | `src/lib/tributario/catalogos/painel.ts` |
 | `/** Regiões cujo destino recebe 7% quando a origem é Sul/Sudeste (exceto ES). */` | `src/lib/tributario/catalogos/painel.ts` |
-| … +196 linhas — lista completa em `context.json` | |
+| `// 1ª quota sem juros; demais com SELIC acumulada + 1% no mês do pagamento.` | `src/lib/tributario/darf/consolidar.ts` |
+| `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
+| `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
+| `// Bonificação reduz base ICMS/PIS/COFINS — economia estimada de 2-9% sobre volume` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| … +192 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -4159,8 +4159,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `LIMITE_ADICIONAL_TRIMESTRAL` | `60` | `src/lib/tributario/calculadora/lucro-presumido.ts` |
 | `LIMITE_ADICIONAL_ANUAL` | `240` | `src/lib/tributario/calculadora/lucro-real.ts` |
 | `LIMITE_ADICIONAL_TRIMESTRAL` | `60` | `src/lib/tributario/calculadora/lucro-real.ts` |
-| `CBS_ALVO` | `0.088` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
-| `IBS_ALVO` | `0.177` | `src/lib/tributario/calculadora/reforma-tributaria.ts` |
 | `LIMITE_ANUAL` | `4` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `SUBLIMITE_PADRAO` | `3` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `FATOR_R_CORTE` | `0.28` | `src/lib/tributario/calculadora/simples-nacional.ts` |
@@ -4251,9 +4249,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `VERY_SLOW_THRESHOLD_MS` | `8` | `src/pages/admin/AnomaliaDetalhe.tsx` |
 | `COUNTDOWN_SECONDS` | `3` | `src/pages/auth/CorporateOnboarding.hook.ts` |
 | `TAMANHO_PAGINA_HISTORICO` | `5` | `src/pages/tributario/SimulacaoRegimes.tsx` |
-| `ALIQUOTA_REFERENCIA_IVA_DUAL` | `26.5` | `src/types/reforma-tributaria/transicao.ts` |
-| `ALIQUOTA_CBS_REFERENCIA` | `8.8` | `src/types/reforma-tributaria/transicao.ts` |
-| `ALIQUOTA_IBS_REFERENCIA` | `17.7` | `src/types/reforma-tributaria/transicao.ts` |
 | `TTL_SEGREDO_MS` | `60` | `supabase/functions/_shared/auth-guard.ts` |
 | `LIMITE_BUFFER` | `200` | `supabase/functions/_shared/console-persist.ts` |
 | `MAX_REENVIOS` | `3` | `supabase/functions/_shared/console-persist.ts` |
@@ -5074,7 +5069,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3639 testes em 321 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3640 testes em 321 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5172,7 +5167,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/arquitetura/__tests__/escopo-querykey.test.ts` | 13 | detector de escopo de empresa · fatia blocos balanceados ignorando strings e comentários · extrai a queryKey de cada useQuery · acusa filtro por empresa_id sem empresa na chave … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-mva.test.ts` | 13 | coerência do catálogo de MVA/ST · não acusa divergência quando o catálogo está íntegro · acusa NCM sujeito à ST sem protocolo vigente · acusa MVA fora dos limites defensivos … |
 | `src/lib/tributario/__tests__/digest-conformidade.test.ts` | 13 | digest de conformidade — utilitários · escapa os cinco caracteres perigosos · normaliza severidades desconhecidas para baixa · formata competência e tolera formatos inesperados … |
-| `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 13 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS pleno 8,8%, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
+| `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 13 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `src/lib/tributario/__tests__/snapshot-normalizacao.test.ts` | 13 | normalizarParametrosSnapshot — contrato · rejeita payloads que não são objeto · rejeita snapshot sem faturamento anual finito · coage faturamento anual persistido como string numérica … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
 | `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 12 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
@@ -5362,6 +5357,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useFluxoCaixaPage.saldo.test.tsx` | 3 | useFluxoCaixaPage — saldo final zero e projeção vazia (F07) · saldo final legitimamente ZERO nao e trocado pelo saldo inicial · projecao vazia preserva o saldo inicial e variacao zero |
 | `src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts` | 3 | relatórios do EXPERT com contas vencidas · o fluxo de caixa pede contas a pagar vencidas, não só pendentes · o relatório de contas a pagar pede as vencidas e as soma no total |
 | `src/lib/__tests__/brazilian-validators.regression.test.ts` | 3 | brazilian-validators — regressão de API pública · preserva exports históricos · validateCPF/CNPJ geram e validam consistentes |
+| `src/lib/__tests__/reforma-tributaria-types.regression.test.ts` | 3 | types/reforma-tributaria — regressão de API pública · preserva catálogos exportados · ALIQUOTAS_TRANSICAO deriva de REF_CBS_2027/REF_IBS, não de constantes fixas |
 | `src/lib/__tests__/sped-generator.regression.test.ts` | 3 | sped-generator — regressão de API pública · preserva exports históricos após modularização · validarArquivoSPED rejeita conteúdo inválido |
 | `src/lib/compras/__tests__/pedidos.test.ts` | 3 | calcularMetricasPedidosCompra · considera somente pedidos persistidos no mês de referência · não inventa dados quando não há pedidos com data de emissão |
 | `src/lib/offline/__tests__/fiscal-cache.test.ts` | 3 | fiscal-cache · gera chave determinística e independente da ordem das propriedades · degrada com segurança quando IndexedDB não está disponível (jsdom) |
@@ -5377,7 +5373,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
 | `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
-| `src/components/dashboard/__tests__/DashboardFiltersHeader.test.tsx` | 2 | DashboardFiltersHeader · expõe nomes acessíveis para os filtros do dashboard |
 | … +21 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)

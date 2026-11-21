@@ -671,7 +671,7 @@
    "usado_por_modulos": [
     "lib/reforma-tributaria"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 5,
    "orfao": false
   },
   {
@@ -3439,10 +3439,14 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 0,
-   "usado_por_modulos": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/reforma-tributaria",
+    "lib/tributario",
+    "types/reforma-tributaria"
+   ],
    "coberto_por_testes": 1,
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "src/lib/reforma-tributaria/regras.ts",
@@ -3455,7 +3459,7 @@
     "verificarIsencao"
    ],
    "export_default": null,
-   "linhas": 107,
+   "linhas": 91,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5103,7 +5107,7 @@
     "calcularReformaTributaria"
    ],
    "export_default": null,
-   "linhas": 243,
+   "linhas": 186,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -7846,7 +7850,7 @@
     "projetarReforma"
    ],
    "export_default": null,
-   "linhas": 218,
+   "linhas": 168,
    "tabelas": [],
    "rpcs": [],
    "edges": [],

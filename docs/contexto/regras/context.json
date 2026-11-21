@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5788349561ec1edeafed4c553960f8ca7b3f538c",
+  "sha": "9fc35eeba490df4da502302784bf5b8b3ce1c20b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 20:16 UTC",
+  "generated_at": "2026-11-21 20:32 UTC",
   "files_total": 4023,
   "code_files": 3614,
-  "code_lines": 514644
+  "code_lines": 514477
  },
  "version": "1.3.2",
- "facts_hash": "ecb5bdce7767b998",
+ "facts_hash": "5875d9df2756df7d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -69929,7 +69929,7 @@
   {
    "module": "src/hooks",
    "files": 321,
-   "lines": 47645,
+   "lines": 47648,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -70266,7 +70266,7 @@
   {
    "module": "src/lib",
    "files": 417,
-   "lines": 55633,
+   "lines": 55525,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -70772,7 +70772,7 @@
   {
    "module": "src/types",
    "files": 17,
-   "lines": 1037,
+   "lines": 975,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
@@ -70788,7 +70788,7 @@
     "regimes.ts: ConfiguracaoRegimeEspecial, REGIMES_ESPECIAIS",
     "simulacao.ts: SimulacaoTributaria",
     "split-payment.ts: SplitPaymentConfig, TransacaoSplitPayment",
-    "transicao.ts: AliquotasTransicao, ALIQUOTAS_TRANSICAO, ALIQUOTA_REFERENCIA_IVA_DUAL, ALIQUOTA_CBS_REFERENCIA, ALIQUOTA_IBS_REFERENCIA"
+    "transicao.ts: AliquotasTransicao, ALIQUOTAS_TRANSICAO"
    ],
    "docs": [
     "reforma-tributaria.ts: Barrel: API pública histórica após modularização. Implementação em src/types/reforma-tributaria/*.",
@@ -70799,7 +70799,8 @@
    ],
    "imports_modules": [
     "src/components",
-    "src/integrations"
+    "src/integrations",
+    "src/lib"
    ],
    "file_list": [
     "src/types/financial.ts",
@@ -99841,16 +99842,6 @@
     "value": "60"
    },
    {
-    "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    "name": "CBS_ALVO",
-    "value": "0.088"
-   },
-   {
-    "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    "name": "IBS_ALVO",
-    "value": "0.177"
-   },
-   {
     "file": "src/lib/tributario/calculadora/simples-nacional.ts",
     "name": "LIMITE_ANUAL",
     "value": "4"
@@ -100299,21 +100290,6 @@
     "file": "src/pages/tributario/SimulacaoRegimes.tsx",
     "name": "TAMANHO_PAGINA_HISTORICO",
     "value": "5"
-   },
-   {
-    "file": "src/types/reforma-tributaria/transicao.ts",
-    "name": "ALIQUOTA_REFERENCIA_IVA_DUAL",
-    "value": "26.5"
-   },
-   {
-    "file": "src/types/reforma-tributaria/transicao.ts",
-    "name": "ALIQUOTA_CBS_REFERENCIA",
-    "value": "8.8"
-   },
-   {
-    "file": "src/types/reforma-tributaria/transicao.ts",
-    "name": "ALIQUOTA_IBS_REFERENCIA",
-    "value": "17.7"
    },
    {
     "file": "supabase/functions/_shared/auth-guard.ts",
@@ -116506,7 +116482,7 @@
     "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "name": "calcularReformaTributaria",
     "params": "input: InputReforma",
-    "body": "const memoria: LinhaMemoria[] = []; const alertas: string[] = []; const ano = input.anoReferencia; const fase = CRONOGRAMA[ano] ?? CRONOGRAMA[ano >= 2033 ? 2033 : 2026]; const reducao = input.regimeEspecialReducao ?? 0; const receita = input.receitas.receitaBrutaAnual; const creditos = input.creditos ?? 0; const cbsAliq = (input.aliquotaCbsAlvo ?? fase.cbs) * (1 - reducao); const ibsAliq = (input.aliquotaIbsAlvo ?? fase.ibs) * (1 - reducao); const cbsDebito = receita * cbsAliq; const ibsDebito = …"
+    "body": "const memoria: LinhaMemoria[] = []; const alertas: string[] = []; const ano = input.anoReferencia; const fase = obterFase(ano); const reducao = input.regimeEspecialReducao ?? 0; const receita = input.receitas.receitaBrutaAnual; const creditos = input.creditos ?? 0; const cbsAliq = (input.aliquotaCbsAlvo ?? fase.cbs) * (1 - reducao); const ibsAliq = (input.aliquotaIbsAlvo ?? fase.ibs) * (1 - reducao); const cbsDebito = receita * cbsAliq; const ibsDebito = receita * ibsAliq; const cbsCredito = cre …"
    },
    {
     "file": "src/lib/tributario/calculadora/simples-nacional.ts",
@@ -119403,22 +119379,6 @@
    {
     "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "line": "const pisAntigo = receita * 0.0165 * fase.pisResidual;"
-   },
-   {
-    "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    "line": "ibs: IBS_ALVO * 0.1,"
-   },
-   {
-    "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    "line": "ibs: IBS_ALVO * 0.2,"
-   },
-   {
-    "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    "line": "ibs: IBS_ALVO * 0.3,"
-   },
-   {
-    "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-    "line": "ibs: IBS_ALVO * 0.4,"
    },
    {
     "file": "src/lib/tributario/calculadora/reforma-tributaria.ts",
@@ -127632,7 +127592,11 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
-    "name": "preserva constantes e catálogos exportados"
+    "name": "preserva catálogos exportados"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
+    "name": "ALIQUOTAS_TRANSICAO deriva de REF_CBS_2027/REF_IBS, não de constantes fixas"
    },
    {
     "file": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
@@ -132232,7 +132196,7 @@
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-    "name": "2027: CBS pleno 8,8%, PIS/COFINS extintos"
+    "name": "2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos"
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
@@ -132240,11 +132204,11 @@
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-    "name": "2033: sistema novo pleno — IBS 17,7%, sem residuais"
+    "name": "2033: sistema novo pleno — IBS = REF_IBS, CBS = REF_CBS_2027, sem residuais"
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-    "name": "total CBS+IBS em 2033 ~ 26,5% (alíquota de referência)"
+    "name": "total CBS+IBS em 2033 = REF_CBS_2027 + REF_IBS"
    },
    {
     "file": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
@@ -208077,7 +208041,7 @@
   },
   "src/hooks/__tests__/useCashbackSimulador.test.ts": {
    "path": "src/hooks/__tests__/useCashbackSimulador.test.ts",
-   "lines": 128,
+   "lines": 131,
    "is_test": true,
    "params": [
     {
@@ -212894,11 +212858,12 @@
   },
   "src/lib/__tests__/reforma-tributaria-types.regression.test.ts": {
    "path": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
-   "lines": 17,
+   "lines": 25,
    "is_test": true,
    "tests": [
     "types/reforma-tributaria — regressão de API pública",
-    "preserva constantes e catálogos exportados"
+    "preserva catálogos exportados",
+    "ALIQUOTAS_TRANSICAO deriva de REF_CBS_2027/REF_IBS, não de constantes fixas"
    ]
   },
   "src/lib/__tests__/relatorio-pdf.regression.test.ts": {
@@ -214598,7 +214563,7 @@
   },
   "src/lib/reforma-tributaria/regras.ts": {
    "path": "src/lib/reforma-tributaria/regras.ts",
-   "lines": 108,
+   "lines": 92,
    "exports": [
     "function determinarFaseTransicao",
     "function obterAliquotasTransicao",
@@ -216139,7 +216104,7 @@
   },
   "src/lib/tributario/projecao-reforma.ts": {
    "path": "src/lib/tributario/projecao-reforma.ts",
-   "lines": 219,
+   "lines": 169,
    "exports": [
     "interface AliquotaTransicao",
     "const CRONOGRAMA_REFORMA",
@@ -217557,16 +217522,16 @@
   },
   "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts": {
    "path": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-   "lines": 98,
+   "lines": 101,
    "is_test": true,
    "doc": "============================================ TESTES — Transição CBS/IBS ano a ano (EC 132/2023) ============================================",
    "tests": [
     "Cronograma transição CBS/IBS",
     "2026: CBS 0,9% + IBS 0,1% (fase teste)",
-    "2027: CBS pleno 8,8%, PIS/COFINS extintos",
+    "2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos",
     "2029: ICMS/ISS começam a reduzir (90% residual)",
-    "2033: sistema novo pleno — IBS 17,7%, sem residuais",
-    "total CBS+IBS em 2033 ~ 26,5% (alíquota de referência)",
+    "2033: sistema novo pleno — IBS = REF_IBS, CBS = REF_CBS_2027, sem residuais",
+    "total CBS+IBS em 2033 = REF_CBS_2027 + REF_IBS",
     "projetarReforma — cálculos por ano",
     "2026 mantém ICMS integral + CBS/IBS simbólicos",
     "2027 zera PIS/COFINS, CBS pleno",
@@ -217964,36 +217929,22 @@
   },
   "src/lib/tributario/calculadora/reforma-tributaria.ts": {
    "path": "src/lib/tributario/calculadora/reforma-tributaria.ts",
-   "lines": 244,
+   "lines": 187,
    "exports": [
     "function calcularReformaTributaria"
-   ],
-   "params": [
-    {
-     "name": "CBS_ALVO",
-     "value": "0.088"
-    },
-    {
-     "name": "IBS_ALVO",
-     "value": "0.177"
-    }
    ],
    "doc": "REFORMA TRIBUTÁRIA — CBS/IBS transição 2026-2033",
    "calc_fns": [
     {
      "name": "calcularReformaTributaria",
      "params": "input: InputReforma",
-     "body": "const memoria: LinhaMemoria[] = []; const alertas: string[] = []; const ano = input.anoReferencia; const fase = CRONOGRAMA[ano] ?? CRONOGRAMA[ano >= 2033 ? 2033 : 2026]; const reducao = input.regimeEspecialReducao ?? 0; const receita = input.receitas.receitaBrutaAnual; const creditos = input.creditos ?? 0; const cbsAliq = (input.aliquotaCbsAlvo ?? fase.cbs) * (1 - reducao); const ibsAliq = (input.aliquotaIbsAlvo ?? fase.ibs) * (1 - reducao); const cbsDebito = receita * cbsAliq; const ibsDebito = …"
+     "body": "const memoria: LinhaMemoria[] = []; const alertas: string[] = []; const ano = input.anoReferencia; const fase = obterFase(ano); const reducao = input.regimeEspecialReducao ?? 0; const receita = input.receitas.receitaBrutaAnual; const creditos = input.creditos ?? 0; const cbsAliq = (input.aliquotaCbsAlvo ?? fase.cbs) * (1 - reducao); const ibsAliq = (input.aliquotaIbsAlvo ?? fase.ibs) * (1 - reducao); const cbsDebito = receita * cbsAliq; const ibsDebito = receita * ibsAliq; const cbsCredito = cre …"
     }
    ],
    "percents": [
     "const cofinsAntigo = receita * 0.076 * fase.cofinsResidual;",
     "const issResidual = receita * 0.05 * fase.issResidual * (input.receitas.percentualServicos / 100);",
     "const pisAntigo = receita * 0.0165 * fase.pisResidual;",
-    "ibs: IBS_ALVO * 0.1,",
-    "ibs: IBS_ALVO * 0.2,",
-    "ibs: IBS_ALVO * 0.3,",
-    "ibs: IBS_ALVO * 0.4,",
     "receita * 0.18 * fase.icmsResidual * (1 - input.receitas.percentualServicos / 100);"
    ]
   },
@@ -218145,7 +218096,7 @@
   },
   "src/lib/tributario/calculadora/__tests__/regimes.test.ts": {
    "path": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-   "lines": 114,
+   "lines": 118,
    "is_test": true,
    "tests": [
     "calcularLucroPresumido",
@@ -227960,27 +227911,10 @@
   },
   "src/types/reforma-tributaria/transicao.ts": {
    "path": "src/types/reforma-tributaria/transicao.ts",
-   "lines": 89,
+   "lines": 27,
    "exports": [
     "interface AliquotasTransicao",
-    "const ALIQUOTAS_TRANSICAO",
-    "const ALIQUOTA_REFERENCIA_IVA_DUAL",
-    "const ALIQUOTA_CBS_REFERENCIA",
-    "const ALIQUOTA_IBS_REFERENCIA"
-   ],
-   "params": [
-    {
-     "name": "ALIQUOTA_REFERENCIA_IVA_DUAL",
-     "value": "26.5"
-    },
-    {
-     "name": "ALIQUOTA_CBS_REFERENCIA",
-     "value": "8.8"
-    },
-    {
-     "name": "ALIQUOTA_IBS_REFERENCIA",
-     "value": "17.7"
-    }
+    "const ALIQUOTAS_TRANSICAO"
    ]
   },
   "supabase/functions/fuzz_test.ts": {
@@ -244972,10 +244906,26 @@
   }
  },
  "git": {
-  "sha": "5788349561ec1edeafed4c553960f8ca7b3f538c",
+  "sha": "9fc35eeba490df4da502302784bf5b8b3ce1c20b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9fc35ee",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)",
+    "files": [
+     "src/hooks/__tests__/useCashbackSimulador.test.ts",
+     "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
+     "src/lib/reforma-tributaria/regras.ts",
+     "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+     "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+     "src/lib/tributario/calculadora/reforma-tributaria.ts",
+     "src/lib/tributario/projecao-reforma.ts",
+     "src/types/reforma-tributaria/transicao.ts"
+    ]
+   },
    {
     "sha": "5788349",
     "date": "2026-11-21",
@@ -245326,15 +245276,6 @@
      "scripts/ci/check-colunas-select.mjs",
      "scripts/ci/check-colunas-select.unit.mjs"
     ]
-   },
-   {
-    "sha": "f56d307",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(docs): fecha a auditoria de recuperação — 4 PRs do Dependabot e as 79 tags de arquivo (#464)",
-    "files": [
-     "docs/agentes/auditoria-branches-2026-11-17.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245371,6 +245312,38 @@
     2
    ],
    [
+    "src/hooks/__tests__/useCashbackSimulador.test.ts",
+    1
+   ],
+   [
+    "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
+    1
+   ],
+   [
+    "src/lib/reforma-tributaria/regras.ts",
+    1
+   ],
+   [
+    "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+    1
+   ],
+   [
+    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+    1
+   ],
+   [
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    1
+   ],
+   [
+    "src/lib/tributario/projecao-reforma.ts",
+    1
+   ],
+   [
+    "src/types/reforma-tributaria/transicao.ts",
+    1
+   ],
+   [
     "docs/receitafederal/PLANO_MELHORIAS_100_ETAPAS_CADASTRO_FISCAL.md",
     1
    ],
@@ -245384,38 +245357,6 @@
    ],
    [
     "docs/receitafederal/rfb-changelog-state.json",
-    1
-   ],
-   [
-    "src/config/reforma-tributaria.ts",
-    1
-   ],
-   [
-    "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
-    1
-   ],
-   [
-    "src/lib/reforma-tributaria/cronograma-oficial.ts",
-    1
-   ],
-   [
-    "scripts/integrity/README.md",
-    1
-   ],
-   [
-    "scripts/integrity/baseline/expected-crons.json",
-    1
-   ],
-   [
-    "scripts/migrate-cron-jobs.sh",
-    1
-   ],
-   [
-    "scripts/migrate-cron-jobs.sql",
-    1
-   ],
-   [
-    "scripts/test_migrate_cron_jobs.py",
     1
    ]
   ]
