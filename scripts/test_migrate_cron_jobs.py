@@ -36,10 +36,18 @@ sys.stdout.write(re.sub(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$([A-Za-z_][A-Za-z0-9_
 
 STUB_PSQL = r'''#!/usr/bin/env bash
 printf '%s\n' "$*" >> "$CAP"
+if [[ "$*" == *"to_regclass"* ]]; then
+  printf '%s\n' "${PSQL_DETECT_SCHEMA-1}"
+  exit "${PSQL_DETECT_RC:-0}"
+fi
+if [[ "$*" == *"vault.decrypted_secrets"* ]]; then
+  printf '%s\n' "${PSQL_DETECT_HAS-0}"
+  exit "${PSQL_DETECT_RC:-0}"
+fi
 prev=""
 for a in "$@"; do
   if [[ "$prev" == "-f" ]]; then cp "$a" "$CAP.sql"; echo "aplicado"; exit "${PSQL_APPLY_RC:-0}"; fi
-  if [[ "$a" == "-Atc" ]]; then printf '%s\n' "${PSQL_COUNT-13}"; exit "${PSQL_COUNT_RC:-0}"; fi
+  if [[ "$a" == "-Atc" ]]; then printf '%s\n' "${PSQL_COUNT-33}"; exit "${PSQL_COUNT_RC:-0}"; fi
   prev="$a"
 done
 echo " jobname | schedule | active"
@@ -64,6 +72,26 @@ BEGIN
   IF NOT FOUND THEN RAISE EXCEPTION 'could not find valid entry for job %', job_name; END IF;
   RETURN true;
 END $f$;
+"""
+
+FAKE_VAULT = r"""
+CREATE SCHEMA IF NOT EXISTS vault;
+CREATE TABLE IF NOT EXISTS vault._secrets(name text PRIMARY KEY, value text NOT NULL, description text);
+CREATE OR REPLACE FUNCTION vault.create_secret(_new_secret text, _new_name text, _new_description text DEFAULT NULL)
+RETURNS uuid LANGUAGE plpgsql AS $v$
+BEGIN
+  INSERT INTO vault._secrets(name, value, description) VALUES (_new_name, _new_secret, _new_description);
+  RETURN '00000000-0000-0000-0000-000000000001'::uuid;
+END $v$;
+CREATE OR REPLACE FUNCTION vault.update_secret(_secret_id uuid, _new_secret text, _new_name text, _new_description text DEFAULT NULL)
+RETURNS void LANGUAGE plpgsql AS $v$
+BEGIN
+  UPDATE vault._secrets SET value = _new_secret WHERE name = _new_name;
+END $v$;
+DROP VIEW IF EXISTS vault.decrypted_secrets;
+CREATE VIEW vault.decrypted_secrets AS
+  SELECT '00000000-0000-0000-0000-000000000001'::uuid AS id, name, value AS decrypted_secret
+  FROM vault._secrets;
 """
 
 
@@ -94,6 +122,9 @@ class Base(unittest.TestCase):
             "DEST_DB_URL": "postgresql://stub/db",
             "PROJECT_REF": "refteste",
             "ANON_KEY": "eyJhbGciOi.J9-_x",
+            # Devin ANALYSIS 592ca264: parser POSIX do psql/sed só reproduz
+            # com POSIXLY_CORRECT=1 no ambiente que inicia o script.
+            "POSIXLY_CORRECT": "1",
         }
         if env_extra:
             env.update(env_extra)
@@ -167,16 +198,20 @@ class TestDryRun(Base):
         self.assertEqual(self.psql_calls(), [])
         self.assertIn("DRY-RUN", r.stdout)
         self.assertIn("SELECT cron.schedule(", r.stdout)
-        self.assertIn("$cron$ SELECT public.capture_slow_queries(500); $cron$", r.stdout)
+        self.assertIn("$cron$ SELECT public.capture_slow_queries() $cron$", r.stdout)
 
     def test_renderizado_vai_para_tmpdir_e_e_identico_a_fonte(self):
         r = self.run_script("--dry-run", env_extra={"ANON_KEY": "CHAVE_SENTINELA.x"})
         self.assertEqual(r.returncode, 0, r.stderr)
         arquivos = list(self.tmp.glob("cron-final-*.sql"))
         self.assertEqual(len(arquivos), 1)
-        # Nenhum placeholder ativo hoje: nada do ambiente pode entrar no SQL.
-        self.assertEqual(arquivos[0].read_text(), SQL.read_text())
-        self.assertNotIn("CHAVE_SENTINELA", r.stdout)
+        # Interpolação ativa: PROJECT_REF entra nos hosts das edges; ANON_KEY não
+        # tem mais placeholder no SQL e nada do ambiente pode vazar para o arquivo.
+        esperado = SQL.read_text().replace("${PROJECT_REF}", "refteste")
+        self.assertEqual(arquivos[0].read_text(), esperado)
+        self.assertIn("https://refteste.supabase.co/functions", arquivos[0].read_text())
+        self.assertNotIn("CHAVE_SENTINELA", arquivos[0].read_text())
+        self.assertNotIn("${PROJECT_REF}", arquivos[0].read_text())
 
     def test_duas_execucoes_nao_colidem(self):
         self.run_script("--dry-run")
@@ -189,12 +224,15 @@ class TestAplicacao(Base):
         r = self.run_script()
         self.assertEqual(r.returncode, 0, r.stderr)
         chamadas = self.psql_calls()
-        self.assertEqual(len(chamadas), 3)
-        self.assertTrue(all(c.startswith("-X postgresql://stub/db") for c in chamadas), chamadas)
-        self.assertIn("-v ON_ERROR_STOP=1 -f", chamadas[0])
+        self.assertEqual(len(chamadas), 5)
+        self.assertTrue(all(c.startswith("-X ") and c.endswith("postgresql://stub/db") for c in chamadas), chamadas)
+        self.assertIn("-v ON_ERROR_STOP=1", chamadas[2])
+        self.assertIn("-v vault_schema=1 -v vault_has=0", chamadas[2])
+        self.assertIn(" -f ", chamadas[2])
         esperado = len(re.findall(r"^SELECT cron\.schedule\(", SQL.read_text(), re.M))
-        self.assertIn(f"✅ Total de jobs no destino: 13 (esperado ≥ {esperado})", r.stdout)
-        self.assertEqual(Path(str(self.cap) + ".sql").read_text(), SQL.read_text())
+        self.assertIn(f"✅ Total de jobs no destino: 33 (esperado ≥ {esperado})", r.stdout)
+        self.assertEqual(Path(str(self.cap) + ".sql").read_text(),
+                         SQL.read_text().replace("${PROJECT_REF}", "refteste"))
         logs = list(self.tmp.glob("cron-apply-*.log"))
         self.assertEqual(len(logs), 1)
         self.assertIn("aplicado", logs[0].read_text())
@@ -203,7 +241,8 @@ class TestAplicacao(Base):
         r = self.run_script(env_extra={"PSQL_APPLY_RC": "3"})
         self.assertEqual(r.returncode, 3)
         self.assertNotIn("✅", r.stdout)
-        self.assertEqual(len(self.psql_calls()), 1)
+        # 2× detecção do vault + 1× apply (a falha ocorre no apply)
+        self.assertEqual(len(self.psql_calls()), 3)
 
     def test_contagem_abaixo_do_esperado_falha(self):
         # Regressão: imprimia "✅ Total ... 5 (esperado ≥ 13)" e saía 0.
@@ -220,7 +259,7 @@ class TestAplicacao(Base):
                 self.assertNotIn("✅", r.stdout)
 
     def test_contagem_maior_que_o_esperado_passa(self):
-        r = self.run_script(env_extra={"PSQL_COUNT": "20"})
+        r = self.run_script(env_extra={"PSQL_COUNT": "40"})
         self.assertEqual(r.returncode, 0, r.stderr)
 
     def test_falha_na_consulta_de_contagem_propaga(self):
@@ -263,11 +302,15 @@ class TestInterpolacao(Base):
     def test_valor_estranho_nao_entra_no_sql_real(self):
         # Regressão: o comentário do cabeçalho tinha os placeholders e uma quebra
         # de linha no ANON_KEY virava SQL executável no destino.
+        # Regressão: o cabeçalho tinha placeholders em comentário e uma quebra de
+        # linha no ANON_KEY virava SQL executável no destino. Os placeholders de
+        # comentário foram removidos; só PROJECT_REF é interpolado de fato.
         r = self.run_script(env_extra={"ANON_KEY": "k\nCREATE TABLE public.pwned(x int);"})
         self.assertEqual(r.returncode, 0, r.stderr)
         aplicado = Path(str(self.cap) + ".sql").read_text()
         self.assertNotIn("pwned", aplicado)
-        self.assertEqual(aplicado, SQL.read_text())
+        self.assertEqual(aplicado, SQL.read_text().replace("${PROJECT_REF}", "refteste"))
+        self.assertNotIn("k\nCREATE TABLE", aplicado)
 
     def test_sql_sem_cron_schedule_exit4(self):
         script = self.copia_com_sql("SELECT 1;\n")
@@ -283,7 +326,7 @@ class TestInterpolacao(Base):
 
 
 class TestSqlConsistencia(unittest.TestCase):
-    """O SQL fixa 13 em três lugares; todos têm de bater com os jobs declarados."""
+    """O SQL fixa a contagem em três lugares; todos têm de bater com os jobs declarados."""
 
     @classmethod
     def setUpClass(cls):
@@ -344,31 +387,76 @@ class TestIntegracaoPostgresLocal(Base):
         self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS cron CASCADE;")
 
     def _psql(self, *args):
-        return subprocess.run(["psql", "-X", self.url, "-v", "ON_ERROR_STOP=1", "-q", "-At", *args],
+        return subprocess.run(["psql", "-X", "-v", "ON_ERROR_STOP=1", "-q", "-At", *args, self.url],
                               capture_output=True, text=True, timeout=30, check=True).stdout.strip()
 
     def test_aplica_e_e_idempotente(self):
         for _ in range(2):
             r = self.run_script(env_extra={"DEST_DB_URL": self.url})
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-            self.assertIn("✅ Total de jobs no destino: 13", r.stdout)
-        self.assertEqual(self._psql("-c", "SELECT count(*), count(DISTINCT jobname) FROM cron.job"), "13|13")
+            self.assertIn("✅ Total de jobs no destino: 33", r.stdout)
+        self.assertEqual(self._psql("-c", "SELECT count(*), count(DISTINCT jobname) FROM cron.job"), "33|33")
 
     def test_job_extra_preexistente_e_preservado(self):
         self._psql("-c", "SELECT cron.schedule('outro-job', '* * * * *', 'SELECT 1')")
         r = self.run_script(env_extra={"DEST_DB_URL": self.url})
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertEqual(self._psql("-c", "SELECT count(*) FROM cron.job"), "14")
+        self.assertEqual(self._psql("-c", "SELECT count(*) FROM cron.job"), "34")
 
     def test_schedule_quebrado_aborta_tudo(self):
         self._psql("-c", "CREATE OR REPLACE FUNCTION cron.schedule(job_name text, schedule text, command text) "
-                         "RETURNS bigint LANGUAGE plpgsql AS $f$ BEGIN IF job_name = 'pgss_weekly_baseline' THEN "
+                         "RETURNS bigint LANGUAGE plpgsql AS $f$ BEGIN IF job_name = 'pgss-weekly-baseline' THEN "
                          "RAISE EXCEPTION 'boom'; END IF; INSERT INTO cron.job(schedule, command, jobname) "
                          "VALUES (schedule, command, job_name); RETURN 1; END $f$;")
         r = self.run_script(env_extra={"DEST_DB_URL": self.url})
         self.assertNotEqual(r.returncode, 0)
         self.assertNotIn("✅", r.stdout)
         self.assertEqual(self._psql("-c", "SELECT count(*) FROM cron.job"), "0")
+
+    def test_provisiona_anon_key_no_vault(self):
+        # BUG 4: anon_key ausente no vault quebra chave_anon_vault() fechada.
+        # Sem o schema vault, o bloco só emite WARN e nada é gravado.
+        self._psql("-c", FAKE_VAULT)
+        self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
+        for _ in range(2):
+            r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "eyJhbGciOi.J9-_x"})
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        # idempotente: 2 aplicações, 1 linha, valor atual = último enviado
+        self.assertEqual(self._psql("-c", "SELECT count(*) FROM vault._secrets"), "1")
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "eyJhbGciOi.J9-_x")
+        # BUG 5: quebra de linha final no secret entra no vault como caracter
+        # literal e quebra chave_anon_vault(). Aplicar chave com \n final deve
+        # gravar a chave já normalizada (trim do wrapper).
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "sk-rotacionada.abc\n"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "sk-rotacionada.abc")
+
+    def test_chave_terminada_em_rn_nao_e_truncada(self):
+        # Devin BUG (cf4497df): sed 's/[\r\n]*$//' em modo POSIX casa as
+        # letras 'r' e 'n' finais de uma chave válida e grava versão truncada
+        # no vault, quebrando o apikey dos crons de conformidade. O wrapper
+        # agora usa tr -d '\r\n' (remove só CR/LF — não letras).
+        self._psql("-c", FAKE_VAULT)
+        self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
+        # POSIXLY_CORRECT=1 reproduz o modo POSIX do GNU sed: se o trim via
+        # sed voltar, a chave seria truncada e o teste falha aqui.
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-teste.rn", "POSIXLY_CORRECT": "1"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-teste.rn")
+
+    def test_rotaciona_anon_key_no_vault(self):
+        # ANÁLISE Devin: o teste de integração não comprova rotação — duas
+        # aplicações usavam o mesmo valor. Aqui a 2ª usa chave diferente e a
+        # única entrada passa a conter o novo valor (update idempotente).
+        self._psql("-c", FAKE_VAULT)
+        self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-v1.abc"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-v1.abc")
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-v2.def"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT count(*) FROM vault._secrets"), "1")
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-v2.def")
 
     def test_dry_run_nao_altera_o_banco(self):
         r = self.run_script("--dry-run", env_extra={"DEST_DB_URL": self.url})
