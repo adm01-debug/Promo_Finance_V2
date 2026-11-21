@@ -11,13 +11,13 @@ const GLOSSARIO: Record<string, { titulo: string; descricao: string; fundamentoL
   CBS: {
     titulo: 'Contribuição sobre Bens e Serviços',
     descricao:
-      'Tributo federal que substitui PIS e COFINS. Alíquota de referência pendente de resolução do Senado (LC 214/2025, art. 347) — veja o valor aplicado no ano ao lado.',
+      'Tributo federal que substitui PIS e COFINS. Alíquota de referência pendente de resolução do Senado (LC 214/2025, art. 347) — o valor exibido no período pode diferir da referência plena.',
     fundamentoLegal: 'LC 214/2025, Art. 1º',
   },
   IBS: {
     titulo: 'Imposto sobre Bens e Serviços',
     descricao:
-      'Tributo estadual/municipal que substitui ICMS e ISS. Alíquota de referência pendente de resolução do Senado (LC 214/2025, art. 349) — veja o valor aplicado no ano ao lado.',
+      'Tributo estadual/municipal que substitui ICMS e ISS. Alíquota de referência pendente de resolução do Senado (LC 214/2025, art. 349) — o valor exibido no período pode diferir da referência plena.',
     fundamentoLegal: 'LC 214/2025, Art. 1º',
   },
   IS: {

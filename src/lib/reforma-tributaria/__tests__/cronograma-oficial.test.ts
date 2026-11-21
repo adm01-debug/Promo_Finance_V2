@@ -59,10 +59,30 @@ describe('cronograma-oficial', () => {
     expect(linha.ibsUf).toBeCloseTo(obterLinhaCronograma(2033).ibsUf, 10);
   });
 
-  it('todas as linhas declaram origem e fundamento', () => {
+  it('todas as linhas declaram origem e fundamento (CBS e IBS)', () => {
     for (const linha of CRONOGRAMA_OFICIAL) {
       expect(['lei', 'simulado']).toContain(linha.origem);
       expect(linha.fundamento.length).toBeGreaterThan(0);
+      expect(['lei', 'simulado']).toContain(linha.origemIbs);
+      expect(linha.fundamentoIbs.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('2027/2028: IBS é "lei" (art. 344) mesmo com CBS "simulado" (art. 347) — origens divergem', () => {
+    for (const ano of [2027, 2028]) {
+      const linha = obterLinhaCronograma(ano);
+      expect(linha.origem).toBe('simulado');
+      expect(linha.origemIbs).toBe('lei');
+      expect(linha.fundamentoIbs).not.toBe(linha.fundamento);
+    }
+  });
+
+  it('2026 e 2029+: origem e origemIbs coincidem (ambos lei em 2026, ambos simulado de 2029+)', () => {
+    expect(obterLinhaCronograma(2026).origem).toBe(obterLinhaCronograma(2026).origemIbs);
+    for (const ano of [2029, 2030, 2031, 2032, 2033]) {
+      const linha = obterLinhaCronograma(ano);
+      expect(linha.origem).toBe('simulado');
+      expect(linha.origemIbs).toBe('simulado');
     }
   });
 });
