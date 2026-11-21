@@ -52,4 +52,7 @@ export type RegimeEspecial =
   | 'agencias_viagem'
   | 'transporte_coletivo'
   | 'sociedades_cooperativas'
+  | 'saude'
+  | 'educacao'
+  | 'producoes_culturais'
   | 'nenhum';
