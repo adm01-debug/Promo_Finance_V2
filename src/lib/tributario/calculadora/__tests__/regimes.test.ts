@@ -113,27 +113,30 @@ describe('calcularReformaTributaria', () => {
   it('imposto seletivo aplica sobre categorias com alíquota informada pelo usuário', () => {
     const r = calcularReformaTributaria({
       ...base,
-        categoriaImpostoSeletivo: 'produtos_fumigenos',
+      categoriaImpostoSeletivo: 'produtos_fumigenos',
       aliquotaISCustomizada: 25,
     });
-      // base = vendas (1mi × 50% serviços) = 500k → 25% = 125k
-      expect(r.tributos.find((t) => t.nome === 'Imposto Seletivo')!.valor).toBeCloseTo(125_000, 0);
+    // base = vendas (1mi × 50% serviços) = 500k → 25% = 125k
+    expect(r.tributos.find((t) => t.nome === 'Imposto Seletivo')!.valor).toBeCloseTo(125_000, 0);
   });
 
   it('categoria de IS sem alíquota informada não aplica imposto — lei não fixa alíquota por categoria', () => {
-      const r = calcularReformaTributaria({ ...base, categoriaImpostoSeletivo: 'produtos_fumigenos' });
+    const r = calcularReformaTributaria({
+      ...base,
+      categoriaImpostoSeletivo: 'produtos_fumigenos',
+    });
     expect(r.tributos.find((t) => t.nome === 'Imposto Seletivo')!.valor).toBe(0);
   });
 
-    it('categorias novas da LC 214/2025 aplicam alíquota na base de bens', () => {
-      const r = calcularReformaTributaria({
-        ...base,
-        categoriaImpostoSeletivo: 'embarcacoes_aeronaves',
-        aliquotaISCustomizada: 10,
-      });
-      // base = vendas 500k → 10% = 50k
-      const tributo = r.tributos.find((t) => t.nome === 'Imposto Seletivo')!;
-      expect(tributo.valor).toBeCloseTo(50_000, 0);
-      expect(tributo.base).toBeCloseTo(500_000, 0);
+  it('categorias novas da LC 214/2025 aplicam alíquota na base de bens', () => {
+    const r = calcularReformaTributaria({
+      ...base,
+      categoriaImpostoSeletivo: 'embarcacoes_aeronaves',
+      aliquotaISCustomizada: 10,
     });
+    // base = vendas 500k → 10% = 50k
+    const tributo = r.tributos.find((t) => t.nome === 'Imposto Seletivo')!;
+    expect(tributo.valor).toBeCloseTo(50_000, 0);
+    expect(tributo.base).toBeCloseTo(500_000, 0);
+  });
 });
