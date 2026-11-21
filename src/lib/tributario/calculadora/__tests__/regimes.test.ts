@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { calcularLucroPresumido } from '../lucro-presumido';
 import { calcularSimplesNacional } from '../simples-nacional';
 import { calcularReformaTributaria } from '../reforma-tributaria';
+import { REF_CBS_2027, REF_IBS } from '@/config/reforma-tributaria';
 
 describe('calcularLucroPresumido', () => {
   const base = {
@@ -91,8 +92,8 @@ describe('calcularReformaTributaria', () => {
     const r = calcularReformaTributaria(base);
     expect(r.tributos.find((t) => t.nome === 'ICMS residual')!.valor).toBe(0);
     expect(r.tributos.find((t) => t.nome === 'ISS residual')!.valor).toBe(0);
-    // CBS 8.8% + IBS 17.7% = 26.5%
-    expect(r.cargaEfetiva).toBeCloseTo(26.5, 1);
+    // CBS = REF_CBS_2027 (sem o -0.1 de transição, 2033 é pleno) + IBS = REF_IBS
+    expect(r.cargaEfetiva).toBeCloseTo(REF_CBS_2027 + REF_IBS, 1);
   });
 
   it('2026: alíquotas teste 0,9% + 0,1%', () => {
@@ -103,7 +104,10 @@ describe('calcularReformaTributaria', () => {
 
   it('regime reduzido aplica desconto', () => {
     const r = calcularReformaTributaria({ ...base, regimeEspecialReducao: 0.6 });
-    expect(r.tributos.find((t) => t.nome === 'CBS')!.aliquotaEfetiva).toBeCloseTo(0.088 * 0.4, 4);
+    expect(r.tributos.find((t) => t.nome === 'CBS')!.aliquotaEfetiva).toBeCloseTo(
+      (REF_CBS_2027 / 100) * 0.4,
+      4
+    );
   });
 
   it('imposto seletivo aplica sobre categorias', () => {
