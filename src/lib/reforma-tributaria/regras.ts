@@ -28,6 +28,8 @@ export function obterAliquotasTransicao(ano: number): AliquotasTransicao {
     ano: linha.ano,
     cbs: linha.cbs,
     ibs: linha.ibsUf + linha.ibsMun,
+    ibsUf: linha.ibsUf,
+    ibsMun: linha.ibsMun,
     icmsResidual: linha.icmsResidual,
     issResidual: linha.issResidual,
     pisResidual: linha.pisResidual,
