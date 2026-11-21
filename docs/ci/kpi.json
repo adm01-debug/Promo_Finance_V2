@@ -1,97 +1,97 @@
 {
   "actionlint.yml": {
-    "runs": 84,
-    "custo_semana_min": 609.6,
+    "runs": 38,
+    "custo_semana_min": 66.4,
     "taxa_falha_7d": "0%"
   },
   "auto-update-pr-branch.yml": {
-    "runs": 1660,
-    "custo_semana_min": 5260.7,
-    "taxa_falha_7d": "0.3%"
+    "runs": 1712,
+    "custo_semana_min": 1155.5,
+    "taxa_falha_7d": "0.2%"
   },
   "automation-local.yml": {
-    "runs": 705,
-    "custo_semana_min": 7632.9,
-    "taxa_falha_7d": "3%"
+    "runs": 557,
+    "custo_semana_min": 3122,
+    "taxa_falha_7d": "2.3%"
   },
   "ci.yml": {
-    "runs": 707,
-    "custo_semana_min": 28675.2,
-    "taxa_falha_7d": "6.1%"
+    "runs": 558,
+    "custo_semana_min": 10080.6,
+    "taxa_falha_7d": "8.4%"
   },
   "codeql.yml": {
-    "runs": 264,
-    "custo_semana_min": 2001.4,
-    "taxa_falha_7d": "9.8%"
+    "runs": 236,
+    "custo_semana_min": 785.6,
+    "taxa_falha_7d": "1.7%"
   },
   "contexto.yml": {
-    "runs": 691,
-    "custo_semana_min": 7239.4,
-    "taxa_falha_7d": "1.7%"
+    "runs": 268,
+    "custo_semana_min": 1072.8,
+    "taxa_falha_7d": "1.9%"
   },
   "copilot": {
-    "runs": 12,
-    "custo_semana_min": 25.9,
-    "taxa_falha_7d": "16.7%"
+    "runs": 1,
+    "custo_semana_min": 1.7,
+    "taxa_falha_7d": "0%"
   },
   "copilot-pull-request-reviewer": {
-    "runs": 4,
-    "custo_semana_min": 33.7,
-    "taxa_falha_7d": "50%"
+    "runs": 2,
+    "custo_semana_min": 4.9,
+    "taxa_falha_7d": "100%"
   },
   "deno-tests.yml": {
-    "runs": 707,
-    "custo_semana_min": 9250.7,
-    "taxa_falha_7d": "1.7%"
+    "runs": 557,
+    "custo_semana_min": 2050.7,
+    "taxa_falha_7d": "2.2%"
   },
   "dependabot-updates": {
-    "runs": 9,
-    "custo_semana_min": 16.3,
+    "runs": 6,
+    "custo_semana_min": 12.7,
     "taxa_falha_7d": "0%"
   },
   "dependency-review.yml": {
-    "runs": 580,
-    "custo_semana_min": 4865.2,
-    "taxa_falha_7d": "4.1%"
-  },
-  "estado-real.yml": {
-    "runs": 32,
-    "custo_semana_min": 134.8,
+    "runs": 423,
+    "custo_semana_min": 1359.2,
     "taxa_falha_7d": "3.1%"
   },
+  "estado-real.yml": {
+    "runs": 34,
+    "custo_semana_min": 140.7,
+    "taxa_falha_7d": "2.9%"
+  },
   "functions-deploy.yml": {
-    "runs": 17,
-    "custo_semana_min": 49.1,
-    "taxa_falha_7d": "5.9%"
+    "runs": 142,
+    "custo_semana_min": 287.5,
+    "taxa_falha_7d": "0.7%"
   },
   "graphify.yml": {
-    "runs": 296,
-    "custo_semana_min": 5744.8,
-    "taxa_falha_7d": "2%"
+    "runs": 35,
+    "custo_semana_min": 353.8,
+    "taxa_falha_7d": "14.3%"
   },
   "inventario-estado.yml": {
-    "runs": 24,
-    "custo_semana_min": 297,
+    "runs": 26,
+    "custo_semana_min": 108.2,
     "taxa_falha_7d": "0%"
   },
   "prod-migrate.yml": {
-    "runs": 8,
-    "custo_semana_min": 325.8,
-    "taxa_falha_7d": "37.5%"
+    "runs": 6,
+    "custo_semana_min": 54.3,
+    "taxa_falha_7d": "16.7%"
   },
   "schema-drift.yml": {
     "runs": 3,
-    "custo_semana_min": 34.5,
-    "taxa_falha_7d": "100%"
+    "custo_semana_min": 12.7,
+    "taxa_falha_7d": "33.3%"
   },
   "settings-guard.yml": {
     "runs": 5,
-    "custo_semana_min": 3.9,
+    "custo_semana_min": 1.4,
     "taxa_falha_7d": "0%"
   },
   "supabase-linter.yml": {
-    "runs": 642,
-    "custo_semana_min": 5230.6,
+    "runs": 483,
+    "custo_semana_min": 1481.4,
     "taxa_falha_7d": "2.5%"
   },
   "update-graph": {
