@@ -5,12 +5,12 @@
   "linguagens": [
    "TypeScript (2369)",
    "SQL (1125)",
-   "Markdown (217)",
+   "Markdown (218)",
    "JavaScript (76)",
+   "JSON (45)",
    "Python (45)",
-   "JSON (44)",
    "Shell (29)",
-   "YAML (25)"
+   "YAML (26)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -645,6 +645,30 @@
    ]
   },
   {
+   "arquivo": ".github/workflows/rfb-upstream-watch.yml",
+   "nome": "Vigilância de versões RFB (upstream watch)",
+   "gatilhos": [
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "crons": [
+    "23 9 * * 1"
+   ],
+   "branches": [],
+   "jobs": [
+    "verificar"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [],
+   "actions": [
+    "actions/checkout"
+   ]
+  },
+  {
    "arquivo": ".github/workflows/schema-drift.yml",
    "nome": "Schema drift (types + migrations)",
    "gatilhos": [
@@ -1237,7 +1261,7 @@
   },
   {
    "pasta": "docs/receitafederal",
-   "arquivos_md": 3
+   "arquivos_md": 4
   },
   {
    "pasta": "docs/auditoria",

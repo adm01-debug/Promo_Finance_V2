@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "794bb458fc6d8e9741ca0cff081bb22a481689d8",
+  "sha": "f22be434f9012b9ec42cd31989729f433959e277",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 19:54 UTC",
-  "files_total": 4019,
+  "generated_at": "2026-11-21 20:06 UTC",
+  "files_total": 4022,
   "code_files": 3614,
   "code_lines": 514644
  },
  "version": "1.3.2",
- "facts_hash": "077240bd076477b0",
+ "facts_hash": "ecb5bdce7767b998",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -287,6 +287,14 @@
     "file": ".github/workflows/prod-migrate.yml",
     "name": "prod-migrate",
     "triggers": [
+     "workflow_dispatch"
+    ]
+   },
+   {
+    "file": ".github/workflows/rfb-upstream-watch.yml",
+    "name": "Vigilância de versões RFB (upstream watch)",
+    "triggers": [
+     "schedule",
      "workflow_dispatch"
     ]
    },
@@ -66596,6 +66604,11 @@
     "kind": "GitHub Actions cron",
     "detail": "41 9 * * 1",
     "file": ".github/workflows/inventario-estado.yml"
+   },
+   {
+    "kind": "GitHub Actions cron",
+    "detail": "23 9 * * 1",
+    "file": ".github/workflows/rfb-upstream-watch.yml"
    },
    {
     "kind": "GitHub Actions cron",
@@ -244959,10 +244972,21 @@
   }
  },
  "git": {
-  "sha": "794bb458fc6d8e9741ca0cff081bb22a481689d8",
+  "sha": "f22be434f9012b9ec42cd31989729f433959e277",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f22be43",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)",
+    "files": [
+     ".github/workflows/rfb-upstream-watch.yml",
+     "docs/receitafederal/VERSOES_RFB.md",
+     "docs/receitafederal/rfb-changelog-state.json"
+    ]
+   },
    {
     "sha": "794bb45",
     "date": "2026-11-21",
@@ -245311,15 +245335,6 @@
     "files": [
      "supabase/migrations/20261118000000_versiona_vw_webhooks_recentes.sql"
     ]
-   },
-   {
-    "sha": "6d521cd",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "docs(agentes): auditoria das 75 PRs fechadas e varredura de drift do types.ts (#462)",
-    "files": [
-     "docs/agentes/auditoria-branches-2026-11-17.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245356,8 +245371,16 @@
     2
    ],
    [
-    "docs/agentes/auditoria-branches-2026-11-17.md",
-    2
+    ".github/workflows/rfb-upstream-watch.yml",
+    1
+   ],
+   [
+    "docs/receitafederal/VERSOES_RFB.md",
+    1
+   ],
+   [
+    "docs/receitafederal/rfb-changelog-state.json",
+    1
    ],
    [
     "src/config/reforma-tributaria.ts",
@@ -245393,14 +245416,6 @@
    ],
    [
     "scripts/test_staging_migrate.py",
-    1
-   ],
-   [
-    "docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
-    1
-   ],
-   [
-    "docs/archive/README.md",
     1
    ]
   ]

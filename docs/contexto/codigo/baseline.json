@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "794bb458fc6d8e9741ca0cff081bb22a481689d8",
+  "commit": "f22be434f9012b9ec42cd31989729f433959e277",
   "branch": "main",
-  "data_commit": "2026-11-21T16:53:29-03:00",
+  "data_commit": "2026-11-21T17:03:49-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f22be43",
+    "data": "2026-11-21",
+    "assunto": "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)"
+   },
    {
     "sha": "794bb45",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "cb9d5c8",
     "data": "2026-11-17",
     "assunto": "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)"
-   },
-   {
-    "sha": "2d54fb1",
-    "data": "2026-11-17",
-    "assunto": "chore(db): remove 11 tabelas-resíduo de particionamento e 4 views sem consumidor (#467)"
    }
   ],
-  "arquivos_mudados_7d": 445,
+  "arquivos_mudados_7d": 448,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -161,11 +161,11 @@
    },
    {
     "pasta": "package.json",
-    "mudancas": 25
+    "mudancas": 24
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 23
+    "mudancas": 22
    },
    {
     "pasta": "src/components/contas-pagar",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3980,
+  "arquivos_total": 3983,
   "arquivos_codigo": 2488,
   "linhas_codigo": 443710,
   "rotas": 130,
@@ -333,9 +333,9 @@
   "migrations": 1053,
   "cron_jobs": 22,
   "testes": 486,
-  "workflows": 19,
+  "workflows": 20,
   "scripts": 116,
-  "docs_md": 217
+  "docs_md": 218
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

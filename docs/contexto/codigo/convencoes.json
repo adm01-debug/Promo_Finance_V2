@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)",
    "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)",
    "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)",
    "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)",
-   "merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)",
-   "fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)"
+   "merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
