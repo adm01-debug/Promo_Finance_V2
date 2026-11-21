@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "424bfe74d31cde5de0aede45ce704dfbf7b01f65",
+  "sha": "9aa15fe833652a20039fca0ebab53a907ae4750e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 21:32 UTC",
+  "generated_at": "2026-11-21 22:13 UTC",
   "files_total": 4024,
   "code_files": 3615,
-  "code_lines": 514719
+  "code_lines": 514735
  },
  "version": "1.3.2",
- "facts_hash": "c6795ee93700b0b0",
+ "facts_hash": "e73bbe3fbc0c0cec",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70266,7 +70266,7 @@
   {
    "module": "src/lib",
    "files": 418,
-   "lines": 55677,
+   "lines": 55687,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -70772,7 +70772,7 @@
   {
    "module": "src/types",
    "files": 17,
-   "lines": 1006,
+   "lines": 1012,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
@@ -119066,14 +119066,6 @@
     "line": "// de fato\" (cota zero do rateio de acordo com 100% de desconto ou"
    },
    {
-    "file": "src/lib/reforma-tributaria/calcular-tributos.ts",
-    "line": "const aliquotaIBSEstadual = aliquotaIBS * 0.75;"
-   },
-   {
-    "file": "src/lib/reforma-tributaria/calcular-tributos.ts",
-    "line": "const aliquotaIBSMunicipal = aliquotaIBS * 0.25;"
-   },
-   {
     "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
     "line": "ibsMun: (REF_IBS * 0.1) / 2,"
    },
@@ -119952,6 +119944,14 @@
    {
     "file": "src/pages/tributario/TabelasConsulta.tsx",
     "line": "<TableHead>INSS 11%</TableHead>"
+   },
+   {
+    "file": "src/types/reforma-tributaria/transicao.ts",
+    "line": "/** Alíquota (% da base) do IBS estadual — 0,1% em 2026 (100% do IBS), metade de `ibs` a partir de 2027. */"
+   },
+   {
+    "file": "src/types/reforma-tributaria/transicao.ts",
+    "line": "/** Alíquota (% da base) do IBS municipal — 0% em 2026, metade de `ibs` a partir de 2027. */"
    },
    {
     "file": "supabase/functions/_shared/carga-tributaria.ts",
@@ -127549,7 +127549,11 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "name": "IBS dividido 75% estadual 25% municipal"
+    "name": "IBS dividido 50% estadual 50% municipal (regime pleno, 2033)"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "IBS 2026: 100% estadual, 0% municipal (ano-teste, art. 343 LC 214/2025)"
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
@@ -212889,7 +212893,7 @@
   },
   "src/lib/__tests__/reforma-tributaria-calculator.test.ts": {
    "path": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-   "lines": 289,
+   "lines": 295,
    "is_test": true,
    "tests": [
     "Reforma Tributária Calculator",
@@ -212928,7 +212932,8 @@
     "split payment CBS ativo a partir de 2026",
     "carga tributária percentual é consistente",
     "detalhamento contém informações úteis",
-    "IBS dividido 75% estadual 25% municipal",
+    "IBS dividido 50% estadual 50% municipal (regime pleno, 2033)",
+    "IBS 2026: 100% estadual, 0% municipal (ano-teste, art. 343 LC 214/2025)",
     "com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo",
     "com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota",
     "calcularCreditos",
@@ -214586,13 +214591,9 @@
   },
   "src/lib/reforma-tributaria/calcular-tributos.ts": {
    "path": "src/lib/reforma-tributaria/calcular-tributos.ts",
-   "lines": 158,
+   "lines": 160,
    "exports": [
     "function calcularTributosReforma"
-   ],
-   "percents": [
-    "const aliquotaIBSEstadual = aliquotaIBS * 0.75;",
-    "const aliquotaIBSMunicipal = aliquotaIBS * 0.25;"
    ]
   },
   "src/lib/reforma-tributaria/creditos.ts": {
@@ -214649,7 +214650,7 @@
   },
   "src/lib/reforma-tributaria/regras.ts": {
    "path": "src/lib/reforma-tributaria/regras.ts",
-   "lines": 88,
+   "lines": 90,
    "exports": [
     "function determinarFaseTransicao",
     "function obterAliquotasTransicao",
@@ -228022,10 +228023,14 @@
   },
   "src/types/reforma-tributaria/transicao.ts": {
    "path": "src/types/reforma-tributaria/transicao.ts",
-   "lines": 27,
+   "lines": 33,
    "exports": [
     "interface AliquotasTransicao",
     "const ALIQUOTAS_TRANSICAO"
+   ],
+   "percents": [
+    "/** Alíquota (% da base) do IBS estadual — 0,1% em 2026 (100% do IBS), metade de `ibs` a partir de 2027. */",
+    "/** Alíquota (% da base) do IBS municipal — 0% em 2026, metade de `ibs` a partir de 2027. */"
    ]
   },
   "supabase/functions/fuzz_test.ts": {
@@ -245017,10 +245022,22 @@
   }
  },
  "git": {
-  "sha": "424bfe74d31cde5de0aede45ce704dfbf7b01f65",
+  "sha": "9aa15fe833652a20039fca0ebab53a907ae4750e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9aa15fe",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)",
+    "files": [
+     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+     "src/lib/reforma-tributaria/calcular-tributos.ts",
+     "src/lib/reforma-tributaria/regras.ts",
+     "src/types/reforma-tributaria/transicao.ts"
+    ]
+   },
    {
     "sha": "424bfe7",
     "date": "2026-11-21",
@@ -245386,25 +245403,23 @@
      "docs/auditoria-20260912/evidencias.json",
      "docs/auditoria-20260912/reproduzir-lacunas.cjs"
     ]
-   },
-   {
-    "sha": "cb9d5c8",
-    "date": "2026-11-17",
-    "author": "adm01-debug",
-    "subject": "chore(db): regenera tipos Supabase (18 objetos de drift) e tipa empresasFiltradas com Empresa (#468)",
-    "files": [
-     "src/integrations/supabase/types.ts",
-     "src/pages/EmpresasConteudo.tsx"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "src/lib/reforma-tributaria/regras.ts",
+    3
+   ],
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
    ],
    [
-    "src/lib/reforma-tributaria/regras.ts",
+    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    2
+   ],
+   [
+    "src/types/reforma-tributaria/transicao.ts",
     2
    ],
    [
@@ -245444,6 +245459,10 @@
     2
    ],
    [
+    "src/lib/reforma-tributaria/calcular-tributos.ts",
+    1
+   ],
+   [
     "src/components/reforma-tributaria/CalculadoraTributos.tsx",
     1
    ],
@@ -245460,23 +245479,11 @@
     1
    ],
    [
-    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    1
-   ],
-   [
     "src/lib/reforma-tributaria/simulador.ts",
     1
    ],
    [
     "src/lib/reforma-tributaria/types.ts",
-    1
-   ],
-   [
-    "src/lib/tributario/calculadora/types.ts",
-    1
-   ],
-   [
-    "src/pages/tributario/CalculadoraTributaria.helpers.ts",
     1
    ]
   ]

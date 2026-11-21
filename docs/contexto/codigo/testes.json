@@ -2218,11 +2218,11 @@
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
    "tipo": "unit",
-   "linhas": 288,
+   "linhas": 294,
    "testa": [
     "src/lib/reforma-tributaria-calculator.ts"
    ],
-   "casos": 39
+   "casos": 40
   },
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",

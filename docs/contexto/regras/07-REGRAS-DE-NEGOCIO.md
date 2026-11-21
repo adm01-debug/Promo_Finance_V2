@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `424bfe74d3` · branch `main` · 2026-11-21 21:32 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9aa15fe833` · branch `main` · 2026-11-21 22:13 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3945,8 +3945,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// existe mais na tabela. Falha 100% das vezes, em toda linha.` | `src/lib/supabase-write.ts` |
 | `particleCount: Math.floor(config.particleCount! * 0.5),` | `src/lib/toast-confetti.tsx` |
 | `// de fato" (cota zero do rateio de acordo com 100% de desconto ou` | `src/lib/financeiro/valor-recebido-efetivo.ts` |
-| `const aliquotaIBSEstadual = aliquotaIBS * 0.75;` | `src/lib/reforma-tributaria/calcular-tributos.ts` |
-| `const aliquotaIBSMunicipal = aliquotaIBS * 0.25;` | `src/lib/reforma-tributaria/calcular-tributos.ts` |
 | `ibsMun: (REF_IBS * 0.1) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | `ibsMun: (REF_IBS * 0.2) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | `ibsMun: (REF_IBS * 0.3) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
@@ -4042,6 +4040,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
 | `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
 | `// Bonificação reduz base ICMS/PIS/COFINS — economia estimada de 2-9% sobre volume` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| `const economiaEstimada = aplicavel ? volumeEstimado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| `const volumeEstimado = faturamento * 0.05; // assume 5% potencial de bonificação` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
 | … +192 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
@@ -5070,7 +5070,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3659 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3660 testes em 322 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5081,7 +5081,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx` | 61 | ContasReceberTableRow · Gap #14 - Coluna Empresa · mostra coluna empresa quando showEmpresa=true · não mostra coluna empresa quando showEmpresa=false … |
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
-| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 48 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
+| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 49 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
 | `src/lib/__tests__/cashflow-scenarios.test.ts` | 31 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |

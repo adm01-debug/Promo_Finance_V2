@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `424bfe74d31cde5de0aede45ce704dfbf7b01f65` (2026-11-21T18:32:08-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9aa15fe833652a20039fca0ebab53a907ae4750e` (2026-11-21T19:12:44-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3985 |
 | arquivos_codigo | 2489 |
-| linhas_codigo | 443784 |
+| linhas_codigo | 443800 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `9aa15fe` fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)
 - 2026-11-21 `424bfe7` fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)
 - 2026-11-21 `1f4be40` fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)
 - 2026-11-21 `045482e` feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `21ecbbc` chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)
 - 2026-11-21 `b28b64b` fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)
 - 2026-11-21 `c3e421c` chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)
-- 2026-11-21 `11779f6` chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

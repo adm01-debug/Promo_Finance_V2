@@ -3381,7 +3381,7 @@
     "calcularTributosReforma"
    ],
    "export_default": null,
-   "linhas": 157,
+   "linhas": 159,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3459,7 +3459,7 @@
     "verificarIsencao"
    ],
    "export_default": null,
-   "linhas": 87,
+   "linhas": 89,
    "tabelas": [],
    "rpcs": [],
    "edges": [],

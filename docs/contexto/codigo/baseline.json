@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "424bfe74d31cde5de0aede45ce704dfbf7b01f65",
+  "commit": "9aa15fe833652a20039fca0ebab53a907ae4750e",
   "branch": "main",
-  "data_commit": "2026-11-21T18:32:08-03:00",
+  "data_commit": "2026-11-21T19:12:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9aa15fe",
+    "data": "2026-11-21",
+    "assunto": "fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)"
+   },
    {
     "sha": "424bfe7",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "e6e6143",
     "data": "2026-11-19",
     "assunto": "feat: bump React 19 (react+react-dom+types, joyride 3, lucide-react) (#474)"
-   },
-   {
-    "sha": "dd12c7d",
-    "data": "2026-11-19",
-    "assunto": "feat: suíte E2E de contrato contábil para contabilizar-evento (#473)"
    }
   ],
-  "arquivos_mudados_7d": 471,
+  "arquivos_mudados_7d": 472,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/pages/tributario",
@@ -188,11 +188,11 @@
     "mudancas": 16
    },
    {
-    "pasta": ".github/workflows/ci.yml",
-    "mudancas": 14
+    "pasta": "src/lib/__tests__",
+    "mudancas": 15
    },
    {
-    "pasta": "src/lib/__tests__",
+    "pasta": ".github/workflows/ci.yml",
     "mudancas": 14
    }
   ],
@@ -290,18 +290,18 @@
     "mudancas": 7
    },
    {
-    "arquivo": "src/hooks/useAcordosParcelamento.ts",
+    "arquivo": "supabase/functions/_shared/observability.ts",
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/_shared/observability.ts",
+    "arquivo": "supabase/functions/analise-preditiva/index.ts",
     "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 245
+    "commits": 246
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3985,
   "arquivos_codigo": 2489,
-  "linhas_codigo": 443784,
+  "linhas_codigo": 443800,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -664,7 +664,7 @@
   },
   "src/lib": {
    "arquivos": 418,
-   "linhas": 55259
+   "linhas": 55269
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -684,7 +684,7 @@
   },
   "src/types": {
    "arquivos": 17,
-   "linhas": 989
+   "linhas": 995
   },
   "supabase/functions": {
    "arquivos": 237,
