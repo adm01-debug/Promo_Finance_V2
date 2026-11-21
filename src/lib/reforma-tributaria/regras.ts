@@ -82,12 +82,13 @@ export function verificarIsencao(dados: DadosOperacao): ResultadoIsencao {
 
   // Lista explícita de CFOPs de exportação (série 7xxx — NF-e)
   // Referência: Ajuste SINIEF 7/2005, Tabela B, códigos de operações com exterior
+  // 7651/7654: venda de combustível/lubrificante para o exterior (Convênio SINIEF 54/2000)
   const cfopsExportacao = new Set([
     '7101', '7102', '7103', '7105', '7106', '7127', '7129',
     '7201', '7202', '7203', '7205', '7206', '7211',
     '7301', '7302', '7303', '7304', '7305', '7306',
     '7401', '7501', '7502', '7503', '7504',
-    '7551', '7667', '7930', '7949',
+    '7551', '7651', '7654', '7667', '7930', '7949',
   ]);
 
   if (dados.cfop.length === 4 && cfopsExportacao.has(dados.cfop)) {
