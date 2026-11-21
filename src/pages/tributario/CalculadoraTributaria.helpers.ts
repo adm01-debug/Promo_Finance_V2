@@ -29,7 +29,16 @@ export type CampoInput = {
   rbt12: number;
   folha12m: number;
   anoReforma: number;
-  categoriaSeletivo: 'nenhum' | 'bebidas_alcoolicas' | 'fumo' | 'veiculos' | 'bens_luxo';
+  categoriaSeletivo:
+    | 'nenhum'
+    | 'bebidas_alcoolicas'
+    | 'bebidas_acucaradas'
+    | 'produtos_fumigenos'
+    | 'veiculos'
+    | 'embarcacoes_aeronaves'
+    | 'minerios'
+    | 'combustiveis_fosseis'
+    | 'concursos_prognosticos';
   reducaoReforma: number;
   /** LC 214/2025 ainda não fixou alíquota por categoria — usuário informa a sua. */
   aliquotaISCustomizada: number;

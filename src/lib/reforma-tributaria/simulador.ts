@@ -58,6 +58,11 @@ export function simularComparativo(
     const aliquotaIS = obterAliquotaIS(dados.categoriaIS, dados.aliquotaISCustomizada);
     isNovo = faturamentoVendas * (aliquotaIS / 100) * 0.2;
     observacoes.push(`Imposto Seletivo aplicado: ${aliquotaIS}%`);
+    if (dados.aliquotaISCustomizada) {
+      observacoes.push(
+        'Al?quota do IS simulada (informada pelo usu?rio) ? a lei n?o fixa valor por categoria (LC 214/2025 arts. 393-400)'
+      );
+    }
   }
 
   const totalNovo = cbsNovo + ibsNovo + isNovo;

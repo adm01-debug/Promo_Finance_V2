@@ -216,8 +216,8 @@ export function useOperacoesTributaveis(empresaId?: string) {
         ibs_aliquota = aliquotas.ibs * (1 - reducao.ibs);
         ibs_valor = baseCalculo * ibs_aliquota;
 
-        // IS (Imposto Seletivo)
-        is_aliquota = obterAliquotaIS(input.is_categoria, input.is_aliquota_customizada);
+        // IS (Imposto Seletivo) — alíquota em % (25 = 25%): /100 para fator
+        is_aliquota = obterAliquotaIS(input.is_categoria, input.is_aliquota_customizada) / 100;
         is_valor = baseCalculo * is_aliquota;
 
         // Tributos residuais
