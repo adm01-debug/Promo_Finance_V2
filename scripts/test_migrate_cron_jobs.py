@@ -122,6 +122,9 @@ class Base(unittest.TestCase):
             "DEST_DB_URL": "postgresql://stub/db",
             "PROJECT_REF": "refteste",
             "ANON_KEY": "eyJhbGciOi.J9-_x",
+            # Devin ANALYSIS 592ca264: parser POSIX do psql/sed só reproduz
+            # com POSIXLY_CORRECT=1 no ambiente que inicia o script.
+            "POSIXLY_CORRECT": "1",
         }
         if env_extra:
             env.update(env_extra)
@@ -384,7 +387,7 @@ class TestIntegracaoPostgresLocal(Base):
         self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS cron CASCADE;")
 
     def _psql(self, *args):
-        return subprocess.run(["psql", "-X", self.url, "-v", "ON_ERROR_STOP=1", "-q", "-At", *args],
+        return subprocess.run(["psql", "-X", "-v", "ON_ERROR_STOP=1", "-q", "-At", *args, self.url],
                               capture_output=True, text=True, timeout=30, check=True).stdout.strip()
 
     def test_aplica_e_e_idempotente(self):
