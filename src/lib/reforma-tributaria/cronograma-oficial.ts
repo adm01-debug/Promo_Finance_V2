@@ -6,9 +6,9 @@ export interface LinhaCronograma {
   ano: number;
   /** % CBS sobre a base de cálculo. */
   cbs: number;
-  /** % IBS estadual (metade do IBS total — LC 214/2025: IBS é 50/50 UF/Mun). */
+  /** % IBS estadual. Em 2026 é o IBS total (art. 343); de 2027 em diante, metade (50/50 UF/Mun). */
   ibsUf: number;
-  /** % IBS municipal (a outra metade). */
+  /** % IBS municipal. Zero em 2026 (sem parcela municipal); a outra metade a partir de 2027. */
   ibsMun: number;
   /** % ainda devida de ICMS (fração do tributo antigo, não residual absoluto). */
   icmsResidual: number;
@@ -23,13 +23,18 @@ export interface LinhaCronograma {
 }
 
 const FUNDAMENTO_2026 =
-  'ADCT (EC 132/2023) — ano-teste de conformidade, sem efeito arrecadatório (art. 348 LC 214/2025)';
+  'LC 214/2025 art. 343 — IBS 2026 é só alíquota estadual (0,1%), sem parcela municipal; ' +
+  'sem efeito arrecadatório, compensado com PIS/COFINS/ICMS/ISS (art. 348)';
 const FUNDAMENTO_TRANSICAO_IBS =
   'ADCT (EC 132/2023) — cronograma de substituição gradual de ICMS/ISS por IBS, 2029-2032';
 const FUNDAMENTO_PLENO = 'ADCT (EC 132/2023) — regime definitivo a partir de 2033';
 const FUNDAMENTO_CBS_SIMULADO =
-  'CBS plena = REF_CBS_2027 (TCU, TC 006.529/2026-7) − 0,1 p.p. (parcela-teste do IBS mantida); ' +
+  'LC 214/2025 art. 347 — CBS 2027/2028 = REF_CBS_2027 (TCU, TC 006.529/2026-7) − 0,1 p.p.; ' +
+  'redução vale só para 2027 e 2028 (não se estende a 2029+); ' +
   'alíquota legal definitiva pendente de resolução do Senado até 15/12/2026';
+const FUNDAMENTO_CBS_PLENA_SIMULADA =
+  'A partir de 2029 a redução de 0,1 p.p. do art. 347 não se aplica mais — CBS usa REF_CBS_2027 ' +
+  '(TCU, TC 006.529/2026-7) sem desconto; alíquota legal definitiva pendente do Senado';
 
 /**
  * Fonte única das alíquotas de transição IBS/CBS (etapa 7 do plano de
@@ -40,8 +45,8 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
   {
     ano: 2026,
     cbs: 0.9,
-    ibsUf: 0.05,
-    ibsMun: 0.05,
+    ibsUf: 0.1,
+    ibsMun: 0,
     icmsResidual: 100,
     issResidual: 100,
     pisResidual: 100,
@@ -75,7 +80,7 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
   },
   {
     ano: 2029,
-    cbs: REF_CBS_2027 - 0.1,
+    cbs: REF_CBS_2027,
     ibsUf: (REF_IBS * 0.1) / 2,
     ibsMun: (REF_IBS * 0.1) / 2,
     icmsResidual: 90,
@@ -83,11 +88,11 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: FUNDAMENTO_TRANSICAO_IBS,
+    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
   },
   {
     ano: 2030,
-    cbs: REF_CBS_2027 - 0.1,
+    cbs: REF_CBS_2027,
     ibsUf: (REF_IBS * 0.2) / 2,
     ibsMun: (REF_IBS * 0.2) / 2,
     icmsResidual: 80,
@@ -95,11 +100,11 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: FUNDAMENTO_TRANSICAO_IBS,
+    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
   },
   {
     ano: 2031,
-    cbs: REF_CBS_2027 - 0.1,
+    cbs: REF_CBS_2027,
     ibsUf: (REF_IBS * 0.3) / 2,
     ibsMun: (REF_IBS * 0.3) / 2,
     icmsResidual: 70,
@@ -107,11 +112,11 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: FUNDAMENTO_TRANSICAO_IBS,
+    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
   },
   {
     ano: 2032,
-    cbs: REF_CBS_2027 - 0.1,
+    cbs: REF_CBS_2027,
     ibsUf: (REF_IBS * 0.4) / 2,
     ibsMun: (REF_IBS * 0.4) / 2,
     icmsResidual: 60,
@@ -119,7 +124,7 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: FUNDAMENTO_TRANSICAO_IBS,
+    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
   },
   {
     ano: 2033,

@@ -1,14 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { CRONOGRAMA_OFICIAL, obterLinhaCronograma } from '../cronograma-oficial';
+import { REF_IBS, REF_CBS_2027 } from '@/config/reforma-tributaria';
 
 describe('cronograma-oficial', () => {
-  it('2029-2032: residual de ICMS/ISS + fração de IBS fecham em 100%', () => {
+  it('2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100%', () => {
     const anos2029a2032 = CRONOGRAMA_OFICIAL.filter((l) => l.ano >= 2029 && l.ano <= 2032);
     expect(anos2029a2032).toHaveLength(4);
     for (const linha of anos2029a2032) {
-      const fracaoIbsPercentual = ((linha.ibsUf + linha.ibsMun) / 17.7) * 100;
+      const fracaoIbsPercentual = ((linha.ibsUf + linha.ibsMun) / REF_IBS) * 100;
       expect(linha.icmsResidual + fracaoIbsPercentual).toBeCloseTo(100, 0);
       expect(linha.issResidual + fracaoIbsPercentual).toBeCloseTo(100, 0);
+    }
+  });
+
+  it('2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028)', () => {
+    for (const ano of [2029, 2030, 2031, 2032]) {
+      expect(obterLinhaCronograma(ano).cbs).toBe(REF_CBS_2027);
     }
   });
 
@@ -19,8 +26,14 @@ describe('cronograma-oficial', () => {
     }
   });
 
-  it('IBS é sempre partido 50/50 entre UF e Município', () => {
-    for (const linha of CRONOGRAMA_OFICIAL) {
+  it('2026: IBS é só estadual (art. 343 LC 214/2025), sem parcela municipal', () => {
+    const linha2026 = obterLinhaCronograma(2026);
+    expect(linha2026.ibsUf).toBeCloseTo(0.1, 5);
+    expect(linha2026.ibsMun).toBe(0);
+  });
+
+  it('2027 em diante: IBS é partido 50/50 entre UF e Município', () => {
+    for (const linha of CRONOGRAMA_OFICIAL.filter((l) => l.ano >= 2027)) {
       expect(linha.ibsUf).toBeCloseTo(linha.ibsMun, 10);
     }
   });
