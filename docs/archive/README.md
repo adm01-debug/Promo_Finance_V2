@@ -8,3 +8,6 @@ Não descrevem o estado atual do sistema. Fontes de verdade vigentes:
 - `AGENTS.md` / `CLAUDE.md` — regras operacionais
 - `sql/scripts/` — scripts SQL ad-hoc de diagnóstico executados manualmente
   (substituídos pelos testes versionados em `supabase/tests/sql/`)
+- `PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` — plano antigo de integração RFB,
+  nunca executado; substituído por
+  `docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md`
