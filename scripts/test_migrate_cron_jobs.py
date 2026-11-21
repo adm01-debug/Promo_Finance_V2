@@ -428,6 +428,17 @@ class TestIntegracaoPostgresLocal(Base):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "sk-rotacionada.abc")
 
+    def test_chave_terminada_em_rn_nao_e_truncada(self):
+        # Devin BUG (cf4497df): sed 's/[\r\n]*$//' em modo POSIX casa as
+        # letras 'r' e 'n' finais de uma chave válida e grava versão truncada
+        # no vault, quebrando o apikey dos crons de conformidade. O wrapper
+        # agora usa tr -d '\r\n' (remove só CR/LF — não letras).
+        self._psql("-c", FAKE_VAULT)
+        self.addCleanup(self._psql, "-c", "DROP SCHEMA IF EXISTS vault CASCADE;")
+        r = self.run_script(env_extra={"DEST_DB_URL": self.url, "ANON_KEY": "chave-teste.rn"})
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self._psql("-c", "SELECT value FROM vault._secrets"), "chave-teste.rn")
+
     def test_rotaciona_anon_key_no_vault(self):
         # ANÁLISE Devin: o teste de integração não comprova rotação — duas
         # aplicações usavam o mesmo valor. Aqui a 2ª usa chave diferente e a
