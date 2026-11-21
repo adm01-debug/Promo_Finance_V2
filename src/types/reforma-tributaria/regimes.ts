@@ -36,7 +36,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'zona_franca_manaus',
     descricao: 'Zona Franca de Manaus',
-    reducaoAliquotaCBS: 100, reducaoAliquotaIBS: 100,
+    reducaoAliquotaCBS: 100,
+    reducaoAliquotaIBS: 100,
     creditoIntegralMantido: true,
     observacoes: 'Manutenção dos benefícios até 2073',
     fundamentoLegal: 'Art. 446 a 460 LC 214/2025',
@@ -45,7 +46,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'combustiveis',
     descricao: 'Combustíveis',
-    reducaoAliquotaCBS: 0, reducaoAliquotaIBS: 0,
+    reducaoAliquotaCBS: 0,
+    reducaoAliquotaIBS: 0,
     creditoIntegralMantido: true,
     observacoes: 'Regime monofásico com alíquotas específicas',
     fundamentoLegal: 'Art. 172 a 189 LC 214/2025',
@@ -54,7 +56,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'servicos_financeiros',
     descricao: 'Serviços Financeiros',
-    reducaoAliquotaCBS: 0, reducaoAliquotaIBS: 0,
+    reducaoAliquotaCBS: 0,
+    reducaoAliquotaIBS: 0,
     creditoIntegralMantido: false,
     observacoes: 'Base de cálculo diferenciada (margem)',
     fundamentoLegal: 'Art. 190 a 232 LC 214/2025',
@@ -63,7 +66,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'imobiliario',
     descricao: 'Operações Imobiliárias',
-    reducaoAliquotaCBS: 40, reducaoAliquotaIBS: 40,
+    reducaoAliquotaCBS: 40,
+    reducaoAliquotaIBS: 40,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 40% para imóveis (regime geral)',
     fundamentoLegal: 'Art. 233 a 256 LC 214/2025',
@@ -72,16 +76,19 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'locacao_imovel',
     descricao: 'Locação e Cessão de Imóvel',
-    reducaoAliquotaCBS: 70, reducaoAliquotaIBS: 70,
+    reducaoAliquotaCBS: 70,
+    reducaoAliquotaIBS: 70,
     creditoIntegralMantido: true,
-    observacoes: 'Tratada como operação com bem (art. 3º §3º LC 227/2026) — redução de 70% para locação residencial',
+    observacoes:
+      'Tratada como operação com bem (art. 3º §3º LC 227/2026) — redução de 70% para locação residencial',
     fundamentoLegal: 'Art. 3º §3º LC 227/2026 c/c arts. 233 a 256 LC 214/2025',
     origem: 'lei',
   },
   {
     regime: 'hotelaria',
     descricao: 'Hotelaria e Hospedagem',
-    reducaoAliquotaCBS: 40, reducaoAliquotaIBS: 40,
+    reducaoAliquotaCBS: 40,
+    reducaoAliquotaIBS: 40,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 40%',
     fundamentoLegal: 'Art. 257 a 259 LC 214/2025',
@@ -90,7 +97,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'bares_restaurantes',
     descricao: 'Bares e Restaurantes',
-    reducaoAliquotaCBS: 40, reducaoAliquotaIBS: 40,
+    reducaoAliquotaCBS: 40,
+    reducaoAliquotaIBS: 40,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 40%',
     fundamentoLegal: 'Art. 260 a 262 LC 214/2025',
@@ -99,7 +107,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'transporte_coletivo',
     descricao: 'Transporte Coletivo',
-    reducaoAliquotaCBS: 60, reducaoAliquotaIBS: 60,
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60%',
     fundamentoLegal: 'Art. 263 a 268 LC 214/2025',
@@ -108,7 +117,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'saude',
     descricao: 'Serviços de Saúde',
-    reducaoAliquotaCBS: 60, reducaoAliquotaIBS: 60,
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60% — serviços de saúde humana',
     fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 4)',
@@ -117,7 +127,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'educacao',
     descricao: 'Serviços de Educação',
-    reducaoAliquotaCBS: 60, reducaoAliquotaIBS: 60,
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60% — serviços de educação',
     fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 5)',
@@ -126,7 +137,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
   {
     regime: 'producoes_culturais',
     descricao: 'Produções Culturais Nacionais',
-    reducaoAliquotaCBS: 60, reducaoAliquotaIBS: 60,
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60% — produções artísticas, culturais, jornalísticas',
     fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 8)',
