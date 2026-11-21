@@ -50,6 +50,11 @@ fi
 if grep -Eq '\$\{?ANON_KEY\b' "$SRC" && [[ ! "$ANON_KEY" =~ ^[A-Za-z0-9._-]+$ ]]; then
   echo "ANON_KEY inválido — esperado JWT/chave publicável (letras, números, '.', '-' e '_')" >&2; exit 2
 fi
+# BUG 5 (Devin): quebra de linha final no secret entra no vault como caracter
+# literal e quebra chave_anon_vault() nos crons de conformidade. Trim só de
+# \r\n finais (o valor em si já foi validado como JWT publicável acima).
+ANON_KEY="$(printf '%s' "$ANON_KEY" | tr -d '\r\n')"
+[ -n "$ANON_KEY" ] || { echo "ANON_KEY vazio após normalização" >&2; exit 2; }
 
 # Fonte da contagem esperada: o próprio SQL (nada de número fixo aqui).
 EXPECTED="$(grep -c '^SELECT cron\.schedule(' "$SRC" || true)"
@@ -72,20 +77,40 @@ echo "📄 SQL renderizado: $OUT"
 if [[ $DRY_RUN -eq 1 ]]; then
   echo "🧪 DRY-RUN — nenhuma alteração aplicada. Preview abaixo:"
   echo "------------------------------------------------------------"
-  sed -n '1,60p' "$OUT"
+  sed -n '1,24p' "$OUT"
+  echo "..."
+  FIRST=$(grep -n '^SELECT cron.schedule(' "$OUT" | head -1 | cut -d: -f1)
+  if [[ -n "$FIRST" ]]; then
+    sed -n "${FIRST},$((FIRST+24))p" "$OUT"
+  fi
   echo "... (truncado) ..."
   exit 0
 fi
 
 echo "🚀 Aplicando em $PROJECT_REF..."
+# Detecta o vault do destino e decide create/update/omitir sem estado prévio.
+# 1ª query usa só to_regclass (parse-safe mesmo quando o schema vault não existe);
+# só consulta vault.decrypted_secrets se o schema existir (EXISTS em relação
+# inexistente quebra no parse ANTES de o CASE ser avaliado).
+VAULT_SCHEMA="$(psql -X -Atc "SELECT CASE WHEN to_regclass('vault.decrypted_secrets') IS NULL THEN 0 ELSE 1 END" "$DEST_DB_URL")"
+case "$VAULT_SCHEMA" in
+  0) VAULT_HAS=0 ;;
+  1)
+    VAULT_HAS="$(psql -X -Atc "SELECT CASE WHEN EXISTS (SELECT 1 FROM vault.decrypted_secrets WHERE name='anon_key') THEN 1 ELSE 0 END" "$DEST_DB_URL")"
+    ;;
+  *)
+    echo "❌ Detecção do vault falhou (resposta: '$VAULT_SCHEMA')" >&2
+    exit 1
+    ;;
+esac
 ( set -o noclobber; : > "$LOG" ) 2>/dev/null || { echo "Não foi possível criar $LOG" >&2; exit 4; }
-psql -X "$DEST_DB_URL" -v ON_ERROR_STOP=1 -f "$OUT" 2>&1 | tee "$LOG"
+psql -X -v ON_ERROR_STOP=1 -v vault_schema="$VAULT_SCHEMA" -v vault_has="$VAULT_HAS" -f "$OUT" "$DEST_DB_URL" 2>&1 | tee "$LOG"
 
 echo ""
 echo "🔎 Validando cron.job..."
-psql -X "$DEST_DB_URL" -c "SELECT jobname, schedule, active FROM cron.job ORDER BY jobname;"
+psql -X -c "SELECT jobname, schedule, active FROM cron.job ORDER BY jobname;" "$DEST_DB_URL"
 
-COUNT="$(psql -X "$DEST_DB_URL" -Atc "SELECT count(*) FROM cron.job;")"
+COUNT="$(psql -X -Atc "SELECT count(*) FROM cron.job;" "$DEST_DB_URL")"
 echo ""
 if [[ ! "$COUNT" =~ ^[0-9]+$ || "$COUNT" -lt "$EXPECTED" ]]; then
   echo "❌ Total de jobs no destino: ${COUNT:-?} (esperado ≥ $EXPECTED)" >&2
