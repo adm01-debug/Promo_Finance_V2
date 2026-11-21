@@ -396,3 +396,21 @@ BEGIN
   END IF;
   RAISE NOTICE '✅ 33 cron jobs registrados com sucesso.';
 END $$;
+-- 99. Provisiona anon_key no vault do destino (idempotente) quando presente.
+\getenv anon_key ANON_KEY
+\if :{?anon_key}
+  \if :vault_schema
+    \if :vault_has
+      SELECT vault.update_secret(
+        (SELECT id FROM vault.decrypted_secrets WHERE name = 'anon_key' LIMIT 1),
+        :'anon_key', 'anon_key', 'Anon key do projeto destino (migrate-cron-jobs)');
+    \else
+      SELECT vault.create_secret(
+        :'anon_key', 'anon_key', 'Anon key do projeto destino (migrate-cron-jobs)');
+    \endif
+  \else
+    \echo 'WARN: schema vault ausente no destino — anon_key não provisionado'
+  \endif
+\else
+  \echo 'WARN: ANON_KEY ausente no ambiente — anon_key do vault não provisionado'
+\endif

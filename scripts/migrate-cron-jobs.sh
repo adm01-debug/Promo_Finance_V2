@@ -83,8 +83,23 @@ if [[ $DRY_RUN -eq 1 ]]; then
 fi
 
 echo "🚀 Aplicando em $PROJECT_REF..."
+# Detecta o vault do destino e decide create/update/omitir sem estado prévio.
+# 1ª query usa só to_regclass (parse-safe mesmo quando o schema vault não existe);
+# só consulta vault.decrypted_secrets se o schema existir (EXISTS em relação
+# inexistente quebra no parse ANTES de o CASE ser avaliado).
+VAULT_SCHEMA="$(psql -X "$DEST_DB_URL" -Atc "SELECT CASE WHEN to_regclass('vault.decrypted_secrets') IS NULL THEN 0 ELSE 1 END")"
+case "$VAULT_SCHEMA" in
+  0) VAULT_HAS=0 ;;
+  1)
+    VAULT_HAS="$(psql -X "$DEST_DB_URL" -Atc "SELECT CASE WHEN EXISTS (SELECT 1 FROM vault.decrypted_secrets WHERE name='anon_key') THEN 1 ELSE 0 END")"
+    ;;
+  *)
+    echo "❌ Detecção do vault falhou (resposta: '$VAULT_SCHEMA')" >&2
+    exit 1
+    ;;
+esac
 ( set -o noclobber; : > "$LOG" ) 2>/dev/null || { echo "Não foi possível criar $LOG" >&2; exit 4; }
-psql -X "$DEST_DB_URL" -v ON_ERROR_STOP=1 -f "$OUT" 2>&1 | tee "$LOG"
+psql -X "$DEST_DB_URL" -v ON_ERROR_STOP=1 -v vault_schema="$VAULT_SCHEMA" -v vault_has="$VAULT_HAS" -f "$OUT" 2>&1 | tee "$LOG"
 
 echo ""
 echo "🔎 Validando cron.job..."

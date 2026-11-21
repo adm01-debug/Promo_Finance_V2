@@ -38,6 +38,8 @@ exit 0
 # Só consome stdin quando o SQL vem por heredoc (sem -f/-c), como o psql real.
 STUB_PSQL = r"""#!/usr/bin/env bash
 printf 'psql %s\n' "$*" >> "$CAP"
+if [[ "$*" == *"to_regclass"* ]]; then echo 1; exit 0; fi
+if [[ "$*" == *"vault.decrypted_secrets"* ]]; then echo 0; exit 0; fi
 for a in "$@"; do
   [[ "$a" == "-Atc" ]] && { echo 33; exit 0; }
   [[ "$a" == "-f" || "$a" == "-c" ]] && exit 0
