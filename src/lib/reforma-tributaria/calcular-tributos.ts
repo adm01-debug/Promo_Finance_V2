@@ -70,8 +70,10 @@ export function calcularTributosReforma(
 
   const valorCBS = valorBase * (aliquotaCBS / 100);
   const valorIBS = valorBase * (aliquotaIBS / 100);
-  const aliquotaIBSEstadual = aliquotaIBS * 0.75;
-  const aliquotaIBSMunicipal = aliquotaIBS * 0.25;
+  const { ibsUf, ibsMun } = aliquotasTransicao;
+  const fracaoUf = ibsUf + ibsMun > 0 ? ibsUf / (ibsUf + ibsMun) : 0.5;
+  const aliquotaIBSEstadual = aliquotaIBS * fracaoUf;
+  const aliquotaIBSMunicipal = aliquotaIBS * (1 - fracaoUf);
 
   const aliquotaIS = obterAliquotaIS(dados.categoriaIS, dados.aliquotaISCustomizada);
   const valorIS = valorBase * (aliquotaIS / 100);
