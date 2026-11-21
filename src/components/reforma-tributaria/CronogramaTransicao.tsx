@@ -221,8 +221,8 @@ export function CronogramaTransicao() {
                         <p className="text-xs text-muted-foreground mb-1">
                           <GlossarioTooltip
                             termo="IBS"
-                            origem={linha.origem}
-                            fundamento={linha.fundamento}
+                            origem={linha.origemIbs}
+                            fundamento={linha.fundamentoIbs}
                           >
                             IBS
                           </GlossarioTooltip>

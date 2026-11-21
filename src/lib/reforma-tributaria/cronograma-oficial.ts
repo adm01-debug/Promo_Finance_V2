@@ -18,8 +18,12 @@ export interface LinhaCronograma {
   pisResidual: number;
   /** % ainda devida de COFINS. */
   cofinsResidual: number;
+  /** Origem/fundamento da alíquota de CBS do ano (`cbs`). */
   origem: OrigemValor;
   fundamento: string;
+  /** Origem/fundamento da alíquota de IBS do ano (`ibsUf`+`ibsMun`) — diverge de `origem`/`fundamento` em 2027-2028, quando o IBS já é fixado por lei (art. 344) mas a CBS ainda depende de estimativa. */
+  origemIbs: OrigemValor;
+  fundamentoIbs: string;
 }
 
 const FUNDAMENTO_2026 =
@@ -36,6 +40,15 @@ const FUNDAMENTO_CBS_SIMULADO =
 const FUNDAMENTO_CBS_PLENA_SIMULADA =
   'A partir de 2029 a redução de 0,1 p.p. do art. 347 não se aplica mais — CBS usa REF_CBS_2027 ' +
   '(TCU, TC 006.529/2026-7) sem desconto; alíquota legal definitiva pendente do Senado';
+const FUNDAMENTO_IBS_2027_2028 =
+  'LC 214/2025 art. 344 — IBS 2027/2028 fixado em lei: 0,05% estadual + 0,05% municipal';
+const FUNDAMENTO_IBS_TRANSICAO_SIMULADO =
+  `${FUNDAMENTO_TRANSICAO_IBS}; split UF/Mun aqui é estimativa (50/50), não garantido por lei — ` +
+  'o art. 349, II fixa alíquotas de referência separadas para estados e municípios por resolução ' +
+  'do Senado (arts. 360-365), sem exigir igualdade entre as duas parcelas';
+const FUNDAMENTO_IBS_PLENO_SIMULADO =
+  `${FUNDAMENTO_PLENO}; alíquota de referência (REF_IBS) e split UF/Mun ainda pendentes de ` +
+  'resolução do Senado (arts. 349, II e 360-365 da LC 214/2025)';
 
 /**
  * Fonte única das alíquotas de transição IBS/CBS (etapa 7 do plano de
@@ -54,6 +67,8 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     cofinsResidual: 100,
     origem: 'lei',
     fundamento: FUNDAMENTO_2026,
+    origemIbs: 'lei',
+    fundamentoIbs: FUNDAMENTO_2026,
   },
   {
     ano: 2027,
@@ -66,6 +81,8 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     cofinsResidual: 0,
     origem: 'simulado',
     fundamento: FUNDAMENTO_CBS_SIMULADO,
+    origemIbs: 'lei',
+    fundamentoIbs: FUNDAMENTO_IBS_2027_2028,
   },
   {
     ano: 2028,
@@ -78,6 +95,8 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     cofinsResidual: 0,
     origem: 'simulado',
     fundamento: FUNDAMENTO_CBS_SIMULADO,
+    origemIbs: 'lei',
+    fundamentoIbs: FUNDAMENTO_IBS_2027_2028,
   },
   {
     ano: 2029,
@@ -89,7 +108,9 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
+    fundamento: FUNDAMENTO_CBS_PLENA_SIMULADA,
+    origemIbs: 'simulado',
+    fundamentoIbs: FUNDAMENTO_IBS_TRANSICAO_SIMULADO,
   },
   {
     ano: 2030,
@@ -101,7 +122,9 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
+    fundamento: FUNDAMENTO_CBS_PLENA_SIMULADA,
+    origemIbs: 'simulado',
+    fundamentoIbs: FUNDAMENTO_IBS_TRANSICAO_SIMULADO,
   },
   {
     ano: 2031,
@@ -113,7 +136,9 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
+    fundamento: FUNDAMENTO_CBS_PLENA_SIMULADA,
+    origemIbs: 'simulado',
+    fundamentoIbs: FUNDAMENTO_IBS_TRANSICAO_SIMULADO,
   },
   {
     ano: 2032,
@@ -125,7 +150,9 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     pisResidual: 0,
     cofinsResidual: 0,
     origem: 'simulado',
-    fundamento: `${FUNDAMENTO_CBS_PLENA_SIMULADA}. ${FUNDAMENTO_TRANSICAO_IBS}`,
+    fundamento: FUNDAMENTO_CBS_PLENA_SIMULADA,
+    origemIbs: 'simulado',
+    fundamentoIbs: FUNDAMENTO_IBS_TRANSICAO_SIMULADO,
   },
   {
     ano: 2033,
@@ -138,6 +165,8 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     cofinsResidual: 0,
     origem: 'simulado',
     fundamento: FUNDAMENTO_PLENO,
+    origemIbs: 'simulado',
+    fundamentoIbs: FUNDAMENTO_IBS_PLENO_SIMULADO,
   },
 ];
 
@@ -159,6 +188,8 @@ export function obterLinhaCronograma(ano: number): LinhaCronograma {
       cofinsResidual: 100,
       origem: 'lei',
       fundamento: 'Pré-reforma — CBS/IBS ainda não vigentes',
+      origemIbs: 'lei',
+      fundamentoIbs: 'Pré-reforma — CBS/IBS ainda não vigentes',
     };
   }
   if (ano > 2033) {
