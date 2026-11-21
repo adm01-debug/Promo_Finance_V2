@@ -4,7 +4,7 @@
 |---|---|
 | nome | expert-agent |
 | status | ACTIVE |
-| versão | 125 |
+| versão | 126 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/expert-agent/index.ts |
 | import_map |  |
