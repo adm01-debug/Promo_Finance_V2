@@ -8,6 +8,7 @@ migrate-functions.sh e migrate-cron-jobs.sh; os sub-scripts de outras pastas
 curl) são stubs que registram cada chamada. Nenhuma rede, nenhum banco.
 """
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -17,7 +18,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = REPO_ROOT / "scripts"
-SISTEMA = "/usr/local/bin:/usr/bin:/bin"
+SISTEMA = os.path.expanduser("~/.local/bin") + ":/usr/local/bin:/usr/bin:/bin"
 
 STUB_SUPABASE = r"""#!/usr/bin/env bash
 printf 'supabase %s\n' "$*" >> "$CAP"
@@ -38,7 +39,7 @@ exit 0
 STUB_PSQL = r"""#!/usr/bin/env bash
 printf 'psql %s\n' "$*" >> "$CAP"
 for a in "$@"; do
-  [[ "$a" == "-Atc" ]] && { echo 13; exit 0; }
+  [[ "$a" == "-Atc" ]] && { echo 33; exit 0; }
   [[ "$a" == "-f" || "$a" == "-c" ]] && exit 0
 done
 cat >/dev/null
