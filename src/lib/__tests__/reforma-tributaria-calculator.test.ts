@@ -184,10 +184,16 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.detalhamento.some((d) => d.includes('Base de cálculo'))).toBe(true);
     });
 
-    it('IBS dividido 75% estadual 25% municipal', () => {
+    it('IBS dividido 50% estadual 50% municipal (regime pleno, 2033)', () => {
       const r = calcularTributosReforma(dadosVenda, 2033);
-      expect(r.aliquotaIBSEstadual).toBeCloseTo(r.aliquotaIBS * 0.75, 4);
-      expect(r.aliquotaIBSMunicipal).toBeCloseTo(r.aliquotaIBS * 0.25, 4);
+      expect(r.aliquotaIBSEstadual).toBeCloseTo(r.aliquotaIBS * 0.5, 4);
+      expect(r.aliquotaIBSMunicipal).toBeCloseTo(r.aliquotaIBS * 0.5, 4);
+    });
+
+    it('IBS 2026: 100% estadual, 0% municipal (ano-teste, art. 343 LC 214/2025)', () => {
+      const r = calcularTributosReforma(dadosVenda, 2026);
+      expect(r.aliquotaIBSMunicipal).toBeCloseTo(0, 4);
+      expect(r.aliquotaIBSEstadual).toBeCloseTo(r.aliquotaIBS, 4);
     });
 
     it('com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo', () => {
