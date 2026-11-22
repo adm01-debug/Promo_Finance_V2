@@ -42,6 +42,15 @@ export interface CreditoTributario {
   valor_utilizado: number;
   saldo_disponivel?: number;
 
+  /** De onde veio o valor (etapa 43). Ausente em registros manuais antigos. */
+  origem?: 'xml_destacado' | 'estimado' | 'manual' | null;
+  /**
+   * Se o crédito é apropriável (etapa 44). 2026 é ano de teste: o valor é
+   * destacado, mas o crédito é apenas informativo.
+   */
+  efeito_tributario?: boolean | null;
+  ano_fato_gerador?: number | null;
+
   observacoes?: string;
   created_at: string;
   updated_at?: string;
@@ -99,7 +108,9 @@ export function useCreditosTributarios(empresaId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('creditos_tributarios')
-        .select('tipo_tributo, status, valor_credito, valor_utilizado, saldo_disponivel');
+        .select(
+          'tipo_tributo, status, valor_credito, valor_utilizado, saldo_disponivel, origem, efeito_tributario'
+        );
 
       if (empresaId && empresaId !== 'all' && empresaId !== 'todas' && empresaId !== 'default') {
         query = query.eq('empresa_id', empresaId);
@@ -109,9 +120,9 @@ export function useCreditosTributarios(empresaId?: string) {
       if (error) throw error;
 
       const resumo = {
-        cbs: { total: 0, disponivel: 0, utilizado: 0 },
-        ibs: { total: 0, disponivel: 0, utilizado: 0 },
-        is: { total: 0, disponivel: 0, utilizado: 0 },
+        cbs: { total: 0, disponivel: 0, utilizado: 0, informativo: 0 },
+        ibs: { total: 0, disponivel: 0, utilizado: 0, informativo: 0 },
+        is: { total: 0, disponivel: 0, utilizado: 0, informativo: 0 },
       };
 
       interface CreditoData {
@@ -120,15 +131,25 @@ export function useCreditosTributarios(empresaId?: string) {
         valor_credito: number | null;
         valor_utilizado: number | null;
         saldo_disponivel: number;
+        origem?: string | null;
+        efeito_tributario?: boolean | null;
       }
 
       (data || []).forEach((c: CreditoData) => {
         const key = c.tipo_tributo.toLowerCase() as 'cbs' | 'ibs' | 'is';
         resumo[key].total += Number(c.valor_credito) || 0;
         resumo[key].utilizado += Number(c.valor_utilizado) || 0;
-        if (c.status === 'disponivel') {
+
+        // Etapa 44/48/88: "disponível" exige `efeito_tributario=true` **e**
+        // `origem='xml_destacado'`. Antes bastava `status='disponivel'`, então
+        // um crédito de 2026 (informativo) e uma estimativa (sem destaque)
+        // entravam no saldo apropriável.
+        if (c.efeito_tributario === true && c.origem === 'xml_destacado') {
           resumo[key].disponivel +=
             Number(c.saldo_disponivel) || Number(c.valor_credito) - Number(c.valor_utilizado) || 0;
+        } else if (c.status !== 'utilizado' && c.status !== 'estornado') {
+          // KPI separado: informativo 2026 + estimados. Não é saldo gastável.
+          resumo[key].informativo += Number(c.saldo_disponivel) || 0;
         }
       });
 

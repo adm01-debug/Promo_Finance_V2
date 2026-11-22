@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { DollarSign, TrendingUp, Receipt, Download, Plus, AlertCircle } from 'lucide-react';
+import { DollarSign, TrendingUp, Receipt, Download, Plus, AlertCircle, Info } from 'lucide-react';
 import {
   PieChart,
   Pie,
@@ -54,33 +54,54 @@ export function GestorCreditosTributarios() {
         cbsTotal: 0,
         cbsUtilizado: 0,
         cbsDisponivel: 0,
+        cbsInformativo: 0,
         ibsTotal: 0,
         ibsUtilizado: 0,
         ibsDisponivel: 0,
+        ibsInformativo: 0,
         total: 0,
         totalUtilizado: 0,
         totalDisponivel: 0,
+        totalInformativo: 0,
       };
     }
 
     const cbsCreditos = creditos.filter((c) => c.tipo_tributo === 'CBS');
     const ibsCreditos = creditos.filter((c) => c.tipo_tributo === 'IBS');
 
+    // Etapa 44/48/88: só é apropriável o crédito com `efeito_tributario=true` e
+    // `origem='xml_destacado'`. 2026 é ano de teste (informativo) e estimativa
+    // nunca é aproveitável — ambos entram no KPI separado, não no saldo.
+    const apropriavel = (c: { efeito_tributario?: boolean | null; origem?: string | null }) =>
+      c.efeito_tributario === true && c.origem === 'xml_destacado';
+
     const cbsTotal = cbsCreditos.reduce((acc, c) => acc + Number(c.valor_credito), 0);
     const cbsUtilizado = cbsCreditos.reduce((acc, c) => acc + Number(c.valor_utilizado), 0);
+    const cbsDisponivel = cbsCreditos
+      .filter(apropriavel)
+      .reduce((acc, c) => acc + (Number(c.valor_credito) - Number(c.valor_utilizado)), 0);
     const ibsTotal = ibsCreditos.reduce((acc, c) => acc + Number(c.valor_credito), 0);
     const ibsUtilizado = ibsCreditos.reduce((acc, c) => acc + Number(c.valor_utilizado), 0);
+    const ibsDisponivel = ibsCreditos
+      .filter(apropriavel)
+      .reduce((acc, c) => acc + (Number(c.valor_credito) - Number(c.valor_utilizado)), 0);
+
+    const cbsInformativo = cbsTotal - cbsUtilizado - cbsDisponivel;
+    const ibsInformativo = ibsTotal - ibsUtilizado - ibsDisponivel;
 
     return {
       cbsTotal,
       cbsUtilizado,
-      cbsDisponivel: cbsTotal - cbsUtilizado,
+      cbsDisponivel,
+      cbsInformativo,
       ibsTotal,
       ibsUtilizado,
-      ibsDisponivel: ibsTotal - ibsUtilizado,
+      ibsDisponivel,
+      ibsInformativo,
       total: cbsTotal + ibsTotal,
       totalUtilizado: cbsUtilizado + ibsUtilizado,
-      totalDisponivel: cbsTotal - cbsUtilizado + (ibsTotal - ibsUtilizado),
+      totalDisponivel: cbsDisponivel + ibsDisponivel,
+      totalInformativo: cbsInformativo + ibsInformativo,
     };
   }, [creditos]);
 
@@ -122,6 +143,33 @@ export function GestorCreditosTributarios() {
       ? creditos
       : creditos.filter((c) => c.tipo_tributo === filtroTipo);
   }, [creditos, filtroTipo]);
+
+  /**
+   * Badge fiscal do crédito. `status` é o estado operacional; a apropriação
+   * (etapa 44) depende de `efeito_tributario` + `origem`, então um crédito
+   * "disponível" de 2026 aparece como informativo — senão a tela diria que há
+   * saldo gastável onde não há.
+   */
+  const getBadgeApropriacao = (credito: {
+    efeito_tributario?: boolean | null;
+    origem?: string | null;
+  }) => {
+    if (credito.efeito_tributario === true && credito.origem === 'xml_destacado') {
+      return <Badge className="bg-success">Disponível</Badge>;
+    }
+    if (credito.origem === 'estimado') {
+      return (
+        <Badge variant="outline" className="border-warning text-warning">
+          Estimado
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="outline" className="border-muted-foreground text-muted-foreground">
+        Informativo
+      </Badge>
+    );
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -174,7 +222,7 @@ export function GestorCreditosTributarios() {
   return (
     <div className="space-y-6">
       {/* Cards de Resumo */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Créditos Totais</CardTitle>
@@ -201,6 +249,20 @@ export function GestorCreditosTributarios() {
               value={resumo.total > 0 ? (resumo.totalDisponivel / resumo.total) * 100 : 0}
               className="mt-2"
             />
+          </CardContent>
+        </Card>
+
+        <Card className="border-muted-foreground/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Informativo 2026</CardTitle>
+            <Info className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {/* Destacado na nota, mas fora do saldo apropriável (etapa 44). */}
+            <div className="text-2xl font-bold text-muted-foreground">
+              {formatCurrency(resumo.totalInformativo)}
+            </div>
+            <p className="text-xs text-muted-foreground">Estimado + ano de teste</p>
           </CardContent>
         </Card>
 
@@ -339,6 +401,7 @@ export function GestorCreditosTributarios() {
                   <TableHead className="text-right">Utilizado</TableHead>
                   <TableHead className="text-right">Disponível</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Apropriação</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -368,6 +431,7 @@ export function GestorCreditosTributarios() {
                       )}
                     </TableCell>
                     <TableCell>{getStatusBadge(credito.status)}</TableCell>
+                    <TableCell>{getBadgeApropriacao(credito)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

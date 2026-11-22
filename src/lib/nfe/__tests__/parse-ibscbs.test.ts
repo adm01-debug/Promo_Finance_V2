@@ -123,4 +123,23 @@ describe('parse-ibscbs (etapa 41)', () => {
     const grupo = parseItemIbscbs(docDe(xml).querySelector('det') as Element);
     expect(grupo?.gRedUF).toBeUndefined();
   });
+
+  it('lê os totais monofásicos de gMono', () => {
+    // Nota monofásica destaca IBS/CBS em `gMono`, não em `gIBS`/`gCBS`. Sem
+    // ler esse grupo, o importador não distingue "sem destaque" de "destacado
+    // fora do regime regular" e estimaria crédito que não existe.
+    const xml = XML_IBSCBS.replace(
+      '<gCBS><vCBS>9.00</vCBS></gCBS>',
+      '<gCBS><vCBS>9.00</vCBS></gCBS><gMono><vIBSMono>1.30</vIBSMono><vCBSMono>0.90</vCBSMono></gMono>'
+    );
+    const totais = parseIbscbsTotais(docDe(xml).querySelector('infNFe') as Element);
+    expect(totais.vTotIBSMono).toBeCloseTo(1.3, 6);
+    expect(totais.vTotCBSMono).toBeCloseTo(0.9, 6);
+  });
+
+  it('não inventa totais monofásicos quando a nota não tem gMono', () => {
+    const totais = parseIbscbsTotais(docDe(XML_IBSCBS).querySelector('infNFe') as Element);
+    expect(totais.vTotIBSMono).toBeUndefined();
+    expect(totais.vTotCBSMono).toBeUndefined();
+  });
 });
