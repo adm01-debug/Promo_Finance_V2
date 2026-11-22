@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "856fef074d6bb3df5c95e8dcea15c1e1abceb5bf",
+  "commit": "60ece16588ff4298ee0320f33b53bcefd3166211",
   "branch": "main",
-  "data_commit": "2026-11-22T11:12:30-03:00",
+  "data_commit": "2026-11-22T11:53:29-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "60ece16",
+    "data": "2026-11-22",
+    "assunto": "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)"
+   },
    {
     "sha": "856fef0",
     "data": "2026-11-22",
@@ -126,11 +131,6 @@
     "sha": "d11416f",
     "data": "2026-11-21",
     "assunto": "fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)"
-   },
-   {
-    "sha": "d1fc1cf",
-    "data": "2026-11-21",
-    "assunto": "fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)"
    }
   ],
   "arquivos_mudados_7d": 506,
@@ -222,10 +222,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 8
-   },
-   {
     "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
    },
@@ -236,6 +232,10 @@
    {
     "arquivo": "scripts/automation.config.json",
     "mudancas": 8
+   },
+   {
+    "arquivo": ".github/workflows/prod-migrate.yml",
+    "mudancas": 7
    },
    {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
@@ -270,10 +270,6 @@
     "mudancas": 6
    },
    {
-    "arquivo": "scripts/migrate-functions.sh",
-    "mudancas": 6
-   },
-   {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
     "mudancas": 6
    },
@@ -286,22 +282,26 @@
     "mudancas": 6
    },
    {
-    "arquivo": ".github/workflows/functions-deploy.yml",
-    "mudancas": 5
-   },
-   {
     "arquivo": "deno.lock",
     "mudancas": 5
    },
    {
     "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
     "mudancas": 5
+   },
+   {
+    "arquivo": "docs/ci/README.md",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "scripts/migrate-functions.sh",
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 272
+    "commits": 273
    },
    {
     "autor": "dependabot[bot]",

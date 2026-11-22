@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "856fef074d6bb3df5c95e8dcea15c1e1abceb5bf",
+  "sha": "60ece16588ff4298ee0320f33b53bcefd3166211",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 14:20 UTC",
+  "generated_at": "2026-11-22 15:14 UTC",
   "files_total": 4048,
   "code_files": 3636,
   "code_lines": 516376
@@ -246738,10 +246738,19 @@
   }
  },
  "git": {
-  "sha": "856fef074d6bb3df5c95e8dcea15c1e1abceb5bf",
+  "sha": "60ece16588ff4298ee0320f33b53bcefd3166211",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "60ece16",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)",
+    "files": [
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
+    ]
+   },
    {
     "sha": "856fef0",
     "date": "2026-11-22",
@@ -247071,16 +247080,6 @@
      "src/pages/tributario/CalculadoraTributaria.parts.tsx",
      "src/types/reforma-tributaria/imposto-seletivo.ts"
     ]
-   },
-   {
-    "sha": "1f4be40",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)",
-    "files": [
-     ".github/workflows/rfb-upstream-watch.yml",
-     "docs/ci/README.md"
-    ]
    }
   ],
   "hot_files": [
@@ -247091,6 +247090,10 @@
    [
     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     4
+   ],
+   [
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    3
    ],
    [
     "src/integrations/supabase/types.ts",
@@ -247118,10 +247121,6 @@
    ],
    [
     "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
-    2
-   ],
-   [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     2
    ],
    [
