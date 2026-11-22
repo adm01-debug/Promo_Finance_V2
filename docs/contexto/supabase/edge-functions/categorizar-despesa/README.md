@@ -4,7 +4,7 @@
 |---|---|
 | nome | categorizar-despesa |
 | status | ACTIVE |
-| versão | 149 |
+| versão | 150 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/categorizar-despesa/index.ts |
 | import_map |  |

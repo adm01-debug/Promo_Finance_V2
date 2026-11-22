@@ -1,6 +1,6 @@
 # CONTEXTO PARA AGENTES DE IA — ÍNDICE ÚNICO
 
-> Gerado automaticamente por indice.py · 2026-11-22 01:16 UTC · HEAD `bb4d237463` · Não edite à mão.
+> Gerado automaticamente por indice.py · 2026-11-22 02:21 UTC · HEAD `ebf034ffcf` · Não edite à mão.
 
 Um sistema, três fontes de verdade, três produtores independentes. **Leia este arquivo e vá direto à fonte certa.** Cada fato tem um dono: se duas fontes discordarem, vale o dono.
 
@@ -108,7 +108,7 @@ Um sistema, três fontes de verdade, três produtores independentes. **Leia este
 - `docs/contexto/supabase/edge-functions/open-finance/README.md`
 - `docs/contexto/supabase/edge-functions/overlay-rejeicoes-auditoria/README.md`
 - `docs/contexto/supabase/edge-functions/prever-carga-tributaria/README.md`
-- … +324
+- … +329
 
 </details>
 

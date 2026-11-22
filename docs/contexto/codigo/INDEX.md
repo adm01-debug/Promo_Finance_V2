@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `bb4d2374630e4a231b43229d2c9db4ee81125c44` (2026-11-21T22:09:52-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059` (2026-11-21T22:53:02-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2372), SQL (1126), Markdown (221), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2372), SQL (1126), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3989 |
+| arquivos_total | 3990 |
 | arquivos_codigo | 2491 |
 | linhas_codigo | 444330 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 486 |
 | workflows | 20 |
 | scripts | 116 |
-| docs_md | 221 |
+| docs_md | 222 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -461,21 +461,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (34)
-- bun.lock (32)
-- .github/workflows/ci.yml (23)
-- supabase/functions/asaas-proxy/index.ts (14)
-- env.manifest.json (13)
+- package.json (33)
+- bun.lock (31)
+- .github/workflows/ci.yml (22)
+- supabase/functions/asaas-proxy/index.ts (13)
+- env.manifest.json (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- supabase/functions/bitrix24-sync/index.ts (10)
-- supabase/functions/n8n-callback/index.ts (10)
-- supabase/functions/sync-profile-to-bitrix/index.ts (10)
-- scripts/generate-env-manifest.mjs (9)
-- supabase/functions/bling-proxy/index.ts (9)
+- supabase/functions/bitrix24-sync/index.ts (9)
+- supabase/functions/n8n-callback/index.ts (9)
+- supabase/functions/sync-profile-to-bitrix/index.ts (9)
 - .github/workflows/prod-migrate.yml (8)
 - analise-prs/progresso.json (8)
 - scripts/automation.config.json (8)
+- scripts/generate-env-manifest.mjs (8)
+- supabase/functions/bling-proxy/index.ts (8)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -630,10 +630,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (907 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/receitafederal (7), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/receitafederal (8), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `ebf034f` docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)
 - 2026-11-21 `bb4d237` docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)
 - 2026-11-21 `ce2dfdb` chore: remove baseline histórica pré-correção (etapa 30)
 - 2026-11-21 `9e6fc7b` feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `1f4be40` fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)
 - 2026-11-21 `045482e` feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura
 - 2026-11-21 `9fc35ee` fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)
-- 2026-11-21 `5788349` chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

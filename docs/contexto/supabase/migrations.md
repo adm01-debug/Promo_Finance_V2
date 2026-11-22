@@ -1058,3 +1058,15 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261121093000 | [reconciliar_validar_catalogos_tributarios](migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql) | 5 |
 | 20261121103000 | [alinhar_ddl_catalogos](migrations/20261121103000_alinhar_ddl_catalogos.sql) | 6 |
 | 20261121120000 | [adiciona_is_aliquota_customizada](migrations/20261121120000_adiciona_is_aliquota_customizada.sql) | 1 |
+| 20261122020000 | [cria_notas_fiscais_itens](migrations/20261122020000_cria_notas_fiscais_itens.sql) | 1 |
+| 20261122020001 | [corrige_rls_notas_fiscais_itens](migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql) | 1 |
+| 20261122020002 | [ajustes_notas_fiscais_itens_review](migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql) | 1 |
+| 20261122020500 | [grupo_ibscbs_por_item](migrations/20261122020500_grupo_ibscbs_por_item.sql) | 1 |
+| 20261122021000 | [grupo_is_por_item](migrations/20261122021000_grupo_is_por_item.sql) | 1 |
+| 20261122021500 | [totais_nota_ibscbs](migrations/20261122021500_totais_nota_ibscbs.sql) | 1 |
+| 20261122022000 | [creditos_origem_efeito_tributario](migrations/20261122022000_creditos_origem_efeito_tributario.sql) | 1 |
+| 20261122022500 | [catalogo_cclasstrib](migrations/20261122022500_catalogo_cclasstrib.sql) | 1 |
+| 20261122023000 | [catalogos_ncm_nbs_aliquota_referencia](migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql) | 1 |
+| 20261122023500 | [corrige_pk_catalogos_vigencia](migrations/20261122023500_corrige_pk_catalogos_vigencia.sql) | 1 |
+| 20261122023600 | [corrige_unicidade_catalogo_aliquota_referencia](migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql) | 1 |
+| 20261122023700 | [corrige_pk_catalogo_ncm_nbs_vigencia](migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql) | 1 |

@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "bb4d2374630e4a231b43229d2c9db4ee81125c44",
+  "sha": "ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 01:15 UTC",
-  "files_total": 4028,
+  "generated_at": "2026-11-22 02:20 UTC",
+  "files_total": 4029,
   "code_files": 3618,
   "code_lines": 515282
  },
@@ -245223,10 +245223,19 @@
   }
  },
  "git": {
-  "sha": "bb4d2374630e4a231b43229d2c9db4ee81125c44",
+  "sha": "ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ebf034f",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)",
+    "files": [
+     "docs/receitafederal/SCHEMA_FISCAL_ATUAL.md"
+    ]
+   },
    {
     "sha": "bb4d237",
     "date": "2026-11-21",
@@ -245580,15 +245589,6 @@
     "subject": "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)",
     "files": [
      "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md"
-    ]
-   },
-   {
-    "sha": "d7e6b41",
-    "date": "2026-11-20",
-    "author": "adm01-debug",
-    "subject": "docs: preserva auditoria planejado x implementado (20/11) (#480)",
-    "files": [
-     "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md"
     ]
    }
   ],

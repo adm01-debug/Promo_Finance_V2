@@ -137,6 +137,13 @@ Uso e tamanho em `stats.md`.
 | public.budgets | budgets_pkey | btree | id | sim | sim |  |
 | public.budgets | idx_budgets_company_user | btree | company_id, user_id | não | sim |  |
 | public.budgets | idx_budgets_user_id_fk | btree | user_id | não | sim |  |
+| public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_cbs_uk | btree | ano | sim | sim | `(tributo = 'cbs'::text)` |
+| public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_ibs_mun_uk | btree | ano, municipio_ibge | sim | sim | `(tributo = 'ibs_mun'::text)` |
+| public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_ibs_uf_uk | btree | ano, uf | sim | sim | `(tributo = 'ibs_uf'::text)` |
+| public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_pkey | btree | id | sim | sim |  |
+| public.catalogo_cclasstrib | catalogo_cclasstrib_pkey | btree | cclasstrib, inicio_vigencia | sim | sim |  |
+| public.catalogo_nbs | catalogo_nbs_pkey | btree | nbs, inicio_vigencia | sim | sim |  |
+| public.catalogo_ncm | catalogo_ncm_pkey | btree | ncm, inicio_vigencia | sim | sim |  |
 | public.catalogos_fiscais_cargas | catalogos_fiscais_cargas_checksum_key | btree | checksum | sim | sim |  |
 | public.catalogos_fiscais_cargas | catalogos_fiscais_cargas_pkey | btree | id | sim | sim |  |
 | public.catalogos_tributarios_health_history | catalogos_health_history_dia_key | btree | dia | sim | sim |  |
@@ -477,6 +484,8 @@ Uso e tamanho em `stats.md`.
 | public.notas_fiscais | idx_notas_fiscais_status | btree | status | não | sim |  |
 | public.notas_fiscais | notas_fiscais_chave_acesso_key | btree | chave_acesso | sim | sim |  |
 | public.notas_fiscais | notas_fiscais_pkey | btree | id | sim | sim |  |
+| public.notas_fiscais_itens | notas_fiscais_itens_nota_item_uk | btree | nota_fiscal_id, n_item | sim | sim |  |
+| public.notas_fiscais_itens | notas_fiscais_itens_pkey | btree | id | sim | sim |  |
 | public.notas_fiscais_ocr | idx_notas_fiscais_ocr_empresa_id | btree | empresa_id | não | sim |  |
 | public.notas_fiscais_ocr | notas_fiscais_ocr_pkey | btree | id | sim | sim |  |
 | public.notification_history | idx_notification_history_source | btree | source, source_ref | não | sim |  |

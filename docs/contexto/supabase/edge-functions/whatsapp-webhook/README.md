@@ -4,7 +4,7 @@
 |---|---|
 | nome | whatsapp-webhook |
 | status | ACTIVE |
-| versão | 148 |
+| versão | 149 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/whatsapp-webhook/index.ts |
 | import_map |  |

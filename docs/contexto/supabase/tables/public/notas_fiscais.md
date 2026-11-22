@@ -32,6 +32,12 @@
 | 14 | `cliente_nome` | `text` | sim |  |  |  |
 | 15 | `valor_desconto` | `numeric` | não | `0` |  |  |
 | 16 | `valor_frete` | `numeric` | não | `0` |  |  |
+| 17 | `v_bc_ibscbs` | `numeric(15,2)` | sim |  |  |  |
+| 18 | `v_ibs` | `numeric(15,2)` | sim |  |  |  |
+| 19 | `v_ibs_uf` | `numeric(15,2)` | sim |  |  |  |
+| 20 | `v_ibs_mun` | `numeric(15,2)` | sim |  |  |  |
+| 21 | `v_cbs` | `numeric(15,2)` | sim |  |  |  |
+| 22 | `v_is` | `numeric(15,2)` | sim |  |  |  |
 
 
 ## Constraints
@@ -48,6 +54,7 @@
 | tabela | constraint | colunas | on delete |
 |---|---|---|---|
 | public.creditos_tributarios | creditos_tributarios_nota_fiscal_id_fkey | nota_fiscal_id | NO ACTION |
+| public.notas_fiscais_itens | notas_fiscais_itens_nota_fiscal_id_fkey | nota_fiscal_id | CASCADE |
 
 
 ## Índices
@@ -99,7 +106,9 @@
 
 ## Triggers
 
-_nenhum_
+| nome | timing | eventos | nível | status | função |
+|---|---|---|---|---|---|
+| notas_fiscais_verifica_totais_ibscbs | BEFORE | INSERT OR UPDATE | ROW | enabled | public.verificar_totais_ibscbs_nota |
 
 
 ## Grants

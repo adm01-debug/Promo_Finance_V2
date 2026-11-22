@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-sped-ecd |
 | status | ACTIVE |
-| versão | 145 |
+| versão | 146 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/gerar-sped-ecd/index.ts |
 | import_map |  |

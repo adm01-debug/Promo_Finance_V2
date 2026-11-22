@@ -17,6 +17,7 @@
 | public.nivel_risco | enum | BAIXO, MEDIO, ALTO | public.estrategias_elisao.risco |
 | public.order_status | enum | PENDING, MATCHED, ON_GOING, PICKED_UP, COMPLETED, CANCELLED, REJECTED, EXPIRED |  |
 | public.org_papel | enum | RESPONSAVEL, ADMIN, MEMBRO, LEITOR | public.convites.papel_proposto, public.organizacao_membros.papel_na_org |
+| public.origem_credito_tributario | enum | xml_destacado, estimado, manual | public.creditos_tributarios.origem |
 | public.prioridade_alerta | enum | baixa, media, alta, critica |  |
 | public.regiao_brasil | enum | NORTE, NORDESTE, CENTRO_OESTE, SUDESTE, SUL | public.ufs.regiao |
 | public.regime_tributario_enum | enum | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO | public.simulacao_tributos_detalhados.regime, public.simulacoes.regime_recomendado |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-pdf-tributario |
 | status | ACTIVE |
-| versão | 146 |
+| versão | 147 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/gerar-pdf-tributario/index.ts |
 | import_map |  |

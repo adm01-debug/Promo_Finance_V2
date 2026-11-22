@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "bb4d2374630e4a231b43229d2c9db4ee81125c44",
+  "commit": "ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059",
   "branch": "main",
-  "data_commit": "2026-11-21T22:09:52-03:00",
+  "data_commit": "2026-11-21T22:53:02-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ebf034f",
+    "data": "2026-11-21",
+    "assunto": "docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)"
+   },
    {
     "sha": "bb4d237",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "c3e421c",
     "data": "2026-11-21",
     "assunto": "chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)"
-   },
-   {
-    "sha": "11779f6",
-    "data": "2026-11-21",
-    "assunto": "chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)"
    }
   ],
-  "arquivos_mudados_7d": 484,
+  "arquivos_mudados_7d": 485,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -199,23 +199,23 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 32
+    "mudancas": 31
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 23
+    "mudancas": 22
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 14
+    "mudancas": 13
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 13
+    "mudancas": 12
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -227,22 +227,14 @@
    },
    {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 9
    },
    {
@@ -258,15 +250,11 @@
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 8
    },
    {
@@ -282,26 +270,38 @@
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/_shared/observability.ts",
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/analise-preditiva/index.ts",
+    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/ci-security-gate-log/index.ts",
-    "mudancas": 7
+    "arquivo": ".github/workflows/schema-drift.yml",
+    "mudancas": 6
+   },
+   {
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "docs/prod-readiness.md",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "scripts/migrate-functions.sh",
+    "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 254
+    "commits": 255
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3989,
+  "arquivos_total": 3990,
   "arquivos_codigo": 2491,
   "linhas_codigo": 444330,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 486,
   "workflows": 20,
   "scripts": 116,
-  "docs_md": 221
+  "docs_md": 222
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

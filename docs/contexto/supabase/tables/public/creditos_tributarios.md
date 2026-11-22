@@ -39,6 +39,9 @@
 | 21 | `observacoes` | `text` | sim |  |  |  |
 | 22 | `apuracao_id` | `uuid` | sim |  |  |  |
 | 23 | `competencia_utilizacao` | `text` | sim |  |  |  |
+| 24 | `origem` | `origem_credito_tributario` | não | `'estimado'::origem_credito_tributario` |  |  |
+| 25 | `efeito_tributario` | `boolean` | não | `false` |  |  |
+| 26 | `ano_fato_gerador` | `integer` | sim |  |  |  |
 
 
 ## Constraints

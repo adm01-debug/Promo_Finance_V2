@@ -161,6 +161,7 @@
 | public.nfe_recebidas | conta_pagar_id | public.contas_pagar | id | SET NULL | NO ACTION |
 | public.nfe_recebidas | empresa_id | public.empresas | id | SET NULL | NO ACTION |
 | public.notas_fiscais | empresa_id | public.empresas | id | CASCADE | NO ACTION |
+| public.notas_fiscais_itens | nota_fiscal_id | public.notas_fiscais | id | CASCADE | NO ACTION |
 | public.notas_fiscais_ocr | empresa_id | public.empresas | id | CASCADE | NO ACTION |
 | public.open_finance_consents | user_id | auth.users | id | NO ACTION | NO ACTION |
 | public.operacoes_icms | empresa_id | public.empresas | id | CASCADE | NO ACTION |

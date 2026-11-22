@@ -57,6 +57,10 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.bloqueios_duplicidade](tables/public/bloqueios_duplicidade.md) | table | sim | 1 | 20 | não |  |
 | [public.boletos](tables/public/boletos.md) | table | sim | 5 | 38 | não |  |
 | [public.budgets](tables/public/budgets.md) | table | sim | 1 | 9 | não |  |
+| [public.catalogo_aliquota_referencia](tables/public/catalogo_aliquota_referencia.md) | table | sim | 2 | 8 | não |  |
+| [public.catalogo_cclasstrib](tables/public/catalogo_cclasstrib.md) | table | sim | 2 | 12 | não |  |
+| [public.catalogo_nbs](tables/public/catalogo_nbs.md) | table | sim | 2 | 6 | não |  |
+| [public.catalogo_ncm](tables/public/catalogo_ncm.md) | table | sim | 2 | 6 | não |  |
 | [public.catalogos_fiscais_cargas](tables/public/catalogos_fiscais_cargas.md) | table | sim | 1 | 13 | não |  |
 | [public.catalogos_tributarios_health_history](tables/public/catalogos_tributarios_health_history.md) | table | sim | 1 | 13 | não |  |
 | [public.categorias](tables/public/categorias.md) | table | sim | 1 | 10 | não |  |
@@ -77,7 +81,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.contratos](tables/public/contratos.md) | table | sim | 1 | 18 | não |  |
 | [public.convites](tables/public/convites.md) | table | sim | 1 | 9 | não |  |
 | [public.convites_contador](tables/public/convites_contador.md) | table | sim | 2 | 13 | não |  |
-| [public.creditos_tributarios](tables/public/creditos_tributarios.md) | table | sim | 5 | 23 | não |  |
+| [public.creditos_tributarios](tables/public/creditos_tributarios.md) | table | sim | 5 | 26 | não |  |
 | [public.cron_job_logs](tables/public/cron_job_logs.md) | table | sim | 1 | 9 | não |  |
 | [public.custom_field_definitions](tables/public/custom_field_definitions.md) | table | sim | 1 | 12 | não |  |
 | [public.custom_field_values](tables/public/custom_field_values.md) | table | sim | 1 | 6 | não |  |
@@ -161,7 +165,8 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.new_device_alerts](tables/public/new_device_alerts.md) | table | sim | 4 | 8 | não |  |
 | [public.nfe_eventos](tables/public/nfe_eventos.md) | table | sim | 1 | 14 | não |  |
 | [public.nfe_recebidas](tables/public/nfe_recebidas.md) | table | sim | 2 | 28 | não |  |
-| [public.notas_fiscais](tables/public/notas_fiscais.md) | table | sim | 3 | 16 | não |  |
+| [public.notas_fiscais](tables/public/notas_fiscais.md) | table | sim | 3 | 22 | não |  |
+| [public.notas_fiscais_itens](tables/public/notas_fiscais_itens.md) | table | sim | 2 | 28 | não |  |
 | [public.notas_fiscais_ocr](tables/public/notas_fiscais_ocr.md) | table | sim | 5 | 26 | não |  |
 | [public.notification_history](tables/public/notification_history.md) | table | sim | 1 | 12 | não |  |
 | [public.open_finance_consents](tables/public/open_finance_consents.md) | table | sim | 1 | 9 | não |  |

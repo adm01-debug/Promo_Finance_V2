@@ -4,7 +4,7 @@
 |---|---|
 | nome | simular-simples |
 | status | ACTIVE |
-| versão | 144 |
+| versão | 145 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/simular-simples/index.ts |
 | import_map |  |
