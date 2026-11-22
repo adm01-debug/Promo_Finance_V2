@@ -158,7 +158,9 @@ Deno.serve(
         const pisCofins = faturamentoAnual * (pisCofinsAtual / 100) * (ano.pisCofinsResidual / 100);
         const icms = baseComercio * (icmsAtual / 100) * (ano.icmsResidual / 100);
         const iss = baseServicos * (issAtual / 100) * (ano.issResidual / 100);
-        const total = cbs + ibs + pisCofins + icms + iss;
+        // art. 343/348 LC 214/2025: 2026 é ano-teste — CBS/IBS são compensáveis/dispensados.
+        // A carga líquida de 2026 equivale ao regime antigo: somar CBS+IBS geraria pico artificial.
+        const total = ano.ano === 2026 ? pisCofins + icms + iss : cbs + ibs + pisCofins + icms + iss;
         const carga = (total / faturamentoAnual) * 100;
 
         return {
@@ -180,6 +182,14 @@ Deno.serve(
         0
       );
 
+      // Pico tributário: exclui 2026 (ano-teste sem carga adicional real)
+      const candidatosPico = projecoes.filter((p) => p.ano !== 2026);
+      const basePico = candidatosPico.length > 0 ? candidatosPico : projecoes;
+      const picoTributario = basePico.reduce(
+        (max, p) => (p.totalTributos > max.totalTributos ? p : max),
+        basePico[0]
+      );
+
       logger.info('projecao_concluida', { duration_ms: Date.now() - t0 });
       await logger.flush();
 
@@ -188,6 +198,7 @@ Deno.serve(
           cargaAtual,
           projecoes,
           economiaAcumulada,
+          picoTributario,
           parametros: raw,
         }),
         {
