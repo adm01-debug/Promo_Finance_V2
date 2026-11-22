@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "4d50a6fc7acd9c45ee0d867345c7dd73839e2764",
+  "commit": "a570395a348b7c398d7662584aaceaba79aaad63",
   "branch": "main",
-  "data_commit": "2026-11-22T01:59:35-03:00",
+  "data_commit": "2026-11-22T02:31:39-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a570395",
+    "data": "2026-11-22",
+    "assunto": "chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)"
+   },
    {
     "sha": "4d50a6f",
     "data": "2026-11-22",
@@ -126,14 +131,9 @@
     "sha": "9fc35ee",
     "data": "2026-11-21",
     "assunto": "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)"
-   },
-   {
-    "sha": "5788349",
-    "data": "2026-11-21",
-    "assunto": "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)"
    }
   ],
-  "arquivos_mudados_7d": 500,
+  "arquivos_mudados_7d": 501,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -274,6 +274,10 @@
     "mudancas": 6
    },
    {
+    "arquivo": "src/integrations/supabase/types.ts",
+    "mudancas": 6
+   },
+   {
     "arquivo": "src/lib/telemetry.ts",
     "mudancas": 6
    },
@@ -292,16 +296,12 @@
    {
     "arquivo": ".github/workflows/functions-deploy.yml",
     "mudancas": 5
-   },
-   {
-    "arquivo": "deno.lock",
-    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 264
+    "commits": 265
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 4004,
   "arquivos_codigo": 2491,
-  "linhas_codigo": 444349,
+  "linhas_codigo": 444611,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -660,7 +660,7 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 19784
+   "linhas": 20046
   },
   "src/lib": {
    "arquivos": 420,
@@ -710,7 +710,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 19648
+   "linhas": 19910
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",

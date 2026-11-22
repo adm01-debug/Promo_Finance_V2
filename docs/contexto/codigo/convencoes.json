@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)",
    "infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)",
    "feat: regimes especiais LC 214/2025 — etapas 15-16",
    "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS",
-   "infra: grupo IS por item (etapa 34 RT/RFB) (#513)",
-   "infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)"
+   "infra: grupo IS por item (etapa 34 RT/RFB) (#513)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

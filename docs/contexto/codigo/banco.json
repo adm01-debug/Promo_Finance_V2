@@ -12678,6 +12678,20 @@
    ],
    "fks": [],
    "criada_em": "20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+   "colunas_types": {
+    "aliquota": "number",
+    "ano": "number",
+    "carregado_em": "string",
+    "fonte": "string",
+    "id": "string",
+    "municipio_ibge": "string | null",
+    "tributo": "string",
+    "uf": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -12789,6 +12803,24 @@
    "indices": [],
    "fks": [],
    "criada_em": "20261122022500_catalogo_cclasstrib.sql",
+   "colunas_types": {
+    "cclasstrib": "string",
+    "created_at": "string",
+    "cst": "string",
+    "descricao": "string",
+    "exige_gibscbs": "boolean",
+    "fim_vigencia": "string | null",
+    "ind_dir": "number | null",
+    "inicio_vigencia": "string",
+    "p_red_cbs": "number",
+    "p_red_ibs_mun": "number",
+    "p_red_ibs_uf": "number",
+    "versao_it": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -12858,6 +12890,18 @@
    "indices": [],
    "fks": [],
    "criada_em": "20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+   "colunas_types": {
+    "carregado_em": "string",
+    "descricao": "string",
+    "fim_vigencia": "string | null",
+    "fonte": "string",
+    "inicio_vigencia": "string",
+    "nbs": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -12927,6 +12971,18 @@
    "indices": [],
    "fks": [],
    "criada_em": "20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+   "colunas_types": {
+    "carregado_em": "string",
+    "descricao": "string",
+    "fim_vigencia": "string | null",
+    "fonte": "string",
+    "inicio_vigencia": "string",
+    "ncm": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -17576,6 +17632,7 @@
    "criada_em": "20260106105751_7e782e21-b8e9-4819-9fbf-d7ea14d17482.sql",
    "colunas_types": {
     "aliquota": "number | null",
+    "ano_fato_gerador": "number | null",
     "apuracao_id": "string | null",
     "competencia_origem": "string | null",
     "competencia_utilizacao": "string | null",
@@ -17584,6 +17641,7 @@
     "documento_chave": "string | null",
     "documento_numero": "string | null",
     "documento_tipo": "string | null",
+    "efeito_tributario": "boolean",
     "empresa_id": "string | null",
     "fornecedor_cnpj": "string | null",
     "fornecedor_id": "string | null",
@@ -17591,6 +17649,7 @@
     "id": "string",
     "nota_fiscal_id": "string | null",
     "observacoes": "string | null",
+    "origem": "Database['public']['Enums']['origem_credito_tributario']",
     "saldo_disponivel": "number",
     "status": "string | null",
     "tipo_credito": "string | null",
@@ -17603,10 +17662,7 @@
     "so_na_migration": [
      "documento_serie",
      "updated_at",
-     "created_by",
-     "origem",
-     "efeito_tributario",
-     "ano_fato_gerador"
+     "created_by"
     ],
     "so_no_types": []
    },
@@ -30762,6 +30818,12 @@
     "numero": "string | null",
     "serie": "string | null",
     "status": "string | null",
+    "v_bc_ibscbs": "number | null",
+    "v_cbs": "number | null",
+    "v_ibs": "number | null",
+    "v_ibs_mun": "number | null",
+    "v_ibs_uf": "number | null",
+    "v_is": "number | null",
     "valor_desconto": "number",
     "valor_frete": "number",
     "valor_icms": "number | null",
@@ -30796,13 +30858,7 @@
      "asaas_xml_url",
      "asaas_rps_number",
      "bitrix_deal_id",
-     "observacoes",
-     "v_bc_ibscbs",
-     "v_ibs",
-     "v_ibs_uf",
-     "v_ibs_mun",
-     "v_cbs",
-     "v_is"
+     "observacoes"
     ],
     "so_no_types": []
    },
@@ -31033,6 +31089,40 @@
     "nota_fiscal_id->notas_fiscais"
    ],
    "criada_em": "20261122020000_cria_notas_fiscais_itens.sql",
+   "colunas_types": {
+    "ad_rem_is": "number | null",
+    "c_prod": "string",
+    "cclasstrib": "string | null",
+    "cclasstrib_is": "string | null",
+    "cfop": "string",
+    "created_at": "string",
+    "cst_ibscbs": "string | null",
+    "cst_is": "string | null",
+    "id": "string",
+    "n_item": "number",
+    "ncm": "string",
+    "nota_fiscal_id": "string",
+    "p_aliq_efet": "number | null",
+    "p_cbs": "number | null",
+    "p_ibs_mun": "number | null",
+    "p_ibs_uf": "number | null",
+    "p_is": "number | null",
+    "p_red_aliq": "number | null",
+    "q_com": "number",
+    "v_bc_ibscbs": "number | null",
+    "v_bc_is": "number | null",
+    "v_cbs": "number | null",
+    "v_ibs": "number | null",
+    "v_ibs_mun": "number | null",
+    "v_ibs_uf": "number | null",
+    "v_is": "number | null",
+    "v_prod": "number",
+    "v_un_com": "number"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [

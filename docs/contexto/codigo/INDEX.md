@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4d50a6fc7acd9c45ee0d867345c7dd73839e2764` (2026-11-22T01:59:35-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a570395a348b7c398d7662584aaceaba79aaad63` (2026-11-22T02:31:39-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4004 |
 | arquivos_codigo | 2491 |
-| linhas_codigo | 444349 |
+| linhas_codigo | 444611 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `a570395` chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)
 - 2026-11-22 `4d50a6f` infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)
 - 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
 - 2026-11-22 `2463d97` fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `ce2dfdb` chore: remove baseline histórica pré-correção (etapa 30)
 - 2026-11-21 `9e6fc7b` feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)
 - 2026-11-21 `2a68642` fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação
-- 2026-11-21 `1a51242` feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

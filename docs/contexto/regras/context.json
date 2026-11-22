@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "4d50a6fc7acd9c45ee0d867345c7dd73839e2764",
+  "sha": "a570395a348b7c398d7662584aaceaba79aaad63",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 05:00 UTC",
+  "generated_at": "2026-11-22 05:32 UTC",
   "files_total": 4043,
   "code_files": 3632,
   "code_lines": 515778
@@ -246566,10 +246566,20 @@
   }
  },
  "git": {
-  "sha": "4d50a6fc7acd9c45ee0d867345c7dd73839e2764",
+  "sha": "a570395a348b7c398d7662584aaceaba79aaad63",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "a570395",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)",
+    "files": [
+     "src/hooks/useCreditosTributarios.ts",
+     "src/integrations/supabase/types.ts"
+    ]
+   },
    {
     "sha": "4d50a6f",
     "date": "2026-11-22",
@@ -246916,22 +246926,6 @@
      "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
      "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
     ]
-   },
-   {
-    "sha": "ea8ccc8",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)",
-    "files": [
-     ".github/workflows/ci.yml",
-     "env.manifest.json",
-     "scripts/integrity/baseline/expected-policies.json",
-     "scripts/integrity/baseline/schema-counts.json",
-     "scripts/security/export-function-privileges.sh",
-     "scripts/security/test-observability-privileges.sql",
-     "scripts/security/test-security-definer-invocation.sql",
-     "supabase/tests/sql/rls_multi_empresa.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246946,10 +246940,6 @@
    [
     "src/lib/tributario/calculadora/reforma-tributaria.ts",
     4
-   ],
-   [
-    "scripts/integrity/baseline/schema-counts.json",
-    3
    ],
    [
     "src/types/reforma-tributaria/enums.ts",
@@ -246972,11 +246962,15 @@
     3
    ],
    [
-    "src/lib/reforma-tributaria/arredondamento.ts",
+    "src/integrations/supabase/types.ts",
     2
    ],
    [
-    "scripts/integrity/baseline/expected-policies.json",
+    "scripts/integrity/baseline/schema-counts.json",
+    2
+   ],
+   [
+    "src/lib/reforma-tributaria/arredondamento.ts",
     2
    ],
    [
