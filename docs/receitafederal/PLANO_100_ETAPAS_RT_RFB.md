@@ -22,7 +22,7 @@
 | 2 | Arquivar o plano antigo não executado | `docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` → `docs/archive/` | [ ] arquivo movido [ ] README aponta para o plano novo [ ] nenhum link quebrado (`grep -r PLANO_INTEGRACAO docs/`) | `git mv` no diff |
 | 3 | Criar `docs/receitafederal/FONTES_NORMATIVAS.md` | novo | [ ] tabela: norma · artigo · o que fixa · data · link [ ] cobre LC 214, LC 227, LC 235, ADCT 124-133, NT 2025.002, Atos Conjuntos 1/2025 e 4/2026, Res. CGIBS 6/2026, TCU 2933/2026 | doc revisado |
 | 4 | Snapshot de regressão dos motores atuais (antes de corrigir) | `src/lib/__tests__/rt-snapshot-pre-correcao.test.ts` | [ ] 8 anos × 3 motores gravados como snapshot [ ] teste marcado `describe.skip` com motivo "baseline histórica" | `vitest run` verde |
-| 5 | ~~Feature flag `rt_motor_v2` por empresa~~ — ⛔ descartada (ADR-004) | — | único uso original era alternar local × RFB na etapa 72; a Fase 7 saiu de escopo (ADR-004), então a flag não teria estado a alternar. Nenhuma migration foi criada e não há consumo da flag no código. Sem rollback automatizado: o rollback das Fases 1-2 é revert de commit | — |
+| 5 | Feature flag `rt_motor_v2` por empresa | `supabase/migrations/<ts>_feature_flag_rt_motor_v2.sql` ⚠️, `src/hooks/useFeatureFlag.ts` | [ ] flag default `false` [ ] RLS herdada da tabela de flags existente [ ] hook retorna boolean tipado | PR aberta p/ Joaquim |
 | 6 | Workflow semanal que compara tag/`V00xx` dos repos RFB com `docs/receitafederal/VERSOES_RFB.md` ⚠️ | `.github/workflows/rfb-upstream-watch.yml` | [ ] roda segunda 06:00 BRT [ ] abre issue quando `CHANGELOG.md` upstream muda [ ] `actionlint` verde | PR aberta p/ Joaquim |
 
 ## Fase 1 — Fonte única de alíquotas e cronograma (7-18)
@@ -102,9 +102,7 @@
 | 57 | `FiscalHealthBadge` reflete % de notas com grupo | `src/components/admin/FiscalHealthBadge.tsx`, `ConformidadeFiscalTab.tsx` | [ ] métrica real, não fabricada (seguir testes `sefaz-sem-metrica-fabricada`) | teste |
 | 58 | Cancelamento/evento mantém coerência | `CancelamentoNFe.tsx`, `EventosHistorico.tsx` | [ ] cancelamento estorna crédito `xml_destacado` [ ] evento gravado com chave | teste |
 
-## Fase 6 — Infra da calculadora oficial (59-68) — ⛔ FORA DE ESCOPO (ADR-004)
-
-> **Não executar.** O `ADR-004-TOPOLOGIA-RFB.md` decidiu que a calculadora oficial da RFB não será hospedada: Edge Functions rodam em Deno e não executam JVM. As etapas 59-68 e a Fase 7 inteira (69-78) ficam como registro histórico do cenário original, não como backlog.
+## Fase 6 — Infra da calculadora oficial (59-68)
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
@@ -119,9 +117,7 @@
 | 67 | Health agregado | `supabase/functions/rfb-health/index.ts` + cron | [ ] consulta `versao/status` das 2 calculadoras [ ] grava em `slo_metrics` [ ] alerta após 2 ciclos degradados | linha em `calcular-slo-metrics-diario` |
 | 68 | Registrar no `functions-deploy.yml` ⚠️ | `.github/workflows/functions-deploy.yml` | [ ] `rfb-proxy`, `rfb-health` deployadas [ ] `README.md` dos workflows atualizado | run verde |
 
-## Fase 7 — Cálculo delegado à calculadora oficial (69-78) — ⛔ FORA DE ESCOPO (ADR-004)
-
-> **Não executar.** Esta fase dependia da calculadora oficial em execução; sem ela não há segundo motor, e a etapa 72 (alternar local × RFB via `rt_motor_v2`) perde o estado válido. A etapa 5, que criava a flag, foi descartada junto. O que esta fase cobria como ideia — client tipado, mapeadores, tradução de erros, cache idempotente — só volta ao backlog se o dono reabrir a decisão do ADR-004.
+## Fase 7 — Cálculo delegado à calculadora oficial (69-78)
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
@@ -170,7 +166,7 @@
 | 96 | E2E ponta a ponta: produto → NF-e → XML → crédito → apuração | `e2e/rt-ponta-a-ponta.e2e.ts` | [ ] Playwright verde em CI [ ] usa usuário E2E padrão | run |
 | 97 | Chaos: calculadora fora | `e2e/rt-fallback.e2e.ts` | [ ] proxy 503 → motor local + alerta, sem 5xx na UI | run |
 | 98 | Runbook RFB | `docs/RUNBOOK.md` seção RFB | [ ] como pingar, rotacionar token, subir versão upstream, ler `REG-*` | doc |
-| 99 | ~~Flag `rt_motor_v2` ligada em produção para Promo Brindes~~ ⛔ descartada com a etapa 5 | — | Encerrada pelo ADR-004: sem segundo motor, não há flag a ligar. O rollback do motor próprio é revert do commit da Fase 1-2 | — |
+| 99 | Flag `rt_motor_v2` ligada em produção para Promo Brindes ⚠️ | update na tabela de flags | [ ] 1 semana de paridade sem divergência [ ] rollback = flag off | query + log |
 | 100 | Encerramento | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | [ ] 13 achados da auditoria marcados "resolvido em PR #" [ ] branches órfãs apagadas [ ] `VERSOES_RFB.md` com tags em uso | `gh pr list` limpo |
 
 ---
