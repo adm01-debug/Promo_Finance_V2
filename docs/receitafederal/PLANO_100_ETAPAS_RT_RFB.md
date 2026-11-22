@@ -166,10 +166,10 @@
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
-| 95 | Suíte de paridade local × RFB | `src/lib/__tests__/rfb-paridade.test.ts` | [ ] 200 operações (NCM reais de brindes) [ ] divergência máxima R$ 0,01 por item, 0 no total | relatório |
+| 95 | ~~Suíte de paridade local × RFB~~ — ⛔ descartada (ADR-004: sem segundo motor) | `src/lib/__tests__/rfb-paridade.test.ts` | [ ] 200 operações (NCM reais de brindes) [ ] divergência máxima R$ 0,01 por item, 0 no total | relatório |
 | 96 | E2E ponta a ponta: produto → NF-e → XML → crédito → apuração | `e2e/rt-ponta-a-ponta.e2e.ts` | [ ] Playwright verde em CI [ ] usa usuário E2E padrão | run |
-| 97 | Chaos: calculadora fora | `e2e/rt-fallback.e2e.ts` | [ ] proxy 503 → motor local + alerta, sem 5xx na UI | run |
-| 98 | Runbook RFB | `docs/RUNBOOK.md` seção RFB | [ ] como pingar, rotacionar token, subir versão upstream, ler `REG-*` | doc |
+| 97 | ~~Chaos: calculadora fora (proxy 503 → motor local)~~ — ⛔ descartada (ADR-004) | `e2e/rt-fallback.e2e.ts` | [ ] proxy 503 → motor local + alerta, sem 5xx na UI | run |
+| 98 | ~~Runbook RFB (pingar calculadora, rotacionar token, subir versão upstream)~~ — ⛔ descartada (ADR-004) | `docs/RUNBOOK.md` seção RFB | [ ] como pingar, rotacionar token, subir versão upstream, ler `REG-*` | doc |
 | 99 | ~~Flag `rt_motor_v2` ligada em produção para Promo Brindes~~ — ⛔ descartada (ADR-004) | update na tabela de flags | [ ] 1 semana de paridade sem divergência [ ] rollback = flag off | query + log |
 | 100 | Encerramento | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | [ ] 13 achados da auditoria marcados "resolvido em PR #" [ ] branches órfãs apagadas [ ] `VERSOES_RFB.md` com tags em uso | `gh pr list` limpo |
 
@@ -178,10 +178,11 @@
 ## Dependências entre fases
 
 ```
-0 → 1 → 2 → (3 ⚠️) → 4 → 5
-                 └→ 6 ⚠️ → 7 → 8 → 9 → 10
+0 → 1 → 2 → (3 ⚠️) → 4 → 5 → 8 → 9 → 10
+
+6 ⛔ e 7 ⛔ — fora de escopo (ADR-004), não bloqueiam nenhuma fase
 ```
-Fases 1-2 não dependem de banco nem de infra: começam imediatamente e já corrigem o que hoje está errado na tela. Fase 3 e 6 travam no Joaquim (regra 8). Fase 7 só faz sentido com 3 + 6 prontas.
+Fases 1-2 não dependem de banco nem de infra: começam imediatamente e já corrigem o que hoje está errado na tela. Fase 3 trava no Joaquim (regra 8). As fases 6 e 7 foram descartadas pelo ADR-004 e saíram do caminho crítico: a fase 8 depende apenas da 5.
 
 ## Riscos registrados
 
