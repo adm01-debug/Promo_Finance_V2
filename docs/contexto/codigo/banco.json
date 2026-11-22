@@ -4128,7 +4128,7 @@
    ],
    "criada_em": "20260712223141_stub-alerts-tables.sql",
    "colunas_types": {
-    "alert_type": "Database['public']['Enums']['alert_type']",
+    "alert_type": "Database[\"public\"][\"Enums\"][\"alert_type\"]",
     "bitrix24_user_ids": "number[] | null",
     "channel": "string",
     "conditions": "Json | null",
@@ -4989,9 +4989,9 @@
     "message": "string",
     "metadata": "Json | null",
     "order_id": "string | null",
-    "severity": "Database['public']['Enums']['alert_severity']",
+    "severity": "Database[\"public\"][\"Enums\"][\"alert_severity\"]",
     "title": "string",
-    "type": "Database['public']['Enums']['alert_type']"
+    "type": "Database[\"public\"][\"Enums\"][\"alert_type\"]"
    },
    "drift": {
     "so_na_migration": [],
@@ -5251,8 +5251,8 @@
     "aliquota_importado": "number",
     "created_at": "string",
     "id": "string",
-    "uf_destino": "Database['public']['Enums']['uf_brasil']",
-    "uf_origem": "Database['public']['Enums']['uf_brasil']",
+    "uf_destino": "Database[\"public\"][\"Enums\"][\"uf_brasil\"]",
+    "uf_origem": "Database[\"public\"][\"Enums\"][\"uf_brasil\"]",
     "updated_at": "string",
     "vigente_ate": "string | null",
     "vigente_de": "string"
@@ -5369,7 +5369,7 @@
     "categoria_produto": "string",
     "created_at": "string",
     "id": "string",
-    "uf": "Database['public']['Enums']['uf_brasil']",
+    "uf": "Database[\"public\"][\"Enums\"][\"uf_brasil\"]",
     "updated_at": "string",
     "vigente_ate": "string | null",
     "vigente_de": "string"
@@ -5502,7 +5502,7 @@
     "id": "string",
     "item_lista_id": "string | null",
     "municipio": "string",
-    "uf": "Database['public']['Enums']['uf_brasil']",
+    "uf": "Database[\"public\"][\"Enums\"][\"uf_brasil\"]",
     "updated_at": "string",
     "vigente_ate": "string | null",
     "vigente_de": "string"
@@ -6842,6 +6842,16 @@
     "user_id->auth"
    ],
    "criada_em": "20261120235900_quorum_aprovacao_assinaturas.sql",
+   "colunas_types": {
+    "assinado_em": "string",
+    "id": "string",
+    "solicitacao_id": "string",
+    "user_id": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -10350,7 +10360,7 @@
     "nome": "string",
     "percentual": "number | null",
     "tipo": "string",
-    "uf": "Database['public']['Enums']['uf_brasil'] | null",
+    "uf": "Database[\"public\"][\"Enums\"][\"uf_brasil\"] | null",
     "updated_at": "string",
     "vigente_ate": "string | null",
     "vigente_de": "string"
@@ -14306,7 +14316,7 @@
    "criada_em": "20260727185837_e55927cd-4203-4660-8ed3-653c76377123.sql",
    "colunas_types": {
     "anexo_simples": "string | null",
-    "atividade": "Database['public']['Enums']['atividade_economica'] | null",
+    "atividade": "Database[\"public\"][\"Enums\"][\"atividade_economica\"] | null",
     "codigo": "string",
     "created_at": "string",
     "descricao": "string",
@@ -17209,7 +17219,7 @@
     "expira_em": "string",
     "id": "string",
     "organizacao_id": "string",
-    "papel_proposto": "Database['public']['Enums']['org_papel']",
+    "papel_proposto": "Database[\"public\"][\"Enums\"][\"org_papel\"]",
     "token": "string",
     "utilizado_em": "string | null"
    },
@@ -17649,7 +17659,7 @@
     "id": "string",
     "nota_fiscal_id": "string | null",
     "observacoes": "string | null",
-    "origem": "Database['public']['Enums']['origem_credito_tributario']",
+    "origem": "Database[\"public\"][\"Enums\"][\"origem_credito_tributario\"]",
     "saldo_disponivel": "number",
     "status": "string | null",
     "tipo_credito": "string | null",
@@ -20548,7 +20558,7 @@
    ],
    "criada_em": "20260722193652_033f461a-fac8-4db7-8a60-4371347bd7c5.sql",
    "colunas_types": {
-    "ambiente": "Database['public']['Enums']['sefaz_ambiente']",
+    "ambiente": "Database[\"public\"][\"Enums\"][\"sefaz_ambiente\"]",
     "ativo": "boolean",
     "cnpj": "string",
     "created_at": "string",
@@ -20862,7 +20872,7 @@
     "nome": "string",
     "regimes_aplicaveis": "string[]",
     "requisitos": "Json",
-    "risco": "Database['public']['Enums']['nivel_risco']",
+    "risco": "Database[\"public\"][\"Enums\"][\"nivel_risco\"]",
     "updated_at": "string"
    },
    "drift": {
@@ -30370,7 +30380,7 @@
    ],
    "criada_em": "20260722193652_033f461a-fac8-4db7-8a60-4371347bd7c5.sql",
    "colunas_types": {
-    "ambiente": "Database['public']['Enums']['sefaz_ambiente']",
+    "ambiente": "Database[\"public\"][\"Enums\"][\"sefaz_ambiente\"]",
     "chave_acesso": "string",
     "cnpj_destinatario": "string",
     "cnpj_emitente": "string",
@@ -30383,13 +30393,13 @@
     "ie_emitente": "string | null",
     "manifestacao_data": "string | null",
     "manifestacao_justificativa": "string | null",
-    "manifestacao_status": "Database['public']['Enums']['nfe_manifestacao_status']",
+    "manifestacao_status": "Database[\"public\"][\"Enums\"][\"nfe_manifestacao_status\"]",
     "modelo": "string",
     "nsu": "number",
     "numero": "string | null",
     "raw_metadata": "Json | null",
     "razao_emitente": "string | null",
-    "schema_tipo": "Database['public']['Enums']['nfe_schema_tipo']",
+    "schema_tipo": "Database[\"public\"][\"Enums\"][\"nfe_schema_tipo\"]",
     "serie": "string | null",
     "situacao_nfe": "string | null",
     "tipo_documento": "string",
@@ -31905,7 +31915,7 @@
     "ncm": "string | null",
     "periodo_referencia": "string | null",
     "reducao_bc": "number | null",
-    "tipo_destinatario": "Database['public']['Enums']['tipo_destinatario']",
+    "tipo_destinatario": "Database[\"public\"][\"Enums\"][\"tipo_destinatario\"]",
     "tipo_operacao": "string",
     "tributos_aplicaveis": "Json",
     "tributos_nao_aplicaveis": "Json",
@@ -32412,7 +32422,7 @@
     "icms_valor": "number | null",
     "id": "string",
     "is_aliquota": "number | null",
-    "is_aliquota_customizada": "number | null",
+    "is_aliquota_customizada": "number",
     "is_categoria": "string | null",
     "is_valor": "number | null",
     "isento": "boolean | null",
@@ -32832,7 +32842,7 @@
     "created_at": "string",
     "id": "string",
     "organizacao_id": "string",
-    "papel_na_org": "Database['public']['Enums']['org_papel']",
+    "papel_na_org": "Database[\"public\"][\"Enums\"][\"org_papel\"]",
     "updated_at": "string",
     "usuario_id": "string"
    },
@@ -33424,7 +33434,7 @@
     "plano": "string | null",
     "proxima_geracao": "string | null",
     "status": "string",
-    "tipo_cobranca": "Database['public']['Enums']['tipo_cobranca']",
+    "tipo_cobranca": "Database[\"public\"][\"Enums\"][\"tipo_cobranca\"]",
     "total_gerado": "number",
     "ultima_geracao": "string | null",
     "ultima_transacao_id": "string | null",
@@ -36906,7 +36916,7 @@
     "id": "string",
     "papel": "string",
     "protocolo_id": "string",
-    "uf": "Database['public']['Enums']['uf_brasil']",
+    "uf": "Database[\"public\"][\"Enums\"][\"uf_brasil\"]",
     "updated_at": "string"
    },
    "drift": {
@@ -40392,7 +40402,7 @@
     "created_at": "string | null",
     "id": "string",
     "permission_id": "string | null",
-    "role": "Database['public']['Enums']['app_role']"
+    "role": "Database[\"public\"][\"Enums\"][\"app_role\"]"
    },
    "drift": {
     "so_na_migration": [],
@@ -40933,7 +40943,7 @@
     "canal": "string | null",
     "created_at": "string",
     "filter_id": "string | null",
-    "frequencia": "Database['public']['Enums']['subscription_frequencia']",
+    "frequencia": "Database[\"public\"][\"Enums\"][\"subscription_frequencia\"]",
     "horario_preferido": "string",
     "id": "string",
     "last_seen_at": "string",
@@ -41585,7 +41595,7 @@
     "ativo": "boolean",
     "created_at": "string",
     "created_by": "string | null",
-    "default_role": "Database['public']['Enums']['app_role'] | null",
+    "default_role": "Database[\"public\"][\"Enums\"][\"app_role\"] | null",
     "empresa_id": "string",
     "expires_at": "string | null",
     "id": "string",
@@ -42135,7 +42145,7 @@
    "fks": [],
    "criada_em": "20260722193652_033f461a-fac8-4db7-8a60-4371347bd7c5.sql",
    "colunas_types": {
-    "ambiente": "Database['public']['Enums']['sefaz_ambiente']",
+    "ambiente": "Database[\"public\"][\"Enums\"][\"sefaz_ambiente\"]",
     "circuit_open": "boolean",
     "cnpj": "string",
     "created_at": "string",
@@ -42421,7 +42431,7 @@
     "mei": "number | null",
     "memoria_calculo": "Json | null",
     "periodo_referencia": "string | null",
-    "regime": "Database['public']['Enums']['regime_tributario_enum']",
+    "regime": "Database[\"public\"][\"Enums\"][\"regime_tributario_enum\"]",
     "regime_tributario": "string | null",
     "retencoes": "number",
     "simples_nacional": "number | null",
@@ -42625,7 +42635,6 @@
     "parametros": "Json",
     "periodo_fim": "string",
     "periodo_inicio": "string",
-    "regime_recomendado": "Database['public']['Enums']['regime_tributario_enum'] | null",
     "resultado": "Json | null",
     "resultado_presumido": "Json | null",
     "resultado_real": "Json | null",
@@ -42637,7 +42646,9 @@
     "versao_motor": "string"
    },
    "drift": {
-    "so_na_migration": [],
+    "so_na_migration": [
+     "regime_recomendado"
+    ],
     "so_no_types": [
      "created_by",
      "parametros",
@@ -44260,7 +44271,7 @@
     "configuracoes": "Json | null",
     "created_at": "string | null",
     "created_by": "string | null",
-    "default_role": "Database['public']['Enums']['app_role']",
+    "default_role": "Database[\"public\"][\"Enums\"][\"app_role\"]",
     "discovery_url": "string | null",
     "empresa_id": "string | null",
     "entity_id_idp": "string | null",
@@ -44742,7 +44753,7 @@
     "id": "string",
     "last_synced_at": "string",
     "matched_group": "string | null",
-    "matched_role": "Database['public']['Enums']['app_role'] | null",
+    "matched_role": "Database[\"public\"][\"Enums\"][\"app_role\"] | null",
     "provider_id": "string",
     "synced_at": "string | null",
     "updated_at": "string",
@@ -46257,8 +46268,8 @@
     "nome": "string",
     "observacoes": "string | null",
     "possui_fcp": "boolean",
-    "regiao": "Database['public']['Enums']['regiao_brasil']",
-    "sigla": "Database['public']['Enums']['uf_brasil']",
+    "regiao": "Database[\"public\"][\"Enums\"][\"regiao_brasil\"]",
+    "sigla": "Database[\"public\"][\"Enums\"][\"uf_brasil\"]",
     "updated_at": "string",
     "vigente_ate": "string | null",
     "vigente_de": "string"
@@ -47196,7 +47207,7 @@
     "id": "string",
     "is_default": "boolean",
     "provisioned_via": "string",
-    "role": "Database['public']['Enums']['app_role']",
+    "role": "Database[\"public\"][\"Enums\"][\"app_role\"]",
     "scim_external_id": "string | null",
     "updated_at": "string",
     "user_id": "string"
@@ -47712,6 +47723,20 @@
     "user_id->auth"
    ],
    "criada_em": "20261121000000_restaura_user_preferences.sql",
+   "colunas_types": {
+    "created_at": "string",
+    "id": "string",
+    "key": "string",
+    "payload": "Json",
+    "updated_at": "string",
+    "user_id": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": [
+     "key"
+    ]
+   },
    "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [
@@ -47854,7 +47879,7 @@
     "id": "string",
     "is_active": "boolean | null",
     "notes": "string | null",
-    "role": "Database['public']['Enums']['app_role']",
+    "role": "Database[\"public\"][\"Enums\"][\"app_role\"]",
     "updated_at": "string | null",
     "user_id": "string"
    },

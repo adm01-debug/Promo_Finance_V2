@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f2e0d56cecae827f9b6b86fa138c4e8dbff7fb2c` (2026-11-22T10:57:55-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `00b75889555d8475ee3e955aaf434a42013781ae` (2026-11-22T11:12:21-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4009 |
 | arquivos_codigo | 2495 |
-| linhas_codigo | 445206 |
+| linhas_codigo | 445321 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -448,7 +448,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
-- tabelas_com_drift_migration_vs_types: 154 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
+- tabelas_com_drift_migration_vs_types: 155 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
@@ -473,9 +473,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - scripts/automation.config.json (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - scripts/security/test-canonical-db-gates.mjs (7)
+- src/integrations/supabase/types.ts (7)
 - supabase/functions/n8n-callback/index.ts (7)
 - .github/workflows/schema-drift.yml (6)
-- .github/workflows/supabase-linter.yml (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `00b7588` fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)
 - 2026-11-22 `f2e0d56` chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)
 - 2026-11-22 `5faafbe` chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório
 - 2026-11-22 `8254da0` fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `96b4a9b` infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)
 - 2026-11-21 `e76f879` infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)
 - 2026-11-21 `5148e34` infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)
-- 2026-11-21 `77c3f5d` infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

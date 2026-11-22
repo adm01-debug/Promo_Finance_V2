@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f2e0d56cecae827f9b6b86fa138c4e8dbff7fb2c",
+  "commit": "00b75889555d8475ee3e955aaf434a42013781ae",
   "branch": "main",
-  "data_commit": "2026-11-22T10:57:55-03:00",
+  "data_commit": "2026-11-22T11:12:21-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "00b7588",
+    "data": "2026-11-22",
+    "assunto": "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)"
+   },
    {
     "sha": "f2e0d56",
     "data": "2026-11-22",
@@ -126,11 +131,6 @@
     "sha": "ab226ac",
     "data": "2026-11-21",
     "assunto": "feat: selo \"simulado\" em CBS/IBS na UI (etapa 18 RT)"
-   },
-   {
-    "sha": "9cd4c84",
-    "data": "2026-11-21",
-    "assunto": "docs: plano 100 etapas RT/RFB e avaliações técnicas"
    }
   ],
   "arquivos_mudados_7d": 506,
@@ -246,6 +246,10 @@
     "mudancas": 7
    },
    {
+    "arquivo": "src/integrations/supabase/types.ts",
+    "mudancas": 7
+   },
+   {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 7
    },
@@ -267,10 +271,6 @@
    },
    {
     "arquivo": "scripts/migrate-functions.sh",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 6
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 270
+    "commits": 271
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 4009,
   "arquivos_codigo": 2495,
-  "linhas_codigo": 445206,
+  "linhas_codigo": 445321,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -652,7 +652,7 @@
   },
   "src/hooks": {
    "arquivos": 322,
-   "linhas": 47496
+   "linhas": 47495
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -660,7 +660,7 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 20046
+   "linhas": 20162
   },
   "src/lib": {
    "arquivos": 423,
@@ -710,7 +710,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 19910
+   "linhas": 20026
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
@@ -810,7 +810,7 @@
   }
  ],
  "qualidade": {
-  "any": 356,
+  "any": 353,
   "console_log": 237,
   "ts_ignore": 2,
   "eslint_disable": 1,
@@ -1073,6 +1073,7 @@
    "user_devices",
    "user_onboarding_progress",
    "user_passkeys",
+   "user_preferences",
    "user_roles",
    "vendedores",
    "verificacoes_conformidade",

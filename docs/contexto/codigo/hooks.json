@@ -5236,7 +5236,7 @@
    "hooks_exportados": [
     "usePreferenciasSistema"
    ],
-   "linhas": 184,
+   "linhas": 183,
    "dominio": "hooks",
    "tabelas": [
     "user_preferences"
