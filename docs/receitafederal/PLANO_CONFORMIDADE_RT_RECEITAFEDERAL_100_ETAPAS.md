@@ -74,7 +74,7 @@ Substitui `docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` (arquivad
 | 36  | `creditos_tributarios`: origem e efeito                                                  | migration                                    | `origem enum('xml_destacado','estimado','manual')`; `efeito_tributario boolean` (false para FG 2026); `ano_fato_gerador int`; backfill: créditos existentes → `origem='estimado', efeito_tributario=false`                                                                                                                                                                 | query de contagem antes/depois |
 | 37  | Tabela `catalogo_cclasstrib`                                                             | migration                                    | espelho da `CLASSIFICACAO_TRIBUTARIA` RFB: `cclasstrib, cst, descricao, p_red_cbs, p_red_ibs_uf, p_red_ibs_mun, exige_gibscbs, ind_dir, inicio_vigencia, fim_vigencia, versao_it`; RLS leitura para authenticated, escrita service_role                                                                                                                                    | lint                           |
 | 38  | Tabelas `catalogo_ncm`, `catalogo_nbs`, `catalogo_aliquota_referencia`                   | migration                                    | vigência; `fonte='RFB'`, `carregado_em`                                                                                                                                                                                                                                                                                                                                    | lint                           |
-| 39  | Tabela `rfb_calculos` (cache/idempotência)                                               | migration                                    | `hash_payload` unique, `request_id`, `resposta jsonb`, `estado_item`, `ttl`; RLS service_role                                                                                                                                                                                                                                                                              | lint                           |
+| 39  | ~~Tabela `rfb_calculos` (cache/idempotência)~~ — ⛔ dispensada (ADR-004)                 | —                                            | única finalidade era cache do `rfb-proxy` (Fase 7, fora de escopo); nenhum outro uso identificado — etapa removida, sem migration a criar                                                                                                                                                                                                                                  | —                              |
 | 40  | Regenerar `src/integrations/supabase/types.ts` e remover `@ts-nocheck` dos hooks tocados | `types.ts`, hooks                            | `supabase gen types`; `tsc --noEmit` exit 0                                                                                                                                                                                                                                                                                                                                | log do comando                 |
 
 ## Fase 4 — Importação de XML e créditos reais (41-50)
@@ -105,7 +105,9 @@ Substitui `docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` (arquivad
 | 57  | `FiscalHealthBadge` reflete % de notas com grupo | `src/components/admin/FiscalHealthBadge.tsx`, `ConformidadeFiscalTab.tsx`                | métrica real, não fabricada                                                                                                     | teste                                         |
 | 58  | Cancelamento/evento mantém coerência             | `CancelamentoNFe.tsx`, `EventosHistorico.tsx`                                            | cancelamento estorna crédito `xml_destacado`; evento gravado com chave                                                          | teste                                         |
 
-## Fase 6 — Infra da calculadora oficial (59-68)
+## Fase 6 — Infra da calculadora oficial (59-68) — ⛔ fora de escopo (ADR-004)
+
+> Decisão do dono (`docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md`): não hospedar a calculadora oficial da RFB (app Java, incompatível com Supabase Edge Functions/Deno). Etapas 59-68 não serão executadas.
 
 | #   | Etapa                                                        | Arquivos                                                   | Checklist de conclusão                                                                                                    | Evidência                                  |
 | --- | ------------------------------------------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
@@ -120,7 +122,9 @@ Substitui `docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` (arquivad
 | 67  | Health agregado                                              | `supabase/functions/rfb-health/index.ts` + cron            | consulta `versao/status` das 2 calculadoras; grava em `slo_metrics`; alerta após 2 ciclos degradados                      | linha em `calcular-slo-metrics-diario`     |
 | 68  | Registrar no `functions-deploy.yml` ⚠️                       | `.github/workflows/functions-deploy.yml`                   | `rfb-proxy`, `rfb-health` deployadas; `README.md` dos workflows atualizado                                                | run verde                                  |
 
-## Fase 7 — Cálculo delegado à calculadora oficial (69-78)
+## Fase 7 — Cálculo delegado à calculadora oficial (69-78) — ⛔ fora de escopo (ADR-004)
+
+> Mesma decisão da Fase 6: sem infra para a calculadora oficial, não há o que delegar. Etapas 69-78 não serão executadas; o motor próprio (Fases 1-2) continua sendo a única fonte de cálculo.
 
 | #   | Etapa                                                | Arquivos                                              | Checklist de conclusão                                                                                                             | Evidência                          |
 | --- | ---------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -163,25 +167,24 @@ Substitui `docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` (arquivad
 
 ## Fase 10 — Qualidade, operação e encerramento (95-100)
 
-| #   | Etapa                                    | Arquivos                                                 | Checklist de conclusão                                                                                       | Evidência          |
-| --- | ---------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------ |
-| 95  | Suíte de paridade local × RFB            | `src/lib/__tests__/rfb-paridade.test.ts`                 | 200 operações; divergência máxima R$ 0,01 por item, 0 no total                                               | relatório          |
-| 96  | E2E ponta a ponta                        | `e2e/rt-ponta-a-ponta.e2e.ts`                            | Playwright verde em CI                                                                                       | run                |
-| 97  | Chaos: calculadora fora                  | `e2e/rt-fallback.e2e.ts`                                 | proxy 503 → motor local + alerta, sem 5xx na UI                                                              | run                |
-| 98  | Runbook RFB                              | `docs/RUNBOOK.md` seção RFB                              | como pingar, rotacionar token, subir versão upstream, ler `REG-*`                                            | doc                |
-| 99  | Flag `rt_motor_v2` ligada em produção ⚠️ | update na tabela de flags                                | 1 semana de paridade sem divergência; rollback = flag off                                                    | query + log        |
-| 100 | Encerramento                             | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | achados da auditoria marcados "resolvido em PR #"; branches órfãs apagadas; `VERSOES_RFB.md` com tags em uso | `gh pr list` limpo |
+| #   | Etapa                                                                  | Arquivos                                                 | Checklist de conclusão                                                                                                                                                                   | Evidência          |
+| --- | ---------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| 95  | ~~Suíte de paridade local × RFB~~ → paridade manual (ADR-004)          | `src/lib/__tests__/rfb-paridade.test.ts`                 | sem proxy para comparar automaticamente; validação manual contra casos de exemplo publicados pela RFB (NT 2025.002, doc. da calculadora)                                                 | relatório          |
+| 96  | E2E ponta a ponta                                                      | `e2e/rt-ponta-a-ponta.e2e.ts`                            | Playwright verde em CI                                                                                                                                                                   | run                |
+| 97  | ~~Chaos: calculadora fora~~ — ⛔ não aplica (ADR-004)                  | —                                                        | sem proxy/calculadora remota, não há fallback a testar — motor local é a única via                                                                                                       | —                  |
+| 98  | Runbook RFB                                                            | `docs/RUNBOOK.md` seção RFB                              | documenta a decisão do ADR-004 (motor próprio, sem infra RFB); sem passos de proxy/calculadora                                                                                           | doc                |
+| 99  | ~~Flag `rt_motor_v2` ligada em produção~~ — ⛔ não aplica (ADR-004) ⚠️ | —                                                        | flag existia para alternar local × RFB; sem RFB, não há estado a ativar — avaliar se a flag ainda serve a outro propósito (rollback do motor novo das Fases 1-2) ou se deve ser removida | —                  |
+| 100 | Encerramento                                                           | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | achados da auditoria marcados "resolvido em PR #"; branches órfãs apagadas; `VERSOES_RFB.md` com tags em uso                                                                             | `gh pr list` limpo |
 
 ---
 
 ## Dependências entre fases
 
 ```
-0 → 1 → 2 → (3 ⚠️) → 4 → 5
-                 └→ 6 ⚠️ → 7 → 8 → 9 → 10
+0 → 1 → 2 → (3 ⚠️) → 4 → 5 → 8 → 9 → 10
 ```
 
-Fases 1-2 não dependem de banco nem de infra: começam imediatamente e já corrigem o que hoje está errado na tela. Fase 3 e 6 travam no dono (regra 8). Fase 7 só faz sentido com 3 + 6 prontas.
+Fases 1-2 não dependem de banco nem de infra: começam imediatamente e já corrigem o que hoje está errado na tela. Fase 3 trava no dono (regra 8). Fases 6 e 7 (infra e delegação à calculadora oficial) estão fora de escopo (ADR-004) e saíram do caminho crítico — Fase 8 (catálogos) depende só de Fase 3 (schema) e dos endpoints públicos de dados abertos da RFB, não da calculadora.
 
 **Dependências finas dentro das fases** (o diagrama acima é só entre fases): a etapa 53 usa o catálogo `catalogo_cclasstrib` que só é populado pela etapa 79 (sync diário) — rodar 53 antes de 79 funciona com a tabela vazia e só passa a sugerir valores depois que 79 roda uma vez; registrar isso como limitação conhecida na etapa 53 até 79 estar ativa. A etapa 77 (geração/validação de XML) assume que o pré-validador da etapa 54 já existe — se a execução pular a etapa 54, a etapa 77 deve falhar explicitamente em vez de enviar XML não validado.
 
@@ -193,4 +196,4 @@ Fases 1-2 não dependem de banco nem de infra: começam imediatamente e já corr
 | Rejeição 1115 reativada sem aviso              | etapa 54 bloqueia envio sem grupo desde já                                                                                                                           |
 | Nova versão da tabela cClassTrib (IT 2025.002) | sync diário (79) + watch upstream (6)                                                                                                                                |
 | Bling não expor campos IBS/CBS no payload      | etapa 51 decide: cadastro no Bling vs. troca de emissor                                                                                                              |
-| Custo da VPS para Java 25                      | ADR-004 (59) antes de qualquer deploy                                                                                                                                |
+| Custo da VPS para Java 25                      | resolvido: ADR-004 — dono optou por não hospedar a calculadora; sem custo de infra nova                                                                              |
