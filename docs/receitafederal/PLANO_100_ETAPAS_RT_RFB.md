@@ -102,7 +102,9 @@
 | 57 | `FiscalHealthBadge` reflete % de notas com grupo | `src/components/admin/FiscalHealthBadge.tsx`, `ConformidadeFiscalTab.tsx` | [ ] métrica real, não fabricada (seguir testes `sefaz-sem-metrica-fabricada`) | teste |
 | 58 | Cancelamento/evento mantém coerência | `CancelamentoNFe.tsx`, `EventosHistorico.tsx` | [ ] cancelamento estorna crédito `xml_destacado` [ ] evento gravado com chave | teste |
 
-## Fase 6 — Infra da calculadora oficial (59-68)
+## Fase 6 — Infra da calculadora oficial (59-68) — ⛔ FORA DE ESCOPO (ADR-004)
+
+> **Não executar.** O `ADR-004-TOPOLOGIA-RFB.md` decidiu que a calculadora oficial da RFB não será hospedada: Edge Functions rodam em Deno e não executam JVM. As etapas 59-68 e a Fase 7 inteira (69-78) ficam como registro histórico do cenário original, não como backlog.
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
@@ -117,7 +119,9 @@
 | 67 | Health agregado | `supabase/functions/rfb-health/index.ts` + cron | [ ] consulta `versao/status` das 2 calculadoras [ ] grava em `slo_metrics` [ ] alerta após 2 ciclos degradados | linha em `calcular-slo-metrics-diario` |
 | 68 | Registrar no `functions-deploy.yml` ⚠️ | `.github/workflows/functions-deploy.yml` | [ ] `rfb-proxy`, `rfb-health` deployadas [ ] `README.md` dos workflows atualizado | run verde |
 
-## Fase 7 — Cálculo delegado à calculadora oficial (69-78)
+## Fase 7 — Cálculo delegado à calculadora oficial (69-78) — ⛔ FORA DE ESCOPO (ADR-004)
+
+> **Não executar.** Esta fase dependia da calculadora oficial em execução; sem ela não há segundo motor, e a etapa 72 (alternar local × RFB via `rt_motor_v2`) perde o estado válido. A etapa 5, que criava a flag, foi descartada junto. O que esta fase cobria como ideia — client tipado, mapeadores, tradução de erros, cache idempotente — só volta ao backlog se o dono reabrir a decisão do ADR-004.
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
@@ -166,7 +170,7 @@
 | 96 | E2E ponta a ponta: produto → NF-e → XML → crédito → apuração | `e2e/rt-ponta-a-ponta.e2e.ts` | [ ] Playwright verde em CI [ ] usa usuário E2E padrão | run |
 | 97 | Chaos: calculadora fora | `e2e/rt-fallback.e2e.ts` | [ ] proxy 503 → motor local + alerta, sem 5xx na UI | run |
 | 98 | Runbook RFB | `docs/RUNBOOK.md` seção RFB | [ ] como pingar, rotacionar token, subir versão upstream, ler `REG-*` | doc |
-| 99 | Flag `rt_motor_v2` ligada em produção para Promo Brindes ⚠️ | update na tabela de flags | [ ] 1 semana de paridade sem divergência [ ] rollback = flag off | query + log |
+| 99 | ~~Flag `rt_motor_v2` ligada em produção para Promo Brindes~~ ⛔ descartada com a etapa 5 | — | Encerrada pelo ADR-004: sem segundo motor, não há flag a ligar. O rollback do motor próprio é revert do commit da Fase 1-2 | — |
 | 100 | Encerramento | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | [ ] 13 achados da auditoria marcados "resolvido em PR #" [ ] branches órfãs apagadas [ ] `VERSOES_RFB.md` com tags em uso | `gh pr list` limpo |
 
 ---
