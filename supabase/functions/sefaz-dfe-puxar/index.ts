@@ -45,6 +45,7 @@ import {
 import { gunzipBase64 } from '../_shared/sefaz/gunzip.ts';
 import { parseDoc, type ParsedDoc } from '../_shared/sefaz/parser.ts';
 import { buildXmlPath, uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
+import { extrairIbscbs } from '../_shared/nfe/ibscbs.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -236,6 +237,12 @@ async function stageDoc(
       chave: parsed.chaveAcesso,
       xml,
     });
+
+    // Etapa 49: `resNFe` (resumo) não traz itens nem impostos, então não há
+    // valor destacado — só `procNFe` (XML completo) alimenta o grupo IBS/CBS.
+    // Sem essa guarda o resumo viraria crédito "xml_destacado" zerado ou um
+    // crédito estimado disfarçado de destacado.
+    const ibscbs = parsed.xmlCompleto ? extrairIbscbs(xml) : null;
     return {
       kind: 'nfe',
       nsu,
@@ -256,6 +263,7 @@ async function stageDoc(
         schema_tipo: parsed.schemaTipo,
         xml_path: xmlPath,
         xml_completo: parsed.xmlCompleto,
+        raw_metadata: ibscbs ? { ibscbs } : null,
       },
     };
   }
