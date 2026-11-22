@@ -18,3 +18,7 @@ docs/ci/MATRIZ_EDGE_TABELA.md
 # (gerar-matriz-conformidade-contratos.mjs)
 docs/contract-conformance.json
 docs/contract-conformance-summary.md
+
+# Gerado por 'supabase gen types' (schema-drift.yml); a CLI nao passa pelo Prettier,
+# formatar criaria diff de milhares de linhas sem efeito semantico
+src/integrations/supabase/types.ts

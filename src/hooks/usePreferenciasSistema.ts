@@ -51,10 +51,9 @@ export function usePreferenciasSistema() {
     queryKey: ['user_preferences', user?.id ?? 'anon', KEY],
     queryFn: async (): Promise<PreferenciasSistema> => {
       if (!user) return PREFERENCIAS_DEFAULT;
-      // Tabela fora do typemap gerado (foi dropada em prod e está sendo
-      // restaurada pela migration 20261121000000) — cast any no builder.
-      const prefsTable = supabase.from('user_preferences' as any);
-      const { data, error } = await (prefsTable.select('payload') as any)
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('payload')
         .eq('user_id', user.id)
         .eq('key', KEY)
         .maybeSingle();
@@ -153,7 +152,7 @@ export function usePreferenciasSistema() {
             ? 'A leitura falhou e as preferências não puderam ser carregadas.'
             : 'Preferências ainda carregando. Tente novamente em instantes.',
         };
-      const { error } = await supabase.from('user_preferences' as any).upsert(
+      const { error } = await supabase.from('user_preferences').upsert(
         {
           user_id: user.id,
           key: KEY,
