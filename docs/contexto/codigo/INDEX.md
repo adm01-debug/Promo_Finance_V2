@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9e6fc7bdc6b682a9693ec5e8ce413725d49a8305` (2026-11-21T20:57:44-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ce2dfdba98982fcf0037ce3c60f44a4943eac28c` (2026-11-21T21:51:58-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2373), SQL (1126), Markdown (220), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2372), SQL (1126), Markdown (220), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3990 |
-| arquivos_codigo | 2492 |
-| linhas_codigo | 444380 |
+| arquivos_total | 3988 |
+| arquivos_codigo | 2491 |
+| linhas_codigo | 444330 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 312 |
 | migrations | 1054 |
 | cron_jobs | 22 |
-| testes | 487 |
+| testes | 486 |
 | workflows | 20 |
 | scripts | 116 |
 | docs_md | 220 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (238), src/components (27), src/pages (5)
 - servicos_logica: src/lib (265), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (287), outro (112), co-localizado (*.test) (48)
+- testes: co-localizado (__tests__) (286), outro (112), co-localizado (*.test) (48)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -464,8 +464,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (34)
 - bun.lock (32)
 - .github/workflows/ci.yml (24)
-- supabase/functions/asaas-proxy/index.ts (15)
 - env.manifest.json (14)
+- supabase/functions/asaas-proxy/index.ts (14)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - scripts/generate-env-manifest.mjs (10)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `ce2dfdb` chore: remove baseline histórica pré-correção (etapa 30)
 - 2026-11-21 `9e6fc7b` feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)
 - 2026-11-21 `2a68642` fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação
 - 2026-11-21 `1a51242` feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `9fc35ee` fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)
 - 2026-11-21 `5788349` chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)
 - 2026-11-21 `f22be43` infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)
-- 2026-11-21 `794bb45` feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

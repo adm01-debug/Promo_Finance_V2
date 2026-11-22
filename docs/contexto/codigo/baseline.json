@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9e6fc7bdc6b682a9693ec5e8ce413725d49a8305",
+  "commit": "ce2dfdba98982fcf0037ce3c60f44a4943eac28c",
   "branch": "main",
-  "data_commit": "2026-11-21T20:57:44-03:00",
+  "data_commit": "2026-11-21T21:51:58-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ce2dfdb",
+    "data": "2026-11-21",
+    "assunto": "chore: remove baseline histórica pré-correção (etapa 30)"
+   },
    {
     "sha": "9e6fc7b",
     "data": "2026-11-21",
@@ -126,11 +131,6 @@
     "sha": "cab2bf4",
     "data": "2026-11-20",
     "assunto": "fix(configuracoes): persiste preferências do Sistema por usuário (#3) (#484)"
-   },
-   {
-    "sha": "72a08b5",
-    "data": "2026-11-20",
-    "assunto": "fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)"
    }
   ],
   "arquivos_mudados_7d": 483,
@@ -188,11 +188,11 @@
     "mudancas": 19
    },
    {
-    "pasta": "src/components/conciliacao",
-    "mudancas": 16
+    "pasta": "src/lib/__tests__",
+    "mudancas": 18
    },
    {
-    "pasta": "src/lib/__tests__",
+    "pasta": "src/components/conciliacao",
     "mudancas": 16
    }
   ],
@@ -210,11 +210,11 @@
     "mudancas": 24
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 15
+    "arquivo": "env.manifest.json",
+    "mudancas": 14
    },
    {
-    "arquivo": "env.manifest.json",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 14
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 252
+    "commits": 253
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3990,
-  "arquivos_codigo": 2492,
-  "linhas_codigo": 444380,
+  "arquivos_total": 3988,
+  "arquivos_codigo": 2491,
+  "linhas_codigo": 444330,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 312,
   "migrations": 1054,
   "cron_jobs": 22,
-  "testes": 487,
+  "testes": 486,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 220
@@ -663,8 +663,8 @@
    "linhas": 19784
   },
   "src/lib": {
-   "arquivos": 421,
-   "linhas": 55635
+   "arquivos": 420,
+   "linhas": 55585
   },
   "src/main.tsx": {
    "arquivos": 1,

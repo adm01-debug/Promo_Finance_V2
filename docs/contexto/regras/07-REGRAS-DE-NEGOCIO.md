@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `9e6fc7bdc6` · branch `main` · 2026-11-21 23:58 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ce2dfdba98` · branch `main` · 2026-11-22 00:52 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5098,7 +5098,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3671 testes em 322 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3667 testes em 321 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5356,7 +5356,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
 | `src/lib/__tests__/conciliacao-complex-e2e.test.ts` | 4 | E2E Complexo: Conciliação Multi-Conta e Multi-CNPJ · deve filtrar matches corretamente por contaBancariaId para evitar cross-account matching · deve lidar com múltiplos CNPJs (Empresas) no mesmo pool de lançamentos se necessário · deve gerar divergência corretamente para valores parciais |
-| `src/lib/__tests__/rt-snapshot-pre-correcao.test.ts` | 4 | baseline histórica pré-correção · motor 1: calcularTributosReforma (src/lib/reforma-tributaria) · motor 2: calcularReformaTributaria (src/lib/tributario/calculadora) · motor 3: projetarReforma (src/lib/tributario/projecao-reforma) |
 | `src/lib/__tests__/sso-error-messages.test.ts` | 4 | SSO_ERROR_MESSAGES · possui título, descrição e hint para todos os códigos · inferSsoErrorCode · inferindo  |
 | `src/lib/arquitetura/__tests__/snapshot-grafo.test.ts` | 4 | snapshot do grafo de arquitetura · lista de arestas está sincronizada com o código · contagem de imports analisados está sincronizada · resumo de drift está sincronizado e zerado |
 | `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
@@ -5402,7 +5401,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/executar-regua-cobranca/domain.test.ts` | 3 | normaliza dias, remove duplicados e rejeita valores inválidos · normaliza e limita canais ao contrato conhecido · calcula datas antes, no dia e depois do vencimento em UTC |
 | `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
-| … +22 linhas — lista completa em `context.json` | | |
+| `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
+| … +21 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

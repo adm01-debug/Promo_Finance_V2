@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9e6fc7bdc6b682a9693ec5e8ce413725d49a8305",
+  "sha": "ce2dfdba98982fcf0037ce3c60f44a4943eac28c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-21 23:58 UTC",
-  "files_total": 4029,
-  "code_files": 3619,
-  "code_lines": 515333
+  "generated_at": "2026-11-22 00:52 UTC",
+  "files_total": 4027,
+  "code_files": 3618,
+  "code_lines": 515282
  },
  "version": "1.3.2",
- "facts_hash": "7fe05539cd31247d",
+ "facts_hash": "aa54db50ea90269f",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1256,
+   ".ts": 1255,
    ".sql": 1126,
    ".tsx": 1117,
    ".mjs": 67,
@@ -70273,8 +70273,8 @@
   },
   {
    "module": "src/lib",
-   "files": 421,
-   "lines": 56056,
+   "files": 420,
+   "lines": 56005,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -127725,22 +127725,6 @@
    {
     "file": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
     "name": "preserva exports históricos"
-   },
-   {
-    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    "name": "baseline histórica pré-correção"
-   },
-   {
-    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    "name": "motor 1: calcularTributosReforma (src/lib/reforma-tributaria)"
-   },
-   {
-    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    "name": "motor 2: calcularReformaTributaria (src/lib/tributario/calculadora)"
-   },
-   {
-    "file": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    "name": "motor 3: projetarReforma (src/lib/tributario/projecao-reforma)"
    },
    {
     "file": "src/lib/__tests__/secure-random.test.ts",
@@ -213096,17 +213080,6 @@
     "preserva exports históricos"
    ]
   },
-  "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts": {
-   "path": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-   "lines": 51,
-   "is_test": true,
-   "tests": [
-    "baseline histórica pré-correção",
-    "motor 1: calcularTributosReforma (src/lib/reforma-tributaria)",
-    "motor 2: calcularReformaTributaria (src/lib/tributario/calculadora)",
-    "motor 3: projetarReforma (src/lib/tributario/projecao-reforma)"
-   ]
-  },
   "src/lib/__tests__/secure-random.test.ts": {
    "path": "src/lib/__tests__/secure-random.test.ts",
    "lines": 34,
@@ -245250,10 +245223,20 @@
   }
  },
  "git": {
-  "sha": "9e6fc7bdc6b682a9693ec5e8ce413725d49a8305",
+  "sha": "ce2dfdba98982fcf0037ce3c60f44a4943eac28c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ce2dfdb",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "chore: remove baseline histórica pré-correção (etapa 30)",
+    "files": [
+     "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
+     "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
+    ]
+   },
    {
     "sha": "9e6fc7b",
     "date": "2026-11-21",
@@ -245612,15 +245595,6 @@
      "scripts/integrity/baseline/schema-counts.json",
      "scripts/integrity/dump-baseline.sh"
     ]
-   },
-   {
-    "sha": "b7e2355",
-    "date": "2026-11-20",
-    "author": "adm01-debug",
-    "subject": "fix: cobertura teste do zIndex do tour (options.zIndex=10000, achado Devin #474) (#477)",
-    "files": [
-     "src/components/onboarding/__tests__/OnboardingTour.zIndex.test.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -245647,6 +245621,14 @@
    [
     "scripts/integrity/baseline/schema-counts.json",
     3
+   ],
+   [
+    "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
+    2
+   ],
+   [
+    "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+    2
    ],
    [
     "src/types/reforma-tributaria/enums.ts",
@@ -245694,14 +245676,6 @@
    ],
    [
     "src/components/reforma-tributaria/GlossarioTooltip.tsx",
-    2
-   ],
-   [
-    "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
-    2
-   ],
-   [
-    "src/lib/reforma-tributaria/cronograma-oficial.ts",
     2
    ]
   ]
