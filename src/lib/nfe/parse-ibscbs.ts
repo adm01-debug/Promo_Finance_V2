@@ -43,16 +43,32 @@ export interface NFeIbscbsGrupo {
   vCBS?: number;
   /** Total de IBS do item (gIBSCBS/vIBS). */
   vIBS?: number;
-  /** Redução de alíquota (gRed). */
-  gRed?: NFeIbscbsRed;
+  /**
+   * Redução de alíquota do IBS UF (`gIBSUF/gRed`). Cada tributo tem o seu
+   * próprio grupo no leiaute (gIBSUF, gIBSMun, gCBS), com valores distintos.
+   */
+  gRedUF?: NFeIbscbsRed;
+  /** Redução de alíquota do IBS Municipal (`gIBSMun/gRed`). */
+  gRedMun?: NFeIbscbsRed;
+  /** Redução de alíquota da CBS (`gCBS/gRed`). */
+  gRedCBS?: NFeIbscbsRed;
 }
 
 export interface NFeIsGrupo {
   cstIs?: string;
   cClassTribIs?: string;
   vBCIs?: number;
+  /** Alíquota do IS em percentual (`pIS`). */
   pIs?: number;
+  /**
+   * Alíquota específica do IS **por valor** (`pISEspec`, ex.: R$/unidade).
+   * Não é percentual — fica como veio no XML, sem divisão por 100.
+   */
   pIsEspec?: number;
+  /** Unidade tributável (`uTrib`), exigida quando há `pISEspec`. */
+  uTrib?: string;
+  /** Quantidade tributável (`qTrib`), exigida quando há `pISEspec`. */
+  qTrib?: number;
   vIs?: number;
 }
 
@@ -83,6 +99,19 @@ function toFrac(pct: number | undefined): number | undefined {
 }
 
 /**
+ * Lê um grupo `gRed` (TRed): `pRedAliq` é percentual de redução,
+ * `pAliqEfet` é a alíquota efetiva já calculada — ambos percentuais.
+ */
+function lerRed(gRed: Element | null | undefined): NFeIbscbsRed | undefined {
+  if (!gRed) return undefined;
+  const red: NFeIbscbsRed = {
+    pRedAliq: toFrac(num(gRed.querySelector('pRedAliq'))),
+    pAliqEfet: toFrac(num(gRed.querySelector('pAliqEfet'))),
+  };
+  return red.pRedAliq === undefined && red.pAliqEfet === undefined ? undefined : red;
+}
+
+/**
  * Lê o grupo IBS/CBS de um item (`det`).
  */
 export function parseItemIbscbs(det: Element): NFeIbscbsGrupo | undefined {
@@ -93,8 +122,6 @@ export function parseItemIbscbs(det: Element): NFeIbscbsGrupo | undefined {
   const gIBSUF = gIBSCBS?.querySelector('gIBSUF');
   const gIBSMun = gIBSCBS?.querySelector('gIBSMun');
   const gCBS = gIBSCBS?.querySelector('gCBS');
-  const gRed =
-    gIBSUF?.querySelector('gRed') || gIBSMun?.querySelector('gRed') || gCBS?.querySelector('gRed');
 
   const pIBSUF = num(gIBSUF?.querySelector('pIBSUF'));
   const pIBSMun = num(gIBSMun?.querySelector('pIBSMun'));
@@ -113,12 +140,14 @@ export function parseItemIbscbs(det: Element): NFeIbscbsGrupo | undefined {
     vIBS: num(gIBSCBS?.querySelector('vIBS')),
   };
 
-  if (gRed) {
-    grupo.gRed = {
-      pRedAliq: toFrac(num(gRed.querySelector('pRedAliq'))),
-      pAliqEfet: toFrac(num(gRed.querySelector('pAliqEfet'))),
-    };
-  }
+  // Cada tributo tem o seu próprio gRed: ler só o primeiro descartaria as
+  // reduções dos outros dois (o leiaute TCIBS os define separadamente).
+  const redUF = lerRed(gIBSUF?.querySelector('gRed'));
+  const redMun = lerRed(gIBSMun?.querySelector('gRed'));
+  const redCBS = lerRed(gCBS?.querySelector('gRed'));
+  if (redUF) grupo.gRedUF = redUF;
+  if (redMun) grupo.gRedMun = redMun;
+  if (redCBS) grupo.gRedCBS = redCBS;
 
   // Sem nenhum campo preenchido, o grupo não existe no XML.
   const temCampo = Object.values(grupo).some((v) => v !== undefined);
@@ -138,7 +167,10 @@ export function parseItemIs(det: Element): NFeIsGrupo | undefined {
     cClassTribIs: is.querySelector('cClassTribIS')?.textContent?.trim() || undefined,
     vBCIs: num(is.querySelector('vBCIS')),
     pIs: toFrac(num(is.querySelector('pIS'))),
-    pIsEspec: toFrac(num(is.querySelector('pISEspec'))),
+    // pISEspec é alíquota por valor (R$/unidade), não percentual: nunca /100.
+    pIsEspec: num(is.querySelector('pISEspec')),
+    uTrib: is.querySelector('uTrib')?.textContent?.trim() || undefined,
+    qTrib: num(is.querySelector('qTrib')),
     vIs: num(is.querySelector('vIS')),
   };
 

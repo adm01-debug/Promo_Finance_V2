@@ -11,15 +11,15 @@ const XML_SEM_IBSCBS = `<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe"><NFe
 const XML_IBSCBS = `<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe"><NFe><infNFe>
   <det nItem="1"><prod><cProd>P1</cProd><xProd>PRODUTO</xProd><NCM>12345678</NCM><CFOP>5102</CFOP><qCom>1.0000</qCom><vUnCom>100.00</vUnCom><vProd>100.00</vProd></prod>
     <imposto>
+      <IS><CSTIS>200</CSTIS><cClassTribIS>000123</cClassTribIS><vBCIS>100.00</vBCIS><pIS>1.00</pIS><pISEspec>0.50</pISEspec><uTrib>UN</uTrib><qTrib>100.0000</qTrib><vIS>1.00</vIS></IS>
       <IBSCBS><CST>200</CST><cClassTrib>000123</cClassTrib>
         <gIBSCBS><vBC>100.00</vBC>
           <gIBSUF><pIBSUF>11.30</pIBSUF><gRed><pRedAliq>50.00</pRedAliq><pAliqEfet>5.65</pAliqEfet></gRed><vIBSUF>5.65</vIBSUF></gIBSUF>
-          <gIBSMun><pIBSMun>5.00</pIBSMun><vIBSMun>5.00</vIBSMun></gIBSMun>
-          <gCBS><pCBS>9.00</pCBS><vCBS>9.00</vCBS></gCBS>
+          <gIBSMun><pIBSMun>5.00</pIBSMun><gRed><pRedAliq>30.00</pRedAliq><pAliqEfet>3.50</pAliqEfet></gRed><vIBSMun>5.00</vIBSMun></gIBSMun>
+          <gCBS><pCBS>9.00</pCBS><gRed><pRedAliq>10.00</pRedAliq><pAliqEfet>8.10</pAliqEfet></gRed><vCBS>9.00</vCBS></gCBS>
           <vIBS>10.65</vIBS>
         </gIBSCBS>
       </IBSCBS>
-      <IS><CSTIS>200</CSTIS><cClassTribIS>000123</cClassTribIS><vBCIS>100.00</vBCIS><pIS>1.00</pIS><vIS>1.00</vIS></IS>
     </imposto>
   </det>
   <total><ICMSTot><vNF>100.00</vNF><vProd>100.00</vProd><vBC>100.00</vBC><vICMS>18.00</vICMS></ICMSTot>
@@ -58,8 +58,13 @@ describe('parse-ibscbs (etapa 41)', () => {
     expect(grupo?.pCBS).toBeCloseTo(0.09, 6);
     expect(grupo?.vCBS).toBeCloseTo(9.0, 6);
     expect(grupo?.vIBS).toBeCloseTo(10.65, 6);
-    expect(grupo?.gRed?.pRedAliq).toBeCloseTo(0.5, 6);
-    expect(grupo?.gRed?.pAliqEfet).toBeCloseTo(0.0565, 6);
+    // Cada tributo tem o seu gRed (leiaute TCIBS): os três devem ser preservados.
+    expect(grupo?.gRedUF?.pRedAliq).toBeCloseTo(0.5, 6);
+    expect(grupo?.gRedUF?.pAliqEfet).toBeCloseTo(0.0565, 6);
+    expect(grupo?.gRedMun?.pRedAliq).toBeCloseTo(0.3, 6);
+    expect(grupo?.gRedMun?.pAliqEfet).toBeCloseTo(0.035, 6);
+    expect(grupo?.gRedCBS?.pRedAliq).toBeCloseTo(0.1, 6);
+    expect(grupo?.gRedCBS?.pAliqEfet).toBeCloseTo(0.081, 6);
   });
 
   it('lê o grupo IS do item', () => {
@@ -71,6 +76,10 @@ describe('parse-ibscbs (etapa 41)', () => {
     expect(is?.vBCIs).toBeCloseTo(100.0, 6);
     expect(is?.pIs).toBeCloseTo(0.01, 6);
     expect(is?.vIs).toBeCloseTo(1.0, 6);
+    // pISEspec é alíquota por valor (R$/unidade): NÃO é percentual, não divide por 100.
+    expect(is?.pIsEspec).toBeCloseTo(0.5, 6);
+    expect(is?.uTrib).toBe('UN');
+    expect(is?.qTrib).toBeCloseTo(100.0, 6);
   });
 
   it('lê os totais de IBSCBS e IS da nota', () => {
@@ -90,5 +99,28 @@ describe('parse-ibscbs (etapa 41)', () => {
     expect(totais.vBCIBSCBS).toBeUndefined();
     expect(totais.vIBS).toBeUndefined();
     expect(totais.vIS).toBeUndefined();
+  });
+
+  it('preserva gRed isolado de um único tributo sem inventar os demais', () => {
+    const xml = XML_IBSCBS.replace(
+      '<gIBSMun><pIBSMun>5.00</pIBSMun><gRed><pRedAliq>30.00</pRedAliq><pAliqEfet>3.50</pAliqEfet></gRed><vIBSMun>5.00</vIBSMun></gIBSMun>',
+      '<gIBSMun><pIBSMun>5.00</pIBSMun><vIBSMun>5.00</vIBSMun></gIBSMun>'
+    ).replace(
+      '<gCBS><pCBS>9.00</pCBS><gRed><pRedAliq>10.00</pRedAliq><pAliqEfet>8.10</pAliqEfet></gRed><vCBS>9.00</vCBS></gCBS>',
+      '<gCBS><pCBS>9.00</pCBS><vCBS>9.00</vCBS></gCBS>'
+    );
+    const grupo = parseItemIbscbs(docDe(xml).querySelector('det') as Element);
+    expect(grupo?.gRedUF?.pRedAliq).toBeCloseTo(0.5, 6);
+    expect(grupo?.gRedMun).toBeUndefined();
+    expect(grupo?.gRedCBS).toBeUndefined();
+  });
+
+  it('não cria gRed quando o grupo não traz nenhum dos dois campos', () => {
+    const xml = XML_IBSCBS.replace(
+      '<gRed><pRedAliq>50.00</pRedAliq><pAliqEfet>5.65</pAliqEfet></gRed>',
+      '<gRed></gRed>'
+    );
+    const grupo = parseItemIbscbs(docDe(xml).querySelector('det') as Element);
+    expect(grupo?.gRedUF).toBeUndefined();
   });
 });

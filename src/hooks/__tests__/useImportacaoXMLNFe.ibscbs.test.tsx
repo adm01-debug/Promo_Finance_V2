@@ -98,7 +98,9 @@ describe('useImportacaoXMLNFe — grupo IBS/CBS/IS (etapa 41)', () => {
     expect(item.ibscbs?.pCBS).toBeCloseTo(0.09, 6);
     expect(item.ibscbs?.vCBS).toBeCloseTo(9, 6);
     expect(item.ibscbs?.vIBS).toBeCloseTo(10.65, 6);
-    expect(item.ibscbs?.gRed?.pRedAliq).toBeCloseTo(0.5, 6);
+    expect(item.ibscbs?.gRedUF?.pRedAliq).toBeCloseTo(0.5, 6);
+    expect(item.ibscbs?.gRedMun?.pRedAliq).toBeCloseTo(0.3, 6);
+    expect(item.ibscbs?.gRedCBS?.pRedAliq).toBeCloseTo(0.1, 6);
 
     expect(item.is).toBeDefined();
     expect(item.is?.cstIs).toBe('200');
@@ -117,6 +119,9 @@ describe('useImportacaoXMLNFe — grupo IBS/CBS/IS (etapa 41)', () => {
     expect(nfe.ibscbs?.vIBS_UF).toBeCloseTo(5.65, 6);
     expect(nfe.ibscbs?.vIBS_Mun).toBeCloseTo(5, 6);
     expect(nfe.ibscbs?.vIS).toBeCloseTo(1, 6);
+    // pISEspec vem do XML como alíquota por valor: não pode ser dividido por 100.
+    expect(nfe.itens[0].is?.pIsEspec).toBeCloseTo(0.5, 6);
+    expect(nfe.itens[0].is?.pIs).toBeCloseTo(0.01, 6);
   });
 
   it('não quebra nota antiga sem grupo IBSCBS/IS', async () => {
