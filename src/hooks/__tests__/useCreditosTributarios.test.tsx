@@ -36,9 +36,9 @@ type Linha = {
   efeito_tributario: boolean | null;
 };
 
-/** Responde por tabela: cr?ditos detalhados vazios, resumo com as linhas dadas. */
+/** Cr?ditos detalhados vazios; o resumo responde com as linhas dadas. */
 function montaCliente(linhas: Linha[]) {
-  return (tabela: string) => ({
+  return () => ({
     select: () => ({
       order: () => Promise.resolve({ data: [], error: null }),
       then: (resolve: (v: unknown) => unknown) =>
