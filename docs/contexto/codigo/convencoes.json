@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)",
    "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)",
    "docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)",
    "docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)",
-   "chore: remove baseline histórica pré-correção (etapa 30)",
-   "feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)"
+   "chore: remove baseline histórica pré-correção (etapa 30)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

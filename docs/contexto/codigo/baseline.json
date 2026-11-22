@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "77c3f5d569a024c836c59765b753f02926deb751",
+  "commit": "5148e34b8fd5d452a6628594f4dbd74bf48af745",
   "branch": "main",
-  "data_commit": "2026-11-21T23:31:26-03:00",
+  "data_commit": "2026-11-21T23:40:41-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5148e34",
+    "data": "2026-11-21",
+    "assunto": "infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)"
+   },
    {
     "sha": "77c3f5d",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "21ecbbc",
     "data": "2026-11-21",
     "assunto": "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)"
-   },
-   {
-    "sha": "b28b64b",
-    "data": "2026-11-21",
-    "assunto": "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)"
    }
   ],
-  "arquivos_mudados_7d": 488,
+  "arquivos_mudados_7d": 491,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -199,15 +199,15 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 33
+    "mudancas": 32
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 31
+    "mudancas": 30
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 22
+    "mudancas": 21
    },
    {
     "arquivo": "env.manifest.json",
@@ -266,10 +266,6 @@
     "mudancas": 7
    },
    {
-    "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
-    "mudancas": 7
-   },
-   {
     "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 7
    },
@@ -294,14 +290,18 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/components/contas-pagar/ContaPagarForm.tsx",
+    "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "src/components/layout/MainLayout.tsx",
     "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 256
+    "commits": 257
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3992,
+  "arquivos_total": 3995,
   "arquivos_codigo": 2491,
   "linhas_codigo": 444338,
   "rotas": 130,
@@ -329,8 +329,8 @@
   "componentes": 992,
   "hooks": 274,
   "edge_functions": 106,
-  "tabelas": 313,
-  "migrations": 1056,
+  "tabelas": 316,
+  "migrations": 1059,
   "cron_jobs": 22,
   "testes": 486,
   "workflows": 20,

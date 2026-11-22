@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `77c3f5d569` · branch `main` · 2026-11-22 02:32 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5148e34b8f` · branch `main` · 2026-11-22 02:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -61,7 +61,10 @@
 | `bloqueios_duplicidade` | _(sem COMMENT ON TABLE — significado não documentado)_ | 20 colunas | migration |
 | `boletos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 38 colunas | migration |
 | `budgets` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
+| `catalogo_aliquota_referencia` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `catalogo_cclasstrib` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `catalogo_nbs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `catalogo_ncm` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `catalogos_fiscais_cargas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
 | `catalogos_tributarios_health_history` | Série diária das invariantes violadas nos catálogos tributários (UF, NCM, CNAE, Simples, ISS, ST). Alimentada por check_catalogos_tributarios_invariants(). | 13 colunas | migration |
 | `categorias` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
@@ -304,10 +307,7 @@
 | `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
 | `regime_tributario_enum` (enum) | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO |  | banco |
 | `atividade_economica` (enum) | INDUSTRIA, COMERCIO, SERVICOS, MISTA |  | banco |
-| `uf_brasil` (enum) | AC, AL, AP, AM, BA, CE, DF, ES, GO, MA, MT, MS, MG, PA, PB, PR, PE, PI, RJ, RN, RS, RO, RR, SC, SP, SE, TO |  | banco |
-| `regiao_brasil` (enum) | NORTE, NORDESTE, CENTRO_OESTE, SUDESTE, SUL |  | banco |
-| `nivel_risco` (enum) | BAIXO, MEDIO, ALTO |  | banco |
-| … +238 linhas — lista completa em `context.json` | | | |
+| … +241 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -532,7 +532,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 264/270 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- 267/273 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `77c3f5d569` · branch `main` · 2026-11-22 02:32 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5148e34b8f` · branch `main` · 2026-11-22 02:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `simulacoes` | simulacoes_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
-| … +522 linhas — lista completa em `context.json` | | | | | | |
+| … +528 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2285 linhas — lista completa em `context.json` | | |
+| … +2301 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 

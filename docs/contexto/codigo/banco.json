@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1056,
+ "migrations": 1059,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -12570,6 +12570,105 @@
    "sem_rls": false,
    "nao_usada": false
   },
+  "catalogo_aliquota_referencia": {
+   "colunas": {
+    "aliquota": {
+     "tipo": "numeric(5,4)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "ano": {
+     "tipo": "integer",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "carregado_em": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "fonte": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'RFB'",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "municipio_ibge": {
+     "tipo": "character varying(7)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "tributo": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "uf": {
+     "tipo": "character(2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "catalogo_aliquota_referencia_select_authenticated",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "catalogo_aliquota_referencia_service_role_all",
+     "comando": "all",
+     "para": "service_role",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [
+    {
+     "nome": "catalogo_aliquota_referencia_cbs_uk",
+     "colunas": "ano",
+     "unico": true
+    },
+    {
+     "nome": "catalogo_aliquota_referencia_ibs_mun_uk",
+     "colunas": "ano, municipio_ibge",
+     "unico": true
+    },
+    {
+     "nome": "catalogo_aliquota_referencia_ibs_uf_uk",
+     "colunas": "ano, uf",
+     "unico": true
+    }
+   ],
+   "fks": [],
+   "criada_em": "20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
   "catalogo_cclasstrib": {
    "colunas": {
     "cclasstrib": {
@@ -12675,6 +12774,144 @@
    "indices": [],
    "fks": [],
    "criada_em": "20261122022500_catalogo_cclasstrib.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "catalogo_nbs": {
+   "colunas": {
+    "carregado_em": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "descricao": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "fim_vigencia": {
+     "tipo": "date",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "fonte": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'RFB'",
+     "ref": null
+    },
+    "inicio_vigencia": {
+     "tipo": "date",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "nbs": {
+     "tipo": "text",
+     "nn": false,
+     "pk": true,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "catalogo_nbs_select_authenticated",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "catalogo_nbs_service_role_all",
+     "comando": "all",
+     "para": "service_role",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [],
+   "fks": [],
+   "criada_em": "20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "catalogo_ncm": {
+   "colunas": {
+    "carregado_em": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "descricao": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "fim_vigencia": {
+     "tipo": "date",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "fonte": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'RFB'",
+     "ref": null
+    },
+    "inicio_vigencia": {
+     "tipo": "date",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "ncm": {
+     "tipo": "character varying(8)",
+     "nn": false,
+     "pk": true,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "catalogo_ncm_select_authenticated",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "catalogo_ncm_service_role_all",
+     "comando": "all",
+     "para": "service_role",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [],
+   "fks": [],
+   "criada_em": "20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],

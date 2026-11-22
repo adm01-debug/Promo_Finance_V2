@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "77c3f5d569a024c836c59765b753f02926deb751",
+  "sha": "5148e34b8fd5d452a6628594f4dbd74bf48af745",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 02:32 UTC",
-  "files_total": 4031,
-  "code_files": 3620,
-  "code_lines": 515331
+  "generated_at": "2026-11-22 02:41 UTC",
+  "files_total": 4034,
+  "code_files": 3623,
+  "code_lines": 515415
  },
  "version": "1.3.2",
- "facts_hash": "e2c22a40cc6a7c3d",
+ "facts_hash": "20331f8882268a2d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,7 +341,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1255,
-   ".sql": 1128,
+   ".sql": 1131,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -28350,6 +28350,184 @@
     "comment": "",
     "origin": "migration"
    },
+   "catalogo_ncm": {
+    "columns": [
+     {
+      "name": "ncm",
+      "type": "character varying(8) primary key",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "descricao",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "inicio_vigencia",
+      "type": "date not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "fim_vigencia",
+      "type": "date",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "fonte",
+      "type": "text not null default 'RFB'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "carregado_em",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "primary",
+      "type": "key (ncm, inicio_vigencia)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql"
+     }
+    ],
+    "constraints": [],
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+    "comment": "",
+    "origin": "migration"
+   },
+   "catalogo_nbs": {
+    "columns": [
+     {
+      "name": "nbs",
+      "type": "text primary key",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "descricao",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "inicio_vigencia",
+      "type": "date not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "fim_vigencia",
+      "type": "date",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "fonte",
+      "type": "text not null default 'RFB'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "carregado_em",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "primary",
+      "type": "key (nbs, inicio_vigencia)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql"
+     }
+    ],
+    "constraints": [],
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+    "comment": "",
+    "origin": "migration"
+   },
+   "catalogo_aliquota_referencia": {
+    "columns": [
+     {
+      "name": "id",
+      "type": "uuid primary key default gen_random_uuid()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "ano",
+      "type": "integer not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "tributo",
+      "type": "text not null check (tributo in ('cbs', 'ibs_uf', 'ibs_mun'))",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "uf",
+      "type": "character(2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "municipio_ibge",
+      "type": "character varying(7)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "aliquota",
+      "type": "numeric(5,4) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "fonte",
+      "type": "text not null default 'RFB'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     },
+     {
+      "name": "carregado_em",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+     }
+    ],
+    "constraints": [],
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "frontend_error_logs_2026_01": {
     "columns": [
      {
@@ -36827,6 +37005,66 @@
     "using": "true",
     "check": "true",
     "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+   },
+   {
+    "name": "catalogo_ncm_select_authenticated",
+    "table": "catalogo_ncm",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_ncm_service_role_all",
+    "table": "catalogo_ncm",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_nbs_select_authenticated",
+    "table": "catalogo_nbs",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_nbs_service_role_all",
+    "table": "catalogo_nbs",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_select_authenticated",
+    "table": "catalogo_aliquota_referencia",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_service_role_all",
+    "table": "catalogo_aliquota_referencia",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
    }
   ],
   "triggers": [
@@ -49358,6 +49596,30 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_cbs_uk",
+    "table": "catalogo_aliquota_referencia",
+    "columns": "ano",
+    "unique": true,
+    "where": "where tributo = 'cbs'",
+    "src": "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_ibs_uf_uk",
+    "table": "catalogo_aliquota_referencia",
+    "columns": "ano, uf",
+    "unique": true,
+    "where": "where tributo = 'ibs_uf'",
+    "src": "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_ibs_mun_uk",
+    "table": "catalogo_aliquota_referencia",
+    "columns": "ano, municipio_ibge",
+    "unique": true,
+    "where": "where tributo = 'ibs_mun'",
+    "src": "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql"
    }
   ],
   "cron_jobs": [
@@ -50642,7 +50904,10 @@
    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
    "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
    "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
+   "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
    "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql",
+   "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql",
+   "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -50905,7 +51170,10 @@
    "cnpja_rate_limit": "enabled",
    "aprovacao_assinaturas": "enabled",
    "user_preferences": "enabled",
-   "catalogo_cclasstrib": "enabled"
+   "catalogo_cclasstrib": "enabled",
+   "catalogo_ncm": "enabled",
+   "catalogo_nbs": "enabled",
+   "catalogo_aliquota_referencia": "enabled"
   },
   "grants": [
    {
@@ -71215,8 +71483,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1056,
-   "lines": 81515,
+   "files": 1059,
+   "lines": 81599,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -76273,7 +76541,10 @@
    "bitrix24_stage_mappings",
    "bitrix24_tokens",
    "bloat_snapshots",
+   "catalogo_aliquota_referencia",
    "catalogo_cclasstrib",
+   "catalogo_nbs",
+   "catalogo_ncm",
    "catalogos_fiscais_cargas",
    "catalogos_tributarios_health_history",
    "cnpja_rate_limit",
@@ -99458,6 +99729,86 @@
    {
     "table": "catalogo_cclasstrib",
     "column": "created_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "catalogo_ncm",
+    "column": "ncm",
+    "rule": "PK"
+   },
+   {
+    "table": "catalogo_ncm",
+    "column": "descricao",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_ncm",
+    "column": "inicio_vigencia",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_ncm",
+    "column": "fonte",
+    "rule": "default 'RFB'"
+   },
+   {
+    "table": "catalogo_ncm",
+    "column": "carregado_em",
+    "rule": "default now()"
+   },
+   {
+    "table": "catalogo_nbs",
+    "column": "nbs",
+    "rule": "PK"
+   },
+   {
+    "table": "catalogo_nbs",
+    "column": "descricao",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_nbs",
+    "column": "inicio_vigencia",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_nbs",
+    "column": "fonte",
+    "rule": "default 'RFB'"
+   },
+   {
+    "table": "catalogo_nbs",
+    "column": "carregado_em",
+    "rule": "default now()"
+   },
+   {
+    "table": "catalogo_aliquota_referencia",
+    "column": "id",
+    "rule": "PK; default gen_random_uuid()"
+   },
+   {
+    "table": "catalogo_aliquota_referencia",
+    "column": "ano",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_aliquota_referencia",
+    "column": "tributo",
+    "rule": "obrigatório; CHECK tributo in ('cbs', 'ibs_uf', 'ibs_mun')"
+   },
+   {
+    "table": "catalogo_aliquota_referencia",
+    "column": "aliquota",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_aliquota_referencia",
+    "column": "fonte",
+    "rule": "default 'RFB'"
+   },
+   {
+    "table": "catalogo_aliquota_referencia",
+    "column": "carregado_em",
     "rule": "default now()"
    },
    {
@@ -144480,6 +144831,66 @@
     "using": "true",
     "check": "true",
     "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+   },
+   {
+    "name": "catalogo_ncm_select_authenticated",
+    "table": "catalogo_ncm",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_ncm_service_role_all",
+    "table": "catalogo_ncm",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_nbs_select_authenticated",
+    "table": "catalogo_nbs",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_nbs_service_role_all",
+    "table": "catalogo_nbs",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_select_authenticated",
+    "table": "catalogo_aliquota_referencia",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_aliquota_referencia_service_role_all",
+    "table": "catalogo_aliquota_referencia",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
    }
   ],
   "db_triggers": [
@@ -157204,7 +157615,55 @@
      "authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role) OR (company_id IN ( SELECT ue.empresa_id …"
     ]
    },
+   "catalogo_aliquota_referencia": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: true",
+     "service_role: true"
+    ],
+    "INSERT": [
+     "service_role: true"
+    ],
+    "UPDATE": [
+     "service_role: true"
+    ],
+    "DELETE": [
+     "service_role: true"
+    ]
+   },
    "catalogo_cclasstrib": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: true",
+     "service_role: true"
+    ],
+    "INSERT": [
+     "service_role: true"
+    ],
+    "UPDATE": [
+     "service_role: true"
+    ],
+    "DELETE": [
+     "service_role: true"
+    ]
+   },
+   "catalogo_nbs": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: true",
+     "service_role: true"
+    ],
+    "INSERT": [
+     "service_role: true"
+    ],
+    "UPDATE": [
+     "service_role: true"
+    ],
+    "DELETE": [
+     "service_role: true"
+    ]
+   },
+   "catalogo_ncm": {
     "rls": "enabled",
     "SELECT": [
      "authenticated: true",
@@ -160996,6 +161455,7 @@
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
    "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
+   "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -170830,7 +171290,7 @@
    "asaas_payment_links"
   ],
   "tenant_missing": [],
-  "tenant_cov": 0.49,
+  "tenant_cov": 0.48,
   "soft_delete": [
    [
     "clientes",
@@ -171996,6 +172456,9 @@
    "catalogo_cclasstrib": [
     "created_at"
    ],
+   "catalogo_ncm": [],
+   "catalogo_nbs": [],
+   "catalogo_aliquota_referencia": [],
    "frontend_error_logs_2026_01": [
     "created_at"
    ],
@@ -173922,7 +174385,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "264/270 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "267/273 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -245333,9 +245796,22 @@
    "lines": 34,
    "uses_service_role": true
   },
+  "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql": {
+   "path": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+   "lines": 53,
+   "uses_service_role": true
+  },
   "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql": {
    "path": "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql",
    "lines": 7
+  },
+  "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql": {
+   "path": "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql",
+   "lines": 21
+  },
+  "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql": {
+   "path": "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql",
+   "lines": 10
   },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
@@ -245445,10 +245921,21 @@
   }
  },
  "git": {
-  "sha": "77c3f5d569a024c836c59765b753f02926deb751",
+  "sha": "5148e34b8fd5d452a6628594f4dbd74bf48af745",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5148e34",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)",
+    "files": [
+     "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
+     "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql",
+     "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql"
+    ]
+   },
    {
     "sha": "77c3f5d",
     "date": "2026-11-21",
@@ -245806,15 +246293,6 @@
      "src/hooks/useAprovacoes.ts",
      "src/hooks/useConciliacaoPage.ts",
      "src/lib/conciliacao-page-helpers.ts"
-    ]
-   },
-   {
-    "sha": "3a239d1",
-    "date": "2026-11-20",
-    "author": "adm01-debug",
-    "subject": "docs(receitafederal): plano de integração RTC/LC 214/2025 em 100 etapas — módulo tributário (#485)",
-    "files": [
-     "docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md"
     ]
    }
   ],
