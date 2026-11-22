@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+  <NFe>
+    <infNFe Id="NFe35260712345678000199550010000000011000000023" versao="4.00">
+      <ide>
+        <cUF>35</cUF>
+        <cNF>00000001</cNF>
+        <natOp>VENDA</natOp>
+        <mod>55</mod>
+        <serie>1</serie>
+        <nNF>1</nNF>
+        <dhEmi>2026-07-22T10:00:00-03:00</dhEmi>
+        <tpNF>1</tpNF>
+        <idDest>1</idDest>
+        <cMunFG>3550308</cMunFG>
+        <tpImp>1</tpImp>
+        <tpEmis>1</tpEmis>
+        <cDV>5</cDV>
+        <tpAmb>2</tpAmb>
+        <finNFe>1</finNFe>
+        <indFinal>1</indFinal>
+        <indPres>1</indPres>
+        <procEmi>0</procEmi>
+        <verProc>CALC-RFB-1.0</verProc>
+      </ide>
+      <emit>
+        <CNPJ>12345678000199</CNPJ>
+        <xNome>EMITENTE 2026 LTDA</xNome>
+        <enderEmit>
+          <xLgr>RUA TRIBUTO</xLgr>
+          <nro>200</nro>
+          <xBairro>CENTRO</xBairro>
+          <cMun>3550308</cMun>
+          <xMun>SAO PAULO</xMun>
+          <UF>SP</UF>
+          <CEP>01000000</CEP>
+        </enderEmit>
+        <IE>111111111111</IE>
+        <CRT>3</CRT>
+      </emit>
+      <dest>
+        <CNPJ>98765432000188</CNPJ>
+        <xNome>DESTINATARIO 2026 LTDA</xNome>
+        <indIEDest>1</indIEDest>
+        <IE>222222222222</IE>
+      </dest>
+      <det nItem="1">
+        <prod>
+          <cProd>P1</cProd>
+          <cEAN>SEM GTIN</cEAN>
+          <xProd>PRODUTO A</xProd>
+          <NCM>12345678</NCM>
+          <CFOP>5102</CFOP>
+          <uCom>UN</uCom>
+          <qCom>1.0000</qCom>
+          <vUnCom>100.00</vUnCom>
+          <vProd>100.00</vProd>
+          <cEANTrib>SEM GTIN</cEANTrib>
+          <uTrib>UN</uTrib>
+          <qTrib>1.0000</qTrib>
+          <vUnTrib>100.00</vUnTrib>
+        </prod>
+        <imposto>          <IS>
+            <CSTIS>200</CSTIS>
+            <cClassTribIS>000123</cClassTribIS>
+            <vBCIS>100.00</vBCIS>
+            <pIS>1.00</pIS>
+            <pISEspec>0.50</pISEspec>
+            <uTrib>UN</uTrib>
+            <qTrib>100.0000</qTrib>
+            <vIS>1.00</vIS>
+          </IS>
+          <IBSCBS>
+            <CST>200</CST>
+            <cClassTrib>000123</cClassTrib>
+            <gIBSCBS>
+              <vBC>100.00</vBC>
+              <gIBSUF>
+                <pIBSUF>11.30</pIBSUF>
+                <gRed>
+                  <pRedAliq>50.00</pRedAliq>
+                  <pAliqEfet>5.65</pAliqEfet>
+                </gRed>
+                <vIBSUF>5.65</vIBSUF>
+              </gIBSUF>
+              <gIBSMun>
+                <pIBSMun>5.00</pIBSMun>
+                <gRed>
+                  <pRedAliq>30.00</pRedAliq>
+                  <pAliqEfet>3.50</pAliqEfet>
+                </gRed>
+                <vIBSMun>5.00</vIBSMun>
+              </gIBSMun>
+              <gCBS>
+                <pCBS>9.00</pCBS>
+                <gRed>
+                  <pRedAliq>10.00</pRedAliq>
+                  <pAliqEfet>8.10</pAliqEfet>
+                </gRed>
+                <vCBS>9.00</vCBS>
+              </gCBS>
+              <vIBS>10.65</vIBS>
+            </gIBSCBS>
+          </IBSCBS>        </imposto>
+      </det>
+      <total>
+        <ICMSTot>
+          <vBC>100.00</vBC>
+          <vICMS>18.00</vICMS>
+          <vNF>100.00</vNF>
+          <vProd>100.00</vProd>
+        </ICMSTot>
+        <IBSCBSTot>
+          <vBCIBSCBS>100.00</vBCIBSCBS>
+          <gIBS>
+            <gIBSUF>
+              <vIBSUF>5.65</vIBSUF>
+            </gIBSUF>
+            <gIBSMun>
+              <vIBSMun>5.00</vIBSMun>
+            </gIBSMun>
+            <vIBS>10.65</vIBS>
+          </gIBS>
+          <gCBS>
+            <vCBS>9.00</vCBS>
+          </gCBS>
+        </IBSCBSTot>
+        <ISTot>
+          <vIS>1.00</vIS>
+        </ISTot>
+      </total>
+    </infNFe>
+  </NFe>
+  <protNFe versao="4.00">
+    <infProt>
+      <tpAmb>2</tpAmb>
+      <verAplic>CALC-RFB</verAplic>
+      <chNFe>35260712345678000199550010000000011000000023</chNFe>
+      <dhRecbto>2026-07-22T10:00:05-03:00</dhRecbto>
+      <nProt>135260000000001</nProt>
+      <digVal>abc123</digVal>
+      <cStat>100</cStat>
+      <xMotivo>Autorizado o uso da NF-e</xMotivo>
+    </infProt>
+  </protNFe>
+</nfeProc>
