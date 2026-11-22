@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 2011,
- "arestas": 8488,
+ "arestas": 8489,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -279,7 +279,6 @@
   "src/hooks/useGlobalFilterSync.ts",
   "src/hooks/usePrefetchRoutes.tsx",
   "src/lib/arquitetura/escopo-empresa.ts",
-  "src/lib/reforma-tributaria/arredondamento.ts",
   "src/lib/reforma-tributaria/base-calculo.ts",
   "src/lib/reforma-tributaria/totalizar.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",

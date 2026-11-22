@@ -2218,11 +2218,12 @@
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
    "tipo": "unit",
-   "linhas": 312,
+   "linhas": 275,
    "testa": [
-    "src/lib/reforma-tributaria-calculator.ts"
+    "src/lib/reforma-tributaria-calculator.ts",
+    "src/lib/reforma-tributaria/arredondamento.ts"
    ],
-   "casos": 42
+   "casos": 44
   },
   {
    "arquivo": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
@@ -4541,6 +4542,7 @@
   "src/lib/plano-contas-csv-importer.ts": 1,
   "src/lib/queryClient.ts": 1,
   "src/lib/reforma-tributaria-calculator.ts": 1,
+  "src/lib/reforma-tributaria/arredondamento.ts": 1,
   "src/lib/reforma-tributaria/cronograma-oficial.ts": 2,
   "src/lib/secure-random.ts": 1,
   "src/lib/sefaz-contingency/constants.ts": 1,

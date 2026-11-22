@@ -3384,7 +3384,7 @@
     "calcularComArredondamento"
    ],
    "export_default": null,
-   "linhas": 41,
+   "linhas": 51,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3393,10 +3393,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 0,
-   "usado_por_modulos": [],
-   "coberto_por_testes": 0,
-   "orfao": true
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/reforma-tributaria"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
   },
   {
    "arquivo": "src/lib/reforma-tributaria/base-calculo.ts",
@@ -3428,7 +3430,7 @@
     "calcularTributosReforma"
    ],
    "export_default": null,
-   "linhas": 160,
+   "linhas": 129,
    "tabelas": [],
    "rpcs": [],
    "edges": [],

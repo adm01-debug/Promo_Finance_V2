@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "7db0fc453aee4a6d51d15e593c016d25272e6903",
+  "sha": "2463d9754a74b7c084b648a126ec06555260cd78",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 03:13 UTC",
+  "generated_at": "2026-11-22 03:24 UTC",
   "files_total": 4040,
   "code_files": 3629,
-  "code_lines": 515559
+  "code_lines": 515501
  },
  "version": "1.3.2",
- "facts_hash": "3a3f191ffe7d9a60",
+ "facts_hash": "23e7f438cd890a49",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70924,7 +70924,7 @@
   {
    "module": "src/lib",
    "files": 420,
-   "lines": 56005,
+   "lines": 55947,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -117163,7 +117163,7 @@
     "file": "src/lib/reforma-tributaria/arredondamento.ts",
     "name": "arredondar",
     "params": "valor: number, casas = 2",
-    "body": "const fator = Math.pow(10, casas); const valorShift = valor * fator; const piso = Math.floor(valorShift); const resto = valorShift - piso; // Empate exato (x.5): arredonda para par if (Math.abs(resto - 0.5) < 1e-10) { return (piso % 2 === 0 ? piso : piso + 1) / fator; } return Math.round(valorShift) / fator;"
+    "body": "const fator = Math.pow(10, casas); // Aritmética inteira a 10× a precisão-alvo evita falsos empates por float binário. const valorShift10 = Math.round(valor * fator * 10); const resto10 = ((valorShift10 % 10) + 10) % 10; // 0-9, correto p/ negativos const inteiro = (valorShift10 - resto10) / 10; // truncado na precisão alvo // Empate exato (x.5): arredonda para par (banker's rounding) if (resto10 === 5) { return (inteiro % 2 === 0 ? inteiro : inteiro + 1) / fator; } return (resto10 < 5 ? inteiro …"
    },
    {
     "file": "src/lib/reforma-tributaria/arredondamento.ts",
@@ -128507,14 +128507,6 @@
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "name": "carga tributária percentual é consistente"
-   },
-   {
-    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "name": "detalhamento contém informações úteis"
-   },
-   {
-    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     "name": "IBS dividido 50% estadual 50% municipal (regime pleno, 2033)"
    },
    {
@@ -128528,6 +128520,14 @@
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     "name": "com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "carga tributária percentual é consistente"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "detalhamento contém informações úteis"
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
@@ -128564,6 +128564,18 @@
    {
     "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     "name": "créditos recuperáveis calculados"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "arredondamento ABNT NBR 5891"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "empate binário: arredondar(5792.945, 2) → 5792.94 (par, banker"
+   },
+   {
+    "file": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "name": "calcularComArredondamento: R$51.265 × 11,3% → R$5.792,94 (NT 2025.002)"
    },
    {
     "file": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
@@ -214060,7 +214072,7 @@
   },
   "src/lib/__tests__/reforma-tributaria-calculator.test.ts": {
    "path": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-   "lines": 313,
+   "lines": 276,
    "is_test": true,
    "tests": [
     "Reforma Tributária Calculator",
@@ -214099,12 +214111,12 @@
     "exportação retorna tudo zero",
     "ano 2024 não tem tributos novos",
     "split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)",
-    "carga tributária percentual é consistente",
-    "detalhamento contém informações úteis",
     "IBS dividido 50% estadual 50% municipal (regime pleno, 2033)",
     "IBS 2026: 100% estadual, 0% municipal (ano-teste, art. 343 LC 214/2025)",
     "com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo",
     "com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota",
+    "carga tributária percentual é consistente",
+    "detalhamento contém informações úteis",
     "calcularCreditos",
     "calcula créditos CBS e IBS",
     "não-cumulatividade plena ativa",
@@ -214113,7 +214125,10 @@
     "retorna comparativo sistema antigo vs novo",
     "diferença absoluta coerente",
     "carga percentual calculada sobre faturamento",
-    "créditos recuperáveis calculados"
+    "créditos recuperáveis calculados",
+    "arredondamento ABNT NBR 5891",
+    "empate binário: arredondar(5792.945, 2) → 5792.94 (par, banker",
+    "calcularComArredondamento: R$51.265 × 11,3% → R$5.792,94 (NT 2025.002)"
    ]
   },
   "src/lib/__tests__/reforma-tributaria-types.regression.test.ts": {
@@ -215749,7 +215764,7 @@
   },
   "src/lib/reforma-tributaria/arredondamento.ts": {
    "path": "src/lib/reforma-tributaria/arredondamento.ts",
-   "lines": 42,
+   "lines": 52,
    "exports": [
     "function arredondar",
     "const arredondarBase",
@@ -215761,7 +215776,7 @@
     {
      "name": "arredondar",
      "params": "valor: number, casas = 2",
-     "body": "const fator = Math.pow(10, casas); const valorShift = valor * fator; const piso = Math.floor(valorShift); const resto = valorShift - piso; // Empate exato (x.5): arredonda para par if (Math.abs(resto - 0.5) < 1e-10) { return (piso % 2 === 0 ? piso : piso + 1) / fator; } return Math.round(valorShift) / fator;"
+     "body": "const fator = Math.pow(10, casas); // Aritmética inteira a 10× a precisão-alvo evita falsos empates por float binário. const valorShift10 = Math.round(valor * fator * 10); const resto10 = ((valorShift10 % 10) + 10) % 10; // 0-9, correto p/ negativos const inteiro = (valorShift10 - resto10) / 10; // truncado na precisão alvo // Empate exato (x.5): arredonda para par (banker's rounding) if (resto10 === 5) { return (inteiro % 2 === 0 ? inteiro : inteiro + 1) / fator; } return (resto10 < 5 ? inteiro …"
     },
     {
      "name": "arredondarBase",
@@ -215804,7 +215819,7 @@
   },
   "src/lib/reforma-tributaria/calcular-tributos.ts": {
    "path": "src/lib/reforma-tributaria/calcular-tributos.ts",
-   "lines": 161,
+   "lines": 130,
    "exports": [
     "function calcularTributosReforma"
    ]
@@ -246324,10 +246339,21 @@
   }
  },
  "git": {
-  "sha": "7db0fc453aee4a6d51d15e593c016d25272e6903",
+  "sha": "2463d9754a74b7c084b648a126ec06555260cd78",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "2463d97",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS",
+    "files": [
+     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+     "src/lib/reforma-tributaria/arredondamento.ts",
+     "src/lib/reforma-tributaria/calcular-tributos.ts"
+    ]
+   },
    {
     "sha": "7db0fc4",
     "date": "2026-11-22",
@@ -246677,18 +246703,13 @@
      "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
      "supabase/migrations/20261120130000_ledger_reconciliado.sql"
     ]
-   },
-   {
-    "sha": "b28b64b",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)",
-    "files": [
-     "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    4
+   ],
    [
     "src/lib/reforma-tributaria/regras.ts",
     4
@@ -246696,6 +246717,10 @@
    [
     "src/lib/tributario/calculadora/reforma-tributaria.ts",
     4
+   ],
+   [
+    "src/lib/reforma-tributaria/calcular-tributos.ts",
+    3
    ],
    [
     "scripts/integrity/baseline/schema-counts.json",
@@ -246706,12 +246731,12 @@
     3
    ],
    [
-    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
     3
    ],
    [
-    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-    3
+    "src/lib/reforma-tributaria/arredondamento.ts",
+    2
    ],
    [
     "scripts/integrity/baseline/expected-policies.json",
@@ -246738,10 +246763,6 @@
     2
    ],
    [
-    "src/lib/reforma-tributaria/calcular-tributos.ts",
-    2
-   ],
-   [
     "src/lib/reforma-tributaria/types.ts",
     2
    ],
@@ -246763,10 +246784,6 @@
    ],
    [
     "src/pages/tributario/CalculadoraTributaria.helpers.ts",
-    2
-   ],
-   [
-    "src/pages/tributario/CalculadoraTributaria.parts.tsx",
     2
    ]
   ]

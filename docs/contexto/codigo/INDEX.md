@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `7db0fc453aee4a6d51d15e593c016d25272e6903` (2026-11-22T00:12:27-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2463d9754a74b7c084b648a126ec06555260cd78` (2026-11-22T00:24:05-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4001 |
 | arquivos_codigo | 2491 |
-| linhas_codigo | 444338 |
+| linhas_codigo | 444280 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `2463d97` fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS
 - 2026-11-22 `7db0fc4` infra: grupo IS por item (etapa 34 RT/RFB) (#513)
 - 2026-11-22 `d32ac55` infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)
 - 2026-11-21 `96b4a9b` infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `1a51242` feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)
 - 2026-11-21 `d11416f` fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)
 - 2026-11-21 `d1fc1cf` fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)
-- 2026-11-21 `ab226ac` feat: selo "simulado" em CBS/IBS na UI (etapa 18 RT)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

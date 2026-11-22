@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7db0fc453a` · branch `main` · 2026-11-22 03:13 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2463d9754a` · branch `main` · 2026-11-22 03:24 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3112,7 +3112,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **arredondar(valor: number, casas = 2)** — `src/lib/reforma-tributaria/arredondamento.ts`
   ```
-  const fator = Math.pow(10, casas); const valorShift = valor * fator; const piso = Math.floor(valorShift); const resto = valorShift - piso; // Empate exato (x.5): arredonda para par if (Math.abs(resto - 0.5) < 1e-10) { return (piso % 2 === 0 ? piso : piso + 1) / fator; } return Math.round(valorShift) / fator;
+  const fator = Math.pow(10, casas); // Aritmética inteira a 10× a precisão-alvo evita falsos empates por float binário. const valorShift10 = Math.round(valor * fator * 10); const resto10 = ((valorShift10 % 10) + 10) % 10; // 0-9, correto p/ negativos const inteiro = (valorShift10 - resto10) / 10; // truncado na precisão alvo // Empate exato (x.5): arredonda para par (banker's rounding) if (resto10 === 5) { return (inteiro % 2 === 0 ? inteiro : inteiro + 1) / fator; } return (resto10 < 5 ? inteiro …
   ```
 - **arredondarBase(v: number)** — `src/lib/reforma-tributaria/arredondamento.ts`
   ```
@@ -5099,7 +5099,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3667 testes em 321 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3670 testes em 321 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5108,7 +5108,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/brazilian-validators.test.ts` | 76 | validateCPF · CPF válido · CPF válido sem formatação · CPF inválido - dígito errado … |
 | `src/pages/__tests__/AdminTelemetria.test.tsx` | 68 | formatDuration · formats 0ms · formats 1ms · formats 500ms … |
 | `src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx` | 61 | ContasReceberTableRow · Gap #14 - Coluna Empresa · mostra coluna empresa quando showEmpresa=true · não mostra coluna empresa quando showEmpresa=false … |
-| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 51 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
+| `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 54 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "7db0fc453aee4a6d51d15e593c016d25272e6903",
+  "commit": "2463d9754a74b7c084b648a126ec06555260cd78",
   "branch": "main",
-  "data_commit": "2026-11-22T00:12:27-03:00",
+  "data_commit": "2026-11-22T00:24:05-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2463d97",
+    "data": "2026-11-22",
+    "assunto": "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS"
+   },
    {
     "sha": "7db0fc4",
     "data": "2026-11-22",
@@ -126,11 +131,6 @@
     "sha": "794bb45",
     "data": "2026-11-21",
     "assunto": "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)"
-   },
-   {
-    "sha": "9f993fd",
-    "data": "2026-11-21",
-    "assunto": "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)"
    }
   ],
   "arquivos_mudados_7d": 497,
@@ -180,16 +180,16 @@
     "mudancas": 22
    },
    {
+    "pasta": "src/lib/reforma-tributaria",
+    "mudancas": 21
+   },
+   {
     "pasta": "src/components/admin",
     "mudancas": 20
    },
    {
-    "pasta": "src/lib/reforma-tributaria",
-    "mudancas": 19
-   },
-   {
     "pasta": "src/lib/__tests__",
-    "mudancas": 18
+    "mudancas": 19
    },
    {
     "pasta": "src/components/conciliacao",
@@ -278,6 +278,10 @@
     "mudancas": 6
    },
    {
+    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "mudancas": 6
+   },
+   {
     "arquivo": "src/lib/reforma-tributaria/regras.ts",
     "mudancas": 6
    },
@@ -292,16 +296,12 @@
    {
     "arquivo": "supabase/functions/bitrix24-sync/index.ts",
     "mudancas": 6
-   },
-   {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
-    "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 261
+    "commits": 262
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 4001,
   "arquivos_codigo": 2491,
-  "linhas_codigo": 444338,
+  "linhas_codigo": 444280,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -664,7 +664,7 @@
   },
   "src/lib": {
    "arquivos": 420,
-   "linhas": 55585
+   "linhas": 55527
   },
   "src/main.tsx": {
    "arquivos": 1,
