@@ -89,7 +89,9 @@
 
 ## Triggers
 
-_nenhum_
+| nome | timing | eventos | nível | status | função |
+|---|---|---|---|---|---|
+| notas_fiscais_itens_verifica_totais_ibscbs | AFTER | INSERT OR DELETE OR UPDATE | ROW | enabled | public.verificar_totais_ibscbs_item |
 
 
 ## Grants

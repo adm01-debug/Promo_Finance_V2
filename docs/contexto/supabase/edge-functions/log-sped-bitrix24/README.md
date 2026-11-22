@@ -4,7 +4,7 @@
 |---|---|
 | nome | log-sped-bitrix24 |
 | status | ACTIVE |
-| versão | 147 |
+| versão | 148 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/log-sped-bitrix24/index.ts |
 | import_map |  |
