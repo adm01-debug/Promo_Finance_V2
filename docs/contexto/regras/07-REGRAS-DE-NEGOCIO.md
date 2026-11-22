@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e76f8795a9` · branch `main` · 2026-11-22 02:50 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `96b4a9bb70` · branch `main` · 2026-11-22 02:53 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2312 linhas — lista completa em `context.json` | | |
+| … +2314 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1531,6 +1531,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | status_workflow | `IDENTIFICADO`, `EM_ANALISE`, `APROVADO`, `EM_EXECUCAO`, `CONCLUIDO`, `CANCELADO` | banco |
 | tipo_destinatario | `CONTRIBUINTE_REVENDA`, `CONTRIBUINTE_USO_CONSUMO`, `NAO_CONTRIBUINTE`, `EXTERIOR` | banco |
 | org_papel | `RESPONSAVEL`, `ADMIN`, `MEMBRO`, `LEITOR` | banco |
+| origem_credito_tributario | `xml_destacado`, `estimado`, `manual` | banco |
 | approval_priority | `LOW`, `MEDIUM`, `HIGH`, `URGENT`, `CRITICAL` | banco |
 | approval_status | `PENDING`, `APPROVED`, `REJECTED` | banco |
 | delivery_outcome | `SUCCESS`, `FAILED`, `DAMAGED`, `STOLEN`, `LATE`, `WRONG_ADDRESS`, `CUSTOMER_UNAVAILABLE` | banco |

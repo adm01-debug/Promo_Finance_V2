@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1062,
+ "migrations": 1063,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -111,6 +111,11 @@
    "ADMIN",
    "MEMBRO",
    "LEITOR"
+  ],
+  "origem_credito_tributario": [
+   "xml_destacado",
+   "estimado",
+   "manual"
   ],
   "prioridade_alerta": [
    "baixa",
@@ -17324,6 +17329,13 @@
      "default": null,
      "ref": null
     },
+    "ano_fato_gerador": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "apuracao_id": {
      "tipo": "uuid",
      "nn": false,
@@ -17394,6 +17406,13 @@
      "default": null,
      "ref": null
     },
+    "efeito_tributario": {
+     "tipo": "boolean",
+     "nn": true,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
     "empresa_id": {
      "tipo": "uuid",
      "nn": false,
@@ -17441,6 +17460,13 @@
      "nn": false,
      "pk": false,
      "default": null,
+     "ref": null
+    },
+    "origem": {
+     "tipo": "public",
+     "nn": true,
+     "pk": false,
+     "default": "'estimado'",
      "ref": null
     },
     "saldo_disponivel": {
@@ -17567,7 +17593,10 @@
     "so_na_migration": [
      "documento_serie",
      "updated_at",
-     "created_by"
+     "created_by",
+     "origem",
+     "efeito_tributario",
+     "ano_fato_gerador"
     ],
     "so_no_types": []
    },

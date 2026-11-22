@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e76f8795a9` · branch `main` · 2026-11-22 02:50 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `96b4a9bb70` · branch `main` · 2026-11-22 02:53 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -85,7 +85,7 @@
 | `contratos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 18 colunas | migration |
 | `convites` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `convites_contador` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
-| `creditos_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 23 colunas | migration |
+| `creditos_tributarios` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `cron.job` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `cron.job_run_details` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `cron_job_logs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
@@ -307,7 +307,7 @@
 | `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
 | `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
 | `regime_tributario_enum` (enum) | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO |  | banco |
-| … +242 linhas — lista completa em `context.json` | | | |
+| … +243 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 

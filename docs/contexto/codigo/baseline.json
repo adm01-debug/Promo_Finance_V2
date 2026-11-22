@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e76f8795a9d57b76e26f76227dd6c7ca5e0ccfcf",
+  "commit": "96b4a9bb707bc392bd462f251b7a1b8dbf963e58",
   "branch": "main",
-  "data_commit": "2026-11-21T23:49:55-03:00",
+  "data_commit": "2026-11-21T23:52:50-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "96b4a9b",
+    "data": "2026-11-21",
+    "assunto": "infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)"
+   },
    {
     "sha": "e76f879",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "ea8ccc8",
     "data": "2026-11-21",
     "assunto": "merge: QG verde 8/8 — PROD_DB_URL no CI + baselines Gate #26 (#479)"
-   },
-   {
-    "sha": "ea32d18",
-    "data": "2026-11-21",
-    "assunto": "fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)"
    }
   ],
-  "arquivos_mudados_7d": 494,
+  "arquivos_mudados_7d": 495,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -210,10 +210,6 @@
     "mudancas": 21
    },
    {
-    "arquivo": "env.manifest.json",
-    "mudancas": 12
-   },
-   {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 12
    },
@@ -226,6 +222,10 @@
     "mudancas": 11
    },
    {
+    "arquivo": "env.manifest.json",
+    "mudancas": 11
+   },
+   {
     "arquivo": ".github/workflows/prod-migrate.yml",
     "mudancas": 8
    },
@@ -235,10 +235,6 @@
    },
    {
     "arquivo": "scripts/automation.config.json",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 8
    },
    {
@@ -255,6 +251,10 @@
    },
    {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 7
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 258
+    "commits": 259
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3998,
+  "arquivos_total": 3999,
   "arquivos_codigo": 2491,
   "linhas_codigo": 444338,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 317,
-  "migrations": 1062,
+  "migrations": 1063,
   "cron_jobs": 22,
   "testes": 486,
   "workflows": 20,
