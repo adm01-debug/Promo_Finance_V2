@@ -22,7 +22,7 @@
 | 2 | Arquivar o plano antigo não executado | `docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md` → `docs/archive/` | [ ] arquivo movido [ ] README aponta para o plano novo [ ] nenhum link quebrado (`grep -r PLANO_INTEGRACAO docs/`) | `git mv` no diff |
 | 3 | Criar `docs/receitafederal/FONTES_NORMATIVAS.md` | novo | [ ] tabela: norma · artigo · o que fixa · data · link [ ] cobre LC 214, LC 227, LC 235, ADCT 124-133, NT 2025.002, Atos Conjuntos 1/2025 e 4/2026, Res. CGIBS 6/2026, TCU 2933/2026 | doc revisado |
 | 4 | Snapshot de regressão dos motores atuais (antes de corrigir) | `src/lib/__tests__/rt-snapshot-pre-correcao.test.ts` | [ ] 8 anos × 3 motores gravados como snapshot [ ] teste marcado `describe.skip` com motivo "baseline histórica" | `vitest run` verde |
-| 5 | Feature flag `rt_motor_v2` por empresa | `supabase/migrations/<ts>_feature_flag_rt_motor_v2.sql` ⚠️, `src/hooks/useFeatureFlag.ts` | [ ] flag default `false` [ ] RLS herdada da tabela de flags existente [ ] hook retorna boolean tipado | PR aberta p/ Joaquim |
+| 5 | ~~Feature flag `rt_motor_v2` por empresa~~ — ⛔ descartada (ADR-004) | — | único uso original era alternar local × RFB na etapa 72; a Fase 7 saiu de escopo (ADR-004), então a flag não teria estado a alternar. Nenhuma migration foi criada e não há consumo da flag no código. Sem rollback automatizado: o rollback das Fases 1-2 é revert de commit | — |
 | 6 | Workflow semanal que compara tag/`V00xx` dos repos RFB com `docs/receitafederal/VERSOES_RFB.md` ⚠️ | `.github/workflows/rfb-upstream-watch.yml` | [ ] roda segunda 06:00 BRT [ ] abre issue quando `CHANGELOG.md` upstream muda [ ] `actionlint` verde | PR aberta p/ Joaquim |
 
 ## Fase 1 — Fonte única de alíquotas e cronograma (7-18)

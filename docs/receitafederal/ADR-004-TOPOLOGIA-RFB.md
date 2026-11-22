@@ -23,6 +23,8 @@ O motor de cálculo próprio em TypeScript (Fases 1-2 do plano, etapas 7-30 — 
 - Fases 8-9 que dependiam de dados sincronizados via `rfb-proxy` (etapas 79-86, catálogos oficiais) precisam ser reavaliadas: os catálogos (`catalogo_cclasstrib`, NCM, alíquotas de referência) ainda podem ser sincronizados diretamente dos endpoints públicos de dados abertos da RFB (não dependem da calculadora Java), então não são automaticamente descartados por esta decisão — só a integração de cálculo (Fase 7) é.
 - Fase 3 (schema de banco, etapas 31-40) e Fase 4-5 (XML/NF-e) continuam no plano, sem alteração — não dependiam da calculadora oficial, só do modelo de dados.
 
+- Etapa 5 (feature flag `rt_motor_v2` por empresa) fica descartada: existia só para alternar motor local × calculadora RFB na etapa 72. Sem a Fase 7 não há segundo motor a alternar, então a flag não teria estado válido. Nenhuma migration foi criada (`supabase/migrations/*feature_flag_rt_motor_v2*` não existe) e nenhum arquivo consome o nome no código. Rollback das Fases 1-2 é revert do commit, não flag.
+
 ## Alternativa considerada e descartada
 
 Rodar a calculadora Java via Supabase Edge Function: tecnicamente impossível (runtime Deno, sem suporte a JVM nem a processos de longa duração com banco embarcado).
