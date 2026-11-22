@@ -2,7 +2,11 @@
 -- FOR ALL usava empresa_acessivel() (nível de leitura, qualquer membro
 -- ativo) para autorizar também INSERT/UPDATE/DELETE. notas_fiscais exige
 -- role admin/financeiro/operacional para escrever; itens deve exigir o
--- mesmo, não só ser membro da empresa.
+-- mesmo, não só ser membro da empresa. Esquema final de
+-- notas_fiscais_itens (após esta migration + a 20261122020002, que remove
+-- o índice redundante): SELECT por qualquer membro ativo; escrita só com
+-- role admin/financeiro/operacional; único índice extra além da PK é o do
+-- constraint (nota_fiscal_id, n_item), que já cobre busca por nota.
 
 drop policy if exists notas_fiscais_itens_empresa_acesso on public.notas_fiscais_itens;
 
