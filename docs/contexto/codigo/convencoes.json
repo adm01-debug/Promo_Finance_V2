@@ -16,12 +16,12 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (265)",
+   "src/lib (266)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (286)",
+   "co-localizado (__tests__) (288)",
    "outro (112)",
    "co-localizado (*.test) (48)"
   ],
@@ -41,7 +41,7 @@
  "nomenclatura": {
   "componentes": "PascalCase (90%)",
   "hooks": "use + PascalCase",
-  "servicos": "camelCase (52%)",
+  "servicos": "camelCase (51%)",
   "edge_functions": "kebab-case (99%)",
   "tabelas": "snake_case (79%)"
  },
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)",
    "chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)",
    "infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)",
    "feat: regimes especiais LC 214/2025 — etapas 15-16",
-   "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS",
-   "infra: grupo IS por item (etapa 34 RT/RFB) (#513)"
+   "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

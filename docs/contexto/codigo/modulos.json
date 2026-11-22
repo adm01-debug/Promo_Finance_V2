@@ -6441,7 +6441,7 @@
    "modulo": "hooks",
    "arquivos": 228,
    "testes": 8,
-   "linhas": 35523,
+   "linhas": 35547,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -7958,6 +7958,7 @@
     "lib/contabil",
     "lib/contabilidade",
     "lib/financeiro",
+    "lib/nfe",
     "lib/offline",
     "lib/organizacoes",
     "lib/sso",
@@ -7979,7 +7980,7 @@
   {
    "modulo": "hooks/__tests__",
    "arquivos": 0,
-   "testes": 50,
+   "testes": 51,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -8994,6 +8995,36 @@
    "depende_de_modulos": [
     "integrations/supabase"
    ],
+   "pacotes_externos": []
+  },
+  {
+   "modulo": "lib/nfe",
+   "arquivos": 1,
+   "testes": 1,
+   "linhas": 202,
+   "itens_menu": [],
+   "telas": [],
+   "rotas_http": [],
+   "componentes": 0,
+   "hooks_locais": [],
+   "hooks_definidos": [],
+   "edges": [],
+   "tabelas": [],
+   "rpcs": [],
+   "buckets": [],
+   "canais_realtime": [],
+   "env": [],
+   "flags": [],
+   "papeis": [],
+   "diretos": {
+    "edges": [],
+    "tabelas": [],
+    "rpcs": []
+   },
+   "importado_por_outros_modulos": [
+    "hooks"
+   ],
+   "depende_de_modulos": [],
    "pacotes_externos": []
   },
   {

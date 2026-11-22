@@ -3,7 +3,7 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2372)",
+   "TypeScript (2375)",
    "SQL (1140)",
    "Markdown (222)",
    "JavaScript (76)",
@@ -1535,7 +1535,7 @@
    },
    {
     "host": "www.portalfiscal.inf.br",
-    "arquivos": 9
+    "arquivos": 11
    },
    {
     "host": "test.supabase.co",

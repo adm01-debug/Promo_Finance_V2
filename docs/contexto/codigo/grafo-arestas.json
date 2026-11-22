@@ -7103,6 +7103,7 @@
    "src/integrations/supabase/client.ts",
    "src/lib/formatters.ts",
    "src/lib/logger.ts",
+   "src/lib/nfe/parse-ibscbs.ts",
    "src/lib/supabase-write.ts",
    "src/types/reforma-tributaria.ts"
   ],

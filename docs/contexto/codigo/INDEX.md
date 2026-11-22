@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a570395a348b7c398d7662584aaceaba79aaad63` (2026-11-22T02:31:39-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `19a3b1607fbd623b07f35df8aa4e018e2bc7ab06` (2026-11-22T09:50:28-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2372), SQL (1140), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2375), SQL (1140), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,21 +34,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4004 |
-| arquivos_codigo | 2491 |
-| linhas_codigo | 444611 |
+| arquivos_total | 4008 |
+| arquivos_codigo | 2494 |
+| linhas_codigo | 445110 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
-| modulos | 128 |
+| modulos | 129 |
 | componentes | 992 |
 | hooks | 274 |
 | edge_functions | 106 |
 | tabelas | 317 |
 | migrations | 1067 |
 | cron_jobs | 22 |
-| testes | 487 |
+| testes | 489 |
 | workflows | 20 |
 | scripts | 116 |
 | docs_md | 222 |
@@ -57,13 +57,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - telas: src/pages (127)
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (238), src/components (27), src/pages (5)
-- servicos_logica: src/lib (265), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (286), outro (112), co-localizado (*.test) (48)
+- servicos_logica: src/lib (266), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (288), outro (112), co-localizado (*.test) (48)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
 - docs: docs (56), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (51%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `19a3b16` feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)
 - 2026-11-22 `a570395` chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)
 - 2026-11-22 `4d50a6f` infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)
 - 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `bb4d237` docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)
 - 2026-11-21 `ce2dfdb` chore: remove baseline histórica pré-correção (etapa 30)
 - 2026-11-21 `9e6fc7b` feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)
-- 2026-11-21 `2a68642` fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

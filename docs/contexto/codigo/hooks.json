@@ -4154,7 +4154,7 @@
    "hooks_exportados": [
     "useImportacaoXMLNFe"
    ],
-   "linhas": 377,
+   "linhas": 401,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -4171,7 +4171,7 @@
    "usado_por_arquivos": [
     "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useImportPlanoContas.ts",

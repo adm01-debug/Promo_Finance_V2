@@ -101,6 +101,7 @@
   "supabase/functions/_shared/resilience_test.ts",
   "supabase/functions/_shared/sefaz/__fixtures__/procEventoNFe-ciencia.xml",
   "supabase/functions/_shared/sefaz/__fixtures__/procNFe-duplicada.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/procNFe-ibscbs-2026.xml",
   "supabase/functions/_shared/sefaz/__fixtures__/procNFe-ok.xml",
   "supabase/functions/_shared/sefaz/__fixtures__/resNFe-resumo.xml",
   "supabase/functions/_shared/sefaz/__fixtures__/retDistDFeInt-108.xml",

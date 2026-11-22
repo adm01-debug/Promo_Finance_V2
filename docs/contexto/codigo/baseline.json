@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "a570395a348b7c398d7662584aaceaba79aaad63",
+  "commit": "19a3b1607fbd623b07f35df8aa4e018e2bc7ab06",
   "branch": "main",
-  "data_commit": "2026-11-22T02:31:39-03:00",
+  "data_commit": "2026-11-22T09:50:28-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "19a3b16",
+    "data": "2026-11-22",
+    "assunto": "feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)"
+   },
    {
     "sha": "a570395",
     "data": "2026-11-22",
@@ -126,14 +131,9 @@
     "sha": "045482e",
     "data": "2026-11-21",
     "assunto": "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura"
-   },
-   {
-    "sha": "9fc35ee",
-    "data": "2026-11-21",
-    "assunto": "fix(reforma-tributaria): migra os 3 motores para a fonte única de cronograma (#493)"
    }
   ],
-  "arquivos_mudados_7d": 501,
+  "arquivos_mudados_7d": 506,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -148,15 +148,15 @@
     "mudancas": 37
    },
    {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 31
+   },
+   {
     "pasta": "src/components/contas-receber",
     "mudancas": 30
    },
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 30
-   },
-   {
-    "pasta": "supabase/functions/_shared",
     "mudancas": 30
    },
    {
@@ -169,7 +169,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 23
+    "mudancas": 24
    },
    {
     "pasta": "bun.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 265
+    "commits": 266
    },
    {
     "autor": "dependabot[bot]",
@@ -318,21 +318,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4004,
-  "arquivos_codigo": 2491,
-  "linhas_codigo": 444611,
+  "arquivos_total": 4008,
+  "arquivos_codigo": 2494,
+  "linhas_codigo": 445110,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
-  "modulos": 128,
+  "modulos": 129,
   "componentes": 992,
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 317,
   "migrations": 1067,
   "cron_jobs": 22,
-  "testes": 487,
+  "testes": 489,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 222
@@ -651,8 +651,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 321,
-   "linhas": 47325
+   "arquivos": 322,
+   "linhas": 47496
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -663,8 +663,8 @@
    "linhas": 20046
   },
   "src/lib": {
-   "arquivos": 420,
-   "linhas": 55527
+   "arquivos": 422,
+   "linhas": 55855
   },
   "src/main.tsx": {
    "arquivos": 1,

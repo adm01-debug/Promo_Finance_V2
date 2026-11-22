@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a570395a34` · branch `main` · 2026-11-22 05:32 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `19a3b1607f` · branch `main` · 2026-11-22 12:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3670 testes em 321 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3682 testes em 323 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5274,6 +5274,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/ip-mask.test.ts` | 8 | ip-mask · retorna  · não mascara quando desabilitado · mascara os dois últimos octetos de IPv4 … |
 | `src/lib/__tests__/privacy-redact.test.ts` | 8 | redactPath · redige token de convite e contador no path · decodifica URL-encoding antes de redigir (?redirect=%2Fconvite%2F) · remove query e hash por completo (busca, CPF, magic link) … |
 | `src/lib/arquitetura/__tests__/edge-functions-imports.test.ts` | 8 | Edge Functions — conformidade de imports Deno · encontra arquivos de função para auditar · usa uma única versão canônica de @supabase/supabase-js · não importa @supabase/supabase-js sem versão fixada … |
+| `src/lib/nfe/__tests__/parse-ibscbs.test.ts` | 8 | parse-ibscbs (etapa 41) · retorna undefined para item sem grupo IBSCBS · lê o grupo IBSCBS do item com percentuais convertidos para fração · lê o grupo IS do item … |
 | `src/lib/tributario/__tests__/catalogos-alertas.test.ts` | 8 | alertas proativos de catálogos fiscais · não gera alerta quando todos os catálogos estão coerentes · aponta o item e o campo divergentes de uma UF adulterada · sinaliza catálogo vazio como divergência crítica … |
 | `src/lib/tributario/__tests__/diagnostico-parametros.test.ts` | 8 | diagnosticarParametros · não reporta ajustes para parâmetros válidos · não reporta campos omitidos (defaults do motor não são ajustes) · reporta percentual de serviços acima de 100% como ajuste … |
 | `src/lib/tributario/__tests__/prejuizo-fiscal-trava-30.test.ts` | 8 | Trava dos 30% na compensação de prejuízos (Lei 9.065/95, arts. 15 e 16) · limita a compensação a 30% do lucro do período · compensa integralmente quando o estoque é menor que a trava · não compensa em período com prejuízo e acumula ao estoque … |
@@ -5357,6 +5358,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
+| `src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx` | 4 | useImportacaoXMLNFe — grupo IBS/CBS/IS (etapa 41) · lê o grupo IBSCBS e IS destacado no item da nota 2026 · lê os totais IBSCBSTot e ISTot da nota 2026 · não quebra nota antiga sem grupo IBSCBS/IS |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
@@ -5405,9 +5407,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/executar-analise-preditiva/index.test.ts` | 3 | executar-analise-preditiva rejeita chamada sem credencial antes de acessar serviços · executar-analise-preditiva rejeita segredo interno incorreto antes de acessar serviços · executar-analise-preditiva preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/executar-regua-cobranca/domain.test.ts` | 3 | normaliza dias, remove duplicados e rejeita valores inválidos · normaliza e limita canais ao contrato conhecido · calcula datas antes, no dia e depois do vencimento em UTC |
 | `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
-| `supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts` | 3 | detectSchema identifica procNFe, resNFe e procEventoNFe · parseDoc extrai chave de 44 dígitos de procNFe · parseDoc devolve null para XML sem schema conhecido |
-| `src/components/command-palette/commandPaletteManagement.test.ts` | 2 | comandos de criação rápida · leva a intenção de abrir o formulário até a rota de destino |
-| … +21 linhas — lista completa em `context.json` | | |
+| … +23 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

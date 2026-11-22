@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 487,
+ "total": 489,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 410
+  "unit": 412
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 286
+   "arquivos": 288
   },
   {
    "padrao": "outro",
@@ -1647,6 +1647,15 @@
    "casos": 6
   },
   {
+   "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+   "tipo": "unit",
+   "linhas": 147,
+   "testa": [
+    "src/hooks/useImportacaoXMLNFe.ts"
+   ],
+   "casos": 3
+  },
+  {
    "arquivo": "src/hooks/__tests__/useIndicesContabeis.test.ts",
    "tipo": "unit",
    "linhas": 67,
@@ -2486,6 +2495,15 @@
     "src/lib/navigation-intent.ts"
    ],
    "casos": 1
+  },
+  {
+   "arquivo": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+   "tipo": "unit",
+   "linhas": 126,
+   "testa": [
+    "src/lib/nfe/parse-ibscbs.ts"
+   ],
+   "casos": 7
   },
   {
    "arquivo": "src/lib/offline/__tests__/fiscal-cache.test.ts",
@@ -4475,7 +4493,7 @@
   "src/hooks/useFluxoCaixa.ts": 3,
   "src/hooks/useFluxoCaixaPage.ts": 2,
   "src/hooks/useGlobalFilterSync.ts": 1,
-  "src/hooks/useImportacaoXMLNFe.ts": 1,
+  "src/hooks/useImportacaoXMLNFe.ts": 2,
   "src/hooks/useIndicesContabeis.ts": 1,
   "src/hooks/useKeyboardNavigation.ts": 1,
   "src/hooks/useKeyboardShortcuts.ts": 1,
@@ -4533,6 +4551,7 @@
   "src/lib/masks.ts": 1,
   "src/lib/navigation-intent.ts": 1,
   "src/lib/navigation.ts": 3,
+  "src/lib/nfe/parse-ibscbs.ts": 1,
   "src/lib/offline/fiscal-cache.ts": 1,
   "src/lib/ofx-parser.ts": 7,
   "src/lib/ofx-parser/utils.ts": 1,

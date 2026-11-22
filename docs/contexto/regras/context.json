@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "a570395a348b7c398d7662584aaceaba79aaad63",
+  "sha": "19a3b1607fbd623b07f35df8aa4e018e2bc7ab06",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 05:32 UTC",
-  "files_total": 4043,
-  "code_files": 3632,
-  "code_lines": 515778
+  "generated_at": "2026-11-22 12:51 UTC",
+  "files_total": 4047,
+  "code_files": 3635,
+  "code_lines": 516280
  },
  "version": "1.3.2",
- "facts_hash": "e5176ffca179127f",
+ "facts_hash": "f0191564fda342e8",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1255,
+   ".ts": 1257,
    ".sql": 1140,
-   ".tsx": 1117,
+   ".tsx": 1118,
    ".mjs": 67,
    ".py": 45,
    ".js": 8,
@@ -62549,7 +62549,7 @@
      "registrar_auditoria_config",
      "registrar_nfe_com_creditos"
     ],
-    "deps_count": 195
+    "deps_count": 196
    },
    {
     "path": "/reset-password",
@@ -70704,8 +70704,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 321,
-   "lines": 47646,
+   "files": 322,
+   "lines": 47818,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -70917,6 +70917,8 @@
     "@testing-library/react",
     "date-fns",
     "lucide-react",
+    "node:fs",
+    "node:path",
     "react",
     "react-router-dom",
     "sonner",
@@ -71041,8 +71043,8 @@
   },
   {
    "module": "src/lib",
-   "files": 420,
-   "lines": 55947,
+   "files": 422,
+   "lines": 56277,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -125237,6 +125239,22 @@
     "name": "reporta a deriva de schema em vez de gravar a nota sem os campos"
    },
    {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    "name": "useImportacaoXMLNFe — grupo IBS/CBS/IS (etapa 41)"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    "name": "lê o grupo IBSCBS e IS destacado no item da nota 2026"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    "name": "lê os totais IBSCBSTot e ISTot da nota 2026"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    "name": "não quebra nota antiga sem grupo IBSCBS/IS"
+   },
+   {
     "file": "src/hooks/__tests__/useIndicesContabeis.test.ts",
     "name": "normalizarAgregados"
    },
@@ -129851,6 +129869,38 @@
    {
     "file": "src/lib/contabil/__tests__/termos-livro.test.ts",
     "name": "lista contador com CRC"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "parse-ibscbs (etapa 41)"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "retorna undefined para item sem grupo IBSCBS"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "lê o grupo IBSCBS do item com percentuais convertidos para fração"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "lê o grupo IS do item"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "lê os totais de IBSCBS e IS da nota"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "retorna totais vazios quando a nota não tem IBSCBSTot/ISTot"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "preserva gRed isolado de um único tributo sem inventar os demais"
+   },
+   {
+    "file": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+    "name": "não cria gRed quando o grupo não traz nenhum dos dois campos"
    },
    {
     "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
@@ -204276,7 +204326,7 @@
   },
   "src/hooks/useImportacaoXMLNFe.ts": {
    "path": "src/hooks/useImportacaoXMLNFe.ts",
-   "lines": 378,
+   "lines": 402,
    "exports": [
     "interface NFeParsed",
     "interface NFeItem",
@@ -209884,6 +209934,21 @@
     "não contabiliza crédito quando a função recusa a gravação",
     "não tenta compensar nada: a falha é desfeita pelo ROLLBACK",
     "reporta a deriva de schema em vez de gravar a nota sem os campos"
+   ]
+  },
+  "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx": {
+   "path": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+   "lines": 148,
+   "is_test": true,
+   "rule_comments": [
+    "pISEspec vem do XML como alíquota por valor: não pode ser dividido por 100."
+   ],
+   "doc": "Testes — useImportacaoXMLNFe: leitura do grupo IBS/CBS/IS (etapa 41) A etapa 41 faz o parser do XML ler o grupo tributário novo (`det/imposto/IBSCBS`, `det/imposto/IS` e os totais `total/IBSCBSTot`/`total/ISTot`) em vez de só estimar o crédito pela alíquota de transição. Estes testes usam a fixture …",
+   "tests": [
+    "useImportacaoXMLNFe — grupo IBS/CBS/IS (etapa 41)",
+    "lê o grupo IBSCBS e IS destacado no item da nota 2026",
+    "lê os totais IBSCBSTot e ISTot da nota 2026",
+    "não quebra nota antiga sem grupo IBSCBS/IS"
    ]
   },
   "src/hooks/__tests__/useIndicesContabeis.test.ts": {
@@ -215572,6 +215637,34 @@
    ],
    "percents": [
     "// de fato\" (cota zero do rateio de acordo com 100% de desconto ou"
+   ]
+  },
+  "src/lib/nfe/parse-ibscbs.ts": {
+   "path": "src/lib/nfe/parse-ibscbs.ts",
+   "lines": 203,
+   "exports": [
+    "interface NFeIbscbsRed",
+    "interface NFeIbscbsGrupo",
+    "interface NFeIsGrupo",
+    "interface NFeIbscbsTotais",
+    "function parseItemIbscbs",
+    "function parseItemIs",
+    "function parseIbscbsTotais"
+   ]
+  },
+  "src/lib/nfe/__tests__/parse-ibscbs.test.ts": {
+   "path": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+   "lines": 127,
+   "is_test": true,
+   "tests": [
+    "parse-ibscbs (etapa 41)",
+    "retorna undefined para item sem grupo IBSCBS",
+    "lê o grupo IBSCBS do item com percentuais convertidos para fração",
+    "lê o grupo IS do item",
+    "lê os totais de IBSCBS e IS da nota",
+    "retorna totais vazios quando a nota não tem IBSCBSTot/ISTot",
+    "preserva gRed isolado de um único tributo sem inventar os demais",
+    "não cria gRed quando o grupo não traz nenhum dos dois campos"
    ]
   },
   "src/lib/offline/fiscal-cache.ts": {
@@ -246566,10 +246659,23 @@
   }
  },
  "git": {
-  "sha": "a570395a348b7c398d7662584aaceaba79aaad63",
+  "sha": "19a3b1607fbd623b07f35df8aa4e018e2bc7ab06",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "19a3b16",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)",
+    "files": [
+     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+     "src/hooks/useImportacaoXMLNFe.ts",
+     "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
+     "src/lib/nfe/parse-ibscbs.ts",
+     "supabase/functions/_shared/sefaz/__fixtures__/procNFe-ibscbs-2026.xml"
+    ]
+   },
    {
     "sha": "a570395",
     "date": "2026-11-22",
@@ -246911,21 +247017,6 @@
      "scripts/test_migrate_cron_jobs.py",
      "scripts/test_staging_migrate.py"
     ]
-   },
-   {
-    "sha": "aeefe2f",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)",
-    "files": [
-     "docs/archive/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md",
-     "docs/archive/README.md",
-     "docs/receitafederal/ADR-003-AUDITORIA-RT-2026-11-21.md",
-     "docs/receitafederal/FONTES_NORMATIVAS.md",
-     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-     "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
-     "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -246974,18 +247065,6 @@
     2
    ],
    [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    2
-   ],
-   [
-    "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
-    2
-   ],
-   [
-    "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    2
-   ],
-   [
     "src/lib/reforma-tributaria/types.ts",
     2
    ],
@@ -247007,6 +247086,18 @@
    ],
    [
     "src/pages/tributario/CalculadoraTributaria.helpers.ts",
+    2
+   ],
+   [
+    "src/pages/tributario/CalculadoraTributaria.parts.tsx",
+    2
+   ],
+   [
+    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
+    2
+   ],
+   [
+    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
     2
    ]
   ]
