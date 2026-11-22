@@ -19831,6 +19831,7 @@ export const Constants = {
         'EXPIRED',
       ],
       org_papel: ['RESPONSAVEL', 'ADMIN', 'MEMBRO', 'LEITOR'],
+      origem_credito_tributario: ['xml_destacado', 'estimado', 'manual'],
       prioridade_alerta: ['baixa', 'media', 'alta', 'critica'],
       regiao_brasil: ['NORTE', 'NORDESTE', 'CENTRO_OESTE', 'SUDESTE', 'SUL'],
       regime_tributario_enum: ['MEI', 'SIMPLES', 'PRESUMIDO', 'REAL', 'ARBITRADO'],
