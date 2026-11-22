@@ -52,7 +52,9 @@ export function validarItemFiscal(
   const cClassTrib = soDigitos(item.cClassTrib);
 
   // Formato do NCM ? verific?vel sem cat?logo: a RFB usa 8 d?gitos.
-  if (ncm.length > 0 && ncm.length !== 8) {
+  // '00' ? o c?digo do leiaute para item sem produto (servi?o, frete, seguro):
+  // n?o ? erro de digita??o e n?o pode gerar alerta.
+  if (ncm.length > 0 && ncm !== '00' && ncm.length !== 8) {
     divergencias.push({
       codigo: 'REG-010',
       campo: 'NCM',
@@ -65,8 +67,10 @@ export function validarItemFiscal(
 
     if (!referencia) {
       // S? acusa quando o cat?logo tem conte?do: vazio significa carga da RFB
-      // ainda n?o executada (etapas 79-81), n?o c?digo inv?lido.
-      if (referencias.cclasstrib.size > 0) {
+      // ainda n?o executada (etapas 79-81), n?o c?digo inv?lido. A flag importa
+      // porque o mapa ? recortado pelos c?digos do lote ? um mapa vazio n?o
+      // prova cat?logo vazio.
+      if (referencias.cclasstribCarregado) {
         divergencias.push({
           codigo: 'REG-013',
           campo: 'cClassTrib',
@@ -84,7 +88,7 @@ export function validarItemFiscal(
     }
   }
 
-  if (ncm.length === 8 && !referencias.ncm.has(ncm) && referencias.ncm.size > 0) {
+  if (ncm.length === 8 && !referencias.ncm.has(ncm) && referencias.ncmCarregado) {
     divergencias.push({
       codigo: 'REG-012',
       campo: 'NCM',

@@ -170,6 +170,12 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const numero = ide?.querySelector('nNF')?.textContent || '';
       const serie = ide?.querySelector('serie')?.textContent || '';
       const dataEmissao = new Date(ide?.querySelector('dhEmi')?.textContent || '');
+      // Data inválida vira Invalid Date e só estoura na tela, dentro de
+      // format(), derrubando a prévia do lote inteiro. Falhar aqui marca a nota
+      // como erro e preserva as demais.
+      if (Number.isNaN(dataEmissao.getTime())) {
+        throw new Error('Data de emissão (dhEmi) ausente ou inválida');
+      }
       const cnpjEmitente = emit?.querySelector('CNPJ')?.textContent || '';
       const nomeEmitente = emit?.querySelector('xNome')?.textContent || '';
       const cnpjDestinatario = dest?.querySelector('CNPJ')?.textContent || '';
@@ -321,13 +327,32 @@ export function useImportacaoXMLNFe(empresaId: string) {
       let notasComAlertaFiscal = 0;
       const processadas = [...nfesParsed];
 
-      // Etapa 46: uma única leitura de catálogo para o lote inteiro, e só dos
-      // códigos que o lote declarou. Fazer a consulta por nota multiplicaria
-      // rede por arquivo sem ganho — as referências são as mesmas.
-      const referencias = await buscarReferenciasFiscais(
-        processadas.flatMap((n) => n.itens.map((i) => i.ibscbs?.cClassTrib ?? '')),
-        processadas.flatMap((n) => n.itens.map((i) => i.ncm))
-      );
+      // Etapa 46: uma leitura de catálogo por exercício presente no lote, e só
+      // dos códigos daquele exercício. Os catálogos são versionados por
+      // inicio_vigencia/fim_vigencia: consultar uma vez com a data do relógio
+      // validaria nota de 2025 contra a tabela de 2027. Agrupar por ano de
+      // emissão mantém a economia de rede (poucos grupos por lote) sem perder a
+      // vigência correta de cada nota.
+      const referenciasPorAno = new Map<
+        number,
+        Awaited<ReturnType<typeof buscarReferenciasFiscais>>
+      >();
+      for (const n of processadas) {
+        if (n.status === 'erro') continue;
+        const ano = anoEmissao(n.dataEmissao);
+        if (referenciasPorAno.has(ano)) continue;
+        const doAno = processadas.filter(
+          (o) => o.status !== 'erro' && anoEmissao(o.dataEmissao) === ano
+        );
+        referenciasPorAno.set(
+          ano,
+          await buscarReferenciasFiscais(
+            doAno.flatMap((o) => o.itens.map((i) => i.ibscbs?.cClassTrib ?? '')),
+            doAno.flatMap((o) => o.itens.map((i) => i.ncm)),
+            ano + '-12-31'
+          )
+        );
+      }
 
       for (let i = 0; i < processadas.length; i++) {
         const nfe = processadas[i];
@@ -481,7 +506,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
               cstIbscbs: i.ibscbs?.cst,
               cClassTrib: i.ibscbs?.cClassTrib,
             })),
-            referencias
+            referenciasPorAno.get(anoFatoGerador) ?? (await buscarReferenciasFiscais([], [], anoFatoGerador + '-12-31'))
           );
 
           processadas[i] = {

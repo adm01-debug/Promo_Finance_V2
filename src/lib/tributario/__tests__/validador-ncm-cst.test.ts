@@ -40,12 +40,17 @@ const comCatalogo = (): ReferenciasFiscais => ({
     ],
   ]),
   ncm: new Map([['02013000', { ncm: '02013000', descricao: 'Carnes de bovino' }]]),
+  // catálogo carregado: um código fora dele é divergência de verdade
+  cclasstribCarregado: true,
+  ncmCarregado: true,
 });
 
 const vazio = (): ReferenciasFiscais => ({
   referencia: '2026-11-22',
   cclasstrib: new Map(),
   ncm: new Map(),
+  cclasstribCarregado: false,
+  ncmCarregado: false,
 });
 
 describe('validarItemFiscal', () => {
@@ -86,6 +91,30 @@ describe('validarItemFiscal', () => {
     const d = validarItemFiscal({ ncm: '1234' }, vazio());
     expect(d).toHaveLength(1);
     expect(d[0].codigo).toBe('REG-010');
+  });
+
+  it('REG-010: NCM 00 é item sem produto, não erro de digitação', () => {
+    // Leiaute da NF-e: item sem produto (serviço, frete) vai com NCM 00.
+    // Acusar tamanho inválido aqui marcaria toda nota de serviço como suspeita.
+    const d = validarItemFiscal({ ncm: '00' }, comCatalogo());
+    expect(d.filter((x) => x.codigo === 'REG-010')).toHaveLength(0);
+  });
+
+  it('código fora do catálogo é divergência mesmo com outros válidos', () => {
+    const d = validarItemFiscal({ ncm: '99999999', cClassTrib: '999999' }, comCatalogo());
+    expect(d.map((x) => x.codigo).sort()).toEqual(['REG-012', 'REG-013']);
+  });
+
+  it('catálogo com carga mas nenhum código do lote ainda acusa', () => {
+    // Regressão do mapa vazio: antes a condição era `size > 0` e este caso
+    // passava sem alerta justamente por o mapa estar vazio.
+    const refs: ReferenciasFiscais = {
+      ...vazio(),
+      cclasstribCarregado: true,
+      ncmCarregado: true,
+    };
+    const d = validarItemFiscal({ ncm: '11111111', cClassTrib: '111111' }, refs);
+    expect(d.map((x) => x.codigo).sort()).toEqual(['REG-012', 'REG-013']);
   });
 
   it('cat?logo vazio nunca gera diverg?ncia de conte?do', () => {

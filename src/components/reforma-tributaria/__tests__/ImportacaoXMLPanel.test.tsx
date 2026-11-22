@@ -81,4 +81,29 @@ describe('ImportacaoXMLPanel — etapa 47', () => {
     render(<ImportacaoXMLPanel empresaId="e1" />);
     expect(screen.getByText('sem grupo')).toBeInTheDocument();
   });
+
+  it('nota só com grupo monofásico não anuncia crédito apropriável', () => {
+    // O importador grava crédito zero quando a nota só traz gMono/VTotMono:
+    // o valor está destacado, mas fora do regime regular. Antes o badge dizia
+    // "apropriável" e o usuário esperava um crédito que nunca aparecia.
+    mockHook([
+      {
+        ...nfeBase,
+        dataEmissao: new Date(2027, 2, 15, 10, 0, 0),
+        ibscbs: { vTotIBSMono: 5, vTotCBSMono: 3 },
+      },
+    ] as never);
+    render(<ImportacaoXMLPanel empresaId="e1" />);
+    expect(screen.getByText('monofásico')).toBeInTheDocument();
+    expect(screen.queryByText('apropriável')).not.toBeInTheDocument();
+  });
+
+  it('não afirma conformidade fiscal antes da importação', () => {
+    // A validação roda na gravação; na prévia o badge dizia "ok" sem nada
+    // ter sido conferido, o que dava ao usuário uma garantia falsa.
+    mockHook([{ ...nfeBase, ibscbs: { vIBS: 12.5, vCBS: 9.1 } }] as never);
+    render(<ImportacaoXMLPanel empresaId="e1" />);
+    expect(screen.getByText('não conferido')).toBeInTheDocument();
+    expect(screen.queryByText('ok')).not.toBeInTheDocument();
+  });
 });

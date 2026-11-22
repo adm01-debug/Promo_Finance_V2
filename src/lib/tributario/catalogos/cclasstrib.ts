@@ -33,12 +33,21 @@ export interface ReferenciasFiscais {
   ncm: Map<string, NcmCatalogo>;
   /** Data usada no recorte de vig?ncia. */
   referencia: string;
+  /**
+   * A tabela tem conte?do? Distingue "cat?logo vazio" (carga da RFB n?o rodou)
+   * de "nenhum c?digo do lote existe no cat?logo" ? s? o segundo ? diverg?ncia.
+   * Sem essa flag, um mapa vazio dos dois jeitos suprimiria o alerta.
+   */
+  cclasstribCarregado: boolean;
+  ncmCarregado: boolean;
 }
 
 const VAZIO = (referencia: string): ReferenciasFiscais => ({
   cclasstrib: new Map(),
   ncm: new Map(),
   referencia,
+  cclasstribCarregado: false,
+  ncmCarregado: false,
 });
 
 /** Mant?m s? a linha que estava vigente na data de refer?ncia. */
@@ -77,6 +86,7 @@ export async function buscarReferenciasFiscais(
       .in('cclasstrib', codigosTrib);
 
     if (!error) {
+      resultado.cclasstribCarregado = (data ?? []).length > 0;
       for (const linha of data ?? []) {
         if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
         resultado.cclasstrib.set(linha.cclasstrib, {
@@ -100,6 +110,7 @@ export async function buscarReferenciasFiscais(
       .in('ncm', codigosNcm);
 
     if (!error) {
+      resultado.ncmCarregado = (data ?? []).length > 0;
       for (const linha of data ?? []) {
         if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
         resultado.ncm.set(linha.ncm, { ncm: linha.ncm, descricao: linha.descricao });

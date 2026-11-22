@@ -32,16 +32,25 @@ interface Props {
  * aproveitável ou é apenas informativo (ano de teste de 2026).
  */
 function getBadgeIbscbs(nfe: NFeParsed) {
-  const temGrupo =
-    nfe.ibscbs?.vIBS !== undefined ||
-    nfe.ibscbs?.vCBS !== undefined ||
-    nfe.ibscbs?.vTotIBSMono !== undefined ||
-    nfe.ibscbs?.vTotCBSMono !== undefined;
+  const temRegular = nfe.ibscbs?.vIBS !== undefined || nfe.ibscbs?.vCBS !== undefined;
+  const temMono =
+    nfe.ibscbs?.vTotIBSMono !== undefined || nfe.ibscbs?.vTotCBSMono !== undefined;
+  const temGrupo = temRegular || temMono;
 
   if (!temGrupo) {
     return (
       <Badge variant="outline" title="XML sem grupo IBS/CBS — crédito será estimado">
         sem grupo
+      </Badge>
+    );
+  }
+
+  // Só monofásico: o valor está destacado, mas fora do regime regular —
+  // o importador grava crédito zero nesse caso, então não é apropriável.
+  if (!temRegular) {
+    return (
+      <Badge variant="outline" title="Apenas grupo monofásico — não gera crédito regular">
+        monofásico
       </Badge>
     );
   }
@@ -71,6 +80,16 @@ function getBadgeIbscbs(nfe: NFeParsed) {
  * a mensagem de cada regra para o usuário conferir com o contador.
  */
 function getBadgeFiscal(nfe: NFeParsed) {
+  // A validação só roda na gravação: na prévia a ausência de alertas não
+  // significa conformidade, significa que ninguém conferiu ainda.
+  if (nfe.status === 'pendente') {
+    return (
+      <Badge variant="outline" title="A conferência roda na importação">
+        não conferido
+      </Badge>
+    );
+  }
+
   const alertas = nfe.alertasFiscais ?? [];
   if (alertas.length === 0) {
     return (

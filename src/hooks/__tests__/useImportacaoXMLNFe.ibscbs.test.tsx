@@ -216,6 +216,32 @@ describe('useImportacaoXMLNFe — crédito pelo valor destacado (etapa 43)', () 
     }
   });
 
+  it('nota de 31/12 às 22h em Brasília pertence ao exercício anterior', async () => {
+    // 22h de 31/12 em -03:00 é 01h de 01/01 em UTC. Se a vigência fosse lida
+    // pelo relógio/UTC, esta nota viraria 2027 e passaria a gerar crédito
+    // apropriável indevidamente. O ano tem que ser o civil do emitente.
+    const xmlVirada = readFileSync(resolve(FIXTURES, 'procNFe-ibscbs-2026.xml'), 'utf8').replace(
+      '2026-07-22T10:00:00-03:00',
+      '2026-12-31T22:00:00-03:00'
+    );
+    const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
+    const arq = { name: 'nfe-virada.xml', text: () => Promise.resolve(xmlVirada) } as unknown as File;
+    await act(async () => {
+      await result.current.processarArquivos([arq] as unknown as FileList);
+    });
+    await waitFor(() => expect(result.current.nfesParsed).toHaveLength(1));
+    mockRpc.mockResolvedValue({ data: { id: 'nota-1' }, error: null });
+    await act(async () => {
+      await result.current.importarNFes.mutateAsync();
+    });
+
+    const payload = mockRpc.mock.calls[0][1] as { p_creditos: Array<Record<string, unknown>> };
+    for (const credito of payload.p_creditos) {
+      expect(credito.ano_fato_gerador).toBe(2026);
+      expect(credito.efeito_tributario).toBe(false);
+      expect(credito.saldo_disponivel).toBe(0);
+    }
+  });
   it('nota sem grupo IBS/CBS cai no estimado, marcado como tal', async () => {
     const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
     const antiga = {

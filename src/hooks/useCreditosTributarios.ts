@@ -144,12 +144,19 @@ export function useCreditosTributarios(empresaId?: string) {
         // `origem='xml_destacado'`. Antes bastava `status='disponivel'`, então
         // um crédito de 2026 (informativo) e uma estimativa (sem destaque)
         // entravam no saldo apropriável.
+        // O importador grava `saldo_disponivel = 0` no crédito informativo
+        // (não há saldo a gastar). Somar esse campo zerava o KPI: o valor do
+        // documento está em `valor_credito`, que é o que precisa ser exibido.
+        const saldo =
+          Number(c.saldo_disponivel) ||
+          Number(c.valor_credito) - Number(c.valor_utilizado) ||
+          0;
+
         if (c.efeito_tributario === true && c.origem === 'xml_destacado') {
-          resumo[key].disponivel +=
-            Number(c.saldo_disponivel) || Number(c.valor_credito) - Number(c.valor_utilizado) || 0;
+          resumo[key].disponivel += saldo;
         } else if (c.status !== 'utilizado' && c.status !== 'estornado') {
           // KPI separado: informativo 2026 + estimados. Não é saldo gastável.
-          resumo[key].informativo += Number(c.saldo_disponivel) || 0;
+          resumo[key].informativo += saldo;
         }
       });
 

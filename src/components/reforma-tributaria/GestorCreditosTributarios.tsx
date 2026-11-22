@@ -37,6 +37,10 @@ import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { NaoCumulatividadeInfoCard } from './NaoCumulatividadeInfoCard';
 
+/** Etapa 44/48/88: só é apropriável o crédito com efeito tributário e vindo do XML. */
+const ehApropriavel = (c: { efeito_tributario?: boolean | null; origem?: string | null }) =>
+  c.efeito_tributario === true && c.origem === 'xml_destacado';
+
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
 export function GestorCreditosTributarios() {
@@ -72,8 +76,7 @@ export function GestorCreditosTributarios() {
     // Etapa 44/48/88: só é apropriável o crédito com `efeito_tributario=true` e
     // `origem='xml_destacado'`. 2026 é ano de teste (informativo) e estimativa
     // nunca é aproveitável — ambos entram no KPI separado, não no saldo.
-    const apropriavel = (c: { efeito_tributario?: boolean | null; origem?: string | null }) =>
-      c.efeito_tributario === true && c.origem === 'xml_destacado';
+    const apropriavel = ehApropriavel;
 
     const cbsTotal = cbsCreditos.reduce((acc, c) => acc + Number(c.valor_credito), 0);
     const cbsUtilizado = cbsCreditos.reduce((acc, c) => acc + Number(c.valor_utilizado), 0);
@@ -154,7 +157,7 @@ export function GestorCreditosTributarios() {
     efeito_tributario?: boolean | null;
     origem?: string | null;
   }) => {
-    if (credito.efeito_tributario === true && credito.origem === 'xml_destacado') {
+    if (ehApropriavel(credito)) {
       return <Badge className="bg-success">Disponível</Badge>;
     }
     if (credito.origem === 'estimado') {
@@ -426,9 +429,11 @@ export function GestorCreditosTributarios() {
                       {formatCurrency(credito.valor_utilizado)}
                     </TableCell>
                     <TableCell className="text-right font-medium text-success">
-                      {formatCurrency(
-                        Number(credito.valor_credito) - Number(credito.valor_utilizado)
-                      )}
+                      {ehApropriavel(credito)
+                        ? formatCurrency(
+                            Number(credito.valor_credito) - Number(credito.valor_utilizado)
+                          )
+                        : '-'}
                     </TableCell>
                     <TableCell>{getStatusBadge(credito.status)}</TableCell>
                     <TableCell>{getBadgeApropriacao(credito)}</TableCell>
