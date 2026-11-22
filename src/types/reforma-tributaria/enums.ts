@@ -56,4 +56,7 @@ export type RegimeEspecial =
   | 'saude'
   | 'educacao'
   | 'producoes_culturais'
+  | 'cesta_basica' // Art. 125 LC 214/2025 — alíquota zero (100%)
+  | 'alimentos' // Art. 128 LC 214/2025 — redução de 60%
+  | 'profissoes_liberais' // Art. 127 LC 214/2025 — redução de 30%
   | 'nenhum';

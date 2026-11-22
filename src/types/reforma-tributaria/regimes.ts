@@ -64,13 +64,14 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     origem: 'lei',
   },
   {
+    // Correção: arts. 261-263 LC 214/2025 determinam redução de 50% (não 40%)
     regime: 'imobiliario',
     descricao: 'Operações Imobiliárias',
-    reducaoAliquotaCBS: 40,
-    reducaoAliquotaIBS: 40,
+    reducaoAliquotaCBS: 50,
+    reducaoAliquotaIBS: 50,
     creditoIntegralMantido: true,
-    observacoes: 'Redução de 40% para imóveis (regime geral)',
-    fundamentoLegal: 'Art. 233 a 256 LC 214/2025',
+    observacoes: 'Redução de 50% para operações imobiliárias (arts. 261-263 LC 214/2025)',
+    fundamentoLegal: 'Art. 261 a 263 LC 214/2025',
     origem: 'lei',
   },
   {
@@ -105,6 +106,26 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     origem: 'lei',
   },
   {
+    regime: 'parques_diversao',
+    descricao: 'Parques de Diversão e Temáticos',
+    reducaoAliquotaCBS: 40,
+    reducaoAliquotaIBS: 40,
+    creditoIntegralMantido: true,
+    observacoes: 'Redução de 40%',
+    fundamentoLegal: 'Art. 275 a 277 LC 214/2025',
+    origem: 'lei',
+  },
+  {
+    regime: 'agencias_viagem',
+    descricao: 'Agências de Viagem e Turismo',
+    reducaoAliquotaCBS: 40,
+    reducaoAliquotaIBS: 40,
+    creditoIntegralMantido: true,
+    observacoes: 'Redução de 40%',
+    fundamentoLegal: 'Art. 278 a 280 LC 214/2025',
+    origem: 'lei',
+  },
+  {
     regime: 'transporte_coletivo',
     descricao: 'Transporte Coletivo',
     reducaoAliquotaCBS: 60,
@@ -112,6 +133,16 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60%',
     fundamentoLegal: 'Art. 263 a 268 LC 214/2025',
+    origem: 'lei',
+  },
+  {
+    regime: 'sociedades_cooperativas',
+    descricao: 'Sociedades Cooperativas',
+    reducaoAliquotaCBS: 40,
+    reducaoAliquotaIBS: 40,
+    creditoIntegralMantido: true,
+    observacoes: 'Regime especial — redução efetiva aproximada de 40%',
+    fundamentoLegal: 'Art. 341 a 350 LC 214/2025',
     origem: 'lei',
   },
   {
@@ -142,6 +173,41 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     creditoIntegralMantido: true,
     observacoes: 'Redução de 60% — produções artísticas, culturais, jornalísticas',
     fundamentoLegal: 'Art. 127 LC 214/2025 (Anexo I, item 8)',
+    origem: 'lei',
+  },
+  {
+    // Art. 125 LC 214/2025: Cesta Básica Nacional — alíquota zero CBS e IBS
+    regime: 'cesta_basica',
+    descricao: 'Cesta Básica Nacional',
+    reducaoAliquotaCBS: 100,
+    reducaoAliquotaIBS: 100,
+    creditoIntegralMantido: true,
+    observacoes:
+      'Alíquota zero (100% de redução) — não-cumulatividade plena mantida conforme art. 28 LC 214/2025',
+    fundamentoLegal: 'Art. 125 LC 214/2025',
+    origem: 'lei',
+  },
+  {
+    // Art. 128 LC 214/2025: Alimentos em geral — redução de 60%
+    regime: 'alimentos',
+    descricao: 'Alimentos em Geral',
+    reducaoAliquotaCBS: 60,
+    reducaoAliquotaIBS: 60,
+    creditoIntegralMantido: true,
+    observacoes: 'Redução de 60% para alimentos em geral (fora da cesta básica)',
+    fundamentoLegal: 'Art. 128 LC 214/2025',
+    origem: 'lei',
+  },
+  {
+    // Art. 127 LC 214/2025: Profissões regulamentadas — redução de 30%
+    regime: 'profissoes_liberais',
+    descricao: 'Profissões Liberais Regulamentadas',
+    reducaoAliquotaCBS: 30,
+    reducaoAliquotaIBS: 30,
+    creditoIntegralMantido: true,
+    observacoes:
+      'Redução de 30% para profissões regulamentadas (advogados, médicos, engenheiros etc.)',
+    fundamentoLegal: 'Art. 127 LC 214/2025',
     origem: 'lei',
   },
 ];
