@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2376)",
    "SQL (1140)",
-   "Markdown (222)",
+   "Markdown (224)",
    "JavaScript (76)",
    "JSON (45)",
    "Python (45)",
@@ -1133,6 +1133,11 @@
    "linhas": 72
   },
   {
+   "arquivo": "docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md",
+   "titulo": "Plano Front-End — 190 etapas de correção e melhoria (2026-11-22)",
+   "linhas": 1383
+  },
+  {
    "arquivo": "docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md",
    "titulo": "Plano de Melhorias e Correções — 50 Etapas",
    "linhas": 741
@@ -1141,6 +1146,11 @@
    "arquivo": "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md",
    "titulo": "PLANO — Incorporação do RTC (Regime Tributário de Caixa) ao módulo tributário do Promo_Finance_V2",
    "linhas": 176
+  },
+  {
+   "arquivo": "docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md",
+   "titulo": "Plano UX de Navegação — 200 etapas (2026-11-22)",
+   "linhas": 1373
   },
   {
    "arquivo": "docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md",

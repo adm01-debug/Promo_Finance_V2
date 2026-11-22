@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `60ece16588ff4298ee0320f33b53bcefd3166211` (2026-11-22T11:53:29-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2c2486f2e6536a482e3bedc8d153f3e154309513` (2026-11-22T13:06:33-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2376), SQL (1140), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2376), SQL (1140), Markdown (224), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4009 |
+| arquivos_total | 4011 |
 | arquivos_codigo | 2495 |
 | linhas_codigo | 445321 |
 | rotas | 130 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 490 |
 | workflows | 20 |
 | scripts | 116 |
-| docs_md | 222 |
+| docs_md | 224 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
@@ -62,7 +62,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
-- docs: docs (56), (raiz) (19), .github (2)
+- docs: docs (58), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (51%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
@@ -609,8 +609,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/PERFORMANCE.md` — ⚡ Guia de Performance - Promo Finance (315 linhas)
 - `docs/PLANO_AUDITORIA_FINANCEIRA_100_ETAPAS_2026-09-10.md` — Auditoria funcional e financeira — plano de melhorias em 100 etapas (160 linhas)
 - `docs/PLANO_EXCELENCIA_10_10.md` — Plano de Excelência 10/10 — Promo Finance (72 linhas)
+- `docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md` — Plano Front-End — 190 etapas de correção e melhoria (2026-11-22) (1383 linhas)
 - `docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md` — Plano de Melhorias e Correções — 50 Etapas (741 linhas)
 - `docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md` — PLANO — Incorporação do RTC (Regime Tributário de Caixa) ao módulo tributário do Promo_Finance_V2 (176 linhas)
+- `docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md` — Plano UX de Navegação — 200 etapas (2026-11-22) (1373 linhas)
 - `docs/PLANO_WORKFLOWS_100_ETAPAS_2026-09-27.md` — Plano de correções e melhorias — GitHub Workflows (100 etapas) (192 linhas)
 - `docs/QA_EXHAUSTIVE_REPORT.md` — Relatório QA Exaustivo — 2026-07-22 (68 linhas)
 - `docs/QA_VALIDATION_REPORT.md` — QA Validation Report — Auditoria Exaustiva (123 linhas)
@@ -634,6 +636,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
+- 2026-11-22 `f423b99` chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)
 - 2026-11-22 `60ece16` fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)
 - 2026-11-22 `856fef0` fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)
 - 2026-11-22 `00b7588` fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)
@@ -647,8 +651,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
 - 2026-11-22 `2463d97` fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS
 - 2026-11-22 `7db0fc4` infra: grupo IS por item (etapa 34 RT/RFB) (#513)
-- 2026-11-22 `d32ac55` infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)
-- 2026-11-21 `96b4a9b` infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

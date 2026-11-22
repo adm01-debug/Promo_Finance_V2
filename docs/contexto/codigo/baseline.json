@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "60ece16588ff4298ee0320f33b53bcefd3166211",
+  "commit": "2c2486f2e6536a482e3bedc8d153f3e154309513",
   "branch": "main",
-  "data_commit": "2026-11-22T11:53:29-03:00",
+  "data_commit": "2026-11-22T13:06:33-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2c2486f",
+    "data": "2026-11-22",
+    "assunto": "chore: adiciona plano de UX de navegacao em 200 etapas (#529)"
+   },
+   {
+    "sha": "f423b99",
+    "data": "2026-11-22",
+    "assunto": "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)"
+   },
    {
     "sha": "60ece16",
     "data": "2026-11-22",
@@ -121,19 +131,9 @@
     "sha": "2a68642",
     "data": "2026-11-21",
     "assunto": "fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação"
-   },
-   {
-    "sha": "1a51242",
-    "data": "2026-11-21",
-    "assunto": "feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)"
-   },
-   {
-    "sha": "d11416f",
-    "data": "2026-11-21",
-    "assunto": "fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)"
    }
   ],
-  "arquivos_mudados_7d": 506,
+  "arquivos_mudados_7d": 508,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -294,14 +294,14 @@
     "mudancas": 5
    },
    {
-    "arquivo": "scripts/migrate-functions.sh",
+    "arquivo": "scripts/security/test-migration-replay-safety.sh",
     "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 273
+    "commits": 275
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4009,
+  "arquivos_total": 4011,
   "arquivos_codigo": 2495,
   "linhas_codigo": 445321,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 490,
   "workflows": 20,
   "scripts": 116,
-  "docs_md": 222
+  "docs_md": 224
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

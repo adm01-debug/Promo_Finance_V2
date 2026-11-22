@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "60ece16588ff4298ee0320f33b53bcefd3166211",
+  "sha": "2c2486f2e6536a482e3bedc8d153f3e154309513",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 15:14 UTC",
-  "files_total": 4048,
+  "generated_at": "2026-11-22 16:17 UTC",
+  "files_total": 4050,
   "code_files": 3636,
   "code_lines": 516376
  },
@@ -246738,10 +246738,28 @@
   }
  },
  "git": {
-  "sha": "60ece16588ff4298ee0320f33b53bcefd3166211",
+  "sha": "2c2486f2e6536a482e3bedc8d153f3e154309513",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "2c2486f",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "chore: adiciona plano de UX de navegacao em 200 etapas (#529)",
+    "files": [
+     "docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md"
+    ]
+   },
+   {
+    "sha": "f423b99",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)",
+    "files": [
+     "docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md"
+    ]
+   },
    {
     "sha": "60ece16",
     "date": "2026-11-22",
@@ -247046,49 +247064,11 @@
     "files": [
      "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
     ]
-   },
-   {
-    "sha": "9aa15fe",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)",
-    "files": [
-     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-     "src/lib/reforma-tributaria/calcular-tributos.ts",
-     "src/lib/reforma-tributaria/regras.ts",
-     "src/types/reforma-tributaria/transicao.ts"
-    ]
-   },
-   {
-    "sha": "424bfe7",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)",
-    "files": [
-     "src/components/reforma-tributaria/CalculadoraTributos.tsx",
-     "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
-     "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
-     "src/hooks/useOperacoesTributaveis.ts",
-     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-     "src/lib/reforma-tributaria/regras.ts",
-     "src/lib/reforma-tributaria/simulador.ts",
-     "src/lib/reforma-tributaria/types.ts",
-     "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-     "src/lib/tributario/calculadora/reforma-tributaria.ts",
-     "src/lib/tributario/calculadora/types.ts",
-     "src/pages/tributario/CalculadoraTributaria.helpers.ts",
-     "src/pages/tributario/CalculadoraTributaria.parts.tsx",
-     "src/types/reforma-tributaria/imposto-seletivo.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
-    4
-   ],
-   [
-    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     4
    ],
    [
@@ -247100,19 +247080,7 @@
     3
    ],
    [
-    "src/lib/reforma-tributaria/calcular-tributos.ts",
-    3
-   ],
-   [
     "src/components/reforma-tributaria/ResultadoTributos.tsx",
-    3
-   ],
-   [
-    "src/lib/reforma-tributaria/regras.ts",
-    3
-   ],
-   [
-    "src/lib/tributario/calculadora/reforma-tributaria.ts",
     3
    ],
    [
@@ -247136,32 +247104,48 @@
     2
    ],
    [
+    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    2
+   ],
+   [
     "src/lib/reforma-tributaria/arredondamento.ts",
     2
    ],
    [
-    "src/lib/reforma-tributaria/types.ts",
+    "src/lib/reforma-tributaria/calcular-tributos.ts",
     2
    ],
    [
-    "src/components/reforma-tributaria/simulador/SimuladorInputForm.tsx",
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
     2
    ],
    [
-    "src/hooks/useOperacoesTributaveis.ts",
+    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
     2
    ],
    [
-    "src/lib/reforma-tributaria/simulador.ts",
+    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
     2
    ],
    [
-    "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
-    2
+    "docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md",
+    1
    ],
    [
-    "src/lib/tributario/calculadora/types.ts",
-    2
+    "docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md",
+    1
+   ],
+   [
+    ".prettierignore",
+    1
+   ],
+   [
+    "src/hooks/usePreferenciasSistema.ts",
+    1
+   ],
+   [
+    "supabase/functions/projecao-reforma/index.ts",
+    1
    ]
   ]
  }

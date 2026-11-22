@@ -33,7 +33,7 @@
    "scripts/ci (15)"
   ],
   "docs": [
-   "docs (56)",
+   "docs (58)",
    "(raiz) (19)",
    ".github (2)"
   ]
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: adiciona plano de UX de navegacao em 200 etapas (#529)",
+   "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)",
    "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)",
    "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)",
-   "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)",
-   "chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)",
-   "chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório"
+   "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

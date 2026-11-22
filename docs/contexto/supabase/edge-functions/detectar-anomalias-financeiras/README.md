@@ -4,7 +4,7 @@
 |---|---|
 | nome | detectar-anomalias-financeiras |
 | status | ACTIVE |
-| versão | 157 |
+| versão | 159 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/detectar-anomalias-financeiras/index.ts |
 | import_map |  |
