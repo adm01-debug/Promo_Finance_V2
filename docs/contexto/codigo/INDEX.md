@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5148e34b8fd5d452a6628594f4dbd74bf48af745` (2026-11-21T23:40:41-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e76f8795a9d57b76e26f76227dd6c7ca5e0ccfcf` (2026-11-21T23:49:55-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2372), SQL (1131), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2372), SQL (1134), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3995 |
+| arquivos_total | 3998 |
 | arquivos_codigo | 2491 |
 | linhas_codigo | 444338 |
 | rotas | 130 |
@@ -45,8 +45,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 992 |
 | hooks | 274 |
 | edge_functions | 106 |
-| tabelas | 316 |
-| migrations | 1059 |
+| tabelas | 317 |
+| migrations | 1062 |
 | cron_jobs | 22 |
 | testes | 486 |
 | workflows | 20 |
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-21 `e76f879` infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)
 - 2026-11-21 `5148e34` infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)
 - 2026-11-21 `77c3f5d` infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)
 - 2026-11-21 `ebf034f` docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `9cd4c84` docs: plano 100 etapas RT/RFB e avaliações técnicas
 - 2026-11-21 `9aa15fe` fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)
 - 2026-11-21 `424bfe7` fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)
-- 2026-11-21 `1f4be40` fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

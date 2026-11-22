@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1059,
+ "migrations": 1062,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -30726,6 +30726,105 @@
    ],
    "sem_rls": false,
    "nao_usada": false
+  },
+  "notas_fiscais_itens": {
+   "colunas": {
+    "c_prod": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cfop": {
+     "tipo": "character varying(4)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "n_item": {
+     "tipo": "integer",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "ncm": {
+     "tipo": "character varying(8)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "nota_fiscal_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": "notas_fiscais"
+    },
+    "q_com": {
+     "tipo": "numeric(15,4)",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "v_prod": {
+     "tipo": "numeric(15,2)",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "v_un_com": {
+     "tipo": "numeric(15,4)",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "notas_fiscais_itens_mutate",
+     "comando": "all",
+     "para": "public",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "notas_fiscais_itens_select",
+     "comando": "select",
+     "para": "public",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [],
+   "fks": [
+    "nota_fiscal_id->notas_fiscais"
+   ],
+   "criada_em": "20261122020000_cria_notas_fiscais_itens.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
   },
   "notas_fiscais_ocr": {
    "colunas": {

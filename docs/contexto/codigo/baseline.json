@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5148e34b8fd5d452a6628594f4dbd74bf48af745",
+  "commit": "e76f8795a9d57b76e26f76227dd6c7ca5e0ccfcf",
   "branch": "main",
-  "data_commit": "2026-11-21T23:40:41-03:00",
+  "data_commit": "2026-11-21T23:49:55-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e76f879",
+    "data": "2026-11-21",
+    "assunto": "infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)"
+   },
    {
     "sha": "5148e34",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "ea32d18",
     "data": "2026-11-21",
     "assunto": "fix(db): alinha DDL de catalogo tributario ao main (UNIQUE, CHECK domain, check_catalogos_tributarios_invariants) (#488)"
-   },
-   {
-    "sha": "21ecbbc",
-    "data": "2026-11-21",
-    "assunto": "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)"
    }
   ],
-  "arquivos_mudados_7d": 491,
+  "arquivos_mudados_7d": 494,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -290,18 +290,18 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
+    "arquivo": "src/components/layout/MainLayout.tsx",
     "mudancas": 6
    },
    {
-    "arquivo": "src/components/layout/MainLayout.tsx",
+    "arquivo": "src/components/nfe/ContingenciaNFe.tsx",
     "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 257
+    "commits": 258
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3995,
+  "arquivos_total": 3998,
   "arquivos_codigo": 2491,
   "linhas_codigo": 444338,
   "rotas": 130,
@@ -329,8 +329,8 @@
   "componentes": 992,
   "hooks": 274,
   "edge_functions": 106,
-  "tabelas": 316,
-  "migrations": 1059,
+  "tabelas": 317,
+  "migrations": 1062,
   "cron_jobs": 22,
   "testes": 486,
   "workflows": 20,

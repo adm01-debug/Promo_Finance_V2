@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5148e34b8fd5d452a6628594f4dbd74bf48af745",
+  "sha": "e76f8795a9d57b76e26f76227dd6c7ca5e0ccfcf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 02:41 UTC",
-  "files_total": 4034,
-  "code_files": 3623,
-  "code_lines": 515415
+  "generated_at": "2026-11-22 02:50 UTC",
+  "files_total": 4037,
+  "code_files": 3626,
+  "code_lines": 515514
  },
  "version": "1.3.2",
- "facts_hash": "20331f8882268a2d",
+ "facts_hash": "71c12cce637e8fcc",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,7 +341,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1255,
-   ".sql": 1131,
+   ".sql": 1134,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -28251,6 +28251,86 @@
     "comment": "",
     "origin": "migration"
    },
+   "notas_fiscais_itens": {
+    "columns": [
+     {
+      "name": "id",
+      "type": "uuid primary key default gen_random_uuid()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "nota_fiscal_id",
+      "type": "uuid not null references public.notas_fiscais(id) on delete cascade",
+      "fk": "notas_fiscais.id on delete cascade",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "n_item",
+      "type": "integer not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "c_prod",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "ncm",
+      "type": "character varying(8) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "cfop",
+      "type": "character varying(4) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "q_com",
+      "type": "numeric(15,4) not null default 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "v_un_com",
+      "type": "numeric(21,10) not null default 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "v_prod",
+      "type": "numeric(15,2) not null default 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     }
+    ],
+    "constraints": [
+     "constraint notas_fiscais_itens_nota_item_uk unique (nota_fiscal_id, n_item)"
+    ],
+    "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "catalogo_cclasstrib": {
     "columns": [
      {
@@ -36985,6 +37065,26 @@
     "using": "auth.uid() = user_id",
     "check": "",
     "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "notas_fiscais_itens_select",
+    "table": "notas_fiscais_itens",
+    "cmd": "SELECT",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.empresa_acessivel(nf.empresa_id) )",
+    "check": "",
+    "src": "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql"
+   },
+   {
+    "name": "notas_fiscais_itens_mutate",
+    "table": "notas_fiscais_itens",
+    "cmd": "ALL",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), array['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) and public.empresa_membro_ativo(nf.empresa_id) )",
+    "check": "exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), array['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) and public.empresa_membro_ativo(nf.empresa_id) )",
+    "src": "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql"
    },
    {
     "name": "catalogo_cclasstrib_select_authenticated",
@@ -50903,6 +51003,9 @@
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
    "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
+   "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
+   "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
+   "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql",
    "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
    "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
    "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql",
@@ -51170,6 +51273,7 @@
    "cnpja_rate_limit": "enabled",
    "aprovacao_assinaturas": "enabled",
    "user_preferences": "enabled",
+   "notas_fiscais_itens": "enabled",
    "catalogo_cclasstrib": "enabled",
    "catalogo_ncm": "enabled",
    "catalogo_nbs": "enabled",
@@ -71483,8 +71587,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1059,
-   "lines": 81599,
+   "files": 1062,
+   "lines": 81698,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -76408,6 +76512,7 @@
     "extrato_bancario",
     "logs_conciliacao_retroativa",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "alertas",
     "relatorios_agendados",
     "historico_relatorios",
@@ -76525,6 +76630,9 @@
    ],
    "solicitacoes_aprovacao": [
     "aprovacao_assinaturas"
+   ],
+   "notas_fiscais": [
+    "notas_fiscais_itens"
    ]
   },
   "tables_only_in_code": [
@@ -76574,6 +76682,7 @@
    "job",
    "job_run_details",
    "mfa_sessions",
+   "notas_fiscais_itens",
    "operacoes_icms",
    "password_reset_tokens",
    "performance_alerts",
@@ -99680,6 +99789,61 @@
     "table": "user_preferences",
     "column": "(tabela)",
     "rule": "UNIQUE(user_id, key)"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "id",
+    "rule": "PK; default gen_random_uuid()"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "nota_fiscal_id",
+    "rule": "obrigatório; FK → notas_fiscais.id on delete cascade"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "n_item",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "c_prod",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "ncm",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "cfop",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "q_com",
+    "rule": "default 0"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "v_un_com",
+    "rule": "default 0"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "v_prod",
+    "rule": "default 0"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "created_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "(tabela)",
+    "rule": "constraint notas_fiscais_itens_nota_item_uk unique (nota_fiscal_id, n_item)"
    },
    {
     "table": "catalogo_cclasstrib",
@@ -144813,6 +144977,26 @@
     "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
    },
    {
+    "name": "notas_fiscais_itens_select",
+    "table": "notas_fiscais_itens",
+    "cmd": "SELECT",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.empresa_acessivel(nf.empresa_id) )",
+    "check": "",
+    "src": "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql"
+   },
+   {
+    "name": "notas_fiscais_itens_mutate",
+    "table": "notas_fiscais_itens",
+    "cmd": "ALL",
+    "roles": "public",
+    "mode": "permissive",
+    "using": "exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), array['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) and public.empresa_membro_ativo(nf.empresa_id) )",
+    "check": "exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), array['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) and public.empresa_membro_ativo(nf.empresa_id) )",
+    "src": "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql"
+   },
+   {
     "name": "catalogo_cclasstrib_select_authenticated",
     "table": "catalogo_cclasstrib",
     "cmd": "SELECT",
@@ -159307,6 +159491,22 @@
      "authenticated: public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro', 'operacional']::app_role[]) AND empresa_membro_ativo(empresa_id)"
     ]
    },
+   "notas_fiscais_itens": {
+    "rls": "enabled",
+    "SELECT": [
+     "public: exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.empresa_acessivel(nf.empr …",
+     "public: exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), …"
+    ],
+    "INSERT": [
+     "public: exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), …"
+    ],
+    "UPDATE": [
+     "public: exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), …"
+    ],
+    "DELETE": [
+     "public: exists ( select 1 from public.notas_fiscais nf where nf.id = notas_fiscais_itens.nota_fiscal_id and public.has_any_role(auth.uid(), …"
+    ]
+   },
    "notas_fiscais_ocr": {
     "rls": "enabled",
     "SELECT": [
@@ -172453,6 +172653,9 @@
     "created_at",
     "updated_at"
    ],
+   "notas_fiscais_itens": [
+    "created_at"
+   ],
    "catalogo_cclasstrib": [
     "created_at"
    ],
@@ -174385,7 +174588,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "267/273 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "268/274 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -245791,6 +245994,18 @@
    "path": "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
    "lines": 18
   },
+  "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql": {
+   "path": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
+   "lines": 44
+  },
+  "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql": {
+   "path": "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
+   "lines": 43
+  },
+  "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql": {
+   "path": "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql",
+   "lines": 12
+  },
   "supabase/migrations/20261122022500_catalogo_cclasstrib.sql": {
    "path": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
    "lines": 34,
@@ -245921,10 +246136,21 @@
   }
  },
  "git": {
-  "sha": "5148e34b8fd5d452a6628594f4dbd74bf48af745",
+  "sha": "e76f8795a9d57b76e26f76227dd6c7ca5e0ccfcf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e76f879",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)",
+    "files": [
+     "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
+     "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
+     "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql"
+    ]
+   },
    {
     "sha": "5148e34",
     "date": "2026-11-21",
@@ -246277,22 +246503,6 @@
      "src/hooks/usePreferenciasSistema.ts",
      "src/pages/Configuracoes.tsx",
      "supabase/migrations/20261121000000_restaura_user_preferences.sql"
-    ]
-   },
-   {
-    "sha": "72a08b5",
-    "date": "2026-11-20",
-    "author": "adm01-debug",
-    "subject": "fix: quorum de aprovação (bloqueio honesto) + baixa automática + obrigações + conciliação (#5/#6a/#7/#16) (#482)",
-    "files": [
-     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
-     "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
-     "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
-     "src/hooks/__tests__/useAprovacoes.test.tsx",
-     "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
-     "src/hooks/useAprovacoes.ts",
-     "src/hooks/useConciliacaoPage.ts",
-     "src/lib/conciliacao-page-helpers.ts"
     ]
    }
   ],
