@@ -4,7 +4,7 @@
 |---|---|
 | nome | notify-saved-filter |
 | status | ACTIVE |
-| versão | 141 |
+| versão | 143 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/notify-saved-filter/index.ts |
 | import_map |  |

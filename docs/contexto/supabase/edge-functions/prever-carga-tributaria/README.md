@@ -4,7 +4,7 @@
 |---|---|
 | nome | prever-carga-tributaria |
 | status | ACTIVE |
-| versão | 143 |
+| versão | 145 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/prever-carga-tributaria/index.ts |
 | import_map |  |

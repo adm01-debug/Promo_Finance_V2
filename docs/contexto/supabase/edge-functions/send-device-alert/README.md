@@ -4,7 +4,7 @@
 |---|---|
 | nome | send-device-alert |
 | status | ACTIVE |
-| versão | 138 |
+| versão | 140 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/send-device-alert/index.ts |
 | import_map |  |
