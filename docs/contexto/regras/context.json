@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "ce2dfdba98982fcf0037ce3c60f44a4943eac28c",
+  "sha": "bb4d2374630e4a231b43229d2c9db4ee81125c44",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 00:52 UTC",
-  "files_total": 4027,
+  "generated_at": "2026-11-22 01:15 UTC",
+  "files_total": 4028,
   "code_files": 3618,
   "code_lines": 515282
  },
@@ -245223,10 +245223,20 @@
   }
  },
  "git": {
-  "sha": "ce2dfdba98982fcf0037ce3c60f44a4943eac28c",
+  "sha": "bb4d2374630e4a231b43229d2c9db4ee81125c44",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "bb4d237",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)",
+    "files": [
+     "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
+    ]
+   },
    {
     "sha": "ce2dfdb",
     "date": "2026-11-21",
@@ -245580,21 +245590,6 @@
     "files": [
      "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md"
     ]
-   },
-   {
-    "sha": "5c51f13",
-    "date": "2026-11-20",
-    "author": "adm01-debug",
-    "subject": "chore: ativar Gate #26 de drift de schema/policies no CI (#475)",
-    "files": [
-     ".github/workflows/ci.yml",
-     "scripts/ci/check-baseline-drift.sh",
-     "scripts/ci/test_scripts_shell.py",
-     "scripts/integrity/baseline/allowed-anon-writes.json",
-     "scripts/integrity/baseline/expected-policies.json",
-     "scripts/integrity/baseline/schema-counts.json",
-     "scripts/integrity/dump-baseline.sh"
-    ]
    }
   ],
   "hot_files": [
@@ -245619,8 +245614,8 @@
     3
    ],
    [
-    "scripts/integrity/baseline/schema-counts.json",
-    3
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    2
    ],
    [
     "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
