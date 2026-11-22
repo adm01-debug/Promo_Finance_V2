@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ef2218a08dbc80c423e054915ece02e61e6ea735` (2026-11-22T09:54:02-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8254da0064d5d859a549c770383d6f52823d3ec6` (2026-11-22T10:17:42-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4008 |
 | arquivos_codigo | 2494 |
-| linhas_codigo | 445110 |
+| linhas_codigo | 445122 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -462,8 +462,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (31)
-- bun.lock (30)
-- .github/workflows/ci.yml (20)
+- bun.lock (29)
+- .github/workflows/ci.yml (19)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - supabase/functions/asaas-proxy/index.ts (9)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `8254da0` fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)
 - 2026-11-22 `ef2218a` chore: encerra a feature flag rt_motor_v2 (etapa 5 RT/RFB descartada) (#521)
 - 2026-11-22 `19a3b16` feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)
 - 2026-11-22 `a570395` chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `77c3f5d` infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)
 - 2026-11-21 `ebf034f` docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)
 - 2026-11-21 `bb4d237` docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)
-- 2026-11-21 `ce2dfdb` chore: remove baseline histórica pré-correção (etapa 30)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

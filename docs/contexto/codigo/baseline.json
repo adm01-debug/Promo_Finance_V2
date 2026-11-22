@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ef2218a08dbc80c423e054915ece02e61e6ea735",
+  "commit": "8254da0064d5d859a549c770383d6f52823d3ec6",
   "branch": "main",
-  "data_commit": "2026-11-22T09:54:02-03:00",
+  "data_commit": "2026-11-22T10:17:42-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8254da0",
+    "data": "2026-11-22",
+    "assunto": "fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)"
+   },
    {
     "sha": "ef2218a",
     "data": "2026-11-22",
@@ -126,11 +131,6 @@
     "sha": "424bfe7",
     "data": "2026-11-21",
     "assunto": "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)"
-   },
-   {
-    "sha": "1f4be40",
-    "data": "2026-11-21",
-    "assunto": "fix: bloco # docs do rfb-upstream-watch em linha única (CI estado-real vermelho) (#497)"
    }
   ],
   "arquivos_mudados_7d": 506,
@@ -203,11 +203,11 @@
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 20
+    "mudancas": 19
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 267
+    "commits": 268
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 4008,
   "arquivos_codigo": 2494,
-  "linhas_codigo": 445110,
+  "linhas_codigo": 445122,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -688,7 +688,7 @@
   },
   "supabase/functions": {
    "arquivos": 237,
-   "linhas": 52072
+   "linhas": 52084
   },
   "supabase/tests": {
    "arquivos": 2,

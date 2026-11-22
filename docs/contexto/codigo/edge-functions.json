@@ -3295,7 +3295,7 @@
    "nome": "projecao-reforma",
    "entrada": "supabase/functions/projecao-reforma/index.ts",
    "arquivos": 1,
-   "linhas": 209,
+   "linhas": 221,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
