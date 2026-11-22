@@ -182,7 +182,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     reducaoAliquotaCBS: 100,
     reducaoAliquotaIBS: 100,
     creditoIntegralMantido: true,
-    observacoes: 'Alíquota zero (100% de redução) — não-cumulatividade plena mantida conforme art. 28 LC 214/2025',
+    observacoes:
+      'Alíquota zero (100% de redução) — não-cumulatividade plena mantida conforme art. 28 LC 214/2025',
     fundamentoLegal: 'Art. 125 LC 214/2025',
     origem: 'lei',
   },
@@ -204,7 +205,8 @@ export const REGIMES_ESPECIAIS: ConfiguracaoRegimeEspecial[] = [
     reducaoAliquotaCBS: 30,
     reducaoAliquotaIBS: 30,
     creditoIntegralMantido: true,
-    observacoes: 'Redução de 30% para profissões regulamentadas (advogados, médicos, engenheiros etc.)',
+    observacoes:
+      'Redução de 30% para profissões regulamentadas (advogados, médicos, engenheiros etc.)',
     fundamentoLegal: 'Art. 127 LC 214/2025',
     origem: 'lei',
   },
