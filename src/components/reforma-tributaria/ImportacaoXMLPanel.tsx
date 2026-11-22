@@ -65,6 +65,30 @@ function getBadgeIbscbs(nfe: NFeParsed) {
   );
 }
 
+/**
+ * Etapa 46: divergência entre o que a nota declarou e o catálogo oficial.
+ * É alerta, não bloqueio — a nota entra de qualquer forma, e o tooltip mostra
+ * a mensagem de cada regra para o usuário conferir com o contador.
+ */
+function getBadgeFiscal(nfe: NFeParsed) {
+  const alertas = nfe.alertasFiscais ?? [];
+  if (alertas.length === 0) {
+    return (
+      <Badge variant="outline" title="NCM/CST/cClassTrib conferem com o catálogo">
+        ok
+      </Badge>
+    );
+  }
+  return (
+    <Badge
+      variant="destructive"
+      title={alertas.map((a) => `${a.codigo}: ${a.mensagem}`).join('\n')}
+    >
+      {alertas.length} alerta{alertas.length > 1 ? 's' : ''}
+    </Badge>
+  );
+}
+
 export function ImportacaoXMLPanel({ empresaId }: Props) {
   const {
     nfesParsed,
@@ -172,6 +196,7 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
                     <TableHead className="text-right">vIBS</TableHead>
                     <TableHead className="text-right">vCBS</TableHead>
                     <TableHead>IBS/CBS</TableHead>
+                    <TableHead>Fiscal</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
@@ -198,6 +223,7 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
                         {nfe.ibscbs?.vCBS !== undefined ? formatCurrency(nfe.ibscbs.vCBS) : '-'}
                       </TableCell>
                       <TableCell>{getBadgeIbscbs(nfe)}</TableCell>
+                      <TableCell>{getBadgeFiscal(nfe)}</TableCell>
                       <TableCell>
                         <Badge
                           variant={

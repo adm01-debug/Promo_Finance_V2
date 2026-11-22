@@ -228,6 +228,7 @@ export const MODULOS: readonly Modulo[] = [
  */
 export const ADAPTERS_AUTORIZADOS: readonly string[] = [
   'src/lib/tributario/catalogos/repositorio.ts',
+  'src/lib/tributario/catalogos/cclasstrib.ts',
 ] as const;
 
 /** Prefixos de import proibidos dentro do núcleo de domínio. */

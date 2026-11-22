@@ -243,7 +243,11 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
                 score_confianca: v.score,
                 divergencias_detectadas: [
                   ...(Array.isArray(c.divergencias_detectadas) ? c.divergencias_detectadas : []),
-                  ...v.divergencias,
+                  ...v.divergencias.map((d) => ({
+                    codigo: d.codigo,
+                    campo: d.campo,
+                    mensagem: d.mensagem,
+                  })),
                 ],
               };
             }

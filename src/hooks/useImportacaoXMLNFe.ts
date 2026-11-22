@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 import { mustSucceed } from '@/lib/supabase-write';
+import { buscarReferenciasFiscais } from '@/lib/tributario/catalogos/cclasstrib';
+import { validarItensFiscais, type DivergenciaFiscal } from '@/lib/tributario/validador-ncm-cst';
 import {
   parseItemIbscbs,
   parseItemIs,
@@ -50,6 +52,11 @@ export interface NFeParsed {
   ibscbs?: NFeIbscbsTotais;
   status: 'pendente' | 'importado' | 'erro';
   mensagemErro?: string;
+  /**
+   * Divergências entre o que a nota declarou e os catálogos oficiais
+   * (etapa 46). É alerta: a nota é importada mesmo assim.
+   */
+  alertasFiscais?: DivergenciaFiscal[];
 }
 
 export interface NFeItem {
@@ -89,6 +96,8 @@ export interface ResultadoImportacao {
   notasEstimadas: number;
   /** NF-e monofásicas (destaque em `gMono`), sem crédito regular. */
   notasMonofasicas: number;
+  /** NF-e com pelo menos uma divergência contra os catálogos (etapa 46). */
+  notasComAlertaFiscal: number;
   nfesProcessadas: NFeParsed[];
 }
 
@@ -309,7 +318,16 @@ export function useImportacaoXMLNFe(empresaId: string) {
       let ibsDoXml = 0;
       let notasEstimadas = 0;
       let notasMonofasicas = 0;
+      let notasComAlertaFiscal = 0;
       const processadas = [...nfesParsed];
+
+      // Etapa 46: uma única leitura de catálogo para o lote inteiro, e só dos
+      // códigos que o lote declarou. Fazer a consulta por nota multiplicaria
+      // rede por arquivo sem ganho — as referências são as mesmas.
+      const referencias = await buscarReferenciasFiscais(
+        processadas.flatMap((n) => n.itens.map((i) => i.ibscbs?.cClassTrib ?? '')),
+        processadas.flatMap((n) => n.itens.map((i) => i.ncm))
+      );
 
       for (let i = 0; i < processadas.length; i++) {
         const nfe = processadas[i];
@@ -454,7 +472,26 @@ export function useImportacaoXMLNFe(empresaId: string) {
             notasEstimadas++;
           }
 
-          processadas[i] = { ...nfe, status: 'importado' };
+          // Etapa 46: a divergência é anexada à nota e contada no resumo, mas
+          // não interrompe a importação. Recusar a nota por catálogo
+          // desatualizado faria o contribuinte perder o crédito.
+          const validacao = validarItensFiscais(
+            nfe.itens.map((i) => ({
+              ncm: i.ncm,
+              cstIbscbs: i.ibscbs?.cst,
+              cClassTrib: i.ibscbs?.cClassTrib,
+            })),
+            referencias
+          );
+
+          processadas[i] = {
+            ...nfe,
+            status: 'importado',
+            ...(validacao.divergencias.length > 0
+              ? { alertasFiscais: validacao.divergencias }
+              : {}),
+          };
+          if (validacao.divergencias.length > 0) notasComAlertaFiscal++;
           sucesso++;
         } catch (error: unknown) {
           processadas[i] = { ...nfe, status: 'erro', mensagemErro: (error as Error).message };
@@ -480,6 +517,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
         },
         notasEstimadas,
         notasMonofasicas,
+        notasComAlertaFiscal,
         nfesProcessadas: processadas,
       };
     },
