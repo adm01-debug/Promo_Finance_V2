@@ -4,7 +4,7 @@
 |---|---|
 | nome | api-keys-manage |
 | status | ACTIVE |
-| versão | 139 |
+| versão | 144 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/api-keys-manage/index.ts |
 | import_map |  |

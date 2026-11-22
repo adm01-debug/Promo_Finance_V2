@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "00b75889555d8475ee3e955aaf434a42013781ae",
+  "commit": "856fef074d6bb3df5c95e8dcea15c1e1abceb5bf",
   "branch": "main",
-  "data_commit": "2026-11-22T11:12:21-03:00",
+  "data_commit": "2026-11-22T11:12:30-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "856fef0",
+    "data": "2026-11-22",
+    "assunto": "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)"
+   },
    {
     "sha": "00b7588",
     "data": "2026-11-22",
@@ -126,11 +131,6 @@
     "sha": "d1fc1cf",
     "data": "2026-11-21",
     "assunto": "fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)"
-   },
-   {
-    "sha": "ab226ac",
-    "data": "2026-11-21",
-    "assunto": "feat: selo \"simulado\" em CBS/IBS na UI (etapa 18 RT)"
    }
   ],
   "arquivos_mudados_7d": 506,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 271
+    "commits": 272
    },
    {
     "autor": "dependabot[bot]",

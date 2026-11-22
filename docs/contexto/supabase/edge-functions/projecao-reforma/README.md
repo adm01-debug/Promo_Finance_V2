@@ -4,7 +4,7 @@
 |---|---|
 | nome | projecao-reforma |
 | status | ACTIVE |
-| versão | 153 |
+| versão | 158 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/projecao-reforma/index.ts |
 | import_map |  |

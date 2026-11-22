@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `00b75889555d8475ee3e955aaf434a42013781ae` (2026-11-22T11:12:21-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `856fef074d6bb3df5c95e8dcea15c1e1abceb5bf` (2026-11-22T11:12:30-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `856fef0` fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)
 - 2026-11-22 `00b7588` fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)
 - 2026-11-22 `f2e0d56` chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)
 - 2026-11-22 `5faafbe` chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-22 `d32ac55` infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)
 - 2026-11-21 `96b4a9b` infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)
 - 2026-11-21 `e76f879` infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)
-- 2026-11-21 `5148e34` infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

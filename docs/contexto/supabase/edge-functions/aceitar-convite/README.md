@@ -4,7 +4,7 @@
 |---|---|
 | nome | aceitar-convite |
 | status | ACTIVE |
-| versão | 151 |
+| versão | 156 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/aceitar-convite/index.ts |
 | import_map |  |

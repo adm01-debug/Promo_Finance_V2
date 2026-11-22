@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "00b75889555d8475ee3e955aaf434a42013781ae",
+  "sha": "856fef074d6bb3df5c95e8dcea15c1e1abceb5bf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 14:15 UTC",
+  "generated_at": "2026-11-22 14:20 UTC",
   "files_total": 4048,
   "code_files": 3636,
   "code_lines": 516376
@@ -246738,10 +246738,19 @@
   }
  },
  "git": {
-  "sha": "00b75889555d8475ee3e955aaf434a42013781ae",
+  "sha": "856fef074d6bb3df5c95e8dcea15c1e1abceb5bf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "856fef0",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)",
+    "files": [
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
+    ]
+   },
    {
     "sha": "00b7588",
     "date": "2026-11-22",
@@ -247072,38 +247081,19 @@
      ".github/workflows/rfb-upstream-watch.yml",
      "docs/ci/README.md"
     ]
-   },
-   {
-    "sha": "045482e",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "feat: etapas 13 e 15 — testes regras/tipos e regimes especiais saúde/educação/cultura",
-    "files": [
-     "src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts",
-     "src/types/reforma-tributaria/enums.ts",
-     "src/types/reforma-tributaria/regimes.ts"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    4
+   ],
    [
     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     4
    ],
    [
     "src/integrations/supabase/types.ts",
-    3
-   ],
-   [
-    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
-    3
-   ],
-   [
-    "src/types/reforma-tributaria/enums.ts",
-    3
-   ],
-   [
-    "src/types/reforma-tributaria/regimes.ts",
     3
    ],
    [
@@ -247136,6 +247126,14 @@
    ],
    [
     "scripts/integrity/baseline/schema-counts.json",
+    2
+   ],
+   [
+    "src/types/reforma-tributaria/enums.ts",
+    2
+   ],
+   [
+    "src/types/reforma-tributaria/regimes.ts",
     2
    ],
    [

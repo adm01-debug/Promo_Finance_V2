@@ -4,7 +4,7 @@
 |---|---|
 | nome | sso-logout |
 | status | ACTIVE |
-| versão | 145 |
+| versão | 150 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/sso-logout/index.ts |
 | import_map |  |

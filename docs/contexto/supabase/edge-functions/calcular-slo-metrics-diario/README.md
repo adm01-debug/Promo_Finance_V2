@@ -4,7 +4,7 @@
 |---|---|
 | nome | calcular-slo-metrics-diario |
 | status | ACTIVE |
-| versão | 149 |
+| versão | 154 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/calcular-slo-metrics-diario/index.ts |
 | import_map |  |

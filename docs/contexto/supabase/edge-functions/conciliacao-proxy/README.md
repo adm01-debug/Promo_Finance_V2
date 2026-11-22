@@ -4,7 +4,7 @@
 |---|---|
 | nome | conciliacao-proxy |
 | status | ACTIVE |
-| versão | 152 |
+| versão | 157 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/conciliacao-proxy/index.ts |
 | import_map |  |

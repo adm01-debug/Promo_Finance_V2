@@ -4,7 +4,7 @@
 |---|---|
 | nome | convidar-usuario |
 | status | ACTIVE |
-| versão | 140 |
+| versão | 145 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/convidar-usuario/index.ts |
 | import_map |  |

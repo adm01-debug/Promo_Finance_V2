@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)",
    "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)",
    "chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)",
    "chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório",
-   "fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)",
-   "chore: encerra a feature flag rt_motor_v2 (etapa 5 RT/RFB descartada) (#521)"
+   "fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
