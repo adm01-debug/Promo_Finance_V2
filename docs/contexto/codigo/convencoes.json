@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: regimes especiais LC 214/2025 — etapas 15-16",
    "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS",
    "infra: grupo IS por item (etapa 34 RT/RFB) (#513)",
    "infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)",
-   "infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)",
-   "infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)"
+   "infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

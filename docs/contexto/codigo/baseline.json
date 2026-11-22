@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2463d9754a74b7c084b648a126ec06555260cd78",
+  "commit": "81d3613ea203e64348ee164df0a73cbc9ba612c4",
   "branch": "main",
-  "data_commit": "2026-11-22T00:24:05-03:00",
+  "data_commit": "2026-11-22T00:51:05-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "81d3613",
+    "data": "2026-11-22",
+    "assunto": "feat: regimes especiais LC 214/2025 — etapas 15-16"
+   },
    {
     "sha": "2463d97",
     "data": "2026-11-22",
@@ -126,11 +131,6 @@
     "sha": "f22be43",
     "data": "2026-11-21",
     "assunto": "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)"
-   },
-   {
-    "sha": "794bb45",
-    "data": "2026-11-21",
-    "assunto": "feat(reforma-tributaria): fonte única do cronograma de alíquotas IBS/CBS (#492)"
    }
   ],
   "arquivos_mudados_7d": 497,
@@ -246,10 +246,6 @@
     "mudancas": 7
    },
    {
-    "arquivo": "src/App.tsx",
-    "mudancas": 7
-   },
-   {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 7
    },
@@ -270,19 +266,7 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/components/layout/MainLayout.tsx",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/components/nfe/ContingenciaNFe.tsx",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/reforma-tributaria/regras.ts",
+    "arquivo": "src/App.tsx",
     "mudancas": 6
    },
    {
@@ -290,18 +274,34 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
     "mudancas": 6
    },
    {
-    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 6
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "deno.lock",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 262
+    "commits": 263
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 4001,
   "arquivos_codigo": 2491,
-  "linhas_codigo": 444280,
+  "linhas_codigo": 444349,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -684,7 +684,7 @@
   },
   "src/types": {
    "arquivos": 17,
-   "linhas": 1027
+   "linhas": 1096
   },
   "supabase/functions": {
    "arquivos": 237,

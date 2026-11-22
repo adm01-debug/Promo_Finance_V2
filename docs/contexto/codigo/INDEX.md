@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2463d9754a74b7c084b648a126ec06555260cd78` (2026-11-22T00:24:05-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `81d3613ea203e64348ee164df0a73cbc9ba612c4` (2026-11-22T00:51:05-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4001 |
 | arquivos_codigo | 2491 |
-| linhas_codigo | 444280 |
+| linhas_codigo | 444349 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -473,9 +473,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - scripts/automation.config.json (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - scripts/security/test-canonical-db-gates.mjs (7)
-- src/App.tsx (7)
 - supabase/functions/n8n-callback/index.ts (7)
 - .github/workflows/schema-drift.yml (6)
+- .github/workflows/supabase-linter.yml (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
 - 2026-11-22 `2463d97` fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS
 - 2026-11-22 `7db0fc4` infra: grupo IS por item (etapa 34 RT/RFB) (#513)
 - 2026-11-22 `d32ac55` infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `2a68642` fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação
 - 2026-11-21 `1a51242` feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)
 - 2026-11-21 `d11416f` fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)
-- 2026-11-21 `d1fc1cf` fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

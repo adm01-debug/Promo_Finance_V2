@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "2463d9754a74b7c084b648a126ec06555260cd78",
+  "sha": "81d3613ea203e64348ee164df0a73cbc9ba612c4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 03:24 UTC",
+  "generated_at": "2026-11-22 03:51 UTC",
   "files_total": 4040,
   "code_files": 3629,
-  "code_lines": 515501
+  "code_lines": 515570
  },
  "version": "1.3.2",
- "facts_hash": "23e7f438cd890a49",
+ "facts_hash": "044e32ea50e6c9c7",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -71430,7 +71430,7 @@
   {
    "module": "src/types",
    "files": 17,
-   "lines": 1044,
+   "lines": 1113,
    "tables": [],
    "exports": [
     "financial.ts: StatusPagamento, TipoTransacao, TipoCobranca, PrioridadeAlerta, EtapaReguaCobranca, CNPJ",
@@ -120876,12 +120876,28 @@
     "line": "<TableHead>INSS 11%</TableHead>"
    },
    {
+    "file": "src/types/reforma-tributaria/enums.ts",
+    "line": "| 'alimentos' // Art. 128 LC 214/2025 — redução de 60%"
+   },
+   {
+    "file": "src/types/reforma-tributaria/enums.ts",
+    "line": "| 'profissoes_liberais' // Art. 127 LC 214/2025 — redução de 30%"
+   },
+   {
     "file": "src/types/reforma-tributaria/regimes.ts",
     "line": "* @param reducoes - percentuais de redução a aplicar (ex.: [60, 30] = 60% sobre base, 30% sobre restante)"
    },
    {
     "file": "src/types/reforma-tributaria/regimes.ts",
     "line": "* aplicarOrdemBeneficios([60, 30]) // => 72 (1 - 0.4 * 0.7) * 100"
+   },
+   {
+    "file": "src/types/reforma-tributaria/regimes.ts",
+    "line": "// Art. 127 LC 214/2025: Profissões regulamentadas — redução de 30%"
+   },
+   {
+    "file": "src/types/reforma-tributaria/regimes.ts",
+    "line": "// Art. 128 LC 214/2025: Alimentos em geral — redução de 60%"
    },
    {
     "file": "src/types/reforma-tributaria/transicao.ts",
@@ -229079,7 +229095,7 @@
   },
   "src/types/reforma-tributaria/enums.ts": {
    "path": "src/types/reforma-tributaria/enums.ts",
-   "lines": 60,
+   "lines": 63,
    "exports": [
     "type RegimeTributario",
     "type TipoTributoNovo",
@@ -229124,7 +229140,11 @@
      "values": "zona_franca_manaus | combustiveis | servicos_financeiros | imobiliario | locacao_imovel"
     }
    ],
-   "doc": "Enums e types unions da reforma tributária."
+   "doc": "Enums e types unions da reforma tributária.",
+   "percents": [
+    "| 'alimentos' // Art. 128 LC 214/2025 — redução de 60%",
+    "| 'profissoes_liberais' // Art. 127 LC 214/2025 — redução de 30%"
+   ]
   },
   "src/types/reforma-tributaria/imposto-seletivo.ts": {
    "path": "src/types/reforma-tributaria/imposto-seletivo.ts",
@@ -229255,7 +229275,7 @@
   },
   "src/types/reforma-tributaria/regimes.ts": {
    "path": "src/types/reforma-tributaria/regimes.ts",
-   "lines": 148,
+   "lines": 214,
    "exports": [
     "interface ConfiguracaoRegimeEspecial",
     "function aplicarOrdemBeneficios",
@@ -229270,7 +229290,9 @@
    ],
    "percents": [
     "* @param reducoes - percentuais de redução a aplicar (ex.: [60, 30] = 60% sobre base, 30% sobre restante)",
-    "* aplicarOrdemBeneficios([60, 30]) // => 72 (1 - 0.4 * 0.7) * 100"
+    "* aplicarOrdemBeneficios([60, 30]) // => 72 (1 - 0.4 * 0.7) * 100",
+    "// Art. 127 LC 214/2025: Profissões regulamentadas — redução de 30%",
+    "// Art. 128 LC 214/2025: Alimentos em geral — redução de 60%"
    ]
   },
   "src/types/reforma-tributaria/simulacao.ts": {
@@ -246339,10 +246361,20 @@
   }
  },
  "git": {
-  "sha": "2463d9754a74b7c084b648a126ec06555260cd78",
+  "sha": "81d3613ea203e64348ee164df0a73cbc9ba612c4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "81d3613",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "feat: regimes especiais LC 214/2025 — etapas 15-16",
+    "files": [
+     "src/types/reforma-tributaria/enums.ts",
+     "src/types/reforma-tributaria/regimes.ts"
+    ]
+   },
    {
     "sha": "2463d97",
     "date": "2026-11-22",
@@ -246693,16 +246725,6 @@
      "scripts/integrity/baseline/schema-counts.json",
      "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql"
     ]
-   },
-   {
-    "sha": "21ecbbc",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "chore(db): reconciliar ledger da migration SLO 20261120130000 (#487)",
-    "files": [
-     "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql",
-     "supabase/migrations/20261120130000_ledger_reconciliado.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -246717,6 +246739,14 @@
    [
     "src/lib/tributario/calculadora/reforma-tributaria.ts",
     4
+   ],
+   [
+    "src/types/reforma-tributaria/enums.ts",
+    3
+   ],
+   [
+    "src/types/reforma-tributaria/regimes.ts",
+    3
    ],
    [
     "src/lib/reforma-tributaria/calcular-tributos.ts",
@@ -246752,14 +246782,6 @@
    ],
    [
     "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    2
-   ],
-   [
-    "src/types/reforma-tributaria/enums.ts",
-    2
-   ],
-   [
-    "src/types/reforma-tributaria/regimes.ts",
     2
    ],
    [
