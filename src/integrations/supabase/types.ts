@@ -1309,6 +1309,35 @@ export type Database = {
           },
         ];
       };
+      aprovacao_assinaturas: {
+        Row: {
+          assinado_em: string;
+          id: string;
+          solicitacao_id: string;
+          user_id: string;
+        };
+        Insert: {
+          assinado_em?: string;
+          id?: string;
+          solicitacao_id: string;
+          user_id: string;
+        };
+        Update: {
+          assinado_em?: string;
+          id?: string;
+          solicitacao_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "aprovacao_assinaturas_solicitacao_id_fkey";
+            columns: ["solicitacao_id"];
+            isOneToOne: false;
+            referencedRelation: "solicitacoes_aprovacao";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       aprovacao_comentarios: {
         Row: {
           comentario: string | null;
@@ -10864,7 +10893,7 @@ export type Database = {
           icms_valor: number | null;
           id: string;
           is_aliquota: number | null;
-          is_aliquota_customizada: number | null;
+          is_aliquota_customizada: number;
           is_categoria: string | null;
           is_valor: number | null;
           isento: boolean | null;
@@ -10920,7 +10949,7 @@ export type Database = {
           icms_valor?: number | null;
           id?: string;
           is_aliquota?: number | null;
-          is_aliquota_customizada?: number | null;
+          is_aliquota_customizada?: number;
           is_categoria?: string | null;
           is_valor?: number | null;
           isento?: boolean | null;
@@ -10976,7 +11005,7 @@ export type Database = {
           icms_valor?: number | null;
           id?: string;
           is_aliquota?: number | null;
-          is_aliquota_customizada?: number | null;
+          is_aliquota_customizada?: number;
           is_categoria?: string | null;
           is_valor?: number | null;
           isento?: boolean | null;
@@ -16896,6 +16925,33 @@ export type Database = {
           last_used_at?: string | null;
           public_key?: string;
           transports?: string[] | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_preferences: {
+        Row: {
+          created_at: string;
+          id: string;
+          key: string;
+          payload: Json;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          key: string;
+          payload?: Json;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          key?: string;
+          payload?: Json;
+          updated_at?: string;
           user_id?: string;
         };
         Relationships: [];
