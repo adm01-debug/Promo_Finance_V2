@@ -1,3 +1,4 @@
+import { arredondar } from './arredondamento';
 import { CONFIGURACOES_IS, REGIMES_ESPECIAIS } from '@/types/reforma-tributaria';
 import {
   aplicarRegimeEspecial,
@@ -68,8 +69,9 @@ export function calcularTributosReforma(
     detalhamento.push(`Alíquota IBS após redução: ${aliquotaIBS.toFixed(2)}%`);
   }
 
-  const valorCBS = valorBase * (aliquotaCBS / 100);
-  const valorIBS = valorBase * (aliquotaIBS / 100);
+  // Etapa 25: arredondar conforme ABNT NBR 5891 (banker's rounding) — NT 2025.002
+  const valorCBS = arredondar(valorBase * (aliquotaCBS / 100));
+  const valorIBS = arredondar(valorBase * (aliquotaIBS / 100));
   const { ibsUf, ibsMun } = aliquotasTransicao;
   const fracaoUf = ibsUf + ibsMun > 0 ? ibsUf / (ibsUf + ibsMun) : 0.5;
   const aliquotaIBSEstadual = aliquotaIBS * fracaoUf;
@@ -85,10 +87,11 @@ export function calcularTributosReforma(
 
   const totalTributosNovos = valorCBS + valorIBS + valorIS;
 
-  const aliquotaICMSBase = 18;
-  const aliquotaISSBase = 5;
-  const aliquotaPISBase = 1.65;
-  const aliquotaCOFINSBase = 7.6;
+  // Etapa 22: alíquotas dos tributos antigos parametrizáveis por operação (DadosOperacao)
+  const aliquotaICMSBase = dados.aliquotaICMS ?? 18;
+  const aliquotaISSBase = dados.aliquotaISS ?? 5;
+  const aliquotaPISBase = dados.aliquotaPIS ?? 1.65;
+  const aliquotaCOFINSBase = dados.aliquotaCOFINS ?? 7.6;
 
   const icmsResidual =
     dados.tipoOperacao === 'venda'
