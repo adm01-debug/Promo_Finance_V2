@@ -160,7 +160,8 @@ Deno.serve(
         const iss = baseServicos * (issAtual / 100) * (ano.issResidual / 100);
         // art. 343/348 LC 214/2025: 2026 é ano-teste — CBS/IBS são compensáveis/dispensados.
         // A carga líquida de 2026 equivale ao regime antigo: somar CBS+IBS geraria pico artificial.
-        const total = ano.ano === 2026 ? pisCofins + icms + iss : cbs + ibs + pisCofins + icms + iss;
+        const total =
+          ano.ano === 2026 ? pisCofins + icms + iss : cbs + ibs + pisCofins + icms + iss;
         const carga = (total / faturamentoAnual) * 100;
 
         return {
