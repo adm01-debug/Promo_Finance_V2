@@ -9,6 +9,14 @@ import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 import { toISOLocal } from '@/lib/formatters';
 import { mustSucceed } from '@/lib/supabase-write';
+import {
+  parseItemIbscbs,
+  parseItemIs,
+  parseIbscbsTotais,
+  type NFeIbscbsGrupo,
+  type NFeIsGrupo,
+  type NFeIbscbsTotais,
+} from '@/lib/nfe/parse-ibscbs';
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -30,6 +38,8 @@ export interface NFeParsed {
   cfop: string;
   naturezaOperacao: string;
   itens: NFeItem[];
+  /** Grupo IBS/CBS/IS por item (etapa 41): presente quando o XML traz o grupo. */
+  ibscbs?: NFeIbscbsTotais;
   status: 'pendente' | 'importado' | 'erro';
   mensagemErro?: string;
 }
@@ -46,6 +56,10 @@ export interface NFeItem {
   valorIPI?: number;
   valorPIS?: number;
   valorCOFINS?: number;
+  /** Grupo IBS/CBS do item (etapa 41). */
+  ibscbs?: NFeIbscbsGrupo;
+  /** Grupo IS do item (etapa 41). */
+  is?: NFeIsGrupo;
 }
 
 export interface ResultadoImportacao {
@@ -100,18 +114,27 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const valorCOFINS = parseFloat(total?.querySelector('vCOFINS')?.textContent || '0');
 
       const itensXML = doc.querySelectorAll('det');
-      const itens: NFeItem[] = Array.from(itensXML).map((item) => ({
-        codigo: item.querySelector('prod cProd')?.textContent || '',
-        descricao: item.querySelector('prod xProd')?.textContent || '',
-        ncm: item.querySelector('prod NCM')?.textContent || '',
-        cfop: item.querySelector('prod CFOP')?.textContent || '',
-        quantidade: parseFloat(item.querySelector('prod qCom')?.textContent || '0'),
-        valorUnitario: parseFloat(item.querySelector('prod vUnCom')?.textContent || '0'),
-        valorTotal: parseFloat(item.querySelector('prod vProd')?.textContent || '0'),
-        valorICMS: parseFloat(item.querySelector('imposto ICMS vICMS')?.textContent || '0'),
-        valorPIS: parseFloat(item.querySelector('imposto PIS vPIS')?.textContent || '0'),
-        valorCOFINS: parseFloat(item.querySelector('imposto COFINS vCOFINS')?.textContent || '0'),
-      }));
+      const itens: NFeItem[] = Array.from(itensXML).map((item) => {
+        const ibscbs = parseItemIbscbs(item);
+        const is = parseItemIs(item);
+        const nfeItem: NFeItem = {
+          codigo: item.querySelector('prod cProd')?.textContent || '',
+          descricao: item.querySelector('prod xProd')?.textContent || '',
+          ncm: item.querySelector('prod NCM')?.textContent || '',
+          cfop: item.querySelector('prod CFOP')?.textContent || '',
+          quantidade: parseFloat(item.querySelector('prod qCom')?.textContent || '0'),
+          valorUnitario: parseFloat(item.querySelector('prod vUnCom')?.textContent || '0'),
+          valorTotal: parseFloat(item.querySelector('prod vProd')?.textContent || '0'),
+          valorICMS: parseFloat(item.querySelector('imposto ICMS vICMS')?.textContent || '0'),
+          valorPIS: parseFloat(item.querySelector('imposto PIS vPIS')?.textContent || '0'),
+          valorCOFINS: parseFloat(item.querySelector('imposto COFINS vCOFINS')?.textContent || '0'),
+        };
+        if (ibscbs) nfeItem.ibscbs = ibscbs;
+        if (is) nfeItem.is = is;
+        return nfeItem;
+      });
+
+      const ibscbsTotais = infNFe ? parseIbscbsTotais(infNFe) : undefined;
 
       const cfop = itens[0]?.cfop || '';
       const naturezaOperacao = ide?.querySelector('natOp')?.textContent || '';
@@ -134,6 +157,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
         cfop,
         naturezaOperacao,
         itens,
+        ibscbs: ibscbsTotais,
         status: 'pendente',
       };
     } catch (error: unknown) {
