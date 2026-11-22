@@ -302,7 +302,7 @@
         "is_default": true,
         "name": "main",
         "persistent": false,
-        "status": "FUNCTIONS_DEPLOYED"
+        "status": "MIGRATIONS_FAILED"
       }
     ],
     "custom_hostname": null,
@@ -70430,7 +70430,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 60,
+          "code_total_files": 62,
           "cron": [],
           "db": [
             "public.certificado_get_password",
@@ -70537,9 +70537,13 @@
             {
               "file": "supabase/migrations/20261114083000_rls_policies_alerts_risk_rules.sql",
               "hits": 15
+            },
+            {
+              "file": "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
+              "hits": 2
             }
           ],
-          "code_total_files": 15,
+          "code_total_files": 16,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -73514,7 +73518,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 39,
+          "code_total_files": 40,
           "cron": [],
           "db": [],
           "triggers": [],

@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-22 03:18 UTC
+
+- **functions** alterado (3): `public.empresa_acessivel(_empresa_id uuid)`, `public.empresa_membro_ativo(_empresa_id uuid)`, `public.has_any_role(_user_id uuid, _roles app_role[])`
+
 ## 2026-11-22 02:21 UTC
 
 - **colunas** adicionado (69): `public.catalogo_aliquota_referencia.aliquota`, `public.catalogo_aliquota_referencia.ano`, `public.catalogo_aliquota_referencia.carregado_em`, `public.catalogo_aliquota_referencia.fonte`, `public.catalogo_aliquota_referencia.id`, `public.catalogo_aliquota_referencia.municipio_ibge`, `public.catalogo_aliquota_referencia.tributo`, `public.catalogo_aliquota_referencia.uf`, `public.catalogo_cclasstrib.cclasstrib`, `public.catalogo_cclasstrib.created_at`, `public.catalogo_cclasstrib.cst`, `public.catalogo_cclasstrib.descricao`, `public.catalogo_cclasstrib.exige_gibscbs`, `public.catalogo_cclasstrib.fim_vigencia`, `public.catalogo_cclasstrib.ind_dir`, `public.catalogo_cclasstrib.inicio_vigencia`, `public.catalogo_cclasstrib.p_red_cbs`, `public.catalogo_cclasstrib.p_red_ibs_mun`, `public.catalogo_cclasstrib.p_red_ibs_uf`, `public.catalogo_cclasstrib.versao_it`, `public.catalogo_nbs.carregado_em`, `public.catalogo_nbs.descricao`, `public.catalogo_nbs.fim_vigencia`, `public.catalogo_nbs.fonte`, `public.catalogo_nbs.inicio_vigencia`, `public.catalogo_nbs.nbs`, `public.catalogo_ncm.carregado_em`, `public.catalogo_ncm.descricao`, `public.catalogo_ncm.fim_vigencia`, `public.catalogo_ncm.fonte`, `public.catalogo_ncm.inicio_vigencia`, `public.catalogo_ncm.ncm`, `public.creditos_tributarios.ano_fato_gerador`, `public.creditos_tributarios.efeito_tributario`, `public.creditos_tributarios.origem`, `public.notas_fiscais.v_bc_ibscbs`, `public.notas_fiscais.v_cbs`, `public.notas_fiscais.v_ibs`, `public.notas_fiscais.v_ibs_mun`, `public.notas_fiscais.v_ibs_uf` … (+29)
