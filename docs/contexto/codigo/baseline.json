@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059",
+  "commit": "77c3f5d569a024c836c59765b753f02926deb751",
   "branch": "main",
-  "data_commit": "2026-11-21T22:53:02-03:00",
+  "data_commit": "2026-11-21T23:31:26-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "77c3f5d",
+    "data": "2026-11-21",
+    "assunto": "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)"
+   },
    {
     "sha": "ebf034f",
     "data": "2026-11-21",
@@ -126,14 +131,9 @@
     "sha": "b28b64b",
     "data": "2026-11-21",
     "assunto": "fix(db): reconcilia public.validar_catalogos_tributarios() ao contrato detalhado do main (#486)"
-   },
-   {
-    "sha": "c3e421c",
-    "data": "2026-11-21",
-    "assunto": "chore(docs): revalida prod-readiness no head 5c51f133 (20/11) (#478)"
    }
   ],
-  "arquivos_mudados_7d": 485,
+  "arquivos_mudados_7d": 488,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -210,11 +210,11 @@
     "mudancas": 22
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 13
+    "arquivo": "env.manifest.json",
+    "mudancas": 12
    },
    {
-    "arquivo": "env.manifest.json",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 12
    },
    {
@@ -224,18 +224,6 @@
    {
     "arquivo": "RELATORIO_CI.md",
     "mudancas": 11
-   },
-   {
-    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
-    "mudancas": 9
    },
    {
     "arquivo": ".github/workflows/prod-migrate.yml",
@@ -254,11 +242,23 @@
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 8
    },
    {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 7
    },
    {
@@ -270,15 +270,11 @@
     "mudancas": 7
    },
    {
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "mudancas": 7
+   },
+   {
     "arquivo": "supabase/functions/contabilizar-evento/index.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "mudancas": 7
    },
    {
@@ -296,12 +292,16 @@
    {
     "arquivo": "scripts/migrate-functions.sh",
     "mudancas": 6
+   },
+   {
+    "arquivo": "src/components/contas-pagar/ContaPagarForm.tsx",
+    "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 255
+    "commits": 256
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3990,
+  "arquivos_total": 3992,
   "arquivos_codigo": 2491,
-  "linhas_codigo": 444330,
+  "linhas_codigo": 444338,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -329,8 +329,8 @@
   "componentes": 992,
   "hooks": 274,
   "edge_functions": 106,
-  "tabelas": 312,
-  "migrations": 1054,
+  "tabelas": 313,
+  "migrations": 1056,
   "cron_jobs": 22,
   "testes": 486,
   "workflows": 20,
@@ -588,7 +588,7 @@
   },
   "scripts/security": {
    "arquivos": 13,
-   "linhas": 4502
+   "linhas": 4510
   },
   "scripts/simular-observabilidade-digest.ts": {
    "arquivos": 1,
@@ -786,7 +786,7 @@
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-   "linhas": 697
+   "linhas": 705
   },
   {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",

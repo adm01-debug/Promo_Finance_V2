@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059",
+  "sha": "77c3f5d569a024c836c59765b753f02926deb751",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 02:20 UTC",
-  "files_total": 4029,
-  "code_files": 3618,
-  "code_lines": 515282
+  "generated_at": "2026-11-22 02:32 UTC",
+  "files_total": 4031,
+  "code_files": 3620,
+  "code_lines": 515331
  },
  "version": "1.3.2",
- "facts_hash": "aa54db50ea90269f",
+ "facts_hash": "e2c22a40cc6a7c3d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,7 +341,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1255,
-   ".sql": 1126,
+   ".sql": 1128,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -28251,6 +28251,105 @@
     "comment": "",
     "origin": "migration"
    },
+   "catalogo_cclasstrib": {
+    "columns": [
+     {
+      "name": "cclasstrib",
+      "type": "character(6) primary key",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "cst",
+      "type": "character(3) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "descricao",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "p_red_cbs",
+      "type": "numeric(5,4) not null default 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "p_red_ibs_uf",
+      "type": "numeric(5,4) not null default 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "p_red_ibs_mun",
+      "type": "numeric(5,4) not null default 0",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "exige_gibscbs",
+      "type": "boolean not null default false",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "ind_dir",
+      "type": "smallint",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "inicio_vigencia",
+      "type": "date not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "fim_vigencia",
+      "type": "date",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "versao_it",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+     },
+     {
+      "name": "primary",
+      "type": "key (cclasstrib, inicio_vigencia)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql"
+     }
+    ],
+    "constraints": [],
+    "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "frontend_error_logs_2026_01": {
     "columns": [
      {
@@ -36708,6 +36807,26 @@
     "using": "auth.uid() = user_id",
     "check": "",
     "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "catalogo_cclasstrib_select_authenticated",
+    "table": "catalogo_cclasstrib",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+   },
+   {
+    "name": "catalogo_cclasstrib_service_role_all",
+    "table": "catalogo_cclasstrib",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
    }
   ],
   "triggers": [
@@ -50522,6 +50641,8 @@
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
    "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
+   "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
+   "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -50783,7 +50904,8 @@
    "estrategias_elisao_catalogo": "enabled",
    "cnpja_rate_limit": "enabled",
    "aprovacao_assinaturas": "enabled",
-   "user_preferences": "enabled"
+   "user_preferences": "enabled",
+   "catalogo_cclasstrib": "enabled"
   },
   "grants": [
    {
@@ -69366,7 +69488,7 @@
   {
    "module": "scripts",
    "files": 152,
-   "lines": 50371,
+   "lines": 50379,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -71093,8 +71215,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1054,
-   "lines": 81474,
+   "files": 1056,
+   "lines": 81515,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -76151,6 +76273,7 @@
    "bitrix24_stage_mappings",
    "bitrix24_tokens",
    "bloat_snapshots",
+   "catalogo_cclasstrib",
    "catalogos_fiscais_cargas",
    "catalogos_tributarios_health_history",
    "cnpja_rate_limit",
@@ -99286,6 +99409,56 @@
     "table": "user_preferences",
     "column": "(tabela)",
     "rule": "UNIQUE(user_id, key)"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "cclasstrib",
+    "rule": "PK"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "cst",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "descricao",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "p_red_cbs",
+    "rule": "default 0"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "p_red_ibs_uf",
+    "rule": "default 0"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "p_red_ibs_mun",
+    "rule": "default 0"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "exige_gibscbs",
+    "rule": "default false"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "inicio_vigencia",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "versao_it",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_cclasstrib",
+    "column": "created_at",
+    "rule": "default now()"
    },
    {
     "table": "frontend_error_logs_2026_01",
@@ -144287,6 +144460,26 @@
     "using": "auth.uid() = user_id",
     "check": "",
     "src": "supabase/migrations/20261121000000_restaura_user_preferences.sql"
+   },
+   {
+    "name": "catalogo_cclasstrib_select_authenticated",
+    "table": "catalogo_cclasstrib",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
+   },
+   {
+    "name": "catalogo_cclasstrib_service_role_all",
+    "table": "catalogo_cclasstrib",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql"
    }
   ],
   "db_triggers": [
@@ -157011,6 +157204,22 @@
      "authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role) OR (company_id IN ( SELECT ue.empresa_id …"
     ]
    },
+   "catalogo_cclasstrib": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: true",
+     "service_role: true"
+    ],
+    "INSERT": [
+     "service_role: true"
+    ],
+    "UPDATE": [
+     "service_role: true"
+    ],
+    "DELETE": [
+     "service_role: true"
+    ]
+   },
    "catalogos_fiscais_cargas": {
     "rls": "enabled",
     "SELECT": [
@@ -160786,6 +160995,7 @@
    "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql",
    "supabase/migrations/20261121093000_reconciliar_validar_catalogos_tributarios.sql",
    "supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql",
+   "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -171783,6 +171993,9 @@
     "created_at",
     "updated_at"
    ],
+   "catalogo_cclasstrib": [
+    "created_at"
+   ],
    "frontend_error_logs_2026_01": [
     "created_at"
    ],
@@ -173709,7 +173922,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "263/269 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "264/270 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -178421,7 +178634,7 @@
   },
   "scripts/security/test-canonical-db-gates.mjs": {
    "path": "scripts/security/test-canonical-db-gates.mjs",
-   "lines": 698,
+   "lines": 706,
    "exports": [
     "const EXPECTED_PROJECT_REF",
     "const REQUIRED_MIGRATIONS",
@@ -245115,6 +245328,15 @@
    "path": "supabase/migrations/20261121120000_adiciona_is_aliquota_customizada.sql",
    "lines": 18
   },
+  "supabase/migrations/20261122022500_catalogo_cclasstrib.sql": {
+   "path": "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
+   "lines": 34,
+   "uses_service_role": true
+  },
+  "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql": {
+   "path": "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql",
+   "lines": 7
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -245223,10 +245445,23 @@
   }
  },
  "git": {
-  "sha": "ebf034ffcf8d68ccb025b5fad5cb2e4e6440c059",
+  "sha": "77c3f5d569a024c836c59765b753f02926deb751",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "77c3f5d",
+    "date": "2026-11-21",
+    "author": "adm01-debug",
+    "subject": "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)",
+    "files": [
+     "scripts/integrity/baseline/expected-policies.json",
+     "scripts/integrity/baseline/schema-counts.json",
+     "scripts/security/test-canonical-db-gates.mjs",
+     "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
+     "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql"
+    ]
+   },
    {
     "sha": "ebf034f",
     "date": "2026-11-21",
@@ -245581,15 +245816,6 @@
     "files": [
      "docs/receitafederal/PLANO_INTEGRACAO_RECEITAFEDERAL_100_ETAPAS.md"
     ]
-   },
-   {
-    "sha": "574c46c",
-    "date": "2026-11-20",
-    "author": "adm01-debug",
-    "subject": "docs: plano 100 etapas p/ incorporar RTC da ReceitaFederal ao módulo tributário (#481)",
-    "files": [
-     "docs/PLANO_RTC_RECEITAFEDERAL_100_ETAPAS.md"
-    ]
    }
   ],
   "hot_files": [
@@ -245602,6 +245828,10 @@
     4
    ],
    [
+    "scripts/integrity/baseline/schema-counts.json",
+    3
+   ],
+   [
     "src/components/reforma-tributaria/ResultadoTributos.tsx",
     3
    ],
@@ -245612,6 +245842,10 @@
    [
     "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
     3
+   ],
+   [
+    "scripts/integrity/baseline/expected-policies.json",
+    2
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
@@ -245663,14 +245897,6 @@
    ],
    [
     "src/pages/tributario/CalculadoraTributaria.parts.tsx",
-    2
-   ],
-   [
-    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
-    2
-   ],
-   [
-    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
     2
    ]
   ]

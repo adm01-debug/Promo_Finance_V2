@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ebf034ffcf` · branch `main` · 2026-11-22 02:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `77c3f5d569` · branch `main` · 2026-11-22 02:32 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -70,6 +70,7 @@
 | `bloqueios_duplicidade` | enabled | public: empresa_id IN (SELECT id FROM public.empresas WHERE ativo = true)<br>authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
 | `boletos` | enabled | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: ((empresa_id IS NOT NULL) AND (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_ … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role]) AND empresa_acessivel(emp … | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id) | authenticated: ((SELECT auth.uid()) = user_id)<br>authenticated: has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id) |
 | `budgets` | enabled | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()<br>public: company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())<br>authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role) OR (company_id IN ( SELECT ue.empresa_id … | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()<br>public: company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())<br>authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role) OR (company_id IN ( SELECT ue.empresa_id … | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()<br>public: company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())<br>authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role) OR (company_id IN ( SELECT ue.empresa_id … | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()<br>public: company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())<br>authenticated: ((user_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role) OR (company_id IN ( SELECT ue.empresa_id … |
+| `catalogo_cclasstrib` | enabled | authenticated: true<br>service_role: true | service_role: true | service_role: true | service_role: true |
 | `catalogos_fiscais_cargas` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | — | — |
 | `catalogos_tributarios_health_history` | enabled | authenticated: ( SELECT has_role((SELECT auth.uid()), 'admin'::app_role) AS has_role) | — | — | — |
 | `categorias` | enabled | public: auth.uid() = user_id<br>authenticated: auth.uid() IS NOT NULL<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.u … | public: auth.uid() = user_id<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.u … | public: auth.uid() = user_id<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.u … | public: auth.uid() = user_id<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) OR (empresa_id IN ( SELECT ue.empresa_id FROM user_empresas ue WHERE ((ue.u … |
@@ -299,7 +300,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 361 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 362 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -451,7 +452,7 @@
 - `supabase/functions/sso-test-login/index.ts`
 - `supabase/functions/stress_test.ts`
 - `supabase/functions/sync-profile-to-bitrix/index.ts`
-- … +211 (lista completa em `context.json`)
+- … +212 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -1231,6 +1232,7 @@ Middleware matcher (Next.js): nenhum
 | `asaas_payment_links` | `created_at`, `created_by` |
 | `estrategias_elisao_catalogo` | `created_at` |
 | `user_preferences` | `created_at`, `updated_at` |
+| `catalogo_cclasstrib` | `created_at` |
 | `frontend_error_logs_2026_01` | `created_at` |
 | `frontend_error_logs_2026_02` | `created_at` |
 | `frontend_error_logs_2026_03` | `created_at` |

@@ -1047,7 +1047,7 @@
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
    "descricao": null,
-   "linhas": 697,
+   "linhas": 705,
    "env": [],
    "npm_scripts": [],
    "workflows": [

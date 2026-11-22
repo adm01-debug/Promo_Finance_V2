@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1054,
+ "migrations": 1056,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -12569,6 +12569,117 @@
    ],
    "sem_rls": false,
    "nao_usada": false
+  },
+  "catalogo_cclasstrib": {
+   "colunas": {
+    "cclasstrib": {
+     "tipo": "character(6)",
+     "nn": false,
+     "pk": true,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "cst": {
+     "tipo": "character(3)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "descricao": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "exige_gibscbs": {
+     "tipo": "boolean",
+     "nn": true,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "fim_vigencia": {
+     "tipo": "date",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "ind_dir": {
+     "tipo": "smallint",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "inicio_vigencia": {
+     "tipo": "date",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "p_red_cbs": {
+     "tipo": "numeric(5,4)",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "p_red_ibs_mun": {
+     "tipo": "numeric(5,4)",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "p_red_ibs_uf": {
+     "tipo": "numeric(5,4)",
+     "nn": true,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "versao_it": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "catalogo_cclasstrib_select_authenticated",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "catalogo_cclasstrib_service_role_all",
+     "comando": "all",
+     "para": "service_role",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [],
+   "fks": [],
+   "criada_em": "20261122022500_catalogo_cclasstrib.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
   },
   "catalogos_fiscais_cargas": {
    "colunas": {
