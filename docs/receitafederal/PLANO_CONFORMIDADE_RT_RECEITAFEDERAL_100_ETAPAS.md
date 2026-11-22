@@ -1,7 +1,7 @@
 # Promo Finance V2 — Plano de Conformidade com a Reforma Tributária e Integração ReceitaFederal (100 etapas)
 
 **Base:** auditoria de 21/11/2026 sobre `adm01-debug/Promo_Finance_V2@ea8ccc8` e `ReceitaFederal/calculadora-rtc-regime-regular@1.7.2` (DB `V0073`).
-**Ordem:** primeiro parar de calcular errado (Fases 1-2), depois guardar os dados fiscais certos (Fases 3-5), depois delegar o cálculo à calculadora oficial (Fases 6-8), por fim apuração/split/encerramento (Fases 9-10). Nenhuma etapa reescreve módulo inteiro; cada uma é diff mínimo.
+**Ordem:** primeiro parar de calcular errado (Fases 1-2), depois guardar os dados fiscais certos (Fases 3-5), depois sincronizar os dados abertos oficiais (Fase 8 — as Fases 6 e 7, de hospedar a calculadora da RFB, foram descartadas pelo ADR-004), por fim apuração/split/encerramento (Fases 9-10). Nenhuma etapa reescreve módulo inteiro; cada uma é diff mínimo.
 
 ## Convenções (valem para todas as etapas)
 
@@ -47,12 +47,12 @@
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
 | 19 | 2026: não somar IBS/CBS a PIS/COFINS | `calcular-tributos.ts:79-104` | [ ] campo novo `cbsIbsCompensavel` [ ] `totalTributos` 2026 = tributos antigos [ ] detalhamento cita art. 348 | teste: 2026 carga = carga antiga |
-| 20 | Mesmo ajuste no simulador anual | `calculadora/reforma-tributaria.ts:96-109` | [ ] alerta 2026 corrigido ("compensável/dispensado") | teste verde |
+| 20 | Mesmo ajuste no simulador anual | `src/lib/tributario/calculadora/reforma-tributaria.ts:162-173` | [ ] alerta 2026 corrigido ("compensável/dispensado") [ ] `totalTributos` de 2026 **não soma** `tributos.find(t => t.nome==='CBS').valor + ... IBS` ao total de residuais — o teste compara o valor numérico do total, não só a presença do alerta | teste verde |
 | 21 | Mesmo ajuste na projeção | `projecao-reforma.ts:177-181` | [ ] 2026 não gera "pico tributário" artificial | teste: `picoTributario.ano !== 2026` |
 | 22 | Remover ICMS 18% / ISS 5% / PIS 1,65 / COFINS 7,6 fixos | `calcular-tributos.ts:82-86` | [ ] alíquotas vêm de `DadosOperacao` (obrigatórias) ou de `parametros_tributarios` da empresa [ ] erro tipado se ausentes | teste: sem alíquota → erro |
 | 23 | Base de cálculo oficial | `src/lib/reforma-tributaria/base-calculo.ts` (novo) | [ ] `baseRG = vProd+vFrete+vSeg+vOutro−vDesc−vICMS−vFCP (−vPIS−vCOFINS só 2026) + vIS` [ ] vigência por ano [ ] avisos de campo ignorado iguais aos da RFB | teste reproduz exemplo RFB: 2027 → 870,00 |
 | 24 | Política de arredondamento | `src/lib/reforma-tributaria/arredondamento.ts` (novo) | [ ] base 2 casas antes de multiplicar [ ] alíquota efetiva 4 casas [ ] arredondar uma vez [ ] `vIBS = vIBSUF + vIBSMun` exibidos [ ] empate → par | teste: base 25 × 0,9% = 0,22; 12 × (0,05+0,05) = 0,02 |
-| 25 | Aplicar arredondamento em `calcularTributosReforma` | `calcular-tributos.ts:70-71` | [ ] nenhuma multiplicação float sem `arredondar()` | `grep -n "\* (aliquota" calcular-tributos.ts` = 0 |
+| 25 | Aplicar arredondamento em `calcularTributosReforma` | `src/lib/reforma-tributaria/calcular-tributos.ts:71-76` | [ ] nenhuma multiplicação float sem `arredondar()` | `grep -n "\* (aliquota" calcular-tributos.ts` = 0 |
 | 26 | Totais = soma dos itens (rejeição 1091) | `src/lib/reforma-tributaria/totalizar.ts` (novo) | [ ] total CBS = Σ vCBS exibidos [ ] propriedade testada com 1.000 lotes aleatórios | `vitest` verde |
 | 27 | Créditos: alíquota do ano de origem, não do regime do comprador | `src/lib/reforma-tributaria/creditos.ts` | [ ] usa `anoReferencia` da aquisição [ ] bloco "crédito proporcional ao regime especial" removido (redução é do fornecedor) [ ] `naoCumulatividadePlena` só `true` quando crédito vem de valor destacado | teste |
 | 28 | Split payment desligado até ato conjunto | `calcular-tributos.ts:111-113`, `src/types/reforma-tributaria/split-payment.ts` | [ ] `valorSplitPayment*` = 0 com `motivo: 'não vigente'` [ ] `SplitPaymentConfig.retencao*Automatica` removido (split é do PSP, arts. 31-35) | teste + `SplitPaymentPanel` sem botão de reter |
@@ -80,12 +80,12 @@
 |---|---|---|---|---|
 | 41 | Parser lê `det/imposto/IBSCBS` | `src/hooks/useImportacaoXMLNFe.ts:55-130` → extrair `src/lib/nfe/parse-ibscbs.ts` | [ ] lê `CST, cClassTrib, gIBSCBS/vBC, gIBSUF/pIBSUF,vIBSUF, gIBSMun/pIBSMun,vIBSMun, gCBS/pCBS,vCBS, vIBS, gRed` [ ] lê `IS` [ ] lê `total/IBSCBSTot` | teste com fixtures `procNFe-ok.xml` + XML 2026 real |
 | 42 | Fixture oficial com IBS/CBS | `supabase/functions/_shared/sefaz/__fixtures__/procNFe-ibscbs-2026.xml` | [ ] gerado pelo `POST /xml/generate?tipo=nfe` da calculadora RFB [ ] validado por `/xml/validate?subtipo=nota` = true | resposta da API |
-| 43 | Crédito = valor destacado, ano = emissão | `useImportacaoXMLNFe.ts:185-201` | [ ] `new Date().getFullYear()` removido [ ] `cbsCalculado` → `vCBS` do XML [ ] fallback estimado só se XML sem grupo, com `origem:'estimado'` e aviso | teste: XML 2026 com vCBS 9,00 → crédito 9,00 |
+| 43 | Crédito = valor destacado, ano = emissão | `useImportacaoXMLNFe.ts:245-305` | [ ] `new Date().getFullYear()` removido [ ] `cbsCalculado` → `vCBS` do XML [ ] fallback estimado só se XML sem grupo, com `origem:'estimado'` e aviso | teste: XML 2026 com vCBS 9,00 → crédito 9,00 |
 | 44 | Efeito tributário por ano | mesmo | [ ] FG 2026 → `efeito_tributario=false`, `status='informativo'` [ ] ≥2027 → `disponivel` — _só quando `origem='xml_destacado'`_ | teste |
 | 45 | RPC `registrar_nfe_com_creditos` grava itens e grupos ⚠️ | migration da função | [ ] `p_itens jsonb` validado contra `information_schema` como já feito para `p_nota` [ ] transação única | pgTAP |
 | 46 | Validação cClassTrib × CST × NCM na importação | `src/lib/tributario/validador-ncm-cst.ts` | [ ] consulta `catalogo_cclasstrib` + `catalogo_ncm` [ ] regras de exemplo PIS/COFINS removidas [ ] divergência vira alerta na nota, não bloqueio | teste: NCM 02013000 × 200035 → REG-011 |
 | 47 | Painel de importação mostra grupo IBS/CBS | `src/components/reforma-tributaria/ImportacaoXMLPanel.tsx` | [ ] colunas vCBS/vIBS/CST/cClassTrib [ ] badge "informativo 2026" | screenshot E2E |
-| 48 | Gestor de créditos separa informativo × disponível | `GestorCreditosTributarios.tsx`, `useCreditosTributarios.ts` | [ ] saldo "disponível" exclui `efeito_tributario=false` [ ] KPI "informativo 2026" separado | E2E `split-payment`/`tributario-dashboard` ajustado |
+| 48 | Gestor de créditos separa informativo × disponível | `GestorCreditosTributarios.tsx`, `useCreditosTributarios.ts` | [ ] saldo "disponível" usa o mesmo critério da etapa 44/88: `efeito_tributario=true` **E** `origem='xml_destacado'` — crédito estimado nunca conta como disponível [ ] KPI "informativo 2026" separado | E2E `split-payment`/`tributario-dashboard` ajustado |
 | 49 | NF-e recebidas (Sefaz/manifestação) também preenchem grupo | `src/hooks/useNfeRecebidas.ts`, `supabase/functions/nfe-vinculo-proxy` | [ ] resumo `resNFe` não gera crédito (sem XML completo) [ ] `procNFe` completo passa pelo parser da etapa 41 | `deno test` |
 | 50 | Reprocessamento retroativo 2026 | `supabase/functions/reprocessar-creditos-ibscbs/index.ts` + cron | [ ] lê XML em storage (`xml-storage.ts`) [ ] regrava créditos com `origem='xml_destacado'` [ ] idempotente por `chave_acesso` | log: N notas reprocessadas, 0 duplicadas |
 
@@ -95,7 +95,7 @@
 |---|---|---|---|---|
 | 51 | Mapear payload `criar_nfe` do Bling | `supabase/functions/bling-proxy/index.ts`, `docs/receitafederal/BLING_NFE_IBSCBS.md` | [ ] campos de tributação por item que o Bling aceita listados [ ] confirmado se IBS/CBS vem do cadastro de produto Bling ou do payload | doc + request real de teste |
 | 52 | `ItemNFe` ganha grupo IBS/CBS | `src/components/nfe/nfe-types.ts:3-12` | [ ] `cstIbsCbs, cClassTrib, vBC, pCBS, vCBS, pIBSUF, vIBSUF, pIBSMun, vIBSMun` opcionais→obrigatórios atrás da flag | `tsc` verde |
-| 53 | `NovaNFeForm` preenche CST/cClassTrib por item | `src/components/nfe/NovaNFeForm.tsx` | [ ] select de cClassTrib do `catalogo_cclasstrib` vigente [ ] default por NCM (regra 000001 para brindes tributados) [ ] cálculo local via Fase 2 exibido antes do envio | E2E `nfe-fluxo` |
+| 53 | `NovaNFeForm` preenche CST/cClassTrib por item | `src/components/nfe/NovaNFeForm.tsx` | [ ] select de cClassTrib do `catalogo_cclasstrib` vigente — **hoje a migration `20261122022500_catalogo_cclasstrib.sql` cria a tabela sem nenhum `INSERT`**, então o select nasce vazio: a etapa exige popular o catálogo (vigência + NCM/NBS) antes da UI [ ] default por NCM (regra 000001 para brindes tributados) [ ] cálculo local via Fase 2 exibido antes do envio | E2E `nfe-fluxo` |
 | 54 | Pré-validação antes de enviar ao Bling/SEFAZ | `src/lib/nfe/pre-validar-ibscbs.ts` (novo) | [ ] regras UB12-10 (grupo presente p/ CRT 3), totais = Σ itens, CST × cClassTrib vinculados [ ] bloqueia envio com mensagem PT-BR | teste unitário por regra |
 | 55 | Guardar XML autorizado e extrair grupo | `useBlingNFe.ts`, `xml-storage.ts` | [ ] após `enviar_nfe_sefaz`, XML baixado e parseado (etapa 41) [ ] itens/totais gravados (Fase 3) | query: nota autorizada tem `v_cbs` preenchido |
 | 56 | Alerta de conformidade: NF-e emitida sem grupo | `supabase/functions/verificar-conformidade-fiscal/index.ts`, `gerar-alertas-tributarios` | [ ] regra "FG ≥ 03/08/2026 e CRT 3 sem IBSCBS" → alerta alto [ ] regra "contribuinte não-ICMS: NF-e obrigatória desde 01/12/2026" | alerta gerado em fixture |
@@ -147,7 +147,7 @@
 | 83 | `CatalogosTributariosHealthPanel` passa a medir os catálogos RFB | `src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx`, `src/lib/tributario/catalogos/saude.ts` | [ ] idade do último sync [ ] versão IT [ ] alerta > 7 dias | painel |
 | 84 | Página de consulta pública interna | `src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx` | [ ] busca NCM → cClassTrib válidos + redução + fundamento [ ] modo offline usa `fiscal-cache.ts` | E2E |
 | 85 | Cache offline com vigência | `src/lib/offline/fiscal-cache.ts` | [ ] TTL respeita `fim_vigencia` [ ] registro expirado não retorna | teste existente estendido |
-| 86 | Cadastro de produto com cClassTrib default | `src/pages/tributario/TabelasConsulta.tsx` + tabela de produtos/Bling | [ ] produto tem `cclasstrib_padrao` [ ] sugestão por NCM | query |
+| 86 | Cadastro de produto com cClassTrib default ⚠️ | `src/pages/tributario/TabelasConsulta.tsx` + tabela de produtos/Bling | [ ] produto tem `cclasstrib_padrao` (coluna nova = DDL em produção, regra 8) [ ] sugestão por NCM | query |
 
 ## Fase 9 — Apuração 2026/2027, split, remoção do fictício (87-94)
 
@@ -166,7 +166,7 @@
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
-| 95 | ~~Suíte de paridade local × RFB~~ → fixture estática com exemplos oficiais (ADR-004) | `src/lib/__tests__/rfb-paridade.test.ts` | [ ] 200 operações (NCM reais de brindes) [ ] divergência máxima R$ 0,01 por item, 0 no total — _não chama calculadora externa_ | relatório |
+| 95 | ~~Suíte de paridade local × RFB~~ → fixture estática com exemplos oficiais (ADR-004) | `src/lib/__tests__/rfb-paridade.test.ts` | [ ] 200 operações (NCM reais de brindes) [ ] **saídas esperadas publicadas pela RFB** (NT 2025.002 / doc. da calculadora) como referência independente — NCM real sozinho não prova paridade [ ] divergência máxima R$ 0,01 por item, 0 no total — _não chama calculadora externa_ | relatório |
 | 96 | E2E ponta a ponta: produto → NF-e → XML → crédito → apuração | `e2e/rt-ponta-a-ponta.e2e.ts` | [ ] Playwright verde em CI [ ] usa usuário E2E padrão | run |
 | 97 | ~~Chaos: calculadora fora~~ — ⛔ não aplica (ADR-004) | — | ~~[ ] proxy 503 → motor local + alerta, sem 5xx na UI~~ — sem proxy/calculadora remota não há fallback a testar; motor local é a única via | — |
 | 98 | ~~Runbook RFB (pingar calculadora, rotacionar token, subir versão upstream)~~ — ⛔ substituída por documentar a decisão do ADR-004 | `docs/RUNBOOK.md` seção RFB | [ ] como pingar, rotacionar token, subir versão upstream, ler `REG-*` | doc |
@@ -188,7 +188,7 @@ Fases 1-2 não dependem de banco nem de infra: começam imediatamente e já corr
 
 | Risco | Mitigação |
 |---|---|
-| Senado fixa CBS ≠ 11,3% em dez/2026 | parâmetro único (etapa 8), sem redeploy de código |
+| Senado fixa CBS ≠ 11,3% em dez/2026 | parâmetro único (etapa 8) — a referência vem de `import.meta.env` (`src/config/reforma-tributaria.ts:26-27`), então muda sem editar código, mas a alíquota só vale no site após novo build e deploy |
 | Rejeição 1115 reativada sem aviso | etapa 54 bloqueia envio sem grupo desde já |
 | Nova versão da tabela cClassTrib (IT 2025.002) | sync diário (79) + watch upstream (6) |
 | Bling não expor campos IBS/CBS no payload | etapa 51 decide: cadastro no Bling vs. troca de emissor |
