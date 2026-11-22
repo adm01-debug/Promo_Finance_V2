@@ -4,7 +4,7 @@
 |---|---|
 | nome | validar-token-contador |
 | status | ACTIVE |
-| versão | 148 |
+| versão | 149 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/validar-token-contador/index.ts |
 | import_map |  |

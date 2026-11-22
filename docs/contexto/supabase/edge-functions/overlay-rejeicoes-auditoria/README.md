@@ -4,7 +4,7 @@
 |---|---|
 | nome | overlay-rejeicoes-auditoria |
 | status | ACTIVE |
-| versão | 147 |
+| versão | 148 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/overlay-rejeicoes-auditoria/index.ts |
 | import_map |  |
