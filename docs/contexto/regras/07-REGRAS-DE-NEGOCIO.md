@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `8254da0064` · branch `main` · 2026-11-22 13:21 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f2e0d56cec` · branch `main` · 2026-11-22 14:03 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5103,7 +5103,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3682 testes em 323 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3690 testes em 324 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5273,6 +5273,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts` | 8 | aprovarPagamento · aprova as duas tabelas numa transação só, sem escrita do cliente · usa o fornecedor lido dentro da transação, não o retrato anterior · não confirma ao usuário quando a função recusa a gravação … |
 | `src/lib/__tests__/ip-mask.test.ts` | 8 | ip-mask · retorna  · não mascara quando desabilitado · mascara os dois últimos octetos de IPv4 … |
 | `src/lib/__tests__/privacy-redact.test.ts` | 8 | redactPath · redige token de convite e contador no path · decodifica URL-encoding antes de redigir (?redirect=%2Fconvite%2F) · remove query e hash por completo (busca, CPF, magic link) … |
+| `src/lib/__tests__/rt-snapshot-pre-correcao.test.ts` | 8 | RT Snapshot Baseline Pré-Correção (baseline histórica — não falhar CI) · Motor 1 — calcularTributosReforma (calcular-tributos.ts) · ano ${ano}: totalTributosNovos + totalTributosAntigos snapshot · Motor 2 — calcularReformaTributaria (calculadora/reforma-tributaria.ts) … |
 | `src/lib/arquitetura/__tests__/edge-functions-imports.test.ts` | 8 | Edge Functions — conformidade de imports Deno · encontra arquivos de função para auditar · usa uma única versão canônica de @supabase/supabase-js · não importa @supabase/supabase-js sem versão fixada … |
 | `src/lib/nfe/__tests__/parse-ibscbs.test.ts` | 8 | parse-ibscbs (etapa 41) · retorna undefined para item sem grupo IBSCBS · lê o grupo IBSCBS do item com percentuais convertidos para fração · lê o grupo IS do item … |
 | `src/lib/tributario/__tests__/catalogos-alertas.test.ts` | 8 | alertas proativos de catálogos fiscais · não gera alerta quando todos os catálogos estão coerentes · aponta o item e o campo divergentes de uma UF adulterada · sinaliza catálogo vazio como divergência crítica … |
@@ -5406,8 +5407,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/enviar-alerta-email/index.test.ts` | 3 | enviar-alerta-email rejeita chamada sem credencial antes de acessar serviços · enviar-alerta-email rejeita segredo interno incorreto antes de acessar serviços · enviar-alerta-email preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/executar-analise-preditiva/index.test.ts` | 3 | executar-analise-preditiva rejeita chamada sem credencial antes de acessar serviços · executar-analise-preditiva rejeita segredo interno incorreto antes de acessar serviços · executar-analise-preditiva preserva preflight e não anuncia headers de segredo no preflight |
 | `supabase/functions/executar-regua-cobranca/domain.test.ts` | 3 | normaliza dias, remove duplicados e rejeita valores inválidos · normaliza e limita canais ao contrato conhecido · calcula datas antes, no dia e depois do vencimento em UTC |
-| `supabase/functions/gerar-alertas-tributarios/index.test.ts` | 3 | gerar-alertas-tributarios rejeita chamada sem credencial antes de acessar o banco · gerar-alertas-tributarios rejeita segredo interno incorreto antes de acessar o banco · gerar-alertas-tributarios preserva preflight e não anuncia headers de segredo no preflight |
-| … +23 linhas — lista completa em `context.json` | | |
+| … +24 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 489,
+ "total": 490,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 412
+  "unit": 413
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 288
+   "arquivos": 289
   },
   {
    "padrao": "outro",
@@ -2252,6 +2252,18 @@
     "src/lib/tributario/relatorio-pdf.ts"
    ],
    "casos": 1
+  },
+  {
+   "arquivo": "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
+   "tipo": "unit",
+   "linhas": 84,
+   "testa": [
+    "src/lib/reforma-tributaria/calcular-tributos.ts",
+    "src/lib/reforma-tributaria/types.ts",
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    "src/lib/tributario/projecao-reforma.ts"
+   ],
+   "casos": 4
   },
   {
    "arquivo": "src/lib/__tests__/secure-random.test.ts",
@@ -4563,7 +4575,9 @@
   "src/lib/queryClient.ts": 1,
   "src/lib/reforma-tributaria-calculator.ts": 1,
   "src/lib/reforma-tributaria/arredondamento.ts": 1,
+  "src/lib/reforma-tributaria/calcular-tributos.ts": 1,
   "src/lib/reforma-tributaria/cronograma-oficial.ts": 2,
+  "src/lib/reforma-tributaria/types.ts": 1,
   "src/lib/secure-random.ts": 1,
   "src/lib/sefaz-contingency/constants.ts": 1,
   "src/lib/sefaz-contingency/rules.ts": 1,
@@ -4590,7 +4604,7 @@
   "src/lib/tributario/calculadora/index.ts": 1,
   "src/lib/tributario/calculadora/lucro-presumido.ts": 5,
   "src/lib/tributario/calculadora/lucro-real.ts": 2,
-  "src/lib/tributario/calculadora/reforma-tributaria.ts": 1,
+  "src/lib/tributario/calculadora/reforma-tributaria.ts": 2,
   "src/lib/tributario/calculadora/simples-nacional.ts": 1,
   "src/lib/tributario/calculadora/types.ts": 3,
   "src/lib/tributario/catalogos/alertas.ts": 3,
@@ -4649,7 +4663,7 @@
   "src/lib/tributario/obrigacoes/types.ts": 2,
   "src/lib/tributario/pf-vinculada.ts": 1,
   "src/lib/tributario/pis-cofins/index.ts": 1,
-  "src/lib/tributario/projecao-reforma.ts": 2,
+  "src/lib/tributario/projecao-reforma.ts": 3,
   "src/lib/tributario/rbt12.ts": 3,
   "src/lib/tributario/recomendar-empresa.ts": 1,
   "src/lib/tributario/relatorio-pdf.ts": 1,

@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8254da0064d5d859a549c770383d6f52823d3ec6",
+  "commit": "f2e0d56cecae827f9b6b86fa138c4e8dbff7fb2c",
   "branch": "main",
-  "data_commit": "2026-11-22T10:17:42-03:00",
+  "data_commit": "2026-11-22T10:57:55-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f2e0d56",
+    "data": "2026-11-22",
+    "assunto": "chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)"
+   },
+   {
+    "sha": "5faafbe",
+    "data": "2026-11-22",
+    "assunto": "chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório"
+   },
    {
     "sha": "8254da0",
     "data": "2026-11-22",
@@ -121,16 +131,6 @@
     "sha": "9cd4c84",
     "data": "2026-11-21",
     "assunto": "docs: plano 100 etapas RT/RFB e avaliações técnicas"
-   },
-   {
-    "sha": "9aa15fe",
-    "data": "2026-11-21",
-    "assunto": "fix: split IBS UF/Mun deriva da fonte única (etapa 17) (#500)"
-   },
-   {
-    "sha": "424bfe7",
-    "data": "2026-11-21",
-    "assunto": "fix(reforma-tributaria): remove alíquotas fabricadas de Imposto Seletivo por categoria (#495)"
    }
   ],
   "arquivos_mudados_7d": 506,
@@ -189,7 +189,7 @@
    },
    {
     "pasta": "src/lib/__tests__",
-    "mudancas": 19
+    "mudancas": 20
    },
    {
     "pasta": "src/components/conciliacao",
@@ -270,10 +270,6 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/App.tsx",
-    "mudancas": 6
-   },
-   {
     "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 6
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": "deno.lock",
     "mudancas": 5
+   },
+   {
+    "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 268
+    "commits": 270
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4008,
-  "arquivos_codigo": 2494,
-  "linhas_codigo": 445122,
+  "arquivos_total": 4009,
+  "arquivos_codigo": 2495,
+  "linhas_codigo": 445206,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 317,
   "migrations": 1067,
   "cron_jobs": 22,
-  "testes": 489,
+  "testes": 490,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 222
@@ -663,8 +663,8 @@
    "linhas": 20046
   },
   "src/lib": {
-   "arquivos": 422,
-   "linhas": 55855
+   "arquivos": 423,
+   "linhas": 55939
   },
   "src/main.tsx": {
    "arquivos": 1,

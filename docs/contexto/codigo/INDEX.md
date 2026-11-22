@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8254da0064d5d859a549c770383d6f52823d3ec6` (2026-11-22T10:17:42-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f2e0d56cecae827f9b6b86fa138c4e8dbff7fb2c` (2026-11-22T10:57:55-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2375), SQL (1140), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2376), SQL (1140), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4008 |
-| arquivos_codigo | 2494 |
-| linhas_codigo | 445122 |
+| arquivos_total | 4009 |
+| arquivos_codigo | 2495 |
+| linhas_codigo | 445206 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 317 |
 | migrations | 1067 |
 | cron_jobs | 22 |
-| testes | 489 |
+| testes | 490 |
 | workflows | 20 |
 | scripts | 116 |
 | docs_md | 222 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (778), src/pages (210), src/hooks (2)
 - hooks: src/hooks (238), src/components (27), src/pages (5)
 - servicos_logica: src/lib (266), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (288), outro (112), co-localizado (*.test) (48)
+- testes: co-localizado (__tests__) (289), outro (112), co-localizado (*.test) (48)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -634,6 +634,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `f2e0d56` chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)
+- 2026-11-22 `5faafbe` chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório
 - 2026-11-22 `8254da0` fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)
 - 2026-11-22 `ef2218a` chore: encerra a feature flag rt_motor_v2 (etapa 5 RT/RFB descartada) (#521)
 - 2026-11-22 `19a3b16` feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)
@@ -647,8 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `e76f879` infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)
 - 2026-11-21 `5148e34` infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)
 - 2026-11-21 `77c3f5d` infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)
-- 2026-11-21 `ebf034f` docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)
-- 2026-11-21 `bb4d237` docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -3472,7 +3472,7 @@
    "usado_por_modulos": [
     "lib"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -3628,7 +3628,7 @@
     "lib",
     "lib/reforma-tributaria"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -5223,7 +5223,7 @@
    "usado_por_modulos": [
     "lib/tributario"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -7967,7 +7967,7 @@
     "lib/tributario",
     "pages/tributario"
    ],
-   "coberto_por_testes": 2,
+   "coberto_por_testes": 3,
    "orfao": false
   },
   {
