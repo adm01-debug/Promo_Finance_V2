@@ -16,18 +16,12 @@ describe('Reforma Tributária Calculator', () => {
   describe('determinarFaseTransicao', () => {
     it('2025 → 2026_teste', () => expect(determinarFaseTransicao(2025)).toBe('2026_teste'));
     it('2026 → 2026_teste', () => expect(determinarFaseTransicao(2026)).toBe('2026_teste'));
-    it('2027 → 2027_cbs_plena', () =>
-      expect(determinarFaseTransicao(2027)).toBe('2027_cbs_plena'));
-    it('2028 → 2028_cbs_plena', () =>
-      expect(determinarFaseTransicao(2028)).toBe('2028_cbs_plena'));
-    it('2029 → 2029_transicao', () =>
-      expect(determinarFaseTransicao(2029)).toBe('2029_transicao'));
-    it('2030 → 2030_transicao', () =>
-      expect(determinarFaseTransicao(2030)).toBe('2030_transicao'));
-    it('2031 → 2031_transicao', () =>
-      expect(determinarFaseTransicao(2031)).toBe('2031_transicao'));
-    it('2032 → 2032_transicao', () =>
-      expect(determinarFaseTransicao(2032)).toBe('2032_transicao'));
+    it('2027 → 2027_cbs_plena', () => expect(determinarFaseTransicao(2027)).toBe('2027_cbs_plena'));
+    it('2028 → 2028_cbs_plena', () => expect(determinarFaseTransicao(2028)).toBe('2028_cbs_plena'));
+    it('2029 → 2029_transicao', () => expect(determinarFaseTransicao(2029)).toBe('2029_transicao'));
+    it('2030 → 2030_transicao', () => expect(determinarFaseTransicao(2030)).toBe('2030_transicao'));
+    it('2031 → 2031_transicao', () => expect(determinarFaseTransicao(2031)).toBe('2031_transicao'));
+    it('2032 → 2032_transicao', () => expect(determinarFaseTransicao(2032)).toBe('2032_transicao'));
     it('2033 → 2033_pleno', () => expect(determinarFaseTransicao(2033)).toBe('2033_pleno'));
     it('2040 → 2033_pleno', () => expect(determinarFaseTransicao(2040)).toBe('2033_pleno'));
   });
@@ -150,21 +144,18 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.valorCBS).toBe(0);
       expect(r.valorIBS).toBe(0);
     });
-    it(
-      'split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)',
-      () => {
-        const r2025 = calcularTributosReforma(dadosVenda, 2025);
-        const r2026 = calcularTributosReforma(dadosVenda, 2026);
-        const r2027 = calcularTributosReforma(dadosVenda, 2027);
-        expect(r2025.valorSplitPaymentCBS).toBe(0);
-        expect(r2026.valorSplitPaymentCBS).toBe(0);
-        expect(r2027.valorSplitPaymentCBS).toBe(0);
-        expect(r2026.valorSplitPaymentIBS).toBe(0);
-        expect(r2027.valorSplitPaymentIBS).toBe(0);
-        expect(r2026.valorTotalSplitPayment).toBe(0);
-        expect(r2027.valorTotalSplitPayment).toBe(0);
-      }
-    );
+    it('split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)', () => {
+      const r2025 = calcularTributosReforma(dadosVenda, 2025);
+      const r2026 = calcularTributosReforma(dadosVenda, 2026);
+      const r2027 = calcularTributosReforma(dadosVenda, 2027);
+      expect(r2025.valorSplitPaymentCBS).toBe(0);
+      expect(r2026.valorSplitPaymentCBS).toBe(0);
+      expect(r2027.valorSplitPaymentCBS).toBe(0);
+      expect(r2026.valorSplitPaymentIBS).toBe(0);
+      expect(r2027.valorSplitPaymentIBS).toBe(0);
+      expect(r2026.valorTotalSplitPayment).toBe(0);
+      expect(r2027.valorTotalSplitPayment).toBe(0);
+    });
     it('IBS dividido 50% estadual 50% municipal (regime pleno, 2033)', () => {
       const r = calcularTributosReforma(dadosVenda, 2033);
       expect(r.aliquotaIBSEstadual).toBeCloseTo(r.aliquotaIBS * 0.5, 4);
@@ -183,21 +174,14 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.valorIS).toBeGreaterThan(0);
       expect(r.aliquotaIS).toBe(20);
     });
-    it(
-      'com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota',
-      () => {
-        const r = calcularTributosReforma(
-          { ...dadosVenda, categoriaIS: 'bebidas_alcoolicas' },
-          2033
-        );
-        expect(r.valorIS).toBe(0);
-        expect(r.aliquotaIS).toBe(0);
-      }
-    );
+    it('com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota', () => {
+      const r = calcularTributosReforma({ ...dadosVenda, categoriaIS: 'bebidas_alcoolicas' }, 2033);
+      expect(r.valorIS).toBe(0);
+      expect(r.aliquotaIS).toBe(0);
+    });
     it('carga tributária percentual é consistente', () => {
       const r = calcularTributosReforma(dadosVenda, 2033);
-      const cargaEsperada =
-        ((r.totalTributosNovos + r.totalTributosAntigos) / r.valorBase) * 100;
+      const cargaEsperada = ((r.totalTributosNovos + r.totalTributosAntigos) / r.valorBase) * 100;
       expect(r.cargaTributariaPercentual).toBeCloseTo(cargaEsperada, 2);
     });
     it('detalhamento contém informações úteis', () => {
@@ -266,10 +250,7 @@ describe('Reforma Tributária Calculator', () => {
         (r.totalAntigo / dados.faturamentoAnual) * 100,
         2
       );
-      expect(r.cargaNovaPercentual).toBeCloseTo(
-        (r.totalNovo / dados.faturamentoAnual) * 100,
-        2
-      );
+      expect(r.cargaNovaPercentual).toBeCloseTo((r.totalNovo / dados.faturamentoAnual) * 100, 2);
     });
     it('créditos recuperáveis calculados', () => {
       const r = simularComparativo(dados, 2033);
