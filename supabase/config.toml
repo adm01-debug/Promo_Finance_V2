@@ -331,6 +331,11 @@ verify_jwt = true
 [functions.calcular-slo-metrics-diario]
 verify_jwt = true
 
+# Job de backfill do grupo IBS/CBS (etapa 50). Chamado so pelo pg_cron com
+# x-cron-secret; verify_jwt=true nao atrapalha porque o cron manda a service key.
+[functions.reprocessar-creditos-ibscbs]
+verify_jwt = true
+
 [functions.calculo-iva]
 verify_jwt = true
 
