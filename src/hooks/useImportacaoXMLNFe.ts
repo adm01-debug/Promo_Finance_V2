@@ -18,13 +18,13 @@ import {
 } from '@/lib/nfe/parse-ibscbs';
 
 /** Fuso civil brasileiro usado para ler a data declarada na NF-e. */
-const FUSO_PADRAO_BR = 'America/Sao_Paulo';
+export const FUSO_PADRAO_BR = 'America/Sao_Paulo';
 
 /**
  * Primeiro ano com crédito apropriável de IBS/CBS (LC 214/2025, art. 128 do
  * ADCT): 2026 é ano de teste, com destaque apenas informativo.
  */
-const ANO_INICIO_APROPRIACAO = 2027;
+export const ANO_INICIO_APROPRIACAO = 2027;
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -101,7 +101,7 @@ export interface ResultadoImportacao {
  * caía no exercício seguinte. Lendo o fuso do próprio documento, o ano é o da
  * data civil que o emitente declarou.
  */
-const anoEmissao = (data: Date): number =>
+export const anoEmissao = (data: Date): number =>
   Number(
     new Intl.DateTimeFormat('en-CA', {
       timeZone: FUSO_PADRAO_BR,
