@@ -18,6 +18,7 @@
   "anomalia_toast_eventos": 2,
   "anomalias_detectadas": 2,
   "api_keys": 2,
+  "aprovacao_assinaturas": 2,
   "aprovacao_comentarios": 2,
   "apuracoes_irpj_csll": 5,
   "apuracoes_tributarias": 6,
@@ -51,6 +52,10 @@
   "bloqueios_duplicidade": 1,
   "boletos": 5,
   "budgets": 1,
+  "catalogo_aliquota_referencia": 2,
+  "catalogo_cclasstrib": 2,
+  "catalogo_nbs": 2,
+  "catalogo_ncm": 2,
   "catalogos_fiscais_cargas": 1,
   "catalogos_tributarios_health_history": 1,
   "categorias": 1,
@@ -156,6 +161,7 @@
   "nfe_eventos": 1,
   "nfe_recebidas": 2,
   "notas_fiscais": 3,
+  "notas_fiscais_itens": 2,
   "notas_fiscais_ocr": 5,
   "notification_history": 1,
   "open_finance_consents": 1,
@@ -249,6 +255,7 @@
   "user_filter_presets": 2,
   "user_onboarding_progress": 3,
   "user_passkeys": 7,
+  "user_preferences": 4,
   "user_roles": 5,
   "user_sessions": 1,
   "vendedores": 1,
@@ -260,7 +267,5 @@
   "webhook_simulation_results": 1,
   "webhook_simulation_runs": 2,
   "webhooks_log": 2,
-  "whatsapp_conversas": 1,
-  "user_preferences": 4,
-  "aprovacao_assinaturas": 2
+  "whatsapp_conversas": 1
 }
