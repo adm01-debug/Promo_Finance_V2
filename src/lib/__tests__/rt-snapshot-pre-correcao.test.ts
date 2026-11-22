@@ -36,7 +36,6 @@ const PARAMS_PROJECAO = {
   issAtual: 5,
 };
 
-// eslint-disable-next-line vitest/no-disabled-tests
 describe.skip('RT Snapshot Baseline Pré-Correção (baseline histórica — não falhar CI)', () => {
   describe('Motor 1 — calcularTributosReforma (calcular-tributos.ts)', () => {
     for (const ano of ANOS) {
