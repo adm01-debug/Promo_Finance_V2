@@ -128,6 +128,8 @@ export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
   allowPolicy("ufs", "ufs_select_authenticated", "SELECT", "authenticated"),
   allowPolicy("elisao_regras_creditos", "regras_creditos_leitura", "SELECT", "authenticated"),
   allowPolicy("asaas_payment_links", "Service role full access asaas_payment_links", "ALL", "service_role"),
+  allowPolicy("catalogo_cclasstrib", "catalogo_cclasstrib_select_authenticated", "SELECT", "authenticated"),
+  allowPolicy("catalogo_cclasstrib", "catalogo_cclasstrib_service_role_all", "ALL", "service_role"),
 ]);
 
 export const ALLOWED_ANON_WRITE_GRANTS = Object.freeze([
