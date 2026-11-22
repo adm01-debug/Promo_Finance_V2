@@ -1330,11 +1330,11 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "aprovacao_assinaturas_solicitacao_id_fkey";
-            columns: ["solicitacao_id"];
+            foreignKeyName: 'aprovacao_assinaturas_solicitacao_id_fkey';
+            columns: ['solicitacao_id'];
             isOneToOne: false;
-            referencedRelation: "solicitacoes_aprovacao";
-            referencedColumns: ["id"];
+            referencedRelation: 'solicitacoes_aprovacao';
+            referencedColumns: ['id'];
           },
         ];
       };
