@@ -148,9 +148,7 @@ export function useCreditosTributarios(empresaId?: string) {
         // (não há saldo a gastar). Somar esse campo zerava o KPI: o valor do
         // documento está em `valor_credito`, que é o que precisa ser exibido.
         const saldo =
-          Number(c.saldo_disponivel) ||
-          Number(c.valor_credito) - Number(c.valor_utilizado) ||
-          0;
+          Number(c.saldo_disponivel) || Number(c.valor_credito) - Number(c.valor_utilizado) || 0;
 
         if (c.efeito_tributario === true && c.origem === 'xml_destacado') {
           resumo[key].disponivel += saldo;

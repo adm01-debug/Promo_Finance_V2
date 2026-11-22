@@ -225,7 +225,10 @@ describe('useImportacaoXMLNFe — crédito pelo valor destacado (etapa 43)', () 
       '2026-12-31T22:00:00-03:00'
     );
     const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
-    const arq = { name: 'nfe-virada.xml', text: () => Promise.resolve(xmlVirada) } as unknown as File;
+    const arq = {
+      name: 'nfe-virada.xml',
+      text: () => Promise.resolve(xmlVirada),
+    } as unknown as File;
     await act(async () => {
       await result.current.processarArquivos([arq] as unknown as FileList);
     });

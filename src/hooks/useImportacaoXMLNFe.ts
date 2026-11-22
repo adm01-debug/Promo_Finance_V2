@@ -506,7 +506,8 @@ export function useImportacaoXMLNFe(empresaId: string) {
               cstIbscbs: i.ibscbs?.cst,
               cClassTrib: i.ibscbs?.cClassTrib,
             })),
-            referenciasPorAno.get(anoFatoGerador) ?? (await buscarReferenciasFiscais([], [], anoFatoGerador + '-12-31'))
+            referenciasPorAno.get(anoFatoGerador) ??
+              (await buscarReferenciasFiscais([], [], anoFatoGerador + '-12-31'))
           );
 
           processadas[i] = {

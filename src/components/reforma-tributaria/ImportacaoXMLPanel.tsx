@@ -33,8 +33,7 @@ interface Props {
  */
 function getBadgeIbscbs(nfe: NFeParsed) {
   const temRegular = nfe.ibscbs?.vIBS !== undefined || nfe.ibscbs?.vCBS !== undefined;
-  const temMono =
-    nfe.ibscbs?.vTotIBSMono !== undefined || nfe.ibscbs?.vTotCBSMono !== undefined;
+  const temMono = nfe.ibscbs?.vTotIBSMono !== undefined || nfe.ibscbs?.vTotCBSMono !== undefined;
   const temGrupo = temRegular || temMono;
 
   if (!temGrupo) {
