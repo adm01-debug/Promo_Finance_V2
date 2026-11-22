@@ -178,3 +178,42 @@ describe('preValidarIbscbs', () => {
     expect(r.podeEnviar).toBe(false);
   });
 });
+
+import { adaptarItem } from '@/lib/nfe/pre-validar-ibscbs';
+
+describe('adaptarItem (etapa 52)', () => {
+  it('mapeia os campos camelCase do formulário para a validação', () => {
+    expect(
+      adaptarItem({
+        nItem: 1,
+        cstIbsCbs: '200',
+        cClassTrib: '000001',
+        vBCIbsCbs: 100,
+        vIBSUF: 5.65,
+        vIBSMun: 5,
+        vCBS: 9,
+        vIBS: 10.65,
+      })
+    ).toEqual({
+      nItem: 1,
+      cst: '200',
+      cClassTrib: '000001',
+      vBC: 100,
+      pIBSUF: undefined,
+      vIBSUF: 5.65,
+      pIBSMun: undefined,
+      vIBSMun: 5,
+      pCBS: undefined,
+      vCBS: 9,
+      vIBS: 10.65,
+    });
+  });
+
+  it('item sem grupo adapta para ausência de CST', () => {
+    const adaptado = adaptarItem({ nItem: 2 });
+    expect(adaptado.cst).toBeUndefined();
+    expect(
+      preValidarIbscbs({ crt: 3, dataEmissao: '2026-09-01', itens: [adaptado] }).podeEnviar
+    ).toBe(false);
+  });
+});

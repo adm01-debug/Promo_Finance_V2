@@ -83,6 +83,41 @@ const fmt = (v: number): string =>
 const somar = (valores: Array<number | undefined>): number =>
   valores.reduce<number>((acc, v) => acc + (v ? emCentavos(v) : 0), 0) / CENTAVOS;
 
+/** Item da nota como o formulário/importador monta (etapa 52). */
+export interface ItemNotaComGrupo {
+  nItem: number;
+  cstIbsCbs?: string;
+  cClassTrib?: string;
+  vBCIbsCbs?: number;
+  pIBSUF?: number;
+  vIBSUF?: number;
+  pIBSMun?: number;
+  vIBSMun?: number;
+  pCBS?: number;
+  vCBS?: number;
+  vIBS?: number;
+}
+
+/**
+ * Adapta um item de nota (camelCase com sufixo `IbsCbs`, como o formulário
+ * guarda) para o formato aceito por `preValidarIbscbs`.
+ */
+export function adaptarItem(item: ItemNotaComGrupo): ItemNFeIbscbs {
+  return {
+    nItem: item.nItem,
+    cst: item.cstIbsCbs,
+    cClassTrib: item.cClassTrib,
+    vBC: item.vBCIbsCbs,
+    pIBSUF: item.pIBSUF,
+    vIBSUF: item.vIBSUF,
+    pIBSMun: item.pIBSMun,
+    vIBSMun: item.vIBSMun,
+    pCBS: item.pCBS,
+    vCBS: item.vCBS,
+    vIBS: item.vIBS,
+  };
+}
+
 /**
  * Valida o grupo IBS/CBS/IS de uma NF-e.
  *
