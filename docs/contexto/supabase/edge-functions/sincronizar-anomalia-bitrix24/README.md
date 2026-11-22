@@ -4,7 +4,7 @@
 |---|---|
 | nome | sincronizar-anomalia-bitrix24 |
 | status | ACTIVE |
-| versão | 143 |
+| versão | 145 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/sincronizar-anomalia-bitrix24/index.ts |
 | import_map |  |

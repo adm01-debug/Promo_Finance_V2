@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "19a3b1607fbd623b07f35df8aa4e018e2bc7ab06",
+  "sha": "ef2218a08dbc80c423e054915ece02e61e6ea735",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 12:51 UTC",
+  "generated_at": "2026-11-22 13:14 UTC",
   "files_total": 4047,
   "code_files": 3635,
   "code_lines": 516280
@@ -246659,10 +246659,21 @@
   }
  },
  "git": {
-  "sha": "19a3b1607fbd623b07f35df8aa4e018e2bc7ab06",
+  "sha": "ef2218a08dbc80c423e054915ece02e61e6ea735",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ef2218a",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "chore: encerra a feature flag rt_motor_v2 (etapa 5 RT/RFB descartada) (#521)",
+    "files": [
+     "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
+    ]
+   },
    {
     "sha": "19a3b16",
     "date": "2026-11-22",
@@ -247003,20 +247014,6 @@
      "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
      "src/lib/reforma-tributaria/cronograma-oficial.ts"
     ]
-   },
-   {
-    "sha": "9f993fd",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)",
-    "files": [
-     "scripts/integrity/README.md",
-     "scripts/integrity/baseline/expected-crons.json",
-     "scripts/migrate-cron-jobs.sh",
-     "scripts/migrate-cron-jobs.sql",
-     "scripts/test_migrate_cron_jobs.py",
-     "scripts/test_staging_migrate.py"
-    ]
    }
   ],
   "hot_files": [
@@ -247053,6 +247050,18 @@
     3
    ],
    [
+    "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
+    2
+   ],
+   [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    2
+   ],
+   [
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    2
+   ],
+   [
     "src/integrations/supabase/types.ts",
     2
    ],
@@ -247086,18 +247095,6 @@
    ],
    [
     "src/pages/tributario/CalculadoraTributaria.helpers.ts",
-    2
-   ],
-   [
-    "src/pages/tributario/CalculadoraTributaria.parts.tsx",
-    2
-   ],
-   [
-    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
-    2
-   ],
-   [
-    "src/components/reforma-tributaria/GlossarioTooltip.tsx",
     2
    ]
   ]

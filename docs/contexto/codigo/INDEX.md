@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `19a3b1607fbd623b07f35df8aa4e018e2bc7ab06` (2026-11-22T09:50:28-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ef2218a08dbc80c423e054915ece02e61e6ea735` (2026-11-22T09:54:02-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -461,15 +461,15 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (32)
+- package.json (31)
 - bun.lock (30)
-- .github/workflows/ci.yml (21)
+- .github/workflows/ci.yml (20)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- env.manifest.json (9)
 - supabase/functions/asaas-proxy/index.ts (9)
 - .github/workflows/prod-migrate.yml (8)
 - analise-prs/progresso.json (8)
+- env.manifest.json (8)
 - scripts/automation.config.json (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - scripts/security/test-canonical-db-gates.mjs (7)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `ef2218a` chore: encerra a feature flag rt_motor_v2 (etapa 5 RT/RFB descartada) (#521)
 - 2026-11-22 `19a3b16` feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)
 - 2026-11-22 `a570395` chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)
 - 2026-11-22 `4d50a6f` infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `ebf034f` docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)
 - 2026-11-21 `bb4d237` docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)
 - 2026-11-21 `ce2dfdb` chore: remove baseline histórica pré-correção (etapa 30)
-- 2026-11-21 `9e6fc7b` feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

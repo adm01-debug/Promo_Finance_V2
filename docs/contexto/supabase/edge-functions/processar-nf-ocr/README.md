@@ -4,7 +4,7 @@
 |---|---|
 | nome | processar-nf-ocr |
 | status | ACTIVE |
-| versão | 146 |
+| versão | 148 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/processar-nf-ocr/index.ts |
 | import_map |  |
