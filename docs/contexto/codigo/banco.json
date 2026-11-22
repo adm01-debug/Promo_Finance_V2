@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1064,
+ "migrations": 1065,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -30758,6 +30758,13 @@
   },
   "notas_fiscais_itens": {
    "colunas": {
+    "ad_rem_is": {
+     "tipo": "numeric(15,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "c_prod": {
      "tipo": "text",
      "nn": true,
@@ -30766,6 +30773,13 @@
      "ref": null
     },
     "cclasstrib": {
+     "tipo": "character(6)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cclasstrib_is": {
      "tipo": "character(6)",
      "nn": false,
      "pk": false,
@@ -30787,6 +30801,13 @@
      "ref": null
     },
     "cst_ibscbs": {
+     "tipo": "character(3)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cst_is": {
      "tipo": "character(3)",
      "nn": false,
      "pk": false,
@@ -30849,6 +30870,13 @@
      "default": null,
      "ref": null
     },
+    "p_is": {
+     "tipo": "numeric(5,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "p_red_aliq": {
      "tipo": "numeric(5,4)",
      "nn": false,
@@ -30864,6 +30892,13 @@
      "ref": null
     },
     "v_bc_ibscbs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_bc_is": {
      "tipo": "numeric(15,2)",
      "nn": false,
      "pk": false,
@@ -30892,6 +30927,13 @@
      "ref": null
     },
     "v_ibs_uf": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_is": {
      "tipo": "numeric(15,2)",
      "nn": false,
      "pk": false,

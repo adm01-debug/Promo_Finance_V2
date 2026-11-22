@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d32ac55f6b6accbdb0e6db10e87948d59ab4aeb7",
+  "commit": "7db0fc453aee4a6d51d15e593c016d25272e6903",
   "branch": "main",
-  "data_commit": "2026-11-22T00:01:10-03:00",
+  "data_commit": "2026-11-22T00:12:27-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "7db0fc4",
+    "data": "2026-11-22",
+    "assunto": "infra: grupo IS por item (etapa 34 RT/RFB) (#513)"
+   },
    {
     "sha": "d32ac55",
     "data": "2026-11-22",
@@ -126,14 +131,9 @@
     "sha": "9f993fd",
     "data": "2026-11-21",
     "assunto": "chore(integrity): regenerar baseline expected-crons com os 33 crons reais de prod (#489)"
-   },
-   {
-    "sha": "aeefe2f",
-    "data": "2026-11-21",
-    "assunto": "docs(receitafederal): ADR-003 — auditoria do motor RT + plano de conformidade de 100 etapas (#490)"
    }
   ],
-  "arquivos_mudados_7d": 496,
+  "arquivos_mudados_7d": 497,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -219,11 +219,11 @@
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 11
+    "mudancas": 10
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": ".github/workflows/prod-migrate.yml",
@@ -235,10 +235,6 @@
    },
    {
     "arquivo": "scripts/automation.config.json",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 8
    },
    {
@@ -254,15 +250,7 @@
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 7
    },
    {
@@ -275,10 +263,6 @@
    },
    {
     "arquivo": "docs/prod-readiness.md",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 6
    },
    {
@@ -296,12 +280,28 @@
    {
     "arquivo": "src/lib/reforma-tributaria/regras.ts",
     "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/telemetry.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 260
+    "commits": 261
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4000,
+  "arquivos_total": 4001,
   "arquivos_codigo": 2491,
   "linhas_codigo": 444338,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 317,
-  "migrations": 1064,
+  "migrations": 1065,
   "cron_jobs": 22,
   "testes": 486,
   "workflows": 20,

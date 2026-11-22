@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d32ac55f6b6accbdb0e6db10e87948d59ab4aeb7` (2026-11-22T00:01:10-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `7db0fc453aee4a6d51d15e593c016d25272e6903` (2026-11-22T00:12:27-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2372), SQL (1136), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2372), SQL (1137), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4000 |
+| arquivos_total | 4001 |
 | arquivos_codigo | 2491 |
 | linhas_codigo | 444338 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 274 |
 | edge_functions | 106 |
 | tabelas | 317 |
-| migrations | 1064 |
+| migrations | 1065 |
 | cron_jobs | 22 |
 | testes | 486 |
 | workflows | 20 |
@@ -466,16 +466,16 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - .github/workflows/ci.yml (21)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- supabase/functions/asaas-proxy/index.ts (11)
-- env.manifest.json (10)
+- supabase/functions/asaas-proxy/index.ts (10)
+- env.manifest.json (9)
 - .github/workflows/prod-migrate.yml (8)
 - analise-prs/progresso.json (8)
 - scripts/automation.config.json (8)
-- supabase/functions/n8n-callback/index.ts (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - scripts/security/test-canonical-db-gates.mjs (7)
 - src/App.tsx (7)
-- supabase/functions/bitrix24-sync/index.ts (7)
+- supabase/functions/n8n-callback/index.ts (7)
+- .github/workflows/schema-drift.yml (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `7db0fc4` infra: grupo IS por item (etapa 34 RT/RFB) (#513)
 - 2026-11-22 `d32ac55` infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)
 - 2026-11-21 `96b4a9b` infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)
 - 2026-11-21 `e76f879` infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `d11416f` fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)
 - 2026-11-21 `d1fc1cf` fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)
 - 2026-11-21 `ab226ac` feat: selo "simulado" em CBS/IBS na UI (etapa 18 RT)
-- 2026-11-21 `9cd4c84` docs: plano 100 etapas RT/RFB e avaliações técnicas
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
