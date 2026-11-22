@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `81d3613ea2` · branch `main` · 2026-11-22 03:51 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4d50a6fc7a` · branch `main` · 2026-11-22 05:00 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -917,6 +917,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_sincronizar_conta_partida | BEFORE INSERT OR UPDATE OF CONTA_ID, CONTA_CONTABIL_ID | `partidas_contabeis` | `sincronizar_conta_partida` |  |
 | trg_contabilizar_movimentacao | AFTER INSERT | `movimentacoes` | `contabilizar_movimentacao` |  |
 | tr_user_preferences_updated_at | BEFORE UPDATE | `user_preferences` | `handle_updated_at` |  |
+| notas_fiscais_verifica_totais_ibscbs | BEFORE INSERT OR UPDATE OF V_BC_IBSCBS, V_IBS, V_IBS_UF, V_IBS_MUN, V_CBS, V_IS | `notas_fiscais` | `verificar_totais_ibscbs_nota` |  |
+| notas_fiscais_itens_verifica_totais_ibscbs | AFTER INSERT OR UPDATE OR DELETE | `notas_fiscais_itens` | `verificar_totais_ibscbs_item` |  |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -1069,6 +1071,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `aprovar_solicitacao_pagamento` | conta_pagar_inacessivel | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
 | `aprovar_solicitacao_pagamento` | solicitacao_inacessivel | `supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql` |
 | `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql` |
+| `verificar_totais_ibscbs_nota` | rejeicao_1091_total_divergente_dos_itens | `supabase/migrations/20261122021500_totais_nota_ibscbs.sql` |
+| `verificar_totais_ibscbs_por_id` | rejeicao_1091_total_divergente_dos_itens | `supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql` |
 
 ## E. Estados, máquinas de estado e transições
 

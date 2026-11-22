@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1065,
+ "migrations": 1067,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -548,6 +548,9 @@
   "validar_partidas_dobradas",
   "validate_saved_filter_subscription_rules",
   "validate_user_anomalia_preferences",
+  "verificar_totais_ibscbs_item",
+  "verificar_totais_ibscbs_nota",
+  "verificar_totais_ibscbs_por_id",
   "watch_cron_failures",
   "webhook_claim",
   "webhook_dequeue_retries",
@@ -1724,6 +1727,13 @@
    "evento": "update",
    "tabela": "notas_fiscais",
    "funcao": "update_updated_at_column"
+  },
+  {
+   "nome": "notas_fiscais_itens_verifica_totais_ibscbs",
+   "quando": "after",
+   "evento": "insert or update or delete",
+   "tabela": "notas_fiscais_itens",
+   "funcao": "verificar_totais_ibscbs_item"
   },
   {
    "nome": "trg_nf_ocr_updated_at",
@@ -30567,6 +30577,48 @@
      "default": "now()",
      "ref": null
     },
+    "v_bc_ibscbs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_cbs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_ibs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_ibs_mun": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_ibs_uf": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_is": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "valor": {
      "tipo": "numeric",
      "nn": false,
@@ -30744,7 +30796,13 @@
      "asaas_xml_url",
      "asaas_rps_number",
      "bitrix_deal_id",
-     "observacoes"
+     "observacoes",
+     "v_bc_ibscbs",
+     "v_ibs",
+     "v_ibs_uf",
+     "v_ibs_mun",
+     "v_cbs",
+     "v_is"
     ],
     "so_no_types": []
    },
@@ -30977,7 +31035,9 @@
    "criada_em": "20261122020000_cria_notas_fiscais_itens.sql",
    "usada_no_front": 0,
    "usada_em_edges": [],
-   "triggers": [],
+   "triggers": [
+    "notas_fiscais_itens_verifica_totais_ibscbs"
+   ],
    "sem_rls": false,
    "nao_usada": true
   },

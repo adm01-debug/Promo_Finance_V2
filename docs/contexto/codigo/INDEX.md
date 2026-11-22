@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `81d3613ea203e64348ee164df0a73cbc9ba612c4` (2026-11-22T00:51:05-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4d50a6fc7acd9c45ee0d867345c7dd73839e2764` (2026-11-22T01:59:35-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2372), SQL (1137), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2372), SQL (1140), Markdown (222), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4001 |
+| arquivos_total | 4004 |
 | arquivos_codigo | 2491 |
 | linhas_codigo | 444349 |
 | rotas | 130 |
@@ -46,9 +46,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 274 |
 | edge_functions | 106 |
 | tabelas | 317 |
-| migrations | 1065 |
+| migrations | 1067 |
 | cron_jobs | 22 |
-| testes | 486 |
+| testes | 487 |
 | workflows | 20 |
 | scripts | 116 |
 | docs_md | 222 |
@@ -466,8 +466,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - .github/workflows/ci.yml (21)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- supabase/functions/asaas-proxy/index.ts (10)
 - env.manifest.json (9)
+- supabase/functions/asaas-proxy/index.ts (9)
 - .github/workflows/prod-migrate.yml (8)
 - analise-prs/progresso.json (8)
 - scripts/automation.config.json (8)
@@ -634,6 +634,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-22 `4d50a6f` infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)
 - 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
 - 2026-11-22 `2463d97` fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS
 - 2026-11-22 `7db0fc4` infra: grupo IS por item (etapa 34 RT/RFB) (#513)
@@ -648,7 +649,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-21 `9e6fc7b` feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)
 - 2026-11-21 `2a68642` fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação
 - 2026-11-21 `1a51242` feat: fluxo completo de alíquota customizada do Imposto Seletivo — migration + persistência + UI nos 3 fluxos (#499)
-- 2026-11-21 `d11416f` fix: IBS não herda selo/fundamento da CBS; glossário sem % fixos; acessibilidade (#504)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

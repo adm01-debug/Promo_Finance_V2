@@ -5,7 +5,7 @@
   "vitest",
   "playwright"
  ],
- "total": 486,
+ "total": 487,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
@@ -4325,6 +4325,7 @@
   "supabase/tests/sql/infra.test.sql",
   "supabase/tests/sql/integrity_cycle.test.sql",
   "supabase/tests/sql/lint_function_repairs.test.sql",
+  "supabase/tests/sql/notas_fiscais_totais_ibscbs.test.sql",
   "supabase/tests/sql/overloads.test.sql",
   "supabase/tests/sql/rls_multi_empresa.sql"
  ],

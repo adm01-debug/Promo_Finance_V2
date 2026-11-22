@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "81d3613ea203e64348ee164df0a73cbc9ba612c4",
+  "commit": "4d50a6fc7acd9c45ee0d867345c7dd73839e2764",
   "branch": "main",
-  "data_commit": "2026-11-22T00:51:05-03:00",
+  "data_commit": "2026-11-22T01:59:35-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "4d50a6f",
+    "data": "2026-11-22",
+    "assunto": "infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)"
+   },
    {
     "sha": "81d3613",
     "data": "2026-11-22",
@@ -126,14 +131,9 @@
     "sha": "5788349",
     "data": "2026-11-21",
     "assunto": "chore(docs): plano de melhorias de cadastro fiscal e resiliência em 100 etapas (#494)"
-   },
-   {
-    "sha": "f22be43",
-    "data": "2026-11-21",
-    "assunto": "infra(receitafederal): workflow de vigilância de versões upstream RFB (#491)"
    }
   ],
-  "arquivos_mudados_7d": 497,
+  "arquivos_mudados_7d": 500,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -218,11 +218,11 @@
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 10
+    "arquivo": "env.manifest.json",
+    "mudancas": 9
    },
    {
-    "arquivo": "env.manifest.json",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 9
    },
    {
@@ -262,6 +262,10 @@
     "mudancas": 6
    },
    {
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "mudancas": 6
+   },
+   {
     "arquivo": "scripts/migrate-functions.sh",
     "mudancas": 6
    },
@@ -292,16 +296,12 @@
    {
     "arquivo": "deno.lock",
     "mudancas": 5
-   },
-   {
-    "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
-    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 263
+    "commits": 264
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4001,
+  "arquivos_total": 4004,
   "arquivos_codigo": 2491,
   "linhas_codigo": 444349,
   "rotas": 130,
@@ -330,9 +330,9 @@
   "hooks": 274,
   "edge_functions": 106,
   "tabelas": 317,
-  "migrations": 1065,
+  "migrations": 1067,
   "cron_jobs": 22,
-  "testes": 486,
+  "testes": 487,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 222

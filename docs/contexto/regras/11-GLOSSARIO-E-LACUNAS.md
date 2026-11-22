@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `81d3613ea2` · branch `main` · 2026-11-22 03:51 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4d50a6fc7a` · branch `main` · 2026-11-22 05:00 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -173,7 +173,7 @@
 | `new_device_alerts` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `nfe_eventos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `nfe_recebidas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 28 colunas | migration |
-| `notas_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 16 colunas | migration |
+| `notas_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
 | `notas_fiscais_itens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 28 colunas | migration |
 | `notas_fiscais_ocr` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 12 colunas | migration |
