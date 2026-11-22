@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `96b4a9bb70` · branch `main` · 2026-11-22 02:53 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d32ac55f6b` · branch `main` · 2026-11-22 03:01 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2314 linhas — lista completa em `context.json` | | |
+| … +2315 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 

@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)",
    "infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)",
    "infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)",
    "infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)",
-   "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)",
-   "docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)"
+   "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

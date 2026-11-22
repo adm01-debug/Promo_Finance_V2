@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "96b4a9bb707bc392bd462f251b7a1b8dbf963e58",
+  "sha": "d32ac55f6b6accbdb0e6db10e87948d59ab4aeb7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-22 02:53 UTC",
-  "files_total": 4038,
-  "code_files": 3627,
-  "code_lines": 515526
+  "generated_at": "2026-11-22 03:01 UTC",
+  "files_total": 4039,
+  "code_files": 3628,
+  "code_lines": 515548
  },
  "version": "1.3.2",
- "facts_hash": "bccacac694fa09b4",
+ "facts_hash": "b89b3edb995c66e8",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,7 +341,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1255,
-   ".sql": 1135,
+   ".sql": 1136,
    ".tsx": 1117,
    ".mjs": 67,
    ".py": 45,
@@ -28343,10 +28343,95 @@
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql"
+     },
+     {
+      "name": "cst_ibscbs",
+      "type": "character(3)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "cclasstrib",
+      "type": "character(6)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "v_bc_ibscbs",
+      "type": "numeric(15,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "p_ibs_uf",
+      "type": "numeric(5,4)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "v_ibs_uf",
+      "type": "numeric(15,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "p_ibs_mun",
+      "type": "numeric(5,4)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "v_ibs_mun",
+      "type": "numeric(15,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "p_cbs",
+      "type": "numeric(5,4)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "v_cbs",
+      "type": "numeric(15,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "v_ibs",
+      "type": "numeric(15,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "p_red_aliq",
+      "type": "numeric(5,4)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+     },
+     {
+      "name": "p_aliq_efet",
+      "type": "numeric(5,4)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
      }
     ],
     "constraints": [
-     "constraint notas_fiscais_itens_nota_item_uk unique (nota_fiscal_id, n_item)"
+     "constraint notas_fiscais_itens_nota_item_uk unique (nota_fiscal_id, n_item)",
+     "constraint notas_fiscais_itens_v_ibs_soma_ck check ( v_ibs is null or (v_ibs_uf is not null and v_ibs_mun is not null and v_ibs = v_ibs_uf + v_ibs_mun) )"
     ],
     "src": "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
     "comment": "",
@@ -51032,6 +51117,7 @@
    "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
    "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
    "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql",
+   "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql",
    "supabase/migrations/20261122022000_creditos_origem_efeito_tributario.sql",
    "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
    "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
@@ -71614,8 +71700,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1063,
-   "lines": 81710,
+   "files": 1064,
+   "lines": 81732,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -99881,6 +99967,11 @@
     "table": "notas_fiscais_itens",
     "column": "(tabela)",
     "rule": "constraint notas_fiscais_itens_nota_item_uk unique (nota_fiscal_id, n_item)"
+   },
+   {
+    "table": "notas_fiscais_itens",
+    "column": "(tabela)",
+    "rule": "constraint notas_fiscais_itens_v_ibs_soma_ck check ( v_ibs is null or (v_ibs_uf is not null and v_ibs_mun is not null and v_ibs = v_ibs_uf + v_ibs_mun) )"
    },
    {
     "table": "catalogo_cclasstrib",
@@ -246048,6 +246139,10 @@
    "path": "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql",
    "lines": 12
   },
+  "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql": {
+   "path": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql",
+   "lines": 22
+  },
   "supabase/migrations/20261122022000_creditos_origem_efeito_tributario.sql": {
    "path": "supabase/migrations/20261122022000_creditos_origem_efeito_tributario.sql",
    "lines": 12
@@ -246182,10 +246277,19 @@
   }
  },
  "git": {
-  "sha": "96b4a9bb707bc392bd462f251b7a1b8dbf963e58",
+  "sha": "d32ac55f6b6accbdb0e6db10e87948d59ab4aeb7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d32ac55",
+    "date": "2026-11-22",
+    "author": "adm01-debug",
+    "subject": "infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)",
+    "files": [
+     "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
+    ]
+   },
    {
     "sha": "96b4a9b",
     "date": "2026-11-21",
@@ -246537,15 +246641,6 @@
      "supabase/functions/calcular-slo-metrics-diario/index.test.ts",
      "supabase/functions/calcular-slo-metrics-diario/index.ts",
      "supabase/migrations/20261120130000_add_servico_slo_metrics_diarias.sql"
-    ]
-   },
-   {
-    "sha": "11779f6",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "chore(db): quorum de aprovação por assinaturas (#6b) — DDL (#483)",
-    "files": [
-     "supabase/migrations/20261120235900_quorum_aprovacao_assinaturas.sql"
     ]
    }
   ],

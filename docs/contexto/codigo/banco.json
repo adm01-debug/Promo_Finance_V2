@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1063,
+ "migrations": 1064,
  "seeds": [],
  "avisos": [
   "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -30765,6 +30765,13 @@
      "default": null,
      "ref": null
     },
+    "cclasstrib": {
+     "tipo": "character(6)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "cfop": {
      "tipo": "character varying(4)",
      "nn": true,
@@ -30777,6 +30784,13 @@
      "nn": true,
      "pk": false,
      "default": "now()",
+     "ref": null
+    },
+    "cst_ibscbs": {
+     "tipo": "character(3)",
+     "nn": false,
+     "pk": false,
+     "default": null,
      "ref": null
     },
     "id": {
@@ -30807,11 +30821,81 @@
      "default": null,
      "ref": "notas_fiscais"
     },
+    "p_aliq_efet": {
+     "tipo": "numeric(5,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "p_cbs": {
+     "tipo": "numeric(5,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "p_ibs_mun": {
+     "tipo": "numeric(5,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "p_ibs_uf": {
+     "tipo": "numeric(5,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "p_red_aliq": {
+     "tipo": "numeric(5,4)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "q_com": {
      "tipo": "numeric(15,4)",
      "nn": true,
      "pk": false,
      "default": "0",
+     "ref": null
+    },
+    "v_bc_ibscbs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_cbs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_ibs": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_ibs_mun": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "v_ibs_uf": {
+     "tipo": "numeric(15,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
      "ref": null
     },
     "v_prod": {
