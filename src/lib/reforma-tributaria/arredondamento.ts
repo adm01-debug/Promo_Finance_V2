@@ -23,7 +23,7 @@ export function arredondar(valor: number, casas = 2): number {
   // Aritmética inteira a 10× a precisão-alvo evita falsos empates por float binário.
   const valorShift10 = Math.round(valor * fator * 10);
   const resto10 = ((valorShift10 % 10) + 10) % 10; // 0-9, correto p/ negativos
-  const inteiro = (valorShift10 - resto10) / 10;    // truncado na precisão alvo
+  const inteiro = (valorShift10 - resto10) / 10; // truncado na precisão alvo
 
   // Empate exato (x.5): arredonda para par (banker's rounding)
   if (resto10 === 5) {
