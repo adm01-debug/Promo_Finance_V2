@@ -3476,6 +3476,138 @@ export type Database = {
           },
         ];
       };
+      catalogo_aliquota_referencia: {
+        Row: {
+          aliquota: number;
+          ano: number;
+          carregado_em: string;
+          fonte: string;
+          id: string;
+          municipio_ibge: string | null;
+          tributo: string;
+          uf: string | null;
+        };
+        Insert: {
+          aliquota: number;
+          ano: number;
+          carregado_em?: string;
+          fonte?: string;
+          id?: string;
+          municipio_ibge?: string | null;
+          tributo: string;
+          uf?: string | null;
+        };
+        Update: {
+          aliquota?: number;
+          ano?: number;
+          carregado_em?: string;
+          fonte?: string;
+          id?: string;
+          municipio_ibge?: string | null;
+          tributo?: string;
+          uf?: string | null;
+        };
+        Relationships: [];
+      };
+      catalogo_cclasstrib: {
+        Row: {
+          cclasstrib: string;
+          created_at: string;
+          cst: string;
+          descricao: string;
+          exige_gibscbs: boolean;
+          fim_vigencia: string | null;
+          ind_dir: number | null;
+          inicio_vigencia: string;
+          p_red_cbs: number;
+          p_red_ibs_mun: number;
+          p_red_ibs_uf: number;
+          versao_it: string;
+        };
+        Insert: {
+          cclasstrib: string;
+          created_at?: string;
+          cst: string;
+          descricao: string;
+          exige_gibscbs?: boolean;
+          fim_vigencia?: string | null;
+          ind_dir?: number | null;
+          inicio_vigencia: string;
+          p_red_cbs?: number;
+          p_red_ibs_mun?: number;
+          p_red_ibs_uf?: number;
+          versao_it: string;
+        };
+        Update: {
+          cclasstrib?: string;
+          created_at?: string;
+          cst?: string;
+          descricao?: string;
+          exige_gibscbs?: boolean;
+          fim_vigencia?: string | null;
+          ind_dir?: number | null;
+          inicio_vigencia?: string;
+          p_red_cbs?: number;
+          p_red_ibs_mun?: number;
+          p_red_ibs_uf?: number;
+          versao_it?: string;
+        };
+        Relationships: [];
+      };
+      catalogo_nbs: {
+        Row: {
+          carregado_em: string;
+          descricao: string;
+          fim_vigencia: string | null;
+          fonte: string;
+          inicio_vigencia: string;
+          nbs: string;
+        };
+        Insert: {
+          carregado_em?: string;
+          descricao: string;
+          fim_vigencia?: string | null;
+          fonte?: string;
+          inicio_vigencia: string;
+          nbs: string;
+        };
+        Update: {
+          carregado_em?: string;
+          descricao?: string;
+          fim_vigencia?: string | null;
+          fonte?: string;
+          inicio_vigencia?: string;
+          nbs?: string;
+        };
+        Relationships: [];
+      };
+      catalogo_ncm: {
+        Row: {
+          carregado_em: string;
+          descricao: string;
+          fim_vigencia: string | null;
+          fonte: string;
+          inicio_vigencia: string;
+          ncm: string;
+        };
+        Insert: {
+          carregado_em?: string;
+          descricao: string;
+          fim_vigencia?: string | null;
+          fonte?: string;
+          inicio_vigencia: string;
+          ncm: string;
+        };
+        Update: {
+          carregado_em?: string;
+          descricao?: string;
+          fim_vigencia?: string | null;
+          fonte?: string;
+          inicio_vigencia?: string;
+          ncm?: string;
+        };
+        Relationships: [];
+      };
       catalogos_fiscais_cargas: {
         Row: {
           checksum: string | null;
@@ -4966,6 +5098,7 @@ export type Database = {
       creditos_tributarios: {
         Row: {
           aliquota: number | null;
+          ano_fato_gerador: number | null;
           apuracao_id: string | null;
           competencia_origem: string | null;
           competencia_utilizacao: string | null;
@@ -4974,6 +5107,7 @@ export type Database = {
           documento_chave: string | null;
           documento_numero: string | null;
           documento_tipo: string | null;
+          efeito_tributario: boolean;
           empresa_id: string | null;
           fornecedor_cnpj: string | null;
           fornecedor_id: string | null;
@@ -4981,6 +5115,7 @@ export type Database = {
           id: string;
           nota_fiscal_id: string | null;
           observacoes: string | null;
+          origem: Database['public']['Enums']['origem_credito_tributario'];
           saldo_disponivel: number;
           status: string | null;
           tipo_credito: string | null;
@@ -4991,6 +5126,7 @@ export type Database = {
         };
         Insert: {
           aliquota?: number | null;
+          ano_fato_gerador?: number | null;
           apuracao_id?: string | null;
           competencia_origem?: string | null;
           competencia_utilizacao?: string | null;
@@ -4999,6 +5135,7 @@ export type Database = {
           documento_chave?: string | null;
           documento_numero?: string | null;
           documento_tipo?: string | null;
+          efeito_tributario?: boolean;
           empresa_id?: string | null;
           fornecedor_cnpj?: string | null;
           fornecedor_id?: string | null;
@@ -5006,6 +5143,7 @@ export type Database = {
           id?: string;
           nota_fiscal_id?: string | null;
           observacoes?: string | null;
+          origem?: Database['public']['Enums']['origem_credito_tributario'];
           saldo_disponivel?: number;
           status?: string | null;
           tipo_credito?: string | null;
@@ -5016,6 +5154,7 @@ export type Database = {
         };
         Update: {
           aliquota?: number | null;
+          ano_fato_gerador?: number | null;
           apuracao_id?: string | null;
           competencia_origem?: string | null;
           competencia_utilizacao?: string | null;
@@ -5024,6 +5163,7 @@ export type Database = {
           documento_chave?: string | null;
           documento_numero?: string | null;
           documento_tipo?: string | null;
+          efeito_tributario?: boolean;
           empresa_id?: string | null;
           fornecedor_cnpj?: string | null;
           fornecedor_id?: string | null;
@@ -5031,6 +5171,7 @@ export type Database = {
           id?: string;
           nota_fiscal_id?: string | null;
           observacoes?: string | null;
+          origem?: Database['public']['Enums']['origem_credito_tributario'];
           saldo_disponivel?: number;
           status?: string | null;
           tipo_credito?: string | null;
@@ -10167,6 +10308,12 @@ export type Database = {
           numero: string | null;
           serie: string | null;
           status: string | null;
+          v_bc_ibscbs: number | null;
+          v_cbs: number | null;
+          v_ibs: number | null;
+          v_ibs_mun: number | null;
+          v_ibs_uf: number | null;
+          v_is: number | null;
           valor_desconto: number;
           valor_frete: number;
           valor_icms: number | null;
@@ -10185,6 +10332,12 @@ export type Database = {
           numero?: string | null;
           serie?: string | null;
           status?: string | null;
+          v_bc_ibscbs?: number | null;
+          v_cbs?: number | null;
+          v_ibs?: number | null;
+          v_ibs_mun?: number | null;
+          v_ibs_uf?: number | null;
+          v_is?: number | null;
           valor_desconto?: number;
           valor_frete?: number;
           valor_icms?: number | null;
@@ -10203,6 +10356,12 @@ export type Database = {
           numero?: string | null;
           serie?: string | null;
           status?: string | null;
+          v_bc_ibscbs?: number | null;
+          v_cbs?: number | null;
+          v_ibs?: number | null;
+          v_ibs_mun?: number | null;
+          v_ibs_uf?: number | null;
+          v_is?: number | null;
           valor_desconto?: number;
           valor_frete?: number;
           valor_icms?: number | null;
@@ -10245,6 +10404,107 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'vw_tributario_dashboard';
             referencedColumns: ['empresa_id'];
+          },
+        ];
+      };
+      notas_fiscais_itens: {
+        Row: {
+          ad_rem_is: number | null;
+          c_prod: string;
+          cclasstrib: string | null;
+          cclasstrib_is: string | null;
+          cfop: string;
+          created_at: string;
+          cst_ibscbs: string | null;
+          cst_is: string | null;
+          id: string;
+          n_item: number;
+          ncm: string;
+          nota_fiscal_id: string;
+          p_aliq_efet: number | null;
+          p_cbs: number | null;
+          p_ibs_mun: number | null;
+          p_ibs_uf: number | null;
+          p_is: number | null;
+          p_red_aliq: number | null;
+          q_com: number;
+          v_bc_ibscbs: number | null;
+          v_bc_is: number | null;
+          v_cbs: number | null;
+          v_ibs: number | null;
+          v_ibs_mun: number | null;
+          v_ibs_uf: number | null;
+          v_is: number | null;
+          v_prod: number;
+          v_un_com: number;
+        };
+        Insert: {
+          ad_rem_is?: number | null;
+          c_prod: string;
+          cclasstrib?: string | null;
+          cclasstrib_is?: string | null;
+          cfop: string;
+          created_at?: string;
+          cst_ibscbs?: string | null;
+          cst_is?: string | null;
+          id?: string;
+          n_item: number;
+          ncm: string;
+          nota_fiscal_id: string;
+          p_aliq_efet?: number | null;
+          p_cbs?: number | null;
+          p_ibs_mun?: number | null;
+          p_ibs_uf?: number | null;
+          p_is?: number | null;
+          p_red_aliq?: number | null;
+          q_com?: number;
+          v_bc_ibscbs?: number | null;
+          v_bc_is?: number | null;
+          v_cbs?: number | null;
+          v_ibs?: number | null;
+          v_ibs_mun?: number | null;
+          v_ibs_uf?: number | null;
+          v_is?: number | null;
+          v_prod?: number;
+          v_un_com?: number;
+        };
+        Update: {
+          ad_rem_is?: number | null;
+          c_prod?: string;
+          cclasstrib?: string | null;
+          cclasstrib_is?: string | null;
+          cfop?: string;
+          created_at?: string;
+          cst_ibscbs?: string | null;
+          cst_is?: string | null;
+          id?: string;
+          n_item?: number;
+          ncm?: string;
+          nota_fiscal_id?: string;
+          p_aliq_efet?: number | null;
+          p_cbs?: number | null;
+          p_ibs_mun?: number | null;
+          p_ibs_uf?: number | null;
+          p_is?: number | null;
+          p_red_aliq?: number | null;
+          q_com?: number;
+          v_bc_ibscbs?: number | null;
+          v_bc_is?: number | null;
+          v_cbs?: number | null;
+          v_ibs?: number | null;
+          v_ibs_mun?: number | null;
+          v_ibs_uf?: number | null;
+          v_is?: number | null;
+          v_prod?: number;
+          v_un_com?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notas_fiscais_itens_nota_fiscal_id_fkey';
+            columns: ['nota_fiscal_id'];
+            isOneToOne: false;
+            referencedRelation: 'notas_fiscais';
+            referencedColumns: ['id'];
           },
         ];
       };
@@ -19316,6 +19576,7 @@ export type Database = {
         | 'REJECTED'
         | 'EXPIRED';
       org_papel: 'RESPONSAVEL' | 'ADMIN' | 'MEMBRO' | 'LEITOR';
+      origem_credito_tributario: 'xml_destacado' | 'estimado' | 'manual';
       prioridade_alerta: 'baixa' | 'media' | 'alta' | 'critica';
       regiao_brasil: 'NORTE' | 'NORDESTE' | 'CENTRO_OESTE' | 'SUDESTE' | 'SUL';
       regime_tributario_enum: 'MEI' | 'SIMPLES' | 'PRESUMIDO' | 'REAL' | 'ARBITRADO';
@@ -19570,6 +19831,7 @@ export const Constants = {
         'EXPIRED',
       ],
       org_papel: ['RESPONSAVEL', 'ADMIN', 'MEMBRO', 'LEITOR'],
+      origem_credito_tributario: ['xml_destacado', 'estimado', 'manual'],
       prioridade_alerta: ['baixa', 'media', 'alta', 'critica'],
       regiao_brasil: ['NORTE', 'NORDESTE', 'CENTRO_OESTE', 'SUDESTE', 'SUL'],
       regime_tributario_enum: ['MEI', 'SIMPLES', 'PRESUMIDO', 'REAL', 'ARBITRADO'],
