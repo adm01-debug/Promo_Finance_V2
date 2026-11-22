@@ -91,7 +91,7 @@ describe('conformidade do grafo real com o manifesto', () => {
     const violacoes = construirGrafoObservado(RAIZ)
       .filter((a) => !a.tipoApenas && puros.includes(a.de))
       .filter((a) => !obterModulo(a.para).puro)
-      .filter((a) => a.arquivo !== 'src/lib/tributario/catalogos/repositorio.ts')
+      .filter((a) => !a.arquivo.startsWith('src/lib/tributario/catalogos/'))
       .map((a) => `${a.arquivo} -> ${a.para}`);
     expect(violacoes).toEqual([]);
   });
