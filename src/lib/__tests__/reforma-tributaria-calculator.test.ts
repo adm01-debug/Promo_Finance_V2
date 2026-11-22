@@ -10,11 +10,9 @@ import {
   simularComparativo,
   type DadosOperacao,
 } from '../reforma-tributaria-calculator';
+import { arredondar, calcularComArredondamento } from '../reforma-tributaria/arredondamento';
 
 describe('Reforma Tributária Calculator', () => {
-  // ========================
-  // determinarFaseTransicao
-  // ========================
   describe('determinarFaseTransicao', () => {
     it('2025 → 2026_teste', () => expect(determinarFaseTransicao(2025)).toBe('2026_teste'));
     it('2026 → 2026_teste', () => expect(determinarFaseTransicao(2026)).toBe('2026_teste'));
@@ -28,9 +26,6 @@ describe('Reforma Tributária Calculator', () => {
     it('2040 → 2033_pleno', () => expect(determinarFaseTransicao(2040)).toBe('2033_pleno'));
   });
 
-  // ========================
-  // obterAliquotasTransicao
-  // ========================
   describe('obterAliquotasTransicao', () => {
     it('ano < 2026 retorna zerado com residuais 100%', () => {
       const aliq = obterAliquotasTransicao(2024);
@@ -39,7 +34,6 @@ describe('Reforma Tributária Calculator', () => {
       expect(aliq.icmsResidual).toBe(100);
       expect(aliq.pisResidual).toBe(100);
     });
-
     it('ano > 2033 retorna alíquotas plenas sem residuais', () => {
       const aliq = obterAliquotasTransicao(2040);
       expect(aliq.cbs).toBeGreaterThan(0);
@@ -47,7 +41,6 @@ describe('Reforma Tributária Calculator', () => {
       expect(aliq.icmsResidual).toBe(0);
       expect(aliq.pisResidual).toBe(0);
     });
-
     it('retorna objeto com campos obrigatórios', () => {
       const aliq = obterAliquotasTransicao(2029);
       expect(aliq).toHaveProperty('ano');
@@ -58,28 +51,22 @@ describe('Reforma Tributária Calculator', () => {
     });
   });
 
-  // ========================
-  // aplicarRegimeEspecial
-  // ========================
   describe('aplicarRegimeEspecial', () => {
     it('sem regime retorna alíquotas originais', () => {
       const r = aplicarRegimeEspecial(8.8, 17.7);
       expect(r.cbs).toBe(8.8);
       expect(r.ibs).toBe(17.7);
     });
-
     it('regime "nenhum" retorna alíquotas originais', () => {
       const r = aplicarRegimeEspecial(8.8, 17.7, 'nenhum');
       expect(r.cbs).toBe(8.8);
       expect(r.ibs).toBe(17.7);
     });
-
     it('regime especial reduz alíquotas', () => {
       const r = aplicarRegimeEspecial(8.8, 17.7, 'zona_franca_manaus');
       expect(r.cbs).toBeLessThanOrEqual(8.8);
       expect(r.ibs).toBeLessThanOrEqual(17.7);
     });
-
     it('regime inexistente retorna original', () => {
       const r = aplicarRegimeEspecial(8.8, 17.7, 'regime_fake' as any);
       expect(r.cbs).toBe(8.8);
@@ -87,27 +74,19 @@ describe('Reforma Tributária Calculator', () => {
     });
   });
 
-  // ========================
-  // obterAliquotaIS
-  // ========================
   describe('obterAliquotaIS', () => {
     it('sem categoria retorna 0', () => {
       expect(obterAliquotaIS()).toBe(0);
     });
-
     it('alíquota customizada tem prioridade', () => {
       expect(obterAliquotaIS('bebidas_alcoolicas', 25)).toBe(25);
     });
-
     it('categoria sem alíquota customizada retorna 0 — lei não fixa alíquota por categoria', () => {
       const aliq = obterAliquotaIS('bebidas_alcoolicas');
       expect(aliq).toBe(0);
     });
   });
 
-  // ========================
-  // verificarIsencao
-  // ========================
   describe('verificarIsencao', () => {
     const dadosBase: DadosOperacao = {
       valorOperacao: 10000,
@@ -116,29 +95,24 @@ describe('Reforma Tributária Calculator', () => {
       ufDestino: 'RJ',
       cfop: '5102',
     };
-
     it('operação normal não é isenta', () => {
       const r = verificarIsencao(dadosBase);
       expect(r.isento).toBe(false);
     });
-
     it('exportação é isenta', () => {
       const r = verificarIsencao({ ...dadosBase, isExportacao: true });
       expect(r.isento).toBe(true);
       expect(r.motivo).toContain('Exportação');
     });
-
     it('CFOP 7xxx (exportação) é isento', () => {
       const r = verificarIsencao({ ...dadosBase, cfop: '7101' });
       expect(r.isento).toBe(true);
     });
-
     it('CFOP 7651 (combustível exportação) é isento', () => {
       const r = verificarIsencao({ ...dadosBase, cfop: '7651' });
       expect(r.isento).toBe(true);
       expect(r.manutencaoCredito).toBe(true);
     });
-
     it('CFOP 7654 (lubrificante exportação) é isento', () => {
       const r = verificarIsencao({ ...dadosBase, cfop: '7654' });
       expect(r.isento).toBe(true);
@@ -146,9 +120,6 @@ describe('Reforma Tributária Calculator', () => {
     });
   });
 
-  // ========================
-  // calcularTributosReforma
-  // ========================
   describe('calcularTributosReforma', () => {
     const dadosVenda: DadosOperacao = {
       valorOperacao: 100000,
@@ -157,26 +128,22 @@ describe('Reforma Tributária Calculator', () => {
       ufDestino: 'RJ',
       cfop: '6102',
     };
-
     it('operação normal calcula CBS e IBS', () => {
       const r = calcularTributosReforma(dadosVenda, 2033);
       expect(r.valorCBS).toBeGreaterThan(0);
       expect(r.valorIBS).toBeGreaterThan(0);
       expect(r.totalTributosNovos).toBe(r.valorCBS + r.valorIBS + r.valorIS);
     });
-
     it('exportação retorna tudo zero', () => {
       const r = calcularTributosReforma({ ...dadosVenda, isExportacao: true }, 2033);
       expect(r.totalTributosNovos).toBe(0);
       expect(r.valorLiquido).toBe(100000);
     });
-
     it('ano 2024 não tem tributos novos', () => {
       const r = calcularTributosReforma(dadosVenda, 2024);
       expect(r.valorCBS).toBe(0);
       expect(r.valorIBS).toBe(0);
     });
-
     it('split payment desligado — valorSplitPaymentCBS === 0 em qualquer ano (arts. 31-35 LC 214/2025)', () => {
       const r2025 = calcularTributosReforma(dadosVenda, 2025);
       const r2026 = calcularTributosReforma(dadosVenda, 2026);
@@ -189,50 +156,41 @@ describe('Reforma Tributária Calculator', () => {
       expect(r2026.valorTotalSplitPayment).toBe(0);
       expect(r2027.valorTotalSplitPayment).toBe(0);
     });
-
-    it('carga tributária percentual é consistente', () => {
-      const r = calcularTributosReforma(dadosVenda, 2033);
-      const cargaEsperada = ((r.totalTributosNovos + r.totalTributosAntigos) / r.valorBase) * 100;
-      expect(r.cargaTributariaPercentual).toBeCloseTo(cargaEsperada, 2);
-    });
-
-    it('detalhamento contém informações úteis', () => {
-      const r = calcularTributosReforma(dadosVenda, 2033);
-      expect(r.detalhamento.length).toBeGreaterThan(0);
-      expect(r.detalhamento.some((d) => d.includes('Base de cálculo'))).toBe(true);
-    });
-
     it('IBS dividido 50% estadual 50% municipal (regime pleno, 2033)', () => {
       const r = calcularTributosReforma(dadosVenda, 2033);
       expect(r.aliquotaIBSEstadual).toBeCloseTo(r.aliquotaIBS * 0.5, 4);
       expect(r.aliquotaIBSMunicipal).toBeCloseTo(r.aliquotaIBS * 0.5, 4);
     });
-
     it('IBS 2026: 100% estadual, 0% municipal (ano-teste, art. 343 LC 214/2025)', () => {
       const r = calcularTributosReforma(dadosVenda, 2026);
       expect(r.aliquotaIBSMunicipal).toBeCloseTo(0, 4);
       expect(r.aliquotaIBSEstadual).toBeCloseTo(r.aliquotaIBS, 4);
     });
-
     it('com IS (bebidas alcoólicas) e alíquota customizada adiciona imposto seletivo', () => {
       const r = calcularTributosReforma(
         { ...dadosVenda, categoriaIS: 'bebidas_alcoolicas', aliquotaISCustomizada: 20 },
         2033
       );
       expect(r.valorIS).toBeGreaterThan(0);
-      expect(r.aliquotaIS).toBeGreaterThan(0);
+      expect(r.aliquotaIS).toBe(20);
     });
-
     it('com IS (categoria) mas sem alíquota informada não aplica imposto — lei não fixa alíquota', () => {
       const r = calcularTributosReforma({ ...dadosVenda, categoriaIS: 'bebidas_alcoolicas' }, 2033);
       expect(r.valorIS).toBe(0);
       expect(r.aliquotaIS).toBe(0);
     });
+    it('carga tributária percentual é consistente', () => {
+      const r = calcularTributosReforma(dadosVenda, 2033);
+      const cargaEsperada = ((r.totalTributosNovos + r.totalTributosAntigos) / r.valorBase) * 100;
+      expect(r.cargaTributariaPercentual).toBeCloseTo(cargaEsperada, 2);
+    });
+    it('detalhamento contém informações úteis', () => {
+      const r = calcularTributosReforma(dadosVenda, 2033);
+      expect(r.detalhamento.length).toBeGreaterThan(0);
+      expect(r.detalhamento.some((d) => d.includes('Base de cálculo'))).toBe(true);
+    });
   });
 
-  // ========================
-  // calcularCreditos
-  // ========================
   describe('calcularCreditos', () => {
     it('calcula créditos CBS e IBS', () => {
       const r = calcularCreditos({
@@ -244,7 +202,6 @@ describe('Reforma Tributária Calculator', () => {
       expect(r.creditoIBS).toBeGreaterThan(0);
       expect(r.creditoTotal).toBe(r.creditoCBS + r.creditoIBS);
     });
-
     it('não-cumulatividade plena ativa', () => {
       const r = calcularCreditos({
         valorAquisicao: 50000,
@@ -253,7 +210,6 @@ describe('Reforma Tributária Calculator', () => {
       });
       expect(r.naoCumulatividadePlena).toBe(true);
     });
-
     it('regime especial pode reduzir crédito', () => {
       const normal = calcularCreditos({
         valorAquisicao: 50000,
@@ -270,9 +226,6 @@ describe('Reforma Tributária Calculator', () => {
     });
   });
 
-  // ========================
-  // simularComparativo
-  // ========================
   describe('simularComparativo', () => {
     const dados = {
       faturamentoAnual: 1000000,
@@ -281,19 +234,16 @@ describe('Reforma Tributária Calculator', () => {
       percentualVendas: 70,
       percentualServicos: 30,
     };
-
     it('retorna comparativo sistema antigo vs novo', () => {
       const r = simularComparativo(dados, 2033);
       expect(r.totalAntigo).toBeGreaterThan(0);
       expect(r.totalNovo).toBeGreaterThan(0);
       expect(r.impacto).toMatch(/economia|aumento|neutro/);
     });
-
     it('diferença absoluta coerente', () => {
       const r = simularComparativo(dados, 2033);
       expect(r.diferencaAbsoluta).toBeCloseTo(r.totalNovo - r.totalAntigo, 2);
     });
-
     it('carga percentual calculada sobre faturamento', () => {
       const r = simularComparativo(dados, 2033);
       expect(r.cargaAntigaPercentual).toBeCloseTo(
@@ -302,11 +252,24 @@ describe('Reforma Tributária Calculator', () => {
       );
       expect(r.cargaNovaPercentual).toBeCloseTo((r.totalNovo / dados.faturamentoAnual) * 100, 2);
     });
-
     it('créditos recuperáveis calculados', () => {
       const r = simularComparativo(dados, 2033);
       expect(r.creditosCBSRecuperaveis).toBeGreaterThanOrEqual(0);
       expect(r.creditosIBSRecuperaveis).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('arredondamento ABNT NBR 5891', () => {
+    it("empate binário: arredondar(5792.945, 2) → 5792.94 (par, banker's rounding)", () => {
+      // 5792.945 × 100 = 579294.5000000001 em IEEE 754
+      // Sem aritmética inteira: Math.round(579294.5000000001) = 579295 → ERRADO
+      // Com aritmética inteira: resto10 === 5, inteiro 579294 é par → trunca → 5792.94
+      expect(arredondar(5792.945, 2)).toBe(5792.94);
+    });
+    it('calcularComArredondamento: R$51.265 × 11,3% → R$5.792,94 (NT 2025.002)', () => {
+      // round2(51265) = 51265; round4(11.3/100) = 0.1130
+      // round2(51265 × 0.1130) = round2(5792.945) = 5792.94
+      expect(calcularComArredondamento(51265, 11.3)).toBe(5792.94);
     });
   });
 });

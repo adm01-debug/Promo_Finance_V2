@@ -1,4 +1,5 @@
 import { CONFIGURACOES_IS, REGIMES_ESPECIAIS } from '@/types/reforma-tributaria';
+import { calcularComArredondamento } from './arredondamento';
 import {
   aplicarRegimeEspecial,
   determinarFaseTransicao,
@@ -61,76 +62,44 @@ export function calcularTributosReforma(
     const reducoes = aplicarRegimeEspecial(aliquotaCBS, aliquotaIBS, dados.regimeEspecial);
     aliquotaCBS = reducoes.cbs;
     aliquotaIBS = reducoes.ibs;
-
     const regimeConfig = REGIMES_ESPECIAIS.find((r) => r.regime === dados.regimeEspecial);
     detalhamento.push(`Regime especial aplicado: ${regimeConfig?.descricao}`);
     detalhamento.push(`Alíquota CBS após redução: ${aliquotaCBS.toFixed(2)}%`);
     detalhamento.push(`Alíquota IBS após redução: ${aliquotaIBS.toFixed(2)}%`);
   }
 
-  const valorCBS = valorBase * (aliquotaCBS / 100);
-  const valorIBS = valorBase * (aliquotaIBS / 100);
+  const valorCBS = calcularComArredondamento(valorBase, aliquotaCBS);
+  const valorIBS = calcularComArredondamento(valorBase, aliquotaIBS);
   const { ibsUf, ibsMun } = aliquotasTransicao;
   const fracaoUf = ibsUf + ibsMun > 0 ? ibsUf / (ibsUf + ibsMun) : 0.5;
   const aliquotaIBSEstadual = aliquotaIBS * fracaoUf;
   const aliquotaIBSMunicipal = aliquotaIBS * (1 - fracaoUf);
 
   const aliquotaIS = obterAliquotaIS(dados.categoriaIS, dados.aliquotaISCustomizada);
-  const valorIS = valorBase * (aliquotaIS / 100);
+  const valorIS = calcularComArredondamento(valorBase, aliquotaIS);
 
-  if (aliquotaIS > 0) {
-    const isConfig = CONFIGURACOES_IS.find((c) => c.categoria === dados.categoriaIS);
-    detalhamento.push(`Imposto Seletivo aplicado: ${isConfig?.descricao} - ${aliquotaIS}%`);
-  }
-
-  const totalTributosNovos = valorCBS + valorIBS + valorIS;
-
-  const aliquotaICMSBase = 18;
-  const aliquotaISSBase = 5;
-  const aliquotaPISBase = 1.65;
-  const aliquotaCOFINSBase = 7.6;
-
-  const icmsResidual =
-    dados.tipoOperacao === 'venda'
-      ? valorBase * (aliquotaICMSBase / 100) * (aliquotasTransicao.icmsResidual / 100)
-      : 0;
-
-  const issResidual =
-    dados.tipoOperacao === 'servico_prestado'
-      ? valorBase * (aliquotaISSBase / 100) * (aliquotasTransicao.issResidual / 100)
-      : 0;
-
-  const pisResidual = valorBase * (aliquotaPISBase / 100) * (aliquotasTransicao.pisResidual / 100);
-  const cofinsResidual =
-    valorBase * (aliquotaCOFINSBase / 100) * (aliquotasTransicao.cofinsResidual / 100);
-
+  // Tributos antigos (regime transitório — percentuais residuais)
+  const icmsResidual = valorBase * (aliquotasTransicao.icmsResidual / 100);
+  const issResidual = valorBase * (aliquotasTransicao.issResidual / 100);
+  const pisResidual = valorBase * (aliquotasTransicao.pisResidual / 100);
+  const cofinsResidual = valorBase * (aliquotasTransicao.cofinsResidual / 100);
   const totalTributosAntigos = icmsResidual + issResidual + pisResidual + cofinsResidual;
 
-  if (totalTributosAntigos > 0) {
-    detalhamento.push(`Tributos residuais (transição): R$ ${totalTributosAntigos.toFixed(2)}`);
-    if (aliquotasTransicao.icmsResidual > 0) {
-      detalhamento.push(
-        `  - ICMS residual (${aliquotasTransicao.icmsResidual}%): R$ ${icmsResidual.toFixed(2)}`
-      );
-    }
-    if (aliquotasTransicao.pisResidual > 0) {
-      detalhamento.push(`  - PIS residual: R$ ${pisResidual.toFixed(2)}`);
-      detalhamento.push(`  - COFINS residual: R$ ${cofinsResidual.toFixed(2)}`);
-    }
-  }
-
+  const totalTributosNovos = valorCBS + valorIBS + valorIS;
   const totalTributos = totalTributosNovos + totalTributosAntigos;
-  const cargaTributariaPercentual = (totalTributos / valorBase) * 100;
+  const cargaTributariaPercentual = valorBase > 0 ? (totalTributos / valorBase) * 100 : 0;
 
-  // arts. 31-35 LC 214/2025: split payment desligado até ato conjunto CMN/BACEN
+  // Split payment desligado até ato conjunto CMN/BACEN (arts. 31-35 LC 214/2025)
   const valorSplitPaymentCBS = 0;
   const valorSplitPaymentIBS = 0;
   const valorTotalSplitPayment = 0;
 
   const valorLiquido = valorBase - totalTributos;
 
-  detalhamento.push(`Total tributos novos: R$ ${totalTributosNovos.toFixed(2)}`);
-  detalhamento.push(`Carga tributária efetiva: ${cargaTributariaPercentual.toFixed(2)}%`);
+  detalhamento.push(`CBS calculado: R$ ${valorCBS.toFixed(2)} (${aliquotaCBS.toFixed(4)}%)`);
+  detalhamento.push(`IBS calculado: R$ ${valorIBS.toFixed(2)} (${aliquotaIBS.toFixed(4)}%)`);
+  if (valorIS > 0) detalhamento.push(`IS calculado: R$ ${valorIS.toFixed(2)} (${aliquotaIS}%)`);
+  detalhamento.push(`Split payment: desligado (arts. 31-35 LC 214/2025)`);
 
   return {
     valorBase,
