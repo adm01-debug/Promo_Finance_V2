@@ -274,7 +274,11 @@
       "webauthn_rp_id": null,
       "webauthn_rp_origins": null
     },
-    "backups_config": null,
+    "backups_config": {
+      "pitr_enabled": false,
+      "region": "us-east-1",
+      "walg_enabled": true
+    },
     "branches": [
       {
         "git_branch": "claude/fix-supabase-preview-cron-260928-1235",
@@ -1699,18 +1703,7 @@
     },
     "url": "https://bwwbeyolnnzppeuhgkcd.supabase.co"
   },
-  "carried": [
-    "api.project",
-    "api.edge_functions",
-    "api.secrets_names",
-    "api.postgrest_config",
-    "api.postgres_config",
-    "api.pooler_config",
-    "api.storage_config",
-    "api.network_restrictions",
-    "api.ssl_enforcement",
-    "api.branches"
-  ],
+  "carried": [],
   "db": {
     "columns": [
       {
@@ -115109,59 +115102,6 @@
     ],
     "webhooks": []
   },
-  "errors": [
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd",
-      "section": "api.project"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/functions",
-      "section": "api.edge_functions"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/secrets",
-      "section": "api.secrets"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/postgrest",
-      "section": "api.postgrest_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/postgres",
-      "section": "api.postgres_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/pooler",
-      "section": "api.pooler_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/storage",
-      "section": "api.storage_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/network-restrictions",
-      "section": "api.network_restrictions"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/ssl-enforcement",
-      "section": "api.ssl_enforcement"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/custom-hostname",
-      "section": "api.custom_hostname"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/branches",
-      "section": "api.branches"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/database/backups",
-      "section": "api.backups"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/health?services=auth,db,pooler,realtime,rest,storage",
-      "section": "api.health"
-    }
-  ],
+  "errors": [],
   "format_version": 2
 }
