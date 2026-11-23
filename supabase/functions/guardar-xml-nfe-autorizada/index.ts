@@ -16,7 +16,7 @@
 // `not_authenticated`. O storage usa service_role porque o bucket nao tem
 // policy de escrita para `authenticated`.
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { z } from '../_shared/zod.ts';
 import { corsHeadersComSegredoPara, exigirUsuarioComEmpresa } from '../_shared/auth-guard.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -31,10 +31,12 @@ const log = createLogger('guardar-xml-nfe-autorizada');
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 
-const CorpoSchema = z.object({
-  bling_nfe_id: z.number().int().positive(),
-  empresa_id: z.string().uuid().optional().nullable(),
-});
+const CorpoSchema = z
+  .object({
+    bling_nfe_id: z.number().int().positive(),
+    empresa_id: z.string().uuid().optional().nullable(),
+  })
+  .strict();
 
 export interface CorpoRequisicao {
   bling_nfe_id: number;
@@ -74,6 +76,27 @@ function texto(v: unknown): string | null {
 }
 
 /**
+ * Soma de `<vProd>` dos itens do XML.
+ *
+ * `valor_produtos` e o campo que a apuracao usa como base do produto; o
+ * `vNF` do total inclui frete/seguro/outros e infla a base. Sem itens no XML
+ * nao ha como separar, entao quem chama usa `valor_total` como fallback.
+ */
+export function somarProdutos(xml: string): number | null {
+  const casados = [...xml.matchAll(/<vProd>([\d.]+)<\/vProd>/g)];
+  if (casados.length === 0) return null;
+  return casados.reduce((soma, m) => soma + Number(m[1]), 0);
+}
+
+/** Compara CNPJ ignorando pontuacao: o cadastro guarda sem, o XML tambem. */
+function mesmoCnpj(a: string | null | undefined, b: string | null | undefined): boolean {
+  const soDigitos = (v: string | null | undefined) => (v ?? '').replace(/\D/g, '');
+  const ca = soDigitos(a);
+  const cb = soDigitos(b);
+  return ca.length === 14 && ca === cb;
+}
+
+/**
  * Monta o `p_nota` da RPC a partir do XML autorizado e do objeto do Bling.
  *
  * Os campos NOT NULL de `notas_fiscais` (`numero`, `serie`, `cliente_nome`,
@@ -107,7 +130,7 @@ export function montarNota(args: {
     cliente_nome: destinatarioDoXml(args.xml) ?? contato?.nome ?? 'Consumidor final',
     cliente_cnpj: nfe?.cnpjDestinatario ?? contato?.numeroDocumento ?? null,
     data_emissao: nfe?.dataEmissao ?? texto(args.bling.dataEmissao) ?? new Date().toISOString(),
-    valor_produtos: valorTotal,
+    valor_produtos: somarProdutos(args.xml) ?? valorTotal,
     valor_total: valorTotal,
     natureza_operacao:
       (typeof natureza === 'object' && natureza ? natureza.descricao : natureza) ??
@@ -191,6 +214,24 @@ export function createHandler(deps?: Partial<Dependencias>) {
       }
       if (!/^\d{44}$/.test(doc.chaveAcesso)) {
         return json(422, { error: 'chave_acesso_invalida' });
+      }
+
+      // A NF-e de saida tem que ser emitida pela empresa da sessao. O `id` do
+      // Bling nao prova dono: a conta do Bling e por usuario, entao outro
+      // emitente gravado aqui subiria XML de terceiro no bucket desta empresa.
+      const { data: empresa } = await clientDoUsuario
+        .from('empresas')
+        .select('cnpj')
+        .eq('id', empresaId)
+        .maybeSingle();
+      if (empresa?.cnpj && doc.cnpjEmitente && !mesmoCnpj(empresa.cnpj, doc.cnpjEmitente)) {
+        log.warn('emitente divergente da empresa', {
+          context: { empresa_id: empresaId, chave: doc.chaveAcesso },
+        });
+        return json(422, {
+          error: 'emitente_divergente',
+          message: 'Esta NF-e foi emitida por outro CNPJ, nao pela empresa selecionada.',
+        });
       }
 
       const admin = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);

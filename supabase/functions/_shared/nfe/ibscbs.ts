@@ -15,6 +15,11 @@
  * o bundle pequeno. Os nomes de elemento seguem o leiaute oficial.
  */
 
+export interface IbscbsRed {
+  pRedAliq?: number;
+  pAliqEfet?: number;
+}
+
 export interface IbscbsItem {
   nItem: number;
   cst?: string;
@@ -27,8 +32,16 @@ export interface IbscbsItem {
   vIBS?: number;
   pCBS?: number;
   vCBS?: number;
+  gRedUF?: IbscbsRed;
+  gRedMun?: IbscbsRed;
+  gRedCBS?: IbscbsRed;
   cstIs?: string;
   cClassTribIs?: string;
+  vBCIs?: number;
+  pIs?: number;
+  pIsEspec?: number;
+  uTrib?: string;
+  qTrib?: number;
   vIS?: number;
 }
 
@@ -52,6 +65,29 @@ function num(raw: string | null | undefined): number | undefined {
   if (raw == null) return undefined;
   const v = Number(raw.trim());
   return Number.isFinite(v) ? v : undefined;
+}
+
+/**
+ * Percentual do XML (11.3) para fração decimal (0.113).
+ *
+ * `pIBSUF`/`pIBSMun`/`pCBS`/`pIS` são alíquotas e a convenção do sistema —
+ * a mesma de `src/lib/nfe/parse-ibscbs.ts` e das colunas `p_*` de
+ * `notas_fiscais_itens` — é fração. Guardar 9 no lugar de 0.09 multiplicaria
+ * a alíquota por 100 em qualquer leitura que use o valor como fator.
+ */
+function toFrac(pct: number | undefined): number | undefined {
+  if (pct === undefined) return undefined;
+  return pct / 100;
+}
+
+/** Lê um `gRed` (TRed): `pRedAliq`/`pAliqEfet` são percentuais. */
+function lerRed(blocoRed: string | undefined): IbscbsRed | undefined {
+  if (!blocoRed) return undefined;
+  const red: IbscbsRed = {
+    pRedAliq: toFrac(num(txt(blocoRed, 'pRedAliq'))),
+    pAliqEfet: toFrac(num(txt(blocoRed, 'pAliqEfet'))),
+  };
+  return red.pRedAliq === undefined && red.pAliqEfet === undefined ? undefined : red;
 }
 
 /**
@@ -108,18 +144,23 @@ export function extrairIbscbs(xml: string): IbscbsNota | null {
         item.vIBS = num(txt(g, 'vIBS'));
         const uf = bloco(g, 'gIBSUF');
         if (uf) {
-          item.pIBSUF = num(txt(uf, 'pIBSUF'));
+          item.pIBSUF = toFrac(num(txt(uf, 'pIBSUF')));
           item.vIBSUF = num(txt(uf, 'vIBSUF'));
+          // Cada tributo tem o seu próprio `gRed`: ler só um descartaria as
+          // reduções dos outros dois (o leiaute TCIBS os define separadamente).
+          item.gRedUF = lerRed(bloco(uf, 'gRed'));
         }
         const mun = bloco(g, 'gIBSMun');
         if (mun) {
-          item.pIBSMun = num(txt(mun, 'pIBSMun'));
+          item.pIBSMun = toFrac(num(txt(mun, 'pIBSMun')));
           item.vIBSMun = num(txt(mun, 'vIBSMun'));
+          item.gRedMun = lerRed(bloco(mun, 'gRed'));
         }
         const cbs = bloco(g, 'gCBS');
         if (cbs) {
-          item.pCBS = num(txt(cbs, 'pCBS'));
+          item.pCBS = toFrac(num(txt(cbs, 'pCBS')));
           item.vCBS = num(txt(cbs, 'vCBS'));
+          item.gRedCBS = lerRed(bloco(cbs, 'gRed'));
         }
       }
     }
@@ -127,6 +168,12 @@ export function extrairIbscbs(xml: string): IbscbsNota | null {
     if (is) {
       item.cstIs = txt(is, 'CSTIS');
       item.cClassTribIs = txt(is, 'cClassTribIS');
+      item.vBCIs = num(txt(is, 'vBCIS'));
+      item.pIs = toFrac(num(txt(is, 'pIS')));
+      // `pISEspec` é alíquota por valor (R$/unidade), não percentual: nunca /100.
+      item.pIsEspec = num(txt(is, 'pISEspec'));
+      item.uTrib = txt(is, 'uTrib');
+      item.qTrib = num(txt(is, 'qTrib'));
       item.vIS = num(txt(is, 'vIS'));
     }
 

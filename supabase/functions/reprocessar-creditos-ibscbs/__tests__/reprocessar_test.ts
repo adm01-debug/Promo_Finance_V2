@@ -80,3 +80,22 @@ Deno.test('montarCreditos — data ausente cai no ano corrente sem quebrar', () 
   assertEquals(creditos[0].data_origem, new Date().toISOString().slice(0, 10));
   assertEquals(creditos[0].ano_fato_gerador, new Date().getFullYear());
 });
+
+Deno.test('montarCreditos — data ausente nunca apropria credito por presuncao', () => {
+  const grupo = { itens: [], totais: { vCBS: 5, vIBS: 7 } } as any;
+  const cbs = montarCreditos(grupo, { data_emissao: null })[0];
+  assertEquals(cbs.efeito_tributario, false);
+  assertEquals(cbs.saldo_disponivel, 0, 'sem data nao da para provar o ano do fato gerador');
+});
+
+Deno.test('montarCreditos — emissao de 31/12 22h em Brasilia fica no ano civil brasileiro', () => {
+  const grupo = { itens: [], totais: { vCBS: 9, vIBS: 10.65 } } as any;
+  // 2027-01-01T01:00Z = 2026-12-31 22:00 em Brasilia: ainda e fato gerador 2026,
+  // entao nao pode nascer apropriavel.
+  const cbs = montarCreditos(grupo, { data_emissao: '2027-01-01T01:00:00Z' })[0];
+  assertEquals(cbs.ano_fato_gerador, 2026);
+  assertEquals(cbs.data_origem, '2026-12-31');
+  assertEquals(cbs.competencia_origem, '2026-12');
+  assertEquals(cbs.efeito_tributario, false);
+  assertEquals(cbs.saldo_disponivel, 0);
+});
