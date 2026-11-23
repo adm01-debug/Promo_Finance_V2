@@ -69,7 +69,7 @@ export function SplitPaymentPanel() {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
             <Clock className="h-5 w-5" />
-            Split Payment — Aguardando Ato Conjunto (LC 214/2025)
+            Split Payment — Aguardando Ato Conjunto (LC 214/2025)
           </CardTitle>
           <CardDescription className="text-amber-700 dark:text-amber-400">
             O recolhimento fracionado automático só entra em vigor após ato conjunto do Comitê
@@ -102,7 +102,7 @@ export function SplitPaymentPanel() {
               </p>
               <p className="font-bold text-sm text-amber-700">⏳ Aguardando ato conjunto</p>
               <p className="text-xs text-muted-foreground mt-1">
-                LC 214/2025 art. 48, §§8º; Res. CGIBS a publicar
+                LC 214/2025 art. 48, §§8º; Res. CGIBS a publicar
               </p>
             </div>
           </div>

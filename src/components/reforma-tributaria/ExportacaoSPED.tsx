@@ -116,10 +116,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
 
       setProgresso(60);
 
-      let conteudo: string;
-      let nomeArquivo: string;
-
-      conteudo = gerarEFD_Contribuicoes(
+      const conteudo = gerarEFD_Contribuicoes(
         dadosEmpresa,
         competencia,
         operacoesCompetencia.map((op) => ({
@@ -137,7 +134,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
         }))
       );
 
-      nomeArquivo = `EFD_CONTRIBUICOES_${empresaSelecionada.cnpj.replace(/\D/g, '')}_${competencia.replace('-', '')}.txt`;
+      const nomeArquivo = `EFD_CONTRIBUICOES_${empresaSelecionada.cnpj.replace(/\D/g, '')}_${competencia.replace('-', '')}.txt`;
 
       setProgresso(90);
 
