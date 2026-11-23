@@ -2,7 +2,7 @@
   "version": 1,
   "project": "Promo_Finance_V2",
   "environment": ".tools/graphify/.venv",
-  "pin": "0.9.97",
+  "pin": "0.9.115",
   "pythonVersion": "3.11",
   "state": ".tools/graphify/local-state",
   "output": "graphify-out/pilot",
