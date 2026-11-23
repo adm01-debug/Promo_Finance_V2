@@ -127,6 +127,13 @@ export interface DadosSimulacao {
   categoriaIS?: CategoriaIS;
   /** LC 214/2025 ainda não fixou alíquota por categoria — usuário informa a sua. */
   aliquotaISCustomizada?: number;
+  /**
+   * Cenário de alíquota CBS: 'tcu' (11,2% — estimativa TCU 2024) ou 'livre' (campo livre).
+   * Se ausente, usa o valor da tabela de transição para o ano simulado.
+   */
+  cenarioCBS?: 'tcu' | 'livre';
+  /** Alíquota CBS customizada (% inteiro, ex.: 11.2). Usada quando cenarioCBS='livre'. */
+  aliquotaCBSOverride?: number;
 }
 
 export interface ResultadoSimulacao {

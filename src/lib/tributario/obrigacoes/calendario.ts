@@ -68,6 +68,11 @@ export function calcularPrazo(obrigacao: Obrigacao, competencia: string): string
     return toISO(ultimoDiaUtil(ano + 1, regra.mes));
   }
 
+  // Marco de data fixa (RT: NF-e com grupo, CBS plena, etc.)
+  if (regra.tipo === 'data_fixa') {
+    return regra.data;
+  }
+
   const [ano, mes] = parsePeriodo(competencia);
   const alvoMes = mes + regra.mesesApos; // 1-based, pode extrapolar 12
   const anoAlvo = ano + Math.floor((alvoMes - 1) / 12);
