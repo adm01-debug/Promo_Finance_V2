@@ -19,6 +19,7 @@ import {
 import type { SefazResponse } from '@/lib/sefaz-simulator';
 import { toast } from 'sonner';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
+import { useCancelamentoNFe } from '@/hooks/useCancelamentoNFe';
 
 // COMPONENTE: MODAL DE CANCELAMENTO DE NF-E
 
@@ -51,6 +52,7 @@ export function CancelamentoNFe({ nota, onClose }: CancelamentoNFeProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
   const [sefazResponse, setSefazResponse] = useState<SefazResponse | null>(null);
+  const { cancelarNFe } = useCancelamentoNFe();
 
   const caracteresMinimos = 15;
   const caracteresRestantes = caracteresMinimos - justificativa.length;
@@ -76,6 +78,14 @@ export function CancelamentoNFe({ nota, onClose }: CancelamentoNFeProps) {
     setCurrentStep('');
     setSefazResponse(null);
     setIsProcessing(false);
+    // Estorno: quando sefazConfirmado=true e protocolo real chegarem,
+    // remover o guard e passar sefazConfirmado: true + protocolo real.
+    void cancelarNFe({
+      notaId: nota.id,
+      chaveAcesso: nota.chaveAcesso,
+      protocolo: nota.protocolo ?? '',
+      sefazConfirmado: false, // bloqueado ate homologacao SEFAZ
+    });
     toast.error(
       'Cancelamento indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real.'
     );
