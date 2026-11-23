@@ -34,7 +34,7 @@ const BADGE = {
   nao_encontrada: { label: 'Nao encontrada', Icon: XCircle, cls: 'text-gray-700 bg-gray-100' },
 };
 
-export function ConciliacaoExtratoAssistido() {
+export function ConciliacaoExtratoAssistido({ empresaId }: { empresaId?: string }) {
   const [rawCsv, setRawCsv] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [extrato, setExtrato] = useState<LinhaExtrato[]>([]);
@@ -68,7 +68,10 @@ export function ConciliacaoExtratoAssistido() {
   }, [rawCsv]);
 
   const chaves = extrato.map((e) => e.chave_acesso);
-  const { data: creditosSistema, isLoading } = useCreditosPorChaves(submitted ? chaves : []);
+  const { data: creditosSistema, isLoading, error: erroConsulta } = useCreditosPorChaves(
+    submitted ? chaves : [],
+    empresaId
+  );
 
   const diff = submitted && creditosSistema ? buildDiff(extrato, creditosSistema) : [];
   const totalOk = diff.filter((d) => d.status === 'ok').length;
@@ -198,9 +201,16 @@ export function ConciliacaoExtratoAssistido() {
             Consultando creditos do sistema...
           </p>
         )}
-        {submitted && !isLoading && diff.length === 0 && (
+        {submitted && erroConsulta && (
+          <p className="text-sm text-destructive">
+            Falha ao consultar os créditos do sistema ({erroConsulta.message}). O CSV pode estar
+            correto; tente novamente ou verifique a empresa selecionada.
+          </p>
+        )}
+        {submitted && !isLoading && !erroConsulta && diff.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            Nenhuma linha no extrato apos parsing. Verifique o formato CSV.
+            Nenhuma linha do extrato casou com crédito do sistema. Verifique se o CSV pertence a
+            esta empresa.
           </p>
         )}
       </CardContent>

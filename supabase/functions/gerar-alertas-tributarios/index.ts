@@ -491,7 +491,7 @@ export function determinarAlertasRt(p: AlertasRtParams): AlertaRT[] {
         `IBS/CBS destacado. ${n} nota${n > 1 ? 's' : ''} em aberto${n > 1 ? '' : ' em aberto'} sem o grupo — ` +
         `retifique ou reemita antes da fiscalização.`,
       prioridade: 'alta',
-      acao_url: '/tributario/nfe',
+      acao_url: '/notas-fiscais',
       acao_label: 'Ver NF-e pendentes',
     });
   }
@@ -501,13 +501,14 @@ export function determinarAlertasRt(p: AlertasRtParams): AlertaRT[] {
     alertas.push({
       empresa_id: p.empresa_id,
       tipo: 'nfe_sem_ibscbs_simples_pos_dez26',
-      titulo: `${n} NF-e${n > 1 ? 's' : ''} sem IBS/CBS — Simples Nacional obrigatório desde 01/12/2026`,
+      titulo: `${n} NF-e${n > 1 ? 's' : ''} sem grupo IBS/CBS — nao contribuinte de ICMS desde 01/12/2026`,
       mensagem:
-        `Contribuintes do Simples Nacional passam a destacar IBS/CBS nas NF-e a partir de ` +
-        `01/12/2026. ${n} nota${n > 1 ? 's' : ''} emitida${n > 1 ? 's' : ''} sem o grupo — ` +
-        `ajuste o emissor e retifique.`,
+        `Contribuinte que nao e contribuinte do ICMS passa a ser obrigado a emitir NF-e com o ` +
+        `grupo IBS/CBS a partir de 01/12/2026. ${n} nota${n > 1 ? 's' : ''} emitida${n > 1 ? 's' : ''} ` +
+        `sem o grupo — ajuste o emissor antes do prazo. Se a empresa apura o IBS/CBS pelo ` +
+        `regime regular, o destaque tambem passa a ser exigido.`,
       prioridade: 'alta',
-      acao_url: '/tributario/nfe',
+      acao_url: '/notas-fiscais',
       acao_label: 'Ver NF-e Simples',
     });
   }

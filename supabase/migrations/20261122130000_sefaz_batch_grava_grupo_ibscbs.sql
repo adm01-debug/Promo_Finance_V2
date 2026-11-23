@@ -31,6 +31,7 @@ DECLARE
   v_novos integer := 0;
   v_eventos integer := 0;
   v_ignorados integer := 0;
+  v_atualizados integer := 0;
   v_inserted_id uuid;
 BEGIN
   SELECT ultimo_nsu
@@ -59,6 +60,34 @@ BEGIN
       v_payload := v_doc->'payload';
 
       IF v_kind = 'nfe' THEN
+        -- A SEFAZ distribui primeiro o resumo (resNFe) e, depois da
+        -- manifestacao, o XML completo (procNFe) com a MESMA chave. Sem a
+        -- promocao abaixo o grupo IBS/CBS do XML completo era descartado pelo
+        -- ON CONFLICT DO NOTHING e a nota ficava para sempre sem tributos
+        -- destacados.
+        IF coalesce((v_payload->>'xml_completo')::boolean, true) THEN
+          UPDATE public.nfe_recebidas
+             SET xml_path       = coalesce(v_payload->>'xml_path', xml_path),
+                 xml_completo   = true,
+                 raw_metadata   = coalesce(nullif(v_payload->'raw_metadata', 'null'::jsonb),
+                                           raw_metadata),
+                 valor_total    = coalesce(nullif(v_payload->>'valor_total', '')::numeric,
+                                           valor_total),
+                 data_emissao   = coalesce(nullif(v_payload->>'data_emissao', '')::timestamptz,
+                                           data_emissao),
+                 digest_value   = coalesce(v_payload->>'digest_value', digest_value),
+                 tipo_documento = coalesce(v_payload->>'tipo_documento', tipo_documento),
+                 schema_tipo    = coalesce((v_payload->>'schema_tipo')::public.nfe_schema_tipo,
+                                           schema_tipo)
+           WHERE chave_acesso = v_payload->>'chave_acesso'
+             AND (NOT xml_completo OR raw_metadata IS NULL);
+          GET DIAGNOSTICS v_atualizados = ROW_COUNT;
+
+          IF v_atualizados > 0 THEN
+            CONTINUE;
+          END IF;
+        END IF;
+
         INSERT INTO public.nfe_recebidas (
           empresa_id, chave_acesso, cnpj_emitente, razao_emitente, ie_emitente,
           uf_emitente, cnpj_destinatario, numero, serie, modelo, data_emissao,
@@ -156,7 +185,8 @@ BEGIN
     'cursor_depois', greatest(v_cursor_atual, p_novo_nsu),
     'novos', v_novos,
     'eventos', v_eventos,
-    'ignorados', v_ignorados
+    'ignorados', v_ignorados,
+    'atualizados', v_atualizados
   );
 END
 $function$;

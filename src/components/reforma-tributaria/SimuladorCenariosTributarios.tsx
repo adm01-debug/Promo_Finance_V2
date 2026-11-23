@@ -40,6 +40,8 @@ export function SimuladorCenariosTributarios() {
         temProdutosIS,
         categoriaIS: temProdutosIS ? categoriaIS : undefined,
         aliquotaISCustomizada: temProdutosIS ? aliquotaISCustomizada : undefined,
+        cenarioCBS,
+        aliquotaCBSOverride: cenarioCBS === 'livre' ? aliquotaCBSOverride : undefined,
       },
       anoReferencia
     );
@@ -70,6 +72,8 @@ export function SimuladorCenariosTributarios() {
       temProdutosIS,
       categoriaIS: temProdutosIS ? categoriaIS : undefined,
       aliquotaISCustomizada: temProdutosIS ? aliquotaISCustomizada : undefined,
+      cenarioCBS,
+      aliquotaCBSOverride: cenarioCBS === 'livre' ? aliquotaCBSOverride : undefined,
     };
 
     const resultados = await executarSimulacao(dados);

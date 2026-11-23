@@ -48,6 +48,7 @@ describe('useCancelamentoNFe -- estorno xml_destacado (etapa 58)', () => {
       p_nota_id: 'nota-1',
       p_protocolo: 'PROT123',
       p_chave_acesso: chave,
+      p_sefaz_confirmado: true,
     });
     expect(mockRegistrarEvento).toHaveBeenCalledWith(
       expect.objectContaining({ tipo: 'CANCELAMENTO', chaveAcesso: chave, protocolo: 'PROT123' })

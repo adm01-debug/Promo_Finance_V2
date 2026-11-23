@@ -18355,12 +18355,15 @@ export type Database = {
         Args: {
           p_chave_acesso?: string
           p_nota_id: string
-          p_protocolo?: string
+                p_protocolo: string
+                p_sefaz_confirmado?: boolean
         }
         Returns: {
+                cancelado_em: string
+                chave_acesso: string | null
           creditos_estornados: number
           nota_id: string
-          status: string
+                protocolo: string
         }
       }
       calcular_potencial_elisao: {

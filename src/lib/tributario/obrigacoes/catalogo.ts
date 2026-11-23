@@ -20,6 +20,9 @@ export const OBRIGACOES: readonly Obrigacao[] = [
     multaMensal: 0.005,
     multaTeto: 0.2,
     multaMinima: 500,
+    // LC 214/2025, art. 348: a EFD-Contribuições é extinta a partir de 2027 com o
+    // fim de PIS/COFINS. Sem essa data o calendário seguiria cobrando a entrega.
+    vigencia_fim: '2027-01-01',
   },
   {
     id: 'efd_icms_ipi',

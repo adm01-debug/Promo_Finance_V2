@@ -12,8 +12,14 @@
 --
 -- REGRA 8: contem DDL de producao (pg_cron). Nao aplicar sem aprovacao do dono.
 --
--- Pre-requisito: o segredo `cron_secret` em integration_secrets e o mesmo
--- consultado por `exigirChamadaInterna` na edge.
+-- Pre-requisito: o segredo `internal_jobs` em integration_secrets — o mesmo
+-- consultado por `exigirChamadaInterna` (chave padrao em
+-- supabase/functions/_shared/auth-guard.ts). `cron_secret` NAO e lido pela
+-- guarda: usar aquela chave resultava em 401 em 100% das execucoes.
+-- Pre-requisito 2: a function precisa de `verify_jwt = false` em
+-- supabase/config.toml, porque o pg_cron nao envia JWT de usuario e o gateway
+-- rejeitava a chamada antes do handler. A autorizacao passa a ser feita pela
+-- propria guarda interna (header x-cron-secret).
 
 CREATE EXTENSION IF NOT EXISTS pg_net SCHEMA extensions;
 
@@ -33,7 +39,7 @@ SELECT cron.schedule(
       headers := jsonb_build_object(
         'Content-Type',  'application/json',
         'x-cron-secret', (
-          SELECT valor FROM integration_secrets WHERE chave = 'cron_secret' LIMIT 1
+          SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1
         )
       ),
       body    := '{"source":"pg_cron","limite":200}'::jsonb

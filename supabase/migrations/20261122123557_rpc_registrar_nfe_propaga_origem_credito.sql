@@ -81,7 +81,7 @@ BEGIN
   INSERT INTO public.creditos_tributarios (
     empresa_id, nota_fiscal_id, tipo_tributo, valor_credito,
     saldo_disponivel, data_origem, competencia_origem, status,
-    origem, efeito_tributario, ano_fato_gerador
+      origem, efeito_tributario, ano_fato_gerador, documento_chave, documento_tipo
   )
   SELECT
     p_empresa_id,
@@ -94,7 +94,12 @@ BEGIN
     COALESCE(c.status, 'disponivel'),
     COALESCE(c.origem, 'estimado'::public.origem_credito_tributario),
     COALESCE(c.efeito_tributario, false),
-    c.ano_fato_gerador
+      c.ano_fato_gerador,
+      -- A chave do documento precisa ser gravada também nesta via: sem ela, o
+      -- reprocessamento (que apaga por `documento_chave`) inseria um segundo
+      -- conjunto de créditos para a mesma NF-e e a apuração somava os dois.
+      v_nota.chave_acesso,
+      'nfe'
   FROM jsonb_to_recordset(p_creditos) AS c(
     tipo_tributo text,
     valor_credito numeric,

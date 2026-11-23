@@ -258,12 +258,17 @@ Deno.serve(
             .from('notas_fiscais')
             .select('*', { count: 'exact', head: true })
             .eq('empresa_id', empresa_id)
-            .gte('data_emissao', fg),
+            .gte('data_emissao', fg)
+            // A obrigação é de destaque na emissão própria: nota de entrada
+            // (compra de terceiro) não tem grupo do emitente e inflava o
+            // indicador como emissão irregular.
+            .or('tipo.is.null,tipo.neq.entrada'),
           admin
             .from('notas_fiscais')
             .select('*', { count: 'exact', head: true })
             .eq('empresa_id', empresa_id)
             .gte('data_emissao', fg)
+            .or('tipo.is.null,tipo.neq.entrada')
             .is('v_cbs', null),
         ]);
         const total = totalAposFg ?? 0;

@@ -81,9 +81,16 @@ function getBadgeIbscbs(nfe: NFeParsed) {
 function getBadgeFiscal(nfe: NFeParsed) {
   // A validação só roda na gravação: na prévia a ausência de alertas não
   // significa conformidade, significa que ninguém conferiu ainda.
-  if (nfe.status === 'pendente') {
+  if (nfe.status !== 'importado') {
     return (
-      <Badge variant="outline" title="A conferência roda na importação">
+      <Badge
+        variant="outline"
+        title={
+          nfe.status === 'erro'
+            ? 'A importação falhou: a conferência fiscal não rodou'
+            : 'A conferência roda na importação'
+        }
+      >
         não conferido
       </Badge>
     );

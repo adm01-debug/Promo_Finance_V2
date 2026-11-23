@@ -5,7 +5,8 @@
 CREATE OR REPLACE FUNCTION public.cancelar_nfe_estornar_xml_destacado(
   p_nota_id    uuid,
   p_protocolo  text,
-  p_chave_acesso text DEFAULT NULL
+  p_chave_acesso text DEFAULT NULL,
+  p_sefaz_confirmado boolean DEFAULT false
 )
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -34,6 +35,32 @@ BEGIN
     RAISE EXCEPTION 'forbidden_empresa_access' USING ERRCODE = '42501';
   END IF;
 
+  -- Vínculo ativo apenas permite LER. Cancelar NF-e e estornar crédito é
+  -- escrita fiscal: exige papel de escrita (admin/financeiro) na empresa.
+  IF NOT (
+    public.has_role(auth.uid(), 'admin'::public.app_role)
+    OR EXISTS (
+      SELECT 1
+        FROM public.user_empresas ue
+       WHERE ue.user_id = auth.uid()
+         AND ue.empresa_id = v_empresa_id
+         AND ue.ativo = true
+         AND ue.role IN ('admin'::public.app_role, 'financeiro'::public.app_role)
+    )
+  ) THEN
+    RAISE EXCEPTION 'forbidden_escrita' USING ERRCODE = '42501';
+  END IF;
+
+  -- Sem protocolo de cancelamento homologado não existe evento fiscal: marcar
+  -- a nota como cancelada aqui zeraria crédito legítimo por engano.
+  IF p_protocolo IS NULL OR btrim(p_protocolo) = '' THEN
+    RAISE EXCEPTION 'protocolo_obrigatorio' USING ERRCODE = '22023';
+  END IF;
+
+  IF NOT COALESCE(p_sefaz_confirmado, false) THEN
+    RAISE EXCEPTION 'sefaz_nao_confirmado' USING ERRCODE = '22023';
+  END IF;
+
   IF v_status = 'cancelada' THEN
     RAISE EXCEPTION 'nota_ja_cancelada' USING ERRCODE = '23505';
   END IF;
@@ -52,13 +79,24 @@ BEGIN
 
   -- Estorna creditos tributarios de origem xml_destacado (unica vez que
   -- creditos destacados precisam ser invalidados; estimados e manuais
-  -- seguem politica propria de estorno e nao sao tocados aqui)
+  -- seguem politica propria de estorno e nao sao tocados aqui).
+  -- Casa por `nota_fiscal_id` OU pela chave do documento: os créditos do
+  -- reprocessamento são gravados com `documento_chave` e sem `nota_fiscal_id`,
+  -- e antes ficavam fora do estorno.
   UPDATE public.creditos_tributarios
      SET status         = 'estornado',
          updated_at     = now()
-   WHERE nota_fiscal_id = p_nota_id
+   WHERE empresa_id     = v_empresa_id
      AND origem         = 'xml_destacado'::public.origem_credito_tributario
-     AND status        <> 'estornado';
+     AND status        <> 'estornado'
+     AND (
+       nota_fiscal_id = p_nota_id
+       OR (
+         p_chave_acesso IS NOT NULL
+         AND p_chave_acesso <> ''
+         AND documento_chave = p_chave_acesso
+       )
+     );
 
   GET DIAGNOSTICS v_estornados = ROW_COUNT;
 
@@ -72,8 +110,8 @@ BEGIN
 END
 $function$;
 
-COMMENT ON FUNCTION public.cancelar_nfe_estornar_xml_destacado(uuid, text, text) IS
+COMMENT ON FUNCTION public.cancelar_nfe_estornar_xml_destacado(uuid, text, text, boolean) IS
   'Cancela a NF-e, zera campos IBS/CBS destacados e estorna creditos de origem xml_destacado (etapa 58).';
 
-REVOKE ALL ON FUNCTION public.cancelar_nfe_estornar_xml_destacado(uuid, text, text) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.cancelar_nfe_estornar_xml_destacado(uuid, text, text) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION public.cancelar_nfe_estornar_xml_destacado(uuid, text, text, boolean) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.cancelar_nfe_estornar_xml_destacado(uuid, text, text, boolean) TO authenticated, service_role;

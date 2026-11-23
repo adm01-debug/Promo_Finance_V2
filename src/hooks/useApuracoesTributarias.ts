@@ -6,6 +6,45 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toISOLocal } from '@/lib/formatters';
 
+/**
+ * O PostgREST devolve no máximo 1000 linhas por request. Um mês com mais de
+ * 1000 notas tinha os débitos truncados em silêncio, e a apuração saía menor
+ * que o real. Pagina até a última página.
+ */
+async function buscarTodasNotasDoMes(
+  empresaId: string,
+  inicioMes: string,
+  fimMes: string
+): Promise<{ v_cbs: number | null; v_ibs: number | null; v_ibs_uf: number | null; v_ibs_mun: number | null; v_is: number | null }[]> {
+  const PAGINA = 1000;
+  const acumulado: {
+    v_cbs: number | null;
+    v_ibs: number | null;
+    v_ibs_uf: number | null;
+    v_ibs_mun: number | null;
+    v_is: number | null;
+  }[] = [];
+
+  for (let offset = 0; ; offset += PAGINA) {
+    const { data, error } = await supabase
+      .from('notas_fiscais')
+      .select('v_cbs, v_ibs, v_ibs_uf, v_ibs_mun, v_is')
+      .eq('empresa_id', empresaId)
+      .gte('data_emissao', inicioMes)
+      .lte('data_emissao', fimMes)
+      .neq('status', 'cancelada')
+      .order('id', { ascending: true })
+      .range(offset, offset + PAGINA - 1);
+
+    if (error) throw error;
+    const lote = data ?? [];
+    acumulado.push(...lote);
+    if (lote.length < PAGINA) break;
+  }
+
+  return acumulado;
+}
+
 export interface ApuracaoTributaria {
   id: string;
   empresa_id: string;
@@ -186,15 +225,7 @@ export function useApuracoesTributarias(empresaId?: string) {
       const fimMes = toISOLocal(new Date(ano, mes, 0));
       const competenciaMes = `${ano}-${String(mes).padStart(2, '0')}`;
 
-      const { data: notasEmitidas, error: notasErr } = await supabase
-        .from('notas_fiscais')
-        .select('v_cbs, v_ibs, v_ibs_uf, v_ibs_mun, v_is')
-        .eq('empresa_id', empresaId)
-        .gte('data_emissao', inicioMes)
-        .lte('data_emissao', fimMes)
-        .neq('status', 'cancelada');
-
-      if (notasErr) throw notasErr;
+      const notasEmitidas = await buscarTodasNotasDoMes(empresaId, inicioMes, fimMes);
 
       let cbs_debitos = 0;
       let ibs_debitos = 0;

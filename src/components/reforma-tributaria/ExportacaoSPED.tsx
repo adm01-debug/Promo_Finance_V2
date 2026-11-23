@@ -154,6 +154,13 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
       toast.success('Arquivo SPED gerado com sucesso', {
         description: nomeArquivo,
       });
+      // O gerador de EFD-Contribuições ainda emite só os blocos de abertura e
+      // fechamento (sem C170/M200): avisar evita o arquivo ser transmitido ao
+      // Fisco como se estivesse completo.
+      toast.warning('EFD-Contribuições sem lançamentos', {
+        description:
+          'O arquivo contém apenas a estrutura dos blocos (0000/0001/0990…9999). Os lançamentos (C170/M200) não são gerados — não transmita como EFD oficial.',
+      });
     } catch (error: unknown) {
       toast.error('Erro ao gerar arquivo');
       logger.error('Erro ao gerar SPED:', error);

@@ -41,7 +41,7 @@ export interface CreditoReprocessado {
 
 export interface ResultadoNota {
   chave_acesso: string;
-  status: 'regravado' | 'sem_grupo' | 'sem_xml' | 'xml_invalido' | 'erro';
+  status: 'regravado' | 'sem_grupo' | 'sem_xml' | 'xml_invalido' | 'credito_utilizado' | 'erro';
   creditos?: CreditoReprocessado[];
   motivo?: string;
 }
@@ -251,6 +251,17 @@ export const handler = async (req: Request) => {
         p_creditos: creditos,
       });
       if (erroRpc) {
+        // Crédito já usado não se corrige por reescrita: marca a nota como
+        // revisada para não gastar lote a cada hora com o mesmo documento.
+        if (String(erroRpc.message ?? '').includes('credito_ja_utilizado')) {
+          await marcarRevisada(sb, nota, 'credito_utilizado', 'Crédito já utilizado/compensado');
+          resultados.push({
+            chave_acesso: nota.chave_acesso,
+            status: 'credito_utilizado',
+            motivo: 'Crédito já utilizado/compensado',
+          });
+          continue;
+        }
         resultados.push({
           chave_acesso: nota.chave_acesso,
           status: 'erro',
@@ -301,7 +312,9 @@ export const handler = async (req: Request) => {
       error_message: mensagemErro(e),
       context: contextoErro(e),
     });
-    return new Response(JSON.stringify({ ok: false, error: mensagemErro(e) }), {
+    // Sem o texto do erro no corpo: detalhe fica no log (CodeQL
+    // js/stack-trace-exposure).
+    return new Response(JSON.stringify({ ok: false, error: 'falha_reprocessamento' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

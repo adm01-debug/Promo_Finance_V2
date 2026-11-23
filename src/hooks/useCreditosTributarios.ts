@@ -419,15 +419,18 @@ export function useCreditosTributarios(empresaId?: string) {
  * Etapa 89 — Busca os créditos `xml_destacado` do sistema por chave de acesso,
  * para o diff da conciliação contra o extrato da apuração assistida.
  */
-export function useCreditosPorChaves(chaves: string[]) {
+export function useCreditosPorChaves(chaves: string[], empresaId?: string) {
   return useQuery({
-    queryKey: ['creditos_tributarios_por_chaves', chaves],
-    enabled: chaves.length > 0,
+    queryKey: ['creditos_tributarios_por_chaves', empresaId, chaves],
+    // Sem empresa não há escopo: a RLS deixa passar as empresas do usuário e o
+    // diff compararia o extrato desta empresa com crédito de outra.
+    enabled: chaves.length > 0 && Boolean(empresaId),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('creditos_tributarios')
         .select('documento_chave, tipo_tributo, valor_credito')
         .in('documento_chave', chaves)
+        .eq('empresa_id', empresaId as string)
         .eq('origem', 'xml_destacado')
         .eq('efeito_tributario', true);
 

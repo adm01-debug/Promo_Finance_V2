@@ -9,7 +9,7 @@
  *   - tratamento de cStat=656 (rate_limit) registrando erro no cursor
  */
 
-import { assertEquals, assert } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import { assertEquals, assert } from 'jsr:@std/assert@1';
 import { runPuxador } from '../index.ts';
 import {
   installSefazSoapMock,

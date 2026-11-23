@@ -184,7 +184,7 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
         </Card>
       )}
 
-      <ConciliacaoExtratoAssistido />
+      <ConciliacaoExtratoAssistido empresaId={empresaValida ? empresaId : undefined} />
     </div>
   );
 }

@@ -24,7 +24,7 @@ import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { parseDoc } from '../_shared/sefaz/parser.ts';
 import { extrairIbscbs } from '../_shared/nfe/ibscbs.ts';
-import { extrairItens } from '../_shared/nfe/itens.ts';
+import { extrairItens, itensParaRpc } from '../_shared/nfe/itens.ts';
 import { uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
 
 const log = createLogger('guardar-xml-nfe-autorizada');
@@ -46,6 +46,8 @@ export interface CorpoRequisicao {
 export interface Dependencias {
   /** Chama o bling-proxy com o token do usuario (`action: buscar_nfe`). */
   buscarNfeBling: (blingNfeId: number) => Promise<Record<string, unknown> | null>;
+  /** Baixa o XML quando o Bling devolve link em vez de conteudo. */
+  baixarXml: (url: string) => Promise<string | null>;
 }
 
 /** `cStat` 100 = autorizada; 101 = cancelada; 110 = denegada. */
@@ -86,6 +88,29 @@ export function somarProdutos(xml: string): number | null {
   const casados = [...xml.matchAll(/<vProd>([\d.]+)<\/vProd>/g)];
   if (casados.length === 0) return null;
   return casados.reduce((soma, m) => soma + Number(m[1]), 0);
+}
+
+/**
+ * O Bling devolve em `nfe.xml` um LINK para o XML autorizado, nao o conteudo.
+ * Entregar esse link ao parser devolvia sempre 422 `xml_nao_e_nfe`, entao a
+ * nota nunca era gravada e o credito ficava preso em "estimado".
+ *
+ * O link vem de resposta da API do Bling, mas ainda assim restringimos o host
+ * para a chamada nao virar SSRF contra a rede interna do Supabase.
+ */
+export async function baixarXmlDoBling(url: string): Promise<string | null> {
+  let alvo: URL;
+  try {
+    alvo = new URL(url);
+  } catch {
+    return null;
+  }
+  if (alvo.protocol !== 'https:' || !/(^|\.)bling\.com\.br$/i.test(alvo.hostname)) return null;
+
+  const resp = await fetch(alvo, { headers: { Accept: 'application/xml, text/xml, */*' } });
+  if (!resp.ok) return null;
+  const corpo = await resp.text();
+  return corpo.includes('<') ? corpo.trim() : null;
 }
 
 /** Compara CNPJ ignorando pontuacao: o cadastro guarda sem, o XML tambem. */
@@ -193,13 +218,30 @@ export function createHandler(deps?: Partial<Dependencias>) {
       const bling = await buscar(blingNfeId);
       if (!bling) return json(404, { error: 'nfe_nao_encontrada_no_bling' });
 
-      const xml = texto(bling.xml);
-      if (!xml) {
+      const xmlBruto = texto(bling.xml);
+      if (!xmlBruto) {
         // NF-e em digitacao ainda nao tem XML autorizado; nao e erro de codigo.
         return json(409, {
           error: 'xml_indisponivel',
           message: 'A NF-e ainda nao possui XML autorizado no Bling.',
         });
+      }
+
+      // `bling.xml` e um link na API v3; conteudo cru so em respostas antigas.
+      let xml = xmlBruto;
+      if (!xmlBruto.startsWith('<')) {
+        const baixar = deps?.baixarXml ?? baixarXmlDoBling;
+        const baixado = await baixar(xmlBruto);
+        if (!baixado) {
+          log.warn('link do XML do Bling nao pode ser baixado', {
+            context: { empresa_id: empresaId, bling_nfe_id: blingNfeId },
+          });
+          return json(502, {
+            error: 'falha_ao_baixar_xml',
+            message: 'Nao foi possivel baixar o XML autorizado a partir do link do Bling.',
+          });
+        }
+        xml = baixado;
       }
 
       const doc = parseDoc(xml);
@@ -249,7 +291,7 @@ export function createHandler(deps?: Partial<Dependencias>) {
       const { data, error } = await clientDoUsuario.rpc('salvar_nfe_autorizada', {
         p_empresa_id: empresaId,
         p_nota: nota,
-        p_itens: itens ? itens.itens : [],
+        p_itens: itens ? itensParaRpc(itens.itens) : [],
       });
 
       if (error) {
@@ -257,7 +299,7 @@ export function createHandler(deps?: Partial<Dependencias>) {
           error_message: mensagemErro(error),
           context: { ...contextoErro(error), empresa_id: empresaId, chave: doc.chaveAcesso },
         });
-        return json(500, { error: 'falha_ao_gravar_nota', message: mensagemErro(error) });
+        return json(500, { error: 'falha_ao_gravar_nota' });
       }
 
       log.info('xml autorizado guardado', {
@@ -282,7 +324,9 @@ export function createHandler(deps?: Partial<Dependencias>) {
         error_message: mensagemErro(e),
         context: contextoErro(e),
       });
-      return json(500, { error: 'falha_ao_guardar_xml', message: mensagemErro(e) });
+      // Sem `message` no corpo: o detalhe do erro fica só no log
+      // (CodeQL js/stack-trace-exposure).
+      return json(500, { error: 'falha_ao_guardar_xml' });
     }
   };
 }

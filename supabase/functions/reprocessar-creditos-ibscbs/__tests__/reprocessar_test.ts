@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Etapa 50 — reprocessamento retroativo do grupo IBS/CBS.
  *
  * O teste cobre a funcao pura `montarCreditos` (calculo) e o handler com
@@ -6,7 +6,7 @@
  * calcular diferente do front, a mesma NF-e passa a ter dois valores de
  * credito conforme a data em que foi importada.
  */
-import { assertEquals, assert } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import { assertEquals, assert } from 'jsr:@std/assert@1';
 import { extrairIbscbs } from '../../_shared/nfe/ibscbs.ts';
 import { montarCreditos } from '../index.ts';
 

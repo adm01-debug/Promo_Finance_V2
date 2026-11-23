@@ -304,7 +304,10 @@ Deno.serve(
             'ibs_debitos,ibs_creditos,ibs_saldo_anterior,ibs_a_pagar'
         )
         .eq('empresa_id', body.empresaId)
-        .eq('competencia', `${body.anoReferencia}-${String(body.mesReferencia).padStart(2, '0')}`)
+        // `competencia` é DATE; comparar com '2026-11' nunca casa e a página
+        // inteira da memória de cálculo era omitida do PDF.
+        .eq('ano', body.anoReferencia)
+        .eq('mes', body.mesReferencia)
         .maybeSingle();
 
       if (apuracao) {
@@ -314,16 +317,21 @@ Deno.serve(
         doc.text('Memória de Cálculo IBS/CBS', 15, 20);
         doc.setFontSize(9);
         doc.setTextColor(100, 116, 139);
+        doc.text('Valores consolidados da apuração mensal.', 15, 28);
+        // A apuração soma créditos de origens diferentes (XML destacado e
+        // estimativa por alíquota) e a tabela não guarda essa quebra: dizer
+        // "a partir dos DF-e" era afirmar uma origem que o número não tem.
         doc.text(
-          'Valores apurados a partir dos documentos fiscais eletrônicos (DF-e) com grupo IBS/CBS destacado.',
+          'Créditos podem ter origem em XML destacado (grupo IBSCBS da NF-e) ou em estimativa por alíquota; a discriminação consta na tela de apuração.',
           15,
-          28
+          33,
+          { maxWidth: 180 }
         );
-        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 34);
+        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 44);
         doc.setTextColor(0, 0, 0);
 
         autoTable(doc, {
-          startY: 42,
+          startY: 50,
           head: [['Tributo', 'Débitos', 'Créditos', 'Saldo Anterior', 'A Pagar / Compensar']],
           body: [
             [

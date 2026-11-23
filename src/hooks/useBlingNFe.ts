@@ -174,6 +174,62 @@ function mapNFeItem(item: BlingNFeRawItem): BlingNFe {
 }
 
 /**
+ * Etapa 58: após cancelar no Bling, invalida o crédito IBS/CBS destacado da nota.
+ *
+ * O protocolo de cancelamento vem do próprio Bling (`buscar_nfe`); quando a
+ * resposta não traz protocolo nem chave, a nota local não existe, ou a RPC
+ * falha, a pendência é anunciada em vez de silenciosamente zerar ou manter
+ * crédito indevido.
+ */
+export async function estornarCreditosCancelados(ids: number[]) {
+  const pendentes: string[] = [];
+  for (const id of ids) {
+    try {
+      const resposta = await callBlingProxy('buscar_nfe', { id });
+      const nfe = (resposta?.data ?? {}) as Record<string, unknown>;
+      const chave = typeof nfe.chaveAcesso === 'string' ? nfe.chaveAcesso : null;
+      const cancelamento = (nfe.cancelamento ?? {}) as Record<string, unknown>;
+      const protocoloBruto =
+        cancelamento.protocolo ?? nfe.protocoloCancelamento ?? nfe.protocolo ?? null;
+      const protocolo =
+        typeof protocoloBruto === 'string' && protocoloBruto.trim() ? protocoloBruto.trim() : null;
+
+      if (!chave || !protocolo) {
+        pendentes.push(String(id));
+        continue;
+      }
+
+      const { data: nota } = await supabase
+        .from('notas_fiscais')
+        .select('id')
+        .eq('chave_acesso', chave)
+        .maybeSingle();
+
+      if (!nota?.id) {
+        pendentes.push(String(id));
+        continue;
+      }
+
+      const { error } = await supabase.rpc('cancelar_nfe_estornar_xml_destacado', {
+        p_nota_id: nota.id,
+        p_protocolo: protocolo,
+        p_chave_acesso: chave,
+        p_sefaz_confirmado: true,
+      });
+      if (error) pendentes.push(String(id));
+    } catch {
+      pendentes.push(String(id));
+    }
+  }
+
+  if (pendentes.length > 0) {
+    toast.warning('Cancelamento no Bling sem estorno de crédito', {
+      description: `NF-e(s) ${pendentes.join(', ')}: sem chave/protocolo local. Reprocessar na conferência fiscal.`,
+    });
+  }
+}
+
+/**
  * Etapa 55: guarda o XML autorizado e materializa os itens da nota.
  *
  * Precisa do `empresa_id` porque a edge valida o vínculo do usuário com a
@@ -181,7 +237,7 @@ function mapNFeItem(item: BlingNFeRawItem): BlingNFe {
  * `empresa_obrigatoria`. Falha aqui é silenciosa de propósito: o envio para
  * a SEFAZ já aconteceu e o XML pode ser recuperado depois.
  */
-async function guardarXmlAutorizado(blingNfeId: number) {
+export async function guardarXmlAutorizado(blingNfeId: number) {
   const empresaId = getCurrentEmpresaId();
   const { data, error } = await supabase.functions.invoke('guardar-xml-nfe-autorizada', {
     body: { bling_nfe_id: blingNfeId, empresa_id: empresaId },
@@ -294,6 +350,10 @@ export function useBlingNFe() {
     try {
       await callBlingProxy('cancelar_nfe', { ids });
       toast.success('NF-e cancelada no Bling!');
+      // Etapa 58: cancelar no Bling precisa invalidar o crédito IBS/CBS
+      // destacado. Sem isso a nota cancelada continuava gerando crédito
+      // utilizável (o XML e o crédito ficavam intactos no banco local).
+      await estornarCreditosCancelados(ids);
     } catch (err: unknown) {
       toast.error(`Erro ao cancelar NF-e: ${err instanceof Error ? err.message : String(err)}`);
       throw err;

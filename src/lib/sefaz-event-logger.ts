@@ -31,8 +31,34 @@ export interface EventoSefaz {
   detalhes?: string;
 }
 
-// Armazena eventos em memória (em produção seria um banco de dados)
-const eventosLog: EventoSefaz[] = [];
+// Histórico em memória, espelhado no sessionStorage da aba. Sem o espelho os
+// eventos sumiam a cada reload e a conferência fiscal ficava sem rastro algum
+// do que a SEFAZ respondeu durante a sessão.
+const STORAGE_KEY = 'sefaz-event-log';
+const MAX_EVENTOS = 1000;
+
+function lerEventosPersistidos(): EventoSefaz[] {
+  if (typeof sessionStorage === 'undefined') return [];
+  try {
+    const bruto = sessionStorage.getItem(STORAGE_KEY);
+    if (!bruto) return [];
+    const lista = JSON.parse(bruto) as Array<Omit<EventoSefaz, 'timestamp'> & { timestamp: string }>;
+    return lista.map((e) => ({ ...e, timestamp: new Date(e.timestamp) }));
+  } catch {
+    return [];
+  }
+}
+
+function persistir(): void {
+  if (typeof sessionStorage === 'undefined') return;
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(eventosLog));
+  } catch {
+    // quota cheia: o log em memória continua válido
+  }
+}
+
+const eventosLog: EventoSefaz[] = lerEventosPersistidos();
 
 // Gera ID único para evento
 function gerarEventoId(): string {
@@ -50,10 +76,11 @@ export function registrarEvento(evento: Omit<EventoSefaz, 'id' | 'timestamp'>): 
   eventosLog.unshift(novoEvento); // Adiciona no início (mais recente primeiro)
 
   // Limita a 1000 eventos em memória
-  if (eventosLog.length > 1000) {
+    while (eventosLog.length > MAX_EVENTOS) {
     eventosLog.pop();
   }
 
+    persistir();
   logger.debug('[SEFAZ Event Logger]', novoEvento);
   return novoEvento;
 }
@@ -93,6 +120,7 @@ export function limparEventosAntigos(dias: number = 30): number {
 
   if (indice !== -1) {
     eventosLog.splice(indice);
+      persistir();
   }
 
   return antes - eventosLog.length;

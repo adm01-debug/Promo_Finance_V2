@@ -191,3 +191,40 @@ export function calcularTotais(itens: ItemNFeExtraido[]): TotaisItens {
     vIs: soma((i) => i.vIs),
   };
 }
+
+/**
+ * Converte os itens para o formato que a RPC `salvar_nfe_autorizada` lê em
+ * `jsonb_to_recordset`. As chaves do recordset são snake_case; mandar o objeto
+ * do parser direto (camelCase) faz o `jsonb_to_recordset` devolver NULL em
+ * `c_prod`/`ncm`/`cfop` e derrubar o INSERT inteiro por NOT NULL.
+ */
+export function itensParaRpc(itens: ItemNFeExtraido[]): Array<Record<string, unknown>> {
+  return itens.map((i) => ({
+    n_item: i.nItem,
+    c_prod: i.cProd,
+    x_prod: i.xProd ?? null,
+    ncm: i.ncm,
+    cfop: i.cfop,
+    q_com: i.qCom ?? null,
+    v_un_com: i.vUnCom ?? null,
+    v_prod: i.vProd ?? null,
+    cst_ibscbs: i.cstIbsCbs ?? null,
+    cclasstrib: i.cClassTrib ?? null,
+    v_bc_ibscbs: i.vBcIbsCbs ?? null,
+    p_ibs_uf: i.pIbsUf ?? null,
+    v_ibs_uf: i.vIbsUf ?? null,
+    p_ibs_mun: i.pIbsMun ?? null,
+    v_ibs_mun: i.vIbsMun ?? null,
+    p_cbs: i.pCbs ?? null,
+    v_cbs: i.vCbs ?? null,
+    v_ibs: i.vIbs ?? null,
+    p_red_aliq: i.pRedAliq ?? null,
+    p_aliq_efet: i.pAliqEfet ?? null,
+    cst_is: i.cstIs ?? null,
+    cclasstrib_is: i.cClassTribIs ?? null,
+    v_bc_is: i.vBcIs ?? null,
+    p_is: i.pIs ?? null,
+    ad_rem_is: i.adRemIs ?? null,
+    v_is: i.vIs ?? null,
+  }));
+}

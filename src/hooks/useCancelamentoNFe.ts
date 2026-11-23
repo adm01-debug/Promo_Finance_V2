@@ -51,6 +51,7 @@ export function useCancelamentoNFe() {
         p_nota_id: notaId,
         p_protocolo: protocolo,
         p_chave_acesso: chaveAcesso,
+        p_sefaz_confirmado: true,
       });
 
       if (error) {

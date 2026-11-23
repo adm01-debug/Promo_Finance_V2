@@ -170,22 +170,22 @@ export function SplitPaymentPanel() {
                     </div>
                     <Separator />
                     <div className="flex justify-between text-sm">
-                      <span>CBS Retido ({(simulacao.aliquotas.cbs * 100).toFixed(2)}%):</span>
+                      <span>CBS projetado ({(simulacao.aliquotas.cbs * 100).toFixed(2)}%):</span>
                       <span className="text-primary">{formatCurrency(simulacao.cbsRetido)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>IBS Retido ({(simulacao.aliquotas.ibs * 100).toFixed(2)}%):</span>
+                      <span>IBS projetado ({(simulacao.aliquotas.ibs * 100).toFixed(2)}%):</span>
                       <span className="text-success">{formatCurrency(simulacao.ibsRetido)}</span>
                     </div>
                     {simulacao.isRetido > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span>IS Retido:</span>
+                        <span>IS projetado:</span>
                         <span className="text-warning">{formatCurrency(simulacao.isRetido)}</span>
                       </div>
                     )}
                     <Separator />
                     <div className="flex justify-between font-medium">
-                      <span>Total Retido:</span>
+                      <span>Total projetado:</span>
                       <span className="text-destructive">
                         {formatCurrency(simulacao.totalRetido)}
                       </span>
@@ -211,7 +211,7 @@ export function SplitPaymentPanel() {
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
                     Fechar
                   </Button>
-                  <Button onClick={handleRegistrar}>Registrar Transação</Button>
+                  <Button onClick={handleRegistrar}>Registrar simulação</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -253,7 +253,7 @@ export function SplitPaymentPanel() {
                 <div className="flex items-center gap-3">
                   <Calculator className="h-8 w-8 text-destructive" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Tributos Retidos</p>
+                    <p className="text-sm text-muted-foreground">Tributos projetados</p>
                     <p className="text-2xl font-bold">
                       {formatCurrency(estatisticas.totalTributosRetidos)}
                     </p>

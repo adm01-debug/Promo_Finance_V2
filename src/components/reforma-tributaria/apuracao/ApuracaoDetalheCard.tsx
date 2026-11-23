@@ -22,6 +22,9 @@ interface Props {
 }
 
 export function ApuracaoDetalheCard({ apuracao }: Props) {
+  // 2026 é ano de teste do IBS/CBS: o valor apurado não é recolhido.
+  const informativo = Number(apuracao.ano) <= 2026;
+
   return (
     <Card>
       <CardHeader>
@@ -139,8 +142,14 @@ export function ApuracaoDetalheCard({ apuracao }: Props) {
         <div className="mt-6 p-4 bg-primary/10 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-semibold text-lg">Total a Recolher</h4>
-              <p className="text-sm text-muted-foreground">Tributos novos + residuais</p>
+                      <h4 className="font-semibold text-lg">
+                        {informativo ? 'Total informativo' : 'Total a Recolher'}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {informativo
+                          ? 'Sem recolhimento em 2026 (art. 348 da LC 214/2025)'
+                          : 'Tributos novos + residuais'}
+                      </p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-primary">

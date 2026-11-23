@@ -26,6 +26,31 @@ export interface LinhaDiff {
 
 export const TOLERANCIA = 0.01;
 
+/**
+ * Converte valor monetário do CSV em número.
+ *
+ * `parseFloat('150,25')` devolve 150 e transformava toda linha com vírgula
+ * decimal em divergência falsa. Extratos exportados do Excel em pt-BR usam
+ * vírgula; quando há os dois separadores, o último é o decimal.
+ */
+export function paraNumero(bruto: string | undefined): number {
+  const t = (bruto ?? '').replace(/[^\d.,-]/g, '');
+  if (!t) return 0;
+  const ultimaVirgula = t.lastIndexOf(',');
+  const ultimoPonto = t.lastIndexOf('.');
+  let normalizado = t;
+  if (ultimaVirgula >= 0 && ultimoPonto >= 0) {
+    normalizado =
+      ultimaVirgula > ultimoPonto
+        ? t.replace(/\./g, '').replace(',', '.')
+        : t.replace(/,/g, '');
+  } else if (ultimaVirgula >= 0) {
+    normalizado = t.replace(',', '.');
+  }
+  const n = Number(normalizado);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export function parseCsv(raw: string): LinhaExtrato[] {
   const lines = raw.trim().split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) return [];
@@ -45,8 +70,8 @@ export function parseCsv(raw: string): LinhaExtrato[] {
     return [
       {
         chave_acesso: chave,
-        cbs_credito: parseFloat(cols[iCbs] ?? '0') || 0,
-        ibs_credito: parseFloat(cols[iIbs] ?? '0') || 0,
+        cbs_credito: paraNumero(cols[iCbs]),
+        ibs_credito: paraNumero(cols[iIbs]),
       },
     ];
   });
