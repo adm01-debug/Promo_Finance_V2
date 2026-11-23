@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 5 |
+| policies | 3 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -75,16 +75,6 @@
 | USING | `(user_id = ( SELECT auth.uid() AS uid))` |
 | WITH CHECK | `(user_id = ( SELECT auth.uid() AS uid))` |
 
-### `saved_filters_owner_write`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(user_id = ( SELECT auth.uid() AS uid))` |
-| WITH CHECK | `(user_id = ( SELECT auth.uid() AS uid))` |
-
 ### `saved_filters_select`
 
 | campo | valor |
@@ -93,16 +83,6 @@
 | tipo | PERMISSIVE |
 | roles | authenticated |
 | USING | `((user_id = ( SELECT auth.uid() AS uid)) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1    FROM user_roles ur   WHERE ((ur.user_id = ( SELECT auth.uid() AS uid)) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles)))))))` |
-| WITH CHECK |  |
-
-### `saved_filters_shared_read`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(is_shared = true)` |
 | WITH CHECK |  |
 
 

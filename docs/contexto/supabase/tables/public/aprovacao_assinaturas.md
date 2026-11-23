@@ -39,6 +39,7 @@
 | aprovacao_assinaturas_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX aprovacao_assinaturas_pkey ON public.aprovacao_assinaturas USING btree (id)` |
 | aprovacao_assinaturas_unica | btree | solicitacao_id, user_id | sim | sim |  | `CREATE UNIQUE INDEX aprovacao_assinaturas_unica ON public.aprovacao_assinaturas USING btree (solicitacao_id, user_id)` |
 | idx_aprovacao_assinaturas_solicitacao | btree | solicitacao_id | não | sim |  | `CREATE INDEX idx_aprovacao_assinaturas_solicitacao ON public.aprovacao_assinaturas USING btree (solicitacao_id)` |
+| idx_aprovacao_assinaturas_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_aprovacao_assinaturas_user_id ON public.aprovacao_assinaturas USING btree (user_id)` |
 
 
 ## Policies (RLS)

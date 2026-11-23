@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 4 |
+| policies | 2 |
 | realtime (publication) | sim |
 | replica identity | default |
 | vem de extensão | não |
@@ -68,26 +68,6 @@
 | tipo | PERMISSIVE |
 | roles | authenticated |
 | USING | `(((auth.uid() = user_id) OR ((user_id IS NULL) AND has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]))) AND empresa_acessivel(empresa_id))` |
-| WITH CHECK |  |
-
-### `alertas_owner_delete`
-
-| campo | valor |
-|---|---|
-| comando | DELETE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)` |
-| WITH CHECK |  |
-
-### `alertas_owner_select`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)` |
 | WITH CHECK |  |
 
 

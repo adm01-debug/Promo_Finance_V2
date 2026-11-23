@@ -46,6 +46,7 @@
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
 | idx_sso_attempts_state | btree | state | não | sim | `(state IS NOT NULL)` | `CREATE INDEX idx_sso_attempts_state ON public.sso_login_attempts USING btree (state) WHERE (state IS NOT NULL)` |
+| idx_sso_login_attempts_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_sso_login_attempts_empresa_id ON public.sso_login_attempts USING btree (empresa_id)` |
 | sso_login_attempts_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX sso_login_attempts_pkey ON public.sso_login_attempts USING btree (id)` |
 
 

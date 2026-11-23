@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | sim |
-| policies | 4 |
+| policies | 3 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -64,16 +64,6 @@
 | WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
 
 ### `Users can select own reset tokens`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
-| WITH CHECK |  |
-
-### `Users can view own reset tokens`
 
 | campo | valor |
 |---|---|

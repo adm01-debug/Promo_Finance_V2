@@ -2,6 +2,7 @@ CREATE OR REPLACE FUNCTION public.gerar_lancamento_contabil_automatico()
  RETURNS trigger
  LANGUAGE plpgsql
  SECURITY DEFINER
+ SET search_path TO 'public', 'pg_catalog'
 AS $function$
 DECLARE
     v_lancamento_id uuid;

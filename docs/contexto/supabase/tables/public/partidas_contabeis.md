@@ -48,8 +48,6 @@
 | idx_partidas_contabeis_conta_contabil_id_fk | btree | conta_contabil_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_conta_contabil_id_fk ON public.partidas_contabeis USING btree (conta_contabil_id)` |
 | idx_partidas_contabeis_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_empresa_id ON public.partidas_contabeis USING btree (empresa_id)` |
 | idx_partidas_contabeis_lancamento_id | btree | lancamento_id | não | sim |  | `CREATE INDEX idx_partidas_contabeis_lancamento_id ON public.partidas_contabeis USING btree (lancamento_id)` |
-| idx_partidas_lanc | btree | lancamento_id | não | sim |  | `CREATE INDEX idx_partidas_lanc ON public.partidas_contabeis USING btree (lancamento_id)` |
-| partidas_contabeis_conta_idx | btree | conta_id | não | sim |  | `CREATE INDEX partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id)` |
 | partidas_contabeis_conta_lanc_idx | btree | conta_id, lancamento_id, tipo, valor | não | sim |  | `CREATE INDEX partidas_contabeis_conta_lanc_idx ON public.partidas_contabeis USING btree (conta_id, lancamento_id) INCLUDE (tipo, valor)` |
 | partidas_contabeis_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX partidas_contabeis_pkey ON public.partidas_contabeis USING btree (id)` |
 

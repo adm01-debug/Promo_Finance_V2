@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 4 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -53,16 +53,6 @@
 | USING | `((( SELECT auth.uid() AS uid) = user_id) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role))` |
 | WITH CHECK |  |
 
-### `Users can insert their MFA sessions`
-
-| campo | valor |
-|---|---|
-| comando | INSERT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING |  |
-| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
-
 ### `Users can manage own MFA sessions`
 
 | campo | valor |
@@ -72,16 +62,6 @@
 | roles | authenticated |
 | USING | `(( SELECT auth.uid() AS uid) = user_id)` |
 | WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
-
-### `Users can update their MFA sessions`
-
-| campo | valor |
-|---|---|
-| comando | UPDATE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
-| WITH CHECK |  |
 
 
 ## Triggers

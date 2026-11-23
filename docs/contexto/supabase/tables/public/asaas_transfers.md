@@ -49,6 +49,7 @@
 | asaas_transfers_asaas_id_key | btree | asaas_id | sim | sim |  | `CREATE UNIQUE INDEX asaas_transfers_asaas_id_key ON public.asaas_transfers USING btree (asaas_id)` |
 | asaas_transfers_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_transfers_pkey ON public.asaas_transfers USING btree (id)` |
 | idx_asaas_transfers_empresa_id | btree | empresa_id | não | sim |  | `CREATE INDEX idx_asaas_transfers_empresa_id ON public.asaas_transfers USING btree (empresa_id)` |
+| idx_asaas_transfers_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_asaas_transfers_user_id ON public.asaas_transfers USING btree (user_id)` |
 
 
 ## Policies (RLS)

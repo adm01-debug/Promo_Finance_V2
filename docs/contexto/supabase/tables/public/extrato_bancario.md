@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 1 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -59,16 +59,6 @@
 ## Policies (RLS)
 
 ### `Users can manage their own extrato_bancario`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
-| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
-
-### `extrato_owner_all`
 
 | campo | valor |
 |---|---|

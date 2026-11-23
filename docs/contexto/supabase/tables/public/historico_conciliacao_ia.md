@@ -55,7 +55,6 @@
 | idx_historico_conciliacao_ia_conta_receber_id_fk | btree | conta_receber_id | não | sim |  | `CREATE INDEX idx_historico_conciliacao_ia_conta_receber_id_fk ON public.historico_conciliacao_ia USING btree (conta_receber_id)` |
 | idx_historico_conciliacao_ia_created_by_fk | btree | created_by | não | sim |  | `CREATE INDEX idx_historico_conciliacao_ia_created_by_fk ON public.historico_conciliacao_ia USING btree (created_by)` |
 | idx_historico_conciliacao_ia_sessao | btree | sessao_id | não | sim |  | `CREATE INDEX idx_historico_conciliacao_ia_sessao ON public.historico_conciliacao_ia USING btree (sessao_id)` |
-| idx_historico_conciliacao_ia_sessao_id_fk | btree | sessao_id | não | sim |  | `CREATE INDEX idx_historico_conciliacao_ia_sessao_id_fk ON public.historico_conciliacao_ia USING btree (sessao_id)` |
 
 
 ## Policies (RLS)

@@ -43,7 +43,6 @@
 | convites_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX convites_pkey ON public.convites USING btree (id)` |
 | convites_token_key | btree | token | sim | sim |  | `CREATE UNIQUE INDEX convites_token_key ON public.convites USING btree (token)` |
 | idx_convites_organizacao_id | btree | organizacao_id | não | sim |  | `CREATE INDEX idx_convites_organizacao_id ON public.convites USING btree (organizacao_id)` |
-| idx_convites_organizacao_id_fk | btree | organizacao_id | não | sim |  | `CREATE INDEX idx_convites_organizacao_id_fk ON public.convites USING btree (organizacao_id)` |
 
 
 ## Policies (RLS)

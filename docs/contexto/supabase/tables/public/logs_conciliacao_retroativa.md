@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 1 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -51,16 +51,6 @@
 
 ## Policies (RLS)
 
-### `logs_retro_insert_owner`
-
-| campo | valor |
-|---|---|
-| comando | INSERT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING |  |
-| WITH CHECK | `(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)` |
-
 ### `logs_retro_owner_all`
 
 | campo | valor |
@@ -70,16 +60,6 @@
 | roles | authenticated |
 | USING | `(( SELECT auth.uid() AS uid) = user_id)` |
 | WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
-
-### `logs_retro_select_owner`
-
-| campo | valor |
-|---|---|
-| comando | SELECT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)` |
-| WITH CHECK |  |
 
 
 ## Triggers

@@ -42,6 +42,7 @@
 |---|---|---|---|---|---|---|
 | asaas_audit_trail_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX asaas_audit_trail_pkey ON public.asaas_audit_trail USING btree (id)` |
 | idx_asaas_audit_trail_asaas_payment_id_fk | btree | asaas_payment_id | não | sim |  | `CREATE INDEX idx_asaas_audit_trail_asaas_payment_id_fk ON public.asaas_audit_trail USING btree (asaas_payment_id)` |
+| idx_asaas_audit_trail_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_asaas_audit_trail_user_id ON public.asaas_audit_trail USING btree (user_id)` |
 
 
 ## Policies (RLS)

@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 2 |
+| policies | 1 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -57,16 +57,6 @@
 | roles | authenticated |
 | USING | `(( SELECT auth.uid() AS uid) = user_id)` |
 | WITH CHECK |  |
-
-### `users_own_presets`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(user_id = ( SELECT auth.uid() AS uid))` |
-| WITH CHECK | `(user_id = ( SELECT auth.uid() AS uid))` |
 
 
 ## Triggers

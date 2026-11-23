@@ -69473,7 +69473,7 @@
         ],
         "definition": null,
         "definition_sha": "5dd75bcaecf6769f",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -69524,7 +69524,7 @@
         ],
         "definition": null,
         "definition_sha": "75ed55c59d827fd6",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -69563,7 +69563,7 @@
         ],
         "definition": null,
         "definition_sha": "e84c936328a3dbee",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -69820,7 +69820,7 @@
         ],
         "definition": null,
         "definition_sha": "a38fcf16219af298",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -71333,8 +71333,8 @@
         ],
         "definition": null,
         "definition_sha": "81f122b5855f017a",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": true,
         "kind": "function",
         "language": "plpgsql",
@@ -71374,8 +71374,8 @@
         ],
         "definition": null,
         "definition_sha": "dd64345266581415",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": true,
         "kind": "function",
         "language": "plpgsql",
@@ -71415,8 +71415,8 @@
         ],
         "definition": null,
         "definition_sha": "42b7026134154b17",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": true,
         "kind": "function",
         "language": "plpgsql",
@@ -71456,8 +71456,8 @@
         ],
         "definition": null,
         "definition_sha": "41b347ab5da5e368",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": true,
         "kind": "function",
         "language": "plpgsql",
@@ -71919,8 +71919,8 @@
         ],
         "definition": null,
         "definition_sha": "d204f30171c409b0",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
         "language": "plpgsql",
@@ -72037,11 +72037,13 @@
           "views": []
         },
         "comment": null,
-        "config": null,
+        "config": [
+          "search_path=public, pg_catalog"
+        ],
         "definition": null,
-        "definition_sha": "f7586e96c6ea9695",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "definition_sha": "7bbaf1547a0dcaf7",
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": true,
         "kind": "function",
         "language": "plpgsql",
@@ -72207,9 +72209,11 @@
           "views": []
         },
         "comment": null,
-        "config": null,
+        "config": [
+          "search_path=pg_catalog"
+        ],
         "definition": null,
-        "definition_sha": "2324e41a17153e9c",
+        "definition_sha": "757a2c53f0e08e59",
         "execute_api_roles": "anon, authenticated, service_role",
         "execute_public": true,
         "is_trigger_fn": false,
@@ -72746,7 +72750,7 @@
         ],
         "definition": null,
         "definition_sha": "785d404285840fb5",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -73529,7 +73533,7 @@
           "search_path=public"
         ],
         "definition": null,
-        "definition_sha": "42adc5c7ace9a1ee",
+        "definition_sha": "232ad1511a41d573",
         "execute_api_roles": "authenticated, service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -73760,7 +73764,7 @@
           "search_path=public"
         ],
         "definition": null,
-        "definition_sha": "d380f2b73b1dd392",
+        "definition_sha": "c66deaab622bd10c",
         "execute_api_roles": "authenticated, service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -73808,7 +73812,7 @@
         ],
         "definition": null,
         "definition_sha": "d4cfc5612ef6ed1a",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -77709,8 +77713,8 @@
         ],
         "definition": null,
         "definition_sha": "8246fdb18045cf4b",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
+        "execute_api_roles": "service_role",
+        "execute_public": false,
         "is_trigger_fn": true,
         "kind": "function",
         "language": "plpgsql",
@@ -83150,6 +83154,20 @@
       },
       {
         "columns": [
+          "user_id"
+        ],
+        "definition": "CREATE INDEX idx_aprovacao_assinaturas_user_id ON public.aprovacao_assinaturas USING btree (user_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_aprovacao_assinaturas_user_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "aprovacao_assinaturas"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX aprovacao_comentarios_pkey ON public.aprovacao_comentarios USING btree (id)",
@@ -83284,6 +83302,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_asaas_audit_trail_asaas_payment_id_fk",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_audit_trail"
+      },
+      {
+        "columns": [
+          "user_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_audit_trail_user_id ON public.asaas_audit_trail USING btree (user_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_audit_trail_user_id",
         "predicate": null,
         "schema": "public",
         "table": "asaas_audit_trail"
@@ -83578,6 +83610,20 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_asaas_transfers_empresa_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "asaas_transfers"
+      },
+      {
+        "columns": [
+          "user_id"
+        ],
+        "definition": "CREATE INDEX idx_asaas_transfers_user_id ON public.asaas_transfers USING btree (user_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_asaas_transfers_user_id",
         "predicate": null,
         "schema": "public",
         "table": "asaas_transfers"
@@ -84633,20 +84679,6 @@
       },
       {
         "columns": [
-          "cpf_cnpj"
-        ],
-        "definition": "CREATE INDEX idx_clientes_cpf_cnpj ON public.clientes USING btree (cpf_cnpj)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_clientes_cpf_cnpj",
-        "predicate": null,
-        "schema": "public",
-        "table": "clientes"
-      },
-      {
-        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_clientes_empresa_id_fk ON public.clientes USING btree (empresa_id)",
@@ -84697,20 +84729,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_clientes_user_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "clientes"
-      },
-      {
-        "columns": [
-          "user_id"
-        ],
-        "definition": "CREATE INDEX idx_clientes_user_id_fk ON public.clientes USING btree (user_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_clientes_user_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "clientes"
@@ -85055,20 +85073,6 @@
       },
       {
         "columns": [
-          "data_vencimento"
-        ],
-        "definition": "CREATE INDEX idx_contas_pagar_data_vencimento ON public.contas_pagar USING btree (data_vencimento)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_contas_pagar_data_vencimento",
-        "predicate": null,
-        "schema": "public",
-        "table": "contas_pagar"
-      },
-      {
-        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_contas_pagar_empresa_id ON public.contas_pagar USING btree (empresa_id)",
@@ -85101,40 +85105,12 @@
         "columns": [
           "fornecedor_id"
         ],
-        "definition": "CREATE INDEX idx_contas_pagar_fornecedor ON public.contas_pagar USING btree (fornecedor_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_contas_pagar_fornecedor",
-        "predicate": null,
-        "schema": "public",
-        "table": "contas_pagar"
-      },
-      {
-        "columns": [
-          "fornecedor_id"
-        ],
         "definition": "CREATE INDEX idx_contas_pagar_fornecedor_id ON public.contas_pagar USING btree (fornecedor_id)",
         "is_primary": false,
         "is_unique": false,
         "is_valid": true,
         "method": "btree",
         "name": "idx_contas_pagar_fornecedor_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "contas_pagar"
-      },
-      {
-        "columns": [
-          "fornecedor_id"
-        ],
-        "definition": "CREATE INDEX idx_contas_pagar_fornecedor_id_fk ON public.contas_pagar USING btree (fornecedor_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_contas_pagar_fornecedor_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "contas_pagar"
@@ -85275,21 +85251,6 @@
           "status",
           "data_vencimento"
         ],
-        "definition": "CREATE INDEX idx_cp_status_data_vencimento ON public.contas_pagar USING btree (status, data_vencimento)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_cp_status_data_vencimento",
-        "predicate": null,
-        "schema": "public",
-        "table": "contas_pagar"
-      },
-      {
-        "columns": [
-          "status",
-          "data_vencimento"
-        ],
         "definition": "CREATE INDEX idx_cp_status_vencimento ON public.contas_pagar USING btree (status, data_vencimento)",
         "is_primary": false,
         "is_unique": false,
@@ -85346,20 +85307,6 @@
         "columns": [
           "cliente_id"
         ],
-        "definition": "CREATE INDEX idx_contas_receber_cliente ON public.contas_receber USING btree (cliente_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_contas_receber_cliente",
-        "predicate": null,
-        "schema": "public",
-        "table": "contas_receber"
-      },
-      {
-        "columns": [
-          "cliente_id"
-        ],
         "definition": "CREATE INDEX idx_contas_receber_cliente_id ON public.contas_receber USING btree (cliente_id)",
         "is_primary": false,
         "is_unique": false,
@@ -85395,20 +85342,6 @@
         "method": "btree",
         "name": "idx_contas_receber_data_recebimento",
         "predicate": "(data_recebimento IS NOT NULL)",
-        "schema": "public",
-        "table": "contas_receber"
-      },
-      {
-        "columns": [
-          "data_vencimento"
-        ],
-        "definition": "CREATE INDEX idx_contas_receber_data_vencimento ON public.contas_receber USING btree (data_vencimento)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_contas_receber_data_vencimento",
-        "predicate": null,
         "schema": "public",
         "table": "contas_receber"
       },
@@ -85724,20 +85657,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_convites_organizacao_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "convites"
-      },
-      {
-        "columns": [
-          "organizacao_id"
-        ],
-        "definition": "CREATE INDEX idx_convites_organizacao_id_fk ON public.convites USING btree (organizacao_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_convites_organizacao_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "convites"
@@ -86676,6 +86595,20 @@
       },
       {
         "columns": [
+          "cliente_id"
+        ],
+        "definition": "CREATE INDEX idx_execucoes_cobranca_cliente_id ON public.execucoes_cobranca USING btree (cliente_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_execucoes_cobranca_cliente_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "execucoes_cobranca"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_execucoes_cobranca_empresa_id ON public.execucoes_cobranca USING btree (empresa_id)",
@@ -87260,20 +87193,6 @@
       },
       {
         "columns": [
-          "cnpj"
-        ],
-        "definition": "CREATE INDEX idx_fornecedores_cnpj ON public.fornecedores USING btree (cnpj)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_fornecedores_cnpj",
-        "predicate": null,
-        "schema": "public",
-        "table": "fornecedores"
-      },
-      {
-        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_fornecedores_empresa_id ON public.fornecedores USING btree (empresa_id)",
@@ -87282,20 +87201,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_fornecedores_empresa_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "fornecedores"
-      },
-      {
-        "columns": [
-          "empresa_id"
-        ],
-        "definition": "CREATE INDEX idx_fornecedores_empresa_id_fk ON public.fornecedores USING btree (empresa_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_fornecedores_empresa_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "fornecedores"
@@ -87324,20 +87229,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_fornecedores_user_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "fornecedores"
-      },
-      {
-        "columns": [
-          "user_id"
-        ],
-        "definition": "CREATE INDEX idx_fornecedores_user_id_fk ON public.fornecedores USING btree (user_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_fornecedores_user_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "fornecedores"
@@ -87930,20 +87821,6 @@
       },
       {
         "columns": [
-          "sessao_id"
-        ],
-        "definition": "CREATE INDEX idx_historico_conciliacao_ia_sessao_id_fk ON public.historico_conciliacao_ia USING btree (sessao_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_historico_conciliacao_ia_sessao_id_fk",
-        "predicate": null,
-        "schema": "public",
-        "table": "historico_conciliacao_ia"
-      },
-      {
-        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX historico_relatorios_pkey ON public.historico_relatorios USING btree (id)",
@@ -88391,21 +88268,6 @@
       },
       {
         "columns": [
-          "empresa_id",
-          "data_lancamento"
-        ],
-        "definition": "CREATE INDEX lancamentos_contabeis_empresa_data_idx ON public.lancamentos_contabeis USING btree (empresa_id, data_lancamento)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "lancamentos_contabeis_empresa_data_idx",
-        "predicate": null,
-        "schema": "public",
-        "table": "lancamentos_contabeis"
-      },
-      {
-        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX lancamentos_contabeis_pkey ON public.lancamentos_contabeis USING btree (id)",
@@ -88644,20 +88506,6 @@
       },
       {
         "columns": [
-          "conta_bancaria_id"
-        ],
-        "definition": "CREATE INDEX idx_movimentacoes_conta_bancaria_id_fk ON public.movimentacoes USING btree (conta_bancaria_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_movimentacoes_conta_bancaria_id_fk",
-        "predicate": null,
-        "schema": "public",
-        "table": "movimentacoes"
-      },
-      {
-        "columns": [
           "conta_pagar_id"
         ],
         "definition": "CREATE INDEX idx_movimentacoes_conta_pagar_id_fk ON public.movimentacoes USING btree (conta_pagar_id)",
@@ -88709,20 +88557,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_movimentacoes_empresa_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "movimentacoes"
-      },
-      {
-        "columns": [
-          "empresa_id"
-        ],
-        "definition": "CREATE INDEX idx_movimentacoes_empresa_id_fk ON public.movimentacoes USING btree (empresa_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_movimentacoes_empresa_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "movimentacoes"
@@ -89141,20 +88975,6 @@
       },
       {
         "columns": [
-          "data_emissao"
-        ],
-        "definition": "CREATE INDEX idx_notas_fiscais_data ON public.notas_fiscais USING btree (data_emissao)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_notas_fiscais_data",
-        "predicate": null,
-        "schema": "public",
-        "table": "notas_fiscais"
-      },
-      {
-        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_notas_fiscais_empresa_id ON public.notas_fiscais USING btree (empresa_id)",
@@ -89163,20 +88983,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_notas_fiscais_empresa_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "notas_fiscais"
-      },
-      {
-        "columns": [
-          "empresa_id"
-        ],
-        "definition": "CREATE INDEX idx_notas_fiscais_empresa_id_fk ON public.notas_fiscais USING btree (empresa_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_notas_fiscais_empresa_id_fk",
         "predicate": null,
         "schema": "public",
         "table": "notas_fiscais"
@@ -89672,34 +89478,6 @@
         "is_valid": true,
         "method": "btree",
         "name": "idx_partidas_contabeis_lancamento_id",
-        "predicate": null,
-        "schema": "public",
-        "table": "partidas_contabeis"
-      },
-      {
-        "columns": [
-          "lancamento_id"
-        ],
-        "definition": "CREATE INDEX idx_partidas_lanc ON public.partidas_contabeis USING btree (lancamento_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "idx_partidas_lanc",
-        "predicate": null,
-        "schema": "public",
-        "table": "partidas_contabeis"
-      },
-      {
-        "columns": [
-          "conta_id"
-        ],
-        "definition": "CREATE INDEX partidas_contabeis_conta_idx ON public.partidas_contabeis USING btree (conta_id)",
-        "is_primary": false,
-        "is_unique": false,
-        "is_valid": true,
-        "method": "btree",
-        "name": "partidas_contabeis_conta_idx",
         "predicate": null,
         "schema": "public",
         "table": "partidas_contabeis"
@@ -92085,6 +91863,20 @@
       },
       {
         "columns": [
+          "empresa_id"
+        ],
+        "definition": "CREATE INDEX idx_sso_login_attempts_empresa_id ON public.sso_login_attempts USING btree (empresa_id)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "idx_sso_login_attempts_empresa_id",
+        "predicate": null,
+        "schema": "public",
+        "table": "sso_login_attempts"
+      },
+      {
+        "columns": [
           "id"
         ],
         "definition": "CREATE UNIQUE INDEX sso_login_attempts_pkey ON public.sso_login_attempts USING btree (id)",
@@ -93307,36 +93099,6 @@
     ],
     "lints": [
       {
-        "code": "secdef_mutable_search_path",
-        "detail": "SECURITY DEFINER sem `SET search_path`: vulnerável a sequestro de search_path.",
-        "object": "public.gerar_lancamento_contabil_automatico()",
-        "severity": "ALTA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.aprovacao_assinaturas.aprovacao_assinaturas_user_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_audit_trail.asaas_audit_trail_user_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['user_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.asaas_transfers.asaas_transfers_user_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.execucoes_cobranca.execucoes_cobranca_cliente_id_fkey",
-        "severity": "BAIXA"
-      },
-      {
         "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.execucoes_regua_cobranca.execucoes_regua_cobranca_conta_receber_id_fkey",
@@ -93346,12 +93108,6 @@
         "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.n8n_workflow_configs.n8n_workflow_configs_created_by_fkey",
-        "severity": "BAIXA"
-      },
-      {
-        "code": "fk_without_index",
-        "detail": "FK sem índice nas colunas ['empresa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
-        "object": "public.sso_login_attempts.sso_login_attempts_empresa_id_fkey",
         "severity": "BAIXA"
       },
       {
@@ -94162,12 +93918,6 @@
         "code": "realtime_replica_identity",
         "detail": "Publicada no Realtime sem REPLICA IDENTITY FULL: eventos de UPDATE/DELETE não trazem `old` completo.",
         "object": "public.user_anomalia_preferences",
-        "severity": "INFO"
-      },
-      {
-        "code": "rpc_anon_executable",
-        "detail": "SECURITY DEFINER chamável via RPC por anon (sem login): roda com privilégios do owner. Confirme que é intencional (Supabase dá EXECUTE a anon por padrão; revogue se não for API pública).",
-        "object": "public.gerar_alertas_vencimento()",
         "severity": "INFO"
       },
       {
@@ -100248,30 +99998,6 @@
         "with_check": null
       },
       {
-        "cmd": "DELETE",
-        "name": "alertas_owner_delete",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "alertas",
-        "using": "(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)",
-        "with_check": null
-      },
-      {
-        "cmd": "SELECT",
-        "name": "alertas_owner_select",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "alertas",
-        "using": "(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)",
-        "with_check": null
-      },
-      {
         "cmd": "UPDATE",
         "name": "Atualizar alertas preditivos restrito",
         "permissive": "PERMISSIVE",
@@ -102996,18 +102722,6 @@
         "with_check": null
       },
       {
-        "cmd": "ALL",
-        "name": "Usuários veem suas próprias conversas",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "expert_conversations",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": null
-      },
-      {
         "cmd": "INSERT",
         "name": "Users can insert messages to their conversations",
         "permissive": "PERMISSIVE",
@@ -103046,18 +102760,6 @@
       {
         "cmd": "ALL",
         "name": "Users can manage their own extrato_bancario",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "extrato_bancario",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "extrato_owner_all",
         "permissive": "PERMISSIVE",
         "roles": [
           "authenticated"
@@ -104101,42 +103803,6 @@
         "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
       },
       {
-        "cmd": "INSERT",
-        "name": "logs_baixa_insert_owner",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "logs_baixa_automatica",
-        "using": null,
-        "with_check": "(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)"
-      },
-      {
-        "cmd": "SELECT",
-        "name": "logs_baixa_select_owner",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "logs_baixa_automatica",
-        "using": "(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)",
-        "with_check": null
-      },
-      {
-        "cmd": "INSERT",
-        "name": "logs_retro_insert_owner",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "logs_conciliacao_retroativa",
-        "using": null,
-        "with_check": "(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)"
-      },
-      {
         "cmd": "ALL",
         "name": "logs_retro_owner_all",
         "permissive": "PERMISSIVE",
@@ -104147,18 +103813,6 @@
         "table": "logs_conciliacao_retroativa",
         "using": "(( SELECT auth.uid() AS uid) = user_id)",
         "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
-        "cmd": "SELECT",
-        "name": "logs_retro_select_owner",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "logs_conciliacao_retroativa",
-        "using": "(( SELECT ( SELECT auth.uid() AS uid) AS uid) = user_id)",
-        "with_check": null
       },
       {
         "cmd": "ALL",
@@ -104185,18 +103839,6 @@
         "with_check": null
       },
       {
-        "cmd": "INSERT",
-        "name": "Users can insert their MFA sessions",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "mfa_sessions",
-        "using": null,
-        "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
         "cmd": "ALL",
         "name": "Users can manage own MFA sessions",
         "permissive": "PERMISSIVE",
@@ -104207,18 +103849,6 @@
         "table": "mfa_sessions",
         "using": "(( SELECT auth.uid() AS uid) = user_id)",
         "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
-        "cmd": "UPDATE",
-        "name": "Users can update their MFA sessions",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "mfa_sessions",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": null
       },
       {
         "cmd": "ALL",
@@ -104979,18 +104609,6 @@
       {
         "cmd": "SELECT",
         "name": "Users can select own reset tokens",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "password_reset_tokens",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": null
-      },
-      {
-        "cmd": "SELECT",
-        "name": "Users can view own reset tokens",
         "permissive": "PERMISSIVE",
         "roles": [
           "authenticated"
@@ -105769,18 +105387,6 @@
         "with_check": null
       },
       {
-        "cmd": "ALL",
-        "name": "empresa_based_access",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "regras_roteamento_financeiro",
-        "using": "((empresa_id IN ( SELECT user_empresas.empresa_id\n   FROM user_empresas\n  WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1\n   FROM user_roles\n  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))",
-        "with_check": null
-      },
-      {
         "cmd": "SELECT",
         "name": "regua_cobranca_empresa_select",
         "permissive": "PERMISSIVE",
@@ -106261,18 +105867,6 @@
         "with_check": "(user_id = ( SELECT auth.uid() AS uid))"
       },
       {
-        "cmd": "ALL",
-        "name": "saved_filters_owner_write",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "saved_filters",
-        "using": "(user_id = ( SELECT auth.uid() AS uid))",
-        "with_check": "(user_id = ( SELECT auth.uid() AS uid))"
-      },
-      {
         "cmd": "SELECT",
         "name": "saved_filters_select",
         "permissive": "PERMISSIVE",
@@ -106282,18 +105876,6 @@
         "schema": "public",
         "table": "saved_filters",
         "using": "((user_id = ( SELECT auth.uid() AS uid)) OR (is_shared AND (empresa_id IS NOT NULL) AND empresa_acessivel(empresa_id) AND (EXISTS ( SELECT 1\n   FROM user_roles ur\n  WHERE ((ur.user_id = ( SELECT auth.uid() AS uid)) AND ((ur.role)::text = ANY (saved_filters.shared_with_roles)))))))",
-        "with_check": null
-      },
-      {
-        "cmd": "SELECT",
-        "name": "saved_filters_shared_read",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "saved_filters",
-        "using": "(is_shared = true)",
         "with_check": null
       },
       {
@@ -106407,18 +105989,6 @@
       {
         "cmd": "ALL",
         "name": "Owner manage sessoes",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "sessoes_conciliacao",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "Users can manage their own sessoes_conciliacao",
         "permissive": "PERMISSIVE",
         "roles": [
           "authenticated"
@@ -106898,18 +106468,6 @@
       },
       {
         "cmd": "ALL",
-        "name": "users_own_filters",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "user_active_filters",
-        "using": "(user_id = ( SELECT auth.uid() AS uid))",
-        "with_check": "(user_id = ( SELECT auth.uid() AS uid))"
-      },
-      {
-        "cmd": "ALL",
         "name": "Users can manage their own preferences",
         "permissive": "PERMISSIVE",
         "roles": [
@@ -107018,18 +106576,6 @@
       },
       {
         "cmd": "ALL",
-        "name": "user_digest_prefs_all",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "user_digest_preferences",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
-        "cmd": "ALL",
         "name": "Admins manage user_empresas",
         "permissive": "PERMISSIVE",
         "roles": [
@@ -107063,18 +106609,6 @@
         "table": "user_filter_presets",
         "using": "(( SELECT auth.uid() AS uid) = user_id)",
         "with_check": null
-      },
-      {
-        "cmd": "ALL",
-        "name": "users_own_presets",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "user_filter_presets",
-        "using": "(user_id = ( SELECT auth.uid() AS uid))",
-        "with_check": "(user_id = ( SELECT auth.uid() AS uid))"
       },
       {
         "cmd": "INSERT",
@@ -107149,18 +106683,6 @@
         "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
       },
       {
-        "cmd": "INSERT",
-        "name": "Users can insert their passkeys",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "user_passkeys",
-        "using": null,
-        "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
         "cmd": "UPDATE",
         "name": "Users can update own passkeys",
         "permissive": "PERMISSIVE",
@@ -107171,18 +106693,6 @@
         "table": "user_passkeys",
         "using": "(( SELECT auth.uid() AS uid) = user_id)",
         "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
-      },
-      {
-        "cmd": "UPDATE",
-        "name": "Users can update their passkeys",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "user_passkeys",
-        "using": "(( SELECT auth.uid() AS uid) = user_id)",
-        "with_check": null
       },
       {
         "cmd": "SELECT",

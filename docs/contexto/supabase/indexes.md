@@ -56,6 +56,7 @@ Uso e tamanho em `stats.md`.
 | public.aprovacao_assinaturas | aprovacao_assinaturas_pkey | btree | id | sim | sim |  |
 | public.aprovacao_assinaturas | aprovacao_assinaturas_unica | btree | solicitacao_id, user_id | sim | sim |  |
 | public.aprovacao_assinaturas | idx_aprovacao_assinaturas_solicitacao | btree | solicitacao_id | não | sim |  |
+| public.aprovacao_assinaturas | idx_aprovacao_assinaturas_user_id | btree | user_id | não | sim |  |
 | public.aprovacao_comentarios | aprovacao_comentarios_pkey | btree | id | sim | sim |  |
 | public.aprovacao_comentarios | idx_aprovacao_comentarios_user_id_fk | btree | user_id | não | sim |  |
 | public.apuracoes_irpj_csll | apuracoes_irpj_csll_pkey | btree | id | sim | sim |  |
@@ -66,6 +67,7 @@ Uso e tamanho em `stats.md`.
 | public.apuracoes_tributarias | idx_apuracoes_tributarias_empresa | btree | empresa_id | não | sim |  |
 | public.asaas_audit_trail | asaas_audit_trail_pkey | btree | id | sim | sim |  |
 | public.asaas_audit_trail | idx_asaas_audit_trail_asaas_payment_id_fk | btree | asaas_payment_id | não | sim |  |
+| public.asaas_audit_trail | idx_asaas_audit_trail_user_id | btree | user_id | não | sim |  |
 | public.asaas_config | asaas_config_empresa_id_key | btree | empresa_id | sim | sim |  |
 | public.asaas_config | asaas_config_pkey | btree | id | sim | sim |  |
 | public.asaas_credit_risk_analysis | asaas_credit_risk_analysis_pkey | btree | id | sim | sim |  |
@@ -87,6 +89,7 @@ Uso e tamanho em `stats.md`.
 | public.asaas_transfers | asaas_transfers_asaas_id_key | btree | asaas_id | sim | sim |  |
 | public.asaas_transfers | asaas_transfers_pkey | btree | id | sim | sim |  |
 | public.asaas_transfers | idx_asaas_transfers_empresa_id | btree | empresa_id | não | sim |  |
+| public.asaas_transfers | idx_asaas_transfers_user_id | btree | user_id | não | sim |  |
 | public.audit_logs | audit_logs_pkey | btree | id, created_at | sim | sim |  |
 | public.audit_logs | idx_audit_logs_created_at | btree | created_at | não | sim |  |
 | public.audit_logs | idx_audit_logs_table | btree | table_name, created_at | não | sim |  |
@@ -161,12 +164,10 @@ Uso e tamanho em `stats.md`.
 | public.clientes | idx_clientes_ativo | btree | ativo | não | sim |  |
 | public.clientes | idx_clientes_bitrix_company_id | btree | bitrix_company_id | não | sim | `(bitrix_company_id IS NOT NULL)` |
 | public.clientes | idx_clientes_bitrix_contact_id | btree | bitrix_contact_id | não | sim | `(bitrix_contact_id IS NOT NULL)` |
-| public.clientes | idx_clientes_cpf_cnpj | btree | cpf_cnpj | não | sim |  |
 | public.clientes | idx_clientes_empresa_id_fk | btree | empresa_id | não | sim |  |
 | public.clientes | idx_clientes_nome | btree | nome | não | sim |  |
 | public.clientes | idx_clientes_ramo_atividade | btree | ramo_atividade | não | sim |  |
 | public.clientes | idx_clientes_user_id | btree | user_id | não | sim |  |
-| public.clientes | idx_clientes_user_id_fk | btree | user_id | não | sim |  |
 | public.cnaes | cnaes_codigo_key | btree | codigo | sim | sim |  |
 | public.cnaes | cnaes_pkey | btree | id | sim | sim |  |
 | public.cnpja_cache | cnpja_cache_pkey | btree | cnpj | sim | sim |  |
@@ -191,12 +192,9 @@ Uso e tamanho em `stats.md`.
 | public.contas_pagar | idx_contas_pagar_centro_custo_id | btree | centro_custo_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_data_pagamento | btree | data_pagamento | não | sim | `(data_pagamento IS NOT NULL)` |
-| public.contas_pagar | idx_contas_pagar_data_vencimento | btree | data_vencimento | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_empresa_id | btree | empresa_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  |
-| public.contas_pagar | idx_contas_pagar_fornecedor | btree | fornecedor_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_fornecedor_id | btree | fornecedor_id | não | sim |  |
-| public.contas_pagar | idx_contas_pagar_fornecedor_id_fk | btree | fornecedor_id | não | sim |  |
 | public.contas_pagar | idx_contas_pagar_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` |
 | public.contas_pagar | idx_contas_pagar_prevent_duplicates | btree | empresa_id, fornecedor_id, valor, data_vencimento, numero_documento | sim | sim | `(((status)::text <> 'cancelado'::text) AND (fornecedor_id IS NOT NULL) AND (numero_documento IS NOT NULL))` |
 | public.contas_pagar | idx_contas_pagar_status | btree | status | não | sim |  |
@@ -206,16 +204,13 @@ Uso e tamanho em `stats.md`.
 | public.contas_pagar | idx_cp_descricao_gin | gin |  | não | sim |  |
 | public.contas_pagar | idx_cp_fornecedor_status | btree | fornecedor_id, status | não | sim |  |
 | public.contas_pagar | idx_cp_pendentes | btree | data_vencimento | não | sim | `((status)::text = ANY (ARRAY[('pendente'::character varying)::text, ('vencida'::character varying)::text]))` |
-| public.contas_pagar | idx_cp_status_data_vencimento | btree | status, data_vencimento | não | sim |  |
 | public.contas_pagar | idx_cp_status_vencimento | btree | status, data_vencimento | não | sim |  |
 | public.contas_receber | contas_receber_pkey | btree | id | sim | sim |  |
 | public.contas_receber | idx_contas_receber_categoria_id | btree | categoria_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_centro_custo_id | btree | centro_custo_id | não | sim |  |
-| public.contas_receber | idx_contas_receber_cliente | btree | cliente_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_cliente_id | btree | cliente_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_data_recebimento | btree | data_recebimento | não | sim | `(data_recebimento IS NOT NULL)` |
-| public.contas_receber | idx_contas_receber_data_vencimento | btree | data_vencimento | não | sim |  |
 | public.contas_receber | idx_contas_receber_empresa_id | btree | empresa_id | não | sim |  |
 | public.contas_receber | idx_contas_receber_empresa_status_venc | btree | empresa_id, status, data_vencimento | não | sim |  |
 | public.contas_receber | idx_contas_receber_pendentes_venc | btree | empresa_id, data_vencimento | não | sim | `((status)::text = 'pendente'::text)` |
@@ -238,7 +233,6 @@ Uso e tamanho em `stats.md`.
 | public.convites | convites_pkey | btree | id | sim | sim |  |
 | public.convites | convites_token_key | btree | token | sim | sim |  |
 | public.convites | idx_convites_organizacao_id | btree | organizacao_id | não | sim |  |
-| public.convites | idx_convites_organizacao_id_fk | btree | organizacao_id | não | sim |  |
 | public.convites_contador | convites_contador_pkey | btree | id | sim | sim |  |
 | public.convites_contador | convites_contador_token_hash_key | btree | token_hash | sim | sim |  |
 | public.convites_contador | convites_contador_token_key | btree | token | sim | sim |  |
@@ -305,6 +299,7 @@ Uso e tamanho em `stats.md`.
 | public.evidencias_pacotes | evidencias_pacotes_pkey | btree | id | sim | sim |  |
 | public.evidencias_pacotes | idx_evidencias_pacotes_verificacao_id_fk | btree | verificacao_id | não | sim |  |
 | public.execucoes_cobranca | execucoes_cobranca_pkey | btree | id | sim | sim |  |
+| public.execucoes_cobranca | idx_execucoes_cobranca_cliente_id | btree | cliente_id | não | sim |  |
 | public.execucoes_cobranca | idx_execucoes_cobranca_empresa_id | btree | empresa_id | não | sim |  |
 | public.execucoes_regua_cobranca | execucoes_regua_cobranca_pkey | btree | id | sim | sim |  |
 | public.execucoes_regua_cobranca | idx_execucoes_regua_empresa | btree | empresa_id, created_at | não | sim |  |
@@ -346,12 +341,9 @@ Uso e tamanho em `stats.md`.
 | public.fornecedores | fornecedores_cnpj_key | btree | cnpj | sim | sim |  |
 | public.fornecedores | fornecedores_pkey | btree | id | sim | sim |  |
 | public.fornecedores | idx_fornecedores_ativo | btree | ativo | não | sim |  |
-| public.fornecedores | idx_fornecedores_cnpj | btree | cnpj | não | sim |  |
 | public.fornecedores | idx_fornecedores_empresa_id | btree | empresa_id | não | sim |  |
-| public.fornecedores | idx_fornecedores_empresa_id_fk | btree | empresa_id | não | sim |  |
 | public.fornecedores | idx_fornecedores_razao_social | btree | razao_social | não | sim |  |
 | public.fornecedores | idx_fornecedores_user_id | btree | user_id | não | sim |  |
-| public.fornecedores | idx_fornecedores_user_id_fk | btree | user_id | não | sim |  |
 | public.frontend_error_alert_state | frontend_error_alert_state_pkey | btree | id | sim | sim |  |
 | public.frontend_error_alert_state | frontend_error_alert_state_signature_key | btree | signature | sim | sim |  |
 | public.frontend_error_alert_state | uq_frontend_error_alert_state_assinatura | btree | assinatura | sim | sim |  |
@@ -393,7 +385,6 @@ Uso e tamanho em `stats.md`.
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_conta_receber_id_fk | btree | conta_receber_id | não | sim |  |
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_created_by_fk | btree | created_by | não | sim |  |
 | public.historico_conciliacao_ia | idx_historico_conciliacao_ia_sessao | btree | sessao_id | não | sim |  |
-| public.historico_conciliacao_ia | idx_historico_conciliacao_ia_sessao_id_fk | btree | sessao_id | não | sim |  |
 | public.historico_relatorios | historico_relatorios_pkey | btree | id | sim | sim |  |
 | public.historico_relatorios | idx_historico_relatorios_relatorio_agendado_id_fk | btree | relatorio_agendado_id | não | sim |  |
 | public.historico_score_saude | historico_score_saude_pkey | btree | id | sim | sim |  |
@@ -425,7 +416,6 @@ Uso e tamanho em `stats.md`.
 | public.lancamentos_contabeis | idx_lancamentos_contabeis_empresa_user | btree | empresa_id, user_id | não | sim |  |
 | public.lancamentos_contabeis | idx_lancamentos_contabeis_user_id_fk | btree | user_id | não | sim |  |
 | public.lancamentos_contabeis | lancamentos_contabeis_empresa_comp_idx | btree | empresa_id, competencia | não | sim |  |
-| public.lancamentos_contabeis | lancamentos_contabeis_empresa_data_idx | btree | empresa_id, data_lancamento | não | sim |  |
 | public.lancamentos_contabeis | lancamentos_contabeis_pkey | btree | id | sim | sim |  |
 | public.login_attempts | idx_login_attempts_email | btree | email | não | sim |  |
 | public.login_attempts | idx_login_attempts_email_last | btree | last_attempt_at | não | sim |  |
@@ -443,12 +433,10 @@ Uso e tamanho em `stats.md`.
 | public.movimentacoes | idx_movimentacoes_centro_custo_id | btree | centro_custo_id | não | sim | `(centro_custo_id IS NOT NULL)` |
 | public.movimentacoes | idx_movimentacoes_centro_custo_id_fk | btree | centro_custo_id | não | sim |  |
 | public.movimentacoes | idx_movimentacoes_conta_bancaria_id | btree | conta_bancaria_id | não | sim |  |
-| public.movimentacoes | idx_movimentacoes_conta_bancaria_id_fk | btree | conta_bancaria_id | não | sim |  |
 | public.movimentacoes | idx_movimentacoes_conta_pagar_id_fk | btree | conta_pagar_id | não | sim |  |
 | public.movimentacoes | idx_movimentacoes_conta_receber_id_fk | btree | conta_receber_id | não | sim |  |
 | public.movimentacoes | idx_movimentacoes_empresa_data | btree | empresa_id, data_movimentacao | não | sim | `(deleted_at IS NULL)` |
 | public.movimentacoes | idx_movimentacoes_empresa_id | btree | empresa_id | não | sim |  |
-| public.movimentacoes | idx_movimentacoes_empresa_id_fk | btree | empresa_id | não | sim |  |
 | public.movimentacoes | movimentacoes_pkey | btree | id | sim | sim |  |
 | public.mv_performance_alerts_weekly | idx_mv_performance_alerts_weekly_pkey | btree | week_start, source, severity | sim | sim |  |
 | public.n8n_dispatch_logs | idx_n8n_dispatch_logs_config_id | btree | config_id | não | sim | `(config_id IS NOT NULL)` |
@@ -478,9 +466,7 @@ Uso e tamanho em `stats.md`.
 | public.nfe_recebidas | uq_nfe_rec_conta_pagar | btree | conta_pagar_id | sim | sim | `(conta_pagar_id IS NOT NULL)` |
 | public.notas_fiscais | idx_nfe_data_emissao | btree | data_emissao | não | sim |  |
 | public.notas_fiscais | idx_nfe_numero | btree | numero | não | sim |  |
-| public.notas_fiscais | idx_notas_fiscais_data | btree | data_emissao | não | sim |  |
 | public.notas_fiscais | idx_notas_fiscais_empresa_id | btree | empresa_id | não | sim |  |
-| public.notas_fiscais | idx_notas_fiscais_empresa_id_fk | btree | empresa_id | não | sim |  |
 | public.notas_fiscais | idx_notas_fiscais_status | btree | status | não | sim |  |
 | public.notas_fiscais | notas_fiscais_chave_acesso_key | btree | chave_acesso | sim | sim |  |
 | public.notas_fiscais | notas_fiscais_pkey | btree | id | sim | sim |  |
@@ -516,8 +502,6 @@ Uso e tamanho em `stats.md`.
 | public.partidas_contabeis | idx_partidas_contabeis_conta_contabil_id_fk | btree | conta_contabil_id | não | sim |  |
 | public.partidas_contabeis | idx_partidas_contabeis_empresa_id | btree | empresa_id | não | sim |  |
 | public.partidas_contabeis | idx_partidas_contabeis_lancamento_id | btree | lancamento_id | não | sim |  |
-| public.partidas_contabeis | idx_partidas_lanc | btree | lancamento_id | não | sim |  |
-| public.partidas_contabeis | partidas_contabeis_conta_idx | btree | conta_id | não | sim |  |
 | public.partidas_contabeis | partidas_contabeis_conta_lanc_idx | btree | conta_id, lancamento_id, tipo, valor | não | sim |  |
 | public.partidas_contabeis | partidas_contabeis_pkey | btree | id | sim | sim |  |
 | public.password_reset_requests | idx_password_reset_requests_reviewed_by_fk | btree | reviewed_by | não | sim |  |
@@ -686,6 +670,7 @@ Uso e tamanho em `stats.md`.
 | public.split_payment_transacoes | idx_split_payment_transacoes_empresa_id | btree | empresa_id | não | sim |  |
 | public.split_payment_transacoes | split_payment_transacoes_pkey | btree | id | sim | sim |  |
 | public.sso_login_attempts | idx_sso_attempts_state | btree | state | não | sim | `(state IS NOT NULL)` |
+| public.sso_login_attempts | idx_sso_login_attempts_empresa_id | btree | empresa_id | não | sim |  |
 | public.sso_login_attempts | sso_login_attempts_pkey | btree | id | sim | sim |  |
 | public.sso_providers | idx_sso_providers_empresa_id | btree | empresa_id | não | sim |  |
 | public.sso_providers | sso_providers_pkey | btree | id | sim | sim |  |

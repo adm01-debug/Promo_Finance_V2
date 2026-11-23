@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 7 |
+| policies | 5 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -79,16 +79,6 @@
 | USING |  |
 | WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
 
-### `Users can insert their passkeys`
-
-| campo | valor |
-|---|---|
-| comando | INSERT |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING |  |
-| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
-
 ### `Users can update own passkeys`
 
 | campo | valor |
@@ -98,16 +88,6 @@
 | roles | authenticated |
 | USING | `(( SELECT auth.uid() AS uid) = user_id)` |
 | WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
-
-### `Users can update their passkeys`
-
-| campo | valor |
-|---|---|
-| comando | UPDATE |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
-| WITH CHECK |  |
 
 ### `Users can view own passkeys`
 

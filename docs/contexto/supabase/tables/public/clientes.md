@@ -80,12 +80,10 @@
 | idx_clientes_ativo | btree | ativo | não | sim |  | `CREATE INDEX idx_clientes_ativo ON public.clientes USING btree (ativo)` |
 | idx_clientes_bitrix_company_id | btree | bitrix_company_id | não | sim | `(bitrix_company_id IS NOT NULL)` | `CREATE INDEX idx_clientes_bitrix_company_id ON public.clientes USING btree (bitrix_company_id) WHERE (bitrix_company_id IS NOT NULL)` |
 | idx_clientes_bitrix_contact_id | btree | bitrix_contact_id | não | sim | `(bitrix_contact_id IS NOT NULL)` | `CREATE INDEX idx_clientes_bitrix_contact_id ON public.clientes USING btree (bitrix_contact_id) WHERE (bitrix_contact_id IS NOT NULL)` |
-| idx_clientes_cpf_cnpj | btree | cpf_cnpj | não | sim |  | `CREATE INDEX idx_clientes_cpf_cnpj ON public.clientes USING btree (cpf_cnpj)` |
 | idx_clientes_empresa_id_fk | btree | empresa_id | não | sim |  | `CREATE INDEX idx_clientes_empresa_id_fk ON public.clientes USING btree (empresa_id)` |
 | idx_clientes_nome | btree | nome | não | sim |  | `CREATE INDEX idx_clientes_nome ON public.clientes USING btree (nome)` |
 | idx_clientes_ramo_atividade | btree | ramo_atividade | não | sim |  | `CREATE INDEX idx_clientes_ramo_atividade ON public.clientes USING btree (ramo_atividade)` |
 | idx_clientes_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_clientes_user_id ON public.clientes USING btree (user_id)` |
-| idx_clientes_user_id_fk | btree | user_id | não | sim |  | `CREATE INDEX idx_clientes_user_id_fk ON public.clientes USING btree (user_id)` |
 
 
 ## Policies (RLS)

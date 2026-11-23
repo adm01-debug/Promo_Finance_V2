@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 2 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -55,16 +55,6 @@
 | WITH CHECK |  |
 
 ### `user_active_filters_owner`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(user_id = ( SELECT auth.uid() AS uid))` |
-| WITH CHECK | `(user_id = ( SELECT auth.uid() AS uid))` |
-
-### `users_own_filters`
 
 | campo | valor |
 |---|---|
