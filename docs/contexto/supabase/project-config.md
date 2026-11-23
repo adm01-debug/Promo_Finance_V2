@@ -8,16 +8,12 @@
 | schemas expostos (PostgREST) | public,graphql_public |
 | max_rows (PostgREST) | 1000 |
 | extra_search_path | public, extensions |
-| PITR | não |
+| PITR |  |
 | branches | 3 |
 
 ```json
 {
-  "backups_config": {
-    "pitr_enabled": false,
-    "region": "us-east-1",
-    "walg_enabled": true
-  },
+  "backups_config": null,
   "branches": [
     {
       "git_branch": "claude/fix-supabase-preview-cron-260928-1235",
