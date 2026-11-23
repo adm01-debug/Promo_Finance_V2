@@ -16,7 +16,9 @@
 // `not_authenticated`. O storage usa service_role porque o bucket nao tem
 // policy de escrita para `authenticated`.
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersComSegredoPara, exigirUsuarioComEmpresa } from '../_shared/auth-guard.ts';
+import { validateContract } from '../_shared/contract-validator.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -28,6 +30,11 @@ import { uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
 const log = createLogger('guardar-xml-nfe-autorizada');
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+
+const CorpoSchema = z.object({
+  bling_nfe_id: z.number().int().positive(),
+  empresa_id: z.string().uuid().optional().nullable(),
+});
 
 export interface CorpoRequisicao {
   bling_nfe_id: number;
@@ -147,17 +154,12 @@ export function createHandler(deps?: Partial<Dependencias>) {
     if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
     if (req.method !== 'POST') return json(405, { error: 'method_not_allowed' });
 
-    let corpo: CorpoRequisicao;
-    try {
-      corpo = (await req.json()) as CorpoRequisicao;
-    } catch {
-      return json(400, { error: 'json_invalido' });
-    }
+    const _raw = await req.json().catch(() => ({}));
+    const _v = await validateContract(CorpoSchema, _raw);
+    if (!_v.success) return _v.response;
+    const corpo = _v.data;
 
-    const blingNfeId = numeroOuNulo(corpo?.bling_nfe_id);
-    if (!blingNfeId || blingNfeId <= 0) {
-      return json(400, { error: 'bling_nfe_id_obrigatorio' });
-    }
+    const blingNfeId = corpo.bling_nfe_id;
 
     const guard = await exigirUsuarioComEmpresa(req, corpo?.empresa_id ?? null);
     if (!guard.ok) return guard.resposta;
