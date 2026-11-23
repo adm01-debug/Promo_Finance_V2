@@ -90,9 +90,9 @@ export function FiscalHealthBadge({ className }: { className?: string }) {
       if (!check) return null;
       // detalhes = "X de Y notas após … sem IBS/CBS (Z%)" → inverter para % com grupo
       const m = check.detalhes?.match(/(\d+) de (\d+)/);
-            // Regime fora do escopo do IBS/CBS: "n/a" em vez de 100%, que sinalizava
-            // conformidade plena sem nenhum dado apurado.
-            if (!m) return check.detalhes?.includes('não sujeito') ? 'n/a' : null;
+      // Regime fora do escopo do IBS/CBS: "n/a" em vez de 100%, que sinalizava
+      // conformidade plena sem nenhum dado apurado.
+      if (!m) return check.detalhes?.includes('não sujeito') ? 'n/a' : null;
       const [, sem, total] = m.map(Number);
       if (total === 0) return null;
       const pct = Math.round(((total - sem) / total) * 100);

@@ -41,9 +41,7 @@ export function paraNumero(bruto: string | undefined): number {
   let normalizado = t;
   if (ultimaVirgula >= 0 && ultimoPonto >= 0) {
     normalizado =
-      ultimaVirgula > ultimoPonto
-        ? t.replace(/\./g, '').replace(',', '.')
-        : t.replace(/,/g, '');
+      ultimaVirgula > ultimoPonto ? t.replace(/\./g, '').replace(',', '.') : t.replace(/,/g, '');
   } else if (ultimaVirgula >= 0) {
     normalizado = t.replace(',', '.');
   }

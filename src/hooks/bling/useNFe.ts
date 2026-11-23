@@ -34,23 +34,23 @@ export function useBlingNFeMutations() {
   const enviarSefaz = useMutation({
     mutationFn: ({ id, enviarEmail }: { id: string; enviarEmail?: boolean }) =>
       blingAction('enviar_nfe_sefaz', { id, enviarEmail }),
-      onSuccess: (_data, variables) => {
+    onSuccess: (_data, variables) => {
       toast.success('NF-e enviada ao SEFAZ');
       queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
-        // Sem isso a nota autorizada por esta tela não gerava crédito IBS/CBS:
-        // o XML só era arquivado pelo outro hook do Bling.
-        void guardarXmlAutorizado(Number(variables.id)).catch(() => undefined);
+      // Sem isso a nota autorizada por esta tela não gerava crédito IBS/CBS:
+      // o XML só era arquivado pelo outro hook do Bling.
+      void guardarXmlAutorizado(Number(variables.id)).catch(() => undefined);
     },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const cancelarNFe = useMutation({
     mutationFn: (ids: string[]) => blingAction('cancelar_nfe', { ids }),
-      onSuccess: async (_data, ids) => {
+    onSuccess: async (_data, ids) => {
       toast.success('NF-e cancelada');
       queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
-        // Cancelamento precisa invalidar o crédito destacado (etapa 58).
-        await estornarCreditosCancelados(ids.map((id) => Number(id)));
+      // Cancelamento precisa invalidar o crédito destacado (etapa 58).
+      await estornarCreditosCancelados(ids.map((id) => Number(id)));
     },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });

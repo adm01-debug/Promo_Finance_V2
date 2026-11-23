@@ -48,9 +48,9 @@ interface CancelamentoNFeProps {
 
 export function CancelamentoNFe({ nota, onClose }: CancelamentoNFeProps) {
   const [justificativa, setJustificativa] = useState('');
-    const [isProcessing] = useState(false);
-    const [currentStep] = useState('');
-    const [sefazResponse] = useState<SefazResponse | null>(null);
+  const [isProcessing] = useState(false);
+  const [currentStep] = useState('');
+  const [sefazResponse] = useState<SefazResponse | null>(null);
 
   const caracteresMinimos = 15;
   const caracteresRestantes = caracteresMinimos - justificativa.length;
@@ -67,11 +67,11 @@ export function CancelamentoNFe({ nota, onClose }: CancelamentoNFeProps) {
   const progress = currentStep ? ((currentIndex + 1) / steps.length) * 100 : 0;
 
   // O caminho real de cancelamento exige protocolo homologado pela SEFAZ (RPC
-    // cancelar_nfe_estornar_xml_destacado, p_sefaz_confirmado = true). Enquanto a
-    // homologação não chega nada e enviado -- antes daqui saia um `void
-    // cancelarNFe(...)` com sefazConfirmado:false, que a RPC rejeita e cujo erro
-    // ninguem consumia.
-    const handleCancelar = () => {
+  // cancelar_nfe_estornar_xml_destacado, p_sefaz_confirmado = true). Enquanto a
+  // homologação não chega nada e enviado -- antes daqui saia um `void
+  // cancelarNFe(...)` com sefazConfirmado:false, que a RPC rejeita e cujo erro
+  // ninguem consumia.
+  const handleCancelar = () => {
     toast.error(
       'Cancelamento indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real.'
     );

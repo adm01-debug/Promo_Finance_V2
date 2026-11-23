@@ -63,9 +63,9 @@ export default defineConfig({
     '**/nfe-fluxo-falhas.e2e.ts',
     '**/regua-cobranca.e2e.ts',
     '**/split-payment.e2e.ts',
-        // Etapa 96: o fluxo RT/RFB estava fora do testMatch — o comentário dizia
-        // "gate bloqueante" mas o spec nunca era executado por nenhuma suíte.
-        '**/rt-ponta-a-ponta.e2e.ts',
+    // Etapa 96: o fluxo RT/RFB estava fora do testMatch — o comentário dizia
+    // "gate bloqueante" mas o spec nunca era executado por nenhuma suíte.
+    '**/rt-ponta-a-ponta.e2e.ts',
   ],
 
   fullyParallel: true,

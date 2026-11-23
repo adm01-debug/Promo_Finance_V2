@@ -42,7 +42,9 @@ function lerEventosPersistidos(): EventoSefaz[] {
   try {
     const bruto = sessionStorage.getItem(STORAGE_KEY);
     if (!bruto) return [];
-    const lista = JSON.parse(bruto) as Array<Omit<EventoSefaz, 'timestamp'> & { timestamp: string }>;
+    const lista = JSON.parse(bruto) as Array<
+      Omit<EventoSefaz, 'timestamp'> & { timestamp: string }
+    >;
     return lista.map((e) => ({ ...e, timestamp: new Date(e.timestamp) }));
   } catch {
     return [];
@@ -76,11 +78,11 @@ export function registrarEvento(evento: Omit<EventoSefaz, 'id' | 'timestamp'>): 
   eventosLog.unshift(novoEvento); // Adiciona no início (mais recente primeiro)
 
   // Limita a 1000 eventos em memória
-    while (eventosLog.length > MAX_EVENTOS) {
+  while (eventosLog.length > MAX_EVENTOS) {
     eventosLog.pop();
   }
 
-    persistir();
+  persistir();
   logger.debug('[SEFAZ Event Logger]', novoEvento);
   return novoEvento;
 }
@@ -120,7 +122,7 @@ export function limparEventosAntigos(dias: number = 30): number {
 
   if (indice !== -1) {
     eventosLog.splice(indice);
-      persistir();
+    persistir();
   }
 
   return antes - eventosLog.length;

@@ -35,9 +35,9 @@ test.describe('RT ponta a ponta (produto → NF-e → XML → crédito → apura
 
   test('conciliação tributária permite colar extrato da apuração assistida', async ({ page }) => {
     await page.goto('/tributario/conciliacao');
-    await expect(
-      page.getByRole('heading', { name: /concilia[cç][ãa]o/i }).first()
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /concilia[cç][ãa]o/i }).first()).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test('painel de conciliação aceita colagem de CSV de apuração assistida', async ({ page }) => {

@@ -15,7 +15,15 @@ async function buscarTodasNotasDoMes(
   empresaId: string,
   inicioMes: string,
   fimMes: string
-): Promise<{ v_cbs: number | null; v_ibs: number | null; v_ibs_uf: number | null; v_ibs_mun: number | null; v_is: number | null }[]> {
+): Promise<
+  {
+    v_cbs: number | null;
+    v_ibs: number | null;
+    v_ibs_uf: number | null;
+    v_ibs_mun: number | null;
+    v_is: number | null;
+  }[]
+> {
   const PAGINA = 1000;
   const acumulado: {
     v_cbs: number | null;

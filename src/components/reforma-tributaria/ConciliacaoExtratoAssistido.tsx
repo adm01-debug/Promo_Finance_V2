@@ -68,10 +68,11 @@ export function ConciliacaoExtratoAssistido({ empresaId }: { empresaId?: string 
   }, [rawCsv]);
 
   const chaves = extrato.map((e) => e.chave_acesso);
-  const { data: creditosSistema, isLoading, error: erroConsulta } = useCreditosPorChaves(
-    submitted ? chaves : [],
-    empresaId
-  );
+  const {
+    data: creditosSistema,
+    isLoading,
+    error: erroConsulta,
+  } = useCreditosPorChaves(submitted ? chaves : [], empresaId);
 
   const diff = submitted && creditosSistema ? buildDiff(extrato, creditosSistema) : [];
   const totalOk = diff.filter((d) => d.status === 'ok').length;

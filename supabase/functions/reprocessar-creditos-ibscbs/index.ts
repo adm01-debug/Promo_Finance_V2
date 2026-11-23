@@ -12,6 +12,7 @@ import { corsHeadersComSegredoPara, exigirChamadaInterna } from '../_shared/auth
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { extrairIbscbs, type IbscbsNota } from '../_shared/nfe/ibscbs.ts';
 import { NFE_XML_BUCKET, buildXmlPath } from '../_shared/nfe/xml-storage.ts';
 import { z } from '../_shared/zod.ts';
@@ -189,10 +190,9 @@ export const handler = async (req: Request) => {
         empresa_id: url.searchParams.get('empresa_id') ?? undefined,
       });
     if (!params.success) {
-      return new Response(
-        JSON.stringify({ ok: false, error: 'parâmetros inválidos', detalhes: params.error.issues }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      // Falha de contrato segue o envelope canônico 422 da catraca
+      // `contract-coverage_test.ts` — status genérico aqui é dívida nova.
+      return createValidationErrorResponse(params.error, corsHeaders, 'Parâmetros inválidos');
     }
     const limite = Math.min(params.data.limite, 1000);
     const empresaId = params.data.empresa_id;

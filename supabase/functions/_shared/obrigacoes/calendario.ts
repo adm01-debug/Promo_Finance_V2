@@ -143,13 +143,13 @@ export function gerarCalendario(params: GerarCalendarioParams): ItemCalendario[]
       const chave = chaveItem(obrigacao.id, chaveComp);
       if (vistos.has(chave)) continue;
 
-            // Vigência: fora da janela declarada a obrigação não existe. Espelha o
-                  // motor web (src/lib/tributario/obrigacoes/calendario.ts).
-                  const mesComp = obrigacao.periodicidade === 'anual' ? `${chaveComp}-01` : chaveComp;
-                  const mesInicio = obrigacao.vigencia_inicio?.slice(0, 7);
-                  const mesFim = obrigacao.vigencia_fim?.slice(0, 7);
-                  if (mesInicio && mesComp < mesInicio) continue;
-                  if (mesFim && mesComp >= mesFim) continue;
+      // Vigência: fora da janela declarada a obrigação não existe. Espelha o
+      // motor web (src/lib/tributario/obrigacoes/calendario.ts).
+      const mesComp = obrigacao.periodicidade === 'anual' ? `${chaveComp}-01` : chaveComp;
+      const mesInicio = obrigacao.vigencia_inicio?.slice(0, 7);
+      const mesFim = obrigacao.vigencia_fim?.slice(0, 7);
+      if (mesInicio && mesComp < mesInicio) continue;
+      if (mesFim && mesComp >= mesFim) continue;
 
       vistos.add(chave);
 
@@ -167,32 +167,32 @@ export function gerarCalendario(params: GerarCalendarioParams): ItemCalendario[]
     }
   }
 
-        // Marcos regulatórios da LC 214/2025 (datas fixas). Espelha o motor web.
-        for (const marco of MARCOS_RT) {
-          if (filtro && !filtro.has(marco.id)) continue;
-          const aplicavel =
-            regime === 'todos' || marco.regimes.includes('todos') || marco.regimes.includes(regime);
-          if (!aplicavel) continue;
-          if (marco.regra.tipo !== 'data_fixa') continue;
+  // Marcos regulatórios da LC 214/2025 (datas fixas). Espelha o motor web.
+  for (const marco of MARCOS_RT) {
+    if (filtro && !filtro.has(marco.id)) continue;
+    const aplicavel =
+      regime === 'todos' || marco.regimes.includes('todos') || marco.regimes.includes(regime);
+    if (!aplicavel) continue;
+    if (marco.regra.tipo !== 'data_fixa') continue;
 
-          const prazo = marco.regra.data;
-          const competencia = prazo.slice(0, 7);
-          if (!/^\d{4}-\d{2}$/.test(competencia)) continue;
-          const chave = chaveItem(marco.id, competencia);
-          if (vistos.has(chave)) continue;
-          vistos.add(chave);
+    const prazo = marco.regra.data;
+    const competencia = prazo.slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(competencia)) continue;
+    const chave = chaveItem(marco.id, competencia);
+    if (vistos.has(chave)) continue;
+    vistos.add(chave);
 
-          itens.push({
-            obrigacaoId: marco.id,
-            nome: marco.nome,
-            orgao: marco.orgao,
-            competencia,
-            prazo,
-            situacao: situacaoDe(prazo, hoje, entregues?.has(chave) ?? false),
-            diasRestantes: diasEntre(hoje, prazo),
-            baseLegal: marco.baseLegal,
-          });
-        }
+    itens.push({
+      obrigacaoId: marco.id,
+      nome: marco.nome,
+      orgao: marco.orgao,
+      competencia,
+      prazo,
+      situacao: situacaoDe(prazo, hoje, entregues?.has(chave) ?? false),
+      diasRestantes: diasEntre(hoje, prazo),
+      baseLegal: marco.baseLegal,
+    });
+  }
 
   return itens.sort((a, b) =>
     a.prazo === b.prazo ? a.nome.localeCompare(b.nome) : a.prazo < b.prazo ? -1 : 1
