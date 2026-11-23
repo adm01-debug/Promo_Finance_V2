@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { gerarEFD_Contribuicoes, validarArquivoSPED } from '../sped-generator';
 
-
 describe('SPED Generator', () => {
   const empresa = {
     cnpj: '12.345.678/0001-90',

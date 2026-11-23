@@ -39,10 +39,18 @@ export function simularComparativo(
   const CBS_TCU = 11.2; // Estimativa TCU/2024; sujeita a resolução do Senado
   if (dados.cenarioCBS === 'tcu') {
     aliquotaCBS = CBS_TCU;
-    observacoes.push('⚠️ Simulado — alíquota CBS 11,2% (estimativa TCU 2024; sujeita a resolução do Senado)');
-  } else if (dados.cenarioCBS === 'livre' && dados.aliquotaCBSOverride != null && dados.aliquotaCBSOverride > 0) {
+    observacoes.push(
+      '⚠️ Simulado — alíquota CBS 11,2% (estimativa TCU 2024; sujeita a resolução do Senado)'
+    );
+  } else if (
+    dados.cenarioCBS === 'livre' &&
+    dados.aliquotaCBSOverride != null &&
+    dados.aliquotaCBSOverride > 0
+  ) {
     aliquotaCBS = dados.aliquotaCBSOverride;
-    observacoes.push(`⚠️ Simulado — alíquota CBS ${dados.aliquotaCBSOverride}% (valor livre; sujeita a resolução do Senado)`);
+    observacoes.push(
+      `⚠️ Simulado — alíquota CBS ${dados.aliquotaCBSOverride}% (valor livre; sujeita a resolução do Senado)`
+    );
   }
 
   if (dados.regimeEspecial && dados.regimeEspecial !== 'nenhum') {

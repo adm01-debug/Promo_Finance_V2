@@ -11,15 +11,27 @@ import type { ReactNode } from 'react';
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }));
 
 vi.mock('react-router-dom', () => ({
-  Link: ({ children, to, ...rest }: Record<string, unknown> & { children?: ReactNode; to: string }) => (
-    <a href={to as string} {...rest}>{children}</a>
+  Link: ({
+    children,
+    to,
+    ...rest
+  }: Record<string, unknown> & { children?: ReactNode; to: string }) => (
+    <a href={to as string} {...rest}>
+      {children}
+    </a>
   ),
 }));
 
 vi.mock('@/lib/supabase-dynamic', () => ({
   supabaseDyn: {
     rpc: vi.fn().mockResolvedValue({
-      data: { gerado_em: new Date().toISOString(), ultima_verificacao: new Date().toISOString(), criticos: 0, avisos: 0, saudavel: true },
+      data: {
+        gerado_em: new Date().toISOString(),
+        ultima_verificacao: new Date().toISOString(),
+        criticos: 0,
+        avisos: 0,
+        saudavel: true,
+      },
       error: null,
     }),
   },
@@ -38,24 +50,46 @@ function wrapper({ children }: { children: ReactNode }) {
 
 function mockVerificacao(semIbscbs: number, total: number) {
   mockFrom.mockReturnValue({
-    select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ order: vi.fn().mockReturnValue({ limit: vi.fn().mockReturnValue({
-      maybeSingle: vi.fn().mockResolvedValue({
-        data: { itens: [{ id: 'nfe_ibscbs_cobertura', status: semIbscbs === 0 ? 'aprovado' : 'reprovado', detalhes: `${semIbscbs} de ${total} notas apos FG sem IBS/CBS` }] },
-        error: null,
+    select: vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        order: vi.fn().mockReturnValue({
+          limit: vi.fn().mockReturnValue({
+            maybeSingle: vi.fn().mockResolvedValue({
+              data: {
+                itens: [
+                  {
+                    id: 'nfe_ibscbs_cobertura',
+                    status: semIbscbs === 0 ? 'aprovado' : 'reprovado',
+                    detalhes: `${semIbscbs} de ${total} notas apos FG sem IBS/CBS`,
+                  },
+                ],
+              },
+              error: null,
+            }),
+          }),
+        }),
       }),
-    }) }) }) }),
+    }),
   });
 }
 
 function mockSemVerificacao() {
   mockFrom.mockReturnValue({
-    select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ order: vi.fn().mockReturnValue({ limit: vi.fn().mockReturnValue({
-      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-    }) }) }) }),
+    select: vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        order: vi.fn().mockReturnValue({
+          limit: vi.fn().mockReturnValue({
+            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+          }),
+        }),
+      }),
+    }),
   });
 }
 
-beforeEach(() => { vi.clearAllMocks(); });
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('FiscalHealthBadge -- metrica IBS/CBS nao fabricada (etapa 57)', () => {
   it('sem empresaId -> badge IBS/CBS nao aparece', async () => {

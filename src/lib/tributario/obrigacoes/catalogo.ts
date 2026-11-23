@@ -162,7 +162,8 @@ export const OBRIGACOES: readonly Obrigacao[] = [
   {
     id: 'rt_apuracao_assistida_dere',
     nome: 'Apuração Assistida IBS/CBS (DeRE) — dia 20',
-    descricao: 'A partir de 03/08/2026, a RFB (CBS) e o CGIBS (IBS) disponibilizam apuração assistida no més seguinte à competência. Contribuinte confere e ratifica até o dia 20.',
+    descricao:
+      'A partir de 03/08/2026, a RFB (CBS) e o CGIBS (IBS) disponibilizam apuração assistida no més seguinte à competência. Contribuinte confere e ratifica até o dia 20.',
     orgao: 'RFB',
     periodicidade: 'mensal',
     regra: { tipo: 'dia_fixo', dia: 20, mesesApos: 1 },
@@ -177,7 +178,6 @@ export const OBRIGACOES: readonly Obrigacao[] = [
   },
 ] as const;
 
-
 /**
  * Marcos regulatórios RT (LC 214/2025) — eventos de data fixa, não periódicos.
  * Não são obrigações acessórias recorrentes; exibidos no painel de cronograma RT.
@@ -186,7 +186,8 @@ export const MARCOS_RT: readonly Obrigacao[] = [
   {
     id: 'rt_nfe_grupo_ibscbs',
     nome: 'NF-e com grupo IBS/CBS obrigatório',
-    descricao: 'NF-e emitida após 03/08/2026 deve conter o grupo IBSCBS em cada item (NT 2025.002 v1.51+). Notas sem grupo serão rejeitadas (Rejeição 1115).',
+    descricao:
+      'NF-e emitida após 03/08/2026 deve conter o grupo IBSCBS em cada item (NT 2025.002 v1.51+). Notas sem grupo serão rejeitadas (Rejeição 1115).',
     orgao: 'RFB',
     periodicidade: 'marco',
     regra: { tipo: 'data_fixa', data: '2026-08-03' },
@@ -202,7 +203,8 @@ export const MARCOS_RT: readonly Obrigacao[] = [
   {
     id: 'rt_nfe_nao_contribuinte_icms',
     nome: 'NF-e para não-contribuinte ICMS com grupo IBS/CBS',
-    descricao: 'A partir de 01/12/2026, NF-e destinada a consumidor final não contribuinte de ICMS também exige grupo IBSCBS (NT 2025.002 v2.0).',
+    descricao:
+      'A partir de 01/12/2026, NF-e destinada a consumidor final não contribuinte de ICMS também exige grupo IBSCBS (NT 2025.002 v2.0).',
     orgao: 'RFB',
     periodicidade: 'marco',
     regra: { tipo: 'data_fixa', data: '2026-12-01' },
@@ -218,7 +220,8 @@ export const MARCOS_RT: readonly Obrigacao[] = [
   {
     id: 'rt_cbs_plena_2027',
     nome: 'CBS plena (100%) a partir de 01/01/2027',
-    descricao: 'A partir de 01/01/2027, créditos de CBS destacados em NF-e são apropiáveis integralmente. FG 2026 são apenas informativos.',
+    descricao:
+      'A partir de 01/01/2027, créditos de CBS destacados em NF-e são apropiáveis integralmente. FG 2026 são apenas informativos.',
     orgao: 'RFB',
     periodicidade: 'marco',
     regra: { tipo: 'data_fixa', data: '2027-01-01' },
@@ -234,7 +237,8 @@ export const MARCOS_RT: readonly Obrigacao[] = [
   {
     id: 'rt_fim_pis_cofins',
     nome: 'Fim do PIS/COFINS e da EFD-Contribuições',
-    descricao: 'PIS/COFINS e a EFD-Contribuições são extintos a partir de 01/01/2027. Última entrega: EFD-Contribuições de dezembro/2026.',
+    descricao:
+      'PIS/COFINS e a EFD-Contribuições são extintos a partir de 01/01/2027. Última entrega: EFD-Contribuições de dezembro/2026.',
     orgao: 'RFB',
     periodicidade: 'marco',
     regra: { tipo: 'data_fixa', data: '2027-01-01' },

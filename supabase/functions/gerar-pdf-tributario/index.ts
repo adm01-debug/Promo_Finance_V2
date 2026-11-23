@@ -301,7 +301,7 @@ Deno.serve(
         .from('apuracoes_tributarias')
         .select(
           'competencia,cbs_debitos,cbs_creditos,cbs_saldo_anterior,cbs_a_pagar,' +
-          'ibs_debitos,ibs_creditos,ibs_saldo_anterior,ibs_a_pagar'
+            'ibs_debitos,ibs_creditos,ibs_saldo_anterior,ibs_a_pagar'
         )
         .eq('empresa_id', body.empresaId)
         .eq('competencia', `${body.anoReferencia}-${String(body.mesReferencia).padStart(2, '0')}`)
@@ -314,7 +314,11 @@ Deno.serve(
         doc.text('Memória de Cálculo IBS/CBS', 15, 20);
         doc.setFontSize(9);
         doc.setTextColor(100, 116, 139);
-        doc.text('Valores apurados a partir dos documentos fiscais eletrônicos (DF-e) com grupo IBS/CBS destacado.', 15, 28);
+        doc.text(
+          'Valores apurados a partir dos documentos fiscais eletrônicos (DF-e) com grupo IBS/CBS destacado.',
+          15,
+          28
+        );
         doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 34);
         doc.setTextColor(0, 0, 0);
 
@@ -344,7 +348,11 @@ Deno.serve(
         const afterTable = (doc as any).lastAutoTable.finalY + 10;
         doc.setFontSize(8);
         doc.setTextColor(100, 116, 139);
-        doc.text('Fórmula: A Pagar = Débitos - Créditos - Saldo Anterior (quando positivo).', 15, afterTable);
+        doc.text(
+          'Fórmula: A Pagar = Débitos - Créditos - Saldo Anterior (quando positivo).',
+          15,
+          afterTable
+        );
         doc.text(
           'Créditos considerados: apenas documentos com origem = xml_destacado e efeito_tributario = true.',
           15,

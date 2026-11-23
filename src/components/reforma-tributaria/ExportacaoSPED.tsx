@@ -36,7 +36,8 @@ const TIPOS_ARQUIVO = [
   {
     id: 'efd-ibs-cbs' as TipoArquivo,
     nome: 'EFD-IBS/CBS',
-    descricao: 'Leiaute não publicado pela RFB. A apuração assistida (art. 46; Decreto 12.955/2026; Res. CGIBS 6/2026) substitui a EFD até 2027.',
+    descricao:
+      'Leiaute não publicado pela RFB. A apuração assistida (art. 46; Decreto 12.955/2026; Res. CGIBS 6/2026) substitui a EFD até 2027.',
     disponivel: false,
   },
   {
@@ -119,22 +120,22 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
       let nomeArquivo: string;
 
       conteudo = gerarEFD_Contribuicoes(
-          dadosEmpresa,
-          competencia,
-          operacoesCompetencia.map((op) => ({
-            ...op,
-            cbs_aliquota: op.cbs_aliquota || 0,
-            cbs_valor: op.cbs_valor || 0,
-            ibs_aliquota: op.ibs_aliquota || 0,
-            ibs_valor: op.ibs_valor || 0,
-            is_aliquota: op.is_aliquota || 0,
-            is_valor: op.is_valor || 0,
-          })),
-          creditosCompetencia.map((c) => ({
-            ...c,
-            aliquota: c.aliquota || 0,
-          }))
-        );
+        dadosEmpresa,
+        competencia,
+        operacoesCompetencia.map((op) => ({
+          ...op,
+          cbs_aliquota: op.cbs_aliquota || 0,
+          cbs_valor: op.cbs_valor || 0,
+          ibs_aliquota: op.ibs_aliquota || 0,
+          ibs_valor: op.ibs_valor || 0,
+          is_aliquota: op.is_aliquota || 0,
+          is_valor: op.is_valor || 0,
+        })),
+        creditosCompetencia.map((c) => ({
+          ...c,
+          aliquota: c.aliquota || 0,
+        }))
+      );
 
       nomeArquivo = `EFD_CONTRIBUICOES_${empresaSelecionada.cnpj.replace(/\D/g, '')}_${competencia.replace('-', '')}.txt`;
 
@@ -307,7 +308,8 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
             <div className="p-4 bg-muted/50 rounded-lg">
               <h4 className="font-medium">EFD-IBS/CBS</h4>
               <p className="text-sm text-muted-foreground mt-2">
-                Leiaute oficial não publicado pela RFB. A apuração assistida (art. 46; Decreto 12.955/2026; Res. CGIBS 6/2026) substitui a EFD até 2027.
+                Leiaute oficial não publicado pela RFB. A apuração assistida (art. 46; Decreto
+                12.955/2026; Res. CGIBS 6/2026) substitui a EFD até 2027.
               </p>
             </div>
             <div className="p-4 bg-muted/50 rounded-lg">

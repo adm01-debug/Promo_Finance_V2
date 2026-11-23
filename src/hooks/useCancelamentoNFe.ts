@@ -29,38 +29,41 @@ export interface CancelamentoResult {
 }
 
 export function useCancelamentoNFe() {
-  const cancelarNFe = useCallback(async (params: CancelamentoParams): Promise<CancelamentoResult> => {
-    const { notaId, chaveAcesso, protocolo, sefazConfirmado = false } = params;
+  const cancelarNFe = useCallback(
+    async (params: CancelamentoParams): Promise<CancelamentoResult> => {
+      const { notaId, chaveAcesso, protocolo, sefazConfirmado = false } = params;
 
-    if (!sefazConfirmado) {
-      return { ok: false, reason: 'sefaz_nao_integrada' };
-    }
+      if (!sefazConfirmado) {
+        return { ok: false, reason: 'sefaz_nao_integrada' };
+      }
 
-    // Registra evento ANTES de gravar no banco (nao bloqueia se falhar)
-    registrarEvento({
-      tipo: 'CANCELAMENTO',
-      chaveAcesso,
-      protocolo,
-      cStat: '135',
-      xMotivo: 'Cancelamento de NF-e homologado',
-      ambiente: 'producao',
-    });
+      // Registra evento ANTES de gravar no banco (nao bloqueia se falhar)
+      registrarEvento({
+        tipo: 'CANCELAMENTO',
+        chaveAcesso,
+        protocolo,
+        cStat: '135',
+        xMotivo: 'Cancelamento de NF-e homologado',
+        ambiente: 'producao',
+      });
 
-    const { data, error } = await supabase.rpc('cancelar_nfe_estornar_xml_destacado', {
-      p_nota_id:      notaId,
-      p_protocolo:    protocolo,
-      p_chave_acesso: chaveAcesso,
-    });
+      const { data, error } = await supabase.rpc('cancelar_nfe_estornar_xml_destacado', {
+        p_nota_id: notaId,
+        p_protocolo: protocolo,
+        p_chave_acesso: chaveAcesso,
+      });
 
-    if (error) {
-      return { ok: false, reason: error.message };
-    }
+      if (error) {
+        return { ok: false, reason: error.message };
+      }
 
-    return {
-      ok: true,
-      creditosEstornados: (data as { creditos_estornados?: number })?.creditos_estornados ?? 0,
-    };
-  }, []);
+      return {
+        ok: true,
+        creditosEstornados: (data as { creditos_estornados?: number })?.creditos_estornados ?? 0,
+      };
+    },
+    []
+  );
 
   return { cancelarNFe };
 }

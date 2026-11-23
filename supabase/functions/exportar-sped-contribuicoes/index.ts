@@ -86,7 +86,8 @@ Deno.serve(
         await logger.flush();
         return new Response(
           JSON.stringify({
-            error: 'EFD-Contribuições extinta a partir de 01/01/2027 (LC 214/2025 art. 125). Use a apuração IBS/CBS para competências a partir de 2027.',
+            error:
+              'EFD-Contribuições extinta a partir de 01/01/2027 (LC 214/2025 art. 125). Use a apuração IBS/CBS para competências a partir de 2027.',
             codigo: 'EFD_CONTRIBUICOES_EXTINTA',
             vigencia_fim: '2026-12',
           }),

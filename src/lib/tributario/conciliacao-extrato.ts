@@ -30,7 +30,10 @@ export function parseCsv(raw: string): LinhaExtrato[] {
   const lines = raw.trim().split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) return [];
   const sep = lines[0].includes(';') ? ';' : ',';
-  const header = lines[0].toLowerCase().split(sep).map((h) => h.trim());
+  const header = lines[0]
+    .toLowerCase()
+    .split(sep)
+    .map((h) => h.trim());
   const iChave = header.findIndex((h) => h.includes('chave'));
   const iCbs = header.findIndex((h) => h.includes('cbs'));
   const iIbs = header.findIndex((h) => h.includes('ibs'));
@@ -39,17 +42,19 @@ export function parseCsv(raw: string): LinhaExtrato[] {
     const cols = line.split(sep).map((c) => c.trim().replace(/^"|"$/g, ''));
     const chave = (cols[iChave] ?? '').replace(/\D/g, '');
     if (chave.length < 44) return [];
-    return [{
-      chave_acesso: chave,
-      cbs_credito: parseFloat(cols[iCbs] ?? '0') || 0,
-      ibs_credito: parseFloat(cols[iIbs] ?? '0') || 0,
-    }];
+    return [
+      {
+        chave_acesso: chave,
+        cbs_credito: parseFloat(cols[iCbs] ?? '0') || 0,
+        ibs_credito: parseFloat(cols[iIbs] ?? '0') || 0,
+      },
+    ];
   });
 }
 
 export function buildDiff(
   extrato: LinhaExtrato[],
-  creditos: { documento_chave: string | null; tipo_tributo: string; valor_credito: number | null }[],
+  creditos: { documento_chave: string | null; tipo_tributo: string; valor_credito: number | null }[]
 ): LinhaDiff[] {
   const mapCbs = new Map<string, number>();
   const mapIbs = new Map<string, number>();
@@ -70,8 +75,17 @@ export function buildDiff(
     const status: StatusLinha = naoEncontrada
       ? 'nao_encontrada'
       : diff_cbs > TOLERANCIA || diff_ibs > TOLERANCIA
-      ? 'divergencia'
-      : 'ok';
-    return { chave_acesso: e.chave_acesso, status, cbs_sistema: cbs_sis, ibs_sistema: ibs_sis, cbs_extrato: e.cbs_credito, ibs_extrato: e.ibs_credito, diff_cbs, diff_ibs };
+        ? 'divergencia'
+        : 'ok';
+    return {
+      chave_acesso: e.chave_acesso,
+      status,
+      cbs_sistema: cbs_sis,
+      ibs_sistema: ibs_sis,
+      cbs_extrato: e.cbs_credito,
+      ibs_extrato: e.ibs_credito,
+      diff_cbs,
+      diff_ibs,
+    };
   });
 }

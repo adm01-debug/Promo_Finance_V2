@@ -104,7 +104,9 @@ export function SimuladorCenariosTributarios() {
           <select
             className="border rounded px-2 py-1 text-sm bg-background"
             value={cenarioCBS ?? ''}
-            onChange={(e) => setCenarioCBS((e.target.value || undefined) as 'tcu' | 'livre' | undefined)}
+            onChange={(e) =>
+              setCenarioCBS((e.target.value || undefined) as 'tcu' | 'livre' | undefined)
+            }
           >
             <option value="">Tabela de transição (padrão)</option>
             <option value="tcu">11,2% — Estimativa TCU (2024)</option>

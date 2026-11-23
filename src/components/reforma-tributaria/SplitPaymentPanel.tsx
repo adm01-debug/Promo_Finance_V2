@@ -72,26 +72,38 @@ export function SplitPaymentPanel() {
             Split Payment — Aguardando Ato Conjunto (LC 214/2025)
           </CardTitle>
           <CardDescription className="text-amber-700 dark:text-amber-400">
-            O recolhimento fracionado automático só entra em vigor após ato conjunto do Comitê Gestor do IBS,
-            RFB e Banco Central. Até lá, nenhuma retenção é devida.
+            O recolhimento fracionado automático só entra em vigor após ato conjunto do Comitê
+            Gestor do IBS, RFB e Banco Central. Até lá, nenhuma retenção é devida.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="rounded-md border border-amber-200 bg-white dark:bg-amber-900/20 p-3">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">Piloto voluntário</p>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">
+                Piloto voluntário
+              </p>
               <p className="font-mono font-bold text-sm">15/10/2026</p>
-              <p className="text-xs text-muted-foreground mt-1">Plataformas de pagamento que aderirem voluntariamente.</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Plataformas de pagamento que aderirem voluntariamente.
+              </p>
             </div>
             <div className="rounded-md border border-amber-200 bg-white dark:bg-amber-900/20 p-3">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">Entrada em vigor (previsão)</p>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">
+                Entrada em vigor (previsão)
+              </p>
               <p className="font-mono font-bold text-sm">2º sem. 2027</p>
-              <p className="text-xs text-muted-foreground mt-1">Obrigatório para instituições de pagamento; facultativo B2B</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Obrigatório para instituições de pagamento; facultativo B2B
+              </p>
             </div>
             <div className="rounded-md border border-amber-200 bg-white dark:bg-amber-900/20 p-3">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">Status hoje</p>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">
+                Status hoje
+              </p>
               <p className="font-bold text-sm text-amber-700">⏳ Aguardando ato conjunto</p>
-              <p className="text-xs text-muted-foreground mt-1">LC 214/2025 art. 48, §§8º; Res. CGIBS a publicar</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                LC 214/2025 art. 48, §§8º; Res. CGIBS a publicar
+              </p>
             </div>
           </div>
         </CardContent>

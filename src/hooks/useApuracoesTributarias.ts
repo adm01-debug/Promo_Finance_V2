@@ -235,7 +235,10 @@ export function useApuracoesTributarias(empresaId?: string) {
 
       if (opError) throw opError;
 
-      let icms_residual = 0, iss_residual = 0, pis_residual = 0, cofins_residual = 0;
+      let icms_residual = 0,
+        iss_residual = 0,
+        pis_residual = 0,
+        cofins_residual = 0;
       (operacoes || []).forEach((op) => {
         icms_residual += Number((op as { icms_valor?: number | null }).icms_valor) || 0;
         iss_residual += Number((op as { iss_valor?: number | null }).iss_valor) || 0;
@@ -269,13 +272,15 @@ export function useApuracoesTributarias(empresaId?: string) {
       const is_a_pagar = is_debitos;
 
       const total_tributos_novos = cbs_a_pagar + ibs_a_pagar + is_a_pagar;
-      const total_tributos_residuais = icms_residual + iss_residual + pis_residual + cofins_residual;
+      const total_tributos_residuais =
+        icms_residual + iss_residual + pis_residual + cofins_residual;
       const total_geral = total_tributos_novos + total_tributos_residuais;
 
       // 2026: resultado é apenas informativo (art. 348 LC 214/2025 dispensa recolhimento)
-      const observacoes = ano <= 2026
-        ? 'Informativo — FG 2026: créditos aprop. somente a partir de 2027; resultado compensável com PIS/COFINS (art. 348 LC 214/2025)'
-        : undefined;
+      const observacoes =
+        ano <= 2026
+          ? 'Informativo — FG 2026: créditos aprop. somente a partir de 2027; resultado compensável com PIS/COFINS (art. 348 LC 214/2025)'
+          : undefined;
 
       // Atualizar apuração
       const { data, error } = await supabase

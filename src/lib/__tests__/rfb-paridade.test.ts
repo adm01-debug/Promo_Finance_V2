@@ -14,20 +14,20 @@
  * - Nunca chama calculadora externa (modo offline)
  */
 
-import { describe, it, expect } from "vitest";
-import { parseItemIbscbs, parseIbscbsTotais } from "@/lib/nfe/parse-ibscbs";
+import { describe, it, expect } from 'vitest';
+import { parseItemIbscbs, parseIbscbsTotais } from '@/lib/nfe/parse-ibscbs';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function parseXml(xml: string): Document {
-  return new DOMParser().parseFromString(xml, "application/xml");
+  return new DOMParser().parseFromString(xml, 'application/xml');
 }
 
 function item(xml: string): Element {
   const doc = parseXml(`<nfeProc><NFe><infNFe>${xml}</infNFe></NFe></nfeProc>`);
-  return doc.querySelector("det") as Element;
+  return doc.querySelector('det') as Element;
 }
 
 /** Monta um elemento <det> completo com grupo IBSCBS (NT 2025.002 §6.2). */
@@ -48,8 +48,8 @@ function detIbscbs(opts: {
     <det>
       <imposto>
         <IBSCBS>
-          <CST>${opts.cst ?? "01"}</CST>
-          <cClassTrib>${opts.cClassTrib ?? "0101"}</cClassTrib>
+          <CST>${opts.cst ?? '01'}</CST>
+          <cClassTrib>${opts.cClassTrib ?? '0101'}</cClassTrib>
           <gIBSCBS>
             <vBC>${vBC.toFixed(2)}</vBC>
             <gIBSUF>
@@ -79,37 +79,92 @@ function detIbscbs(opts: {
 
 const FIXTURES: Array<{
   desc: string;
-  input: { vBC: number; pIBSUF: number; vIBSUF: number; pIBSMun: number; vIBSMun: number; vIBS: number; pCBS: number; vCBS: number };
-  expect: { vBC: number; vIBSUF: number; vIBSMun: number; vIBS: number; vCBS: number; pCBS_frac: number };
+  input: {
+    vBC: number;
+    pIBSUF: number;
+    vIBSUF: number;
+    pIBSMun: number;
+    vIBSMun: number;
+    vIBS: number;
+    pCBS: number;
+    vCBS: number;
+  };
+  expect: {
+    vBC: number;
+    vIBSUF: number;
+    vIBSMun: number;
+    vIBS: number;
+    vCBS: number;
+    pCBS_frac: number;
+  };
 }> = [
   {
-    desc: "Exemplo 1 — produto genérico R$ 1.000,00 (alíquotas-teste 2026)",
-    input:  { vBC: 1000.00, pIBSUF: 0.07, vIBSUF: 0.70, pIBSMun: 0.03, vIBSMun: 0.30, vIBS: 1.00, pCBS: 0.9, vCBS: 9.00 },
-    expect: { vBC: 1000.00, vIBSUF: 0.70, vIBSMun: 0.30, vIBS: 1.00, vCBS: 9.00, pCBS_frac: 0.009 },
+    desc: 'Exemplo 1 — produto genérico R$ 1.000,00 (alíquotas-teste 2026)',
+    input: {
+      vBC: 1000.0,
+      pIBSUF: 0.07,
+      vIBSUF: 0.7,
+      pIBSMun: 0.03,
+      vIBSMun: 0.3,
+      vIBS: 1.0,
+      pCBS: 0.9,
+      vCBS: 9.0,
+    },
+    expect: { vBC: 1000.0, vIBSUF: 0.7, vIBSMun: 0.3, vIBS: 1.0, vCBS: 9.0, pCBS_frac: 0.009 },
   },
   {
-    desc: "Exemplo 2 — produto R$ 500,00",
-    input:  { vBC: 500.00, pIBSUF: 0.07, vIBSUF: 0.35, pIBSMun: 0.03, vIBSMun: 0.15, vIBS: 0.50, pCBS: 0.9, vCBS: 4.50 },
-    expect: { vBC: 500.00, vIBSUF: 0.35, vIBSMun: 0.15, vIBS: 0.50, vCBS: 4.50, pCBS_frac: 0.009 },
+    desc: 'Exemplo 2 — produto R$ 500,00',
+    input: {
+      vBC: 500.0,
+      pIBSUF: 0.07,
+      vIBSUF: 0.35,
+      pIBSMun: 0.03,
+      vIBSMun: 0.15,
+      vIBS: 0.5,
+      pCBS: 0.9,
+      vCBS: 4.5,
+    },
+    expect: { vBC: 500.0, vIBSUF: 0.35, vIBSMun: 0.15, vIBS: 0.5, vCBS: 4.5, pCBS_frac: 0.009 },
   },
   {
-    desc: "Exemplo 3 — produto R$ 250,00 (valor mínimo notável)",
-    input:  { vBC: 250.00, pIBSUF: 0.07, vIBSUF: 0.17, pIBSMun: 0.03, vIBSMun: 0.08, vIBS: 0.25, pCBS: 0.9, vCBS: 2.25 },
-    expect: { vBC: 250.00, vIBSUF: 0.18, vIBSMun: 0.08, vIBS: 0.25, vCBS: 2.25, pCBS_frac: 0.009 },
+    desc: 'Exemplo 3 — produto R$ 250,00 (valor mínimo notável)',
+    input: {
+      vBC: 250.0,
+      pIBSUF: 0.07,
+      vIBSUF: 0.17,
+      pIBSMun: 0.03,
+      vIBSMun: 0.08,
+      vIBS: 0.25,
+      pCBS: 0.9,
+      vCBS: 2.25,
+    },
+    expect: { vBC: 250.0, vIBSUF: 0.18, vIBSMun: 0.08, vIBS: 0.25, vCBS: 2.25, pCBS_frac: 0.009 },
   },
   {
-    desc: "Exemplo 4 — serviço R$ 2.000,00 (cClassTrib 0401, CBS plena 2027)",
-    input:  { vBC: 2000.00, pIBSUF: 3.0, vIBSUF: 60.00, pIBSMun: 2.0, vIBSMun: 40.00, vIBS: 100.00, pCBS: 9.0, vCBS: 180.00 },
-    expect: { vBC: 2000.00, vIBSUF: 60.00, vIBSMun: 40.00, vIBS: 100.00, vCBS: 180.00, pCBS_frac: 0.09 },
+    desc: 'Exemplo 4 — serviço R$ 2.000,00 (cClassTrib 0401, CBS plena 2027)',
+    input: {
+      vBC: 2000.0,
+      pIBSUF: 3.0,
+      vIBSUF: 60.0,
+      pIBSMun: 2.0,
+      vIBSMun: 40.0,
+      vIBS: 100.0,
+      pCBS: 9.0,
+      vCBS: 180.0,
+    },
+    expect: { vBC: 2000.0, vIBSUF: 60.0, vIBSMun: 40.0, vIBS: 100.0, vCBS: 180.0, pCBS_frac: 0.09 },
   },
 ];
 
 const TOL = 0.01;
 
-describe("rfb-paridade: parser local × fixtures NT 2025.002", () => {
+describe('rfb-paridade: parser local × fixtures NT 2025.002', () => {
   for (const fix of FIXTURES) {
     it(fix.desc, () => {
-      const el = detIbscbs({ ...fix.input, cClassTrib: fix.desc.includes("0401") ? "0401" : "0101" });
+      const el = detIbscbs({
+        ...fix.input,
+        cClassTrib: fix.desc.includes('0401') ? '0401' : '0101',
+      });
       const parsed = parseItemIbscbs(el);
 
       expect(parsed).not.toBeUndefined();
@@ -130,13 +185,15 @@ describe("rfb-paridade: parser local × fixtures NT 2025.002", () => {
     });
   }
 
-  it("XML sem grupo IBSCBS retorna undefined", () => {
-    const el = item(`<det><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST></ICMS00></ICMS></imposto></det>`);
+  it('XML sem grupo IBSCBS retorna undefined', () => {
+    const el = item(
+      `<det><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST></ICMS00></ICMS></imposto></det>`
+    );
     const parsed = parseItemIbscbs(el);
     expect(parsed).toBeUndefined();
   });
 
-  it("parseIbscbsTotais extrai vIBS e vCBS dos totais da nota", () => {
+  it('parseIbscbsTotais extrai vIBS e vCBS dos totais da nota', () => {
     const doc = parseXml(`
       <infNFe>
         <total>
@@ -153,8 +210,8 @@ describe("rfb-paridade: parser local × fixtures NT 2025.002", () => {
       </infNFe>
     `);
     const totais = parseIbscbsTotais(doc.documentElement);
-    expect(Math.abs((totais.vIBS ?? 0) - 1.50)).toBeLessThanOrEqual(TOL);
-    expect(Math.abs((totais.vCBS ?? 0) - 13.50)).toBeLessThanOrEqual(TOL);
-    expect(Math.abs((totais.vBCIBSCBS ?? 0) - 1500.00)).toBeLessThanOrEqual(TOL);
+    expect(Math.abs((totais.vIBS ?? 0) - 1.5)).toBeLessThanOrEqual(TOL);
+    expect(Math.abs((totais.vCBS ?? 0) - 13.5)).toBeLessThanOrEqual(TOL);
+    expect(Math.abs((totais.vBCIBSCBS ?? 0) - 1500.0)).toBeLessThanOrEqual(TOL);
   });
 });

@@ -12,7 +12,9 @@ vi.mock('@/lib/sefaz-event-logger', () => ({ registrarEvento: mockRegistrarEvent
 import { useCancelamentoNFe } from './useCancelamentoNFe';
 import { beforeEach } from 'vitest';
 
-beforeEach(() => { vi.clearAllMocks(); });
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('useCancelamentoNFe -- estorno xml_destacado (etapa 58)', () => {
   it('sefazConfirmado=false -> retorna early, nao chama rpc nem registra evento', async () => {
