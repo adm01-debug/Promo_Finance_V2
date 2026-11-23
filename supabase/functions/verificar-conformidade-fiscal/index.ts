@@ -245,6 +245,49 @@ Deno.serve(
         detalhes: `${relAtivos ?? 0} relatórios agendados ativos`,
       });
 
+      // 9. Reforma Tributária — cobertura de IBS/CBS após Fato Gerador
+      const esCrt3 = ['lucro_real', 'lucro_presumido'].includes(empresa?.regime_tributario ?? '');
+      const fg = esCrt3
+        ? '2026-08-03'
+        : empresa?.regime_tributario === 'simples_nacional'
+          ? '2026-12-01'
+          : null;
+      if (fg) {
+        const [{ count: totalAposFg }, { count: semIbscbs }] = await Promise.all([
+          admin
+            .from('notas_fiscais')
+            .select('*', { count: 'exact', head: true })
+            .eq('empresa_id', empresa_id)
+            .gte('data_emissao', fg),
+          admin
+            .from('notas_fiscais')
+            .select('*', { count: 'exact', head: true })
+            .eq('empresa_id', empresa_id)
+            .gte('data_emissao', fg)
+            .is('v_cbs', null),
+        ]);
+        const total = totalAposFg ?? 0;
+        const sem = semIbscbs ?? 0;
+        const pct = total > 0 ? (sem / total) * 100 : 0;
+        checks.push({
+          id: 'nfe_ibscbs_cobertura',
+          titulo: 'NF-e com IBS/CBS destacado (Reforma Tributária)',
+          descricao: `NF-e emitidas após ${fg} devem conter grupo IBS/CBS`,
+          status: sem === 0 ? 'aprovado' : pct <= 10 ? 'atencao' : 'reprovado',
+          peso: 9,
+          detalhes: `${sem} de ${total} nota${total !== 1 ? 's' : ''} após ${fg} sem IBS/CBS (${pct.toFixed(0)}%)`,
+        });
+      } else {
+        checks.push({
+          id: 'nfe_ibscbs_cobertura',
+          titulo: 'NF-e com IBS/CBS destacado (Reforma Tributária)',
+          descricao: 'Regime não sujeito a IBS/CBS neste período',
+          status: 'aprovado',
+          peso: 9,
+          detalhes: 'Regime não sujeito (MEI ou regime especial)',
+        });
+      }
+
       // Calcular score ponderado
       const pesoTotal = checks.reduce((s, c) => s + c.peso, 0);
       const pesoObtido = checks.reduce((s, c) => {

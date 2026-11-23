@@ -294,6 +294,50 @@ export const handler = async (req: Request): Promise<Response> => {
             acao_label: 'Ver Holding Patrimonial',
           });
         }
+
+        // 6 e 7) Reforma Tributária — NF-e sem IBS/CBS após FG (CRT 3 e Simples)
+        const countCrt3 = ['lucro_real', 'lucro_presumido'].includes(
+          empresa.regime_tributario ?? ''
+        )
+          ? (async () => {
+              const { count } = await withRetry(
+                () =>
+                  supabase
+                    .from('notas_fiscais')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('empresa_id', empresa.id)
+                    .gte('data_emissao', '2026-08-03')
+                    .is('v_cbs', null),
+                `nfe_sem_ibscbs_crt3_${empresa.id}`
+              );
+              return count ?? 0;
+            })()
+          : Promise.resolve(0);
+        const countSn =
+          empresa.regime_tributario === 'simples_nacional'
+            ? (async () => {
+                const { count } = await withRetry(
+                  () =>
+                    supabase
+                      .from('notas_fiscais')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('empresa_id', empresa.id)
+                      .gte('data_emissao', '2026-12-01')
+                      .is('v_cbs', null),
+                  `nfe_sem_ibscbs_sn_${empresa.id}`
+                );
+                return count ?? 0;
+              })()
+            : Promise.resolve(0);
+        const [crt3Sem, snSem] = await Promise.all([countCrt3, countSn]);
+        for (const a of determinarAlertasRt({
+          empresa_id: empresa.id,
+          regime_tributario: empresa.regime_tributario,
+          countNfeSemIbscbsCrt3: crt3Sem,
+          countNfeSemIbscbsSn: snSem,
+        })) {
+          novosAlertas.push(a);
+        }
       } catch (empresaErr) {
         // Falha em uma empresa não derruba o cron inteiro
         log('error', 'empresa_processing_failed', {
@@ -402,3 +446,71 @@ export const handler = async (req: Request): Promise<Response> => {
 };
 
 if (import.meta.main) Deno.serve(withEdgeObservability('gerar-alertas-tributarios', handler));
+
+// ---------------------------------------------------------------------------
+// Lógica RT/RFB extraída como função pura — testável sem banco
+// ---------------------------------------------------------------------------
+
+export interface AlertasRtParams {
+  empresa_id: string;
+  regime_tributario: string | null;
+  /** Contagem de NF-e sem IBS/CBS após 03/08/2026 (CRT 3). */
+  countNfeSemIbscbsCrt3: number;
+  /** Contagem de NF-e sem IBS/CBS após 01/12/2026 (Simples Nacional). */
+  countNfeSemIbscbsSn: number;
+}
+
+export interface AlertaRT {
+  empresa_id: string;
+  tipo: string;
+  titulo: string;
+  mensagem: string;
+  prioridade: 'baixa' | 'media' | 'alta' | 'critica';
+  acao_url: string;
+  acao_label: string;
+}
+
+/**
+ * Gera os alertas da Reforma Tributária para uma empresa a partir dos
+ * contadores já calculados. Sem I/O — testável diretamente.
+ */
+export function determinarAlertasRt(p: AlertasRtParams): AlertaRT[] {
+  const alertas: AlertaRT[] = [];
+  const esCrt3 = ['lucro_real', 'lucro_presumido'].includes(p.regime_tributario ?? '');
+  const esSn = p.regime_tributario === 'simples_nacional';
+
+  if (esCrt3 && p.countNfeSemIbscbsCrt3 > 0) {
+    const n = p.countNfeSemIbscbsCrt3;
+    alertas.push({
+      empresa_id: p.empresa_id,
+      tipo: 'nfe_sem_ibscbs_obrigatoria',
+      titulo: `${n} NF-e${n > 1 ? 's' : ''} sem IBS/CBS após 03/08/2026 (CRT 3)`,
+      mensagem:
+        `A partir do Fato Gerador da Reforma Tributária (03/08/2026), toda NF-e emitida por ` +
+        `contribuinte do Regime Normal (Lucro Real/Presumido, CRT 3) deve conter o grupo ` +
+        `IBS/CBS destacado. ${n} nota${n > 1 ? 's' : ''} em aberto${n > 1 ? '' : ' em aberto'} sem o grupo — ` +
+        `retifique ou reemita antes da fiscalização.`,
+      prioridade: 'alta',
+      acao_url: '/tributario/nfe',
+      acao_label: 'Ver NF-e pendentes',
+    });
+  }
+
+  if (esSn && p.countNfeSemIbscbsSn > 0) {
+    const n = p.countNfeSemIbscbsSn;
+    alertas.push({
+      empresa_id: p.empresa_id,
+      tipo: 'nfe_sem_ibscbs_simples_pos_dez26',
+      titulo: `${n} NF-e${n > 1 ? 's' : ''} sem IBS/CBS — Simples Nacional obrigatório desde 01/12/2026`,
+      mensagem:
+        `Contribuintes do Simples Nacional passam a destacar IBS/CBS nas NF-e a partir de ` +
+        `01/12/2026. ${n} nota${n > 1 ? 's' : ''} emitida${n > 1 ? 's' : ''} sem o grupo — ` +
+        `ajuste o emissor e retifique.`,
+      prioridade: 'alta',
+      acao_url: '/tributario/nfe',
+      acao_label: 'Ver NF-e Simples',
+    });
+  }
+
+  return alertas;
+}
