@@ -187,6 +187,12 @@ verify_jwt = false
 [functions.gerar-heatmap-tributario]
 verify_jwt = false
 
+# verify_jwt=false: o guard e feito em codigo por `exigirUsuarioComEmpresa`
+# (valida o JWT contra o Auth e o vinculo real em `user_empresas`), mesmo
+# padrao das demais funcoes do Lovable Cloud com signing keys.
+[functions.guardar-xml-nfe-autorizada]
+verify_jwt = false
+
 [functions.gerar-pacote-evidencias]
 verify_jwt = true
 

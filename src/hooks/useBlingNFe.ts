@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { toast } from 'sonner';
 
 export interface BlingNFe {
@@ -172,6 +173,23 @@ function mapNFeItem(item: BlingNFeRawItem): BlingNFe {
   };
 }
 
+/**
+ * Etapa 55: guarda o XML autorizado e materializa os itens da nota.
+ *
+ * Precisa do `empresa_id` porque a edge valida o vínculo do usuário com a
+ * empresa antes de gravar; sem ele, usuário multi-empresa cai em
+ * `empresa_obrigatoria`. Falha aqui é silenciosa de propósito: o envio para
+ * a SEFAZ já aconteceu e o XML pode ser recuperado depois.
+ */
+async function guardarXmlAutorizado(blingNfeId: number) {
+  const empresaId = getCurrentEmpresaId();
+  const { data, error } = await supabase.functions.invoke('guardar-xml-nfe-autorizada', {
+    body: { bling_nfe_id: blingNfeId, empresa_id: empresaId },
+  });
+  if (error || data?.error) return null;
+  return data;
+}
+
 export function useBlingNFe() {
   const [notas, setNotas] = useState<BlingNFe[]>([]);
   const [loading, setLoading] = useState(false);
@@ -245,6 +263,11 @@ export function useBlingNFe() {
     try {
       const data = await callBlingProxy('enviar_nfe_sefaz', { id: nfeId, enviarEmail });
       toast.success('NF-e enviada para SEFAZ via Bling!');
+      // Etapa 55: o XML autorizado só existe depois do retorno da SEFAZ. A
+      // gravação roda em segundo plano e falhar aqui não pode desfazer o
+      // envio — o usuário já recebeu autorização; a nota fica sem XML e
+      // aparece na conferência fiscal até ser reprocessada.
+      void guardarXmlAutorizado(nfeId).catch(() => undefined);
       return data;
     } catch (err: unknown) {
       toast.error(
