@@ -23,6 +23,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { useConciliacaoTributaria } from '@/hooks/useConciliacaoTributaria';
 import { formatCurrency } from '@/lib/formatters';
+import { ConciliacaoExtratoAssistido } from './ConciliacaoExtratoAssistido';
 
 interface Props {
   empresaId?: string;
@@ -182,6 +183,8 @@ export function ConciliacaoTributariaPanel({ empresaId }: Props) {
           </CardContent>
         </Card>
       )}
+
+      <ConciliacaoExtratoAssistido />
     </div>
   );
 }

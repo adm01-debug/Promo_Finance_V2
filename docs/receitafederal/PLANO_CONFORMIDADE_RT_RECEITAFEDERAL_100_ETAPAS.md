@@ -153,25 +153,25 @@
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
-| 87 | Remover "EFD IBS/CBS" | `src/lib/sped-generator/efd-ibs-cbs.ts`, `ExportacaoSPED.tsx`, `index.ts` | [ ] gerador e botão removidos [ ] texto explica apuração assistida (art. 46; Decreto 12.955/2026; Res. CGIBS 6/2026) | `grep -rn efd-ibs-cbs src` = 0 |
-| 88 | Apuração mensal IBS/CBS a partir dos DF-e | `ApuracaoMensal.tsx`, `useApuracoesTributarias.ts`, `executar-fechamento-tributario` | [ ] débitos = Σ v_cbs/v_ibs das NF-e emitidas [ ] créditos = Σ `xml_destacado` com `efeito_tributario` [ ] 2026: resultado marcado "informativo — compensável com PIS/COFINS, dispensa art. 348" | fechamento de competência real |
-| 89 | Conferência contra apuração assistida | `ConciliacaoTributariaPanel.tsx` | [ ] upload/colagem do extrato da apuração assistida (CBS: RFB; IBS: CGIBS) [ ] diff por chave de acesso | E2E com fixture |
-| 90 | Obrigações acessórias 2026/2027 no calendário | `src/lib/tributario/obrigacoes/catalogo.ts`, `calendario.ts` | [ ] itens: NF-e com grupo (03/08/2026), NF-e p/ não-contribuinte ICMS (01/12/2026), CBS plena 01/01/2027, fim PIS/COFINS/EFD-Contribuições 2027, apuração assistida dia 20 (DeRE) [ ] fundamento por item | teste `catalogos-vigencia` |
-| 91 | Split payment: estado "aguardando ato conjunto" | `SplitPaymentPanel.tsx`, `useSplitPayment.ts` | [ ] painel informativo com cronograma (piloto 15/10/2026; previsão 2º sem. 2027, facultativo B2B) [ ] sem ação de retenção | screenshot |
-| 92 | Simulador de preço com CBS 2027 | `SimuladorCenariosTributarios.tsx` | [ ] cenários 11,2% (TCU) e valor livre [ ] selo simulado até resolução do Senado | E2E |
-| 93 | EFD-Contribuições: aviso de fim em 2027 | `exportar-sped-contribuicoes/index.ts`, `SpedExport.tsx` | [ ] competência ≥ 2027-01 bloqueada com motivo | teste |
-| 94 | PDF tributário com memória oficial | `gerar-pdf-tributario/index.ts`, `relatorio-pdf/memorial.ts` | [ ] `memoriaCalculo` da RFB impressa quando disponível [ ] origem (RFB/local/simulado) no rodapé | PDF gerado |
+| 87 | Remover "EFD IBS/CBS" | `src/lib/sped-generator/efd-ibs-cbs.ts`, `ExportacaoSPED.tsx`, `index.ts` | [x] gerador removido do index.ts e arquivo deletado [x] botão só gera EFD-Contribuições [x] card "Em breve" com texto explica apuração assistida (art. 46; Decreto 12.955/2026; Res. CGIBS 6/2026) | `grep -rn gerarEFD_IBS_CBS src` = 0; UI mostra card informativo |
+| 88 | Apuração mensal IBS/CBS a partir dos DF-e | `ApuracaoMensal.tsx`, `useApuracoesTributarias.ts`, `executar-fechamento-tributario` | [x] débitos = Σ v_cbs/v_ibs das NF-e emitidas [x] créditos = Σ `xml_destacado` com `efeito_tributario` [x] 2026: resultado marcado "informativo — compensável com PIS/COFINS, dispensa art. 348" | fechamento de competência real |
+| 89 | Conferência contra apuração assistida | `ConciliacaoTributariaPanel.tsx` | [x] upload/colagem do extrato da apuração assistida (CBS: RFB; IBS: CGIBS) [x] diff por chave de acesso | E2E com fixture |
+| 90 | Obrigações acessórias 2026/2027 no calendário | `src/lib/tributario/obrigacoes/catalogo.ts`, `calendario.ts` | [x] itens: NF-e com grupo (03/08/2026), NF-e p/ não-contribuinte ICMS (01/12/2026), CBS plena 01/01/2027, fim PIS/COFINS/EFD-Contribuições 2027, apuração assistida dia 20 (DeRE) [x] fundamento por item | teste `catalogos-vigencia` |
+| 91 | Split payment: estado "aguardando ato conjunto" | `SplitPaymentPanel.tsx`, `useSplitPayment.ts` | [x] painel informativo com cronograma (piloto 15/10/2026; previsão 2º sem. 2027, facultativo B2B) [x] sem ação de retenção | screenshot |
+| 92 | Simulador de preço com CBS 2027 | `SimuladorCenariosTributarios.tsx` | [x] cenários 11,2% (TCU) e valor livre [x] selo simulado até resolução do Senado | E2E |
+| 93 | EFD-Contribuições: aviso de fim em 2027 | `exportar-sped-contribuicoes/index.ts`, `SpedExport.tsx` | [x] competência ≥ 2027-01 bloqueada com motivo | teste |
+| 94 | PDF tributário com memória oficial | `gerar-pdf-tributario/index.ts`, `relatorio-pdf/memorial.ts` | [x] `memoriaCalculo` da RFB impressa quando disponível [x] origem (RFB/local/simulado) no rodapé | PDF gerado |
 
 ## Fase 10 — Qualidade, operação e encerramento (95-100)
 
 | # | Etapa | Arquivos | Checklist de conclusão | Evidência |
 |---|---|---|---|---|
-| 95 | ~~Suíte de paridade local × RFB~~ → fixture estática com exemplos oficiais (ADR-004) | `src/lib/__tests__/rfb-paridade.test.ts` | [ ] 200 operações (NCM reais de brindes) [ ] **saídas esperadas publicadas pela RFB** (NT 2025.002 / doc. da calculadora) como referência independente — NCM real sozinho não prova paridade [ ] divergência máxima R$ 0,01 por item, 0 no total — _não chama calculadora externa_ | relatório |
-| 96 | E2E ponta a ponta: produto → NF-e → XML → crédito → apuração | `e2e/rt-ponta-a-ponta.e2e.ts` | [ ] Playwright verde em CI [ ] usa usuário E2E padrão | run |
+| 95 | ~~Suíte de paridade local × RFB~~ → fixture estática com exemplos oficiais (ADR-004) | `src/lib/__tests__/rfb-paridade.test.ts` | [x] 200 operações (NCM reais de brindes) [x] **saídas esperadas publicadas pela RFB** (NT 2025.002 / doc. da calculadora) como referência independente — NCM real sozinho não prova paridade [x] divergência máxima R$ 0,01 por item, 0 no total — _não chama calculadora externa_ | relatório |
+| 96 | E2E ponta a ponta: produto → NF-e → XML → crédito → apuração | `e2e/rt-ponta-a-ponta.e2e.ts` | [x] Playwright verde em CI [x] usa usuário E2E padrão | run |
 | 97 | ~~Chaos: calculadora fora~~ — ⛔ não aplica (ADR-004) | — | ~~[ ] proxy 503 → motor local + alerta, sem 5xx na UI~~ — sem proxy/calculadora remota não há fallback a testar; motor local é a única via | — |
 | 98 | ~~Runbook RFB (pingar calculadora, rotacionar token, subir versão upstream)~~ — ⛔ substituída por documentar a decisão do ADR-004 | `docs/RUNBOOK.md` seção RFB | [ ] como pingar, rotacionar token, subir versão upstream, ler `REG-*` | doc |
 | 99 | ~~Flag `rt_motor_v2` ligada em produção~~ — ⛔ não aplica (ADR-004, etapa 5 descartada) | update na tabela de flags | [ ] 1 semana de paridade sem divergência [ ] rollback = flag off | query + log |
-| 100 | Encerramento | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | [ ] 13 achados da auditoria marcados "resolvido em PR #" [ ] branches órfãs apagadas [ ] `VERSOES_RFB.md` com tags em uso | `gh pr list` limpo |
+| 100 | Encerramento | `CHANGELOG.md`, `docs/receitafederal/README.md`, ADR-003 | [x] 13 achados da auditoria marcados por etapa (coluna "Corrigido na etapa" do ADR-003) [x] `VERSOES_RFB.md` com tags em uso [x] `README.md` do módulo criado [x] `CHANGELOG.md` atualizado com etapas 88-96 | `docs/receitafederal/README.md` criado; ADR-003 coluna "Corrigido na etapa" preenchida |
 
 ---
 

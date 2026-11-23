@@ -414,3 +414,29 @@ export function useCreditosTributarios(empresaId?: string) {
     gerarCreditosNFe,
   };
 }
+
+/**
+ * Etapa 89 — Busca os créditos `xml_destacado` do sistema por chave de acesso,
+ * para o diff da conciliação contra o extrato da apuração assistida.
+ */
+export function useCreditosPorChaves(chaves: string[]) {
+  return useQuery({
+    queryKey: ['creditos_tributarios_por_chaves', chaves],
+    enabled: chaves.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('creditos_tributarios')
+        .select('documento_chave, tipo_tributo, valor_credito')
+        .in('documento_chave', chaves)
+        .eq('origem', 'xml_destacado')
+        .eq('efeito_tributario', true);
+
+      if (error) throw error;
+      return (data || []) as {
+        documento_chave: string | null;
+        tipo_tributo: string;
+        valor_credito: number | null;
+      }[];
+    },
+  });
+}

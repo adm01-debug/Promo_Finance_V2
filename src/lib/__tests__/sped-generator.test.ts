@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { gerarEFD_IBS_CBS, gerarEFD_Contribuicoes, validarArquivoSPED } from '../sped-generator';
+import { gerarEFD_Contribuicoes, validarArquivoSPED } from '../sped-generator';
+
 
 describe('SPED Generator', () => {
   const empresa = {
@@ -55,65 +56,6 @@ describe('SPED Generator', () => {
     },
   ];
 
-  const apuracao = {
-    competencia: '2024-01',
-    cbs_debitos: 880,
-    cbs_creditos: 440,
-    cbs_a_pagar: 440,
-    ibs_debitos: 1770,
-    ibs_creditos: 885,
-    ibs_a_pagar: 885,
-    is_debitos: 0,
-    is_a_pagar: 0,
-  };
-
-  describe('gerarEFD_IBS_CBS', () => {
-    it('gera arquivo com registro inicial 0000', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      expect(sped).toContain('|0000|');
-    });
-
-    it('gera arquivo com registro final 9999', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      expect(sped).toContain('|9999|');
-    });
-
-    it('contém CNPJ da empresa', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      expect(sped).toContain('12345678000190');
-    });
-
-    it('contém blocos C (mercadorias)', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      expect(sped).toContain('|C001|');
-      expect(sped).toContain('|C100|');
-      expect(sped).toContain('|C990|');
-    });
-
-    it('contém bloco M (apuração)', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      expect(sped).toContain('|M001|');
-      expect(sped).toContain('|M800|');
-      expect(sped).toContain('|M810|');
-      expect(sped).toContain('|M820|');
-    });
-
-    it('valores formatados com vírgula', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      expect(sped).toContain('10000,00');
-      expect(sped).toContain('880,00');
-    });
-
-    it('linhas seguem formato pipe', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
-      const linhas = sped.split('\r\n');
-      linhas.forEach((l) => {
-        expect(l.startsWith('|')).toBe(true);
-        expect(l.endsWith('|')).toBe(true);
-      });
-    });
-  });
-
   describe('gerarEFD_Contribuicoes', () => {
     it('gera arquivo válido', () => {
       const sped = gerarEFD_Contribuicoes(empresa, '2024-01', operacoes, creditos);
@@ -124,7 +66,7 @@ describe('SPED Generator', () => {
 
   describe('validarArquivoSPED', () => {
     it('arquivo válido retorna sucesso', () => {
-      const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
+      const sped = gerarEFD_Contribuicoes(empresa, '2024-01', operacoes, creditos);
       const resultado = validarArquivoSPED(sped);
       expect(resultado.valido).toBe(true);
       expect(resultado.erros.length).toBe(0);

@@ -296,6 +296,67 @@ Deno.serve(
         headStyles: { fillColor: [37, 99, 235] },
       });
 
+      // PÁGINA 6 — Memória de Cálculo IBS/CBS (etapa 94)
+      const { data: apuracao } = await supabaseAdmin
+        .from('apuracoes_tributarias')
+        .select(
+          'competencia,cbs_debitos,cbs_creditos,cbs_saldo_anterior,cbs_a_pagar,' +
+          'ibs_debitos,ibs_creditos,ibs_saldo_anterior,ibs_a_pagar'
+        )
+        .eq('empresa_id', body.empresaId)
+        .eq('competencia', `${body.anoReferencia}-${String(body.mesReferencia).padStart(2, '0')}`)
+        .maybeSingle();
+
+      if (apuracao) {
+        doc.addPage();
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(16);
+        doc.text('Memória de Cálculo IBS/CBS', 15, 20);
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Valores apurados a partir dos documentos fiscais eletrônicos (DF-e) com grupo IBS/CBS destacado.', 15, 28);
+        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 34);
+        doc.setTextColor(0, 0, 0);
+
+        autoTable(doc, {
+          startY: 42,
+          head: [['Tributo', 'Débitos', 'Créditos', 'Saldo Anterior', 'A Pagar / Compensar']],
+          body: [
+            [
+              'CBS',
+              formatBRL(apuracao.cbs_debitos ?? 0),
+              formatBRL(apuracao.cbs_creditos ?? 0),
+              formatBRL(apuracao.cbs_saldo_anterior ?? 0),
+              formatBRL(apuracao.cbs_a_pagar ?? 0),
+            ],
+            [
+              'IBS',
+              formatBRL(apuracao.ibs_debitos ?? 0),
+              formatBRL(apuracao.ibs_creditos ?? 0),
+              formatBRL(apuracao.ibs_saldo_anterior ?? 0),
+              formatBRL(apuracao.ibs_a_pagar ?? 0),
+            ],
+          ],
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [37, 99, 235] },
+        });
+
+        const afterTable = (doc as any).lastAutoTable.finalY + 10;
+        doc.setFontSize(8);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Fórmula: A Pagar = Débitos - Créditos - Saldo Anterior (quando positivo).', 15, afterTable);
+        doc.text(
+          'Créditos considerados: apenas documentos com origem = xml_destacado e efeito_tributario = true.',
+          15,
+          afterTable + 6
+        );
+        doc.text(
+          `Competência: ${String(body.mesReferencia).padStart(2, '0')}/${body.anoReferencia}`,
+          15,
+          afterTable + 12
+        );
+      }
+
       // Gera PDF como Uint8Array
       const pdfBuffer = doc.output('arraybuffer');
       const pdfBytes = new Uint8Array(pdfBuffer);

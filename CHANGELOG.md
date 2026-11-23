@@ -25,6 +25,16 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Runbooks operacionais: DR/backup (`docs/runbooks/`), uptime externo e matriz papel×rota×tabela
 - Overlay `strictNullChecks` progressivo em `src/lib` (`tsconfig.strict.json` + `type-check:strict`)
 - `vendor/xlsx-0.20.3.tgz` — SheetJS vendored (sha512 verificado) eliminando dependência de CDN no install
+- **Reforma Tributária (etapas 88-96 do plano RT/RFB):**
+  - Apuração mensal IBS/CBS a partir dos DF-e (`useApuracoesTributarias.ts` usa `notas_fiscais` + `creditos_tributarios` com origem `xml_destacado`)
+  - Conciliação contra apuração assistida: `ConciliacaoExtratoAssistido.tsx` — upload/colagem de CSV e diff por chave de acesso
+  - Obrigações acessórias 2026/2027 no calendário: marcos RT (NF-e grupo IBS/CBS 03/08/2026, NF-e não-contribuinte 01/12/2026, CBS plena 01/01/2027, fim PIS/COFINS/EFD-Contribuições 2027) via `MARCOS_RT` separado de `OBRIGACOES`
+  - Split Payment: card de cronograma "aguardando ato conjunto" (piloto 15/10/2026; previsão 2º sem. 2027)
+  - Simulador de preço com CBS 2027: cenários 11,2% (TCU) e valor livre + selo simulado até resolução do Senado
+  - EFD-Contribuições: bloqueio HTTP 422 para competência ≥ 2027-01 (`exportar-sped-contribuicoes`)
+  - PDF tributário: página "Memória de Cálculo IBS/CBS" com valores apurados (`gerar-pdf-tributario`)
+  - Fixture de paridade local × RFB (`rfb-paridade.test.ts`) com exemplos NT 2025.002
+  - E2E ponta a ponta (`e2e/rt-ponta-a-ponta.e2e.ts`)
 
 ### Changed
 
