@@ -304,6 +304,76 @@ BEGIN
   END IF;
 END $$;
 
+-- 7) Cobertura de comandos de escrita nas tabelas cujo fluxo de app escreve
+--    pelo cliente autenticado.
+--
+--    Origem do gap: a checagem 3 valida apenas que cada policy remanescente
+--    referencia a coluna empresa_id — não valida que os quatro comandos estão
+--    cobertos. O endurecimento de RLS de 2026-11-24 removeu as policies
+--    permissivas (ALL) e as substituiu por específicas; em
+--    elisao_creditos_auditoria sobraram SELECT/INSERT/DELETE e NENHUMA de
+--    UPDATE, sem nenhum gate acusar. O sintoma é silencioso: PostgREST
+--    devolve `error: null` e zero linhas em UPDATE bloqueado por RLS, então
+--    o app exibe sucesso e a decisão não persiste.
+--
+--    Lista explícita (firebreak): toda tabela cuja escrita por UPDATE vem do
+--    cliente precisa de policy cobrindo UPDATE ou ALL.
+DO $$
+DECLARE
+  requer_update text[] := ARRAY['elisao_creditos_auditoria'];
+  t text;
+  offenders text := '';
+BEGIN
+  FOREACH t IN ARRAY requer_update LOOP
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_policies p
+      WHERE p.schemaname = 'public'
+        AND p.tablename = t
+        AND p.cmd IN ('UPDATE', 'ALL')
+    ) THEN
+      offenders := offenders || format(E'\n  - public.%s: sem policy de UPDATE', t);
+    END IF;
+  END LOOP;
+
+  IF offenders <> '' THEN
+    RAISE EXCEPTION 'Tabelas escrevíveis por UPDATE sem policy correspondente:%', offenders;
+  END IF;
+END $$;
+
+-- 7b) Informativo (não falha o build): mesma classe de gap no restante do
+--     schema — GRANT de escrita para authenticated sem policy do comando.
+--     Há legado em prod sem uso de cliente, então isso aparece como WARNING
+--     no log em vez de reprovar o gate.
+DO $$
+DECLARE
+  r record;
+BEGIN
+  FOR r IN
+    SELECT g.table_name, g.privilege_type, array_agg(DISTINCT p.cmd) AS cmds
+    FROM information_schema.role_table_grants g
+    LEFT JOIN pg_policies p
+      ON p.schemaname = 'public' AND p.tablename = g.table_name
+    WHERE g.table_schema = 'public'
+      AND g.grantee = 'authenticated'
+      AND g.privilege_type IN ('UPDATE', 'INSERT', 'DELETE')
+      AND EXISTS (
+        SELECT 1 FROM information_schema.columns c
+        WHERE c.table_schema = 'public'
+          AND c.table_name = g.table_name
+          AND c.column_name = 'empresa_id'
+      )
+    GROUP BY g.table_name, g.privilege_type
+  LOOP
+    IF NOT (
+      r.privilege_type = ANY (COALESCE(r.cmds, ARRAY[]::text[]))
+      OR 'ALL' = ANY (COALESCE(r.cmds, ARRAY[]::text[]))
+    ) THEN
+      RAISE WARNING 'Gap de RLS: %.% concedido a authenticated sem policy do comando (policies atuais: %)',
+        'public', r.table_name, COALESCE(r.cmds::text, 'nenhuma');
+    END IF;
+  END LOOP;
+END $$;
+
 ROLLBACK;
 
 \echo '✅ RLS multi-empresa suite: OK'
