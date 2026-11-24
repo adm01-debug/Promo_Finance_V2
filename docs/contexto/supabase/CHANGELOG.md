@@ -2,6 +2,11 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-24 10:16 UTC
+
+- **config: storage_config** alterado (1): `storage_config`
+- **functions** alterado (1): `public.escalate_stale_integrity_alerts()`
+
 ## 2026-11-24 00:34 UTC
 
 - **functions** alterado (8): `public.claim_silenciamentos_digest(p_horas integer, p_min_intervalo_horas integer)`, `public.empresa_acessivel(_empresa_id uuid)`, `public.escalate_stale_integrity_alerts(p_age interval)`, `public.has_any_role(_user_id uuid, _roles app_role[])`, `public.has_role(_user_id uuid, _role app_role)`, `public.registrar_auditoria_config(_tipo_acao text, _empresa_id uuid, _detalhes jsonb)`, `public.registrar_nfe_com_creditos(p_empresa_id uuid, p_nota jsonb, p_creditos jsonb)`, `public.sefaz_process_batch(p_cnpj text, p_ambiente text, p_empresa_id uuid, p_novo_nsu bigint, p_max_nsu bigint, p_status text, p_erro text, p_docs jsonb)`

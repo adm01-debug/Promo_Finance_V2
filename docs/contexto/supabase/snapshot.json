@@ -1699,7 +1699,7 @@
         }
       },
       "fileSizeLimit": 52428800,
-      "migrationVersion": "revoke-extra-lifecycle-postgres-grants"
+      "migrationVersion": "s3-multipart-uploads-parts-index"
     },
     "url": "https://bwwbeyolnnzppeuhgkcd.supabase.co"
   },
@@ -70783,7 +70783,7 @@
         ],
         "definition": null,
         "definition_sha": "521ec655f8e024f3",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
