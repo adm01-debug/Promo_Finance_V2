@@ -52,7 +52,7 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 
 > **Quantidade**: 35 etapas (`001`–`035`). A numeração não é decorativa: é a mesma que o `03-ACHADOS.md` cita no campo "Caminho de correção" de cada achado. Estas etapas cobrem banco/RLS, Edge Functions, integrações e CI — os planos `E-` e `N-` citados acima continuam sendo a referência para front-end e UX, e nenhuma etapa daqui os repete. Fechar cota numérica inventando etapas sem achado que as sustente produziria plano falso: cada etapa abaixo nasceu de um achado com evidência em `03-ACHADOS.md`.
 >
-> **Ondas**: 1 = segurança e perda de dado (001–008, 025–027, 032–033) · 2 = fluxos quebrados (009–013) · 3 = integridade e regra de negócio (015–024) · 6 = performance (034) · 8 = higiene, CI e cadeia de suprimentos (014, 028–031, 035).
+> **Ondas**: 1 = segurança e perda de dado (001–008, 025–027, 032–033) · 2 = fluxos quebrados (009–013) · 3 = integridade e regra de negócio (015–023) · 6 = performance (034) · 8 = higiene, CI e cadeia de suprimentos (014, 024, 028–031, 035).
 
 ---
 
