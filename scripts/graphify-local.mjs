@@ -557,7 +557,10 @@ async function runtime(ctx) {
     path.resolve(value.prefix) !== ctx.envRoot ||
     !inside(ctx.envRoot, value.module)
   )
-    fail('Runtime não corresponde ao ambiente e pin locais', 'missing_runtime');
+    fail(
+      'Runtime não corresponde ao ambiente e pin locais; execute install para ressincronizar',
+      'missing_runtime'
+    );
   const version = await checked([binary, '--version'], ctx.root, ctx.env, 30000);
   if (!version.split('\n').some((s) => s.trim() === `graphify ${ctx.config.pin}`))
     fail('Executável local tem versão divergente', 'missing_runtime');
@@ -989,11 +992,23 @@ export async function main(args = process.argv.slice(2), options = {}) {
       report.status = 'marked';
     } else if (parsed.action === 'install') {
       release = await acquire(path.join(ctx.state, 'running.lock'));
+      // Pin novo sobre ambiente existente não é erro permanente: install é o reparo
+      // explícito, então ressincroniza em vez de recusar para sempre. Isolamento e
+      // hashes seguem valendo; o runtime() do fim revalida ambiente, prefixo e versão.
+      let precisaInstalar = true;
       if (await exists(ctx.python)) {
-        report.runtime = await runtime(ctx);
-        report.status = 'installed';
-      } else {
-        if (await exists(path.join(ctx.envRoot, 'pyvenv.cfg')))
+        const atual = await runtime(ctx).catch((erro) => {
+          if (erro instanceof GraphError && erro.status === 'missing_runtime') return null;
+          throw erro;
+        });
+        if (atual) {
+          report.runtime = atual;
+          report.status = 'installed';
+          precisaInstalar = false;
+        } else report.reparado = 'runtime_divergente';
+      }
+      if (precisaInstalar) {
+        if (!(await exists(ctx.python)) && (await exists(path.join(ctx.envRoot, 'pyvenv.cfg'))))
           fail('Ambiente incompleto preservado; reparo precisa ser explícito', 'missing_runtime');
         const lock =
           config.adapter === 'finance'
