@@ -93,18 +93,21 @@ Asaas (cobrança) · Bling (ERP) · Bitrix24 (CRM) · WhatsApp · SEFAZ/NF-e · 
 
 ## 6. CI — 20 workflows em `.github/workflows` (EXECUTADO)
 
-| Workflow | Gatilhos |
+| Workflow | Gatilhos declarados no `on:` |
 |---|---|
-| `ci.yml` | pull_request, push |
-| `deno-tests.yml` | pull_request, push |
 | `dependency-review.yml` | pull_request |
-| `automation-local.yml` | pull_request, push, workflow_dispatch |
-| `actionlint.yml`, `codeql.yml`, `contexto.yml`, `graphify.yml`, `supabase-linter.yml`, `auto-update-pr-branch.yml` | push |
-| `estado-real.yml`, `inventario-estado.yml` | push, schedule |
+| `ci.yml`, `deno-tests.yml`, `automation-local.yml`, `actionlint.yml`, `graphify.yml`, `supabase-linter.yml` | push, pull_request, workflow_dispatch |
+| `codeql.yml` | push, pull_request, schedule |
+| `contexto.yml` | push, pull_request, schedule, workflow_dispatch |
+| `inventario-estado.yml` | schedule, push, pull_request, workflow_dispatch |
+| `auto-update-pr-branch.yml` | push, workflow_run, schedule, workflow_dispatch |
+| `estado-real.yml` | schedule, push, workflow_dispatch |
 | `rfb-upstream-watch.yml`, `schema-drift.yml`, `settings-guard.yml` | schedule, workflow_dispatch |
 | `functions-deploy.yml`, `migration-ledger.yml`, `prod-migrate.yml`, `staging-migrate.yml`, `supabase-admin-ops.yml` | workflow_dispatch |
 
-Apenas 4 workflows rodam em `pull_request` — os demais, ou são `push`/`schedule`, ou só manuais. O que isso significa para o bloqueio de merge está na camada de infra/CI.
+**Dez dos 20 workflows declaram gatilho de `pull_request`** — `dependency-review`, `ci`, `deno-tests`, `automation-local`, `actionlint`, `graphify`, `supabase-linter`, `codeql`, `contexto` e `inventario-estado` —, medido lendo o bloco `on:` de cada arquivo de `.github/workflows` no commit auditado.
+
+Gatilho declarado, porém, não é o mesmo que check que bloqueia merge. A proteção de `main` exige **8 checks**: `Supabase DB Linter`, `Quality Gate & Tests`, `E2E Critical Gate`, `Integration tests (edge functions live)`, `E2E Financeiro (offline)`, `E2E Destructive Logout`, `Varredura de segredos (gitleaks)` e `Unit tests (offline, deterministic)`. É por isso que `supabase-linter.yml:29-34` dispara em todo PR, sem filtro `paths:` — o job precisa sempre rodar para satisfazer um check obrigatório (o próprio arquivo documenta isso na linha 31). Também rodam em PR, sem serem checks obrigatórios, `dependency-review`, `actionlint`, `automation-local`, `codeql`, `contexto`, `graphify` e `inventario-estado`. O que isso significa para a camada de infra/CI está em `03-ACHADOS.md`.
 
 ## 7. Variáveis de ambiente
 
@@ -146,6 +149,15 @@ A ligação usuário→empresa fica em `user_empresas` (`user_id`, `empresa_id`,
 `npm` não serve de alternativa neste repositório: aborta em `TypeError: Cannot read properties of null (reading 'edgesOut')` ao resolver a dependência vendorizada `xlsx => file:vendor/xlsx-0.20.3.tgz` (log em `/root/.npm/_logs/`), e não há `package-lock.json`.
 
 **Contorno aplicado, sem tocar no repositório**: o projeto foi copiado para o diretório de trabalho da sessão (sem `node_modules`, `.git` nem `supabase/migrations`) e instalado lá com `bun install --registry https://registry.npmjs.org`, já sem as URLs fixadas do lock — **661 pacotes, instalação completa**. O repositório em `/home/user/Promo_Finance_V2` não foi alterado: `bun.lock`, `package.json` e `node_modules` seguem como estavam no commit `2c2486f`.
+
+**Duas configurações, dois resultados** — `AGENTS.md:18` manda registrar o erro de dependência e parar, e é o que vale aqui:
+
+| Configuração | Comando | Resultado |
+|---|---|---|
+| Instalação versionada (a que prova o build oficial) | `bun install` lendo o `bun.lock` do commit auditado | **BLOQUEADA**: 185 falhas `ProxyConnectFailed (403)` em 5 tentativas, sempre nos 209 pacotes que apontam para `europe-west*-npm.pkg.dev` |
+| Configuração de contorno (só para permitir análise estática e testes) | `bun install --registry https://registry.npmjs.org` em cópia fora do repositório, sem as URLs fixadas do lock | **EXECUTADO**: 661 pacotes, suíte e type-check rodaram |
+
+**Escopo dos resultados abaixo**: medidos na configuração de contorno, sobre o mesmo código do commit `2c2486f` — o que muda é a origem dos pacotes, não o código auditado. Eles **não** validam a instalação versionada, que segue bloqueada e é ela própria um achado (`ACH-INF-01`).
 
 **O que isso permitiu executar de verdade**:
 

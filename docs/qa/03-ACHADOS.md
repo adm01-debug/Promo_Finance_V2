@@ -105,10 +105,11 @@
 ### ACH-INF-02 · Só o `bun` consegue instalar o projeto
 
 - **Camada**: infraestrutura · **Severidade**: Baixa · **Confiança**: confirmado · **Modo**: EXECUTADO
-- **Evidência**: `npm install` aborta com `TypeError: Cannot read properties of null (reading 'edgesOut')`; o log mostra a resolução parando em `xlsx@file:vendor/xlsx-0.20.3.tgz`. Não existe `package-lock.json`. O tarball está versionado: `vendor/xlsx-0.20.3.tgz`, 2,4 MB.
+- **Evidência**: `npm install` aborta com `TypeError: Cannot read properties of null (reading 'edgesOut')` — medido no contêiner da auditoria, em 2026-11-23 —; o log mostra a resolução parando em `xlsx@file:vendor/xlsx-0.20.3.tgz`. Não existe `package-lock.json`. O tarball está versionado: `vendor/xlsx-0.20.3.tgz`, 2,4 MB.
 - **Causa raiz**: dependência vendorizada por caminho de arquivo (provavelmente para fugir das versões vulneráveis de `xlsx` no npm) combinada com um bug de resolução do npm.
-- **Impacto no negócio**: qualquer ambiente, pessoa ou ferramenta que use `npm` não consegue montar o projeto. Prende o time a um único gerenciador, sem isso estar escrito em lugar nenhum.
-- **Caminho de correção**: etapa 031 (documentar a exigência e travar `packageManager`), não trocar a vendorização.
+- **Divergência na documentação**: o gerenciador está declarado em dois lugares e de dois jeitos — `docs/agentes/mapa-repo.md:40` afirma "Bun é o gerenciador (`bun.lock`; sem `package-lock.json`)", enquanto `README.md:24` ainda instrui `npm install # ou: bun install`. `package.json` não tem campo `packageManager`, então nada no repositório impõe a escolha.
+- **Impacto no negócio**: qualquer ambiente, pessoa ou ferramenta que siga o `README` e use `npm` não consegue montar o projeto. Prende o time a um único gerenciador, sem isso estar escrito em um só lugar.
+- **Caminho de correção**: etapa 031 — alinhar `README.md` e `docs/agentes/mapa-repo.md` na mesma instrução e travar o gerenciador com `packageManager`; **não** trocar a vendorização. A conclusão sobre `npm` vale para o ambiente testado (contêiner da auditoria), não para qualquer máquina.
 
 ---
 
@@ -118,18 +119,21 @@
 
 - **Camada**: banco de dados / segurança · **Severidade**: Média · **Confiança**: confirmado · **Modo**: EXECUTADO
 - **Evidência**: entre as **170** funções `SECURITY DEFINER` de `public`, exatamente uma tem `proconfig IS NULL`: `gerar_lancamento_contabil_automatico()`. As outras 169 fixam `search_path`.
-- **Causa raiz**: a função ficou de fora do lote em que o `search_path` foi padronizado.
-- **Impacto no negócio**: função que roda com privilégio de dono e resolve nomes de tabela pelo caminho de busca de quem chama — abre espaço para desviar a contabilização automática para outro objeto.
+- **Divergência com a cadeia de migrations (registrada)**: a função **não existe** numa base recriada do zero a partir de `supabase/migrations`. `20261027120000_transferencias_movimentacao_bilateral.sql:375` ainda a recria, mas `20261112023354_contabilizacao_automatica_movimentacoes.sql:148-149` dropa o gatilho `trigger_gerar_contabilidade` e depois a própria função (`DROP FUNCTION IF EXISTS public.gerar_lancamento_contabil_automatico()`). Ou seja: produção tem um objeto que a cadeia versionada remove — é drift, não uma função esquecida no lote de `search_path`.
+- **Causa raiz**: as duas coisas somadas — a função ficou fora do lote em que o `search_path` foi padronizado e o `DROP` da migração de contabilização não foi aplicado em produção.
+- **Impacto no negócio**: função que roda com privilégio de dono e resolve nomes de tabela pelo caminho de busca de quem chama — abre espaço para desviar a contabilização automática para outro objeto. Se o gatilho antigo ainda existir em produção, ele continua disparando esse código.
 - **Precisa de aprovação humana**: sim (DDL em produção).
-- **Caminho de correção**: etapa 032.
+- **Caminho de correção**: etapa 032 — antes de qualquer `DROP` em produção, conferir `pg_trigger` (se `trigger_gerar_contabilidade` ainda existe e aponta para a função) e só então decidir entre dropar os dois ou fixar `search_path` na função enquanto ela existir.
 
 ### ACH-DB-09 · View materializada fora do controle de acesso
 
-- **Camada**: banco de dados / segurança · **Severidade**: Média · **Confiança**: confirmado · **Modo**: EXECUTADO
+- **Camada**: banco de dados / segurança · **Severidade**: Média · **Confiança**: hipótese (o `GRANT` efetivo em produção não foi medido) · **Modo**: EXECUTADO
 - **Evidência**: `mv_performance_alerts_weekly` é a única relação de `public` do tipo view sem `security_invoker` ("NÃO DEFINIDO"); as outras 17 views têm `security_invoker` `on`/`true`. É atualizada pelo cron `refresh-performance-alerts-weekly` (domingos, 1h).
+- **O que já está versionado**: o acesso direto foi revogado duas vezes — na criação (`20260712194623_...:48-49`) e no hardening (`20260827101000_hardening_views_pii_rpcs.sql:51-58`), que faz `REVOKE ALL ... FROM PUBLIC, anon, authenticated` e `GRANT SELECT ... TO service_role`. Nenhuma migration posterior devolve `SELECT` para `anon`/`authenticated` (conferido varrendo as migrations que citam a view).
 - **Causa raiz**: view materializada não aceita `security_invoker` no Postgres — por isso consulta a tabela base com o privilégio do dono, **ignorando a RLS**. A proteção, aqui, só pode vir do `GRANT`.
+- **O que falta medir**: os privilégios **efetivos** em produção (`information_schema.role_table_grants` para `anon`/`authenticated`, e `pg_class.relacl`). O inventário leu o catálogo de produção para views e colunas, mas não mediu o `relacl` desta relação; por isso o achado fica como "a confirmar" em vez de "confirmado".
 - **Impacto no negócio**: se o papel do navegador tiver permissão de leitura nessa view, ela entrega dados agregados sem passar pelo filtro de empresa.
-- **Caminho de correção**: etapa 033 (conferir o `GRANT` e, se preciso, revogar e expor por função com checagem).
+- **Caminho de correção**: etapa 033 — rodar a consulta de `relacl`/`role_table_grants` em produção; se o `GRANT` já estiver restrito a `service_role`, fechar o achado como "mitigado por privilégio", sem DDL.
 
 ### ACH-DB-10 · Cinco chaves estrangeiras sem índice
 
