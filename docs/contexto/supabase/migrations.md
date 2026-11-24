@@ -1071,3 +1071,5 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261122023600 | [corrige_unicidade_catalogo_aliquota_referencia](migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql) | 1 |
 | 20261122023700 | [corrige_pk_catalogo_ncm_nbs_vigencia](migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql) | 1 |
 | 20261122040000 | [corrige_trigger_totais_ibscbs_so_header](migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql) | 0 |
+| 20261122123557 | [rpc_registrar_nfe_propaga_origem_credito](migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql) | 2 |
+| 20261122130000 | [sefaz_batch_grava_grupo_ibscbs](migrations/20261122130000_sefaz_batch_grava_grupo_ibscbs.sql) | 1 |

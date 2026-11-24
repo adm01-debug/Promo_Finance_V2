@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 5 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -107,16 +107,6 @@
 | roles | authenticated |
 | USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role, 'operacional'::app_role, 'visualizador'::app_role]) AND empresa_acessivel(empresa_id))` |
 | WITH CHECK |  |
-
-### `oportunidades_elisao_acesso`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `empresa_acessivel(empresa_id)` |
-| WITH CHECK | `empresa_acessivel(empresa_id)` |
 
 
 ## Triggers

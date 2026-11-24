@@ -25,7 +25,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.api_keys](tables/public/api_keys.md) | table | sim | 2 | 17 | não |  |
 | [public.aprovacao_assinaturas](tables/public/aprovacao_assinaturas.md) | table | sim | 2 | 4 | não |  |
 | [public.aprovacao_comentarios](tables/public/aprovacao_comentarios.md) | table | sim | 2 | 5 | não |  |
-| [public.apuracoes_irpj_csll](tables/public/apuracoes_irpj_csll.md) | table | sim | 5 | 52 | não |  |
+| [public.apuracoes_irpj_csll](tables/public/apuracoes_irpj_csll.md) | table | sim | 4 | 52 | não |  |
 | [public.apuracoes_tributarias](tables/public/apuracoes_tributarias.md) | table | sim | 6 | 40 | não |  |
 | [public.asaas_audit_trail](tables/public/asaas_audit_trail.md) | table | sim | 3 | 9 | não |  |
 | [public.asaas_config](tables/public/asaas_config.md) | table | sim | 8 | 9 | não |  |
@@ -81,7 +81,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.contratos](tables/public/contratos.md) | table | sim | 1 | 18 | não |  |
 | [public.convites](tables/public/convites.md) | table | sim | 1 | 9 | não |  |
 | [public.convites_contador](tables/public/convites_contador.md) | table | sim | 2 | 13 | não |  |
-| [public.creditos_tributarios](tables/public/creditos_tributarios.md) | table | sim | 5 | 26 | não |  |
+| [public.creditos_tributarios](tables/public/creditos_tributarios.md) | table | sim | 4 | 26 | não |  |
 | [public.cron_job_logs](tables/public/cron_job_logs.md) | table | sim | 1 | 9 | não |  |
 | [public.custom_field_definitions](tables/public/custom_field_definitions.md) | table | sim | 1 | 12 | não |  |
 | [public.custom_field_values](tables/public/custom_field_values.md) | table | sim | 1 | 6 | não |  |
@@ -91,7 +91,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.divergencias_conciliacao](tables/public/divergencias_conciliacao.md) | table | sim | 1 | 16 | não |  |
 | [public.edge_function_logs](tables/public/edge_function_logs.md) | table | sim | 1 | 10 | não |  |
 | [public.elisao_alertas](tables/public/elisao_alertas.md) | table | sim | 1 | 16 | não |  |
-| [public.elisao_creditos_auditoria](tables/public/elisao_creditos_auditoria.md) | table | sim | 4 | 21 | não |  |
+| [public.elisao_creditos_auditoria](tables/public/elisao_creditos_auditoria.md) | table | sim | 3 | 21 | não |  |
 | [public.elisao_regras_creditos](tables/public/elisao_regras_creditos.md) | table | sim | 3 | 15 | não |  |
 | [public.elisao_simulacoes_regime](tables/public/elisao_simulacoes_regime.md) | table | sim | 2 | 13 | não |  |
 | [public.elisao_tarefas_acionaveis](tables/public/elisao_tarefas_acionaveis.md) | table | sim | 2 | 18 | não |  |
@@ -142,7 +142,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.historico_conciliacao_ia](tables/public/historico_conciliacao_ia.md) | table | sim | 2 | 17 | não |  |
 | [public.historico_relatorios](tables/public/historico_relatorios.md) | table | sim | 1 | 7 | não |  |
 | [public.historico_score_saude](tables/public/historico_score_saude.md) | table | sim | 2 | 6 | não |  |
-| [public.incentivos_fiscais](tables/public/incentivos_fiscais.md) | table | sim | 6 | 15 | não |  |
+| [public.incentivos_fiscais](tables/public/incentivos_fiscais.md) | table | sim | 4 | 15 | não |  |
 | [public.index_usage_snapshots](tables/public/index_usage_snapshots.md) | table | sim | 1 | 14 | não |  |
 | [public.indices_uso_excecoes](tables/public/indices_uso_excecoes.md) | table | sim | 1 | 7 | não |  |
 | [public.integration_secrets](tables/public/integration_secrets.md) | table | sim | 1 | 8 | não |  |
@@ -172,7 +172,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.open_finance_consents](tables/public/open_finance_consents.md) | table | sim | 1 | 9 | não |  |
 | [public.operacoes_icms](tables/public/operacoes_icms.md) | table | sim | 1 | 26 | não |  |
 | [public.operacoes_tributaveis](tables/public/operacoes_tributaveis.md) | table | sim | 5 | 54 | não |  |
-| [public.oportunidades_elisao](tables/public/oportunidades_elisao.md) | table | sim | 5 | 29 | não |  |
+| [public.oportunidades_elisao](tables/public/oportunidades_elisao.md) | table | sim | 4 | 29 | não |  |
 | [public.organizacao_membros](tables/public/organizacao_membros.md) | table | sim | 2 | 9 | não |  |
 | [public.organizacoes](tables/public/organizacoes.md) | table | sim | 4 | 12 | não |  |
 | [public.overlay_rejeicoes_auditoria](tables/public/overlay_rejeicoes_auditoria.md) | table | sim | 4 | 24 | não |  |
@@ -182,7 +182,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.password_reset_requests](tables/public/password_reset_requests.md) | table | sim | 3 | 15 | não |  |
 | [public.password_reset_tokens](tables/public/password_reset_tokens.md) | table | sim | 3 | 7 | não |  |
 | [public.pedidos_compra](tables/public/pedidos_compra.md) | table | sim | 2 | 11 | não |  |
-| [public.per_dcomp](tables/public/per_dcomp.md) | table | sim | 5 | 25 | não |  |
+| [public.per_dcomp](tables/public/per_dcomp.md) | table | sim | 4 | 25 | não |  |
 | [public.performance_alerts](tables/public/performance_alerts.md) | table | sim | 1 | 15 | sim |  |
 | [public.permissions](tables/public/permissions.md) | table | sim | 4 | 6 | não |  |
 | [public.pg_stat_statements_baseline](tables/public/pg_stat_statements_baseline.md) | table | sim | 1 | 13 | não |  |
@@ -203,7 +203,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.rate_limit_logs](tables/public/rate_limit_logs.md) | table | sim | 2 | 11 | não |  |
 | [public.recomendacoes_metas_ia](tables/public/recomendacoes_metas_ia.md) | table | sim | 2 | 8 | não |  |
 | [public.regime_decision_cache](tables/public/regime_decision_cache.md) | table | sim | 1 | 8 | não |  |
-| [public.regimes_especiais_empresa](tables/public/regimes_especiais_empresa.md) | table | sim | 5 | 8 | não |  |
+| [public.regimes_especiais_empresa](tables/public/regimes_especiais_empresa.md) | table | sim | 4 | 8 | não |  |
 | [public.regimes_simulados](tables/public/regimes_simulados.md) | table | sim | 4 | 19 | não |  |
 | [public.regimes_tributarios](tables/public/regimes_tributarios.md) | table | sim | 1 | 8 | não |  |
 | [public.regras_conciliacao](tables/public/regras_conciliacao.md) | table | sim | 1 | 16 | não |  |
@@ -217,7 +217,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.relatorios_tributarios_agendados](tables/public/relatorios_tributarios_agendados.md) | table | sim | 6 | 12 | não |  |
 | [public.resumos_executivos_semanais](tables/public/resumos_executivos_semanais.md) | table | sim | 1 | 10 | não |  |
 | [public.retencao_politicas](tables/public/retencao_politicas.md) | table | sim | 1 | 9 | não |  |
-| [public.retencoes_fonte](tables/public/retencoes_fonte.md) | table | sim | 5 | 25 | não |  |
+| [public.retencoes_fonte](tables/public/retencoes_fonte.md) | table | sim | 4 | 25 | não |  |
 | [public.risk_rules](tables/public/risk_rules.md) | table | sim | 4 | 9 | não |  |
 | [public.role_permissions](tables/public/role_permissions.md) | table | sim | 5 | 4 | não |  |
 | [public.rpc_observability_metrics](tables/public/rpc_observability_metrics.md) | table | sim | 1 | 10 | não |  |

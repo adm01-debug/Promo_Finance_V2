@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 4 |
+| policies | 3 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -62,16 +62,6 @@
 
 
 ## Policies (RLS)
-
-### `Users can manage company audit logs`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | public |
-| USING | `empresa_acessivel(empresa_id)` |
-| WITH CHECK |  |
 
 ### `creditos_auditoria_delete_admin`
 

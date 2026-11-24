@@ -6,7 +6,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 6 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -100,26 +100,6 @@
 | roles | authenticated |
 | USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
 | WITH CHECK |  |
-
-### `admins_all_incentivos_fiscais`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `(((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() ->> 'role'::text) = 'authenticated'::text) AND ((( SELECT auth.uid() AS uid))::text = (empresa_id)::text)))` |
-| WITH CHECK |  |
-
-### `incentivos_fiscais_acesso`
-
-| campo | valor |
-|---|---|
-| comando | ALL |
-| tipo | PERMISSIVE |
-| roles | authenticated |
-| USING | `empresa_acessivel(empresa_id)` |
-| WITH CHECK | `empresa_acessivel(empresa_id)` |
 
 
 ## Triggers

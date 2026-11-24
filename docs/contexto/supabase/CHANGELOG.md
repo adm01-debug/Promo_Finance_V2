@@ -2,6 +2,15 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-24 00:34 UTC
+
+- **functions** alterado (8): `public.claim_silenciamentos_digest(p_horas integer, p_min_intervalo_horas integer)`, `public.empresa_acessivel(_empresa_id uuid)`, `public.escalate_stale_integrity_alerts(p_age interval)`, `public.has_any_role(_user_id uuid, _roles app_role[])`, `public.has_role(_user_id uuid, _role app_role)`, `public.registrar_auditoria_config(_tipo_acao text, _empresa_id uuid, _detalhes jsonb)`, `public.registrar_nfe_com_creditos(p_empresa_id uuid, p_nota jsonb, p_creditos jsonb)`, `public.sefaz_process_batch(p_cnpj text, p_ambiente text, p_empresa_id uuid, p_novo_nsu bigint, p_max_nsu bigint, p_status text, p_erro text, p_docs jsonb)`
+- **migrations** adicionado (2): `20261122123557_rpc_registrar_nfe_propaga_origem_credito`, `20261122130000_sefaz_batch_grava_grupo_ibscbs`
+- **policies (RLS)** adicionado (1): `public.relatorios_tributarios_agendados.rel_trib_agend_member_select`
+- **policies (RLS)** removido (10): `public.apuracoes_irpj_csll.Empresa-based access`, `public.creditos_tributarios.Access by empresa_id`, `public.elisao_creditos_auditoria.Users can manage company audit logs`, `public.incentivos_fiscais.admins_all_incentivos_fiscais`, `public.incentivos_fiscais.incentivos_fiscais_acesso`, `public.oportunidades_elisao.oportunidades_elisao_acesso`, `public.per_dcomp.per_dcomp_acesso`, `public.regimes_especiais_empresa.Access by empresa_id`, `public.relatorios_tributarios_agendados.rel_trib_agend_all`, `public.retencoes_fonte.Empresa-based access`
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_27`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_20`
+
 ## 2026-11-23 23:16 UTC
 
 - **functions** alterado (16): `public.close_stale_integrity_alerts()`, `public.close_stale_integrity_alerts(p_hour timestamp with time zone, p_domains text[], p_grace interval)`, `public.cnpja_check_rate_limit(_user_id uuid, _max integer, _window_minutes integer)`, `public.confirmar_envio_cobranca(p_fila_id uuid, p_provider text, p_provider_message_id text, p_sucesso boolean, p_erro text)`, `public.fn_notificar_alerta_critico_push()`, `public.fn_saldo_movimentacao()`, `public.fn_sync_valor_pago_movimentacao()`, `public.fn_transferencia_movimentacao()`, `public.gerar_alertas_vencimento()`, `public.gerar_lancamento_contabil_automatico()`, `public.get_active_uapi_token()`, `public.get_lockout_details(_email text)`, `public.has_any_role(_user_id uuid, _roles app_role[])`, `public.has_role(_user_id uuid, _role app_role)`, `public.increment_failed_attempts(_email text)`, `public.trigger_whatsapp_ai_analysis()`

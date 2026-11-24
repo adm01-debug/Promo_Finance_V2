@@ -81,15 +81,15 @@
 | USING | `((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))` |
 | WITH CHECK | `((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))` |
 
-### `rel_trib_agend_all`
+### `rel_trib_agend_member_select`
 
 | campo | valor |
 |---|---|
-| comando | ALL |
+| comando | SELECT |
 | tipo | PERMISSIVE |
 | roles | authenticated |
 | USING | `empresa_acessivel(empresa_id)` |
-| WITH CHECK | `empresa_acessivel(empresa_id)` |
+| WITH CHECK |  |
 
 ### `relatorios_tributarios_agendados_all_admin`
 

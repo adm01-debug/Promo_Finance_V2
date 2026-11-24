@@ -302,7 +302,7 @@
         "is_default": true,
         "name": "main",
         "persistent": false,
-        "status": "FUNCTIONS_DEPLOYED"
+        "status": "MIGRATIONS_FAILED"
       }
     ],
     "custom_hostname": null,
@@ -69081,7 +69081,7 @@
         ],
         "definition": null,
         "definition_sha": "85774e164fa12d0e",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -70430,7 +70430,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 62,
+          "code_total_files": 65,
           "cron": [],
           "db": [
             "public.certificado_get_password",
@@ -70447,6 +70447,7 @@
             "public.nfe_suggest_contas_pagar",
             "public.nfe_unlink_conta_pagar",
             "public.processar_regua_cobranca",
+            "public.registrar_auditoria_config",
             "public.registrar_evento_pagar",
             "public.registrar_evento_receber",
             "public.registrar_nfe_com_creditos"
@@ -70821,7 +70822,7 @@
         ],
         "definition": null,
         "definition_sha": "091d9ac211720e35",
-        "execute_api_roles": "authenticated, service_role",
+        "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
         "kind": "function",
@@ -73533,7 +73534,7 @@
           "search_path=public"
         ],
         "definition": null,
-        "definition_sha": "232ad1511a41d573",
+        "definition_sha": "bc9daf61858f5423",
         "execute_api_roles": "authenticated, service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -73708,7 +73709,7 @@
               "hits": 6
             }
           ],
-          "code_total_files": 196,
+          "code_total_files": 197,
           "cron": [],
           "db": [
             "public.auditar_acessos_cross_tenant",
@@ -73747,6 +73748,7 @@
             "public.monitor_table_bloat",
             "public.prevent_profile_privilege_escalation",
             "public.refresh_performance_alerts_weekly",
+            "public.registrar_auditoria_config",
             "public.reprocess_dlq",
             "public.resolve_integrity_alert",
             "public.run_observability_rpc",
@@ -73764,7 +73766,7 @@
           "search_path=public"
         ],
         "definition": null,
-        "definition_sha": "c66deaab622bd10c",
+        "definition_sha": "fbf680eb418a7dbf",
         "execute_api_roles": "authenticated, service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -76107,7 +76109,7 @@
           "search_path=public, pg_catalog"
         ],
         "definition": null,
-        "definition_sha": "e179640be1038132",
+        "definition_sha": "1bfd649c37018fe2",
         "execute_api_roles": "authenticated, service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -76344,12 +76346,12 @@
           "triggers": [],
           "views": []
         },
-        "comment": "Grava a NF-e e seus créditos CBS/IBS na mesma transação (Etapa 21). Sem crédito não há nota: elimina o delete compensatório do cliente.",
+        "comment": "Cria a nota e seus creditos atomicamente. Propaga origem, efeito_tributario e ano_fato_gerador de cada credito (etapa 43).",
         "config": [
           "search_path=public, pg_catalog"
         ],
         "definition": null,
-        "definition_sha": "0fa451cc063a04bd",
+        "definition_sha": "9ea897fbc52015e7",
         "execute_api_roles": "authenticated, service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -76930,7 +76932,7 @@
           "search_path=public"
         ],
         "definition": null,
-        "definition_sha": "3710b3197cd51ec7",
+        "definition_sha": "1911840637802748",
         "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -99874,6 +99876,18 @@
         "name": "corrige_trigger_totais_ibscbs_so_header",
         "statements": null,
         "version": "20261122040000"
+      },
+      {
+        "name": "rpc_registrar_nfe_propaga_origem_credito",
+        "statements": 2,
+        "statements_sha": "31b1206f986d041b",
+        "version": "20261122123557"
+      },
+      {
+        "name": "sefaz_batch_grava_grupo_ibscbs",
+        "statements": 1,
+        "statements_sha": "dee0feb578bd918c",
+        "version": "20261122130000"
       }
     ],
     "policies": [
@@ -100451,18 +100465,6 @@
         "schema": "public",
         "table": "apuracoes_irpj_csll",
         "using": "(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))",
-        "with_check": null
-      },
-      {
-        "cmd": "ALL",
-        "name": "Empresa-based access",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "apuracoes_irpj_csll",
-        "using": "((empresa_id IN ( SELECT user_empresas.empresa_id\n   FROM user_empresas\n  WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1\n   FROM user_roles\n  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))",
         "with_check": null
       },
       {
@@ -102074,18 +102076,6 @@
         "with_check": null
       },
       {
-        "cmd": "ALL",
-        "name": "Access by empresa_id",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "creditos_tributarios",
-        "using": "((empresa_id IN ( SELECT user_empresas.empresa_id\n   FROM user_empresas\n  WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1\n   FROM user_roles\n  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))",
-        "with_check": null
-      },
-      {
         "cmd": "DELETE",
         "name": "Admin pode deletar creditos_tributarios",
         "permissive": "PERMISSIVE",
@@ -102300,18 +102290,6 @@
         "table": "elisao_alertas",
         "using": "empresa_acessivel(empresa_id)",
         "with_check": "empresa_acessivel(empresa_id)"
-      },
-      {
-        "cmd": "ALL",
-        "name": "Users can manage company audit logs",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "public"
-        ],
-        "schema": "public",
-        "table": "elisao_creditos_auditoria",
-        "using": "empresa_acessivel(empresa_id)",
-        "with_check": null
       },
       {
         "cmd": "DELETE",
@@ -103526,30 +103504,6 @@
         "with_check": null
       },
       {
-        "cmd": "ALL",
-        "name": "admins_all_incentivos_fiscais",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "incentivos_fiscais",
-        "using": "(((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() ->> 'role'::text) = 'authenticated'::text) AND ((( SELECT auth.uid() AS uid))::text = (empresa_id)::text)))",
-        "with_check": null
-      },
-      {
-        "cmd": "ALL",
-        "name": "incentivos_fiscais_acesso",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "incentivos_fiscais",
-        "using": "empresa_acessivel(empresa_id)",
-        "with_check": "empresa_acessivel(empresa_id)"
-      },
-      {
         "cmd": "SELECT",
         "name": "Somente admins leem snapshots de índices",
         "permissive": "PERMISSIVE",
@@ -104284,18 +104238,6 @@
       },
       {
         "cmd": "ALL",
-        "name": "oportunidades_elisao_acesso",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "oportunidades_elisao",
-        "using": "empresa_acessivel(empresa_id)",
-        "with_check": "empresa_acessivel(empresa_id)"
-      },
-      {
-        "cmd": "ALL",
         "name": "org_membros_manage_responsavel",
         "permissive": "PERMISSIVE",
         "roles": [
@@ -104689,18 +104631,6 @@
         "table": "per_dcomp",
         "using": "(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))",
         "with_check": null
-      },
-      {
-        "cmd": "ALL",
-        "name": "per_dcomp_acesso",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "per_dcomp",
-        "using": "empresa_acessivel(empresa_id)",
-        "with_check": "empresa_acessivel(empresa_id)"
       },
       {
         "cmd": "SELECT",
@@ -105207,18 +105137,6 @@
         "with_check": null
       },
       {
-        "cmd": "ALL",
-        "name": "Access by empresa_id",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "regimes_especiais_empresa",
-        "using": "((empresa_id IN ( SELECT user_empresas.empresa_id\n   FROM user_empresas\n  WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1\n   FROM user_roles\n  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))",
-        "with_check": null
-      },
-      {
         "cmd": "DELETE",
         "name": "Admin pode deletar regimes_especiais_empresa",
         "permissive": "PERMISSIVE",
@@ -105543,8 +105461,8 @@
         "with_check": "((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'financeiro'::app_role)) AND empresa_acessivel(empresa_id))"
       },
       {
-        "cmd": "ALL",
-        "name": "rel_trib_agend_all",
+        "cmd": "SELECT",
+        "name": "rel_trib_agend_member_select",
         "permissive": "PERMISSIVE",
         "roles": [
           "authenticated"
@@ -105552,7 +105470,7 @@
         "schema": "public",
         "table": "relatorios_tributarios_agendados",
         "using": "empresa_acessivel(empresa_id)",
-        "with_check": "empresa_acessivel(empresa_id)"
+        "with_check": null
       },
       {
         "cmd": "ALL",
@@ -105612,18 +105530,6 @@
         "schema": "public",
         "table": "retencoes_fonte",
         "using": "(has_role(auth.uid(), 'admin'::app_role) AND empresa_acessivel(empresa_id))",
-        "with_check": null
-      },
-      {
-        "cmd": "ALL",
-        "name": "Empresa-based access",
-        "permissive": "PERMISSIVE",
-        "roles": [
-          "authenticated"
-        ],
-        "schema": "public",
-        "table": "retencoes_fonte",
-        "using": "((empresa_id IN ( SELECT user_empresas.empresa_id\n   FROM user_empresas\n  WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1\n   FROM user_roles\n  WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::app_role)))))",
         "with_check": null
       },
       {
@@ -107372,11 +107278,6 @@
         {
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
-          "table": "messages_2026_11_20"
-        },
-        {
-          "publication": "supabase_realtime_messages_publication",
-          "schema": "realtime",
           "table": "messages_2026_11_21"
         },
         {
@@ -107403,6 +107304,11 @@
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
           "table": "messages_2026_11_26"
+        },
+        {
+          "publication": "supabase_realtime_messages_publication",
+          "schema": "realtime",
+          "table": "messages_2026_11_27"
         }
       ]
     },
