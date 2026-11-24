@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "274d1f75a06fea6b699fabc8bc857bf9fd3e20f1",
+  "commit": "8b0db85ff65262703bc7dd021a285e62a5b28c71",
   "branch": "main",
-  "data_commit": "2026-11-24T14:47:22-03:00",
+  "data_commit": "2026-11-24T15:41:07-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8b0db85",
+    "data": "2026-11-24",
+    "assunto": "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)"
+   },
    {
     "sha": "274d1f7",
     "data": "2026-11-24",
@@ -126,14 +131,9 @@
     "sha": "2463d97",
     "data": "2026-11-22",
     "assunto": "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS"
-   },
-   {
-    "sha": "7db0fc4",
-    "data": "2026-11-22",
-    "assunto": "infra: grupo IS por item (etapa 34 RT/RFB) (#513)"
    }
   ],
-  "arquivos_mudados_7d": 306,
+  "arquivos_mudados_7d": 303,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -199,15 +199,15 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 33
+    "mudancas": 32
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 31
+    "mudancas": 30
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 17
+    "mudancas": 16
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -238,10 +238,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 7
-   },
-   {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 7
    },
@@ -258,7 +254,7 @@
     "mudancas": 7
    },
    {
-    "arquivo": ".github/workflows/schema-drift.yml",
+    "arquivo": ".github/workflows/prod-migrate.yml",
     "mudancas": 6
    },
    {
@@ -276,6 +272,10 @@
    {
     "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 6
+   },
+   {
+    "arquivo": ".github/workflows/schema-drift.yml",
+    "mudancas": 5
    },
    {
     "arquivo": "deno.lock",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 279
+    "commits": 280
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4048,
+  "arquivos_total": 4049,
   "arquivos_codigo": 2521,
   "linhas_codigo": 451039,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 506,
   "workflows": 20,
   "scripts": 116,
-  "docs_md": 229
+  "docs_md": 230
  },
  "por_pasta": {
   "docs/auditoria-20260912": {

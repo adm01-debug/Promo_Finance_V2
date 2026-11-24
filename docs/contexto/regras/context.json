@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "274d1f75a06fea6b699fabc8bc857bf9fd3e20f1",
+  "sha": "8b0db85ff65262703bc7dd021a285e62a5b28c71",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 17:49 UTC",
-  "files_total": 4087,
+  "generated_at": "2026-11-24 19:13 UTC",
+  "files_total": 4088,
   "code_files": 3668,
   "code_lines": 522984
  },
@@ -249228,10 +249228,20 @@
   }
  },
  "git": {
-  "sha": "274d1f75a06fea6b699fabc8bc857bf9fd3e20f1",
+  "sha": "8b0db85ff65262703bc7dd021a285e62a5b28c71",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8b0db85",
+    "date": "2026-11-24",
+    "author": "adm01-debug",
+    "subject": "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)",
+    "files": [
+     "docs/qa/04-PLANO.md",
+     "docs/qa/05-PROGRESSO.md"
+    ]
+   },
    {
     "sha": "274d1f7",
     "date": "2026-11-24",
@@ -249618,19 +249628,6 @@
      "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql",
      "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql"
     ]
-   },
-   {
-    "sha": "77c3f5d",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)",
-    "files": [
-     "scripts/integrity/baseline/expected-policies.json",
-     "scripts/integrity/baseline/schema-counts.json",
-     "scripts/security/test-canonical-db-gates.mjs",
-     "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
-     "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -249647,10 +249644,6 @@
     3
    ],
    [
-    "scripts/integrity/baseline/schema-counts.json",
-    3
-   ],
-   [
     "src/integrations/supabase/types.ts",
     3
    ],
@@ -249659,11 +249652,15 @@
     3
    ],
    [
+    "docs/qa/04-PLANO.md",
+    2
+   ],
+   [
     "src/lib/tributario/catalogos/cclasstrib.ts",
     2
    ],
    [
-    "scripts/integrity/baseline/expected-policies.json",
+    "scripts/integrity/baseline/schema-counts.json",
     2
    ],
    [
@@ -249687,6 +249684,10 @@
     2
    ],
    [
+    "docs/qa/05-PROGRESSO.md",
+    1
+   ],
+   [
     "docs/qa/01-INVENTARIO.md",
     1
    ],
@@ -249696,10 +249697,6 @@
    ],
    [
     "docs/qa/03-ACHADOS.md",
-    1
-   ],
-   [
-    "docs/qa/04-PLANO.md",
     1
    ],
    [
