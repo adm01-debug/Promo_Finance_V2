@@ -352,6 +352,9 @@ test('install preserva ambiente individual válido sem chamar CLI global', async
   await assert.rejects(readFile(f.graph), /ENOENT/);
 });
 
+// Limite declarado: cobre o contrato do reparo (argv exato, lock com hashes, revalidação
+// final pelo runtime()), não o `uv pip sync` real contra o lock do Finance — isso exige
+// baixar do índice PyPI, bloqueado neste ambiente.
 test('install ressincroniza ambiente existente quando o pin muda, mantendo hashes', async (t) => {
   const f = await fixture(t),
     log = path.join(f.dir, 'uv.log');
