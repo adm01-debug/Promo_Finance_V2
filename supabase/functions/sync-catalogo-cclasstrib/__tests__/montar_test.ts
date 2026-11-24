@@ -253,9 +253,7 @@ Deno.test('montarLinhas — presenca preserva a vigencia acima do piso da API', 
     codigo: String(100000 + i),
     descricao: i === 120 ? '' : `Classificacao ${i}`,
   }));
-  const vinculos: SituacaoApi[] = [
-    { codigo: '200', classificacoesTributarias: publicadas },
-  ];
+  const vinculos: SituacaoApi[] = [{ codigo: '200', classificacoesTributarias: publicadas }];
 
   const m = montarLinhas(publicadas, vinculos, 'V0073');
   assertEquals(m.linhas.length, 169);
