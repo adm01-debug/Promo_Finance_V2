@@ -22,7 +22,12 @@
 -- depois deste horario; o trigger de totais (20261122021500) apenas le. Ainda
 -- assim o ALTER nao pode virar fila de bloqueio do app: lock_timeout curto faz
 -- a migration falhar rapido (e o deploy parar) em vez de segurar a tabela.
-SET lock_timeout = '5s';
+-- SET LOCAL dentro da transacao para o limite nao vazar para a conexao do
+-- executor e nao contaminar as migrations seguintes (mesmo padrao de
+-- 20260831153000).
+BEGIN;
+
+SET LOCAL lock_timeout = '5s';
 
 ALTER TABLE public.notas_fiscais_itens
   ALTER COLUMN p_ibs_uf   TYPE numeric(7,6),
@@ -31,3 +36,5 @@ ALTER TABLE public.notas_fiscais_itens
   ALTER COLUMN p_red_aliq TYPE numeric(7,6),
   ALTER COLUMN p_aliq_efet TYPE numeric(7,6),
   ALTER COLUMN p_is       TYPE numeric(7,6);
+
+COMMIT;
