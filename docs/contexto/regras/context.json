@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "45de89c0cee878b90980eca622d52303de00bedc",
+  "sha": "0f6d93666853e86cdf35b9b2d1009489da2d1822",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 21:14 UTC",
+  "generated_at": "2026-11-24 22:14 UTC",
   "files_total": 4088,
   "code_files": 3668,
   "code_lines": 522984
@@ -249228,10 +249228,20 @@
   }
  },
  "git": {
-  "sha": "45de89c0cee878b90980eca622d52303de00bedc",
+  "sha": "0f6d93666853e86cdf35b9b2d1009489da2d1822",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "0f6d936",
+    "date": "2026-11-24",
+    "author": "adm01-debug",
+    "subject": "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)",
+    "files": [
+     "docs/ci/README.md",
+     "docs/ci/kpi.json"
+    ]
+   },
    {
     "sha": "45de89c",
     "date": "2026-11-24",
@@ -249618,17 +249628,6 @@
     "files": [
      "supabase/migrations/20261122022000_creditos_origem_efeito_tributario.sql"
     ]
-   },
-   {
-    "sha": "e76f879",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)",
-    "files": [
-     "supabase/migrations/20261122020000_cria_notas_fiscais_itens.sql",
-     "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
-     "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -249651,6 +249650,14 @@
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
+   ],
+   [
+    "docs/ci/README.md",
+    2
+   ],
+   [
+    "docs/ci/kpi.json",
+    2
    ],
    [
     "docs/qa/04-PLANO.md",
@@ -249686,14 +249693,6 @@
    ],
    [
     "docs/ci/MATRIZ_EDGE_TABELA.md",
-    1
-   ],
-   [
-    "docs/ci/README.md",
-    1
-   ],
-   [
-    "docs/ci/kpi.json",
     1
    ],
    [

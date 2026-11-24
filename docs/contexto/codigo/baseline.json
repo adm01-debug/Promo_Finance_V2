@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "45de89c0cee878b90980eca622d52303de00bedc",
+  "commit": "0f6d93666853e86cdf35b9b2d1009489da2d1822",
   "branch": "main",
-  "data_commit": "2026-11-24T18:13:35-03:00",
+  "data_commit": "2026-11-24T18:53:01-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0f6d936",
+    "data": "2026-11-24",
+    "assunto": "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)"
+   },
    {
     "sha": "45de89c",
     "data": "2026-11-24",
@@ -126,14 +131,9 @@
     "sha": "4d50a6f",
     "data": "2026-11-22",
     "assunto": "infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)"
-   },
-   {
-    "sha": "81d3613",
-    "data": "2026-11-22",
-    "assunto": "feat: regimes especiais LC 214/2025 — etapas 15-16"
    }
   ],
-  "arquivos_mudados_7d": 272,
+  "arquivos_mudados_7d": 266,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -242,6 +242,10 @@
     "mudancas": 7
    },
    {
+    "arquivo": "docs/ci/README.md",
+    "mudancas": 7
+   },
+   {
     "arquivo": "scripts/integrity/baseline/schema-counts.json",
     "mudancas": 7
    },
@@ -255,10 +259,6 @@
    },
    {
     "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "docs/ci/README.md",
     "mudancas": 6
    },
    {
@@ -282,10 +282,6 @@
     "mudancas": 5
    },
    {
-    "arquivo": "deno.lock",
-    "mudancas": 5
-   },
-   {
     "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
     "mudancas": 5
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": "scripts/integrity/baseline/expected-policies.json",
     "mudancas": 5
+   },
+   {
+    "arquivo": "scripts/security/test-migration-replay-safety.sh",
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 281
+    "commits": 282
    },
    {
     "autor": "dependabot[bot]",

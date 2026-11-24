@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `45de89c0cee878b90980eca622d52303de00bedc` (2026-11-24T18:13:35-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0f6d93666853e86cdf35b9b2d1009489da2d1822` (2026-11-24T18:53:01-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -474,10 +474,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - scripts/automation.config.json (8)
 - src/integrations/supabase/types.ts (8)
 - analise-prs/RELATORIO_PRS.md (7)
+- docs/ci/README.md (7)
 - scripts/integrity/baseline/schema-counts.json (7)
 - scripts/security/test-canonical-db-gates.mjs (7)
 - supabase/functions/n8n-callback/index.ts (7)
-- .github/workflows/prod-migrate.yml (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -638,6 +638,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-24 `0f6d936` fix(docs): regenera README de CI a partir do kpi.json vigente (#553)
 - 2026-11-24 `45de89c` chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)
 - 2026-11-24 `8b0db85` docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)
 - 2026-11-24 `274d1f7` chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)
@@ -652,7 +653,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-23 `6a46049` feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)
 - 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
 - 2026-11-22 `f423b99` chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)
-- 2026-11-22 `60ece16` fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
