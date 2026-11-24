@@ -1,1 +1,150 @@
-[{"jobname": "auditar-acessos-cross-tenant", "schedule": "10 * * * *"}, {"jobname": "capture-index-usage-daily", "schedule": "20 4 * * *"}, {"jobname": "capture-slow-queries", "schedule": "0 * * * *"}, {"jobname": "cleanup-cron-logs", "schedule": "0 4 * * 0"}, {"jobname": "cleanup-expired-tokens", "schedule": "0 1 * * *"}, {"jobname": "cleanup-login-attempts", "schedule": "30 1 * * *"}, {"jobname": "cleanup-rpc-obs-metrics-daily", "schedule": "0 5 * * *"}, {"jobname": "cron-failure-watch", "schedule": "10 * * * *"}, {"jobname": "daily-log-cleanup", "schedule": "0 6 * * *"}, {"jobname": "daily-log-retention", "schedule": "0 3 * * *"}, {"jobname": "detect-query-regressions-5min", "schedule": "*/30 * * * *"}, {"jobname": "digest-silenciamentos-erro", "schedule": "0 11 * * 1"}, {"jobname": "enviar-digest-conformidade-diario", "schedule": "0 8 * * *"}, {"jobname": "enviar-digest-conformidade-horario", "schedule": "30 * * * *"}, {"jobname": "executar-regua-cobranca-diaria", "schedule": "0 12 * * *"}, {"jobname": "gerar-alertas-vencimento-diario", "schedule": "0 8 * * *"}, {"jobname": "gerar-contas-recorrentes-diario", "schedule": "35 3 * * *"}, {"jobname": "gerar-snapshots-conformidade-mensal", "schedule": "0 4 5 * *"}, {"jobname": "integrity-invariants-hourly", "schedule": "45 * * * *"}, {"jobname": "maintain-monthly-partitions", "schedule": "0 0 1 * *"}, {"jobname": "marcar-contas-vencidas", "schedule": "5 3 * * *"}, {"jobname": "monitor-health-check", "schedule": "*/30 * * * *"}, {"jobname": "monitor-table-bloat-daily", "schedule": "0 2 * * *"}, {"jobname": "monitorar-erros-frontend", "schedule": "*/30 * * * *"}, {"jobname": "pgss-baseline-cleanup", "schedule": "0 23 * * 0"}, {"jobname": "pgss-weekly-baseline", "schedule": "0 4 * * 0"}, {"jobname": "processar-regua-cobranca-diario", "schedule": "0 9 * * *"}, {"jobname": "recarregar-seeds-fiscais-diario", "schedule": "0 0 * * *"}, {"jobname": "refresh-performance-alerts-weekly", "schedule": "0 1 * * 0"}, {"jobname": "sefaz-dfe-dispatcher-15min", "schedule": "*/15 * * * *"}, {"jobname": "sefaz-observability-hourly", "schedule": "15 * * * *"}, {"jobname": "snapshot-table-bloat-daily", "schedule": "30 2 * * *"}, {"jobname": "webhook-retry-worker-1min", "schedule": "* * * * *"}]
+[
+  {
+    "jobname": "auditar-acessos-cross-tenant",
+    "schedule": "10 * * * *"
+  },
+  {
+    "jobname": "capture-index-usage-daily",
+    "schedule": "20 4 * * *"
+  },
+  {
+    "jobname": "capture-slow-queries",
+    "schedule": "0 * * * *"
+  },
+  {
+    "jobname": "cleanup-cron-logs",
+    "schedule": "0 4 * * 0"
+  },
+  {
+    "jobname": "cleanup-expired-tokens",
+    "schedule": "0 1 * * *"
+  },
+  {
+    "jobname": "cleanup-login-attempts",
+    "schedule": "30 1 * * *"
+  },
+  {
+    "jobname": "cleanup-rpc-obs-metrics-daily",
+    "schedule": "0 5 * * *"
+  },
+  {
+    "jobname": "cron-failure-watch",
+    "schedule": "10 * * * *"
+  },
+  {
+    "jobname": "daily-log-cleanup",
+    "schedule": "0 6 * * *"
+  },
+  {
+    "jobname": "daily-log-retention",
+    "schedule": "0 3 * * *"
+  },
+  {
+    "jobname": "detect-query-regressions-5min",
+    "schedule": "*/30 * * * *"
+  },
+  {
+    "jobname": "digest-silenciamentos-erro",
+    "schedule": "0 11 * * 1"
+  },
+  {
+    "jobname": "enviar-digest-conformidade-diario",
+    "schedule": "0 8 * * *"
+  },
+  {
+    "jobname": "enviar-digest-conformidade-horario",
+    "schedule": "30 * * * *"
+  },
+  {
+    "jobname": "executar-regua-cobranca-diaria",
+    "schedule": "0 12 * * *"
+  },
+  {
+    "jobname": "gerar-alertas-vencimento-diario",
+    "schedule": "0 8 * * *"
+  },
+  {
+    "jobname": "gerar-contas-recorrentes-diario",
+    "schedule": "35 3 * * *"
+  },
+  {
+    "jobname": "gerar-snapshots-conformidade-mensal",
+    "schedule": "0 4 5 * *"
+  },
+  {
+    "jobname": "integrity-invariants-hourly",
+    "schedule": "45 * * * *"
+  },
+  {
+    "jobname": "maintain-monthly-partitions",
+    "schedule": "0 0 1 * *"
+  },
+  {
+    "jobname": "marcar-contas-vencidas",
+    "schedule": "5 3 * * *"
+  },
+  {
+    "jobname": "monitor-health-check",
+    "schedule": "*/30 * * * *"
+  },
+  {
+    "jobname": "monitor-table-bloat-daily",
+    "schedule": "0 2 * * *"
+  },
+  {
+    "jobname": "monitorar-erros-frontend",
+    "schedule": "*/30 * * * *"
+  },
+  {
+    "jobname": "pgss_baseline_cleanup",
+    "schedule": "0 4 1 * *"
+  },
+  {
+    "jobname": "pgss_weekly_baseline",
+    "schedule": "0 3 * * 0"
+  },
+  {
+    "jobname": "pgss-baseline-cleanup",
+    "schedule": "0 23 * * 0"
+  },
+  {
+    "jobname": "pgss-weekly-baseline",
+    "schedule": "0 4 * * 0"
+  },
+  {
+    "jobname": "processar-regua-cobranca-diario",
+    "schedule": "0 9 * * *"
+  },
+  {
+    "jobname": "recarregar-seeds-fiscais-diario",
+    "schedule": "0 0 * * *"
+  },
+  {
+    "jobname": "refresh-benchmark-setorial-weekly",
+    "schedule": "0 3 * * 0"
+  },
+  {
+    "jobname": "refresh-performance-alerts-weekly",
+    "schedule": "0 1 * * 0"
+  },
+  {
+    "jobname": "reprocessar-creditos-ibscbs",
+    "schedule": "20 * * * *"
+  },
+  {
+    "jobname": "sefaz-dfe-dispatcher-15min",
+    "schedule": "*/15 * * * *"
+  },
+  {
+    "jobname": "sefaz-observability-hourly",
+    "schedule": "15 * * * *"
+  },
+  {
+    "jobname": "snapshot-table-bloat-daily",
+    "schedule": "30 2 * * *"
+  },
+  {
+    "jobname": "webhook-retry-worker-1min",
+    "schedule": "* * * * *"
+  }
+]

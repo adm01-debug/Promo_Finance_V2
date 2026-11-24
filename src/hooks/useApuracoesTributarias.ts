@@ -6,6 +6,53 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toISOLocal } from '@/lib/formatters';
 
+/**
+ * O PostgREST devolve no máximo 1000 linhas por request. Um mês com mais de
+ * 1000 notas tinha os débitos truncados em silêncio, e a apuração saía menor
+ * que o real. Pagina até a última página.
+ */
+async function buscarTodasNotasDoMes(
+  empresaId: string,
+  inicioMes: string,
+  fimMes: string
+): Promise<
+  {
+    v_cbs: number | null;
+    v_ibs: number | null;
+    v_ibs_uf: number | null;
+    v_ibs_mun: number | null;
+    v_is: number | null;
+  }[]
+> {
+  const PAGINA = 1000;
+  const acumulado: {
+    v_cbs: number | null;
+    v_ibs: number | null;
+    v_ibs_uf: number | null;
+    v_ibs_mun: number | null;
+    v_is: number | null;
+  }[] = [];
+
+  for (let offset = 0; ; offset += PAGINA) {
+    const { data, error } = await supabase
+      .from('notas_fiscais')
+      .select('v_cbs, v_ibs, v_ibs_uf, v_ibs_mun, v_is')
+      .eq('empresa_id', empresaId)
+      .gte('data_emissao', inicioMes)
+      .lte('data_emissao', fimMes)
+      .neq('status', 'cancelada')
+      .order('id', { ascending: true })
+      .range(offset, offset + PAGINA - 1);
+
+    if (error) throw error;
+    const lote = data ?? [];
+    acumulado.push(...lote);
+    if (lote.length < PAGINA) break;
+  }
+
+  return acumulado;
+}
+
 export interface ApuracaoTributaria {
   id: string;
   empresa_id: string;
@@ -181,57 +228,61 @@ export function useApuracoesTributarias(empresaId?: string) {
       ano: number;
       mes: number;
     }) => {
-      // Buscar operações do período
+      // Buscar NF-e emitidas do período (débitos = v_cbs + v_ibs da nota)
       const inicioMes = toISOLocal(new Date(ano, mes - 1, 1));
       const fimMes = toISOLocal(new Date(ano, mes, 0));
+      const competenciaMes = `${ano}-${String(mes).padStart(2, '0')}`;
 
+      const notasEmitidas = await buscarTodasNotasDoMes(empresaId, inicioMes, fimMes);
+
+      let cbs_debitos = 0;
+      let ibs_debitos = 0;
+      let is_debitos = 0;
+
+      (notasEmitidas || []).forEach((n) => {
+        cbs_debitos += Number(n.v_cbs) || 0;
+        ibs_debitos += (Number(n.v_ibs_uf) || 0) + (Number(n.v_ibs_mun) || 0);
+        is_debitos += Number(n.v_is) || 0;
+      });
+
+      // Buscar créditos xml_destacado com efeito tributário real (≥ 2027)
+      const { data: creditosApropriados, error: credErr } = await supabase
+        .from('creditos_tributarios')
+        .select('tipo_tributo, valor_credito')
+        .eq('empresa_id', empresaId)
+        .eq('origem', 'xml_destacado')
+        .eq('efeito_tributario', true)
+        .like('competencia_origem', `${competenciaMes}%`);
+
+      if (credErr) throw credErr;
+
+      let cbs_creditos = 0;
+      let ibs_creditos = 0;
+
+      (creditosApropriados || []).forEach((c) => {
+        if (c.tipo_tributo === 'CBS') cbs_creditos += Number(c.valor_credito) || 0;
+        else if (c.tipo_tributo === 'IBS') ibs_creditos += Number(c.valor_credito) || 0;
+      });
+
+      // Tributos residuais (ICMS/ISS/PIS/COFINS) continuam em operacoes_tributaveis
       const { data: operacoes, error: opError } = await supabase
         .from('operacoes_tributaveis')
-        .select('*')
+        .select('icms_valor, iss_valor, pis_valor, cofins_valor')
         .eq('empresa_id', empresaId)
         .gte('data_operacao', inicioMes)
         .lte('data_operacao', fimMes);
 
       if (opError) throw opError;
 
-      // Calcular totais
-      let cbs_debitos = 0,
-        cbs_creditos = 0;
-      let ibs_debitos = 0,
-        ibs_creditos = 0;
-      let is_debitos = 0;
       let icms_residual = 0,
         iss_residual = 0,
         pis_residual = 0,
         cofins_residual = 0;
-
-      interface OperacaoData {
-        tipo_operacao: string | null;
-        cbs_valor: number | null;
-        ibs_valor: number | null;
-        is_valor: number | null;
-        cbs_credito: number | null;
-        ibs_credito: number | null;
-        icms_valor: number | null;
-        iss_valor: number | null;
-        pis_valor: number | null;
-        cofins_valor: number | null;
-      }
-
-      (operacoes || []).forEach((op: OperacaoData) => {
-        if (['venda', 'servico_prestado'].includes(op.tipo_operacao ?? '')) {
-          cbs_debitos += Number(op.cbs_valor) || 0;
-          ibs_debitos += Number(op.ibs_valor) || 0;
-          is_debitos += Number(op.is_valor) || 0;
-        } else if (['compra', 'servico_tomado'].includes(op.tipo_operacao ?? '')) {
-          cbs_creditos += Number(op.cbs_credito) || 0;
-          ibs_creditos += Number(op.ibs_credito) || 0;
-        }
-
-        icms_residual += Number(op.icms_valor) || 0;
-        iss_residual += Number(op.iss_valor) || 0;
-        pis_residual += Number(op.pis_valor) || 0;
-        cofins_residual += Number(op.cofins_valor) || 0;
+      (operacoes || []).forEach((op) => {
+        icms_residual += Number((op as { icms_valor?: number | null }).icms_valor) || 0;
+        iss_residual += Number((op as { iss_valor?: number | null }).iss_valor) || 0;
+        pis_residual += Number((op as { pis_valor?: number | null }).pis_valor) || 0;
+        cofins_residual += Number((op as { cofins_valor?: number | null }).cofins_valor) || 0;
       });
 
       // Buscar saldo anterior
@@ -264,6 +315,12 @@ export function useApuracoesTributarias(empresaId?: string) {
         icms_residual + iss_residual + pis_residual + cofins_residual;
       const total_geral = total_tributos_novos + total_tributos_residuais;
 
+      // 2026: resultado é apenas informativo (art. 348 LC 214/2025 dispensa recolhimento)
+      const observacoes =
+        ano <= 2026
+          ? 'Informativo — FG 2026: créditos aprop. somente a partir de 2027; resultado compensável com PIS/COFINS (art. 348 LC 214/2025)'
+          : undefined;
+
       // Atualizar apuração
       const { data, error } = await supabase
         .from('apuracoes_tributarias')
@@ -288,11 +345,11 @@ export function useApuracoesTributarias(empresaId?: string) {
           total_tributos_residuais,
           total_geral,
           status: 'calculado',
+          ...(observacoes && { observacoes }),
         })
         .eq('id', id)
         .select()
         .single();
-
       if (error) throw error;
       return data;
     },

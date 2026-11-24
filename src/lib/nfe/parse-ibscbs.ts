@@ -79,6 +79,13 @@ export interface NFeIbscbsTotais {
   vIBS_UF?: number;
   vIBS_Mun?: number;
   vIS?: number;
+  /**
+   * Totais de tributação monofásica (`total/IBSCBSTot/gMono`). Uma nota
+   * monofásica destaca IBS/CBS no grupo próprio, não em `gIBS`/`gCBS` — por
+   * isso o crédito regular não pode ser lido só de `vIBS`/`vCBS`.
+   */
+  vTotIBSMono?: number;
+  vTotCBSMono?: number;
 }
 
 /**
@@ -190,6 +197,7 @@ export function parseIbscbsTotais(infNFe: Element): NFeIbscbsTotais {
   const gCBS = ibscbsTot?.querySelector('gCBS');
   const gIBSUF = gIBS?.querySelector('gIBSUF');
   const gIBSMun = gIBS?.querySelector('gIBSMun');
+  const gMono = ibscbsTot?.querySelector('gMono');
 
   return {
     vBCIBSCBS: num(ibscbsTot?.querySelector('vBCIBSCBS')),
@@ -198,5 +206,7 @@ export function parseIbscbsTotais(infNFe: Element): NFeIbscbsTotais {
     vIBS_UF: num(gIBSUF?.querySelector('vIBSUF')),
     vIBS_Mun: num(gIBSMun?.querySelector('vIBSMun')),
     vIS: num(istTot?.querySelector('vIS')),
+    vTotIBSMono: num(gMono?.querySelector('vIBSMono')),
+    vTotCBSMono: num(gMono?.querySelector('vCBSMono')),
   };
 }

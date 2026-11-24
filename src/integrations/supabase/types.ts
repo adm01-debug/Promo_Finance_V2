@@ -18351,6 +18351,21 @@ export type Database = {
           tabela: string
         }[]
       }
+      cancelar_nfe_estornar_xml_destacado: {
+        Args: {
+          p_chave_acesso?: string
+          p_nota_id: string
+                p_protocolo: string
+                p_sefaz_confirmado?: boolean
+        }
+        Returns: {
+                cancelado_em: string
+                chave_acesso: string | null
+          creditos_estornados: number
+          nota_id: string
+                protocolo: string
+        }
+      }
       calcular_potencial_elisao: {
         Args: { p_empresa_id: string }
         Returns: {

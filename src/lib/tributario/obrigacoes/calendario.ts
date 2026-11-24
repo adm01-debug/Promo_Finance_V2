@@ -1,6 +1,6 @@
 import { anteciparDiaUtil, isDiaUtil } from '../darf/tabelas';
 import { parsePeriodo, round2 } from '../darf/vencimento';
-import { OBRIGACOES, buscarObrigacao } from './catalogo';
+import { OBRIGACOES, MARCOS_RT, buscarObrigacao } from './catalogo';
 import type {
   AjusteDiaNaoUtil,
   ItemCalendario,
@@ -66,6 +66,11 @@ export function calcularPrazo(obrigacao: Obrigacao, competencia: string): string
     const ano = Number(/^(\d{4})/.exec(competencia.trim())?.[1]);
     if (!Number.isFinite(ano)) throw new Error(`Exercício inválido: "${competencia}"`);
     return toISO(ultimoDiaUtil(ano + 1, regra.mes));
+  }
+
+  // Marco de data fixa (RT: NF-e com grupo, CBS plena, etc.)
+  if (regra.tipo === 'data_fixa') {
+    return regra.data;
   }
 
   const [ano, mes] = parsePeriodo(competencia);
@@ -137,6 +142,16 @@ export function gerarCalendario(params: GerarCalendarioParams): ItemCalendario[]
       const chaveComp = obrigacao.periodicidade === 'anual' ? competencia.slice(0, 4) : competencia;
       const chave = chaveItem(obrigacao.id, chaveComp);
       if (vistos.has(chave)) continue;
+
+      // Vigência: fora da janela declarada a obrigação não existe. Sem esse
+      // corte o calendário cobrava entrega de competência anterior ao início
+      // (ex.: Apuração Assistida antes de 03/08/2026).
+      const mesComp = obrigacao.periodicidade === 'anual' ? `${chaveComp}-01` : chaveComp;
+      const mesInicio = obrigacao.vigencia_inicio?.slice(0, 7);
+      const mesFim = obrigacao.vigencia_fim?.slice(0, 7);
+      if (mesInicio && mesComp < mesInicio) continue;
+      if (mesFim && mesComp >= mesFim) continue;
+
       vistos.add(chave);
 
       const prazo = calcularPrazo(obrigacao, chaveComp);
@@ -151,6 +166,34 @@ export function gerarCalendario(params: GerarCalendarioParams): ItemCalendario[]
         baseLegal: obrigacao.baseLegal,
       });
     }
+  }
+
+  // Marcos regulatórios da LC 214/2025: são datas fixas, sem competência própria,
+  // e até aqui ficavam fora do calendário mesmo sendo o que orienta o cronograma.
+  for (const marco of MARCOS_RT) {
+    if (filtro && !filtro.has(marco.id)) continue;
+    const aplicavel =
+      regime === 'todos' || marco.regimes.includes('todos') || marco.regimes.includes(regime);
+    if (!aplicavel) continue;
+    if (marco.regra.tipo !== 'data_fixa') continue;
+
+    const prazo = marco.regra.data;
+    const competencia = prazo.slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(competencia)) continue;
+    const chave = chaveItem(marco.id, competencia);
+    if (vistos.has(chave)) continue;
+    vistos.add(chave);
+
+    itens.push({
+      obrigacaoId: marco.id,
+      nome: marco.nome,
+      orgao: marco.orgao,
+      competencia,
+      prazo,
+      situacao: situacaoDe(prazo, hoje, entregues?.has(chave) ?? false),
+      diasRestantes: diasEntre(hoje, prazo),
+      baseLegal: marco.baseLegal,
+    });
   }
 
   return itens.sort((a, b) =>

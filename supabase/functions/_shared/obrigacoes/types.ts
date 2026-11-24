@@ -11,7 +11,7 @@
 export type RegimeAplicavel = 'simples' | 'presumido' | 'real' | 'todos';
 
 /** Periodicidade de entrega. */
-export type Periodicidade = 'mensal' | 'trimestral' | 'anual';
+export type Periodicidade = 'mensal' | 'trimestral' | 'anual' | 'marco';
 
 /** Órgão destinatário da obrigação. */
 export type Orgao = 'RFB' | 'SEFAZ' | 'CAIXA' | 'MTE';
@@ -27,7 +27,8 @@ export type RegraPrazo =
   | { readonly tipo: 'dia_fixo'; readonly dia: number; readonly mesesApos: number }
   | { readonly tipo: 'enesimo_dia_util'; readonly n: number; readonly mesesApos: number }
   | { readonly tipo: 'ultimo_dia_util'; readonly mesesApos: number }
-  | { readonly tipo: 'dia_fixo_anual'; readonly mes: number; readonly ultimoDiaUtil: true };
+  | { readonly tipo: 'dia_fixo_anual'; readonly mes: number; readonly ultimoDiaUtil: true }
+  | { readonly tipo: 'data_fixa'; readonly data: string };
 
 /** Ajuste aplicado quando o prazo cai em dia não útil. */
 export type AjusteDiaNaoUtil = 'antecipa' | 'posterga';
@@ -47,6 +48,10 @@ export interface Obrigacao {
   readonly regimes: readonly RegimeAplicavel[];
   /** Base legal resumida (para auditoria e tooltip na UI). */
   readonly baseLegal: string;
+  /** Data ISO a partir da qual a obrigação vigora (AAAA-MM-DD). Obrigações sem este campo valem para todos os períodos. */
+  readonly vigencia_inicio?: string;
+  /** Data ISO do encerramento da obrigação (AAAA-MM-DD). */
+  readonly vigencia_fim?: string;
   /** Forma de cálculo da multa por entrega em atraso. */
   readonly baseMulta: BaseMulta;
   /** Percentual mensal da multa (fração, ex.: 0.02 = 2% a.m.). */

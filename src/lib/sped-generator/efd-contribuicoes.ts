@@ -7,6 +7,14 @@ import {
   type OperacaoTributavel,
 } from './core';
 
+/**
+ * Gera o esqueleto do arquivo EFD-Contribuições (blocos 0000/0001/0990…9999).
+ *
+ * ATENÇÃO: os parâmetros de operações e créditos ainda NÃO são escritos nos
+ * blocos de lançamento (C170/C190/M100/M200). O arquivo resultante não é uma
+ * EFD-Contribuições válida e não deve ser transmitido ao Fisco — a UI de
+ * exportação avisa o usuário. Ver review da PR #528 (achado 48).
+ */
 export function gerarEFD_Contribuicoes(
   empresa: DadosEmpresa,
   competencia: string,
