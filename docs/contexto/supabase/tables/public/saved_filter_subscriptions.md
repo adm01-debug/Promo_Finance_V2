@@ -1,5 +1,7 @@
 # public.saved_filter_subscriptions
 
+> Preferências de notificação associadas a filtros salvos. Horários sem fuso são interpretados como hora local de America/Sao_Paulo.
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -29,7 +31,7 @@
 | 11 | `notify_inapp` | `boolean` | não | `true` |  |  |
 | 12 | `notify_push` | `boolean` | não | `false` |  |  |
 | 13 | `notify_email` | `boolean` | não | `false` |  |  |
-| 14 | `horario_preferido` | `time without time zone` | não | `'09:00:00'::time without time zone` |  |  |
+| 14 | `horario_preferido` | `time without time zone` | não | `'09:00:00'::time without time zone` |  | Horário local preferido para envio, sem informação de fuso na coluna. Regra funcional acordada: interpretar em America/Sao_Paulo. Valor padrão: 09:00:00. |
 | 15 | `severidades_criticas` | `text[]` | não | `ARRAY['critica'::text]` |  |  |
 | 16 | `tipos_eventos_ativos` | `text[]` | não | `ARRAY[]::text[]` |  |  |
 | 17 | `rate_limit_max` | `integer` | não | `5` |  |  |

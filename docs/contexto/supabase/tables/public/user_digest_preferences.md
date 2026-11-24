@@ -22,7 +22,7 @@
 | 4 | `frequencia` | `text` | não | `'diaria'::text` |  |  |
 | 5 | `dia_semana` | `integer` | não | `1` |  |  |
 | 6 | `dia_mes` | `integer` | não | `1` |  |  |
-| 7 | `hora_envio` | `integer` | não | `8` |  |  |
+| 7 | `hora_envio` | `integer` | não | `8` |  | Hora preferida para envio do resumo, representada por inteiro. O banco restringe o valor ao intervalo de 0 a 23; a interpretação acordada é hora local de America/Sao_Paulo. Valor padrão: 8. |
 | 8 | `severidade_minima` | `text` | não | `'media'::text` |  |  |
 | 9 | `tipos_ignorados` | `text[]` | não | `'{}'::text[]` |  |  |
 | 10 | `empresas_filtro` | `uuid[]` | não | `'{}'::uuid[]` |  |  |

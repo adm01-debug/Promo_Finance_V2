@@ -1,5 +1,7 @@
 # public.historico_relatorios
 
+> Registros das execuções dos relatórios agendados, incluindo resultado, duração e eventual mensagem de erro.
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,13 +18,13 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `relatorio_agendado_id` | `uuid` | não |  |  |  |
-| 3 | `status` | `text` | não | `'sucesso'::text` |  |  |
-| 4 | `dados_relatorio` | `jsonb` | sim |  |  |  |
-| 5 | `erro_mensagem` | `text` | sim |  |  |  |
-| 6 | `duracao_ms` | `integer` | sim |  |  |  |
-| 7 | `executado_em` | `timestamp with time zone` | não | `now()` |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Identificador UUID da execução registrada. |
+| 2 | `relatorio_agendado_id` | `uuid` | não |  |  | Identificador do agendamento executado; possui chave estrangeira para public.relatorios_agendados(id). |
+| 3 | `status` | `text` | não | `'sucesso'::text` |  | Resultado da execução. O banco permite: sucesso, erro ou parcial. |
+| 4 | `dados_relatorio` | `jsonb` | sim |  |  | Dados da execução em JSONB. A estrutura não é especificada pelo banco. |
+| 5 | `erro_mensagem` | `text` | sim |  |  | Mensagem de erro associada à execução, quando houver. |
+| 6 | `duracao_ms` | `integer` | sim |  |  | Duração da execução em milissegundos. Se preenchida, deve ser maior ou igual a zero. |
+| 7 | `executado_em` | `timestamp with time zone` | não | `now()` |  | Instante em que a execução foi registrada; valor padrão: now(). |
 
 
 ## Constraints

@@ -25874,7 +25874,7 @@
         "type": "jsonb"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID da execução registrada.",
         "default": "gen_random_uuid()",
         "generated": null,
         "identity": null,
@@ -25887,7 +25887,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador do agendamento executado; possui chave estrangeira para public.relatorios_agendados(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -25900,7 +25900,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Resultado da execução. O banco permite: sucesso, erro ou parcial.",
         "default": "'sucesso'::text",
         "generated": null,
         "identity": null,
@@ -25913,7 +25913,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Dados da execução em JSONB. A estrutura não é especificada pelo banco.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -25926,7 +25926,7 @@
         "type": "jsonb"
       },
       {
-        "comment": null,
+        "comment": "Mensagem de erro associada à execução, quando houver.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -25939,7 +25939,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Duração da execução em milissegundos. Se preenchida, deve ser maior ou igual a zero.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -25952,7 +25952,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Instante em que a execução foi registrada; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -39186,7 +39186,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID do agendamento.",
         "default": "gen_random_uuid()",
         "generated": null,
         "identity": null,
@@ -39199,7 +39199,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Nome descritivo do agendamento.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39212,7 +39212,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Identificador textual do tipo de relatório. O banco não restringe os valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39225,7 +39225,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Frequência do agendamento. O banco permite: diario, semanal, quinzenal, mensal ou trimestral.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39238,7 +39238,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Dia da semana usado pelo agendamento semanal, se aplicável. O banco restringe o valor ao intervalo de 0 a 6; o mapeamento de cada número para um dia não é definido por essa restrição.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39251,7 +39251,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Dia do mês usado pelo agendamento mensal, se aplicável. O banco restringe o valor ao intervalo de 1 a 31.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39264,7 +39264,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Horário local previsto para executar o relatório, sem informação de fuso na coluna. Regra funcional acordada: interpretar em America/Sao_Paulo. Valor padrão: 08:00:00.",
         "default": "'08:00:00'::time without time zone",
         "generated": null,
         "identity": null,
@@ -39277,7 +39277,7 @@
         "type": "time without time zone"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID da empresa associada ao agendamento; possui referência declarada à tabela public.empresas.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39290,7 +39290,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID opcional de centro de custo. O inventário não encontrou chave estrangeira declarada para esta coluna.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39303,7 +39303,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Lista textual de destinatários do relatório. O formato dos elementos não é validado pelo banco.",
         "default": "'{}'::text[]",
         "generated": null,
         "identity": null,
@@ -39316,7 +39316,7 @@
         "type": "text[]"
       },
       {
-        "comment": null,
+        "comment": "Filtros adicionais em JSONB. A estrutura e as chaves permitidas não são especificadas pelo banco.",
         "default": "'{}'::jsonb",
         "generated": null,
         "identity": null,
@@ -39329,7 +39329,7 @@
         "type": "jsonb"
       },
       {
-        "comment": null,
+        "comment": "Indica se o agendamento está ativo.",
         "default": "true",
         "generated": null,
         "identity": null,
@@ -39342,7 +39342,7 @@
         "type": "boolean"
       },
       {
-        "comment": null,
+        "comment": "Instante registrado do envio mais recente; armazenado como timestamp com fuso.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39355,7 +39355,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Instante previsto para o próximo envio; armazenado como timestamp com fuso.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -39368,7 +39368,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "UUID do usuário associado à criação; o valor padrão é auth.uid().",
         "default": "auth.uid()",
         "generated": null,
         "identity": null,
@@ -39381,7 +39381,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Data e hora de criação do registro; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -39394,7 +39394,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Data e hora da última atualização; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -40876,7 +40876,7 @@
         "type": "boolean"
       },
       {
-        "comment": null,
+        "comment": "Horário local preferido para envio, sem informação de fuso na coluna. Regra funcional acordada: interpretar em America/Sao_Paulo. Valor padrão: 09:00:00.",
         "default": "'09:00:00'::time without time zone",
         "generated": null,
         "identity": null,
@@ -47194,7 +47194,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Hora preferida para envio do resumo, representada por inteiro. O banco restringe o valor ao intervalo de 0 a 23; a interpretação acordada é hora local de America/Sao_Paulo. Valor padrão: 8.",
         "default": "8",
         "generated": null,
         "identity": null,
@@ -109729,7 +109729,7 @@
         "schema": "public"
       },
       {
-        "comment": null,
+        "comment": "Registros das execuções dos relatórios agendados, incluindo resultado, duração e eventual mensagem de erro.",
         "from_extension": false,
         "is_partition": false,
         "kind": "table",
@@ -110824,7 +110824,7 @@
         "schema": "public"
       },
       {
-        "comment": null,
+        "comment": "Configurações de relatórios recorrentes por empresa, incluindo frequência, horário, destinatários e filtros. Horários sem fuso são interpretados como hora local de America/Sao_Paulo.",
         "from_extension": false,
         "is_partition": false,
         "kind": "table",
@@ -110959,7 +110959,7 @@
         "schema": "public"
       },
       {
-        "comment": null,
+        "comment": "Preferências de notificação associadas a filtros salvos. Horários sem fuso são interpretados como hora local de America/Sao_Paulo.",
         "from_extension": false,
         "is_partition": false,
         "kind": "table",

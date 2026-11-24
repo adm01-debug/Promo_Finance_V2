@@ -140,7 +140,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.historico_cobranca_whatsapp](tables/public/historico_cobranca_whatsapp.md) | table | sim | 1 | 12 | não |  |
 | [public.historico_cobrancas_boletos](tables/public/historico_cobrancas_boletos.md) | table | sim | 2 | 8 | não |  |
 | [public.historico_conciliacao_ia](tables/public/historico_conciliacao_ia.md) | table | sim | 2 | 17 | não |  |
-| [public.historico_relatorios](tables/public/historico_relatorios.md) | table | sim | 1 | 7 | não |  |
+| [public.historico_relatorios](tables/public/historico_relatorios.md) | table | sim | 1 | 7 | não | Registros das execuções dos relatórios agendados, incluindo resultado, duração e eventual mensagem de erro. |
 | [public.historico_score_saude](tables/public/historico_score_saude.md) | table | sim | 2 | 6 | não |  |
 | [public.incentivos_fiscais](tables/public/incentivos_fiscais.md) | table | sim | 4 | 15 | não |  |
 | [public.index_usage_snapshots](tables/public/index_usage_snapshots.md) | table | sim | 1 | 14 | não |  |
@@ -213,7 +213,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.regua_cobranca](tables/public/regua_cobranca.md) | table | sim | 2 | 12 | não |  |
 | [public.regua_cobranca_etapas](tables/public/regua_cobranca_etapas.md) | table | sim | 3 | 7 | não |  |
 | [public.regua_cobranca_status](tables/public/regua_cobranca_status.md) | table | sim | 1 | 12 | não |  |
-| [public.relatorios_agendados](tables/public/relatorios_agendados.md) | table | sim | 4 | 17 | não |  |
+| [public.relatorios_agendados](tables/public/relatorios_agendados.md) | table | sim | 4 | 17 | não | Configurações de relatórios recorrentes por empresa, incluindo frequência, horário, destinatários e filtros. Horários sem fuso são interpretados como hora local de America/Sao_Paulo. |
 | [public.relatorios_tributarios_agendados](tables/public/relatorios_tributarios_agendados.md) | table | sim | 6 | 12 | não |  |
 | [public.resumos_executivos_semanais](tables/public/resumos_executivos_semanais.md) | table | sim | 1 | 10 | não |  |
 | [public.retencao_politicas](tables/public/retencao_politicas.md) | table | sim | 1 | 9 | não |  |
@@ -222,7 +222,7 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.role_permissions](tables/public/role_permissions.md) | table | sim | 5 | 4 | não |  |
 | [public.rpc_observability_metrics](tables/public/rpc_observability_metrics.md) | table | sim | 1 | 10 | não |  |
 | [public.runtime_error_logs](tables/public/runtime_error_logs.md) | table | sim | 4 | 21 | não |  |
-| [public.saved_filter_subscriptions](tables/public/saved_filter_subscriptions.md) | table | sim | 1 | 20 | não |  |
+| [public.saved_filter_subscriptions](tables/public/saved_filter_subscriptions.md) | table | sim | 1 | 20 | não | Preferências de notificação associadas a filtros salvos. Horários sem fuso são interpretados como hora local de America/Sao_Paulo. |
 | [public.saved_filters](tables/public/saved_filters.md) | table | sim | 3 | 12 | não |  |
 | [public.scim_operations_log](tables/public/scim_operations_log.md) | table | sim | 2 | 15 | não |  |
 | [public.scim_setup_checklist](tables/public/scim_setup_checklist.md) | table | sim | 1 | 12 | não |  |

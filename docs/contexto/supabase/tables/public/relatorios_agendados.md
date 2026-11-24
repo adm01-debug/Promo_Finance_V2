@@ -1,5 +1,7 @@
 # public.relatorios_agendados
 
+> Configurações de relatórios recorrentes por empresa, incluindo frequência, horário, destinatários e filtros. Horários sem fuso são interpretados como hora local de America/Sao_Paulo.
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,23 +18,23 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `nome` | `text` | não |  |  |  |
-| 3 | `tipo_relatorio` | `text` | não |  |  |  |
-| 4 | `frequencia` | `text` | não |  |  |  |
-| 5 | `dia_semana` | `integer` | sim |  |  |  |
-| 6 | `dia_mes` | `integer` | sim |  |  |  |
-| 7 | `hora_execucao` | `time without time zone` | não | `'08:00:00'::time without time zone` |  |  |
-| 8 | `empresa_id` | `uuid` | sim |  |  |  |
-| 9 | `centro_custo_id` | `uuid` | sim |  |  |  |
-| 10 | `destinatarios` | `text[]` | não | `'{}'::text[]` |  |  |
-| 11 | `filtros` | `jsonb` | não | `'{}'::jsonb` |  |  |
-| 12 | `ativo` | `boolean` | não | `true` |  |  |
-| 13 | `ultimo_envio` | `timestamp with time zone` | sim |  |  |  |
-| 14 | `proximo_envio` | `timestamp with time zone` | sim |  |  |  |
-| 15 | `created_by` | `uuid` | não | `auth.uid()` |  |  |
-| 16 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
-| 17 | `updated_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Identificador UUID do agendamento. |
+| 2 | `nome` | `text` | não |  |  | Nome descritivo do agendamento. |
+| 3 | `tipo_relatorio` | `text` | não |  |  | Identificador textual do tipo de relatório. O banco não restringe os valores permitidos. |
+| 4 | `frequencia` | `text` | não |  |  | Frequência do agendamento. O banco permite: diario, semanal, quinzenal, mensal ou trimestral. |
+| 5 | `dia_semana` | `integer` | sim |  |  | Dia da semana usado pelo agendamento semanal, se aplicável. O banco restringe o valor ao intervalo de 0 a 6; o mapeamento de cada número para um dia não é definido por essa restrição. |
+| 6 | `dia_mes` | `integer` | sim |  |  | Dia do mês usado pelo agendamento mensal, se aplicável. O banco restringe o valor ao intervalo de 1 a 31. |
+| 7 | `hora_execucao` | `time without time zone` | não | `'08:00:00'::time without time zone` |  | Horário local previsto para executar o relatório, sem informação de fuso na coluna. Regra funcional acordada: interpretar em America/Sao_Paulo. Valor padrão: 08:00:00. |
+| 8 | `empresa_id` | `uuid` | sim |  |  | Identificador UUID da empresa associada ao agendamento; possui referência declarada à tabela public.empresas. |
+| 9 | `centro_custo_id` | `uuid` | sim |  |  | Identificador UUID opcional de centro de custo. O inventário não encontrou chave estrangeira declarada para esta coluna. |
+| 10 | `destinatarios` | `text[]` | não | `'{}'::text[]` |  | Lista textual de destinatários do relatório. O formato dos elementos não é validado pelo banco. |
+| 11 | `filtros` | `jsonb` | não | `'{}'::jsonb` |  | Filtros adicionais em JSONB. A estrutura e as chaves permitidas não são especificadas pelo banco. |
+| 12 | `ativo` | `boolean` | não | `true` |  | Indica se o agendamento está ativo. |
+| 13 | `ultimo_envio` | `timestamp with time zone` | sim |  |  | Instante registrado do envio mais recente; armazenado como timestamp com fuso. |
+| 14 | `proximo_envio` | `timestamp with time zone` | sim |  |  | Instante previsto para o próximo envio; armazenado como timestamp com fuso. |
+| 15 | `created_by` | `uuid` | não | `auth.uid()` |  | UUID do usuário associado à criação; o valor padrão é auth.uid(). |
+| 16 | `created_at` | `timestamp with time zone` | não | `now()` |  | Data e hora de criação do registro; valor padrão: now(). |
+| 17 | `updated_at` | `timestamp with time zone` | não | `now()` |  | Data e hora da última atualização; valor padrão: now(). |
 
 
 ## Constraints
