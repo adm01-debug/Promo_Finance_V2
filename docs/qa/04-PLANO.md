@@ -48,12 +48,11 @@ Você vai executar este plano sozinho, etapa por etapa, sem acesso a quem o escr
 
 Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 etapas, gerados no mesmo dia: `docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md` (190 etapas, prefixo `E-`) e `docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md` (200 etapas, prefixo `N-`). Eles cobrem **front-end e navegação/UX**. Este plano foi deduplicado contra os títulos daqueles dois: onde um item de interface já estava previsto lá, ele **não** foi repetido aqui, e a etapa correspondente deste plano registra a referência (`E-0xx` / `N-0xx`) no campo "Não tocar / armadilhas". O foco deste plano é o que aqueles dois não alcançam: banco de dados e RLS, Edge Functions, integrações e webhooks, regras de negócio e cálculo financeiro, infraestrutura e CI, e riscos transversais de isolamento multi-empresa.
 
-
 ## Etapas
 
 > **Quantidade**: 35 etapas (`001`–`035`). A numeração não é decorativa: é a mesma que o `03-ACHADOS.md` cita no campo "Caminho de correção" de cada achado. Estas etapas cobrem banco/RLS, Edge Functions, integrações e CI — os planos `E-` e `N-` citados acima continuam sendo a referência para front-end e UX, e nenhuma etapa daqui os repete. Fechar cota numérica inventando etapas sem achado que as sustente produziria plano falso: cada etapa abaixo nasceu de um achado com evidência em `03-ACHADOS.md`.
 >
-> **Ondas**: 1 = segurança e perda de dado (001–008, 025–027) · 2 = fluxos quebrados (009–013) · 3 = integridade e regra de negócio (015–024) · 6 = performance (034–035) · 8 = higiene, CI e cadeia de suprimentos (014, 028–033).
+> **Ondas**: 1 = segurança e perda de dado (001–008, 025–027, 032–033) · 2 = fluxos quebrados (009–013) · 3 = integridade e regra de negócio (015–024) · 6 = performance (034) · 8 = higiene, CI e cadeia de suprimentos (014, 028–031, 035).
 
 ---
 
@@ -63,7 +62,7 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 - **Arquivos e objetos a tocar**: `scripts/integrity/16_isolamento_empresa.sql` (novo) e a tabela de checagens em `scripts/integrity/README.md`.
 - **Não tocar / armadilhas**: nenhuma policy e nenhuma migration nesta etapa — é só medição. Não altere `scripts/integrity/15_views_pii_rpcs.sql`, que é o modelo de formato. Não conte como "fora do predicado" a tabela que tem `empresa_acessivel(` dentro de `EXISTS (...)` — o casamento é textual em `pg_policies.qual` e `with_check`.
 - **Caminho recomendado**: copie o formato de saída de `scripts/integrity/15_views_pii_rpcs.sql:80-97` (`check`, `actual`, `expected`, veredito `pass`/`fail`). A consulta cruza `information_schema.columns` (`column_name = 'empresa_id'`, `table_schema = 'public'`) com `pg_policies`, e devolve as tabelas cujas policies **não** mencionam `empresa_acessivel(`. Ordenar por nome da tabela para o resultado ser comparável entre execuções.
-- **Como verificar**: `psql "$PROD_DB_URL" -f scripts/integrity/16_isolamento_empresa.sql` deve devolver **58** tabelas — o número medido em 2026-11-22. Cole a lista real em `05-PROGRESSO.md`. Se vier diferente, a diferença é o primeiro dado novo: anote quais tabelas entraram ou saíram e siga.
+- **Como verificar**: `psql "$PROD_DB_URL" -f scripts/integrity/16_isolamento_empresa.sql` deve devolver **58** tabelas — o número medido em 2026-11-22. Cole a lista real em `05-PROGRESSO.md`. Se vier diferente, a diferença é o primeiro dado novo: anote quais tabelas entraram ou saíram e siga. **Atenção à métrica**: o 58 é binário — "tabela com `empresa_id` e **nenhuma** policy citando `empresa_acessivel(`" —, que é exatamente o critério do achado. Ele **não** mede se as policies de uma tabela estão todas no padrão: uma tabela com uma policy canônica e quatro legadas sai da lista sem estar resolvida. Por isso a verificação de cada etapa de lote é dupla: a tabela sai da lista **e** a contagem de policies com o predicado antigo naquela tabela vai a zero (modelo na etapa 004).
 - **Precisa de aprovação humana**: não (somente leitura).
 
 ---
@@ -73,7 +72,7 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 - **Onda**: 1 · **Severidade**: Alta · **Achados resolvidos**: ACH-DB-01 · **Depende de**: 001
 - **Arquivos e objetos a tocar**: `supabase/migrations/<YYYYMMDDHHmmss>_isolamento_piloto_movimentacoes.sql` (novo).
 - **Não tocar / armadilhas**: `empresa_membro_ativo()`, `user_empresas`, e qualquer tabela diferente de `movimentacoes`. Não remova a exigência de papel (`has_any_role`) que a policy atual carrega — o predicado de isolamento **soma** a checagem de papel, não substitui. Não use `CONCURRENTLY`: nada aqui é índice, e o gateway transacional recusa.
-- **Caminho recomendado**: antes de escrever a migration, rode `SELECT polname, cmd, roles, qual, with_check FROM pg_policies WHERE schemaname = 'public' AND tablename = 'movimentacoes'` e guarde a saída no `05-PROGRESSO.md`; é o contrato que a nova policy precisa preservar. Confirme também o corpo de `empresa_acessivel(uuid)` (`SELECT prosrc FROM pg_proc WHERE proname = 'empresa_acessivel'`): se ela devolver `true` para `NULL`, a policy precisa de `empresa_id IS NOT NULL AND empresa_acessivel(empresa_id)`. Uma policy por comando (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), mantendo os nomes existentes para a auditoria continuar rastreável.
+- **Caminho recomendado**: antes de escrever a migration, rode `SELECT policyname, cmd, roles, qual, with_check FROM pg_policies WHERE schemaname = 'public' AND tablename = 'movimentacoes'` e guarde a saída no `05-PROGRESSO.md`; é o contrato que a nova policy precisa preservar. Confirme também o corpo de `empresa_acessivel(uuid)` (`SELECT prosrc FROM pg_proc WHERE proname = 'empresa_acessivel'`): se ela devolver `true` para `NULL`, a policy precisa de `empresa_id IS NOT NULL AND empresa_acessivel(empresa_id)`. Uma policy por comando (`SELECT`, `INSERT`, `UPDATE`, `DELETE`), mantendo os nomes existentes para a auditoria continuar rastreável.
 - **Como verificar**: a consulta da etapa 001 deixa de listar `movimentacoes`, e `psql "$PROD_DB_URL" -f supabase/tests/sql/rls_multi_empresa.sql` continua passando (é o teste que o CI roda contra produção). Cole as duas saídas.
 - **Precisa de aprovação humana**: sim (DDL em produção).
 
@@ -83,9 +82,9 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 
 - **Onda**: 1 · **Severidade**: Alta · **Achados resolvidos**: ACH-DB-02 · **Depende de**: 002
 - **Arquivos e objetos a tocar**: migration nova com a policy de `INSERT` de `clientes`.
-- **Não tocar / armadilhas**: as policies `SELECT`/`UPDATE`/`DELETE` de `clientes` são as etapas 004 e 005 — aqui só entra o caminho de escrita que hoje aceita `empresa_id IS NULL`. Não acrescente `CHECK` na coluna: linha existente com nulo faria a migration falhar em produção; hoje são 0, mas o `CHECK` é decisão da etapa 005, junto com a limpeza.
+- **Não tocar / armadilhas**: as policies `SELECT`/`UPDATE`/`DELETE` de `clientes` são as etapas 004 e 005 — aqui só entra o caminho de escrita que hoje aceita `empresa_id IS NULL`. São **dois** caminhos, e os dois precisam do teste: `clientes_tenant_insert` (aceita nulo de forma explícita) e as `clientes_owner_*` (`uid() = user_id`), que alcançam o cliente só por autoria e continuam valendo até a etapa 005. Não acrescente `CHECK` na coluna: linha existente com nulo faria a migration falhar em produção; hoje são 0, mas o `CHECK` é decisão da etapa 005, junto com a limpeza.
 - **Caminho recomendado**: o buraco é `clientes_tenant_insert`, cujo `with_check` é `((empresa_id IS NULL) OR empresa_membro_ativo(empresa_id))`. Reduza a `empresa_acessivel(empresa_id)` (com `empresa_id IS NOT NULL AND` na frente se a função aceitar nulo). `clientes_owner_insert` e `Operacional+ can manage clientes` continuam válidas — elas não abrem o caminho para empresa nula.
-- **Como verificar**: com um usuário autenticado de teste, `INSERT INTO clientes (nome, empresa_id) VALUES ('teste', NULL)` deve ser **recusado** por RLS; o mesmo insert com o `empresa_id` da empresa do usuário deve passar. Cole os dois resultados em `05-PROGRESSO.md` e apague a linha de teste na mesma transação (`BEGIN; ... ROLLBACK;`).
+- **Como verificar**: com um usuário autenticado de teste, `INSERT INTO clientes (nome, empresa_id) VALUES ('teste', NULL)` deve ser **recusado** por RLS — e o mesmo tem de valer para a **inserção com autoria** (`user_id` = sessão), que é o segundo caminho e não é coberto por um teste que só exercita o insert genérico; o insert com o `empresa_id` da empresa do usuário deve passar. Cole os três resultados em `05-PROGRESSO.md` e apague a linha de teste na mesma transação (`BEGIN; ... ROLLBACK;`).
 - **Precisa de aprovação humana**: sim (DDL em produção).
 
 ---
@@ -186,6 +185,9 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 - **Caminho recomendado**: `anexos_financeiros` precisa de cuidado extra: reescreva como `empresa_acessivel(empresa_id)` mais a checagem de papel atual, sem `ue.role`. Se não houver função de papel equivalente, mantenha `ue.role` e registre a dívida para a etapa 017.
 - **Como verificar**: a consulta da etapa 001 deixa de listar as quatro; teste de RLS verde; e `SELECT count(*) FROM anexos_financeiros` inalterado antes/depois (a troca não pode esconder linha existente de quem deveria vê-la).
 - **Precisa de aprovação humana**: sim (DDL em produção).
+
+---
+
 ### 013 · Lote 5: fechar o restante da lista do inventário
 
 - **Onda**: 2 · **Severidade**: Alta · **Achados resolvidos**: ACH-DB-01 · **Depende de**: 012
@@ -203,7 +205,7 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 - **Arquivos e objetos a tocar**: `.github/workflows/ci.yml` (job que já roda `psql "$PROD_DB_URL"`, perto de `ci.yml:353`, onde `14_retencao.sql` é executado) e a checagem `scripts/integrity/16_isolamento_empresa.sql`.
 - **Não tocar / armadilhas**: o repo proíbe PR de workflow sem `actionlint` e `act -j <job> -n` — rode os dois via WSL antes do push. Não transforme o gate em "aviso": o valor dele é reprovar. E não inclua a checagem em job que roda em PR de fork com secret, porque `PROD_DB_URL` não estará disponível.
 - **Caminho recomendado**: o gate só entra **depois** de a lista estar vazia (etapa 013) — antes disso ele nasceria vermelho e seria desligado. Saída esperada: `pass` quando a consulta devolve 0 linhas, `fail` com a lista das tabelas quando devolve qualquer linha.
-- **Como verificar**: abrir uma PR de teste que cria uma tabela com `empresa_id` e sem policy: o job tem de falhar citando o nome da tabela; apagar a tabela na mesma PR de teste e o job volta a passar. Cole os dois runs.
+- **Como verificar**: o job lê o estado de **produção** (`ci.yml:342-359` usa `secrets.PROD_DB_URL`), e nenhum workflow aplica a migration da PR antes do merge — então o caminho de prova é local, não pela PR: rode a checagem dentro de uma transação em produção, criando a tabela de teste e revertendo (`BEGIN; CREATE TABLE teste_gate (id uuid, empresa_id uuid); <rodar a checagem>; ROLLBACK;`) e mostre o `fail` citando `teste_gate`; depois rode a checagem fora da transação e mostre `pass` com a lista vazia. O comportamento do job em si (ler o exit code e emitir `::error::`) é provado com `act -j quality-gate -n` e com um push de teste na própria branch do gate. Colar as três saídas.
 - **Precisa de aprovação humana**: sim (workflow).
 
 ---
@@ -288,10 +290,10 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 ### 022 · Aposentar os rótulos mortos do enum `app_role`
 
 - **Onda**: 3 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-04 · **Depende de**: 021
-- **Arquivos e objetos a tocar**: migration nova com `ALTER TYPE app_role ...` e, antes, o `UPDATE` de `user_empresas.role`.
-- **Não tocar / armadilhas**: valor de enum não se remove com `ALTER TYPE ... DROP VALUE` (não existe). O caminho é criar o tipo novo, migrar a coluna e renomear — operação que trava a tabela. Faça em janela combinada, com `BEGIN`/`COMMIT` e contagem de linhas antes/depois. `contador` **fica**: não é sinônimo de nenhum rótulo em inglês.
-- **Caminho recomendado**: `SELECT role, count(*) FROM user_empresas GROUP BY role` antes; `UPDATE` dos rótulos conforme a decisão da 016; só então a troca do tipo. Se qualquer linha usar `manager`/`operator`/`viewer` depois da 021, **pare** — significa policy ou código ainda dependente.
-- **Como verificar**: `SELECT unnest(enum_range(NULL::app_role))` sem os rótulos aposentados, e `SELECT role, count(*) FROM user_empresas GROUP BY role` com a mesma soma total de antes. Cole as duas saídas.
+- **Arquivos e objetos a tocar**: migration nova com `ALTER TYPE app_role ...` e, antes, os `UPDATE` de **`user_empresas.role` e `user_roles.role`** — as duas colunas são do tipo `app_role`.
+- **Não tocar / armadilhas**: valor de enum não se remove com `ALTER TYPE ... DROP VALUE` (não existe). O caminho é criar o tipo novo, migrar as colunas e renomear — operação que trava as tabelas. Faça em janela combinada, com `BEGIN`/`COMMIT` e contagem de linhas antes/depois. `contador` **fica**: não é sinônimo de nenhum rótulo em inglês. **`user_roles` é a tabela de papéis globais** (`role app_role NOT NULL DEFAULT 'visualizador'`), criada em `20251214170739_...:41-48`, e é ela que `has_role`/`has_any_role` leem (`20260728140000_fix_has_any_role.sql:3-28`) — migrar só `user_empresas.role` deixaria papéis globais apontando para valores que o tipo novo não tem. As duas funções são `SECURITY DEFINER` com a assinatura tipada no enum (`_roles public.app_role[]`, `_role public.app_role`): a troca do tipo exige recriá-las depois do `DROP TYPE`, na mesma migration, com `CREATE OR REPLACE` idêntico ao versionado — sem isso o `DROP TYPE` falha por dependência e as policies que dependem delas caem junto.
+- **Caminho recomendado**: medir antes com `SELECT role, count(*) FROM user_empresas GROUP BY role` **e** `SELECT role, count(*) FROM user_roles GROUP BY role`; `UPDATE` dos rótulos nas duas tabelas conforme a decisão da 016; recriar `has_role`/`has_any_role`; só então a troca do tipo. Confira também se alguma outra coluna ou função usa `app_role` antes de tocar no tipo. Se qualquer linha usar `manager`/`operator`/`viewer` depois da 021, **pare** — significa policy ou código ainda dependente.
+- **Como verificar**: `SELECT unnest(enum_range(NULL::app_role))` sem os rótulos aposentados; `SELECT role, count(*) FROM user_empresas GROUP BY role` e o mesmo para `user_roles`, com a soma total igual à de antes nas duas; e `SELECT proname FROM pg_proc WHERE proname IN ('has_role','has_any_role')` devolvendo as duas, sem erro de tipo. Cole as saídas.
 - **Precisa de aprovação humana**: sim (DDL destrutiva em produção).
 
 ---
@@ -311,125 +313,128 @@ Em 2026-11-22 já existiam dois planos de etapas no repositório, somando 390 et
 
 - **Onda**: 8 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-04 · **Depende de**: 023
 - **Arquivos e objetos a tocar**: script novo em `scripts/ci/` (o diretório já tem `check-claude-md-integrity.mjs` como modelo) e o job correspondente em `.github/workflows/ci.yml`.
-- **Não tocar / armadilhas**: workflow exige `actionlint` + `act -j <job> -n` antes do push. O gate não pode depender de banco: ele lê o código e as migrations.
-- **Caminho recomendado**: o script varre `src/**` e `supabase/migrations/**` procurando rótulo aposentado e `has_role`/`has_any_role` com valor fora do enum; sai 1 com a lista. Mesmo formato de saída dos outros checks de `scripts/ci/`.
-- **Como verificar**: rodar o script na `main` atual = 0 ocorrências; inserir um `'manager'` numa cópia local e ver o script sair 1 citando `arquivo:linha`. Cole as duas saídas.
+- **Não tocar / armadilhas**: workflow exige `actionlint` + `act -j <job> -n` antes do push. O gate não pode depender de banco: ele lê o código e as migrations. **Não varra o histórico de migrations**: `20260712223143_stub-app-role-values.sql:4` acrescenta `manager` ao enum por shim e continuará no repositório depois da aposentadoria — um gate que olha todo `supabase/migrations/**` nasce vermelho e para de ser lido.
+- **Caminho recomendado**: o script varre `src/**` inteiro e, em `supabase/migrations/**`, **apenas o que a PR acrescenta** (comparar com a base do merge, ex.: `git diff --name-only origin/main...HEAD`), procurando rótulo aposentado e `has_role`/`has_any_role` com valor fora do enum; sai 1 com a lista. Mesmo formato de saída dos outros checks de `scripts/ci/`. O estado atual do banco já é coberto pelas etapas 021 e 022 — aqui o alvo é impedir a reincidência.
+- **Como verificar**: rodar o script na `main` atual = 0 ocorrências (o histórico fica fora do escopo); acrescentar um `'manager'` numa migration nova numa cópia local e ver o script sair 1 citando `arquivo:linha`. Cole as duas saídas.
 - **Precisa de aprovação humana**: sim (workflow).
-### 025 · `oportunidades_elisao`: parar de aceitar escrita anônima
+
+---
+
+### 025 · `audit_logs`: fechar o `INSERT` aberto a `authenticated`
 
 - **Onda**: 1 · **Severidade**: Alta · **Achados resolvidos**: ACH-DB-05 · **Depende de**: —
-- **Arquivos e objetos a tocar**: migration nova com as policies de `oportunidades_elisao`.
-- **Não tocar / armadilhas**: a tabela tem `fluxo_id` e não tem `empresa_id` — a policy antiga a tratava como "mesa de oportunidade" e aceitava `fornecedores_owner` como identificação: **esse é o buraco**, porque a condição não exige que a linha de `fornecedores` pertença a quem escreve. Não acrescente `empresa_id` à tabela nesta etapa (é a 027): primeiro feche a escrita, depois modele.
-- **Caminho recomendado**: a evidência é `INSERT` aceito sem usuário autenticado. Reescreva as quatro policies por `empresa_acessivel(...)` via a empresa do `fluxo_id` (`fluxo_id IN (SELECT id FROM fluxos WHERE empresa_acessivel(empresa_id))`) e mantenha `empresa_membro_ativo` na de `INSERT`. Se a 027 (que dá `empresa_id` à tabela) estiver pronta antes, use a coluna direta — a ordem preferida é 027 → 025 justamente por isso.
-- **Como verificar**: no psql, `SET ROLE anon; INSERT INTO oportunidades_elisao (...) VALUES (...);` deve responder `ERROR: new row violates row-level security policy`; e com usuário autenticado da empresa dona do fluxo, o mesmo insert passa. Cole as duas saídas.
+- **Arquivos e objetos a tocar**: `supabase/migrations/<YYYYMMDDHHmmss>_fechar_insert_audit_logs.sql` (novo): `DROP POLICY "System can insert audit logs" ON public.audit_logs`.
+- **Não tocar / armadilhas**: quem grava na trilha é **trigger de banco** — as migrations fazem `INSERT INTO audit_logs` dentro de funções de trigger, que rodam com privilégio de dono, não como `authenticated`; e o service role não passa por RLS. As policies de **leitura** ficam intactas: `src/hooks/` usa `audit_logs` em `useAnomaliaAuditHistory`, `useAnomaliasReabertasIndex`, `useComplianceKpis`, `usePlanoContaHistory` e `useRealtimeAuditToasts`. Leia `20260519134955_drop-user-action-audit-policies.sql` antes: parte da limpeza das policies de ação de usuário já foi feita e não deve ser repetida.
+- **Caminho recomendado**: (1) inventariar as policies de `audit_logs` por `cmd`; (2) dropar só a de `INSERT` de `{authenticated}`; (3) se algum caminho de aplicação precisar gravar na trilha, esse caminho é Edge Function com service role — não uma policy aberta.
+- **Como verificar**: `SET ROLE authenticated; INSERT INTO public.audit_logs (...) VALUES (...)` responde `ERROR: new row violates row-level security policy.` E a gravação legítima continua: fazer uma alteração numa tabela auditada e ver `SELECT count(*) FROM audit_logs` subir, com o `user_id` correto na linha nova. Sem as duas provas, a etapa não fecha.
 - **Precisa de aprovação humana**: sim (DDL em produção).
 
 ---
 
-### 026 · `auditoria_financeira`: tornar o log imutável
+### 026 · `auditoria_financeira`: o `INSERT` passa a validar `empresa_id`
 
 - **Onda**: 1 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-06 · **Depende de**: —
-- **Arquivos e objetos a tocar**: migration nova: `DROP POLICY` de `UPDATE`/`DELETE` (e de `INSERT` direto, se existir) + `GRANT` só de `SELECT` para `authenticated`.
-- **Não tocar / armadilhas**: quem escreve no log é código de servidor com service role — ele **não** passa por RLS, então revogar o `INSERT` do `authenticated` não quebra a gravação. Confirme isso antes: `rg "auditoria_financeira" supabase/functions src --glob '!**/*.test.*'` e veja se algum caminho grava com a sessão do usuário. Se gravar, o caminho é `SECURITY DEFINER`, não permissão aberta.
-- **Caminho recomendado**: remova as policies de escrita de usuário e confie no `BYPASSRLS` do service role; o `REVOKE` no `GRANT` só é necessário se houver GRANT de tabela para `authenticated` — confira com `SELECT grantee, privilege_type FROM information_schema.role_table_grants WHERE table_name = 'auditoria_financeira'`.
-- **Como verificar**: autenticado, `UPDATE auditoria_financeira SET ...` e `DELETE FROM auditoria_financeira` respondem `ERROR: ... violates row-level security policy` (ou `permission denied`); e a listagem continua funcionando. Cole as duas saídas e o grep de quem grava.
+- **Arquivos e objetos a tocar**: `supabase/migrations/<YYYYMMDDHHmmss>_auditoria_insert_valida_empresa.sql` (novo): `ALTER POLICY auditoria_user_insert ON public.auditoria_financeira WITH CHECK (...)`.
+- **Não tocar / armadilhas**: **este achado é de integridade, não de imutabilidade.** O defeito é a regra de escrita não validar `empresa_id`, enquanto a de leitura (`auditoria_financeira_empresa_select`) filtra justamente por ele. Não transforme a tabela em append-only nesta etapa. As policies de leitura ficam como estão.
+- **Caminho recomendado**: `WITH CHECK (uid() = user_id AND empresa_acessivel(empresa_id))` — o mesmo par que as tabelas já corrigidas usam. Se `empresa_acessivel` devolver `true` para nulo, inclua `empresa_id IS NOT NULL AND` na frente.
+- **Como verificar**: com usuário da empresa A, gravar registro carimbado com o `empresa_id` da empresa B deve ser **recusado**; com o `empresa_id` da própria empresa A, aceito; e o registro aceito aparece no `SELECT` de um colega da empresa A. Colar as três saídas — isso também produz o teste de isolamento dessa tabela.
 - **Precisa de aprovação humana**: sim (DDL em produção).
 
 ---
 
-### 027 · `oportunidades_elisao`: dar `empresa_id` à tabela e migrar as linhas
+### 027 · `frontend_error_logs`: o `INSERT` de `anon` precisa de limite
 
 - **Onda**: 1 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-07 · **Depende de**: —
-- **Arquivos e objetos a tocar**: migration nova: `ADD COLUMN empresa_id`, backfill, `SET NOT NULL`, índices e policies.
-- **Não tocar / armadilhas**: o `SET NOT NULL` só depois do backfill verificado — é o mesmo cuidado das etapas 005 e 006. `oportunidades_elisao` alimenta tela de negócio: se o backfill não achar a empresa de alguma linha, **pare** e traga a lista; não escolha a empresa "mais provável".
-- **Caminho recomendado**: a linha tem `fluxo_id`; a empresa vem de `fluxos.empresa_id`. Faça `UPDATE ... FROM fluxos f WHERE f.id = o.fluxo_id`; conte as linhas antes e depois; só então `SET NOT NULL`; e acrescente índice em `(empresa_id)` porque as policies novas vão filtrar por ele. Se preferir entregar junto com a 025, esta migration vem **primeiro**.
-- **Como verificar**: `SELECT count(*) FROM oportunidades_elisao WHERE empresa_id IS NULL` = 0; contagem total inalterada; `\d oportunidades_elisao` com `NOT NULL` e o índice novo. Cole as saídas.
-- **Precisa de aprovação humana**: sim (DDL em produção).
+- **Arquivos e objetos a tocar**: ou `supabase/functions/frontend-error-report/` (novo, com `validatePayload` em Zod) + migration que revoga o `INSERT` de `anon`; ou só a migration, com `WITH CHECK` de formato e tamanho na policy `frontend_error_anon_insert`.
+- **Não tocar / armadilhas**: a policy tem `roles = {anon}` porque o erro de quem **não está logado** precisa ser capturado; quem grava é o navegador, via `src/lib/telemetry.ts` (cliente anon) — `/supabase/functions` e `src/lib/telemetry.ts` são os dois lados que têm de continuar de pé. Revogar o insert sem oferecer o caminho novo para a telemetria é regressão de observabilidade, não conserto. O cron `monitorar-erros-frontend` (a cada 30 min) lê a tabela e não muda.
+- **Caminho recomendado**: a opção completa é mover a escrita para uma Edge Function com `validatePayload` (Zod: limite de tamanho por campo, formato de `metadata`, versão) e revogar o `INSERT` direto de `anon`; isso troca "aberto" por "validado". A opção mínima é `WITH CHECK` com `octet_length(mensagem) <= 2000` e limites por campo — reduz o dano por requisição, **não** impede enchimento em volume; escolher a mínima deixa essa limitação registrada em `05-PROGRESSO.md`.
+- **Como verificar**: (a escolhida) `INSERT` direto como `anon` é recusado por RLS, e um erro real provocado no navegador deslogado chega na tabela pela função nova — `SELECT count(*)` antes/depois. (b) `SET ROLE anon; INSERT` com `mensagem` de 1 MB é recusado por `WITH CHECK`, e um erro normal continua gravando. Colar as saídas dos dois lados.
+- **Precisa de aprovação humana**: sim (DDL e/ou função nova em produção).
 
 ---
 
-### 028 · Aposentar o `Vault` em favor de `secrets` do Supabase
+### 028 · Regerar o `bun.lock` contra o registry público do npm
 
-- **Onda**: 8 · **Severidade**: Média · **Achados resolvidos**: ACH-INF-01 · **Depende de**: —
-- **Arquivos e objetos a tocar**: `supabase/functions/**` (o arquivo onde o cliente Vault é instanciado) e a documentação de variáveis.
-- **Não tocar / armadilhas**: mover segredo não é renomear arquivo — é ler o valor do Vault, gravar no `secrets` do Supabase e só então remover a leitura antiga. Faça na ordem inversa e a função quebra em produção. **Nunca** cole valor de segredo em código, comentário, PR ou `05-PROGRESSO.md`.
-- **Caminho recomendado**: `rg "Vault|vault" supabase/functions` para localizar o ponto único; confirme qual variável é lida (`SLACK_WEBHOOK_URL` ou equivalente) e se ela já existe em `secrets`. Se já existir com o mesmo valor, a etapa é só remover o caminho antigo. A queda do Vault derruba **todas** as integrações que passam por ele — a verificação é por integração, não por função.
-- **Como verificar**: invocar cada função que usa o segredo e ver status 200 no log do Supabase, com o mesmo efeito observável no destino (mensagem recebida, dado sincronizado). Cole o `curl` e a linha do log.
-- **Precisa de aprovação humana**: sim (segredos e produção).
-
----
-
-### 029 · Confirmar que não sobrou leitura de Vault no runtime
-
-- **Onda**: 8 · **Severidade**: Baixa · **Achados resolvidos**: ACH-INF-01 · **Depende de**: 028
-- **Arquivos e objetos a tocar**: nada novo — verificação e registro.
-- **Não tocar / armadilhas**: "não achei no grep" não é prova de que o caminho morreu: o Vault pode ser lido por SQL dentro de função `SECURITY DEFINER`. Cheque também `SELECT count(*) FROM vault.secrets`.
-- **Caminho recomendado**: `rg -i "vault" supabase/ .github/ src/` sem resultado relevante + `vault.secrets` vazio (ou com segredo que nenhuma função lê). Registre em `05-PROGRESSO.md` com o commit da 028.
-- **Como verificar**: as duas saídas acima coladas no progresso, e a data.
-- **Precisa de aprovação humana**: não (leitura).
+- **Onda**: 8 · **Severidade**: Alta · **Achados resolvidos**: ACH-INF-01 · **Depende de**: —
+- **Arquivos e objetos a tocar**: `bun.lock` (regerado).
+- **Não tocar / armadilhas**: **nenhum bump de versão nesta etapa.** O objetivo é trocar o endereço de origem dos pacotes, não as versões resolvidas: se o registry público resolver versão diferente para algum pacote, pare e trate à parte. `vendor/xlsx-0.20.3.tgz` fica como está (a vendorização é decisão registrada em ACH-INF-02 e não se troca aqui).
+- **Caminho recomendado**: o achado mediu **209** URLs de `europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache` e `europe-west1-npm.pkg.dev` em 1.072 entradas (19,5%), e provou que a origem é o lock e não a rede: `curl` ao mesmo pacote em `registry.npmjs.org` devolve HTTP 200, enquanto ao host do Lovable devolve **403 no CONNECT**. Hoje `grep -c 'pkg\.dev' bun.lock` devolve **205**. Regenere em cópia isolada com `bun install --registry https://registry.npmjs.org` e revise o diff linha a linha.
+- **Como verificar**: `grep -c 'pkg\.dev' bun.lock` = **0**; `git diff --stat` mostrando **só** `bun.lock`; `bun install --frozen-lockfile` em diretório limpo instala do npm público; e `Quality Gate & Tests` verde. Colar as saídas.
+- **Precisa de aprovação humana**: sim (lockfile e build).
 
 ---
 
-### 030 · Remover o `config.toml` duplicado e manter um só caminho de configuração
+### 029 · Impedir que o registry privado volte ao lock
 
-- **Onda**: 8 · **Severidade**: Baixa · **Achados resolvidos**: ACH-INF-01 · **Depende de**: 029
-- **Arquivos e objetos a tocar**: o `config.toml` redundante fora de `supabase/`, ou a seção duplicada dentro dele.
-- **Não tocar / armadilhas**: confirme por **hash** qual dos dois arquivos está em uso antes de apagar — apagar o que a CLI lê derruba o `supabase start` de todo mundo. Compare `git hash-object` dos dois e veja qual é referenciado por script/CI.
-- **Caminho recomendado**: `rg "config.toml" .github/ scripts/ package.json supabase/` para achar quem lê; se ninguém lê o duplicado, remova-o. Se ambos são lidos, a duplicação é intencional e a etapa termina com "não removido" justificado.
-- **Como verificar**: `supabase/config.toml` continua sendo o único lido (`rg` sem referência ao removido) e o job de CI que sobe Supabase (se houver) continua verde.
-- **Precisa de aprovação humana**: sim (config de CLI).
-
----
-
-### 031 · Alinhar os dois workflows de documentação
-
-- **Onda**: 8 · **Severidade**: Média · **Achados resolvidos**: ACH-INF-02 · **Depende de**: —
-- **Arquivos e objetos a tocar**: `.github/workflows/` (os dois workflows de docs) e `CONTRIBUTING.md:70-78`, que é onde a regra de formatação de doc está escrita.
-- **Não tocar / armadilhas**: os dois workflows têm gatilhos e escopos de arquivo diferentes — o conserto pode ser no gatilho, não no comando. Não desligue nenhum dos dois para "parar o ruído": um deles provavelmente é o único que roda em PR de fork. `actionlint` obrigatório.
-- **Caminho recomendado**: leia os dois `on:` e os dois passos de verificação; compare com a regra de `CONTRIBUTING.md:70-78`. Se a divergência é de escopo (`paths:`), alinhe os `paths:`; se é de comando, escolha o que está documentado como correto e ajuste o outro.
-- **Como verificar**: abrir uma PR que toca só documentação e ver **um** conjunto de checagens de doc, sem duplicata; abrir uma PR que não toca doc e nenhuma checagem de doc rodar. Cole os dois runs.
-- **Precisa de aprovação humana**: sim (workflow).
-
----
-
-### 032 · Documentar (ou remover) o `.env.example` órfão
-
-- **Onda**: 8 · **Severidade**: Baixa · **Achados resolvidos**: ACH-DB-08 · **Depende de**: —
-- **Arquivos e objetos a tocar**: o `.env.example` órfão e o README/`CONTRIBUTING.md` que descreve variáveis.
-- **Não tocar / armadilhas**: apagar antes de confirmar que nenhuma variável dele é necessária deixa quem clona o repo sem sabê-la. Compare o conteúdo dele com o `.env` real de referência (nomes, nunca valores) e com o que as funções leem.
-- **Caminho recomendado**: liste as chaves do órfão e do usado; as que existirem só no órfão viram entrada no usado (nome, sem valor) ou entram no README; depois remova o órfão. Se ele estiver obsoleto por inteiro, removal + registro em `05-PROGRESSO.md`.
-- **Como verificar**: `rg "\.env\.example" -g '!node_modules'` aponta para o arquivo remanescente, e a lista de chaves do `.env` de referência cobre todas as variáveis lidas por `supabase/functions` e por `src`. Cole a lista de chaves (nomes).
+- **Onda**: 8 · **Severidade**: Média · **Achados resolvidos**: ACH-INF-01 · **Depende de**: 028
+- **Arquivos e objetos a tocar**: `bunfig.toml` (novo, na raiz) — hoje **não existe** `bunfig.toml` nem `.npmrc` no repositório.
+- **Não tocar / armadilhas**: escolher o arquivo que o `bun` lê (`bunfig.toml`), não `.npmrc`: um `.npmrc` que só o npm lê não trava nada do `bun`, que é o gerenciador do projeto (ACH-INF-02). Não repita a lista de pacotes aqui.
+- **Caminho recomendado**: `[install] registry = "https://registry.npmjs.org"` no `bunfig.toml`, e uma linha no `README.md` dizendo que o registry é fixado ali (é o que evita alguém gerar o lock de novo dentro de um ambiente com cache próprio).
+- **Como verificar**: com o `bunfig.toml` no lugar, `bun install` numa cópia limpa (sem cache herdado) resolve tudo em `registry.npmjs.org` — conferir no log da instalação — e o `bun.lock` não ganha URL de `pkg.dev`. Colar o trecho do log e `grep -c 'pkg\.dev' bun.lock` = 0.
 - **Precisa de aprovação humana**: não.
 
 ---
 
-### 033 · Corrigir o check de exposição de matview para exigir acesso negado
+### 030 · Gate: nenhum endereço privado no lockfile
 
-- **Onda**: 8 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-09 · **Depende de**: —
-- **Arquivos e objetos a tocar**: `scripts/integrity/15_views_pii_rpcs.sql:80-97`.
-- **Não tocar / armadilhas**: o defeito é sutil e real: hoje a verificação retorna `pass` quando `actual = 'ausente'` — ou seja, quando a matview **não existe**, o check aprova. A verificação certa é `has_table_privilege` devolvendo **`false`** para os papéis de cliente. Os `grantee` de `role_table_grants` são o dono/`service_role`, por isso a medição antiga (`role_table_grants`) não mede o que diz medir — é exatamente a diferença que o PR #533 alterou e a `main` mantém correta.
-- **Caminho recomendado**: troque a expectativa para "acesso negado" e faça o check reprovar quando a matview existir e o cliente puder ler. Ajuste a mensagem de saída para distinguir os três casos: existe e negado (`pass`), existe e liberado (`fail`), não existe (`fail` — matview esperada não encontrada).
-- **Como verificar**: rodar o script contra produção e ver `pass` para as matviews atuais; depois, num teste em transação, `GRANT SELECT` a um desses papéis e confirmar que o check vira `fail` (`BEGIN; GRANT ...; ROLLBACK;` com o script rodando dentro). Cole as duas saídas.
-- **Precisa de aprovação humana**: não (script de verificação).
+- **Onda**: 8 · **Severidade**: Média · **Achados resolvidos**: ACH-INF-01 · **Depende de**: 029
+- **Arquivos e objetos a tocar**: script novo em `scripts/ci/` (mesmo formato de `scripts/ci/check-claude-md-integrity.mjs`) e um passo em `.github/workflows/ci.yml`, na mesma seção do Gate #35 (`ci.yml:342-359`), terminando em `::error::` + `exit 1`.
+- **Não tocar / armadilhas**: o repo proíbe PR de workflow sem `actionlint` e `act -j <job> -n` (rodar via `wsl -d Ubuntu-24.04`). O gate olha só o lockfile — não varra o repositório inteiro, ou o `README`/docs que citam o host viram falso positivo.
+- **Caminho recomendado**: o script conta ocorrências de `pkg.dev` (e dos hosts do Lovable) em `bun.lock` e sai 1 com a contagem e a primeira linha ofendida.
+- **Como verificar**: rodar o script sobre o lock **antigo** (`git show <commit-anterior-a-028>:bun.lock > /tmp/antigo.lock`) tem de sair **1** citando as 205 URLs; sobre o lock novo, **0**. Colar as duas saídas — é a prova de que o gate não nasceu verde por acidente.
+- **Precisa de aprovação humana**: sim (workflow).
 
 ---
 
-### 034 · Índices de baixo custo nas tabelas de dinheiro quentes
+### 031 · Declarar um único gerenciador de pacotes
+
+- **Onda**: 8 · **Severidade**: Baixa · **Achados resolvidos**: ACH-INF-02 · **Depende de**: —
+- **Arquivos e objetos a tocar**: `package.json`, `README.md`, `CONTRIBUTING.md`, `docs/agentes/mapa-repo.md`.
+- **Não tocar / armadilhas**: **não** trocar a vendorização do `xlsx` (`vendor/xlsx-0.20.3.tgz`, 2,4 MB, versionado) e **não** criar `package-lock.json`. A conclusão do achado sobre o `npm` vale para o contêiner onde foi medido (`npm install` aborta com `TypeError: Cannot read properties of null (reading 'edgesOut')`, resolvendo em `xlsx@file:vendor/xlsx-0.20.3.tgz`), não para qualquer máquina — a etapa padroniza o declarado, não afirma que o npm quebrou em todo lugar.
+- **Caminho recomendado**: `package.json` **não** tem campo `packageManager`. Acrescente `"packageManager": "bun@<versão que o CI usa>"` (pegar de `ci.yml`/`bun --version` no runner) e alinhe as três fontes divergentes — `docs/agentes/mapa-repo.md:40` (bun é o gerenciador), `README.md:24` (`npm install # ou: bun install`) e `CONTRIBUTING.md:70-78` (npm 10+ e `npm run dev`).
+- **Como verificar**: `rg -n "npm install|npm run" README.md CONTRIBUTING.md docs/agentes/mapa-repo.md` sem instrução conflitante; `node -e "console.log(require('./package.json').packageManager)"` imprime a versão; `bun install --frozen-lockfile` continua funcionando. Colar as saídas.
+- **Precisa de aprovação humana**: não.
+
+---
+
+### 032 · `gerar_lancamento_contabil_automatico()`: parar o drift entre produção e a cadeia versionada
+
+- **Onda**: 1 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-08 · **Depende de**: —
+- **Arquivos e objetos a tocar**: nenhum arquivo novo — DDL de convergência em produção (`DROP FUNCTION`, se o gatilho já não existir) **ou** `ALTER FUNCTION ... SET search_path` acompanhado de migration que registre a decisão.
+- **Não tocar / armadilhas**: não drope nada antes de ler `pg_trigger`. Se `trigger_gerar_contabilidade` ainda existir apontando para a função, dropar só a função falha (dependência) ou deixa gatilho órfão; e dropar os dois significa que a contabilização automática **para** em produção — que é exatamente o que a cadeia versionada já decidiu (`20261112023354_contabilizacao_automatica_movimentacoes.sql:12` dropa o gatilho e `:149` dropa a função), mas a decisão é do dono: confirme antes.
+- **Caminho recomendado**: medir em produção, nesta ordem — `SELECT proname, proconfig FROM pg_proc WHERE proname = 'gerar_lancamento_contabil_automatico'` e `SELECT tgname, tgenabled FROM pg_trigger WHERE tgfoid = 'public.gerar_lancamento_contabil_automatico()'::regprocedure`. A partir da resposta: (a) sem gatilho → convergir com produção aplicando o `DROP FUNCTION` que a migration já contém; (b) com gatilho → decidir entre manter a função viva com `search_path` fixo (`ALTER FUNCTION ... SET search_path = public, pg_temp`, enquanto ela existir) ou dropar função + gatilho. A evidência do achado: entre as **170** funções `SECURITY DEFINER` de `public`, é a única com `proconfig IS NULL` — as outras 169 fixam `search_path`.
+- **Como verificar**: `SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.prosecdef AND p.proconfig IS NULL` = **0** (hoje é 1), e a contabilização automática com o comportamento escolhido, provado por um lançamento de teste em `movimentacoes` numa transação revertida. Colar as saídas.
+- **Precisa de aprovação humana**: sim (DDL e decisão de comportamento em produção).
+
+---
+
+### 033 · Medir em produção o privilégio da view materializada
+
+- **Onda**: 1 · **Severidade**: Média · **Achados resolvidos**: ACH-DB-09 · **Depende de**: —
+- **Arquivos e objetos a tocar**: nenhum — esta etapa é medição. A ferramenta já existe: `scripts/integrity/15_views_pii_rpcs.sql:80-97`, checagem `views.matview_not_exposed_to_clients`.
+- **Não tocar / armadilhas**: **`ausente` não é mitigação.** A checagem devolve `pass` quando `to_regclass('public.mv_performance_alerts_weekly') IS NULL` (`15_views_pii_rpcs.sql:83`) — isso quer dizer que a view **não existe** em produção, e não que ela está protegida; se for o caso, o achado **não** fecha e o drift vira achado novo em `05-PROGRESSO.md`. Não rode `REVOKE` preventivo: sem ver `true`, não há o que revogar. `information_schema.role_table_grants` não lista view materializada e `pg_class.relacl` não resolve privilégio herdado de dono/PUBLIC — a medição certa é `has_table_privilege`, que é o que a checagem já usa.
+- **Caminho recomendado**: `psql "$PROD_DB_URL" -f scripts/integrity/15_views_pii_rpcs.sql` e ler a linha `views.matview_not_exposed_to_clients`. Contexto: `mv_performance_alerts_weekly` é a única das 18 views de `public` sem `security_invoker` (view materializada não aceita essa opção — por isso consulta a base com privilégio do dono, ignorando RLS), o acesso direto já foi revogado na criação (`20260712194623_...:48-49`) e no hardening (`20260827101000_hardening_views_pii_rpcs.sql:51-58`: `REVOKE ALL ... FROM PUBLIC, anon, authenticated` + `GRANT SELECT ... TO service_role`), e nenhuma migration posterior devolve o `SELECT`. O achado é **hipótese** justamente porque o efetivo não foi medido.
+- **Como verificar**: `actual = false` → fechar como "mitigado por privilégio, sem DDL", colando a saída do comando em `05-PROGRESSO.md`. `actual = true` → uma das roles clientes lê a view: abrir a etapa de `REVOKE` (aprovação humana) e colar a saída. `actual = ausente` → registrar o drift e **não** fechar o achado.
+- **Precisa de aprovação humana**: não (medição somente leitura).
+
+---
+
+### 034 · Criar os cinco índices de chave estrangeira que faltam
 
 - **Onda**: 6 · **Severidade**: Baixa · **Achados resolvidos**: ACH-DB-10 · **Depende de**: —
-- **Arquivos e objetos a tocar**: migration nova com os `CREATE INDEX` e o script de medição de uso.
-- **Não tocar / armadilhas**: **nada de `CONCURRENTLY`** — o gateway do Supabase recusa. Índice em `(empresa_id, criado_em DESC)` já cobre o filtro de tenant e a ordenação: não crie os dois separados. Não drope índice "não usado" nesta etapa: o PR #243 (404 índices com `idx_scan = 0`) está aberto justamente para isso e é decisão de produção.
-- **Caminho recomendado**: meça primeiro o que existe: `SELECT relname, indexrelname, idx_scan FROM pg_stat_user_indexes WHERE relname IN ('notas_fiscais','movimentacoes','nfe_recebidas','asaas_transfers') ORDER BY idx_scan`. Se já houver índice equivalente, a etapa é "nada a fazer" com a medição no progresso. Use FKs órfãs como sinal: coluna de FK sem índice é o candidato mais seguro.
-- **Como verificar**: `idx_scan` do índice novo > 0 depois de uso real, e `EXPLAIN (ANALYZE, BUFFERS)` da consulta que ele deve servir mostrando `Index Scan` (ou `Bitmap`) em vez de `Seq Scan`. Cole o `EXPLAIN`.
+- **Arquivos e objetos a tocar**: `supabase/migrations/<YYYYMMDDHHmmss>_indices_fk_faltantes.sql` (novo), com cinco `CREATE INDEX`.
+- **Não tocar / armadilhas**: **nada de `CONCURRENTLY`** — o gateway do Supabase recusa. Não aproveite para criar índice fora da lista do achado: os 404 índices com `idx_scan = 0` (PR #243) são outro assunto, com decisão própria, e o PR #243 **não** mergeia por causa desta etapa.
+- **Caminho recomendado**: as cinco colunas, exatamente como medidas — `execucoes_cobranca.cliente_id`, `asaas_audit_trail.user_id`, `asaas_transfers.user_id`, `sso_login_attempts.empresa_id`, `aprovacao_assinaturas.user_id`. Nenhuma delas aparece como primeira coluna de índice algum (consulta cruzando `pg_constraint` com `contype = 'f'` e `pg_index`); o Postgres não cria índice de FK sozinho. Nome no padrão do repositório (`idx_<tabela>_<coluna>`) e todas em uma migration, porque as tabelas têm ≤10 linhas e o lock é desprezível.
+- **Como verificar**: repetir a consulta do achado (`pg_constraint` `contype = 'f'` cruzado com `pg_index`) e obter **0** linhas sem índice; e `EXPLAIN (ANALYZE, BUFFERS)` de um `DELETE`/junção no lado pai mostrando `Index Scan`/`Bitmap` em vez de `Seq Scan`. Colar as duas saídas.
 - **Precisa de aprovação humana**: sim (DDL em produção).
 
 ---
 
-### 035 · Definir o critério de decisão sobre os 404 índices idle
+### 035 · Gate: FK nova nasce com índice
 
-- **Onda**: 6 · **Severidade**: Baixa · **Achados resolvidos**: ACH-DB-10 · **Depende de**: 034
-- **Arquivos e objetos a tocar**: `docs/qa/06-INDICES.md` (novo) e, se o critério for aprovado, as migrations do PR #243.
-- **Não tocar / armadilhas**: `idx_scan = 0` **não** prova que o índice é lixo — índice que serve só `UPDATE`/`DELETE`, ou que protege uma FK contra varredura completa no `UPDATE` pai, aparece com `idx_scan = 0`. Dropar por esse número é o erro clássico. Coleta de estatística zerada (base nova, `pg_stat_reset`) também zera tudo.
-- **Caminho recomendado**: classifique os 404 em três grupos: (a) duplicata de outro índice (`pg_index` com mesmas colunas) → seguro dropar; (b) índice de FK sem uso → manter, o custo é do `UPDATE` no pai; (c) índice em coluna consultada por código (`rg "WHERE <coluna>"`) → manter. Escreva o critério e o grupo de cada índice. O PR #243 só mergeia depois deste documento.
-- **Como verificar**: `docs/qa/06-INDICES.md` com os 404 classificados e a lista dos "seguro dropar" (grupo a) conferida por `pg_index`/`pg_indexes` mostrando a duplicata real. Cole a contagem por grupo.
-- **Precisa de aprovação humana**: sim (o merge do PR #243 é decisão de produção).
+- **Onda**: 8 · **Severidade**: Baixa · **Achados resolvidos**: ACH-DB-10 · **Depende de**: 034
+- **Arquivos e objetos a tocar**: `scripts/integrity/17_fk_sem_indice.sql` (novo — `16_` fica para o inventário de isolamento da etapa 001), a lista em `scripts/integrity/README.md` e um passo em `.github/workflows/ci.yml`.
+- **Não tocar / armadilhas**: `actionlint` e `act -j <job> -n` antes do push (regra do repo para workflow). Não renumere as checagens existentes de `scripts/integrity/` (01 a 15) nem as do `run.sh` — some a nova. O gate precisa do `if: steps.db_url_preflight.outputs.available == 'true'`, como os outros que usam `PROD_DB_URL`, senão PR de fork com secret ausente reprova por motivo errado.
+- **Caminho recomendado**: copie o formato do Gate #35 (`ci.yml:342-359`): `psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f scripts/integrity/17_fk_sem_indice.sql | tee fk.tsv`, e `grep -qP '\tfail\t' fk.tsv` → `::error::` nomeando a FK, `exit 1`. A consulta é a mesma do achado: FK sem índice como primeira coluna.
+- **Como verificar**: na `main` atual o script devolve `pass`; o `fail` é provado criando uma tabela com FK sem índice dentro de uma transação em produção e rodando o script antes do `ROLLBACK` (`BEGIN; CREATE TABLE ... REFERENCES ...; <script>; ROLLBACK;`), ou no banco de staging. Colar as duas saídas.
+- **Precisa de aprovação humana**: sim (workflow).

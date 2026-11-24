@@ -40,17 +40,17 @@ Legenda de status: `aberta` · `em andamento` · `em PR` · `concluída` · `blo
 | 022 | Aposentar rótulos do enum `app_role` | 3 | sim | aberta | — | — | — |
 | 023 | Front-end e helpers no vocabulário único | 3 | não | aberta | — | — | — |
 | 024 | Gate de CI para papel fora do vocabulário | 8 | sim | aberta | — | — | — |
-| 025 | `oportunidades_elisao`: fechar escrita anônima | 1 | sim | aberta | — | — | — |
-| 026 | `auditoria_financeira`: log imutável | 1 | sim | aberta | — | — | — |
-| 027 | `oportunidades_elisao`: `empresa_id` + backfill | 1 | sim | aberta | — | — | — |
-| 028 | Aposentar `Vault` → `secrets` | 8 | sim | aberta | — | — | — |
-| 029 | Confirmar ausência de leitura de Vault | 8 | não | aberta | — | — | — |
-| 030 | Remover `config.toml` duplicado | 8 | sim | aberta | — | — | — |
-| 031 | Alinhar os dois workflows de documentação | 8 | sim | aberta | — | — | — |
-| 032 | `.env.example` órfão | 8 | não | aberta | — | — | — |
-| 033 | Check de matview exige acesso negado | 8 | não | aberta | — | — | — |
-| 034 | Índices nas tabelas de dinheiro quentes | 6 | sim | aberta | — | — | — |
-| 035 | Critério dos 404 índices idle | 6 | sim | aberta | — | — | — |
+| 025 | `audit_logs`: fechar o `INSERT` de `authenticated` | 1 | sim | aberta | — | — | — |
+| 026 | `auditoria_financeira`: validar `empresa_id` no `INSERT` | 1 | sim | aberta | — | — | — |
+| 027 | `frontend_error_logs`: limitar o `INSERT` de `anon` | 1 | sim | aberta | — | — | — |
+| 028 | Regerar o `bun.lock` contra o registry público | 8 | sim | aberta | — | — | — |
+| 029 | Impedir a volta do registry privado ao lock | 8 | não | aberta | — | — | — |
+| 030 | Gate: endereço privado no lockfile | 8 | sim | aberta | — | — | — |
+| 031 | Declarar um único gerenciador de pacotes | 8 | não | aberta | — | — | — |
+| 032 | `gerar_lancamento_contabil_automatico()`: parar o drift | 1 | sim | aberta | — | — | — |
+| 033 | Medir o privilégio da view materializada | 1 | não | aberta | — | — | — |
+| 034 | Cinco índices de chave estrangeira | 6 | sim | aberta | — | — | — |
+| 035 | Gate: FK nova nasce com índice | 8 | sim | aberta | — | — | — |
 
 **Total**: 35 etapas · 28 com aprovação humana obrigatória (DDL, segredo, workflow ou decisão de negócio) · 7 sem.
 
@@ -62,14 +62,14 @@ Legenda de status: `aberta` · `em andamento` · `em PR` · `concluída` · `blo
 | ACH-DB-02 — `clientes` aceita `empresa_id` nulo | Alta | 003–005 | não |
 | ACH-DB-03 — `fornecedores` sem isolamento por empresa | Alta | 006–008 | não |
 | ACH-DB-04 — quatro vocabulários de papel | Alta | 015–024 | não |
-| ACH-DB-05 — `oportunidades_elisao` aceita escrita anônima | Alta | 025 | não |
-| ACH-DB-06 — `auditoria_financeira` aceita `UPDATE`/`DELETE` | Média | 026 | não |
-| ACH-DB-07 — `oportunidades_elisao` sem `empresa_id` | Média | 027 | não |
-| ACH-INF-01 — `Vault` e `config.toml` duplicado | Média | 028–030 | não |
-| ACH-INF-02 — dois workflows de doc divergentes | Média | 031 | não |
-| ACH-DB-08 — `.env.example` órfão | Baixa | 032 | não |
-| ACH-DB-09 — check de matview aprova quando não existe | Média | 033 | não |
-| ACH-DB-10 — 404 índices com `idx_scan = 0` | Baixa | 034–035 | não |
+| ACH-DB-05 — qualquer usuário logado escreve na trilha de auditoria | Alta | 025 | não |
+| ACH-DB-06 — `auditoria_financeira` aceita registro de qualquer empresa | Média | 026 | não |
+| ACH-DB-07 — tabela de erros de front aberta para a internet | Média | 027 | não |
+| ACH-INF-01 — um quinto do build vem de registry privado de terceiro | Alta | 028–030 | não |
+| ACH-INF-02 — só o `bun` consegue instalar o projeto | Baixa | 031 | não |
+| ACH-DB-08 — função com privilégio elevado sem `search_path` fixo | Média | 032 | não |
+| ACH-DB-09 — view materializada fora do controle de acesso | Média | 033 | não |
+| ACH-DB-10 — cinco chaves estrangeiras sem índice | Baixa | 034–035 | não |
 
 ## Desvios
 
@@ -83,7 +83,7 @@ Descobertas feitas durante a execução. **Não** alteram o escopo da etapa em c
 
 | Data | Onde | O que é | Severidade proposta | Virou etapa? |
 | --- | --- | --- | --- | --- |
-| — | — | — | — | — |
+| 2026-11-24 | `docs/qa/04-PLANO.md`, etapas 025–035 | A primeira redação deste plano apontava as etapas 025–035 para objetos que **não** são os dos achados do grupo B/C/D — citava `oportunidades_elisao`, Vault e os 404 índices idle (que pertencem ao PR #243, outro assunto). As onze etapas foram reescritas a partir de `03-ACHADOS.md`; nenhum número de etapa e nenhum vínculo achado→etapa mudou | Alta | não — corrigido na revisão da própria PR |
 
 ## Decisões registradas
 
@@ -95,8 +95,9 @@ Descobertas feitas durante a execução. **Não** alteram o escopo da etapa em c
 
 No PR da etapa, junto com a migration ou o código:
 
-1. Trocar o `status` da linha da etapa (máximo `em PR` antes do merge).
+1. Trocar o `status` da linha da etapa (máximo `em PR` antes do merge) — o PR não pode se declarar `concluída` por conta própria.
 2. Preencher `Branch / PR` e colar a **saída literal** do comando de verificação da etapa na coluna `Evidência` (ou num bloco abaixo, com o número da etapa como título).
-3. No merge, trocar para `concluída` e preencher `Commit` com o hash na `main`.
+3. Só marcar `concluída` **depois** do merge, numa PR curta de atualização deste arquivo (`docs:`), e preencher `Commit` com o hash do commit **na `main`** — depois de um squash-merge esse hash é o commit de squash, então o valor se lê com `git log --oneline -1 origin/main` logo após o merge, não com o hash da branch (a branch é apagada). Sem esse hash na `main`, o status máximo continua `em PR`.
+4. Etapa com `Precisa de aprovação humana: sim` só vira `concluída` se o item 3 vier acompanhado do aval registrado em "Decisões registradas" (data + quem autorizou). Sem o registro, o status fica `bloqueada` com o motivo.
 
 Uma etapa cuja evidência não pôde ser produzida (sem acesso, ambiente indisponível) fica `bloqueada` com o motivo escrito — **nunca** `concluída` por inferência.
