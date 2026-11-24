@@ -120,3 +120,43 @@ export async function buscarReferenciasFiscais(
 
   return resultado;
 }
+
+/**
+ * Lista as linhas vigentes do catalogo, para montar as opcoes de escolha em tela
+ * (etapa 53). Diferente de `buscarReferenciasFiscais`, aqui nao ha lote de
+ * codigos conhecidos: a tela precisa do catalogo inteiro para oferecer o leque.
+ *
+ * Best effort igual ao resto do modulo: erro de leitura devolve lista vazia, e
+ * um codigo com duas linhas vigentes fica com a ultima — mesmo criterio do
+ * `Map` da busca por codigo, que e o que o consumidor enxerga.
+ */
+export async function listarCclasstribVigentes(
+  dataReferencia?: string | Date | null
+): Promise<CclasstribCatalogo[]> {
+  const referencia = normalizarReferencia(dataReferencia ?? hojeIso());
+  const { data, error } = await supabase
+    .from('catalogo_cclasstrib')
+    .select(
+      'cclasstrib, cst, descricao, exige_gibscbs, p_red_cbs, p_red_ibs_uf, p_red_ibs_mun, versao_it, inicio_vigencia, fim_vigencia'
+    )
+    .order('cclasstrib');
+
+  if (error) return [];
+
+  const vigentes = new Map<string, CclasstribCatalogo>();
+  for (const linha of data ?? []) {
+    if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
+    vigentes.set(linha.cclasstrib, {
+      cclasstrib: linha.cclasstrib,
+      cst: linha.cst,
+      descricao: linha.descricao,
+      exigeGibscbs: Boolean(linha.exige_gibscbs),
+      pRedCbs: Number(linha.p_red_cbs),
+      pRedIbsUf: Number(linha.p_red_ibs_uf),
+      pRedIbsMun: Number(linha.p_red_ibs_mun),
+      versaoIt: linha.versao_it,
+    });
+  }
+
+  return [...vigentes.values()];
+}
