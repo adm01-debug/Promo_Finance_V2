@@ -6,7 +6,7 @@
 > Não cobre: tabelas acessadas por `.rpc()` (chamada de função, não de tabela), por nome em variável
 > (`from(nome)`) nem por SQL cru. Chamadas `storage.from('bucket')` são bucket de storage, não tabela, e ficam de fora.
 
-**106 edge functions · 112 tabelas citadas · 25 funções sem `.from()` literal.**
+**108 edge functions · 113 tabelas citadas · 25 funções sem `.from()` literal.**
 
 ## Por função
 
@@ -14,13 +14,13 @@
 |---|---|
 | `aceitar-convite` | `convites`, `organizacao_membros`, `organizacoes` |
 | `analise-fluxo-ia` | — |
-| `analise-preditiva` | `clientes`, `contas_pagar`, `contas_receber`, `transacoes_bancarias` |
+| `analise-preditiva` | `clientes`, `contas_bancarias`, `contas_pagar`, `contas_receber`, `transacoes_bancarias` |
 | `analyze-document` | — |
 | `api-keys-manage` | `api_keys`, `user_empresas` |
 | `asaas-proxy` | `asaas_audit_trail`, `asaas_config`, `asaas_credit_risk_analysis`, `asaas_customers`, `asaas_payment_links`, `asaas_payments`, `asaas_reconciliation_suggestions`, `asaas_sync_queue`, `asaas_transfers`, `clientes`, `contas_receber`, `user_empresas`, `user_roles` |
 | `asaas-webhook` | `asaas_audit_trail`, `asaas_payments`, `asaas_transfers` |
 | `benchmarking-setorial` | — |
-| `bitrix24-sync` | `bitrix_field_mappings`, `bitrix_oauth_tokens`, `bitrix_sync_logs`, `clientes`, `contas_receber`, `elisao_tarefas_acionaveis`, `empresas` |
+| `bitrix24-sync` | `bitrix_field_mappings`, `bitrix_oauth_tokens`, `bitrix_sync_logs`, `clientes`, `contas_receber`, `elisao_tarefas_acionaveis`, `user_empresas` |
 | `bitrix24-webhook` | — |
 | `bling-proxy` | `bling_tokens`, `user_roles` |
 | `bling-webhook` | `alertas` |
@@ -48,8 +48,8 @@
 | `enviar-convite-organizacao` | `convites`, `organizacao_membros`, `organizacoes` |
 | `enviar-digest-conformidade` | `alertas_tributarios`, `digest_envios_log`, `empresas`, `integration_secrets`, `profiles`, `user_digest_preferences`, `user_roles` |
 | `enviar-relatorios-tributarios-agendados` | `empresas`, `relatorios_tributarios_agendados` |
-| `executar-analise-preditiva` | `alertas_preditivos`, `clientes`, `contas_pagar`, `contas_receber`, `empresas`, `historico_analises_preditivas`, `historico_score_saude`, `metas_financeiras`, `recomendacoes_metas_ia`, `transacoes_bancarias`, `user_empresas` |
-| `executar-fechamento-tributario` | `apuracoes_tributarias`, `empresas`, `fechamentos_tributarios`, `regime_decision_cache`, `relatorios_tributarios`, `transacoes_bancarias`, `user_roles`, `verificacoes_conformidade` |
+| `executar-analise-preditiva` | `alertas_preditivos`, `clientes`, `contas_bancarias`, `contas_pagar`, `contas_receber`, `empresas`, `historico_analises_preditivas`, `historico_score_saude`, `metas_financeiras`, `recomendacoes_metas_ia`, `transacoes_bancarias`, `user_empresas` |
+| `executar-fechamento-tributario` | `apuracoes_tributarias`, `contas_bancarias`, `empresas`, `fechamentos_tributarios`, `regime_decision_cache`, `relatorios_tributarios`, `transacoes_bancarias`, `user_roles`, `verificacoes_conformidade` |
 | `executar-regua-cobranca` | `contas_receber`, `execucoes_regua_cobranca`, `regua_cobranca` |
 | `executar-relatorios` | `contas_bancarias`, `contas_pagar`, `contas_receber`, `historico_relatorios`, `relatorios_agendados`, `user_empresas` |
 | `expert-agent` | — |
@@ -58,11 +58,11 @@
 | `gerar-acoes-recomendadas` | `acoes_recomendadas`, `alertas_tributarios`, `anomalias_detectadas`, `apuracoes_tributarias`, `empresas`, `health_scores_operacionais`, `solicitacoes_lgpd` |
 | `gerar-alertas` | `alertas`, `contas_pagar`, `contas_receber`, `metas_financeiras` |
 | `gerar-alertas-dispatcher` | — |
-| `gerar-alertas-tributarios` | `alertas_tributarios`, `apuracoes_tributarias`, `benchmarks_setoriais`, `edge_function_logs`, `empresas`, `faturamento_mensal`, `folha_pagamento`, `movimentacoes` |
+| `gerar-alertas-tributarios` | `alertas_tributarios`, `apuracoes_tributarias`, `benchmarks_setoriais`, `edge_function_logs`, `empresas`, `faturamento_mensal`, `folha_pagamento`, `movimentacoes`, `notas_fiscais` |
 | `gerar-dre-tributaria` | `empresas`, `faturamento_mensal`, `user_empresas` |
 | `gerar-heatmap-tributario` | `faturamento_mensal`, `user_empresas` |
 | `gerar-pacote-evidencias` | `evidencias_pacotes`, `user_empresas`, `user_roles` |
-| `gerar-pdf-tributario` | `empresas`, `user_empresas` |
+| `gerar-pdf-tributario` | `apuracoes_tributarias`, `empresas`, `user_empresas` |
 | `gerar-relatorio-anual` | `alertas_tributarios`, `empresas`, `user_empresas`, `user_roles`, `vw_tributario_dashboard` |
 | `gerar-resumo-executivo-semanal` | `alertas_tributarios`, `contas_pagar`, `contas_receber`, `empresas`, `relatorios_tributarios_agendados`, `resumos_executivos_semanais` |
 | `gerar-resumo-financeiro-diario` | `asaas_config`, `asaas_payments`, `asaas_sync_queue`, `empresas` |
@@ -71,6 +71,7 @@
 | `gerar-sped-ecf` | `empresas`, `lancamentos_contabeis`, `plano_contas`, `sped_contabil_arquivos`, `user_empresas`, `user_roles` |
 | `get-mapbox-token` | — |
 | `get-vapid-key` | — |
+| `guardar-xml-nfe-autorizada` | `empresas` |
 | `health` | `asaas_config` |
 | `insights-relatorio` | — |
 | `log-sped-bitrix24` | `audit_logs` |
@@ -91,6 +92,7 @@
 | `processar-solicitacao-lgpd` | `alertas`, `audit_logs`, `auditoria_tributaria`, `profiles`, `solicitacoes_lgpd` |
 | `projecao-reforma` | — |
 | `relatorio-diario-anomalias` | `alertas`, `anomalias_detectadas`, `profiles`, `user_roles` |
+| `reprocessar-creditos-ibscbs` | `nfe_recebidas` |
 | `scim-server` | `profiles`, `scim_operations_log`, `scim_tokens`, `sso_providers`, `sso_role_mappings`, `user_empresas`, `user_roles` |
 | `sefaz-dfe-dispatcher` | `cron_job_logs`, `empresas_certificados`, `sefaz_dfe_cursor` |
 | `sefaz-dfe-puxar` | `empresas_certificados`, `query_telemetry`, `sefaz_dfe_cursor` |
@@ -111,7 +113,7 @@
 | `upload-anexo` | `anexos_financeiros`, `user_empresas` |
 | `validar-token-contador` | `convites_contador`, `empresas` |
 | `validate-ip-geo` | `auth_logs` |
-| `verificar-conformidade-fiscal` | `alertas_tributarios`, `apuracoes_tributarias`, `contas_pagar`, `empresas`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `user_empresas`, `user_roles`, `verificacoes_conformidade` |
+| `verificar-conformidade-fiscal` | `alertas_tributarios`, `apuracoes_tributarias`, `contas_pagar`, `empresas`, `notas_fiscais`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `user_empresas`, `user_roles`, `verificacoes_conformidade` |
 | `webhook-replay` | `webhooks_log` |
 | `webhook-retry-worker` | — |
 | `webhook-simulator` | `webhook_simulation_results`, `webhook_simulation_runs` |
@@ -134,7 +136,7 @@
 | `anomalia_detection_runs` | `detectar-anomalias-financeiras` |
 | `anomalias_detectadas` | `detectar-anomalias-financeiras`, `gerar-acoes-recomendadas`, `relatorio-diario-anomalias`, `sincronizar-anomalia-bitrix24` |
 | `api_keys` | `api-keys-manage` |
-| `apuracoes_tributarias` | `calcular-health-score-operacional`, `executar-fechamento-tributario`, `exportar-sped-contribuicoes`, `gerar-acoes-recomendadas`, `gerar-alertas-tributarios`, `verificar-conformidade-fiscal` |
+| `apuracoes_tributarias` | `calcular-health-score-operacional`, `executar-fechamento-tributario`, `exportar-sped-contribuicoes`, `gerar-acoes-recomendadas`, `gerar-alertas-tributarios`, `gerar-pdf-tributario`, `verificar-conformidade-fiscal` |
 | `asaas_audit_trail` | `asaas-proxy`, `asaas-webhook`, `whatsapp-webhook` |
 | `asaas_config` | `asaas-proxy`, `gerar-resumo-financeiro-diario`, `health` |
 | `asaas_credit_risk_analysis` | `asaas-proxy` |
@@ -159,7 +161,7 @@
 | `cnpja_cache` | `cnpja-lookup` |
 | `companies` | `external-data` |
 | `conformidade_snapshots` | `gerar-snapshots-conformidade` |
-| `contas_bancarias` | `calcular-health-score-operacional`, `copilot-global`, `executar-relatorios`, `open-finance` |
+| `contas_bancarias` | `analise-preditiva`, `calcular-health-score-operacional`, `copilot-global`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-relatorios`, `open-finance` |
 | `contas_pagar` | `analise-preditiva`, `copilot-global`, `detectar-anomalias-financeiras`, `executar-analise-preditiva`, `executar-relatorios`, `gerar-alertas`, `gerar-resumo-executivo-semanal`, `verificar-conformidade-fiscal` |
 | `contas_receber` | `analise-preditiva`, `asaas-proxy`, `bitrix24-sync`, `calcular-health-score-operacional`, `copilot-global`, `executar-analise-preditiva`, `executar-regua-cobranca`, `executar-relatorios`, `gerar-alertas`, `gerar-resumo-executivo-semanal`, `whatsapp-ia-proativo` |
 | `convites` | `aceitar-convite`, `enviar-convite-organizacao` |
@@ -168,7 +170,7 @@
 | `digest_envios_log` | `enviar-digest-conformidade` |
 | `edge_function_logs` | `gerar-alertas-tributarios` |
 | `elisao_tarefas_acionaveis` | `bitrix24-sync` |
-| `empresas` | `bitrix24-sync`, `calcular-health-score-operacional`, `comparar-benchmark-setorial`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `exportar-sped-contribuicoes`, `gerar-acoes-recomendadas`, `gerar-alertas-tributarios`, `gerar-dre-tributaria`, `gerar-pdf-tributario`, `gerar-relatorio-anual`, `gerar-resumo-executivo-semanal`, `gerar-resumo-financeiro-diario`, `gerar-snapshots-conformidade`, `gerar-sped-ecd`, `gerar-sped-ecf`, `validar-token-contador`, `verificar-conformidade-fiscal` |
+| `empresas` | `calcular-health-score-operacional`, `comparar-benchmark-setorial`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `exportar-sped-contribuicoes`, `gerar-acoes-recomendadas`, `gerar-alertas-tributarios`, `gerar-dre-tributaria`, `gerar-pdf-tributario`, `gerar-relatorio-anual`, `gerar-resumo-executivo-semanal`, `gerar-resumo-financeiro-diario`, `gerar-snapshots-conformidade`, `gerar-sped-ecd`, `gerar-sped-ecf`, `guardar-xml-nfe-autorizada`, `validar-token-contador`, `verificar-conformidade-fiscal` |
 | `empresas_certificados` | `sefaz-dfe-dispatcher`, `sefaz-dfe-puxar`, `sefaz-manifestar` |
 | `entregas_obrigacoes` | `gerar-snapshots-conformidade` |
 | `eventos_contabilizacao_log` | `contabilizar-evento` |
@@ -192,7 +194,8 @@
 | `n8n_workflow_configs` | `n8n-dispatch` |
 | `ncms` | `consulta-tributaria` |
 | `nfe_eventos` | `sefaz-manifestar` |
-| `nfe_recebidas` | `sefaz-manifestar` |
+| `nfe_recebidas` | `reprocessar-creditos-ibscbs`, `sefaz-manifestar` |
+| `notas_fiscais` | `gerar-alertas-tributarios`, `verificar-conformidade-fiscal` |
 | `notas_fiscais_ocr` | `processar-nf-ocr` |
 | `notification_history` | `notify-saved-filter` |
 | `open_finance_consents` | `open-finance` |
@@ -227,7 +230,7 @@
 | `tax_audit_trail` | `decidir-regime` |
 | `transacoes_bancarias` | `analise-preditiva`, `calcular-health-score-operacional`, `detectar-anomalias-financeiras`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `open-finance` |
 | `user_digest_preferences` | `enviar-digest-conformidade` |
-| `user_empresas` | `api-keys-manage`, `asaas-proxy`, `calcular-health-score-operacional`, `comparar-benchmark-setorial`, `contabilizar-evento`, `convidar-contador`, `enviar-bitrix24-tributario`, `executar-analise-preditiva`, `executar-relatorios`, `exportar-sped-contribuicoes`, `external-data`, `gerar-dre-tributaria`, `gerar-heatmap-tributario`, `gerar-pacote-evidencias`, `gerar-pdf-tributario`, `gerar-relatorio-anual`, `gerar-sped-ecd`, `gerar-sped-ecf`, `prever-carga-tributaria`, `scim-server`, `sefaz-manifestar`, `sso-callback`, `upload-anexo`, `verificar-conformidade-fiscal`, `whatsapp-ia-proativo` |
+| `user_empresas` | `api-keys-manage`, `asaas-proxy`, `bitrix24-sync`, `calcular-health-score-operacional`, `comparar-benchmark-setorial`, `contabilizar-evento`, `convidar-contador`, `enviar-bitrix24-tributario`, `executar-analise-preditiva`, `executar-relatorios`, `exportar-sped-contribuicoes`, `external-data`, `gerar-dre-tributaria`, `gerar-heatmap-tributario`, `gerar-pacote-evidencias`, `gerar-pdf-tributario`, `gerar-relatorio-anual`, `gerar-sped-ecd`, `gerar-sped-ecf`, `prever-carga-tributaria`, `scim-server`, `sefaz-manifestar`, `sso-callback`, `upload-anexo`, `verificar-conformidade-fiscal`, `whatsapp-ia-proativo` |
 | `user_roles` | `asaas-proxy`, `bling-proxy`, `contabilizar-evento`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `digest-silenciamentos-erro`, `enviar-digest-conformidade`, `executar-fechamento-tributario`, `exportar-sped-contribuicoes`, `gerar-pacote-evidencias`, `gerar-relatorio-anual`, `gerar-sped-ecd`, `gerar-sped-ecf`, `monitorar-erros-frontend`, `relatorio-diario-anomalias`, `scim-server`, `sso-callback`, `sso-test-login`, `verificar-conformidade-fiscal` |
 | `verificacoes_conformidade` | `executar-fechamento-tributario`, `verificar-conformidade-fiscal` |
 | `vw_edge_health` | `calcular-slo-metrics-diario` |
