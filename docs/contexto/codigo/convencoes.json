@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)",
    "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)",
    "chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)",
    "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)",
-   "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)",
-   "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)"
+   "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8b0db85ff65262703bc7dd021a285e62a5b28c71` (2026-11-24T15:41:07-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `45de89c0cee878b90980eca622d52303de00bedc` (2026-11-24T18:13:35-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -638,6 +638,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-24 `45de89c` chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)
 - 2026-11-24 `8b0db85` docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)
 - 2026-11-24 `274d1f7` chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)
 - 2026-11-24 `04504ef` chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)
@@ -652,7 +653,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
 - 2026-11-22 `f423b99` chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)
 - 2026-11-22 `60ece16` fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)
-- 2026-11-22 `856fef0` fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

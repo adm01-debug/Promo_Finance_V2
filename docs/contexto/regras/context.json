@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "8b0db85ff65262703bc7dd021a285e62a5b28c71",
+  "sha": "45de89c0cee878b90980eca622d52303de00bedc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 19:13 UTC",
+  "generated_at": "2026-11-24 21:14 UTC",
   "files_total": 4088,
   "code_files": 3668,
   "code_lines": 522984
@@ -249228,10 +249228,22 @@
   }
  },
  "git": {
-  "sha": "8b0db85ff65262703bc7dd021a285e62a5b28c71",
+  "sha": "45de89c0cee878b90980eca622d52303de00bedc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "45de89c",
+    "date": "2026-11-24",
+    "author": "adm01-debug",
+    "subject": "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)",
+    "files": [
+     "docs/ci/MATRIZ_EDGE_TABELA.md",
+     "docs/ci/README.md",
+     "docs/ci/kpi.json",
+     "docs/receitafederal/rfb-changelog-state.json"
+    ]
+   },
    {
     "sha": "8b0db85",
     "date": "2026-11-24",
@@ -249617,17 +249629,6 @@
      "supabase/migrations/20261122020001_corrige_rls_notas_fiscais_itens.sql",
      "supabase/migrations/20261122020002_ajustes_notas_fiscais_itens_review.sql"
     ]
-   },
-   {
-    "sha": "5148e34",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)",
-    "files": [
-     "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql",
-     "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql",
-     "supabase/migrations/20261122023700_corrige_pk_catalogo_ncm_nbs_vigencia.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -249684,6 +249685,22 @@
     2
    ],
    [
+    "docs/ci/MATRIZ_EDGE_TABELA.md",
+    1
+   ],
+   [
+    "docs/ci/README.md",
+    1
+   ],
+   [
+    "docs/ci/kpi.json",
+    1
+   ],
+   [
+    "docs/receitafederal/rfb-changelog-state.json",
+    1
+   ],
+   [
     "docs/qa/05-PROGRESSO.md",
     1
    ],
@@ -249693,22 +249710,6 @@
    ],
    [
     "docs/qa/02-CENARIOS.md",
-    1
-   ],
-   [
-    "docs/qa/03-ACHADOS.md",
-    1
-   ],
-   [
-    "graphify-out/GRAPH_REPORT.md",
-    1
-   ],
-   [
-    "graphify-out/manifest.json",
-    1
-   ],
-   [
-    "graphify.local.json",
     1
    ]
   ]

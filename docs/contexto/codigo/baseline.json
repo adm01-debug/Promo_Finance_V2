@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8b0db85ff65262703bc7dd021a285e62a5b28c71",
+  "commit": "45de89c0cee878b90980eca622d52303de00bedc",
   "branch": "main",
-  "data_commit": "2026-11-24T15:41:07-03:00",
+  "data_commit": "2026-11-24T18:13:35-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "45de89c",
+    "data": "2026-11-24",
+    "assunto": "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)"
+   },
    {
     "sha": "8b0db85",
     "data": "2026-11-24",
@@ -126,14 +131,9 @@
     "sha": "81d3613",
     "data": "2026-11-22",
     "assunto": "feat: regimes especiais LC 214/2025 — etapas 15-16"
-   },
-   {
-    "sha": "2463d97",
-    "data": "2026-11-22",
-    "assunto": "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS"
    }
   ],
-  "arquivos_mudados_7d": 303,
+  "arquivos_mudados_7d": 272,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -258,6 +258,10 @@
     "mudancas": 6
    },
    {
+    "arquivo": "docs/ci/README.md",
+    "mudancas": 6
+   },
+   {
     "arquivo": "docs/prod-readiness.md",
     "mudancas": 6
    },
@@ -286,10 +290,6 @@
     "mudancas": 5
    },
    {
-    "arquivo": "docs/ci/README.md",
-    "mudancas": 5
-   },
-   {
     "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     "mudancas": 5
    },
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 280
+    "commits": 281
    },
    {
     "autor": "dependabot[bot]",
