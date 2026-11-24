@@ -55,12 +55,10 @@ describe('calcularGrupoIbscbs', () => {
   });
 
   it('codigo que dispensa o grupo de valores nao destaca tributo', () => {
-    const grupo = calcularGrupoIbscbs(
-      100,
-      { pRedCbs: 1, pRedIbsUf: 1, pRedIbsMun: 1, exigeGibscbs: false },
-      2026
-    );
+    // reducao zero: se a dispensa nao fosse respeitada, sairia aliquota cheia.
+    const grupo = calcularGrupoIbscbs(100, { ...SEM_REDUCAO, exigeGibscbs: false }, 2026);
     expect(grupo.vBC).toBe(100);
+    expect(grupo.pCBS).toBe(0);
     expect(grupo.vCBS).toBe(0);
     expect(grupo.vIBSUF).toBe(0);
     expect(grupo.vIBS).toBe(0);
