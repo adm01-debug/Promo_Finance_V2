@@ -6,6 +6,9 @@
  * contra `catalogo_cclasstrib` e `catalogo_ncm`. O checklist da etapa exige que
  * a diverg?ncia vire **alerta na nota, n?o bloqueio**: estes testes provam que
  * a nota entra mesmo com REG-011 e que o cat?logo vazio n?o gera falso positivo.
+ *
+ * O quarto caso cobre a sonda de cat?logo: consulta filtrada vazia em cima de um
+ * cat?logo cheio ? diverg?ncia (REG-013), n?o carga pendente.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
@@ -50,18 +53,30 @@ type Registro = { tabela: string; metodo: string };
 /**
  * `catalogo_cclasstrib` e `catalogo_ncm` recebem linhas pr?prias; as demais
  * tabelas respondem vazio. A ordem das chamadas ? do hook, n?o do teste.
+ *
+ * A entrada de uma tabela pode ser uma fila: o hook consulta os c?digos do lote
+ * e, se a consulta voltar vazia, sonda o cat?logo com `.limit(1)`. A fila segue
+ * a ordem em que as tabelas s?o consultadas.
  */
-function montaCliente(catalogos: Record<string, Resposta>) {
+function montaCliente(catalogos: Record<string, Resposta | Resposta[]>) {
   const chamadas: Registro[] = [];
+  const indice: Record<string, number> = {};
+  const proxima = (tabela: string): Resposta => {
+    const entrada = catalogos[tabela] ?? { data: [], error: null };
+    if (!Array.isArray(entrada)) return entrada;
+    const i = indice[tabela] ?? 0;
+    indice[tabela] = i + 1;
+    return entrada[Math.min(i, entrada.length - 1)];
+  };
   mockFrom.mockImplementation((tabela: string) => {
     const chain: Record<string, unknown> = {};
-    for (const metodo of ['select', 'insert', 'update', 'delete', 'eq', 'in', 'single']) {
+    for (const metodo of ['select', 'insert', 'update', 'delete', 'eq', 'in', 'limit', 'single']) {
       chain[metodo] = vi.fn(() => {
         chamadas.push({ tabela, metodo });
         return chain;
       });
     }
-    const resposta = catalogos[tabela] ?? { data: [], error: null };
+    const resposta = proxima(tabela);
     chain.then = (r: (v: Resposta) => unknown) => Promise.resolve(resposta).then(r);
     return chain;
   });
@@ -162,5 +177,30 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
     expect(resumo.sucesso).toBe(1);
     expect(resumo.notasComAlertaFiscal).toBe(0);
     expect(resumo.nfesProcessadas[0].alertasFiscais).toBeUndefined();
+  });
+
+  it('catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)', async () => {
+    const { resumo, chamadas } = await importar({
+      // Primeira consulta (códigos do lote) volta vazia porque 200035 não está
+      // no catálogo; a sonda prova que o catálogo tem conteúdo.
+      catalogo_cclasstrib: [
+        { data: [], error: null },
+        { data: [{ cclasstrib: '000001' }], error: null },
+      ],
+      catalogo_ncm: CATALOGO.catalogo_ncm,
+    });
+
+    expect(resumo.sucesso).toBe(1);
+    expect(resumo.notasComAlertaFiscal).toBe(1);
+
+    const alertas = resumo.nfesProcessadas[0].alertasFiscais ?? [];
+    expect(alertas.map((a) => a.codigo)).toEqual(['REG-013']);
+    expect(alertas[0].mensagem).toContain('cClassTrib 200035');
+
+    // Duas consultas: o lote e a sonda. A sonda é `.limit(1)`, não um select
+    // do catálogo inteiro.
+    const selecoes = chamadas.filter((c) => c.tabela === 'catalogo_cclasstrib');
+    expect(selecoes.filter((c) => c.metodo === 'select')).toHaveLength(2);
+    expect(selecoes.filter((c) => c.metodo === 'limit')).toHaveLength(1);
   });
 });

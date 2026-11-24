@@ -1218,9 +1218,16 @@
       "id": "legacy-7579d941b7d2015d",
       "kind": "legacy",
       "files": ["scripts/rfb/gerar_carga_cclasstrib.py"],
-      "manual": ["python3", "scripts/rfb/gerar_carga_cclasstrib.py"],
+      "manual": [
+        "python3",
+        "scripts/rfb/gerar_carga_cclasstrib.py",
+        "--calc-repo",
+        "/tmp/rfbcalc",
+        "--out",
+        "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql"
+      ],
       "triggers": ["manual"],
-      "reason": "Gerador da carga inicial do catalogo cClassTrib (etapa 79): le a planilha oficial da RFB e emite a migration com o seed. Execucao manual e unica, com a planilha baixada a parte; o dispatcher nao executa esta operacao."
+      "reason": "Gerador da carga inicial do catalogo cClassTrib (etapa 79): reaplica as migracoes Flyway do clone oficial da RFB (ReceitaFederal/calculadora-rtc-regime-regular, MIT) e emite a migration com o seed. Execucao manual e pontual, com o clone feito a parte, porque exige rede para clonar o repositorio oficial; o dispatcher nao executa esta operacao."
     }
   ],
   "ci": [

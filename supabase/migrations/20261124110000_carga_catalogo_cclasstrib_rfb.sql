@@ -3,7 +3,7 @@
 -- Gerado por scripts/rfb/gerar_carga_cclasstrib.py (nao editar a mao).
 -- Fonte: ReceitaFederal/calculadora-rtc-regime-regular (MIT), base de dados
 -- construida pelas migracoes Flyway do proprio repositorio oficial.
--- Commit de origem: 4f0342f-base-oficial
+-- Commit de origem: f1eebd7ce3157423b1a6aaca7dc1d6c3395452c4
 -- Versao da base: V0073 (Nova tabela de Classificações Tributárias (IT 2025.002 v.1.71), publicada em 30/10/2026.)
 -- Gerado em: 2026-11-24
 --
@@ -15,9 +15,12 @@
 -- PERE_VALOR vem em pontos percentuais (100.0 = 100%); p_red_* e fracao
 -- decimal (0-1), mesmo padrao das etapas 33-34.
 --
--- Escopo: so o catalogo CBS/IBS. O Imposto Seletivo fica fora porque 14
+-- Escopo: so o catalogo CBS/IBS. O Imposto Seletivo fica fora porque 15
 -- codigos colidem entre os dois catalogos e o consumidor ficaria com a
 -- ultima linha vigente, aplicando CST de IS em nota de CBS/IBS.
+--
+-- `ind_dir` vem do vinculo TIPO_DFE_CLASSIFICACAO -> TIPO_DFE
+-- (TPDF_SIGLA='DIR'), nao do indicador de diferimento do CST.
 --
 -- Idempotente: upsert por (cclasstrib, inicio_vigencia), a PK corrigida
 -- em 20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql.
@@ -26,7 +29,7 @@ insert into public.catalogo_cclasstrib
   (cclasstrib, cst, descricao, p_red_cbs, p_red_ibs_uf, p_red_ibs_mun,
    exige_gibscbs, ind_dir, inicio_vigencia, fim_vigencia, versao_it)
 values
-  ('000001', '000', 'Situações tributadas integralmente pelo IBS e CBS.', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
+  ('000001', '000', 'Situações tributadas integralmente pelo IBS e CBS.', 0.0000, 0.0000, 0.0000, true, 1, '2026-01-01', null, 'V0073'),
   ('000002', '000', 'Exploração de via', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('000003', '000', 'Regime automotivo - projetos incentivados (art. 311)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('000004', '000', 'Regime automotivo - projetos incentivados (art. 312)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
@@ -47,7 +50,7 @@ values
   ('200006', '200', 'Situação de emergência de saúde pública reconhecida pelo Poder público', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200007', '200', 'Fornecimento dos dispositivos de acessibilidade próprios para pessoas com deficiência (Anexo XIII)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200008', '200', 'Fornecimento dos dispositivos de acessibilidade próprios para pessoas com deficiência adquiridos por órgãos da administração pública (Anexo V)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200009', '200', 'Fornecimento dos medicamentos registrados na Anvisa', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
+  ('200009', '200', 'Fornecimento dos medicamentos registrados na Anvisa', 1.0000, 1.0000, 1.0000, true, 1, '2026-01-01', null, 'V0073'),
   ('200010', '200', 'Fornecimento dos medicamentos registrados na Anvisa, adquiridos por órgãos da administração pública', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200011', '200', 'Fornecimento das composições para nutrição enteral e parenteral quando adquiridas por órgãos da administração pública (Anexo VI)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200012', '200', 'Situação de emergência de saúde pública reconhecida pelo Poder público', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
@@ -70,7 +73,7 @@ values
   ('200029', '200', 'Fornecimento dos serviços de saúde humana (Anexo III)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('200030', '200', 'Venda dos dispositivos médicos (Anexo IV)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('200031', '200', 'Fornecimento dos dispositivos de acessibilidade próprios para pessoas com deficiência (Anexo V)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200032', '200', 'Fornecimento dos medicamentos registrados na Anvisa ou produzidos por farmácias de manipulação, ressalvados os medicamentos sujeitos à alíquota zero', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
+  ('200032', '200', 'Fornecimento dos medicamentos registrados na Anvisa ou produzidos por farmácias de manipulação, ressalvados os medicamentos sujeitos à alíquota zero', 0.6000, 0.6000, 0.6000, true, 1, '2026-01-01', null, 'V0073'),
   ('200033', '200', 'Fornecimento das composições para nutrição enteral e parenteral (Anexo VI)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('200034', '200', 'Fornecimento dos alimentos destinados ao consumo humano (Anexo VII)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('200035', '200', 'Fornecimento dos produtos de higiene pessoal e limpeza (Anexo VIII)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
@@ -91,7 +94,7 @@ values
   ('200050', '200', 'Serviços de transporte aéreo regional coletivo de passageiros ou de carga', 0.4000, 0.4000, 0.4000, true, 0, '2026-01-01', null, 'V0073'),
   ('200051', '200', 'Agências de Turismo', 0.4000, 0.4000, 0.4000, true, 0, '2026-01-01', null, 'V0073'),
   ('200052', '200', 'Prestação de serviços de profissões intelectuais', 0.3000, 0.3000, 0.3000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200053', '200', 'Fornecimento de medicamentos registrados na Anvisa, quando  classificados como soros ou vacinas', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
+  ('200053', '200', 'Fornecimento de medicamentos registrados na Anvisa, quando  classificados como soros ou vacinas', 1.0000, 1.0000, 1.0000, true, 1, '2026-01-01', null, 'V0073'),
   ('200054', '200', 'Fornecimento de bem material pela cooperativa de produção agropecuária a associado não sujeito ao regime regular do IBS e da CBS', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200055', '200', 'Fornecimento dos serviços com redução de alíquota de 60% realizado por autônomo', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('200056', '200', 'Fornecimento dos serviços com redução de alíquota de 30% realizado por autônomo', 0.3000, 0.3000, 0.3000, true, 0, '2026-01-01', null, 'V0073'),
@@ -105,17 +108,17 @@ values
   ('222001', '222', 'Transporte internacional de passageiros, caso os trechos de ida e volta sejam vendidos em conjunto', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('400001', '400', 'Fornecimento de serviços de transporte público coletivo de passageiros rodoviário e metroviário', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('400002', '400', 'Fornecimento de serviços de transporte público coletivo de passageiros rodoviário e metroviário com medição por quilômetro rodado', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('400003', '400', 'Bagagens', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('400004', '400', 'Remessas internacionais', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
+  ('400003', '400', 'Bagagens', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
+  ('400004', '400', 'Remessas internacionais', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
   ('410001', '410', 'Fornecimento de bonificações quando constem no documento fiscal e que não dependam de evento posterior', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410002', '410', 'Transferências entre estabelecimentos pertencentes ao mesmo contribuinte', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('410003', '410', 'Doações e amostras grátis sem contraprestação em benefício do doador', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
+  ('410003', '410', 'Doações e amostras grátis sem contraprestação em benefício do doador', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
   ('410004', '410', 'Exportações de bens e serviços', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410005', '410', 'Fornecimentos realizados pela União, pelos Estados, pelo Distrito Federal e pelos Municípios', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410006', '410', 'Fornecimentos realizados por entidades religiosas e templos de qualquer culto', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410007', '410', 'Fornecimentos realizados por partidos políticos, entidades sindicais e instituições de educação e de assistência social', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('410008', '410', 'Fornecimentos de livros, jornais, periódicos e do papel destinado a sua impressão', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('410009', '410', 'Fornecimentos de fonogramas e videofonogramas musicais produzidos no Brasil', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
+  ('410008', '410', 'Fornecimentos de livros, jornais, periódicos e do papel destinado a sua impressão', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
+  ('410009', '410', 'Fornecimentos de fonogramas e videofonogramas musicais produzidos no Brasil', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
   ('410010', '410', 'Fornecimentos de serviço de comunicação nas modalidades de radiodifusão sonora e de sons e imagens de recepção livre e gratuita', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410011', '410', 'Fornecimentos de ouro, quando definido em lei como ativo financeiro ou instrumento cambial', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410012', '410', 'Fornecimento de condomínio edilício não optante pelo regime regular', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
@@ -143,10 +146,10 @@ values
   ('410034', '410', 'Operações de fundos de investimento', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410035', '410', 'Fornecimento realizado por nanoempreendedor', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410036', '410', 'Descontos financeiros em nota fatura', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('410037', '410', 'Importação os bens materiais sem incidência de IBS e CBS', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('410999', '410', 'Operações não onerosas sem previsão de tributação, não especificadas anteriormente', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('510001', '510', 'Operações, sujeitas a diferimento, com energia elétrica, relativas à importação, geração, comercialização, distribuição e transmissão', 0.0000, 0.0000, 0.0000, true, 1, '2026-01-01', null, 'V0073'),
-  ('515001', '515', 'Operações, sujeitas a diferimento, com insumos agropecuários e aquícolas (Anexo IX)', 0.6000, 0.6000, 0.6000, true, 1, '2026-01-01', null, 'V0073'),
+  ('410037', '410', 'Importação os bens materiais sem incidência de IBS e CBS', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
+  ('410999', '410', 'Operações não onerosas sem previsão de tributação, não especificadas anteriormente', 0.0000, 0.0000, 0.0000, false, 1, '2026-01-01', null, 'V0073'),
+  ('510001', '510', 'Operações, sujeitas a diferimento, com energia elétrica, relativas à importação, geração, comercialização, distribuição e transmissão', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
+  ('515001', '515', 'Operações, sujeitas a diferimento, com insumos agropecuários e aquícolas (Anexo IX)', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('550001', '550', 'Exportações de bens materiais', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('550002', '550', 'Regime de Trânsito', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('550003', '550', 'Regimes de Depósito (art. 85)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),

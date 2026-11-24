@@ -12,12 +12,16 @@ Uso:
     python scripts/rfb/gerar_carga_cclasstrib.py --calc-repo /tmp/rfbcalc \
         --out supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql
 
+O commit de origem gravado no cabecalho vem do proprio clone (`git rev-parse
+HEAD`). `--commit` e opcional e, quando informado, precisa ser igual ao HEAD:
+divergencia aborta em vez de gerar uma carga cujo cabecalho nao se reproduz.
+
 Mapeamento (coluna oficial -> coluna nossa):
     CLTR_CD                    -> cclasstrib
     SITUACAO_TRIBUTARIA.SITR_CD -> cst            (via CLTR_SITR_ID)
     CLTR_DESCRICAO             -> descricao
     SITR_IND_GIBSCBS           -> exige_gibscbs   (1 = grupo IBS/CBS obrigatorio)
-    SITR_IND_GDIF              -> ind_dir
+    TIPO_DFE (TPDF_SIGLA='DIR') -> ind_dir        (via TIPO_DFE_CLASSIFICACAO)
     PERCENTUAL_REDUCAO.PERE_VALOR / 100
                                -> p_red_cbs (TBTO 2), p_red_ibs_uf (TBTO 3),
                                   p_red_ibs_mun (TBTO 4)
@@ -33,6 +37,7 @@ import argparse
 import glob
 import os
 import sqlite3
+import subprocess
 import tempfile
 from datetime import datetime, timezone
 
@@ -46,7 +51,18 @@ select
     ct.CLTR_INICIO_VIGENCIA                         as inicio_vigencia,
     ct.CLTR_FIM_VIGENCIA                            as fim_vigencia,
     coalesce(st.SITR_IND_GIBSCBS, 0)                as exige_gibscbs,
-    st.SITR_IND_GDIF                                as ind_dir,
+    -- `ind_dir` e a aplicabilidade de DIR (diferimento) da classificacao, nao
+    -- o SITR_IND_GDIF (que e indicador de diferimento no nivel do CST). A fonte
+    -- oficial e o vinculo TIPO_DFE_CLASSIFICACAO -> TIPO_DFE.TPDF_SIGLA='DIR',
+    -- respeitando a vigencia do vinculo contra a vigencia da classificacao.
+    case when exists (
+      select 1 from TIPO_DFE_CLASSIFICACAO td
+        join TIPO_DFE tp on tp.TPDF_ID = td.TDCL_TPDF_ID
+       where td.TDCL_CLTR_ID = ct.CLTR_ID
+         and tp.TPDF_SIGLA = 'DIR'
+         and td.TDCL_INICIO_VIGENCIA <= coalesce(ct.CLTR_FIM_VIGENCIA, '9999-12-31')
+         and (td.TDCL_FIM_VIGENCIA is null or td.TDCL_FIM_VIGENCIA >= ct.CLTR_INICIO_VIGENCIA)
+    ) then 1 else 0 end                           as ind_dir,
     (select p.PERE_VALOR from PERCENTUAL_REDUCAO p
       where p.PERE_CLTR_ID = ct.CLTR_ID and p.PERE_TBTO_ID = 2
       order by p.PERE_INICIO_VIGENCIA desc limit 1) as red_cbs,
@@ -59,14 +75,16 @@ select
 from CLASSIFICACAO_TRIBUTARIA ct
 join SITUACAO_TRIBUTARIA st on st.SITR_ID = ct.CLTR_SITR_ID
 -- So CBS (TBTO_ID 2), IBSUF (3) e IBSMun (4). CLASSIFICACAO_TRIBUTARIA
--- tambem carrega o catalogo do Imposto Seletivo (TBTO_ID 1, vigencia
--- 2027-01-01): 29 linhas, das quais 14 reaproveitam codigos do catalogo
--- CBS/IBS (000001-000006, 200001-200008) com CST/descricao/reducao diferentes.
--- Sem este filtro o catalogo fica com duas linhas vigentes para o mesmo
--- cclasstrib a partir de 2027 e o consumidor (buscarReferenciasFiscais, que
--- indexa por cclasstrib e deixa a ultima vencer) aplica CST de IS em nota de
--- CBS/IBS. As 170 classificacoes devolvidas pela API de dados abertos sao
--- exatamente as 173 daqui com vigencia aberta, entao o IS nunca entra.
+-- tem 202 linhas: 173 no catalogo CBS/IBS e 29 no do Imposto Seletivo
+-- (TBTO_ID 1, vigencia 2027-01-01). 15 codigos aparecem nos dois
+-- (000001-000006, 200001-200008, 400001) com CST/descricao/reducao
+-- diferentes. Sem este filtro o catalogo fica com duas linhas vigentes para
+-- o mesmo cclasstrib a partir de 2027 e o consumidor
+-- (buscarReferenciasFiscais, que indexa por cclasstrib e deixa a ultima
+-- vencer) aplica CST de IS em nota de CBS/IBS. O filtro devolve 173 linhas:
+-- as 170 com vigencia aberta sao exatamente as 170 classificacoes da API de
+-- dados abertos, e as outras 3 (220001-220003) ja nascem encerradas
+-- (2026-01-01/2026-01-01). O IS nunca entra.
 where exists (
   select 1 from TRIBUTO_SITUACAO_TRIBUTARIA tst
    where tst.TRST_SITR_ID = st.SITR_ID and tst.TRST_TBTO_ID in (2, 3, 4)
@@ -135,6 +153,13 @@ def gerar(con: sqlite3.Connection, commit: str) -> str:
             "catalogo inconsistente: mais de uma vigencia aberta para " + ", ".join(repetidos[:10])
         )
 
+    # Guarda contra a derivacao de `ind_dir`: se o vinculo DIR nao casar com
+    # nenhuma das linhas geradas, a coluna sai zerada em toda a carga e a
+    # aplicabilidade de diferimento some sem aviso.
+    com_dir = [r[0] for r in linhas if r[6] == 1]
+    if not com_dir:
+        raise SystemExit("base sem vinculo TIPO_DFE='DIR' para as classificacoes geradas")
+
     hoje = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     out = []
     out.append("-- Carga inicial de `public.catalogo_cclasstrib` a partir da base oficial da RFB.")
@@ -154,9 +179,12 @@ def gerar(con: sqlite3.Connection, commit: str) -> str:
     out.append("-- PERE_VALOR vem em pontos percentuais (100.0 = 100%); p_red_* e fracao")
     out.append("-- decimal (0-1), mesmo padrao das etapas 33-34.")
     out.append("--")
-    out.append("-- Escopo: so o catalogo CBS/IBS. O Imposto Seletivo fica fora porque 14")
+    out.append("-- Escopo: so o catalogo CBS/IBS. O Imposto Seletivo fica fora porque 15")
     out.append("-- codigos colidem entre os dois catalogos e o consumidor ficaria com a")
     out.append("-- ultima linha vigente, aplicando CST de IS em nota de CBS/IBS.")
+    out.append("--")
+    out.append("-- `ind_dir` vem do vinculo TIPO_DFE_CLASSIFICACAO -> TIPO_DFE")
+    out.append("-- (TPDF_SIGLA='DIR'), nao do indicador de diferimento do CST.")
     out.append("--")
     out.append("-- Idempotente: upsert por (cclasstrib, inicio_vigencia), a PK corrigida")
     out.append("-- em 20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql.")
@@ -197,20 +225,48 @@ def gerar(con: sqlite3.Connection, commit: str) -> str:
     return "\n".join(out), len(linhas), versao
 
 
+def resolver_commit(calc_repo: str, commit: str) -> str:
+    """Le o commit do clone e confere com o `--commit` informado.
+
+    O cabecalho do SQL e a unica referencia de reproducao da carga. Quando o
+    clone responde, ele manda; quando `--commit` e informado e nao bate com o
+    HEAD, aborta em vez de gravar um commit que nao corresponde a base aplicada.
+    """
+    try:
+        head = subprocess.run(
+            ["git", "-C", calc_repo, "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise SystemExit(f"nao consegui ler o commit de {calc_repo}: {exc}")
+    if not head:
+        raise SystemExit(f"clone de {calc_repo} sem HEAD resolvivel")
+    if commit and commit != "desconhecido" and commit != head:
+        raise SystemExit(f"--commit {commit} difere do HEAD do clone ({head})")
+    return head
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--calc-repo", required=True, help="clone do calculadora-rtc-regime-regular")
     ap.add_argument("--out", required=True, help="caminho do .sql a gerar")
-    ap.add_argument("--commit", default="desconhecido", help="commit de origem, para o cabecalho")
+    ap.add_argument(
+        "--commit",
+        default="desconhecido",
+        help="commit de origem para o cabecalho; precisa bater com o HEAD do clone",
+    )
     args = ap.parse_args()
 
+    commit = resolver_commit(args.calc_repo, args.commit)
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         con = montar_base(args.calc_repo, os.path.join(tmp, "calc.db"))
-        sql, total, versao = gerar(con, args.commit)
+        sql, total, versao = gerar(con, commit)
         con.close()
     with open(args.out, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(sql)
-    print(f"{total} linhas, versao {versao} -> {args.out}")
+    print(f"{total} linhas, versao {versao}, commit {commit} -> {args.out}")
 
 
 if __name__ == "__main__":
