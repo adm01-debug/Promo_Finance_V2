@@ -326,6 +326,8 @@ DO $$
 DECLARE
   requer_update text[] := ARRAY['elisao_creditos_auditoria'];
   t text;
+  colunas text[];
+  c text;
   offenders text := '';
 BEGIN
   FOREACH t IN ARRAY requer_update LOOP
@@ -353,10 +355,22 @@ BEGIN
     -- `authenticated` nestas tabelas e o GRANT (por coluna) da migration de
     -- restauro e o que devolve a escrita. Sem esta checagem o gate ficava verde
     -- com o fluxo de aprovacao quebrado (achado do Devin Review na #546).
-    IF NOT has_any_column_privilege('authenticated', format('public.%I', t), 'UPDATE') THEN
-      offenders := offenders || format(
-        E'\n  - public.%s: authenticated sem privilegio de UPDATE em nenhuma coluna', t);
-    END IF;
+    -- Coluna a coluna, e nao `has_any_column_privilege`: um GRANT de uma unica
+    -- coluna satisfazia o "qualquer" e o gate continuava verde, mas um UPDATE
+    -- que nomeia qualquer coluna sem privilegio e rejeitado por inteiro — a
+    -- decisao do credito nao persistiria. A lista e exatamente o que
+    -- `decidirCredito` (src/hooks/useOportunidadesElisao.ts:288-296) escreve.
+    colunas := CASE t
+      WHEN 'elisao_creditos_auditoria' THEN
+        ARRAY['status_aprovacao', 'motivo_rejeicao', 'aprovador_id', 'data_aprovacao']
+      ELSE ARRAY[]::text[]
+    END;
+    FOREACH c IN ARRAY colunas LOOP
+      IF NOT has_column_privilege('authenticated', format('public.%I', t), c, 'UPDATE') THEN
+        offenders := offenders || format(
+          E'\n  - public.%s: authenticated sem privilegio de UPDATE na coluna %s', t, c);
+      END IF;
+    END LOOP;
   END LOOP;
 
   IF offenders <> '' THEN

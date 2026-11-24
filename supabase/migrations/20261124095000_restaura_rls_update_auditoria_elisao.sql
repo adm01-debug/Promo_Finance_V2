@@ -54,3 +54,43 @@ DROP POLICY IF EXISTS "Users can manage company audit logs" ON public.elisao_cre
 -- mesmo que apareca uma policy permissiva.
 GRANT UPDATE (status_aprovacao, motivo_rejeicao, aprovador_id, data_aprovacao)
   ON public.elisao_creditos_auditoria TO authenticated;
+
+-- O GRANT devolve a escrita, mas `aprovador_id` e `data_aprovacao` chegariam do
+-- payload: `decidirCredito` envia `user?.id` e `new Date().toISOString()`
+-- (src/hooks/useOportunidadesElisao.ts:293-294) e pode ser chamado sobre uma
+-- linha ja decidida. Com o GRANT por coluna, um admin/financeiro conseguiria
+-- reescrever quem aprovou e quando uma linha ja decidida — e o gatilho de
+-- historico nao registra isso, porque so grava mudanca de `status_aprovacao`
+-- (achado do Devin Review na PR #546).
+--
+-- O gatilho existente passa a derivar as duas colunas do banco, com o mesmo
+-- `auth.uid()`/`now()` que ele ja usa no historico, e a congelá-las quando o
+-- status nao muda: autoria e data so mudam junto com a decisao.
+CREATE OR REPLACE FUNCTION public.registrar_decisao_elisao()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status_aprovacao IS NOT DISTINCT FROM OLD.status_aprovacao THEN
+        -- Mesma decisao: autoria e data ficam como estao.
+        NEW.aprovador_id := OLD.aprovador_id;
+        NEW.data_aprovacao := OLD.data_aprovacao;
+    ELSIF NEW.status_aprovacao = 'pendente' THEN
+        -- Reaberta: nao ha decisao para atribuir.
+        NEW.aprovador_id := NULL;
+        NEW.data_aprovacao := NULL;
+    ELSE
+        -- Decisao nova: quem e quando vem da sessao, nao do payload.
+        NEW.aprovador_id := COALESCE(auth.uid(), NEW.aprovador_id);
+        NEW.data_aprovacao := now();
+    END IF;
+
+    IF TG_OP = 'UPDATE' AND NEW.status_aprovacao IS DISTINCT FROM OLD.status_aprovacao THEN
+        NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object(
+            'status', NEW.status_aprovacao,
+            'usuario_id', auth.uid(),
+            'data', now(),
+            'comentario', NEW.motivo_rejeicao
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
