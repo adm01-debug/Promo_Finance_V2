@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)",
    "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)",
    "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)",
    "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)",
-   "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)",
-   "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)"
+   "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

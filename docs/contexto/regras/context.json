@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "6ef837b49caa15a692ddb517e0d01e4828b844cb",
+  "sha": "04504efaa1a7f39a73bcf0b8b6a8261c4a49127a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 17:30 UTC",
+  "generated_at": "2026-11-24 17:45 UTC",
   "files_total": 4087,
   "code_files": 3668,
   "code_lines": 522984
@@ -249228,10 +249228,20 @@
   }
  },
  "git": {
-  "sha": "6ef837b49caa15a692ddb517e0d01e4828b844cb",
+  "sha": "04504efaa1a7f39a73bcf0b8b6a8261c4a49127a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "04504ef",
+    "date": "2026-11-24",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "6ef837b",
     "date": "2026-11-24",
@@ -249620,30 +249630,20 @@
     "files": [
      "docs/receitafederal/SCHEMA_FISCAL_ATUAL.md"
     ]
-   },
-   {
-    "sha": "bb4d237",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)",
-    "files": [
-     "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
-     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    4
+    5
    ],
    [
     "package.json",
-    4
+    5
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    4
+    3
    ],
    [
     "scripts/integrity/baseline/schema-counts.json",
@@ -249686,10 +249686,6 @@
     2
    ],
    [
-    "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
-    2
-   ],
-   [
     "docs/qa/01-INVENTARIO.md",
     1
    ],
@@ -249711,6 +249707,10 @@
    ],
    [
     "graphify-out/manifest.json",
+    1
+   ],
+   [
+    "graphify.local.json",
     1
    ]
   ]
