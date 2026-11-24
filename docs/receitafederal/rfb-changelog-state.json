@@ -1,14 +1,14 @@
 {
   "calculadora-rtc-regime-regular": {
     "tag": "1.7.2",
-    "changelog_sha256": "37c7aed336d788db12188969e545e650267108960cc21e2b5f6580d400ccfbbb"
+    "changelog_sha256": "78c9448c74843806c98e0c5c71a6c5b3e0ff236491a00e66ed87db05f2d471d0"
   },
   "calculadora-rtc-simples-nacional": {
     "tag": "1.0.2",
-    "changelog_sha256": "8c50c9f16c13b3cc2b542644a698ccd3133bf4b716e8b336de1cc03ece930617"
+    "changelog_sha256": "c60edf4a3758d7b8e309b337dc60e68b116781c320094aa63a55e7f1ec455bc5"
   },
   "calculadora-rtc-gerador-danfse": {
     "tag": "1.0.0",
-    "changelog_sha256": "b2d26ea881ccd454715cbc9e07e4a1dce11154b5b68265fd99129abfd71bb528"
+    "changelog_sha256": "c5ca355eeeb4ae90a9ff8bd846558f306687a2526baf2a566d322e04b079f0a7"
   }
 }
