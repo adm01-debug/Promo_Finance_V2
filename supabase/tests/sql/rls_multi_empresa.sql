@@ -317,7 +317,11 @@ END $$;
 --    o app exibe sucesso e a decisão não persiste.
 --
 --    Lista explícita (firebreak): toda tabela cuja escrita por UPDATE vem do
---    cliente precisa de policy cobrindo UPDATE ou ALL.
+--    cliente precisa de policy de UPDATE **e** não pode ter policy permissiva
+--    (ALL) sobrando: policies permissivas são combinadas por OR, então uma ALL
+--    anula a específica e o endurecimento vira fachada. Antes desta correção a
+--    checagem aceitava `cmd = 'ALL'` como cobertura e passava trivialmente no
+--    estado de reapply do zero (achado do Devin Review na PR #546).
 DO $$
 DECLARE
   requer_update text[] := ARRAY['elisao_creditos_auditoria'];
@@ -329,9 +333,20 @@ BEGIN
       SELECT 1 FROM pg_policies p
       WHERE p.schemaname = 'public'
         AND p.tablename = t
-        AND p.cmd IN ('UPDATE', 'ALL')
+        AND p.cmd = 'UPDATE'
     ) THEN
       offenders := offenders || format(E'\n  - public.%s: sem policy de UPDATE', t);
+    END IF;
+
+    IF EXISTS (
+      SELECT 1 FROM pg_policies p
+      WHERE p.schemaname = 'public'
+        AND p.tablename = t
+        AND p.cmd = 'ALL'
+        AND p.permissive = 'PERMISSIVE'
+    ) THEN
+      offenders := offenders || format(
+        E'\n  - public.%s: policy permissiva (ALL) sobrepondo o endurecimento', t);
     END IF;
   END LOOP;
 

@@ -21,6 +21,7 @@
 DROP POLICY IF EXISTS "Admin/financeiro can update creditos auditoria" ON public.elisao_creditos_auditoria;
 CREATE POLICY "Admin/financeiro can update creditos auditoria" ON public.elisao_creditos_auditoria
   FOR UPDATE
+  TO authenticated
   USING (has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))
   WITH CHECK (has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id));
 
@@ -32,3 +33,14 @@ CREATE POLICY "Admin/financeiro can update creditos auditoria" ON public.elisao_
 -- permissiva de volta (ALL para qualquer um com empresa_acessivel), anulando o
 -- endurecimento.
 DROP POLICY IF EXISTS oportunidades_elisao_acesso ON public.oportunidades_elisao;
+
+-- O mesmo vale para a tabela desta migration: "Users can manage company audit
+-- logs" e FOR ALL permissiva, recriada por 20260902230000 e conferida (por
+-- existencia) em 20261102000000. Policies permissivas sao combinadas por OR,
+-- entao enquanto ela existir a policy de UPDATE acima e irrelevante: qualquer
+-- usuario com empresa_acessivel escreve na auditoria. O endurecimento a
+-- removeu do banco de producao fora das migrations; sem este DROP um reapply do
+-- zero a revive (achado do Devin Review na PR #546). A conferencia de
+-- 20261102000000 roda antes desta migration (2026-11-02 < 2026-11-24), entao o
+-- DROP nao quebra o reapply.
+DROP POLICY IF EXISTS "Users can manage company audit logs" ON public.elisao_creditos_auditoria;
