@@ -44,3 +44,13 @@ DROP POLICY IF EXISTS oportunidades_elisao_acesso ON public.oportunidades_elisao
 -- 20261102000000 roda antes desta migration (2026-11-02 < 2026-11-24), entao o
 -- DROP nao quebra o reapply.
 DROP POLICY IF EXISTS "Users can manage company audit logs" ON public.elisao_creditos_auditoria;
+
+-- A policy sozinha nao devolve a escrita: 20260728205758 revoga UPDATE de
+-- `authenticated` nesta tabela (defesa em profundidade, para uma policy futura
+-- mal escrita nao reabrir o caminho sozinha). Sem o GRANT o fluxo continuaria
+-- quebrado, agora com erro de privilegio em vez de zero linhas silencioso.
+-- O grant e por coluna: `decidirCredito` (useOportunidadesElisao.ts) escreve
+-- exatamente estas quatro, e valor/empresa/nota seguem imutaveis pelo cliente
+-- mesmo que apareca uma policy permissiva.
+GRANT UPDATE (status_aprovacao, motivo_rejeicao, aprovador_id, data_aprovacao)
+  ON public.elisao_creditos_auditoria TO authenticated;

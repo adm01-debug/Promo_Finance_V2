@@ -348,6 +348,15 @@ BEGIN
       offenders := offenders || format(
         E'\n  - public.%s: policy permissiva (ALL) sobrepondo o endurecimento', t);
     END IF;
+
+    -- Policy sem privilegio nao escreve nada: o endurecimento revoga UPDATE de
+    -- `authenticated` nestas tabelas e o GRANT (por coluna) da migration de
+    -- restauro e o que devolve a escrita. Sem esta checagem o gate ficava verde
+    -- com o fluxo de aprovacao quebrado (achado do Devin Review na #546).
+    IF NOT has_any_column_privilege('authenticated', format('public.%I', t), 'UPDATE') THEN
+      offenders := offenders || format(
+        E'\n  - public.%s: authenticated sem privilegio de UPDATE em nenhuma coluna', t);
+    END IF;
   END LOOP;
 
   IF offenders <> '' THEN
