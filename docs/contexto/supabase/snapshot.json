@@ -14408,7 +14408,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID da conta a pagar.",
         "default": "uuid_generate_v4()",
         "generated": null,
         "identity": null,
@@ -14421,7 +14421,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Descrição da obrigação financeira.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14434,7 +14434,7 @@
         "type": "character varying(255)"
       },
       {
-        "comment": null,
+        "comment": "Valor original da conta a pagar, em reais (BRL). O banco exige valor maior ou igual a zero.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14447,7 +14447,7 @@
         "type": "numeric(15,2)"
       },
       {
-        "comment": null,
+        "comment": "Data de vencimento da obrigação.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14460,7 +14460,7 @@
         "type": "date"
       },
       {
-        "comment": null,
+        "comment": "Data do pagamento, quando realizado.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14473,7 +14473,7 @@
         "type": "date"
       },
       {
-        "comment": null,
+        "comment": "Situação da conta. O banco permite: pendente, pago, vencido, cancelado ou parcial. Valor padrão: pendente.",
         "default": "'pendente'::character varying",
         "generated": null,
         "identity": null,
@@ -14486,7 +14486,7 @@
         "type": "character varying(20)"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional do fornecedor; possui chave estrangeira para public.fornecedores(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14499,7 +14499,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional do usuário associado; possui chave estrangeira para auth.users(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14512,7 +14512,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Data e hora de criação do registro; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -14525,7 +14525,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Data e hora da última atualização; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -14538,7 +14538,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Identificador da empresa associada; possui chave estrangeira para public.empresas(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14551,7 +14551,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional da categoria; possui chave estrangeira para public.categorias(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14564,7 +14564,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional do centro de custo; possui chave estrangeira para public.centros_custo(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14577,7 +14577,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Forma de pagamento registrada como texto. O banco não define uma lista de valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14590,7 +14590,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional da conta bancária utilizada; possui chave estrangeira para public.contas_bancarias(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14603,7 +14603,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Número ou referência textual do documento relacionado à obrigação.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14616,7 +14616,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Observações livres sobre a conta a pagar.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14629,7 +14629,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Valor pago, em reais (BRL). O banco não declara uma restrição de faixa para este campo.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14642,7 +14642,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Valor de juros associado à conta, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -14655,7 +14655,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Valor de multa associado à conta, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -14668,7 +14668,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Valor de desconto aplicado à conta, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -14681,7 +14681,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Indica se a conta está marcada como recorrente. Valor padrão: false.",
         "default": "false",
         "generated": null,
         "identity": null,
@@ -14694,7 +14694,7 @@
         "type": "boolean"
       },
       {
-        "comment": null,
+        "comment": "Número da parcela atual, quando informado. O banco não define uma faixa permitida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14707,7 +14707,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Quantidade total de parcelas, quando informada. O banco não define uma faixa permitida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14720,7 +14720,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Endereço textual de um anexo relacionado à conta.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14733,7 +14733,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Metadados em JSONB. O banco não especifica um contrato de chaves ou estrutura. Valor padrão: objeto JSON vazio.",
         "default": "'{}'::jsonb",
         "generated": null,
         "identity": null,
@@ -14746,7 +14746,7 @@
         "type": "jsonb"
       },
       {
-        "comment": null,
+        "comment": "Categoria registrada como texto.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14759,7 +14759,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Nome do fornecedor registrado como texto.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14772,7 +14772,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Nome da categoria registrado como texto.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14785,7 +14785,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Centro de resultado registrado como texto. O banco não define valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14798,7 +14798,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "UUID do usuário associado à aprovação; possui chave estrangeira para auth.users(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14811,7 +14811,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID associado a uma transação conciliada. O inventário não mostra chave estrangeira declarada para esta coluna.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14824,7 +14824,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Tipo de cobrança registrado como texto. O banco não define uma lista de valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14837,7 +14837,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Data e hora associadas à exclusão lógica do registro, quando preenchida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14850,7 +14850,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Lista de etiquetas textuais. O banco não restringe os valores da lista. Valor padrão: array vazio.",
         "default": "'{}'::text[]",
         "generated": null,
         "identity": null,
@@ -14863,7 +14863,7 @@
         "type": "text[]"
       },
       {
-        "comment": null,
+        "comment": "Data de emissão do documento, quando informada.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14876,7 +14876,7 @@
         "type": "date"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID da conta a receber.",
         "default": "uuid_generate_v4()",
         "generated": null,
         "identity": null,
@@ -14889,7 +14889,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Descrição do valor ou título a receber.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14902,7 +14902,7 @@
         "type": "character varying(255)"
       },
       {
-        "comment": null,
+        "comment": "Valor original da conta a receber, em reais (BRL). O banco exige valor maior ou igual a zero.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14915,7 +14915,7 @@
         "type": "numeric(15,2)"
       },
       {
-        "comment": null,
+        "comment": "Data de vencimento do recebível.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14928,7 +14928,7 @@
         "type": "date"
       },
       {
-        "comment": null,
+        "comment": "Data do recebimento, quando realizado.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14941,7 +14941,7 @@
         "type": "date"
       },
       {
-        "comment": "em_acordo: conta vinculada a um acordo de parcelamento ativo (acordos_parcelamento.contas_receber_ids) — excluída da régua de cobrança automática enquanto durar.",
+        "comment": "Situação da conta. O banco permite: pendente, recebido, pago, vencido, cancelado, parcial, atrasado ou em_acordo. Valor padrão: pendente. O status em_acordo identifica conta vinculada a acordo de parcelamento ativo e excluída da régua de cobrança automática enquanto durar o acordo.",
         "default": "'pendente'::character varying",
         "generated": null,
         "identity": null,
@@ -14954,7 +14954,7 @@
         "type": "character varying(20)"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional do cliente; possui chave estrangeira para public.clientes(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14967,7 +14967,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional do usuário associado; possui chave estrangeira para auth.users(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -14980,7 +14980,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Data e hora de criação do registro; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -14993,7 +14993,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Data e hora da última atualização; valor padrão: now().",
         "default": "now()",
         "generated": null,
         "identity": null,
@@ -15006,7 +15006,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Identificador da empresa associada; possui chave estrangeira para public.empresas(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15019,7 +15019,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional da categoria; possui chave estrangeira para public.categorias(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15032,7 +15032,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional do centro de custo; possui chave estrangeira para public.centros_custo(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15045,7 +15045,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Forma de recebimento registrada como texto. O banco não define uma lista de valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15058,7 +15058,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Identificador opcional da conta bancária associada; possui chave estrangeira para public.contas_bancarias(id).",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15071,7 +15071,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Número ou referência textual do documento relacionado ao recebível.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15084,7 +15084,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Observações livres sobre a conta a receber.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15097,7 +15097,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Valor recebido, em reais (BRL). O banco não declara uma restrição de faixa para este campo.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15110,7 +15110,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Valor de juros associado ao recebível, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -15123,7 +15123,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Valor de multa associado ao recebível, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -15136,7 +15136,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Valor de desconto associado ao recebível, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -15149,7 +15149,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Indica se o recebível está marcado como recorrente. Valor padrão: false.",
         "default": "false",
         "generated": null,
         "identity": null,
@@ -15162,7 +15162,7 @@
         "type": "boolean"
       },
       {
-        "comment": null,
+        "comment": "Número da parcela atual, quando informado. O banco não define uma faixa permitida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15175,7 +15175,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Quantidade total de parcelas, quando informada. O banco não define uma faixa permitida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15188,7 +15188,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Endereço textual de um anexo relacionado ao recebível.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15201,7 +15201,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Pontuação associada ao recebível. A escala e o significado do score não são especificados pelo banco.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15214,7 +15214,7 @@
         "type": "numeric"
       },
       {
-        "comment": null,
+        "comment": "Metadados em JSONB. O banco não especifica um contrato de chaves ou estrutura. Valor padrão: objeto JSON vazio.",
         "default": "'{}'::jsonb",
         "generated": null,
         "identity": null,
@@ -15227,7 +15227,7 @@
         "type": "jsonb"
       },
       {
-        "comment": null,
+        "comment": "Nome do cliente registrado como texto.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15240,7 +15240,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Etapa de cobrança registrada como texto. O banco não define valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15253,7 +15253,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Tipo de cobrança registrado como texto. O banco não define valores permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15266,7 +15266,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Número da parcela atual, quando informado. O banco não define uma faixa permitida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15279,7 +15279,7 @@
         "type": "integer"
       },
       {
-        "comment": null,
+        "comment": "Valor do desconto registrado, em reais (BRL). Valor padrão: 0.",
         "default": "0",
         "generated": null,
         "identity": null,
@@ -15292,7 +15292,7 @@
         "type": "numeric(15,2)"
       },
       {
-        "comment": null,
+        "comment": "Chave Pix registrada como texto. O banco não valida o formato ou os tipos permitidos.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15305,7 +15305,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Data de emissão do recebível; valor padrão: CURRENT_DATE.",
         "default": "CURRENT_DATE",
         "generated": null,
         "identity": null,
@@ -15318,7 +15318,7 @@
         "type": "date"
       },
       {
-        "comment": null,
+        "comment": "Nome da categoria registrado como texto.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15331,7 +15331,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID associado a uma transação conciliada. O inventário não mostra chave estrangeira declarada para esta coluna.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15344,7 +15344,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Data e hora associadas à exclusão lógica do registro, quando preenchida.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15357,7 +15357,7 @@
         "type": "timestamp with time zone"
       },
       {
-        "comment": null,
+        "comment": "Identificador UUID associado a um vendedor. O inventário não mostra chave estrangeira declarada para esta coluna.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15370,7 +15370,7 @@
         "type": "uuid"
       },
       {
-        "comment": null,
+        "comment": "Identificador textual de negócio associado ao Bitrix.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15383,7 +15383,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Valor final do recebível, em reais (BRL). A composição deste valor não é definida por uma restrição do banco.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15396,7 +15396,7 @@
         "type": "numeric(15,2)"
       },
       {
-        "comment": null,
+        "comment": "Código de barras relacionado ao título, quando informado.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15409,7 +15409,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Endereço textual do boleto relacionado ao recebível, quando informado.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -15422,7 +15422,7 @@
         "type": "text"
       },
       {
-        "comment": null,
+        "comment": "Frequência da recorrência. Se preenchido, o banco permite: semanal, quinzenal, mensal, bimestral, trimestral, semestral ou anual.",
         "default": null,
         "generated": null,
         "identity": null,
@@ -108769,7 +108769,7 @@
         "schema": "public"
       },
       {
-        "comment": null,
+        "comment": "Contas e obrigações financeiras a pagar. Valores monetários são expressos em reais (BRL), em unidades monetárias, não centavos.",
         "from_extension": false,
         "is_partition": false,
         "kind": "table",
@@ -108784,7 +108784,7 @@
         "schema": "public"
       },
       {
-        "comment": null,
+        "comment": "Contas e títulos financeiros a receber. Valores monetários são expressos em reais (BRL), em unidades monetárias, não centavos.",
         "from_extension": false,
         "is_partition": false,
         "kind": "table",

@@ -76,8 +76,8 @@ Um arquivo por tabela em `tables/<schema>/<tabela>.md` (colunas, constraints, í
 | [public.configuracoes_duplicidade](tables/public/configuracoes_duplicidade.md) | table | sim | 2 | 9 | não |  |
 | [public.conformidade_snapshots](tables/public/conformidade_snapshots.md) | table | sim | 4 | 14 | não |  |
 | [public.contas_bancarias](tables/public/contas_bancarias.md) | table | sim | 2 | 18 | não |  |
-| [public.contas_pagar](tables/public/contas_pagar.md) | table | sim | 2 | 36 | não |  |
-| [public.contas_receber](tables/public/contas_receber.md) | table | sim | 2 | 43 | não |  |
+| [public.contas_pagar](tables/public/contas_pagar.md) | table | sim | 2 | 36 | não | Contas e obrigações financeiras a pagar. Valores monetários são expressos em reais (BRL), em unidades monetárias, não centavos. |
+| [public.contas_receber](tables/public/contas_receber.md) | table | sim | 2 | 43 | não | Contas e títulos financeiros a receber. Valores monetários são expressos em reais (BRL), em unidades monetárias, não centavos. |
 | [public.contratos](tables/public/contratos.md) | table | sim | 1 | 18 | não |  |
 | [public.convites](tables/public/convites.md) | table | sim | 1 | 9 | não |  |
 | [public.convites_contador](tables/public/convites_contador.md) | table | sim | 2 | 13 | não |  |

@@ -1,5 +1,7 @@
 # public.contas_pagar
 
+> Contas e obrigações financeiras a pagar. Valores monetários são expressos em reais (BRL), em unidades monetárias, não centavos.
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -17,42 +19,42 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `uuid_generate_v4()` |  |  |
-| 2 | `descricao` | `character varying(255)` | não |  |  |  |
-| 3 | `valor` | `numeric(15,2)` | não |  |  |  |
-| 4 | `data_vencimento` | `date` | não |  |  |  |
-| 5 | `data_pagamento` | `date` | sim |  |  |  |
-| 6 | `status` | `character varying(20)` | sim | `'pendente'::character varying` |  |  |
-| 7 | `fornecedor_id` | `uuid` | sim |  |  |  |
-| 8 | `user_id` | `uuid` | sim |  |  |  |
-| 9 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
-| 10 | `updated_at` | `timestamp with time zone` | sim | `now()` |  |  |
-| 11 | `empresa_id` | `uuid` | sim |  |  |  |
-| 12 | `categoria_id` | `uuid` | sim |  |  |  |
-| 13 | `centro_custo_id` | `uuid` | sim |  |  |  |
-| 14 | `forma_pagamento` | `text` | sim |  |  |  |
-| 15 | `conta_bancaria_id` | `uuid` | sim |  |  |  |
-| 16 | `numero_documento` | `text` | sim |  |  |  |
-| 17 | `observacoes` | `text` | sim |  |  |  |
-| 18 | `valor_pago` | `numeric` | sim |  |  |  |
-| 19 | `juros` | `numeric` | sim | `0` |  |  |
-| 20 | `multa` | `numeric` | sim | `0` |  |  |
-| 21 | `desconto` | `numeric` | sim | `0` |  |  |
-| 22 | `recorrente` | `boolean` | sim | `false` |  |  |
-| 23 | `parcela_atual` | `integer` | sim |  |  |  |
-| 24 | `total_parcelas` | `integer` | sim |  |  |  |
-| 25 | `anexo_url` | `text` | sim |  |  |  |
-| 26 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  |  |
-| 27 | `categoria` | `text` | sim |  |  |  |
-| 28 | `fornecedor_nome` | `text` | sim |  |  |  |
-| 29 | `categoria_nome` | `text` | sim |  |  |  |
-| 30 | `centro_resultado` | `text` | sim |  |  |  |
-| 31 | `aprovado_por` | `uuid` | sim |  |  |  |
-| 32 | `transacao_conciliada_id` | `uuid` | sim |  |  |  |
-| 33 | `tipo_cobranca` | `text` | sim |  |  |  |
-| 34 | `deleted_at` | `timestamp with time zone` | sim |  |  |  |
-| 35 | `tags` | `text[]` | sim | `'{}'::text[]` |  |  |
-| 36 | `data_emissao` | `date` | sim |  |  |  |
+| 1 | `id` | `uuid` | não | `uuid_generate_v4()` |  | Identificador UUID da conta a pagar. |
+| 2 | `descricao` | `character varying(255)` | não |  |  | Descrição da obrigação financeira. |
+| 3 | `valor` | `numeric(15,2)` | não |  |  | Valor original da conta a pagar, em reais (BRL). O banco exige valor maior ou igual a zero. |
+| 4 | `data_vencimento` | `date` | não |  |  | Data de vencimento da obrigação. |
+| 5 | `data_pagamento` | `date` | sim |  |  | Data do pagamento, quando realizado. |
+| 6 | `status` | `character varying(20)` | sim | `'pendente'::character varying` |  | Situação da conta. O banco permite: pendente, pago, vencido, cancelado ou parcial. Valor padrão: pendente. |
+| 7 | `fornecedor_id` | `uuid` | sim |  |  | Identificador opcional do fornecedor; possui chave estrangeira para public.fornecedores(id). |
+| 8 | `user_id` | `uuid` | sim |  |  | Identificador opcional do usuário associado; possui chave estrangeira para auth.users(id). |
+| 9 | `created_at` | `timestamp with time zone` | sim | `now()` |  | Data e hora de criação do registro; valor padrão: now(). |
+| 10 | `updated_at` | `timestamp with time zone` | sim | `now()` |  | Data e hora da última atualização; valor padrão: now(). |
+| 11 | `empresa_id` | `uuid` | sim |  |  | Identificador da empresa associada; possui chave estrangeira para public.empresas(id). |
+| 12 | `categoria_id` | `uuid` | sim |  |  | Identificador opcional da categoria; possui chave estrangeira para public.categorias(id). |
+| 13 | `centro_custo_id` | `uuid` | sim |  |  | Identificador opcional do centro de custo; possui chave estrangeira para public.centros_custo(id). |
+| 14 | `forma_pagamento` | `text` | sim |  |  | Forma de pagamento registrada como texto. O banco não define uma lista de valores permitidos. |
+| 15 | `conta_bancaria_id` | `uuid` | sim |  |  | Identificador opcional da conta bancária utilizada; possui chave estrangeira para public.contas_bancarias(id). |
+| 16 | `numero_documento` | `text` | sim |  |  | Número ou referência textual do documento relacionado à obrigação. |
+| 17 | `observacoes` | `text` | sim |  |  | Observações livres sobre a conta a pagar. |
+| 18 | `valor_pago` | `numeric` | sim |  |  | Valor pago, em reais (BRL). O banco não declara uma restrição de faixa para este campo. |
+| 19 | `juros` | `numeric` | sim | `0` |  | Valor de juros associado à conta, em reais (BRL). Valor padrão: 0. |
+| 20 | `multa` | `numeric` | sim | `0` |  | Valor de multa associado à conta, em reais (BRL). Valor padrão: 0. |
+| 21 | `desconto` | `numeric` | sim | `0` |  | Valor de desconto aplicado à conta, em reais (BRL). Valor padrão: 0. |
+| 22 | `recorrente` | `boolean` | sim | `false` |  | Indica se a conta está marcada como recorrente. Valor padrão: false. |
+| 23 | `parcela_atual` | `integer` | sim |  |  | Número da parcela atual, quando informado. O banco não define uma faixa permitida. |
+| 24 | `total_parcelas` | `integer` | sim |  |  | Quantidade total de parcelas, quando informada. O banco não define uma faixa permitida. |
+| 25 | `anexo_url` | `text` | sim |  |  | Endereço textual de um anexo relacionado à conta. |
+| 26 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  | Metadados em JSONB. O banco não especifica um contrato de chaves ou estrutura. Valor padrão: objeto JSON vazio. |
+| 27 | `categoria` | `text` | sim |  |  | Categoria registrada como texto. |
+| 28 | `fornecedor_nome` | `text` | sim |  |  | Nome do fornecedor registrado como texto. |
+| 29 | `categoria_nome` | `text` | sim |  |  | Nome da categoria registrado como texto. |
+| 30 | `centro_resultado` | `text` | sim |  |  | Centro de resultado registrado como texto. O banco não define valores permitidos. |
+| 31 | `aprovado_por` | `uuid` | sim |  |  | UUID do usuário associado à aprovação; possui chave estrangeira para auth.users(id). |
+| 32 | `transacao_conciliada_id` | `uuid` | sim |  |  | Identificador UUID associado a uma transação conciliada. O inventário não mostra chave estrangeira declarada para esta coluna. |
+| 33 | `tipo_cobranca` | `text` | sim |  |  | Tipo de cobrança registrado como texto. O banco não define uma lista de valores permitidos. |
+| 34 | `deleted_at` | `timestamp with time zone` | sim |  |  | Data e hora associadas à exclusão lógica do registro, quando preenchida. |
+| 35 | `tags` | `text[]` | sim | `'{}'::text[]` |  | Lista de etiquetas textuais. O banco não restringe os valores da lista. Valor padrão: array vazio. |
+| 36 | `data_emissao` | `date` | sim |  |  | Data de emissão do documento, quando informada. |
 
 
 ## Constraints

@@ -2,6 +2,11 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-24 13:17 UTC
+
+- **colunas** alterado (79): `public.contas_pagar.anexo_url`, `public.contas_pagar.aprovado_por`, `public.contas_pagar.categoria`, `public.contas_pagar.categoria_id`, `public.contas_pagar.categoria_nome`, `public.contas_pagar.centro_custo_id`, `public.contas_pagar.centro_resultado`, `public.contas_pagar.conta_bancaria_id`, `public.contas_pagar.created_at`, `public.contas_pagar.data_emissao`, `public.contas_pagar.data_pagamento`, `public.contas_pagar.data_vencimento`, `public.contas_pagar.deleted_at`, `public.contas_pagar.desconto`, `public.contas_pagar.descricao`, `public.contas_pagar.empresa_id`, `public.contas_pagar.forma_pagamento`, `public.contas_pagar.fornecedor_id`, `public.contas_pagar.fornecedor_nome`, `public.contas_pagar.id`, `public.contas_pagar.juros`, `public.contas_pagar.metadata`, `public.contas_pagar.multa`, `public.contas_pagar.numero_documento`, `public.contas_pagar.observacoes`, `public.contas_pagar.parcela_atual`, `public.contas_pagar.recorrente`, `public.contas_pagar.status`, `public.contas_pagar.tags`, `public.contas_pagar.tipo_cobranca`, `public.contas_pagar.total_parcelas`, `public.contas_pagar.transacao_conciliada_id`, `public.contas_pagar.updated_at`, `public.contas_pagar.user_id`, `public.contas_pagar.valor`, `public.contas_pagar.valor_pago`, `public.contas_receber.anexo_url`, `public.contas_receber.bitrix_deal_id`, `public.contas_receber.categoria_id`, `public.contas_receber.categoria_nome` … (+39)
+- **tabelas** alterado (2): `public.contas_pagar`, `public.contas_receber`
+
 ## 2026-11-24 10:16 UTC
 
 - **config: storage_config** alterado (1): `storage_config`

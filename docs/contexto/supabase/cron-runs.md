@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:00:00 | succeeded | 0.19 | 1 row |
 | 2026-11-24 12:00:00 | succeeded | 0.43 | 1 row |
 | 2026-11-24 11:00:00 | succeeded | 0.18 | 1 row |
-| 2026-11-24 10:00:00 | succeeded | 0.41 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:00:00 | succeeded | 0.66 | 1 row |
+| 2026-11-24 12:30:00 | succeeded | 0.23 | 1 row |
 | 2026-11-24 12:00:00 | succeeded | 0.33 | 1 row |
-| 2026-11-24 11:30:00 | succeeded | 0.60 | 1 row |
-| 2026-11-24 11:00:00 | succeeded | 0.26 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 12:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-24 11:45:00 | succeeded | 0.02 | 1 row |
 | 2026-11-24 10:45:00 | succeeded | 0.01 | 1 row |
-| 2026-11-24 09:45:00 | succeeded | 0.00 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:15:00 | succeeded | 0.11 | 1 row |
 | 2026-11-24 12:15:00 | succeeded | 0.10 | 1 row |
 | 2026-11-24 11:15:00 | succeeded | 0.06 | 1 row |
-| 2026-11-24 10:15:00 | succeeded | 0.10 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:10:00 | succeeded | 1.66 | 1 row |
 | 2026-11-24 12:10:00 | succeeded | 0.80 | 1 row |
 | 2026-11-24 11:10:00 | succeeded | 1.95 | 1 row |
-| 2026-11-24 10:10:00 | succeeded | 0.91 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-24 12:15:00 | succeeded | 0.05 | 1 row |
-| 2026-11-24 12:00:00 | succeeded | 0.04 | 1 row |
-| 2026-11-24 11:45:00 | succeeded | 0.03 | 1 row |
+| 2026-11-24 13:15:00 | succeeded | 0.05 | 1 row |
+| 2026-11-24 13:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-24 12:45:00 | succeeded | 0.03 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-24 12:22:00 | succeeded | 0.01 | 1 row |
-| 2026-11-24 12:21:00 | succeeded | 0.02 | 1 row |
-| 2026-11-24 12:20:00 | succeeded | 0.01 | 1 row |
+| 2026-11-24 13:16:00 | succeeded | 0.01 | 1 row |
+| 2026-11-24 13:15:00 | succeeded | 0.08 | 1 row |
+| 2026-11-24 13:14:00 | succeeded | 0.01 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:10:00 | succeeded | 0.06 | 1 row |
 | 2026-11-24 12:10:00 | succeeded | 0.13 | 1 row |
 | 2026-11-24 11:10:00 | succeeded | 0.09 | 1 row |
-| 2026-11-24 10:10:00 | succeeded | 0.09 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-24 12:30:00 | succeeded | 0.08 | 1 row |
 | 2026-11-24 12:00:00 | succeeded | 0.06 | 1 row |
-| 2026-11-24 11:30:00 | succeeded | 0.01 | 1 row |
-| 2026-11-24 11:00:00 | succeeded | 0.03 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,9 +250,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 12:30:00 | succeeded | 0.12 | 1 row |
 | 2026-11-24 11:30:00 | succeeded | 0.06 | 1 row |
 | 2026-11-24 10:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-24 09:30:00 | succeeded | 0.03 | 1 row |
 
 
 ## 43 · enviar-digest-conformidade-diario
@@ -268,9 +268,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-24 13:00:00 | succeeded | 0.02 | 1 row |
+| 2026-11-24 12:30:00 | succeeded | 0.05 | 1 row |
 | 2026-11-24 12:00:00 | succeeded | 0.06 | 1 row |
-| 2026-11-24 11:30:00 | succeeded | 0.01 | 1 row |
-| 2026-11-24 11:00:00 | succeeded | 0.06 | 1 row |
 
 
 ## 49 · marcar-contas-vencidas

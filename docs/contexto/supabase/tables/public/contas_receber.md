@@ -1,5 +1,7 @@
 # public.contas_receber
 
+> Contas e títulos financeiros a receber. Valores monetários são expressos em reais (BRL), em unidades monetárias, não centavos.
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -17,49 +19,49 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `uuid_generate_v4()` |  |  |
-| 2 | `descricao` | `character varying(255)` | não |  |  |  |
-| 3 | `valor` | `numeric(15,2)` | não |  |  |  |
-| 4 | `data_vencimento` | `date` | não |  |  |  |
-| 5 | `data_recebimento` | `date` | sim |  |  |  |
-| 6 | `status` | `character varying(20)` | sim | `'pendente'::character varying` |  | em_acordo: conta vinculada a um acordo de parcelamento ativo (acordos_parcelamento.contas_receber_ids) — excluída da régua de cobrança automática enquanto durar. |
-| 7 | `cliente_id` | `uuid` | sim |  |  |  |
-| 8 | `user_id` | `uuid` | sim |  |  |  |
-| 9 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
-| 10 | `updated_at` | `timestamp with time zone` | sim | `now()` |  |  |
-| 11 | `empresa_id` | `uuid` | sim |  |  |  |
-| 12 | `categoria_id` | `uuid` | sim |  |  |  |
-| 13 | `centro_custo_id` | `uuid` | sim |  |  |  |
-| 14 | `forma_recebimento` | `text` | sim |  |  |  |
-| 15 | `conta_bancaria_id` | `uuid` | sim |  |  |  |
-| 16 | `numero_documento` | `text` | sim |  |  |  |
-| 17 | `observacoes` | `text` | sim |  |  |  |
-| 18 | `valor_recebido` | `numeric` | sim |  |  |  |
-| 19 | `juros` | `numeric` | sim | `0` |  |  |
-| 20 | `multa` | `numeric` | sim | `0` |  |  |
-| 21 | `desconto` | `numeric` | sim | `0` |  |  |
-| 22 | `recorrente` | `boolean` | sim | `false` |  |  |
-| 23 | `parcela_atual` | `integer` | sim |  |  |  |
-| 24 | `total_parcelas` | `integer` | sim |  |  |  |
-| 25 | `anexo_url` | `text` | sim |  |  |  |
-| 26 | `score` | `numeric` | sim |  |  |  |
-| 27 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  |  |
-| 28 | `cliente_nome` | `text` | sim |  |  |  |
-| 29 | `etapa_cobranca` | `text` | sim |  |  |  |
-| 30 | `tipo_cobranca` | `text` | sim |  |  |  |
-| 31 | `numero_parcela_atual` | `integer` | sim |  |  |  |
-| 32 | `valor_desconto` | `numeric(15,2)` | sim | `0` |  |  |
-| 33 | `chave_pix` | `text` | sim |  |  |  |
-| 34 | `data_emissao` | `date` | sim | `CURRENT_DATE` |  |  |
-| 35 | `categoria_nome` | `text` | sim |  |  |  |
-| 36 | `transacao_conciliada_id` | `uuid` | sim |  |  |  |
-| 37 | `deleted_at` | `timestamp with time zone` | sim |  |  |  |
-| 38 | `vendedor_id` | `uuid` | sim |  |  |  |
-| 39 | `bitrix_deal_id` | `text` | sim |  |  |  |
-| 40 | `valor_final` | `numeric(15,2)` | sim |  |  |  |
-| 41 | `codigo_barras` | `text` | sim |  |  |  |
-| 42 | `link_boleto` | `text` | sim |  |  |  |
-| 43 | `frequencia_recorrencia` | `text` | sim |  |  |  |
+| 1 | `id` | `uuid` | não | `uuid_generate_v4()` |  | Identificador UUID da conta a receber. |
+| 2 | `descricao` | `character varying(255)` | não |  |  | Descrição do valor ou título a receber. |
+| 3 | `valor` | `numeric(15,2)` | não |  |  | Valor original da conta a receber, em reais (BRL). O banco exige valor maior ou igual a zero. |
+| 4 | `data_vencimento` | `date` | não |  |  | Data de vencimento do recebível. |
+| 5 | `data_recebimento` | `date` | sim |  |  | Data do recebimento, quando realizado. |
+| 6 | `status` | `character varying(20)` | sim | `'pendente'::character varying` |  | Situação da conta. O banco permite: pendente, recebido, pago, vencido, cancelado, parcial, atrasado ou em_acordo. Valor padrão: pendente. O status em_acordo identifica conta vinculada a acordo de parcelamento ativo e excluída da régua de cobrança automática enquanto durar o acordo. |
+| 7 | `cliente_id` | `uuid` | sim |  |  | Identificador opcional do cliente; possui chave estrangeira para public.clientes(id). |
+| 8 | `user_id` | `uuid` | sim |  |  | Identificador opcional do usuário associado; possui chave estrangeira para auth.users(id). |
+| 9 | `created_at` | `timestamp with time zone` | sim | `now()` |  | Data e hora de criação do registro; valor padrão: now(). |
+| 10 | `updated_at` | `timestamp with time zone` | sim | `now()` |  | Data e hora da última atualização; valor padrão: now(). |
+| 11 | `empresa_id` | `uuid` | sim |  |  | Identificador da empresa associada; possui chave estrangeira para public.empresas(id). |
+| 12 | `categoria_id` | `uuid` | sim |  |  | Identificador opcional da categoria; possui chave estrangeira para public.categorias(id). |
+| 13 | `centro_custo_id` | `uuid` | sim |  |  | Identificador opcional do centro de custo; possui chave estrangeira para public.centros_custo(id). |
+| 14 | `forma_recebimento` | `text` | sim |  |  | Forma de recebimento registrada como texto. O banco não define uma lista de valores permitidos. |
+| 15 | `conta_bancaria_id` | `uuid` | sim |  |  | Identificador opcional da conta bancária associada; possui chave estrangeira para public.contas_bancarias(id). |
+| 16 | `numero_documento` | `text` | sim |  |  | Número ou referência textual do documento relacionado ao recebível. |
+| 17 | `observacoes` | `text` | sim |  |  | Observações livres sobre a conta a receber. |
+| 18 | `valor_recebido` | `numeric` | sim |  |  | Valor recebido, em reais (BRL). O banco não declara uma restrição de faixa para este campo. |
+| 19 | `juros` | `numeric` | sim | `0` |  | Valor de juros associado ao recebível, em reais (BRL). Valor padrão: 0. |
+| 20 | `multa` | `numeric` | sim | `0` |  | Valor de multa associado ao recebível, em reais (BRL). Valor padrão: 0. |
+| 21 | `desconto` | `numeric` | sim | `0` |  | Valor de desconto associado ao recebível, em reais (BRL). Valor padrão: 0. |
+| 22 | `recorrente` | `boolean` | sim | `false` |  | Indica se o recebível está marcado como recorrente. Valor padrão: false. |
+| 23 | `parcela_atual` | `integer` | sim |  |  | Número da parcela atual, quando informado. O banco não define uma faixa permitida. |
+| 24 | `total_parcelas` | `integer` | sim |  |  | Quantidade total de parcelas, quando informada. O banco não define uma faixa permitida. |
+| 25 | `anexo_url` | `text` | sim |  |  | Endereço textual de um anexo relacionado ao recebível. |
+| 26 | `score` | `numeric` | sim |  |  | Pontuação associada ao recebível. A escala e o significado do score não são especificados pelo banco. |
+| 27 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  | Metadados em JSONB. O banco não especifica um contrato de chaves ou estrutura. Valor padrão: objeto JSON vazio. |
+| 28 | `cliente_nome` | `text` | sim |  |  | Nome do cliente registrado como texto. |
+| 29 | `etapa_cobranca` | `text` | sim |  |  | Etapa de cobrança registrada como texto. O banco não define valores permitidos. |
+| 30 | `tipo_cobranca` | `text` | sim |  |  | Tipo de cobrança registrado como texto. O banco não define valores permitidos. |
+| 31 | `numero_parcela_atual` | `integer` | sim |  |  | Número da parcela atual, quando informado. O banco não define uma faixa permitida. |
+| 32 | `valor_desconto` | `numeric(15,2)` | sim | `0` |  | Valor do desconto registrado, em reais (BRL). Valor padrão: 0. |
+| 33 | `chave_pix` | `text` | sim |  |  | Chave Pix registrada como texto. O banco não valida o formato ou os tipos permitidos. |
+| 34 | `data_emissao` | `date` | sim | `CURRENT_DATE` |  | Data de emissão do recebível; valor padrão: CURRENT_DATE. |
+| 35 | `categoria_nome` | `text` | sim |  |  | Nome da categoria registrado como texto. |
+| 36 | `transacao_conciliada_id` | `uuid` | sim |  |  | Identificador UUID associado a uma transação conciliada. O inventário não mostra chave estrangeira declarada para esta coluna. |
+| 37 | `deleted_at` | `timestamp with time zone` | sim |  |  | Data e hora associadas à exclusão lógica do registro, quando preenchida. |
+| 38 | `vendedor_id` | `uuid` | sim |  |  | Identificador UUID associado a um vendedor. O inventário não mostra chave estrangeira declarada para esta coluna. |
+| 39 | `bitrix_deal_id` | `text` | sim |  |  | Identificador textual de negócio associado ao Bitrix. |
+| 40 | `valor_final` | `numeric(15,2)` | sim |  |  | Valor final do recebível, em reais (BRL). A composição deste valor não é definida por uma restrição do banco. |
+| 41 | `codigo_barras` | `text` | sim |  |  | Código de barras relacionado ao título, quando informado. |
+| 42 | `link_boleto` | `text` | sim |  |  | Endereço textual do boleto relacionado ao recebível, quando informado. |
+| 43 | `frequencia_recorrencia` | `text` | sim |  |  | Frequência da recorrência. Se preenchido, o banco permite: semanal, quinzenal, mensal, bimestral, trimestral, semestral ou anual. |
 
 
 ## Constraints
