@@ -395,11 +395,31 @@ DECLARE
   autor_b uuid := '00000000-0000-4000-8000-0000000000b2';
   forjado uuid := '00000000-0000-4000-8000-00000000ff44';
   linha record;
+    coluna text;
   data_primeira timestamptz;
 BEGIN
   CREATE TEMP TABLE tmp_decisao_credito (
     LIKE public.elisao_creditos_auditoria INCLUDING DEFAULTS INCLUDING CONSTRAINTS
   );
+    -- A copia herda o NOT NULL das colunas do dominio (empresa_id, nota_fiscal_id,
+    -- ncm, valores) que a decisao de credito nao preenche. A tabela so existe para
+    -- exercitar o gatilho, entao relaxar esse NOT NULL evita que o teste dependa de
+    -- um schema de producao igual ao arquivo de migration e falhe no INSERT antes
+    -- de chegar ao comportamento que ele mede (achado do Devin Review na #546).
+    FOR coluna IN
+      SELECT a.attname
+        FROM pg_attribute a
+        JOIN pg_class c ON c.oid = a.attrelid
+       WHERE c.relnamespace = pg_my_temp_schema()
+         AND c.relname = 'tmp_decisao_credito'
+         AND a.attnum > 0
+         AND a.attnotnull
+         AND NOT a.atthasdef
+         AND a.attname <> ALL (ARRAY['status_aprovacao', 'aprovador_id',
+                                     'data_aprovacao', 'historico_decisoes'])
+    LOOP
+      EXECUTE format('ALTER TABLE tmp_decisao_credito ALTER COLUMN %I DROP NOT NULL', coluna);
+    END LOOP;
   CREATE TRIGGER trg_tmp_decisao_credito
     BEFORE UPDATE ON tmp_decisao_credito
     FOR EACH ROW EXECUTE FUNCTION public.registrar_decisao_elisao();
