@@ -92,6 +92,19 @@ Deno.test('mapearCst — junta CST pelas situacoes e descarta codigo em duas sit
   assertEquals(ambiguas, ['200032']);
 });
 
+Deno.test('mapearCst — terceira ocorrencia nao ressuscita codigo ambiguo', () => {
+  // Sem a guarda de `ambiguas`, a terceira situacao reinsere o codigo no mapa
+  // (a entrada tinha sido apagada pela segunda) e a linha vai ao banco com um
+  // CST escolhido no meio de uma contradicao.
+  const { porCclasstrib, ambiguas } = mapearCst([
+    { codigo: '200', classificacoesTributarias: [{ codigo: '200032' }] },
+    { codigo: '000', classificacoesTributarias: [{ codigo: '200032' }] },
+    { codigo: '400', classificacoesTributarias: [{ codigo: '200032' }] },
+  ]);
+  assertEquals(porCclasstrib.has('200032'), false);
+  assertEquals(ambiguas, ['200032']);
+});
+
 Deno.test('montarLinhas — grava vigencia do catalogo e fracao, sem CST suposto', () => {
   const { linhas, sem_cst, ignoradas, ambiguas } = montarLinhas(
     [
@@ -137,6 +150,40 @@ Deno.test('montarLinhas — grava vigencia do catalogo e fracao, sem CST suposto
     'p_red_ibs_uf',
     'versao_it',
   ]);
+});
+
+Deno.test('montarLinhas — presente conta o publicado, nao so o que tem CST', () => {
+  // Escala real da API (170 codigos): o piso de sanidade do encerramento nao
+  // interfere e a diferenca entre presenca publicada e linha gravavel aparece.
+  const publicadas: ClassificacaoApi[] = Array.from({ length: 170 }, (_, i) => ({
+    codigo: String(100000 + i),
+    descricao: `Classificacao ${i}`,
+  }));
+  const vinculos: SituacaoApi[] = [
+    { codigo: '200', classificacoesTributarias: publicadas.slice(0, 169) },
+  ];
+
+  const m = montarLinhas(publicadas, vinculos, 'V0073');
+  assertEquals(m.linhas.length, 169);
+  assertEquals(m.sem_cst, ['100169']);
+  assertEquals(
+    m.presentes,
+    publicadas.map((c) => String(c.codigo))
+  );
+
+  // 100169 continua publicada pela Receita: se a presenca viesse de `linhas`, o
+  // encerramento fecharia a vigencia de um codigo que a Receita mantem, e a
+  // importacao passaria a acusar REG-013 em nota correta ate o vinculo voltar.
+  const abertos = publicadas.map((c) => String(c.codigo));
+  assertEquals(decidirEncerramentos(abertos, m.presentes, '2026-11-24').encerrar, []);
+  assertEquals(
+    decidirEncerramentos(
+      abertos,
+      m.linhas.map((l) => l.cclasstrib),
+      '2026-11-24'
+    ).encerrar,
+    [{ cclasstrib: '100169', fim_vigencia: '2026-11-24' }]
+  );
 });
 
 Deno.test('montarLinhas — lista vazia nao inventa linha', () => {

@@ -18,6 +18,7 @@ import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { validatePayload } from '../_shared/validation.ts';
 import { z } from '../_shared/zod.ts';
 import {
   MIN_CLASSIFICACOES_API,
@@ -83,23 +84,26 @@ export const handler = async (req: Request) => {
 
   try {
     const url = new URL(req.url);
-    const params = z
-      .object({
+    // `validatePayload` (AGENTS.md) em vez de `safeParse` solto: o helper marca o
+    // desvio de contrato no log da funcao e devolve os campos para a resposta.
+    const params = validatePayload(
+      z.object({
         data: z.string().trim().optional(),
-        forcar: z
-          .string()
-          .optional()
-          .transform((v) => v === '1' || v === 'true'),
-      })
-      .safeParse({
+        forcar: z.string().optional(),
+      }),
+      {
         data: url.searchParams.get('data') ?? undefined,
         forcar: url.searchParams.get('forcar') ?? undefined,
-      });
+      },
+      'sync-catalogo-cclasstrib'
+    );
     if (!params.success) {
-      return createValidationErrorResponse(params.error, corsHeaders, 'Parâmetros inválidos');
+      return createValidationErrorResponse(params.details, corsHeaders, 'Parâmetros inválidos');
     }
     const data = normalizarData(params.data.data);
-    const forcar = params.data.forcar;
+    // `validatePayload` exige schema cujo entrada e saida coincidem, entao a
+    // conversao de `forcar` sai do Zod em vez de virar `transform`.
+    const forcar = params.data.forcar === '1' || params.data.forcar === 'true';
 
     // 1. Versao da base oficial: vira `versao_it` e barra downgrade.
     const versao = await buscarDadosAbertos<VersaoApi>('versao');
@@ -180,8 +184,11 @@ export const handler = async (req: Request) => {
       .upsert(mapeamento.linhas, { onConflict: 'cclasstrib,inicio_vigencia' });
     if (erroUpsert) throw erroUpsert;
 
-    // 4. Encerramento guardado do que desapareceu do catalogo oficial.
-    const recebidos = mapeamento.linhas.map((l) => l.cclasstrib);
+    // 4. Encerramento guardado do que desapareceu do catalogo oficial. A lista de
+    // presenca vem de `mapeamento.presentes`, nao de `mapeamento.linhas`: um
+    // codigo publicado cujo vinculo de CST falhou continua na Receita e nao pode
+    // ser encerrado por falha nossa (ele reaparece em `sem_cst` no resumo).
+    const recebidos = mapeamento.presentes;
     const decisao = decidirEncerramentos(abertos, recebidos, data);
     let encerradas = 0;
     if (decisao.encerrar.length > 0) {

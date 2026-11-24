@@ -64,6 +64,13 @@ export interface LinhaCatalogo {
 
 export interface Mapeamento {
   linhas: LinhaCatalogo[];
+  /**
+   * Codigos validos e unicos que a resposta oficial publicou, com ou sem CST.
+   * E isto - nao `linhas` - que decide quem sumiu do catalogo: um codigo
+   * publicado cujo vinculo de CST falhou continua na Receita e nao pode ser
+   * encerrado por falha nossa.
+   */
+  presentes: string[];
   /** Codigos validos que nenhuma situacao tributaria reivindica. */
   sem_cst: string[];
   /** Codigos invalidos, vazios, sem descricao ou repetidos na resposta. */
@@ -135,6 +142,10 @@ export function mapearCst(situacoes: readonly SituacaoApi[]): {
     for (const classificacao of situacao?.classificacoesTributarias ?? []) {
       const codigo = String(classificacao?.codigo ?? '').trim();
       if (!CC_6.test(codigo)) continue;
+      // `ambiguas` barra toda ocorrencia seguinte: sem isto, uma terceira
+      // situacao reivindicando o codigo o reinsere no mapa e a linha e gravada
+      // com um CST escolhido no meio de uma contradicao.
+      if (ambiguas.has(codigo)) continue;
       const anterior = porCclasstrib.get(codigo);
       if (anterior === undefined) {
         porCclasstrib.set(codigo, cst);
@@ -156,6 +167,7 @@ export function montarLinhas(
 ): Mapeamento {
   const { porCclasstrib, ambiguas } = mapearCst(situacoes);
   const linhas: LinhaCatalogo[] = [];
+  const presentes: string[] = [];
   const sem_cst: string[] = [];
   const ignoradas: string[] = [];
   const vistos = new Set<string>();
@@ -168,6 +180,7 @@ export function montarLinhas(
       continue;
     }
     vistos.add(codigo);
+    presentes.push(codigo);
     const cst = porCclasstrib.get(codigo);
     if (!cst) {
       sem_cst.push(codigo);
@@ -186,7 +199,7 @@ export function montarLinhas(
     });
   }
 
-  return { linhas, sem_cst, ignoradas, ambiguas: [...ambiguas] };
+  return { linhas, presentes, sem_cst, ignoradas, ambiguas: [...ambiguas] };
 }
 
 /**
