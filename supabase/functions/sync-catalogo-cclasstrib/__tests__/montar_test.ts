@@ -126,20 +126,17 @@ Deno.test('montarLinhas — grava vigencia do catalogo e fracao, sem CST suposto
   // `exige_gibscbs` e `ind_dir` nao entram no payload: a API nao os publica e
   // o upsert atualiza exatamente as colunas enviadas — incluir um deles aqui
   // zeraria em producao o valor semeado a partir do banco oficial.
-  assertEquals(
-    Object.keys(medicamento).sort(),
-    [
-      'cclasstrib',
-      'cst',
-      'descricao',
-      'fim_vigencia',
-      'inicio_vigencia',
-      'p_red_cbs',
-      'p_red_ibs_mun',
-      'p_red_ibs_uf',
-      'versao_it',
-    ]
-  );
+  assertEquals(Object.keys(medicamento).sort(), [
+    'cclasstrib',
+    'cst',
+    'descricao',
+    'fim_vigencia',
+    'inicio_vigencia',
+    'p_red_cbs',
+    'p_red_ibs_mun',
+    'p_red_ibs_uf',
+    'versao_it',
+  ]);
 });
 
 Deno.test('montarLinhas — lista vazia nao inventa linha', () => {
