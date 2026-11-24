@@ -378,6 +378,90 @@ BEGIN
   END IF;
 END $$;
 
+-- 7c) Trilha da decisao de credito (firebreak comportamental).
+--
+--     O gatilho e o unico registro de quem decidiu e quando: `decidirCredito`
+--     (src/hooks/useOportunidadesElisao.ts:293-294) envia `user?.id` e
+--     `new Date().toISOString()` no payload e pode ser chamado sobre linha ja
+--     decidida. Derivar autoria/data do banco e congelar quando o status nao muda
+--     e o que impede o cliente de reescrever a trilha.
+--
+--     Roda o gatilho REAL de producao contra uma tabela temporaria com as mesmas
+--     colunas e constraints: valida comportamento sem escrever em linha de
+--     negocio (achado do Devin Review na #546).
+DO $$
+DECLARE
+  autor_a uuid := '00000000-0000-4000-8000-0000000000a1';
+  autor_b uuid := '00000000-0000-4000-8000-0000000000b2';
+  forjado uuid := '00000000-0000-4000-8000-00000000ff44';
+  linha record;
+  data_primeira timestamptz;
+BEGIN
+  CREATE TEMP TABLE tmp_decisao_credito (
+    LIKE public.elisao_creditos_auditoria INCLUDING DEFAULTS INCLUDING CONSTRAINTS
+  );
+  CREATE TRIGGER trg_tmp_decisao_credito
+    BEFORE UPDATE ON tmp_decisao_credito
+    FOR EACH ROW EXECUTE FUNCTION public.registrar_decisao_elisao();
+  INSERT INTO tmp_decisao_credito (status_aprovacao, historico_decisoes)
+  VALUES ('pendente', '[]'::jsonb);
+
+  -- Primeira decisao: autoria e data vem da sessao, nao do payload.
+  PERFORM set_config('request.jwt.claim.sub', autor_a::text, true);
+  UPDATE tmp_decisao_credito
+     SET status_aprovacao = 'aprovado',
+         aprovador_id    = forjado,
+         data_aprovacao  = timestamptz '2020-01-01 00:00:00+00';
+
+  SELECT aprovador_id, data_aprovacao, historico_decisoes INTO linha
+    FROM tmp_decisao_credito;
+  data_primeira := linha.data_aprovacao;
+
+  IF linha.aprovador_id IS DISTINCT FROM autor_a THEN
+    RAISE EXCEPTION 'Trilha de decisao: autoria deveria ser a da sessao (%), veio %',
+      autor_a, COALESCE(linha.aprovador_id::text, 'NULL');
+  END IF;
+  IF linha.data_aprovacao IS NULL
+     OR linha.data_aprovacao < now() - interval '5 minutes' THEN
+    RAISE EXCEPTION 'Trilha de decisao: data deveria ser now(), veio %',
+      COALESCE(linha.data_aprovacao::text, 'NULL');
+  END IF;
+  IF linha.historico_decisoes -> -1 ->> 'usuario_id' IS DISTINCT FROM autor_a::text THEN
+    RAISE EXCEPTION 'Historico de decisao sem o autor da sessao: %', linha.historico_decisoes;
+  END IF;
+
+  -- Linha ja decidida, outro usuario tentando reescrever: congela.
+  PERFORM set_config('request.jwt.claim.sub', autor_b::text, true);
+  UPDATE tmp_decisao_credito
+     SET aprovador_id   = forjado,
+         data_aprovacao = timestamptz '1999-01-01 00:00:00+00';
+
+  SELECT aprovador_id, data_aprovacao INTO linha FROM tmp_decisao_credito;
+  IF linha.aprovador_id IS DISTINCT FROM autor_a THEN
+    RAISE EXCEPTION 'Trilha de decisao: autoria reescrita na mesma decisao (% no lugar de %)',
+      COALESCE(linha.aprovador_id::text, 'NULL'), autor_a;
+  END IF;
+  IF linha.data_aprovacao IS DISTINCT FROM data_primeira THEN
+    RAISE EXCEPTION 'Trilha de decisao: data reescrita na mesma decisao (% no lugar de %)',
+      COALESCE(linha.data_aprovacao::text, 'NULL'), data_primeira;
+  END IF;
+
+  -- Reabertura para pendente: nao ha decisao para atribuir.
+  UPDATE tmp_decisao_credito
+     SET status_aprovacao = 'pendente',
+         aprovador_id     = forjado,
+         data_aprovacao   = now();
+
+  SELECT aprovador_id, data_aprovacao INTO linha FROM tmp_decisao_credito;
+  IF linha.aprovador_id IS NOT NULL OR linha.data_aprovacao IS NOT NULL THEN
+    RAISE EXCEPTION 'Trilha de decisao: linha reaberta manteve autoria/data (%, %)',
+      COALESCE(linha.aprovador_id::text, 'NULL'),
+      COALESCE(linha.data_aprovacao::text, 'NULL');
+  END IF;
+
+  DROP TABLE tmp_decisao_credito;
+END $$;
+
 -- 7b) Informativo (não falha o build): mesma classe de gap no restante do
 --     schema — GRANT de escrita para authenticated sem policy do comando.
 --     Há legado em prod sem uso de cliente, então isso aparece como WARNING
