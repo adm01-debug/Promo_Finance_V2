@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { FiscalHealthBadge } from '@/components/admin/FiscalHealthBadge';
 import { TrilhaTable, type ColunaDef } from './TrilhaTable';
 
 function nivelBadge(n: string) {
@@ -37,5 +38,12 @@ const colunas: ColunaDef[] = [
 ];
 
 export function ConformidadeFiscalTab() {
-  return <TrilhaTable tipo="conformidade" colunas={colunas} filename="conformidade-fiscal" />;
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <FiscalHealthBadge />
+      </div>
+      <TrilhaTable tipo="conformidade" colunas={colunas} filename="conformidade-fiscal" />
+    </div>
+  );
 }

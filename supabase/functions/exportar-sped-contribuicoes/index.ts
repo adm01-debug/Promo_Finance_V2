@@ -80,6 +80,24 @@ Deno.serve(
         );
       }
 
+      // EFD-Contribuições foi extinto a partir de 01/01/2027 (LC 214/2025 art. 125).
+      // Competências >= 2027-01 não geram mais esse arquivo.
+      if (periodo >= '2027-01') {
+        await logger.flush();
+        return new Response(
+          JSON.stringify({
+            error:
+              'EFD-Contribuições extinta a partir de 01/01/2027 (LC 214/2025 art. 125). Use a apuração IBS/CBS para competências a partir de 2027.',
+            codigo: 'EFD_CONTRIBUICOES_EXTINTA',
+            vigencia_fim: '2026-12',
+          }),
+          {
+            status: 422,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
       // financeiro sem vínculo ativo com a empresa pedia dados fiscais de
       // QUALQUER empresa via empresa_id arbitrário (achado P0 do cubic-dev-ai);
       // admin mantém acesso global, igual ao resto do sistema.
