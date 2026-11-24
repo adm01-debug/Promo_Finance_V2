@@ -94,3 +94,15 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- O endurecimento de RLS tambem removeu o gatilho da trilha: a funcao acima nao
+-- existia mais em producao em 2026-11-24 (o gate do CI acusou
+-- "function public.registrar_decisao_elisao() does not exist"), e sem funcao o
+-- gatilho que a usava tambem nao esta la. Recriar so a funcao deixaria a coluna
+-- historico_decisoes sem nenhuma gravacao: a decisao de credito persistiria sem
+-- autoria registrada. Idempotente para sobreviver a um reapply do zero.
+DROP TRIGGER IF EXISTS tr_registrar_decisao_elisao ON public.elisao_creditos_auditoria;
+CREATE TRIGGER tr_registrar_decisao_elisao
+BEFORE UPDATE ON public.elisao_creditos_auditoria
+FOR EACH ROW
+EXECUTE FUNCTION public.registrar_decisao_elisao();

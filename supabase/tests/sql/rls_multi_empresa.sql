@@ -18,6 +18,25 @@
 
 BEGIN;
 
+-- Helper compartilhado pelos gates 7 e 7c: a exigencia sobre o estado POS-migration
+-- so vale depois que a migration que o estabelece entra no ledger do banco. Este
+-- suite roda contra o Postgres de producao (ci.yml usa PROD_DB_URL), onde o estado
+-- esperado so existe depois do `db push` — sem esta guarda o gate reprova o proprio
+-- PR que corrige o gap e o check obrigatorio trava o merge.
+-- Sem ledger legivel mantem a exigencia (fail-safe): nao ha como provar que a
+-- correcao foi aplicada.
+CREATE OR REPLACE FUNCTION pg_temp.migration_aplicada(versao text) RETURNS boolean
+LANGUAGE plpgsql AS $gate$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = versao
+  );
+EXCEPTION
+  WHEN undefined_table OR undefined_column OR invalid_schema_name OR insufficient_privilege THEN
+    RETURN true;
+END;
+$gate$;
+
 -- 1) Tabelas com empresa_id SEM RLS habilitado
 DO $$
 DECLARE
@@ -325,31 +344,15 @@ END $$;
 DO $$
 DECLARE
   requer_update text[] := ARRAY['elisao_creditos_auditoria'];
-  -- Migration que restaura a policy de UPDATE e os GRANTs por coluna da lista
-  -- acima. A exigência só vale quando ela já está no ledger do banco: esta
-  -- suíte roda contra o Postgres de produção (ci.yml usa PROD_DB_URL), onde o
-  -- estado esperado só existe depois do `db push` — sem esta guarda o gate
-  -- reprova o próprio PR que corrige o gap e o check obrigatório trava o merge.
+  -- Migration que restaura a policy de UPDATE, os GRANTs por coluna e o gatilho
+  -- da trilha de decisao. Ver pg_temp.migration_aplicada para a razao da guarda.
   versao_que_restaura text := '20261124095000';
-  aplicada boolean;
   t text;
   colunas text[];
   c text;
   offenders text := '';
 BEGIN
-  BEGIN
-    SELECT EXISTS (
-      SELECT 1 FROM supabase_migrations.schema_migrations
-       WHERE version = versao_que_restaura
-    ) INTO aplicada;
-  EXCEPTION
-    -- Sem ledger legível (banco sem o schema de migrations) mantém a exigência:
-    -- não há como provar que a correção já foi aplicada.
-    WHEN undefined_table OR undefined_column OR insufficient_privilege THEN
-      aplicada := true;
-  END;
-
-  IF aplicada THEN
+  IF pg_temp.migration_aplicada(versao_que_restaura) THEN
   FOREACH t IN ARRAY requer_update LOOP
     IF NOT EXISTS (
       SELECT 1 FROM pg_policies p
@@ -392,6 +395,23 @@ BEGIN
       END IF;
     END LOOP;
   END LOOP;
+
+    -- O endurecimento dropou a funcao e o gatilho da trilha junto com as policies
+    -- (prova: este gate acusou "function public.registrar_decisao_elisao() does not
+    -- exist" em producao em 2026-11-24). Restaurar apenas a funcao deixaria a
+    -- trilha morta — nenhum UPDATE passa por um gatilho inexistente.
+    IF NOT EXISTS (
+      SELECT 1
+        FROM pg_trigger tg
+        JOIN pg_class c ON c.oid = tg.tgrelid
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+       WHERE n.nspname = 'public'
+         AND c.relname = 'elisao_creditos_auditoria'
+         AND tg.tgname = 'tr_registrar_decisao_elisao'
+         AND NOT tg.tgisinternal
+    ) THEN
+      offenders := offenders || E'\n  - public.elisao_creditos_auditoria: gatilho tr_registrar_decisao_elisao ausente (trilha de decisao nao e gravada)';
+    END IF;
   ELSE
     RAISE NOTICE '7) migration % ausente do ledger deste banco: exigência de policy/GRANT de UPDATE pulada', versao_que_restaura;
   END IF;
@@ -421,6 +441,13 @@ DECLARE
     coluna text;
   data_primeira timestamptz;
 BEGIN
+  -- Mesma razao do gate 7: o gatilho real so existe em producao depois que a
+  -- migration 20261124095000 entra no ledger do banco.
+  IF NOT pg_temp.migration_aplicada('20261124095000') THEN
+    RAISE NOTICE '7c) migration 20261124095000 ausente do ledger deste banco: checagem comportamental do gatilho pulada';
+    RETURN;
+  END IF;
+
   CREATE TEMP TABLE tmp_decisao_credito (
     LIKE public.elisao_creditos_auditoria INCLUDING DEFAULTS INCLUDING CONSTRAINTS
   );
