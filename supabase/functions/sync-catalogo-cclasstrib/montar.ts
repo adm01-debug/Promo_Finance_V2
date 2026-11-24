@@ -221,8 +221,12 @@ export function montarLinhas(
     });
   }
 
-  // Sobrou sem descricao em nenhuma ocorrencia: publicado, mas nao gravavel.
-  for (const codigo of sem_descricao) ignoradas.push(codigo);
+  // Sobrou sem descricao: publicado, mas nao gravavel. Quem ja virou linha numa
+  // ocorrencia anterior fica de fora — a linha existe, entao listar o codigo como
+  // ignorado faria o resumo depender da ordem dos duplicados na resposta da API.
+  for (const codigo of sem_descricao) {
+    if (!decididos.has(codigo)) ignoradas.push(codigo);
+  }
 
   return { linhas, presentes, sem_cst, ignoradas, ambiguas: [...ambiguas] };
 }

@@ -245,6 +245,31 @@ Deno.test('montarLinhas — ocorrencia sem descricao nao consome a ocorrencia co
   assertEquals(m.ignoradas, []);
 });
 
+Deno.test('montarLinhas — ordem dos duplicados nao muda resumo nem catalogo', () => {
+  // Mesmo codigo publicado com e sem descricao. A linha gravada e a mesma nas duas
+  // ordens, mas o resumo so listava o codigo em `ignoradas` quando a ocorrencia sem
+  // descricao vinha por ultimo: um codigo gravado aparecia como nao-aproveitado.
+  const semDescricaoPrimeiro: ClassificacaoApi[] = [
+    { codigo: '200032', descricao: '' },
+    { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
+  ];
+  const semDescricaoUltimo: ClassificacaoApi[] = [
+    { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
+    { codigo: '200032', descricao: '' },
+  ];
+  const vinculos: SituacaoApi[] = [
+    { codigo: '200', classificacoesTributarias: [{ codigo: '200032' }] },
+  ];
+
+  const primeiro = montarLinhas(semDescricaoPrimeiro, vinculos, 'V0073');
+  const ultimo = montarLinhas(semDescricaoUltimo, vinculos, 'V0073');
+
+  assertEquals(primeiro.linhas, ultimo.linhas);
+  assertEquals(primeiro.presentes, ['200032']);
+  assertEquals(primeiro.ignoradas, []);
+  assertEquals(ultimo.ignoradas, []);
+});
+
 Deno.test('montarLinhas — presenca preserva a vigencia acima do piso da API', () => {
   // Com menos de MIN_CLASSIFICACOES_API recebidos o encerramento fica bloqueado
   // por resposta curta, e a assercao de "nao encerrou" passa sem testar nada.
