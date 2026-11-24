@@ -1,5 +1,7 @@
 # public.profiles
 
+> Dicionário estrutural de public.profiles (tabela). Chave primária declarada: id. Restrições declaradas no catálogo: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE; PRIMARY KEY (id). A finalidade de negócio não está formalizada além do nome da relação e de suas colunas; não inferir regras adicionais. Comentário anterior no catálogo: nenhum
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -17,16 +19,16 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não |  |  |  |
-| 2 | `full_name` | `text` | sim |  |  |  |
-| 3 | `avatar_url` | `text` | sim |  |  |  |
-| 4 | `role` | `text` | sim | `'visualizador'::text` |  |  |
-| 5 | `created_at` | `timestamp with time zone` | não | `timezone('utc'::text, now())` |  |  |
-| 6 | `updated_at` | `timestamp with time zone` | não | `timezone('utc'::text, now())` |  |  |
-| 7 | `email` | `text` | sim |  |  |  |
-| 8 | `user_id` | `uuid` | sim |  |  |  |
-| 9 | `empresa_id` | `uuid` | sim |  |  |  |
-| 10 | `telefone` | `text` | sim |  |  |  |
+| 1 | `id` | `uuid` | não |  |  | Dicionário estrutural da coluna id em public.profiles. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE; PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 2 | `full_name` | `text` | sim |  |  | Dicionário estrutural da coluna full_name em public.profiles. Papel funcional indicado pelo identificador: full_name; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 3 | `avatar_url` | `text` | sim |  |  | Dicionário estrutural da coluna avatar_url em public.profiles. Papel funcional indicado pelo identificador: avatar_url; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 4 | `role` | `text` | sim | `'visualizador'::text` |  | Dicionário estrutural da coluna role em public.profiles. Papel funcional indicado pelo identificador: role; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: 'visualizador'::text. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 5 | `created_at` | `timestamp with time zone` | não | `timezone('utc'::text, now())` |  | Dicionário estrutural da coluna created_at em public.profiles. Papel funcional indicado pelo identificador: created_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: timezone('utc'::text, now()). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 6 | `updated_at` | `timestamp with time zone` | não | `timezone('utc'::text, now())` |  | Dicionário estrutural da coluna updated_at em public.profiles. Papel funcional indicado pelo identificador: updated_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: timezone('utc'::text, now()). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 7 | `email` | `text` | sim |  |  | Dicionário estrutural da coluna email em public.profiles. Papel funcional indicado pelo identificador: email; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 8 | `user_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna user_id em public.profiles. Papel funcional indicado pelo identificador: user_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 9 | `empresa_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna empresa_id em public.profiles. Papel funcional indicado pelo identificador: empresa_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 10 | `telefone` | `text` | sim |  |  | Dicionário estrutural da coluna telefone em public.profiles. Papel funcional indicado pelo identificador: telefone; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
 
 
 ## Constraints

@@ -1,5 +1,7 @@
 # public.geo_blocks
 
+> Dicionário estrutural de public.geo_blocks (tabela). Chave primária declarada: id. Restrições declaradas no catálogo: CHECK (block_type = ANY (ARRAY['full'::text, 'login_only'::text, 'registration_only'::text])); FOREIGN KEY (blocked_by) REFERENCES auth.users(id); UNIQUE (country_code); PRIMARY KEY (id). A finalidade de negócio não está formalizada além do nome da relação e de suas colunas; não inferir regras adicionais. Comentário anterior no catálogo: nenhum
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,16 +18,16 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `country_code` | `text` | não |  |  |  |
-| 3 | `country_name` | `text` | não |  |  |  |
-| 4 | `is_blocked` | `boolean` | não | `true` |  |  |
-| 5 | `block_type` | `text` | não | `'full'::text` |  |  |
-| 6 | `reason` | `text` | sim |  |  |  |
-| 7 | `blocked_by` | `uuid` | sim |  |  |  |
-| 8 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
-| 9 | `updated_at` | `timestamp with time zone` | não | `now()` |  |  |
-| 10 | `expires_at` | `timestamp with time zone` | sim |  |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Dicionário estrutural da coluna id em public.geo_blocks. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: gen_random_uuid(). Valores de enum: não aplicável. Restrições que envolvem a coluna: PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 2 | `country_code` | `text` | não |  |  | Dicionário estrutural da coluna country_code em public.geo_blocks. Papel funcional indicado pelo identificador: country_code; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: UNIQUE (country_code). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 3 | `country_name` | `text` | não |  |  | Dicionário estrutural da coluna country_name em public.geo_blocks. Papel funcional indicado pelo identificador: country_name; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 4 | `is_blocked` | `boolean` | não | `true` |  | Dicionário estrutural da coluna is_blocked em public.geo_blocks. Papel funcional indicado pelo identificador: is_blocked; o catálogo não especifica significado adicional. Tipo: boolean. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: true. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 5 | `block_type` | `text` | não | `'full'::text` |  | Dicionário estrutural da coluna block_type em public.geo_blocks. Papel funcional indicado pelo identificador: block_type; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: 'full'::text. Valores de enum: não aplicável. Restrições que envolvem a coluna: CHECK (block_type = ANY (ARRAY['full'::text, 'login_only'::text, 'registration_only'::text])). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 6 | `reason` | `text` | sim |  |  | Dicionário estrutural da coluna reason em public.geo_blocks. Papel funcional indicado pelo identificador: reason; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 7 | `blocked_by` | `uuid` | sim |  |  | Dicionário estrutural da coluna blocked_by em public.geo_blocks. Papel funcional indicado pelo identificador: blocked_by; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (blocked_by) REFERENCES auth.users(id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 8 | `created_at` | `timestamp with time zone` | não | `now()` |  | Dicionário estrutural da coluna created_at em public.geo_blocks. Papel funcional indicado pelo identificador: created_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 9 | `updated_at` | `timestamp with time zone` | não | `now()` |  | Dicionário estrutural da coluna updated_at em public.geo_blocks. Papel funcional indicado pelo identificador: updated_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 10 | `expires_at` | `timestamp with time zone` | sim |  |  | Dicionário estrutural da coluna expires_at em public.geo_blocks. Papel funcional indicado pelo identificador: expires_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
 
 
 ## Constraints

@@ -1,5 +1,7 @@
 # public.parcelas_acordo
 
+> Dicionário estrutural de public.parcelas_acordo (tabela). Chave primária declarada: id. Restrições declaradas no catálogo: FOREIGN KEY (acordo_id) REFERENCES acordos_parcelamento(id) ON DELETE CASCADE; PRIMARY KEY (id). A finalidade de negócio não está formalizada além do nome da relação e de suas colunas; não inferir regras adicionais. Comentário anterior no catálogo: nenhum
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,15 +18,15 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `acordo_id` | `uuid` | sim |  |  |  |
-| 3 | `numero_parcela` | `integer` | não |  |  |  |
-| 4 | `valor` | `numeric(15,2)` | não |  |  |  |
-| 5 | `data_vencimento` | `date` | não |  |  |  |
-| 6 | `status` | `text` | sim | `'pendente'::text` |  |  |
-| 7 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
-| 8 | `data_pagamento` | `date` | sim |  |  |  |
-| 9 | `valor_pago` | `numeric(15,2)` | sim |  |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Dicionário estrutural da coluna id em public.parcelas_acordo. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: gen_random_uuid(). Valores de enum: não aplicável. Restrições que envolvem a coluna: PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 2 | `acordo_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna acordo_id em public.parcelas_acordo. Papel funcional indicado pelo identificador: acordo_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (acordo_id) REFERENCES acordos_parcelamento(id) ON DELETE CASCADE. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 3 | `numero_parcela` | `integer` | não |  |  | Dicionário estrutural da coluna numero_parcela em public.parcelas_acordo. Papel funcional indicado pelo identificador: numero_parcela; o catálogo não especifica significado adicional. Tipo: integer. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Unidade, escala ou interpretação de negócio não determinadas pelo tipo PostgreSQL; usar apenas limites explicitamente registrados nas restrições. Comentário anterior no catálogo: nenhum |
+| 4 | `valor` | `numeric(15,2)` | não |  |  | Dicionário estrutural da coluna valor em public.parcelas_acordo. Papel funcional indicado pelo identificador: valor; o catálogo não especifica significado adicional. Tipo: numeric(15,2). Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 5 | `data_vencimento` | `date` | não |  |  | Dicionário estrutural da coluna data_vencimento em public.parcelas_acordo. Papel funcional indicado pelo identificador: data_vencimento; o catálogo não especifica significado adicional. Tipo: date. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 6 | `status` | `text` | sim | `'pendente'::text` |  | Dicionário estrutural da coluna status em public.parcelas_acordo. Papel funcional indicado pelo identificador: status; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: 'pendente'::text. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 7 | `created_at` | `timestamp with time zone` | sim | `now()` |  | Dicionário estrutural da coluna created_at em public.parcelas_acordo. Papel funcional indicado pelo identificador: created_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 8 | `data_pagamento` | `date` | sim |  |  | Dicionário estrutural da coluna data_pagamento em public.parcelas_acordo. Papel funcional indicado pelo identificador: data_pagamento; o catálogo não especifica significado adicional. Tipo: date. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 9 | `valor_pago` | `numeric(15,2)` | sim |  |  | Dicionário estrutural da coluna valor_pago em public.parcelas_acordo. Papel funcional indicado pelo identificador: valor_pago; o catálogo não especifica significado adicional. Tipo: numeric(15,2). Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
 
 
 ## Constraints

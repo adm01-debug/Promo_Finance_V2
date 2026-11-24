@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f7e08e4371a55c7699aa588380588fc4d5d47954",
+  "commit": "d3af1cc695d69757e59e763d57ef8dae34864182",
   "branch": "main",
-  "data_commit": "2026-11-24T11:16:36-03:00",
+  "data_commit": "2026-11-24T17:09:16Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d3af1cc",
+    "data": "2026-11-24",
+    "assunto": "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)"
+   },
    {
     "sha": "f7e08e4",
     "data": "2026-11-24",
@@ -126,14 +131,9 @@
     "sha": "bb4d237",
     "data": "2026-11-21",
     "assunto": "docs: ADR-004 — pular calculadora oficial RFB, decisão do dono (etapa 59) (#507)"
-   },
-   {
-    "sha": "ce2dfdb",
-    "data": "2026-11-21",
-    "assunto": "chore: remove baseline histórica pré-correção (etapa 30)"
    }
   ],
-  "arquivos_mudados_7d": 356,
+  "arquivos_mudados_7d": 303,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 277
+    "commits": 278
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 4044,
   "arquivos_codigo": 2521,
-  "linhas_codigo": 450977,
+  "linhas_codigo": 451039,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -548,11 +548,11 @@
   },
   "scripts/graphify-local.mjs": {
    "arquivos": 1,
-   "linhas": 1229
+   "linhas": 1244
   },
   "scripts/graphify-local.unit.mjs": {
    "arquivos": 1,
-   "linhas": 921
+   "linhas": 968
   },
   "scripts/healthcheck": {
    "arquivos": 3,
@@ -730,7 +730,7 @@
   },
   {
    "arquivo": "scripts/graphify-local.mjs",
-   "linhas": 1229
+   "linhas": 1244
   },
   {
    "arquivo": "supabase/functions/sso-callback/index.ts",
@@ -815,7 +815,7 @@
  ],
  "qualidade": {
   "any": 373,
-  "console_log": 237,
+  "console_log": 239,
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,

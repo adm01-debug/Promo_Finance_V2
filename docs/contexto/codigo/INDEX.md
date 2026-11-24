@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f7e08e4371a55c7699aa588380588fc4d5d47954` (2026-11-24T11:16:36-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d3af1cc695d69757e59e763d57ef8dae34864182` (2026-11-24T17:09:16Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4044 |
 | arquivos_codigo | 2521 |
-| linhas_codigo | 450977 |
+| linhas_codigo | 451039 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -638,6 +638,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-24 `d3af1cc` chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)
 - 2026-11-24 `f7e08e4` feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)
 - 2026-11-23 `6a46049` feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)
 - 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
@@ -652,7 +653,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-22 `19a3b16` feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)
 - 2026-11-22 `a570395` chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)
 - 2026-11-22 `4d50a6f` infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)
-- 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

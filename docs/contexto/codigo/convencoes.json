@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)",
    "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)",
    "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)",
    "chore: adiciona plano de UX de navegacao em 200 etapas (#529)",
-   "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)",
-   "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)"
+   "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f7e08e4371a55c7699aa588380588fc4d5d47954",
+  "sha": "d3af1cc695d69757e59e763d57ef8dae34864182",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 14:19 UTC",
+  "generated_at": "2026-11-24 17:15 UTC",
   "files_total": 4083,
   "code_files": 3668,
-  "code_lines": 522922
+  "code_lines": 522984
  },
  "version": "1.3.2",
- "facts_hash": "bee1c379209c4b0b",
+ "facts_hash": "56ade479769af8e3",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70482,7 +70482,7 @@
   {
    "module": "scripts",
    "files": 152,
-   "lines": 50379,
+   "lines": 50441,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -177719,7 +177719,7 @@
   },
   "scripts/graphify-local.mjs": {
    "path": "scripts/graphify-local.mjs",
-   "lines": 1230,
+   "lines": 1245,
    "exports": [
     "const secretPath",
     "const redact",
@@ -177762,7 +177762,7 @@
   },
   "scripts/graphify-local.unit.mjs": {
    "path": "scripts/graphify-local.unit.mjs",
-   "lines": 922,
+   "lines": 969,
    "env": [
     "GRAPHIFY_FIXTURE_",
     "GRAPHIFY_FIXTURE_SECRET",
@@ -177770,6 +177770,7 @@
     "PATH"
    ],
    "rule_comments": [
+    "Limite declarado: cobre o contrato do reparo (argv exato, lock com hashes, revalidação",
     "metadado alterado DEPOIS da extração inicial: createdAt inválido não pode desligar essa checagem"
    ],
    "uses_service_role": true
@@ -249227,10 +249228,26 @@
   }
  },
  "git": {
-  "sha": "f7e08e4371a55c7699aa588380588fc4d5d47954",
+  "sha": "d3af1cc695d69757e59e763d57ef8dae34864182",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d3af1cc",
+    "date": "2026-11-24",
+    "author": "adm01-debug",
+    "subject": "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)",
+    "files": [
+     "graphify-out/GRAPH_REPORT.md",
+     "graphify-out/manifest.json",
+     "graphify.local.json",
+     "scripts/graphify-local.mjs",
+     "scripts/graphify-local.unit.mjs",
+     "scripts/graphify/config.json",
+     "scripts/graphify/requirements-linux-py311.lock",
+     "scripts/graphify/requirements.in"
+    ]
+   },
    {
     "sha": "f7e08e4",
     "date": "2026-11-24",
@@ -249630,17 +249647,6 @@
      "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
      "src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts",
      "src/lib/reforma-tributaria/cronograma-oficial.ts"
-    ]
-   },
-   {
-    "sha": "d1fc1cf",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "fix(tributario): projeção não soma CBS/IBS a PIS/COFINS/ICMS/ISS em 2026 (#502)",
-    "files": [
-     "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
-     "src/lib/tributario/projecao-reforma.ts",
-     "src/pages/tributario/ProjecaoReforma.tsx"
     ]
    }
   ],

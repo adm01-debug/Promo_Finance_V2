@@ -528,7 +528,7 @@
   {
    "arquivo": "scripts/graphify-local.mjs",
    "descricao": null,
-   "linhas": 1229,
+   "linhas": 1244,
    "env": [],
    "npm_scripts": [],
    "workflows": [],

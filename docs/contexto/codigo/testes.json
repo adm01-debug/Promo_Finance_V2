@@ -510,11 +510,11 @@
   {
    "arquivo": "scripts/graphify-local.unit.mjs",
    "tipo": "unit",
-   "linhas": 921,
+   "linhas": 968,
    "testa": [
     "scripts/graphify-local.mjs"
    ],
-   "casos": 44
+   "casos": 45
   },
   {
    "arquivo": "scripts/graphify/test_benchmark.py",

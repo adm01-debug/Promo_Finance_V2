@@ -1,5 +1,7 @@
 # public.protocolos_st_ufs
 
+> Dicionário estrutural de public.protocolos_st_ufs (tabela). Chave primária declarada: id. Restrições declaradas no catálogo: CHECK (papel = ANY (ARRAY['ORIGEM'::text, 'DESTINO'::text, 'AMBOS'::text])); PRIMARY KEY (id); FOREIGN KEY (protocolo_id) REFERENCES protocolos_st(id) ON DELETE CASCADE; UNIQUE (protocolo_id, uf). A finalidade de negócio não está formalizada além do nome da relação e de suas colunas; não inferir regras adicionais. Comentário anterior no catálogo: nenhum
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,12 +18,12 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `protocolo_id` | `uuid` | não |  |  |  |
-| 3 | `uf` | `uf_brasil` | não |  |  |  |
-| 4 | `papel` | `text` | não | `'AMBOS'::text` |  |  |
-| 5 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
-| 6 | `updated_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Dicionário estrutural da coluna id em public.protocolos_st_ufs. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: gen_random_uuid(). Valores de enum: não aplicável. Restrições que envolvem a coluna: PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 2 | `protocolo_id` | `uuid` | não |  |  | Dicionário estrutural da coluna protocolo_id em public.protocolos_st_ufs. Papel funcional indicado pelo identificador: protocolo_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (protocolo_id) REFERENCES protocolos_st(id) ON DELETE CASCADE; UNIQUE (protocolo_id, uf). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 3 | `uf` | `uf_brasil` | não |  |  | Dicionário estrutural da coluna uf em public.protocolos_st_ufs. Papel funcional indicado pelo identificador: uf; o catálogo não especifica significado adicional. Tipo: uf_brasil. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: AC, AL, AP, AM, BA, CE, DF, ES, GO, MA, MT, MS, MG, PA, PB, PR, PE, PI, RJ, RN, RS, RO, RR, SC, SP, SE, TO. Restrições que envolvem a coluna: UNIQUE (protocolo_id, uf). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 4 | `papel` | `text` | não | `'AMBOS'::text` |  | Dicionário estrutural da coluna papel em public.protocolos_st_ufs. Papel funcional indicado pelo identificador: papel; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: 'AMBOS'::text. Valores de enum: não aplicável. Restrições que envolvem a coluna: CHECK (papel = ANY (ARRAY['ORIGEM'::text, 'DESTINO'::text, 'AMBOS'::text])). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 5 | `created_at` | `timestamp with time zone` | não | `now()` |  | Dicionário estrutural da coluna created_at em public.protocolos_st_ufs. Papel funcional indicado pelo identificador: created_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 6 | `updated_at` | `timestamp with time zone` | não | `now()` |  | Dicionário estrutural da coluna updated_at em public.protocolos_st_ufs. Papel funcional indicado pelo identificador: updated_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
 
 
 ## Constraints

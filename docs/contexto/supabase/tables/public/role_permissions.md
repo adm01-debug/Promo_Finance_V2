@@ -1,5 +1,7 @@
 # public.role_permissions
 
+> Dicionário estrutural de public.role_permissions (tabela). Chave primária declarada: id. Restrições declaradas no catálogo: FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE; PRIMARY KEY (id); UNIQUE (role, permission_id). A finalidade de negócio não está formalizada além do nome da relação e de suas colunas; não inferir regras adicionais. Comentário anterior no catálogo: nenhum
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,10 +18,10 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `role` | `app_role` | não |  |  |  |
-| 3 | `permission_id` | `uuid` | sim |  |  |  |
-| 4 | `created_at` | `timestamp with time zone` | sim | `now()` |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Dicionário estrutural da coluna id em public.role_permissions. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: gen_random_uuid(). Valores de enum: não aplicável. Restrições que envolvem a coluna: PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 2 | `role` | `app_role` | não |  |  | Dicionário estrutural da coluna role em public.role_permissions. Papel funcional indicado pelo identificador: role; o catálogo não especifica significado adicional. Tipo: app_role. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: admin, manager, operator, viewer, financeiro, operacional, visualizador, contador. Restrições que envolvem a coluna: UNIQUE (role, permission_id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 3 | `permission_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna permission_id em public.role_permissions. Papel funcional indicado pelo identificador: permission_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE; UNIQUE (role, permission_id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 4 | `created_at` | `timestamp with time zone` | sim | `now()` |  | Dicionário estrutural da coluna created_at em public.role_permissions. Papel funcional indicado pelo identificador: created_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
 
 
 ## Constraints

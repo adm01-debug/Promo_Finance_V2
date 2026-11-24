@@ -1,5 +1,7 @@
 # public.alerts
 
+> Dicionário estrutural de public.alerts (tabela). Chave primária declarada: id. Restrições declaradas no catálogo: FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE RESTRICT; PRIMARY KEY (id). A finalidade de negócio não está formalizada além do nome da relação e de suas colunas; não inferir regras adicionais. Comentário anterior no catálogo: nenhum
+
 | propriedade | valor |
 |---|---|
 | tipo | table |
@@ -16,18 +18,18 @@
 
 | # | coluna | tipo | nullable | default | identity/generated | comentário |
 |---|---|---|---|---|---|---|
-| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
-| 2 | `type` | `alert_type` | não |  |  |  |
-| 3 | `severity` | `alert_severity` | não | `'INFO'::alert_severity` |  |  |
-| 4 | `title` | `text` | não |  |  |  |
-| 5 | `message` | `text` | não |  |  |  |
-| 6 | `order_id` | `uuid` | sim |  |  |  |
-| 7 | `driver_id` | `uuid` | sim |  |  |  |
-| 8 | `is_read` | `boolean` | sim | `false` |  |  |
-| 9 | `is_dismissed` | `boolean` | sim | `false` |  |  |
-| 10 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  |  |
-| 11 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
-| 12 | `empresa_id` | `uuid` | sim |  |  |  |
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  | Dicionário estrutural da coluna id em public.alerts. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: gen_random_uuid(). Valores de enum: não aplicável. Restrições que envolvem a coluna: PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 2 | `type` | `alert_type` | não |  |  | Dicionário estrutural da coluna type em public.alerts. Papel funcional indicado pelo identificador: type; o catálogo não especifica significado adicional. Tipo: alert_type. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 3 | `severity` | `alert_severity` | não | `'INFO'::alert_severity` |  | Dicionário estrutural da coluna severity em public.alerts. Papel funcional indicado pelo identificador: severity; o catálogo não especifica significado adicional. Tipo: alert_severity. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: 'INFO'::alert_severity. Valores de enum: INFO, WARNING, CRITICAL. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 4 | `title` | `text` | não |  |  | Dicionário estrutural da coluna title em public.alerts. Papel funcional indicado pelo identificador: title; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 5 | `message` | `text` | não |  |  | Dicionário estrutural da coluna message em public.alerts. Papel funcional indicado pelo identificador: message; o catálogo não especifica significado adicional. Tipo: text. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 6 | `order_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna order_id em public.alerts. Papel funcional indicado pelo identificador: order_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 7 | `driver_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna driver_id em public.alerts. Papel funcional indicado pelo identificador: driver_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 8 | `is_read` | `boolean` | sim | `false` |  | Dicionário estrutural da coluna is_read em public.alerts. Papel funcional indicado pelo identificador: is_read; o catálogo não especifica significado adicional. Tipo: boolean. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: false. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 9 | `is_dismissed` | `boolean` | sim | `false` |  | Dicionário estrutural da coluna is_dismissed em public.alerts. Papel funcional indicado pelo identificador: is_dismissed; o catálogo não especifica significado adicional. Tipo: boolean. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: false. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
+| 10 | `metadata` | `jsonb` | sim | `'{}'::jsonb` |  | Dicionário estrutural da coluna metadata em public.alerts. Papel funcional indicado pelo identificador: metadata; o catálogo não especifica significado adicional. Tipo: jsonb. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: '{}'::jsonb. Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. JSONB; as chaves e o contrato do documento não são definidos pelo tipo, salvo restrições listadas. Comentário anterior no catálogo: nenhum |
+| 11 | `created_at` | `timestamp with time zone` | não | `now()` |  | Dicionário estrutural da coluna created_at em public.alerts. Papel funcional indicado pelo identificador: created_at; o catálogo não especifica significado adicional. Tipo: timestamp with time zone. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: now(). Valores de enum: não aplicável. Restrições que envolvem a coluna: nenhuma. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Instante temporal com fuso; PostgreSQL não preserva o nome original do fuso. Comentário anterior no catálogo: nenhum |
+| 12 | `empresa_id` | `uuid` | sim |  |  | Dicionário estrutural da coluna empresa_id em public.alerts. Papel funcional indicado pelo identificador: empresa_id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NULL permitido. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE RESTRICT. Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum |
 
 
 ## Constraints
