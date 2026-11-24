@@ -192,6 +192,40 @@ Deno.test('montarLinhas — lista vazia nao inventa linha', () => {
   assertEquals(sem_cst, []);
 });
 
+Deno.test('montarLinhas — codigo sem descricao continua presente e nao vira linha', () => {
+  // A Receita publicou o codigo e nao publicou a descricao. Ele nao pode virar
+  // linha (a tabela exige descricao), mas tambem nao pode sair de `presentes`:
+  // sair dali faz o encerramento de vigencia fechar um codigo que segue no
+  // catalogo oficial, e a importacao passa a acusar REG-013 em nota correta.
+  const publicadas: ClassificacaoApi[] = [
+    { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
+    { codigo: '200033', descricao: '' },
+    { codigo: '200034', descricao: '   ' },
+  ];
+  const vinculos: SituacaoApi[] = [
+    {
+      codigo: '200',
+      classificacoesTributarias: publicadas.map((c) => ({
+        codigo: c.codigo,
+        descricao: c.descricao,
+      })),
+    },
+  ];
+
+  const m = montarLinhas(publicadas, vinculos, 'V0073');
+  assertEquals(
+    m.linhas.map((l) => l.cclasstrib),
+    ['200032']
+  );
+  assertEquals(m.presentes, ['200032', '200033', '200034']);
+  // Segue observavel no resumo como nao-aproveitado.
+  assertEquals(m.ignoradas, ['200033', '200034']);
+  assertEquals(
+    decidirEncerramentos(['200032', '200033', '200034'], m.presentes, '2026-11-24').encerrar,
+    []
+  );
+});
+
 Deno.test('decidirEncerramentos — encerra o que sumiu dentro do limite', () => {
   const abertos = Array.from({ length: 170 }, (_, i) => String(100000 + i));
   const recebidos = abertos.slice(0, 165);

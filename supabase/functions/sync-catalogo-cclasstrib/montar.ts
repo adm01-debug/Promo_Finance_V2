@@ -175,12 +175,20 @@ export function montarLinhas(
   for (const classificacao of classificacoes ?? []) {
     const codigo = String(classificacao?.codigo ?? '').trim();
     const descricao = String(classificacao?.descricao ?? '').trim();
-    if (!CC_6.test(codigo) || !descricao || vistos.has(codigo)) {
+    if (!CC_6.test(codigo) || vistos.has(codigo)) {
       ignoradas.push(codigo);
       continue;
     }
     vistos.add(codigo);
+    // Presenca = "a Receita publicou", nao "virou linha": o contrato de
+    // `presentes` inclui codigo sem CST, e vale igual para codigo publicado sem
+    // descricao. Antes do fix ele entrava so em `ignoradas` e o encerramento de
+    // vigencia fechava um codigo que segue no catalogo oficial.
     presentes.push(codigo);
+    if (!descricao) {
+      ignoradas.push(codigo);
+      continue;
+    }
     const cst = porCclasstrib.get(codigo);
     if (!cst) {
       sem_cst.push(codigo);
