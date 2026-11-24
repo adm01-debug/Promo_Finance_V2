@@ -65,6 +65,9 @@ const PADROES_AUTORIZACAO: readonly RegExp[] = [
   // de um header citado em `Access-Control-Allow-Headers` muito menos.
   /exigirInternaOuUsuarioComPapel\s*\(/,
   /exigirInternaOuPapel\s*\(/,
+  // `exigirUsuarioComEmpresa` valida o JWT do usuário via `exigirUsuario`
+  // e o vínculo com a empresa antes de qualquer escrita (auth-guard.ts).
+  /exigirUsuarioComEmpresa\s*\(/,
   /segredosIguais\s*\(/,
   /timingSafeEqual\s*\(/,
   /verifyJwt\s*\(/,

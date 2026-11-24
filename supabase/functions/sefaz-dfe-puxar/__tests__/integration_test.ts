@@ -9,7 +9,7 @@
  *   - tratamento de cStat=656 (rate_limit) registrando erro no cursor
  */
 
-import { assertEquals, assert } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import { assertEquals, assert } from 'jsr:@std/assert@1';
 import { runPuxador } from '../index.ts';
 import {
   installSefazSoapMock,
@@ -269,3 +269,91 @@ Deno.test(
     }
   }
 );
+
+// ------------------------------------------------------- etapa 49: grupo IBS/CBS
+//
+// O puxador precisa entregar o grupo destacado ao banco, caso contrário o
+// crédito volta a ser estimado por falta de dado. E o resumo (resNFe) não pode
+// carregar grupo nenhum, senão o sistema inventa crédito destacado sem prova.
+
+Deno.test('runPuxador â€” procNFe completo leva o grupo IBS/CBS em raw_metadata', async () => {
+  const nfeXml = await readFixture('procNFe-ibscbs-2026.xml');
+  const mock = installSefazSoapMock([
+    {
+      cnpj: CNPJ,
+      responses: [
+        { kind: 'batch', docs: [{ xml: nfeXml, nsu: 301 }], ultNSU: 301, maxNSU: 301 },
+        { kind: 'empty' },
+      ],
+    },
+  ]);
+  const { stub, calls } = makeStubClient();
+  try {
+    const summary = await runPuxador(stub as any, CERT, asSefazFetch());
+    assertEquals(summary.erro, null, `erro inesperado: ${summary.erro}`);
+
+    const batch = calls
+      .filter((c) => c.op === 'rpc.sefaz_process_batch')
+      .find((b) => (b.args as any).p_docs?.length > 0);
+    assert(batch, 'deve haver batch com docs');
+
+    const nfeDoc = ((batch!.args as any).p_docs as Array<any>).find((d) => d.kind === 'nfe')!;
+    assertEquals(nfeDoc.payload.xml_completo, true, 'procNFe é XML completo');
+
+    const grupo = nfeDoc.payload.raw_metadata?.ibscbs;
+    assert(grupo, 'raw_metadata.ibscbs deve estar preenchido');
+
+    // Totais destacados pela nota â€” é o que alimenta o crédito.
+    assertEquals(grupo.totais.vIBS, 10.65);
+    assertEquals(grupo.totais.vCBS, 9);
+    assertEquals(grupo.totais.vBCIBSCBS, 100);
+
+    // Item: CST e cClassTrib vêm do grupo, não de tabela estimada.
+    assertEquals(grupo.itens.length, 1);
+    const item = grupo.itens[0];
+    assertEquals(item.nItem, 1);
+    assertEquals(item.cst, '200');
+    assertEquals(item.cClassTrib, '000123');
+    assertEquals(item.vIBSUF, 5.65);
+    assertEquals(item.vIBSMun, 5);
+    assertEquals(item.vCBS, 9);
+    assertEquals(item.vIBS, 10.65);
+    assertEquals(item.vIS, 1);
+    assertEquals(item.cstIs, '200');
+  } finally {
+    mock.restore();
+  }
+});
+
+Deno.test('runPuxador â€” resNFe (resumo) não leva grupo IBS/CBS', async () => {
+  const resumoXml = await readFixture('resNFe-resumo.xml');
+  const mock = installSefazSoapMock([
+    {
+      cnpj: CNPJ,
+      responses: [
+        { kind: 'batch', docs: [{ xml: resumoXml, nsu: 302 }], ultNSU: 302, maxNSU: 302 },
+        { kind: 'empty' },
+      ],
+    },
+  ]);
+  const { stub, calls } = makeStubClient();
+  try {
+    const summary = await runPuxador(stub as any, CERT, asSefazFetch());
+    assertEquals(summary.erro, null, `erro inesperado: ${summary.erro}`);
+
+    const batch = calls
+      .filter((c) => c.op === 'rpc.sefaz_process_batch')
+      .find((b) => (b.args as any).p_docs?.length > 0);
+    assert(batch, 'deve haver batch com docs');
+
+    const nfeDoc = ((batch!.args as any).p_docs as Array<any>).find((d) => d.kind === 'nfe')!;
+    assertEquals(nfeDoc.payload.xml_completo, false, 'resNFe não é XML completo');
+    assertEquals(
+      nfeDoc.payload.raw_metadata,
+      null,
+      'resumo não pode carregar grupo â€” senão gera crédito sem prova'
+    );
+  } finally {
+    mock.restore();
+  }
+});

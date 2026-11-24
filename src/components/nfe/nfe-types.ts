@@ -9,6 +9,17 @@ export interface ItemNFe {
   quantidade: number;
   valorUnitario: number;
   valorTotal: number;
+  /** Grupo IBS/CBS/IS do item (NT 2025.002). Percentuais em %, não fração. */
+  cstIbsCbs?: string;
+  cClassTrib?: string;
+  vBCIbsCbs?: number;
+  pIBSUF?: number;
+  vIBSUF?: number;
+  pIBSMun?: number;
+  vIBSMun?: number;
+  pCBS?: number;
+  vCBS?: number;
+  vIBS?: number;
 }
 
 export interface NotaFiscal {

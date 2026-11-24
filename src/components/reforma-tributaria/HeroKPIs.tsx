@@ -187,6 +187,12 @@ export function HeroKPIs({
               <p className="text-[10px] sm:text-sm text-muted-foreground mt-1 sm:mt-2 truncate hidden sm:block">
                 De {formatCurrency(creditosAcumulados)} acumulados
               </p>
+              {/* A apuração mensal soma os créditos do XML destacado; aqui a
+                  fonte são as operações tributáveis (estimativa por alíquota). */}
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Fonte: operações tributáveis (estimativa). A apuração mensal usa os créditos do XML
+                destacado.
+              </p>
             </CardContent>
           </Card>
         </motion.div>

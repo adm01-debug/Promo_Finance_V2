@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle, CheckCircle2, Scale, ShieldAlert } from 'lucide-react';
@@ -56,6 +58,8 @@ function formatarData(iso: string | null): string {
  * usuários sem permissão o componente degrada silenciosamente (não renderiza).
  */
 export function FiscalHealthBadge({ className }: { className?: string }) {
+  const { currentEmpresaId } = useAuth();
+
   const { data, isLoading, isError } = useQuery<CatalogoHealthResumo>({
     queryKey: ['catalogos-tributarios-health', 'resumo'],
     queryFn: async () => {
@@ -65,6 +69,37 @@ export function FiscalHealthBadge({ className }: { className?: string }) {
     },
     staleTime: 5 * 60 * 1000,
     retry: false,
+  });
+
+  // Métrica RT: % NF-e com IBS/CBS após FG, lida do último check de conformidade.
+  // Sem currentEmpresaId ou sem verificação prévia → null (não mostra "0%").
+  const { data: coberturaIbscbs } = useQuery<string | null>({
+    queryKey: ['ibscbs-cobertura-badge', currentEmpresaId],
+    queryFn: async () => {
+      if (!currentEmpresaId) return null;
+      const { data: ult } = await supabase
+        .from('verificacoes_conformidade')
+        .select('itens')
+        .eq('empresa_id', currentEmpresaId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!ult?.itens) return null;
+      const checks = ult.itens as Array<{ id: string; status: string; detalhes?: string }>;
+      const check = checks.find((c) => c.id === 'nfe_ibscbs_cobertura');
+      if (!check) return null;
+      // detalhes = "X de Y notas após … sem IBS/CBS (Z%)" → inverter para % com grupo
+      const m = check.detalhes?.match(/(\d+) de (\d+)/);
+      // Regime fora do escopo do IBS/CBS: "n/a" em vez de 100%, que sinalizava
+      // conformidade plena sem nenhum dado apurado.
+      if (!m) return check.detalhes?.includes('não sujeito') ? 'n/a' : null;
+      const [, sem, total] = m.map(Number);
+      if (total === 0) return null;
+      const pct = Math.round(((total - sem) / total) * 100);
+      return `${pct}%`;
+    },
+    enabled: !!currentEmpresaId,
+    staleTime: 5 * 60 * 1000,
   });
 
   if (isLoading) return <Skeleton className={cn('h-9 w-64', className)} />;
@@ -101,6 +136,16 @@ export function FiscalHealthBadge({ className }: { className?: string }) {
       <Badge variant="outline" className="border-current bg-transparent text-current">
         {rotulo}
       </Badge>
+      {/* Métrica RT: % NF-e com IBS/CBS — só exibe quando há dado real */}
+      {coberturaIbscbs !== null && coberturaIbscbs !== undefined && (
+        <Badge
+          variant="outline"
+          className="border-current bg-transparent text-current opacity-80"
+          title="% de NF-e com IBS/CBS após o Fato Gerador (Reforma Tributária)"
+        >
+          IBS/CBS {coberturaIbscbs}
+        </Badge>
+      )}
       <span className="hidden text-xs opacity-80 md:inline">
         verificado em {formatarData(data.ultima_verificacao)}
       </span>

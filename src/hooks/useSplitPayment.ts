@@ -139,8 +139,10 @@ export function useSplitPayment(empresaId?: string) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['split-payment'] });
-      toast.success('Split Payment registrado', {
-        description: `Tributos retidos: R$ ${(data.total_retido || 0).toFixed(2)}`,
+      // Split Payment ainda não está em vigor (ato conjunto pendente): o registro
+      // é uma projeção, nunca uma retenção efetiva.
+      toast.success('Simulação de Split Payment registrada', {
+        description: `Tributos projetados: R$ ${(data.total_retido || 0).toFixed(2)}`,
       });
     },
     onError: (error) => {

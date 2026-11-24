@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { blingAction } from './client';
+import { estornarCreditosCancelados, guardarXmlAutorizado } from '@/hooks/useBlingNFe';
 
 export function useBlingNFe(filtros?: Record<string, unknown>) {
   return useQuery({
@@ -33,18 +34,23 @@ export function useBlingNFeMutations() {
   const enviarSefaz = useMutation({
     mutationFn: ({ id, enviarEmail }: { id: string; enviarEmail?: boolean }) =>
       blingAction('enviar_nfe_sefaz', { id, enviarEmail }),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success('NF-e enviada ao SEFAZ');
       queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
+      // Sem isso a nota autorizada por esta tela não gerava crédito IBS/CBS:
+      // o XML só era arquivado pelo outro hook do Bling.
+      void guardarXmlAutorizado(Number(variables.id)).catch(() => undefined);
     },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const cancelarNFe = useMutation({
     mutationFn: (ids: string[]) => blingAction('cancelar_nfe', { ids }),
-    onSuccess: () => {
+    onSuccess: async (_data, ids) => {
       toast.success('NF-e cancelada');
       queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
+      // Cancelamento precisa invalidar o crédito destacado (etapa 58).
+      await estornarCreditosCancelados(ids.map((id) => Number(id)));
     },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
