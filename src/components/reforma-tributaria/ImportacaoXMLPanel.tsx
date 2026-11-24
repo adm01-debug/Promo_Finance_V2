@@ -15,11 +15,103 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useImportacaoXMLNFe } from '@/hooks/useImportacaoXMLNFe';
+import {
+  useImportacaoXMLNFe,
+  anoEmissao,
+  ANO_INICIO_APROPRIACAO,
+} from '@/hooks/useImportacaoXMLNFe';
+import type { NFeParsed } from '@/hooks/useImportacaoXMLNFe';
 import { formatCurrency } from '@/lib/formatters';
 
 interface Props {
   empresaId: string;
+}
+
+/**
+ * Etapa 47: sinaliza na tabela se o grupo IBS/CBS da nota gera crédito
+ * aproveitável ou é apenas informativo (ano de teste de 2026).
+ */
+function getBadgeIbscbs(nfe: NFeParsed) {
+  const temRegular = nfe.ibscbs?.vIBS !== undefined || nfe.ibscbs?.vCBS !== undefined;
+  const temMono = nfe.ibscbs?.vTotIBSMono !== undefined || nfe.ibscbs?.vTotCBSMono !== undefined;
+  const temGrupo = temRegular || temMono;
+
+  if (!temGrupo) {
+    return (
+      <Badge variant="outline" title="XML sem grupo IBS/CBS — crédito será estimado">
+        sem grupo
+      </Badge>
+    );
+  }
+
+  // Só monofásico: o valor está destacado, mas fora do regime regular —
+  // o importador grava crédito zero nesse caso, então não é apropriável.
+  if (!temRegular) {
+    return (
+      <Badge variant="outline" title="Apenas grupo monofásico — não gera crédito regular">
+        monofásico
+      </Badge>
+    );
+  }
+
+  const ano = anoEmissao(nfe.dataEmissao);
+  if (ano < ANO_INICIO_APROPRIACAO) {
+    return (
+      <Badge
+        variant="secondary"
+        title={`Destacado no XML, mas ${ano} é ano de teste: não gera crédito apropriável`}
+      >
+        informativo {ano}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge variant="default" title="Valor destacado no XML e apropriável">
+      apropriável
+    </Badge>
+  );
+}
+
+/**
+ * Etapa 46: divergência entre o que a nota declarou e o catálogo oficial.
+ * É alerta, não bloqueio — a nota entra de qualquer forma, e o tooltip mostra
+ * a mensagem de cada regra para o usuário conferir com o contador.
+ */
+function getBadgeFiscal(nfe: NFeParsed) {
+  // A validação só roda na gravação: na prévia a ausência de alertas não
+  // significa conformidade, significa que ninguém conferiu ainda.
+  if (nfe.status !== 'importado') {
+    return (
+      <Badge
+        variant="outline"
+        title={
+          nfe.status === 'erro'
+            ? 'A importação falhou: a conferência fiscal não rodou'
+            : 'A conferência roda na importação'
+        }
+      >
+        não conferido
+      </Badge>
+    );
+  }
+
+  const alertas = nfe.alertasFiscais ?? [];
+  if (alertas.length === 0) {
+    return (
+      <Badge variant="outline" title="NCM/CST/cClassTrib conferem com o catálogo">
+        ok
+      </Badge>
+    );
+  }
+  return (
+    <Badge
+      variant="destructive"
+      title={alertas.map((a) => `${a.codigo}: ${a.mensagem}`).join('\n')}
+    >
+      {alertas.length} alerta{alertas.length > 1 ? 's' : ''}
+    </Badge>
+  );
 }
 
 export function ImportacaoXMLPanel({ empresaId }: Props) {
@@ -124,6 +216,12 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
                     <TableHead>Emitente</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead className="text-right">Valor</TableHead>
+                    <TableHead>CST</TableHead>
+                    <TableHead>cClassTrib</TableHead>
+                    <TableHead className="text-right">vIBS</TableHead>
+                    <TableHead className="text-right">vCBS</TableHead>
+                    <TableHead>IBS/CBS</TableHead>
+                    <TableHead>Fiscal</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
@@ -137,6 +235,20 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
                       </TableCell>
                       <TableCell>{nfe.dataEmissao.toLocaleDateString('pt-BR')}</TableCell>
                       <TableCell className="text-right">{formatCurrency(nfe.valorTotal)}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {nfe.itens[0]?.ibscbs?.cst ?? '-'}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {nfe.itens[0]?.ibscbs?.cClassTrib ?? '-'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {nfe.ibscbs?.vIBS !== undefined ? formatCurrency(nfe.ibscbs.vIBS) : '-'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {nfe.ibscbs?.vCBS !== undefined ? formatCurrency(nfe.ibscbs.vCBS) : '-'}
+                      </TableCell>
+                      <TableCell>{getBadgeIbscbs(nfe)}</TableCell>
+                      <TableCell>{getBadgeFiscal(nfe)}</TableCell>
                       <TableCell>
                         <Badge
                           variant={

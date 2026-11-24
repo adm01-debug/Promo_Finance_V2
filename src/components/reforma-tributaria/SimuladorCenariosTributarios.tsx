@@ -21,6 +21,8 @@ export function SimuladorCenariosTributarios() {
   const [temProdutosIS, setTemProdutosIS] = useState(false);
   const [categoriaIS, setCategoriaIS] = useState<CategoriaIS>('bebidas_alcoolicas');
   const [aliquotaISCustomizada, setAliquotaISCustomizada] = useState(0);
+  const [cenarioCBS, setCenarioCBS] = useState<'tcu' | 'livre' | undefined>(undefined);
+  const [aliquotaCBSOverride, setAliquotaCBSOverride] = useState(11.2);
 
   const [resultadosProjecao, setResultadosProjecao] = useState<
     { ano: number; resultado: ReturnType<typeof simularCenario> }[]
@@ -38,6 +40,8 @@ export function SimuladorCenariosTributarios() {
         temProdutosIS,
         categoriaIS: temProdutosIS ? categoriaIS : undefined,
         aliquotaISCustomizada: temProdutosIS ? aliquotaISCustomizada : undefined,
+        cenarioCBS,
+        aliquotaCBSOverride: cenarioCBS === 'livre' ? aliquotaCBSOverride : undefined,
       },
       anoReferencia
     );
@@ -51,6 +55,8 @@ export function SimuladorCenariosTributarios() {
     temProdutosIS,
     categoriaIS,
     aliquotaISCustomizada,
+    cenarioCBS,
+    aliquotaCBSOverride,
     anoReferencia,
     simularCenario,
   ]);
@@ -66,6 +72,8 @@ export function SimuladorCenariosTributarios() {
       temProdutosIS,
       categoriaIS: temProdutosIS ? categoriaIS : undefined,
       aliquotaISCustomizada: temProdutosIS ? aliquotaISCustomizada : undefined,
+      cenarioCBS,
+      aliquotaCBSOverride: cenarioCBS === 'livre' ? aliquotaCBSOverride : undefined,
     };
 
     const resultados = await executarSimulacao(dados);
@@ -89,8 +97,46 @@ export function SimuladorCenariosTributarios() {
     diferenca: resultado.totalNovo - resultado.totalAntigo,
   }));
 
+  const isSimulado = !!cenarioCBS;
+
   return (
     <div className="space-y-6">
+      {/* Seletor de cenário CBS — etapa 92 */}
+      <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg border bg-muted/30">
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Cenário CBS</label>
+          <select
+            className="border rounded px-2 py-1 text-sm bg-background"
+            value={cenarioCBS ?? ''}
+            onChange={(e) =>
+              setCenarioCBS((e.target.value || undefined) as 'tcu' | 'livre' | undefined)
+            }
+          >
+            <option value="">Tabela de transição (padrão)</option>
+            <option value="tcu">11,2% — Estimativa TCU (2024)</option>
+            <option value="livre">Valor livre</option>
+          </select>
+        </div>
+        {cenarioCBS === 'livre' && (
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Alíquota CBS (%)</label>
+            <input
+              type="number"
+              min={0}
+              max={30}
+              step={0.1}
+              className="border rounded px-2 py-1 text-sm w-24 bg-background"
+              value={aliquotaCBSOverride}
+              onChange={(e) => setAliquotaCBSOverride(Number(e.target.value))}
+            />
+          </div>
+        )}
+        {isSimulado && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1 text-xs font-semibold">
+            ⚠️ Simulado — alíquota CBS sujeita à resolução do Senado
+          </span>
+        )}
+      </div>
       <div className="grid gap-6 md:grid-cols-2">
         <SimuladorInputForm
           faturamentoAnual={faturamentoAnual}

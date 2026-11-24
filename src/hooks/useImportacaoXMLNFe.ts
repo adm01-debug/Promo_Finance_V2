@@ -7,8 +7,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
-import { toISOLocal } from '@/lib/formatters';
 import { mustSucceed } from '@/lib/supabase-write';
+import { buscarReferenciasFiscais } from '@/lib/tributario/catalogos/cclasstrib';
+import { validarItensFiscais, type DivergenciaFiscal } from '@/lib/tributario/validador-ncm-cst';
 import {
   parseItemIbscbs,
   parseItemIs,
@@ -17,6 +18,15 @@ import {
   type NFeIsGrupo,
   type NFeIbscbsTotais,
 } from '@/lib/nfe/parse-ibscbs';
+
+/** Fuso civil brasileiro usado para ler a data declarada na NF-e. */
+export const FUSO_PADRAO_BR = 'America/Sao_Paulo';
+
+/**
+ * Primeiro ano com crédito apropriável de IBS/CBS (LC 214/2025, art. 128 do
+ * ADCT): 2026 é ano de teste, com destaque apenas informativo.
+ */
+export const ANO_INICIO_APROPRIACAO = 2027;
 
 export interface NFeParsed {
   chaveAcesso: string;
@@ -42,6 +52,11 @@ export interface NFeParsed {
   ibscbs?: NFeIbscbsTotais;
   status: 'pendente' | 'importado' | 'erro';
   mensagemErro?: string;
+  /**
+   * Divergências entre o que a nota declarou e os catálogos oficiais
+   * (etapa 46). É alerta: a nota é importada mesmo assim.
+   */
+  alertasFiscais?: DivergenciaFiscal[];
 }
 
 export interface NFeItem {
@@ -71,8 +86,61 @@ export interface ResultadoImportacao {
     ibs: number;
     total: number;
   };
+  /** Parcela dos créditos que veio do grupo IBS/CBS destacado na nota. */
+  creditosDoXml: {
+    cbs: number;
+    ibs: number;
+    total: number;
+  };
+  /** NF-e sem grupo IBS/CBS que caíram na estimativa por alíquota. */
+  notasEstimadas: number;
+  /** NF-e monofásicas (destaque em `gMono`), sem crédito regular. */
+  notasMonofasicas: number;
+  /** NF-e com pelo menos uma divergência contra os catálogos (etapa 46). */
+  notasComAlertaFiscal: number;
   nfesProcessadas: NFeParsed[];
 }
+
+/**
+ * Ano civil de emissão da NF-e.
+ *
+ * `dhEmi` traz o fuso do emitente (`-03:00` em quase todo o país). `new
+ * Date(...)` vira um instante e `getFullYear()` responde no fuso do navegador:
+ * uma nota emitida às 22h de 31/12 em Brasília é 01/01 em UTC, e o crédito
+ * caía no exercício seguinte. Lendo o fuso do próprio documento, o ano é o da
+ * data civil que o emitente declarou.
+ */
+export const anoEmissao = (data: Date): number =>
+  Number(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: FUSO_PADRAO_BR,
+      year: 'numeric',
+    }).format(data)
+  );
+
+/** Mês civil (1-12) de emissão da NF-e, no fuso da nota. Ver `anoEmissao`. */
+const mesEmissao = (data: Date): number =>
+  Number(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: FUSO_PADRAO_BR,
+      month: 'numeric',
+    }).format(data)
+  );
+
+/**
+ * Data civil de emissão em `YYYY-MM-DD`, no fuso da nota.
+ *
+ * `toISOLocal` usa o fuso do navegador; aqui a data tem de ser a mesma que
+ * originou `competencia_origem`, senão uma nota de 31/03 às 22:30 grava
+ * `data_origem` em abril e `competencia_origem` em março.
+ */
+const dataEmissaoISO = (data: Date): string =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: FUSO_PADRAO_BR,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(data);
 
 export function useImportacaoXMLNFe(empresaId: string) {
   const queryClient = useQueryClient();
@@ -102,6 +170,12 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const numero = ide?.querySelector('nNF')?.textContent || '';
       const serie = ide?.querySelector('serie')?.textContent || '';
       const dataEmissao = new Date(ide?.querySelector('dhEmi')?.textContent || '');
+      // Data inválida vira Invalid Date e só estoura na tela, dentro de
+      // format(), derrubando a prévia do lote inteiro. Falhar aqui marca a nota
+      // como erro e preserva as demais.
+      if (Number.isNaN(dataEmissao.getTime())) {
+        throw new Error('Data de emissão (dhEmi) ausente ou inválida');
+      }
       const cnpjEmitente = emit?.querySelector('CNPJ')?.textContent || '';
       const nomeEmitente = emit?.querySelector('xNome')?.textContent || '';
       const cnpjDestinatario = dest?.querySelector('CNPJ')?.textContent || '';
@@ -242,14 +316,43 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Usuário não autenticado');
 
-      const ano = new Date().getFullYear();
-      const aliquotas = ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
-
       let sucesso = 0;
       let erros = 0;
       let totalCBS = 0;
       let totalIBS = 0;
+      let cbssDoXml = 0;
+      let ibsDoXml = 0;
+      let notasEstimadas = 0;
+      let notasMonofasicas = 0;
+      let notasComAlertaFiscal = 0;
       const processadas = [...nfesParsed];
+
+      // Etapa 46: uma leitura de catálogo por exercício presente no lote, e só
+      // dos códigos daquele exercício. Os catálogos são versionados por
+      // inicio_vigencia/fim_vigencia: consultar uma vez com a data do relógio
+      // validaria nota de 2025 contra a tabela de 2027. Agrupar por ano de
+      // emissão mantém a economia de rede (poucos grupos por lote) sem perder a
+      // vigência correta de cada nota.
+      const referenciasPorAno = new Map<
+        number,
+        Awaited<ReturnType<typeof buscarReferenciasFiscais>>
+      >();
+      for (const n of processadas) {
+        if (n.status === 'erro') continue;
+        const ano = anoEmissao(n.dataEmissao);
+        if (referenciasPorAno.has(ano)) continue;
+        const doAno = processadas.filter(
+          (o) => o.status !== 'erro' && anoEmissao(o.dataEmissao) === ano
+        );
+        referenciasPorAno.set(
+          ano,
+          await buscarReferenciasFiscais(
+            doAno.flatMap((o) => o.itens.map((i) => i.ibscbs?.cClassTrib ?? '')),
+            doAno.flatMap((o) => o.itens.map((i) => i.ncm)),
+            ano + '-12-31'
+          )
+        );
+      }
 
       for (let i = 0; i < processadas.length; i++) {
         const nfe = processadas[i];
@@ -259,10 +362,34 @@ export function useImportacaoXMLNFe(empresaId: string) {
         }
 
         try {
-          const cbsCalculado = nfe.valorProdutos * (aliquotas.cbs / 100);
-          const ibsCalculado = nfe.valorProdutos * (aliquotas.ibs / 100);
+          // Etapa 43: o crédito vem do que a nota destacou (`total/IBSCBSTot`),
+          // não de uma estimativa pelo ano corrente. `new Date().getFullYear()`
+          // usava o ano do relógio: reimportar em janeiro uma nota de dezembro
+          // creditava pela alíquota do ano novo, e o valor nunca batia com o
+          // documento fiscal. A alíquota de fallback é a do **ano de emissão**
+          // da nota (`anoFatoGerador`), não a do relógio.
+          //
+          // `parseIbscbsTotais` sempre devolve um objeto (com campos
+          // `undefined` quando o grupo não existe), então a presença do grupo é
+          // o valor numérico, não a existência do objeto.
+          const anoFatoGerador = anoEmissao(nfe.dataEmissao);
+          const aliquotasNota =
+            ALIQUOTAS_TRANSICAO.find((a) => a.ano === anoFatoGerador) || ALIQUOTAS_TRANSICAO[0];
 
-          const competencia = `${nfe.dataEmissao.getFullYear()}-${String(nfe.dataEmissao.getMonth() + 1).padStart(2, '0')}`;
+          const vCBS = nfe.ibscbs?.vCBS;
+          const vIBS = nfe.ibscbs?.vIBS;
+          const temGrupo = vCBS !== undefined || vIBS !== undefined;
+          // Nota monofásica destaca IBS/CBS em `gMono`, não em `gIBS`/`gCBS`.
+          // O valor existe, mas está fora do regime regular: não é crédito
+          // apropriável e estimar por cima inventaria crédito.
+          const temMono =
+            nfe.ibscbs?.vTotIBSMono !== undefined || nfe.ibscbs?.vTotCBSMono !== undefined;
+          const cbsCalculado =
+            vCBS ?? (temGrupo || temMono ? 0 : nfe.valorProdutos * (aliquotasNota.cbs / 100));
+          const ibsCalculado =
+            vIBS ?? (temGrupo || temMono ? 0 : nfe.valorProdutos * (aliquotasNota.ibs / 100));
+
+          const competencia = `${anoFatoGerador}-${String(mesEmissao(nfe.dataEmissao)).padStart(2, '0')}`;
 
           // Nota e créditos numa transação só. Antes eram duas requisições, e
           // o PostgREST abre uma transação por requisição: se o insert dos
@@ -284,16 +411,36 @@ export function useImportacaoXMLNFe(empresaId: string) {
             data_origem: string;
             competencia_origem: string;
             status: string;
+            origem: 'xml_destacado' | 'estimado';
+            efeito_tributario: boolean;
+            ano_fato_gerador: number;
           }> = [];
+
+          // Etapa 44: 2026 é ano de teste — o valor é destacado, mas o crédito
+          // é apenas informativo (`efeito_tributario=false`). Só a partir de
+          // 2027 o crédito com XML destacado é apropriável. Estimado nunca é
+          // apropriável em ano nenhum: a etapa 44/88 exige
+          // `efeito_tributario=true` **E** `origem='xml_destacado'`.
+          const efeitoTributario = temGrupo && anoFatoGerador >= ANO_INICIO_APROPRIACAO;
+
+          // `saldo_disponivel` do informativo é 0: o CHECK de `status` só aceita
+          // os valores de sempre (`disponivel`, `utilizado`, ...), então o
+          // discriminador é `efeito_tributario`, não um status novo. Zerar o
+          // saldo impede que um consumidor antigo gaste crédito informativo.
+          const saldoCBS = efeitoTributario ? cbsCalculado : 0;
+          const saldoIBS = efeitoTributario ? ibsCalculado : 0;
 
           // `data_origem` é DATE. `toISOString()` convertia para UTC: uma nota
           // emitida à noite no fim do mês virava o dia 1º do mês seguinte,
           // divergindo do `competencia_origem` logo acima, que usa os getters
           // locais.
           const creditoBase = {
-            data_origem: toISOLocal(nfe.dataEmissao),
+            data_origem: dataEmissaoISO(nfe.dataEmissao),
             competencia_origem: competencia,
             status: 'disponivel',
+            origem: (temGrupo ? 'xml_destacado' : 'estimado') as 'xml_destacado' | 'estimado',
+            efeito_tributario: efeitoTributario,
+            ano_fato_gerador: anoFatoGerador,
           };
 
           if (cbsCalculado > 0) {
@@ -301,7 +448,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
               ...creditoBase,
               tipo_tributo: 'CBS',
               valor_credito: cbsCalculado,
-              saldo_disponivel: cbsCalculado,
+              saldo_disponivel: saldoCBS,
             });
           }
 
@@ -310,7 +457,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
               ...creditoBase,
               tipo_tributo: 'IBS',
               valor_credito: ibsCalculado,
-              saldo_disponivel: ibsCalculado,
+              saldo_disponivel: saldoIBS,
             });
           }
 
@@ -322,7 +469,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
                 serie: nfe.serie || '1',
                 cliente_nome: nfe.nomeEmitente,
                 cliente_cnpj: nfe.cnpjEmitente,
-                data_emissao: toISOLocal(nfe.dataEmissao),
+                data_emissao: dataEmissaoISO(nfe.dataEmissao),
                 valor_total: nfe.valorTotal,
                 valor_produtos: nfe.valorProdutos,
                 valor_icms: nfe.valorICMS,
@@ -341,8 +488,36 @@ export function useImportacaoXMLNFe(empresaId: string) {
           // resumo da importação anunciava crédito que não existia no banco.
           totalCBS += cbsCalculado;
           totalIBS += ibsCalculado;
+          if (temGrupo) {
+            cbssDoXml += cbsCalculado;
+            ibsDoXml += ibsCalculado;
+          } else if (temMono) {
+            notasMonofasicas++;
+          } else {
+            notasEstimadas++;
+          }
 
-          processadas[i] = { ...nfe, status: 'importado' };
+          // Etapa 46: a divergência é anexada à nota e contada no resumo, mas
+          // não interrompe a importação. Recusar a nota por catálogo
+          // desatualizado faria o contribuinte perder o crédito.
+          const validacao = validarItensFiscais(
+            nfe.itens.map((i) => ({
+              ncm: i.ncm,
+              cstIbscbs: i.ibscbs?.cst,
+              cClassTrib: i.ibscbs?.cClassTrib,
+            })),
+            referenciasPorAno.get(anoFatoGerador) ??
+              (await buscarReferenciasFiscais([], [], anoFatoGerador + '-12-31'))
+          );
+
+          processadas[i] = {
+            ...nfe,
+            status: 'importado',
+            ...(validacao.divergencias.length > 0
+              ? { alertasFiscais: validacao.divergencias }
+              : {}),
+          };
+          if (validacao.divergencias.length > 0) notasComAlertaFiscal++;
           sucesso++;
         } catch (error: unknown) {
           processadas[i] = { ...nfe, status: 'erro', mensagemErro: (error as Error).message };
@@ -361,15 +536,34 @@ export function useImportacaoXMLNFe(empresaId: string) {
           ibs: totalIBS,
           total: totalCBS + totalIBS,
         },
+        creditosDoXml: {
+          cbs: cbssDoXml,
+          ibs: ibsDoXml,
+          total: cbssDoXml + ibsDoXml,
+        },
+        notasEstimadas,
+        notasMonofasicas,
+        notasComAlertaFiscal,
         nfesProcessadas: processadas,
       };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['notas-fiscais'] });
       queryClient.invalidateQueries({ queryKey: ['creditos-tributarios'] });
-      toast.success(
-        `${result.sucesso} NF-e importadas. Créditos: R$ ${result.creditosGerados.total.toFixed(2)}`
-      );
+      // Etapa 43: o resumo precisa dizer quanto veio do XML. Antes mostrava um
+      // total único, e o usuário não tinha como saber que parte era estimativa
+      // — justamente o que a etapa manda avisar.
+      let mensagem = `${result.sucesso} NF-e importadas. Créditos: R$ ${result.creditosGerados.total.toFixed(2)}`;
+      if (result.creditosDoXml.total > 0) {
+        mensagem += ` (R$ ${result.creditosDoXml.total.toFixed(2)} destacados no XML)`;
+      }
+      if (result.notasEstimadas > 0) {
+        mensagem += `. Atenção: ${result.notasEstimadas} NF-e sem grupo IBS/CBS tiveram crédito estimado`;
+      }
+      if (result.notasMonofasicas > 0) {
+        mensagem += `. ${result.notasMonofasicas} NF-e monofásica(s) sem crédito regular`;
+      }
+      toast.success(mensagem);
     },
     onError: (error: Error) => {
       toast.error('Erro na importação: ' + error.message);

@@ -64,6 +64,50 @@ export function SplitPaymentPanel() {
 
   return (
     <div className="space-y-6">
+      {/* Cronograma Split Payment — aguardando ato conjunto (LC 214/2025 art. 48, §§8º) */}
+      <Card className="border-amber-300 bg-amber-50 dark:bg-amber-950/30">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
+            <Clock className="h-5 w-5" />
+            Split Payment — Aguardando Ato Conjunto (LC 214/2025)
+          </CardTitle>
+          <CardDescription className="text-amber-700 dark:text-amber-400">
+            O recolhimento fracionado automático só entra em vigor após ato conjunto do Comitê
+            Gestor do IBS, RFB e Banco Central. Até lá, nenhuma retenção é devida.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-md border border-amber-200 bg-white dark:bg-amber-900/20 p-3">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">
+                Piloto voluntário
+              </p>
+              <p className="font-mono font-bold text-sm">15/10/2026</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Plataformas de pagamento que aderirem voluntariamente.
+              </p>
+            </div>
+            <div className="rounded-md border border-amber-200 bg-white dark:bg-amber-900/20 p-3">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">
+                Entrada em vigor (previsão)
+              </p>
+              <p className="font-mono font-bold text-sm">2º sem. 2027</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Obrigatório para instituições de pagamento; facultativo B2B
+              </p>
+            </div>
+            <div className="rounded-md border border-amber-200 bg-white dark:bg-amber-900/20 p-3">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">
+                Status hoje
+              </p>
+              <p className="font-bold text-sm text-amber-700">⏳ Aguardando ato conjunto</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                LC 214/2025 art. 48, §§8º; Res. CGIBS a publicar
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -126,22 +170,22 @@ export function SplitPaymentPanel() {
                     </div>
                     <Separator />
                     <div className="flex justify-between text-sm">
-                      <span>CBS Retido ({(simulacao.aliquotas.cbs * 100).toFixed(2)}%):</span>
+                      <span>CBS projetado ({(simulacao.aliquotas.cbs * 100).toFixed(2)}%):</span>
                       <span className="text-primary">{formatCurrency(simulacao.cbsRetido)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>IBS Retido ({(simulacao.aliquotas.ibs * 100).toFixed(2)}%):</span>
+                      <span>IBS projetado ({(simulacao.aliquotas.ibs * 100).toFixed(2)}%):</span>
                       <span className="text-success">{formatCurrency(simulacao.ibsRetido)}</span>
                     </div>
                     {simulacao.isRetido > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span>IS Retido:</span>
+                        <span>IS projetado:</span>
                         <span className="text-warning">{formatCurrency(simulacao.isRetido)}</span>
                       </div>
                     )}
                     <Separator />
                     <div className="flex justify-between font-medium">
-                      <span>Total Retido:</span>
+                      <span>Total projetado:</span>
                       <span className="text-destructive">
                         {formatCurrency(simulacao.totalRetido)}
                       </span>
@@ -167,7 +211,7 @@ export function SplitPaymentPanel() {
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
                     Fechar
                   </Button>
-                  <Button onClick={handleRegistrar}>Registrar Transação</Button>
+                  <Button onClick={handleRegistrar}>Registrar simulação</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -209,7 +253,7 @@ export function SplitPaymentPanel() {
                 <div className="flex items-center gap-3">
                   <Calculator className="h-8 w-8 text-destructive" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Tributos Retidos</p>
+                    <p className="text-sm text-muted-foreground">Tributos projetados</p>
                     <p className="text-2xl font-bold">
                       {formatCurrency(estatisticas.totalTributosRetidos)}
                     </p>

@@ -17,7 +17,13 @@ import {
   moduloDoArquivo,
   resolverEspecificador,
 } from '../analisador-imports';
-import { MODULOS, detectarCiclos, obterModulo, violacoesDeCamada } from '../modulos';
+import {
+  ADAPTERS_AUTORIZADOS,
+  MODULOS,
+  detectarCiclos,
+  obterModulo,
+  violacoesDeCamada,
+} from '../modulos';
 
 const RAIZ = resolve(__dirname, '../../../..');
 
@@ -91,7 +97,7 @@ describe('conformidade do grafo real com o manifesto', () => {
     const violacoes = construirGrafoObservado(RAIZ)
       .filter((a) => !a.tipoApenas && puros.includes(a.de))
       .filter((a) => !obterModulo(a.para).puro)
-      .filter((a) => a.arquivo !== 'src/lib/tributario/catalogos/repositorio.ts')
+      .filter((a) => !ADAPTERS_AUTORIZADOS.includes(a.arquivo))
       .map((a) => `${a.arquivo} -> ${a.para}`);
     expect(violacoes).toEqual([]);
   });

@@ -187,6 +187,12 @@ verify_jwt = false
 [functions.gerar-heatmap-tributario]
 verify_jwt = false
 
+# verify_jwt=false: o guard e feito em codigo por `exigirUsuarioComEmpresa`
+# (valida o JWT contra o Auth e o vinculo real em `user_empresas`), mesmo
+# padrao das demais funcoes do Lovable Cloud com signing keys.
+[functions.guardar-xml-nfe-autorizada]
+verify_jwt = false
+
 [functions.gerar-pacote-evidencias]
 verify_jwt = true
 
@@ -330,6 +336,15 @@ verify_jwt = true
 
 [functions.calcular-slo-metrics-diario]
 verify_jwt = true
+
+# Job de backfill do grupo IBS/CBS (etapa 50). Chamado so pelo pg_cron com
+# x-cron-secret; verify_jwt=true nao atrapalha porque o cron manda a service key.
+[functions.reprocessar-creditos-ibscbs]
+# verify_jwt=false: job interno do pg_cron (etapa 50). O pg_cron nao envia JWT
+# de usuario e o gateway rejeitava a chamada (401) antes do handler; a
+# autorizacao e feita por exigirChamadaInterna contra x-cron-secret
+# (integration_secrets.internal_jobs).
+verify_jwt = false
 
 [functions.calculo-iva]
 verify_jwt = true

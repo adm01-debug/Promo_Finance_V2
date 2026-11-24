@@ -21,7 +21,6 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import {
-  gerarEFD_IBS_CBS,
   gerarEFD_Contribuicoes,
   downloadArquivoSPED,
   validarArquivoSPED,
@@ -37,8 +36,9 @@ const TIPOS_ARQUIVO = [
   {
     id: 'efd-ibs-cbs' as TipoArquivo,
     nome: 'EFD-IBS/CBS',
-    descricao: 'Escrituração Fiscal Digital dos novos tributos',
-    disponivel: true,
+    descricao:
+      'Leiaute não publicado pela RFB. A apuração assistida (art. 46; Decreto 12.955/2026; Res. CGIBS 6/2026) substitui a EFD até 2027.',
+    disponivel: false,
   },
   {
     id: 'efd-contribuicoes' as TipoArquivo,
@@ -67,7 +67,7 @@ interface Props {
 export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
   const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');
   const [competencia, setCompetencia] = useState(format(new Date(), 'yyyy-MM'));
-  const [tipoArquivo, setTipoArquivo] = useState<TipoArquivo>('efd-ibs-cbs');
+  const [tipoArquivo, setTipoArquivo] = useState<TipoArquivo>('efd-contribuicoes');
   const [gerando, setGerando] = useState(false);
   const [progresso, setProgresso] = useState(0);
 
@@ -116,63 +116,25 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
 
       setProgresso(60);
 
-      let conteudo: string;
-      let nomeArquivo: string;
+      const conteudo = gerarEFD_Contribuicoes(
+        dadosEmpresa,
+        competencia,
+        operacoesCompetencia.map((op) => ({
+          ...op,
+          cbs_aliquota: op.cbs_aliquota || 0,
+          cbs_valor: op.cbs_valor || 0,
+          ibs_aliquota: op.ibs_aliquota || 0,
+          ibs_valor: op.ibs_valor || 0,
+          is_aliquota: op.is_aliquota || 0,
+          is_valor: op.is_valor || 0,
+        })),
+        creditosCompetencia.map((c) => ({
+          ...c,
+          aliquota: c.aliquota || 0,
+        }))
+      );
 
-      if (tipoArquivo === 'efd-ibs-cbs') {
-        const apuracao = apuracaoCompetencia || {
-          competencia,
-          cbs_debitos: 0,
-          cbs_creditos: 0,
-          cbs_a_pagar: 0,
-          ibs_debitos: 0,
-          ibs_creditos: 0,
-          ibs_a_pagar: 0,
-          is_debitos: 0,
-          is_a_pagar: 0,
-        };
-
-        conteudo = gerarEFD_IBS_CBS(
-          dadosEmpresa,
-          competencia,
-          operacoesCompetencia.map((op) => ({
-            ...op,
-            cbs_aliquota: op.cbs_aliquota || 0,
-            cbs_valor: op.cbs_valor || 0,
-            ibs_aliquota: op.ibs_aliquota || 0,
-            ibs_valor: op.ibs_valor || 0,
-            is_aliquota: op.is_aliquota || 0,
-            is_valor: op.is_valor || 0,
-          })),
-          creditosCompetencia.map((c) => ({
-            ...c,
-            aliquota: c.aliquota || 0,
-          })),
-          apuracao
-        );
-
-        nomeArquivo = `EFD_IBS_CBS_${empresaSelecionada.cnpj.replace(/\D/g, '')}_${competencia.replace('-', '')}.txt`;
-      } else {
-        conteudo = gerarEFD_Contribuicoes(
-          dadosEmpresa,
-          competencia,
-          operacoesCompetencia.map((op) => ({
-            ...op,
-            cbs_aliquota: op.cbs_aliquota || 0,
-            cbs_valor: op.cbs_valor || 0,
-            ibs_aliquota: op.ibs_aliquota || 0,
-            ibs_valor: op.ibs_valor || 0,
-            is_aliquota: op.is_aliquota || 0,
-            is_valor: op.is_valor || 0,
-          })),
-          creditosCompetencia.map((c) => ({
-            ...c,
-            aliquota: c.aliquota || 0,
-          }))
-        );
-
-        nomeArquivo = `EFD_CONTRIBUICOES_${empresaSelecionada.cnpj.replace(/\D/g, '')}_${competencia.replace('-', '')}.txt`;
-      }
+      const nomeArquivo = `EFD_CONTRIBUICOES_${empresaSelecionada.cnpj.replace(/\D/g, '')}_${competencia.replace('-', '')}.txt`;
 
       setProgresso(90);
 
@@ -191,6 +153,13 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
 
       toast.success('Arquivo SPED gerado com sucesso', {
         description: nomeArquivo,
+      });
+      // O gerador de EFD-Contribuições ainda emite só os blocos de abertura e
+      // fechamento (sem C170/M200): avisar evita o arquivo ser transmitido ao
+      // Fisco como se estivesse completo.
+      toast.warning('EFD-Contribuições sem lançamentos', {
+        description:
+          'O arquivo contém apenas a estrutura dos blocos (0000/0001/0990…9999). Os lançamentos (C170/M200) não são gerados — não transmita como EFD oficial.',
       });
     } catch (error: unknown) {
       toast.error('Erro ao gerar arquivo');
@@ -342,13 +311,10 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="p-4 bg-muted/50 rounded-lg">
               <h4 className="font-medium">EFD-IBS/CBS</h4>
-              <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                <li>• Layout versão 018 (LC 214/2025)</li>
-                <li>• Bloco 0: Identificação</li>
-                <li>• Bloco C: Documentos de Mercadorias</li>
-                <li>• Bloco D: Documentos de Serviços</li>
-                <li>• Bloco M: Apuração IBS/CBS/IS</li>
-              </ul>
+              <p className="text-sm text-muted-foreground mt-2">
+                Leiaute oficial não publicado pela RFB. A apuração assistida (art. 46; Decreto
+                12.955/2026; Res. CGIBS 6/2026) substitui a EFD até 2027.
+              </p>
             </div>
             <div className="p-4 bg-muted/50 rounded-lg">
               <h4 className="font-medium">EFD-Contribuições</h4>

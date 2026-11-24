@@ -3,7 +3,6 @@ import * as api from '@/lib/sped-generator';
 
 describe('sped-generator — regressão de API pública', () => {
   it('preserva exports históricos após modularização', () => {
-    expect(typeof api.gerarEFD_IBS_CBS).toBe('function');
     expect(typeof api.gerarEFD_Contribuicoes).toBe('function');
     expect(typeof api.downloadArquivoSPED).toBe('function');
     expect(typeof api.validarArquivoSPED).toBe('function');
