@@ -14,8 +14,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, XCircle, AlertTriangle, Package, User } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
+import { useCatalogoCclasstrib } from '@/hooks/useCatalogoCclasstrib';
+import { calcularGrupoIbscbs, resolverCclassTribPadrao } from '@/lib/nfe/grupo-ibscbs-item';
 import { toast } from 'sonner';
 import { NotaFiscal, ItemNFe } from './nfe-types';
+
+/** Ano do cronograma usado na estimativa local do grupo IBS/CBS. */
+const ANO_REFERENCIA = new Date().getFullYear();
 
 interface NovaNFeFormProps {
   onClose: () => void;
@@ -24,6 +29,7 @@ interface NovaNFeFormProps {
 
 export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
   const { data: empresas = [] } = useEmpresas();
+  const { opcoes, codigos, carregando, indisponivel } = useCatalogoCclasstrib();
 
   const [formData, setFormData] = useState({
     destinatarioNome: '',
@@ -67,16 +73,64 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
     if (itens.length > 1) setItens(itens.filter((_, i) => i !== index));
   };
 
+  /**
+   * Recalcula o grupo IBS/CBS do item a partir do cClassTrib vigente no catalogo.
+   * Sem codigo escolhido o grupo fica limpo: nao ha valor a destacar.
+   */
+  const comGrupo = (item: ItemNFe, codigo?: string): ItemNFe => {
+    const linha = codigo ? opcoes.find((opcao) => opcao.cclasstrib === codigo) : undefined;
+    if (!linha) {
+      return {
+        ...item,
+        cClassTrib: undefined,
+        cstIbsCbs: undefined,
+        vBCIbsCbs: undefined,
+        pCBS: undefined,
+        vCBS: undefined,
+        pIBSUF: undefined,
+        vIBSUF: undefined,
+        pIBSMun: undefined,
+        vIBSMun: undefined,
+        vIBS: undefined,
+      };
+    }
+    const grupo = calcularGrupoIbscbs(item.valorTotal, linha, ANO_REFERENCIA);
+    return {
+      ...item,
+      cClassTrib: linha.cclasstrib,
+      cstIbsCbs: linha.cst,
+      vBCIbsCbs: grupo.vBC,
+      pCBS: grupo.pCBS,
+      vCBS: grupo.vCBS,
+      pIBSUF: grupo.pIBSUF,
+      vIBSUF: grupo.vIBSUF,
+      pIBSMun: grupo.pIBSMun,
+      vIBSMun: grupo.vIBSMun,
+      vIBS: grupo.vIBS,
+    };
+  };
+
+  const selecionarCclassTrib = (index: number, codigo: string) => {
+    setItens(itens.map((item, i) => (i === index ? comGrupo(item, codigo) : item)));
+  };
+
   const updateItem = (index: number, field: keyof ItemNFe, value: string | number) => {
     const newItens = [...itens];
     newItens[index] = { ...newItens[index], [field]: value };
     if (field === 'quantidade' || field === 'valorUnitario') {
       newItens[index].valorTotal = newItens[index].quantidade * newItens[index].valorUnitario;
     }
+    // NCM completo e sem codigo escolhido assume o padrao de brinde (000001).
+    const padrao =
+      field === 'ncm'
+        ? resolverCclassTribPadrao(String(value), newItens[index].cClassTrib, codigos)
+        : null;
+    newItens[index] = comGrupo(newItens[index], padrao ?? newItens[index].cClassTrib);
     setItens(newItens);
   };
 
   const totalProdutos = itens.reduce((acc, item) => acc + item.valorTotal, 0);
+  const totalIbscbs = itens.reduce((acc, item) => acc + (item.vCBS ?? 0) + (item.vIBS ?? 0), 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,13 +279,62 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
                 <Input value={formatCurrency(item.valorTotal)} disabled className="bg-muted" />
               </div>
             </div>
+
+            <div className="grid grid-cols-4 gap-3">
+              <div className="col-span-2">
+                <Label>cClassTrib (LC 214/2025)</Label>
+                <Select
+                  value={item.cClassTrib ?? ''}
+                  onValueChange={(codigo) => selecionarCclassTrib(index, codigo)}
+                  disabled={carregando || opcoes.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={carregando ? 'Carregando...' : 'Selecione o codigo'}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {opcoes.map((opcao) => (
+                      <SelectItem key={opcao.cclasstrib} value={opcao.cclasstrib}>
+                        {opcao.cclasstrib} — {opcao.descricao}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>CST IBS/CBS</Label>
+                <Input value={item.cstIbsCbs ?? ''} disabled className="bg-muted" placeholder="—" />
+              </div>
+              <div>
+                <Label>CBS + IBS</Label>
+                <Input
+                  value={formatCurrency((item.vCBS ?? 0) + (item.vIBS ?? 0))}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+            </div>
           </div>
         ))}
 
-        <div className="flex justify-end">
+        {indisponivel && (
+          <p className="text-xs text-muted-foreground">
+            Catalogo oficial de cClassTrib indisponivel: o codigo fica bloqueado ate a carga da RFB
+            rodar.
+          </p>
+        )}
+
+        <div className="flex justify-end gap-8">
           <div className="text-right">
             <span className="text-sm text-muted-foreground">Total dos Produtos:</span>
             <p className="text-xl font-bold text-primary">{formatCurrency(totalProdutos)}</p>
+          </div>
+          <div className="text-right">
+            <span className="text-sm text-muted-foreground">
+              CBS + IBS dos itens ({ANO_REFERENCIA}):
+            </span>
+            <p className="text-xl font-bold">{formatCurrency(totalIbscbs)}</p>
           </div>
         </div>
       </div>
