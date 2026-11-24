@@ -1213,6 +1213,14 @@
       "manual": ["bash", "scripts/db/replay-migrations.sh"],
       "triggers": ["manual"],
       "reason": "Replay das migrations num Postgres local efêmero (issue #90). Execução manual: exige postgresql-16 no host e não roda em PR; o dispatcher não executa esta operação."
+    },
+    {
+      "id": "legacy-7579d941b7d2015d",
+      "kind": "legacy",
+      "files": ["scripts/rfb/gerar_carga_cclasstrib.py"],
+      "manual": ["python3", "scripts/rfb/gerar_carga_cclasstrib.py"],
+      "triggers": ["manual"],
+      "reason": "Gerador da carga inicial do catalogo cClassTrib (etapa 79): le a planilha oficial da RFB e emite a migration com o seed. Execucao manual e unica, com a planilha baixada a parte; o dispatcher nao executa esta operacao."
     }
   ],
   "ci": [
