@@ -3,7 +3,7 @@
 -- Gerado por scripts/rfb/gerar_carga_cclasstrib.py (nao editar a mao).
 -- Fonte: ReceitaFederal/calculadora-rtc-regime-regular (MIT), base de dados
 -- construida pelas migracoes Flyway do proprio repositorio oficial.
--- Commit de origem: f1eebd7ce3157423b1a6aaca7dc1d6c3395452c4 (tag 1.7.2)
+-- Commit de origem: 4f0342f-base-oficial
 -- Versao da base: V0073 (Nova tabela de Classificações Tributárias (IT 2025.002 v.1.71), publicada em 30/10/2026.)
 -- Gerado em: 2026-11-24
 --
@@ -15,6 +15,10 @@
 -- PERE_VALOR vem em pontos percentuais (100.0 = 100%); p_red_* e fracao
 -- decimal (0-1), mesmo padrao das etapas 33-34.
 --
+-- Escopo: so o catalogo CBS/IBS. O Imposto Seletivo fica fora porque 14
+-- codigos colidem entre os dois catalogos e o consumidor ficaria com a
+-- ultima linha vigente, aplicando CST de IS em nota de CBS/IBS.
+--
 -- Idempotente: upsert por (cclasstrib, inicio_vigencia), a PK corrigida
 -- em 20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql.
 
@@ -23,21 +27,11 @@ insert into public.catalogo_cclasstrib
    exige_gibscbs, ind_dir, inicio_vigencia, fim_vigencia, versao_it)
 values
   ('000001', '000', 'Situações tributadas integralmente pelo IBS e CBS.', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('000001', '000', 'Primeiro fornecimento a qualquer título de bem', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('000002', '000', 'Exploração de via', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('000002', '000', 'Arrematação em leilão público', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('000003', '000', 'Regime automotivo - projetos incentivados (art. 311)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('000003', '000', 'Transferência não onerosa de bem produzido', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('000004', '000', 'Regime automotivo - projetos incentivados (art. 312)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('000004', '000', 'Incorporação do bem ao ativo imobilizado pelo fabricante', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('000005', '000', 'Operação com EAC destinado à mistura com gasolina A, mas com saída do biocombustível com destinação diversa', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('000005', '000', 'Consumo do bem pelo fabricante', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('000006', '000', 'Situações tributadas integralmente pelo IBS e CBS realizadas por autônomo', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('000006', '000', 'Venda direta pelo fabricante ao consumidor final', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('000007', '000', 'Venda de produto enviado para terceiro para processamento/industrialização', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('000008', '000', 'Venda efetiva de mercadoria remetida para venda fora do estabelecimento', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('000009', '000', 'Importação de bens e serviços', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('000010', '000', 'Primeiro fornecimento de bem mineral (venda no mercado interno ou exportação)', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('010001', '010', 'Operações do FGTS não realizadas pela Caixa Econômica Federal', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('010002', '010', 'Operações do serviço financeiro', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('011001', '011', 'Planos de assistência funerária.', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
@@ -45,23 +39,14 @@ values
   ('011003', '011', 'Intermediação de planos de assistência à saúde', 0.6000, 0.6000, 0.6000, true, 0, '2026-01-01', null, 'V0073'),
   ('011004', '011', 'Concursos e prognósticos', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('011005', '011', 'Planos de assistência à saúde de animais domésticos', 0.3000, 0.3000, 0.3000, true, 0, '2026-01-01', null, 'V0073'),
-  ('100001', '100', 'Exportações de bens e serviços', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200001', '200', 'Serviços de transporte de bens até as zonas de processamento de exportação e bens exportados a partir das zonas de processamento de exportação', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200001', '200', 'Remessa para filial/depósito fechado', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200002', '200', 'Fornecimento ou importação para produtor rural não contribuinte ou TAC', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200002', '200', 'Remessa para terceiro para processamento e industrialização', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200003', '200', 'Vendas de produtos destinados à alimentação humana (Anexo I)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200003', '200', 'Remessa para adquirente por conta e ordem do fabricante', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200004', '200', 'Fornecimento de dispositivos médicos (Anexo XII)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200004', '200', 'Remessa para venda fora do estabelecimento', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200005', '200', 'Fornecimento de dispositivos médicos para órgãos da administração pública e entidades de saúde imunes (Anexo IV)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200005', '200', 'Retorno de mercadoria enviada para processamento/industrialização', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200006', '200', 'Situação de emergência de saúde pública reconhecida pelo Poder público', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200006', '200', 'Retorno de remessa enviada para venda fora do estabelecimento', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200007', '200', 'Fornecimento dos dispositivos de acessibilidade próprios para pessoas com deficiência (Anexo XIII)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200007', '200', 'Venda de bem ou serviço tributado pelo IS em operação anterior', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200008', '200', 'Fornecimento dos dispositivos de acessibilidade próprios para pessoas com deficiência adquiridos por órgãos da administração pública (Anexo V)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('200008', '200', 'Venda em embalagem não primária (não embalada para consumo imediato) de bebidas e fumo', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('200009', '200', 'Fornecimento dos medicamentos registrados na Anvisa', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200010', '200', 'Fornecimento dos medicamentos registrados na Anvisa, adquiridos por órgãos da administração pública', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('200011', '200', 'Fornecimento das composições para nutrição enteral e parenteral quando adquiridas por órgãos da administração pública (Anexo VI)', 1.0000, 1.0000, 1.0000, true, 0, '2026-01-01', null, 'V0073'),
@@ -118,10 +103,7 @@ values
   ('221003', '221', 'Incorporação imobiliária submetida ao regime especial de tributação', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('221004', '221', 'Alienação de imóvel decorrente de parcelamento do solo', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('222001', '222', 'Transporte internacional de passageiros, caso os trechos de ida e volta sejam vendidos em conjunto', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('300001', '300', 'Devolução de bens com documento fiscal emitido pelo adquirente', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('300002', '300', 'Devolução de bens com documento fiscal emitido pelo fornecedor', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('400001', '400', 'Fornecimento de serviços de transporte público coletivo de passageiros rodoviário e metroviário', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('400001', '400', 'Fornecimento de bens com o fim específico de exportação', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('400002', '400', 'Fornecimento de serviços de transporte público coletivo de passageiros rodoviário e metroviário com medição por quilômetro rodado', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('400003', '400', 'Bagagens', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('400004', '400', 'Remessas internacionais', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
@@ -163,11 +145,6 @@ values
   ('410036', '410', 'Descontos financeiros em nota fatura', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410037', '410', 'Importação os bens materiais sem incidência de IBS e CBS', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('410999', '410', 'Operações não onerosas sem previsão de tributação, não especificadas anteriormente', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
-  ('500001', '500', 'Venda de gás natural destinado à utilização como insumo em processo industrial e como combustível para fins de transporte, realizada por produtor extrativista', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('500003', '500', 'Venda de gás natural destinado à utilização como insumo em processo industrial e como combustível para fins de transporte, realizada por importador', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('500004', '500', 'Importação de gás natural destinado à utilização como insumo em processo industrial e como combustível para fins de transporte, realizada por importador distribuidor ou varejista', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('500007', '500', 'Venda de veículo nacional com alíquota zero para motorista de táxi com regime diferenciado reconhecido', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('500008', '500', 'Venda de veículo nacional com alíquota zero para pessoa com deficiência ou transtorno do espectro autista', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('510001', '510', 'Operações, sujeitas a diferimento, com energia elétrica, relativas à importação, geração, comercialização, distribuição e transmissão', 0.0000, 0.0000, 0.0000, true, 1, '2026-01-01', null, 'V0073'),
   ('515001', '515', 'Operações, sujeitas a diferimento, com insumos agropecuários e aquícolas (Anexo IX)', 0.6000, 0.6000, 0.6000, true, 1, '2026-01-01', null, 'V0073'),
   ('550001', '550', 'Exportações de bens materiais', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
@@ -199,8 +176,6 @@ values
   ('550027', '550', 'Regimes de Aperfeiçoamento (Drawback)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('550028', '550', 'Regimes de Aperfeiçoamento (Admissão temporária)', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
   ('550029', '550', 'Zona de Processamento de Exportação', 0.0000, 0.0000, 0.0000, true, 0, '2026-01-01', null, 'V0073'),
-  ('600001', '600', 'Bagagens de viajantes e de tripulantes submetidas ao regime de tributação especial', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
-  ('600002', '600', 'Remessas internacionais submetidas ao regime de tributação simplificada', 0.0000, 0.0000, 0.0000, false, 0, '2027-01-01', null, 'V0073'),
   ('620001', '620', 'Tributação monofásica sobre combustíveis', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('620002', '620', 'Tributação monofásica com responsabilidade pela retenção sobre combustíveis', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),
   ('620003', '620', 'Tributação monofásica com responsabilidade de retenção de tributos por terceiros', 0.0000, 0.0000, 0.0000, false, 0, '2026-01-01', null, 'V0073'),

@@ -58,6 +58,19 @@ select
       order by p.PERE_INICIO_VIGENCIA desc limit 1) as red_ibs_mun
 from CLASSIFICACAO_TRIBUTARIA ct
 join SITUACAO_TRIBUTARIA st on st.SITR_ID = ct.CLTR_SITR_ID
+-- So CBS (TBTO_ID 2), IBSUF (3) e IBSMun (4). CLASSIFICACAO_TRIBUTARIA
+-- tambem carrega o catalogo do Imposto Seletivo (TBTO_ID 1, vigencia
+-- 2027-01-01): 29 linhas, das quais 14 reaproveitam codigos do catalogo
+-- CBS/IBS (000001-000006, 200001-200008) com CST/descricao/reducao diferentes.
+-- Sem este filtro o catalogo fica com duas linhas vigentes para o mesmo
+-- cclasstrib a partir de 2027 e o consumidor (buscarReferenciasFiscais, que
+-- indexa por cclasstrib e deixa a ultima vencer) aplica CST de IS em nota de
+-- CBS/IBS. As 170 classificacoes devolvidas pela API de dados abertos sao
+-- exatamente as 173 daqui com vigencia aberta, entao o IS nunca entra.
+where exists (
+  select 1 from TRIBUTO_SITUACAO_TRIBUTARIA tst
+   where tst.TRST_SITR_ID = st.SITR_ID and tst.TRST_TBTO_ID in (2, 3, 4)
+)
 order by ct.CLTR_CD, ct.CLTR_INICIO_VIGENCIA
 """
 
@@ -112,6 +125,16 @@ def gerar(con: sqlite3.Connection, commit: str) -> str:
     ).fetchone()[0]
     linhas = cur.execute(SELECT).fetchall()
 
+    # Guarda contra a contaminacao que o filtro do SELECT evita: duas linhas com
+    # vigencia aberta para o mesmo cclasstrib quebram o consumidor
+    # (buscarReferenciasFiscais indexa por cclasstrib e a ultima vence).
+    abertas = [r[0] for r in linhas if r[4] is None]
+    repetidos = sorted({cd for cd in abertas if abertas.count(cd) > 1})
+    if repetidos:
+        raise SystemExit(
+            "catalogo inconsistente: mais de uma vigencia aberta para " + ", ".join(repetidos[:10])
+        )
+
     hoje = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     out = []
     out.append("-- Carga inicial de `public.catalogo_cclasstrib` a partir da base oficial da RFB.")
@@ -130,6 +153,10 @@ def gerar(con: sqlite3.Connection, commit: str) -> str:
     out.append("--")
     out.append("-- PERE_VALOR vem em pontos percentuais (100.0 = 100%); p_red_* e fracao")
     out.append("-- decimal (0-1), mesmo padrao das etapas 33-34.")
+    out.append("--")
+    out.append("-- Escopo: so o catalogo CBS/IBS. O Imposto Seletivo fica fora porque 14")
+    out.append("-- codigos colidem entre os dois catalogos e o consumidor ficaria com a")
+    out.append("-- ultima linha vigente, aplicando CST de IS em nota de CBS/IBS.")
     out.append("--")
     out.append("-- Idempotente: upsert por (cclasstrib, inicio_vigencia), a PK corrigida")
     out.append("-- em 20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql.")
