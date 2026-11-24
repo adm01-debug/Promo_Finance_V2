@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2c2486f2e6` · branch `main` · 2026-11-23 15:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6a46049884` · branch `main` · 2026-11-24 00:20 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -174,7 +174,7 @@
 | `nfe_eventos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
 | `nfe_recebidas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 28 colunas | migration |
 | `notas_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 22 colunas | migration |
-| `notas_fiscais_itens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 28 colunas | migration |
+| `notas_fiscais_itens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 29 colunas | migration |
 | `notas_fiscais_ocr` | _(sem COMMENT ON TABLE — significado não documentado)_ | 26 colunas | migration |
 | `notification_history` | Histórico unificado de notificações enviadas ao usuário (in-app/push/e-mail), com status e metadata para auditoria e UI de "central de notificações" | 12 colunas | migration |
 | `open_finance_consents` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
@@ -307,7 +307,7 @@
 | `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
 | `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
 | `regime_tributario_enum` (enum) | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO |  | banco |
-| … +243 linhas — lista completa em `context.json` | | | |
+| … +245 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -379,6 +379,11 @@
 | status | valor `ACCEPTED` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/asaas-proxy/index.ts` |
 | status | valor `finalizado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/calcular-health-score-operacional/index.ts` |
 | status | valor `cancelled` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
+| status | valor `regravado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/reprocessar-creditos-ibscbs/index.ts`<br>`escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
+| status | valor `sem_xml` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
+| status | valor `xml_invalido` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
+| status | valor `sem_grupo` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
+| status | valor `credito_utilizado` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
 | status | valor `contact_not_found` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/sync-profile-to-bitrix/index.ts` |
 | status | valor `fechada` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | status | valor `read` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/whatsapp-webhook/index.ts` |

@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1067,
+ "migrations": 1073,
  "seeds": [],
  "avisos": [
-  "199 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "201 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -319,6 +319,7 @@
   "calcular_potencial_elisao",
   "calcular_proxima_geracao",
   "can_access_saved_filter",
+  "cancelar_nfe_estornar_xml_destacado",
   "capture_index_usage_snapshot",
   "capture_pg_stat_statements_baseline",
   "capture_slow_queries",
@@ -506,6 +507,7 @@
   "registrar_nfe_com_creditos",
   "registrar_tentativa_sso",
   "reprocess_dlq",
+  "reprocessar_creditos_nfe",
   "reset_failed_attempts",
   "resolve_integrity_alert",
   "resolve_sso_providers_for_domain",
@@ -513,6 +515,7 @@
   "run_daily_cleanup_with_logging",
   "run_integrity_cycle",
   "run_observability_rpc",
+  "salvar_nfe_autorizada",
   "sefaz_cursor_advance",
   "sefaz_detect_nsu_gaps",
   "sefaz_detect_stuck_cursors",
@@ -2754,6 +2757,12 @@
    "nome": "refresh-performance-alerts-weekly",
    "agenda": "45 3 * * *",
    "migration": "20260712194623_6779ec03-860d-4d19-89b2-044aa6594ba8.sql"
+  },
+  {
+   "nome": "reprocessar-creditos-ibscbs",
+   "agenda": "20 * * * *",
+   "migration": "20261122150000_cron_reprocessar_creditos_ibscbs.sql",
+   "chama_edge": "reprocessar-creditos-ibscbs"
   },
   {
    "nome": "sefaz-observability-hourly",
@@ -7833,6 +7842,7 @@
     "exportar-sped-contribuicoes",
     "gerar-acoes-recomendadas",
     "gerar-alertas-tributarios",
+    "gerar-pdf-tributario",
     "verificar-conformidade-fiscal"
    ],
    "triggers": [
@@ -12831,11 +12841,11 @@
     "so_na_migration": [],
     "so_no_types": []
    },
-   "usada_no_front": 0,
+   "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [],
    "sem_rls": false,
-   "nao_usada": true
+   "nao_usada": false
   },
   "catalogo_nbs": {
    "colunas": {
@@ -12993,11 +13003,11 @@
     "so_na_migration": [],
     "so_no_types": []
    },
-   "usada_no_front": 0,
+   "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [],
    "sem_rls": false,
-   "nao_usada": true
+   "nao_usada": false
   },
   "catalogos_fiscais_cargas": {
    "colunas": {
@@ -17676,7 +17686,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 4,
+   "usada_no_front": 5,
    "usada_em_edges": [],
    "triggers": [
     "update_creditos_tributarios_updated_at"
@@ -20425,6 +20435,7 @@
     "gerar-snapshots-conformidade",
     "gerar-sped-ecd",
     "gerar-sped-ecf",
+    "guardar-xml-nfe-autorizada",
     "validar-token-contador",
     "verificar-conformidade-fiscal"
    ],
@@ -30415,6 +30426,7 @@
    },
    "usada_no_front": 2,
    "usada_em_edges": [
+    "reprocessar-creditos-ibscbs",
     "sefaz-manifestar"
    ],
    "triggers": [
@@ -30872,8 +30884,11 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 4,
-   "usada_em_edges": [],
+   "usada_no_front": 6,
+   "usada_em_edges": [
+    "gerar-alertas-tributarios",
+    "verificar-conformidade-fiscal"
+   ],
    "triggers": [
     "update_notas_fiscais_updated_at"
    ],
@@ -31077,6 +31092,13 @@
      "pk": false,
      "default": "0",
      "ref": null
+    },
+    "x_prod": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
     }
    },
    "rls": true,
@@ -31130,7 +31152,9 @@
     "v_un_com": "number"
    },
    "drift": {
-    "so_na_migration": [],
+    "so_na_migration": [
+     "x_prod"
+    ],
     "so_no_types": []
    },
    "usada_no_front": 0,
@@ -48360,7 +48384,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 2,
+   "usada_no_front": 3,
    "usada_em_edges": [
     "executar-fechamento-tributario",
     "verificar-conformidade-fiscal"
@@ -49665,6 +49689,11 @@
    "usada_em": 1
   },
   {
+   "nome": "cancelar_nfe_estornar_xml_destacado",
+   "definida": true,
+   "usada_em": 2
+  },
+  {
    "nome": "certificado_get_password",
    "definida": true,
    "usada_em": 1
@@ -49920,6 +49949,11 @@
    "usada_em": 1
   },
   {
+   "nome": "reprocessar_creditos_nfe",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
    "nome": "reset_failed_attempts",
    "definida": true,
    "usada_em": 1
@@ -49933,6 +49967,11 @@
    "nome": "resolve_sso_providers_for_domain",
    "definida": true,
    "usada_em": 2
+  },
+  {
+   "nome": "salvar_nfe_autorizada",
+   "definida": true,
+   "usada_em": 1
   },
   {
    "nome": "sefaz_process_batch",

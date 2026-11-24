@@ -3,9 +3,9 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2376)",
-   "SQL (1140)",
-   "Markdown (224)",
+   "TypeScript (2399)",
+   "SQL (1146)",
+   "Markdown (225)",
    "JavaScript (76)",
    "JSON (45)",
    "Python (45)",
@@ -880,7 +880,7 @@
   {
    "arquivo": "CHANGELOG.md",
    "titulo": "Changelog",
-   "linhas": 113
+   "linhas": 123
   },
   {
    "arquivo": "CLAUDE.md",
@@ -1263,7 +1263,7 @@
   },
   {
    "pasta": "docs/receitafederal",
-   "arquivos_md": 8
+   "arquivos_md": 9
   },
   {
    "pasta": "docs/execucao-cline",
@@ -1362,6 +1362,7 @@
    "MODE",
    "NODE_ENV",
    "SCENARIOS_COUNT",
+   "TZ",
    "VITE_BLING_CLIENT_ID",
    "VITE_RT_REF_CBS",
    "VITE_RT_REF_IBS",
@@ -1459,6 +1460,7 @@
    "MODE",
    "NODE_ENV",
    "SCENARIOS_COUNT",
+   "TZ",
    "VITE_RT_REF_CBS",
    "VITE_RT_REF_IBS"
   ],
@@ -1545,7 +1547,7 @@
    },
    {
     "host": "www.portalfiscal.inf.br",
-    "arquivos": 11
+    "arquivos": 12
    },
    {
     "host": "test.supabase.co",
@@ -2025,6 +2027,7 @@
    "gerar-heatmap-tributario",
    "gerar-pdf-tributario",
    "get-vapid-key",
+   "guardar-xml-nfe-autorizada",
    "health",
    "insights-relatorio",
    "mcp-query",
@@ -2033,6 +2036,7 @@
    "n8n-callback",
    "notify-performance-alert",
    "prever-carga-tributaria",
+   "reprocessar-creditos-ibscbs",
    "scim-server",
    "sefaz-dfe-dispatcher",
    "sefaz-dfe-puxar",

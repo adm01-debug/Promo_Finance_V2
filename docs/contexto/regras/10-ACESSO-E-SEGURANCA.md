@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2c2486f2e6` · branch `main` · 2026-11-23 15:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6a46049884` · branch `main` · 2026-11-24 00:20 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -304,7 +304,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 363 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 368 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -426,6 +426,7 @@
 - `supabase/functions/gerar-snapshots-conformidade/index.ts`
 - `supabase/functions/gerar-sped-ecd/index.ts`
 - `supabase/functions/gerar-sped-ecf/index.ts`
+- `supabase/functions/guardar-xml-nfe-autorizada/index.ts`
 - `supabase/functions/health/index.ts`
 - `supabase/functions/insights-relatorio/index.ts`
 - `supabase/functions/log-sped-bitrix24/index.ts`
@@ -445,6 +446,7 @@
 - `supabase/functions/processar-nf-ocr/index.ts`
 - `supabase/functions/processar-solicitacao-lgpd/index.ts`
 - `supabase/functions/relatorio-diario-anomalias/index.ts`
+- `supabase/functions/reprocessar-creditos-ibscbs/index.ts`
 - `supabase/functions/scim-server/index.ts`
 - `supabase/functions/sefaz-dfe-dispatcher/index.ts`
 - `supabase/functions/send-push-notification/index.test.ts`
@@ -454,9 +456,7 @@
 - `supabase/functions/sso-initiate/index.ts`
 - `supabase/functions/sso-logout/index.ts`
 - `supabase/functions/sso-test-login/index.ts`
-- `supabase/functions/stress_test.ts`
-- `supabase/functions/sync-profile-to-bitrix/index.ts`
-- … +213 (lista completa em `context.json`)
+- … +218 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -467,6 +467,7 @@
 - `auto_vincular_empresa_padrao`
 - `backfill_empresa_id`
 - `can_access_saved_filter`
+- `cancelar_nfe_estornar_xml_destacado`
 - `capture_index_usage_snapshot`
 - `capture_pg_stat_statements_baseline`
 - `capture_slow_queries`
@@ -618,6 +619,7 @@
 - `registrar_evento_receber`
 - `registrar_tentativa_sso`
 - `reprocess_dlq`
+- `reprocessar_creditos_nfe`
 - `reset_failed_attempts`
 - `resolve_integrity_alert`
 - `resolve_sso_providers_for_domain`
@@ -696,6 +698,7 @@
 - `gerar-alertas-dispatcher`
 - `gerar-dre-tributaria`
 - `gerar-heatmap-tributario`
+- `guardar-xml-nfe-autorizada`
 - `api-keys-manage`
 - `health`
 - `mcp-query`
@@ -707,6 +710,7 @@
 - `whatsapp-ai-analyzer`
 - `whatsapp-webhook`
 - `monitor-health`
+- `reprocessar-creditos-ibscbs`
 
 ## Rotas protegidas no front
 
@@ -869,24 +873,24 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | usage, select | `public` |
 | grant | authenticated, anon | execute | `registrar_tentativa_sso` |
 | grant | authenticated, anon | insert | `frontend_error_logs` |
-| grant | authenticated, service_role | execute | `profile_sensitive_fields_unchanged`, `profile_sensitive_fields_unchanged`, `get_performance_alerts_weekly`, `get_asaas_payment_stats`, `export_asaas_audit_csv`, `registrar_evento_receber`, `registrar_evento_cobranca`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `log_rpc_observability_call`, `run_observability_rpc`, `webhook_replay`, `fn_norm_conta_codigo` … +41 |
+| grant | authenticated, service_role | execute | `profile_sensitive_fields_unchanged`, `profile_sensitive_fields_unchanged`, `get_performance_alerts_weekly`, `get_asaas_payment_stats`, `export_asaas_audit_csv`, `registrar_evento_receber`, `registrar_evento_cobranca`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `log_rpc_observability_call`, `run_observability_rpc`, `webhook_replay`, `fn_norm_conta_codigo` … +43 |
 | grant | authenticated, service_role | select | `v_sefaz_observability`, `vw_edge_health`, `vw_tributario_dashboard`, `vw_contas_receber_painel`, `vw_edge_health` |
 | grant | postgres | all privileges | `cron` |
 | grant | postgres, service_role | execute | `notify_performance_alert_trigger`, `internal_job_secret` |
 | grant | public | execute | `is_ip_allowed_for_login`, `is_country_allowed_for_login` |
 | grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +142 |
-| grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +81 |
+| grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +82 |
 | grant | service_role | select | `mv_benchmark_setorial`, `v_table_bloat`, `mv_performance_alerts_weekly`, `estrategias_elisao_catalogo`, `mv_benchmark_setorial`, `vw_edge_health`, `vw_transferencias_painel`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel`, `estrategias_elisao_catalogo`, `vw_webhooks_recentes` |
 | grant | service_role | usage, select | `rpc_observability_metrics_id_seq` |
 | grant | service_role, authenticated | execute | `sefaz_cursor_advance` |
 | grant | service_role, postgres | execute | `refresh_performance_alerts_weekly` |
-| revoke | PUBLIC | all | `resolve_sso_providers_for_domain`, `profile_sensitive_fields_unchanged`, `capture_slow_queries`, `enqueue_webhook_retry`, `reprocess_dlq`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `audit_trigger_generic`, `capture_pg_stat_statements_baseline`, `compare_pg_stat_baseline`, `check_nfe_xml_path_invariants`, `resolve_sso_providers_for_domain`, `calcular_potencial_elisao`, `gerar_contas_recorrentes` … +7 |
+| revoke | PUBLIC | all | `resolve_sso_providers_for_domain`, `profile_sensitive_fields_unchanged`, `capture_slow_queries`, `enqueue_webhook_retry`, `reprocess_dlq`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `audit_trigger_generic`, `capture_pg_stat_statements_baseline`, `compare_pg_stat_baseline`, `check_nfe_xml_path_invariants`, `resolve_sso_providers_for_domain`, `calcular_potencial_elisao`, `gerar_contas_recorrentes` … +8 |
 | revoke | PUBLIC | execute | `run_daily_cleanup`, `run_daily_cleanup_with_logging`, `cleanup_expired_tokens`, `cleanup_old_login_attempts`, `cleanup_old_cron_logs`, `get_cron_jobs`, `get_cron_run_history`, `get_cron_run_history`, `clear_login_attempts`, `reset_failed_attempts`, `increment_failed_attempts`, `registrar_auditoria_config`, `log_audit`, `export_asaas_audit_csv`, `confirmar_conciliacao_manual` … +6 |
-| revoke | PUBLIC, anon | all | `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `get_performance_alerts_weekly`, `get_integrity_alerts`, `sefaz_cursor_advance`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `fn_balancete`, `fn_livro_razao`, `fn_norm_conta_codigo`, `fn_indices_contabeis` … +50 |
+| revoke | PUBLIC, anon | all | `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `get_performance_alerts_weekly`, `get_integrity_alerts`, `sefaz_cursor_advance`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `fn_balancete`, `fn_livro_razao`, `fn_norm_conta_codigo`, `fn_indices_contabeis` … +52 |
 | revoke | PUBLIC, anon | execute | `registrar_evento_receber`, `get_asaas_payment_stats`, `export_asaas_audit_csv`, `registrar_evento_receber`, `registrar_evento_cobranca`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `monitor_table_bloat`, `snapshot_table_bloat`, `refresh_performance_alerts_weekly`, `sefaz_run_observability_checks`, `log_rpc_observability_call`, `run_observability_rpc`, `cleanup_rpc_observability_metrics`, `webhook_replay` … +11 |
 | revoke | PUBLIC, anon, authenticated | all | `v_table_bloat`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `notify_performance_alert_trigger`, `mv_performance_alerts_weekly`, `refresh_performance_alerts_weekly`, `check_integrity_invariants`, `certificado_upsert`, `certificado_get_password`, `sefaz_process_batch`, `nfe_apply_manifestacao`, `sefaz_detect_nsu_gaps`, `sefaz_detect_stuck_cursors`, `sefaz_run_observability_checks` … +53 |
 | revoke | PUBLIC, anon, authenticated | execute | `webhook_claim`, `webhook_mark_success`, `webhook_mark_failure`, `webhook_dequeue_retries`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `confirmar_conciliacao_manual`, `desfazer_conciliacao_manual`, `generate_reconciliation_suggestions`, `lancamento_contabil_before_insert`, `lancamento_contabil_before_update`, `validar_partidas_dobradas`, `normalizar_tipo_partida` … +10 |
-| revoke | anon | all | `catalogos_tributarios_health_history`, `cnpja_cache`, `overlay_rejeicoes_auditoria`, `is_org_membro`, `is_org_responsavel`, `public`, `public`, `public`, `refresh_mv_benchmark_setorial` |
+| revoke | anon | all | `catalogos_tributarios_health_history`, `cnpja_cache`, `overlay_rejeicoes_auditoria`, `is_org_membro`, `is_org_responsavel`, `public`, `public`, `public`, `refresh_mv_benchmark_setorial`, `reprocessar_creditos_nfe` |
 | revoke | anon | execute | `run_daily_cleanup`, `run_daily_cleanup_with_logging`, `cleanup_expired_tokens`, `cleanup_old_login_attempts`, `cleanup_old_cron_logs`, `get_cron_jobs`, `get_cron_run_history`, `get_cron_run_history`, `clear_login_attempts`, `reset_failed_attempts`, `increment_failed_attempts`, `registrar_auditoria_config`, `log_audit`, `export_asaas_audit_csv`, `confirmar_conciliacao_manual` … +21 |
 | revoke | anon | insert | `frontend_error_logs` |
 | revoke | anon | insert, update, delete, truncate | `audit_logs` |
@@ -898,7 +902,7 @@ Middleware matcher (Next.js): nenhum
 | revoke | anon, authenticated | update, delete, truncate | `frontend_error_logs` |
 | revoke | anon, authenticated, PUBLIC | execute | `profile_sensitive_fields_unchanged`, `confirmar_envio_cobranca`, `audit_trigger_generic`, `has_permission`, `check_catalogos_tributarios_invariants`, `recarregar_seeds_fiscais`, `detectar_duplicidades_financeiras` |
 | revoke | anon, public | execute | `profile_sensitive_fields_unchanged` |
-| revoke | authenticated | all | `refresh_mv_benchmark_setorial` |
+| revoke | authenticated | all | `refresh_mv_benchmark_setorial`, `reprocessar_creditos_nfe` |
 | revoke | authenticated | execute | `audit_trigger_generic`, `auto_vincular_empresa_padrao`, `backfill_empresa_id`, `capture_index_usage_snapshot`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `check_catalogos_tributarios_invariants`, `check_integrity_invariants`, `check_nfe_xml_path_invariants`, `cleanup_log_tables`, `cleanup_pgss_baseline`, `cleanup_rpc_observability_metrics`, `clear_login_attempts`, `compare_pg_stat_baseline`, `confirmar_conciliacao` … +78 |
 | revoke | authenticated | insert | `frontend_error_logs` |
 | revoke | authenticated | select, insert, update, delete | `cnpja_cache` |

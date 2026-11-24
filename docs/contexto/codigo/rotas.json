@@ -298,6 +298,7 @@
     "itens_lista_iss",
     "metas_financeiras",
     "ncms",
+    "notas_fiscais",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "recomendacoes_metas_ia",
@@ -313,6 +314,7 @@
     "vw_contas_receber_painel"
    ],
    "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config",
     "totais_contas_pagar",
     "totais_contas_receber"
@@ -325,6 +327,7 @@
     "copilot-global",
     "external-data",
     "gerar-acoes-recomendadas",
+    "guardar-xml-nfe-autorizada",
     "send-push-notification"
    ],
    "canais_realtime": [
@@ -348,7 +351,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 211
+   "arquivos_puxados": 212
   },
   {
    "protegida": false,
@@ -925,6 +928,7 @@
     "verificacoes_conformidade"
    ],
    "rpcs": [
+    "get_catalogos_tributarios_health",
     "registrar_auditoria_config"
    ],
    "edges": [
@@ -951,7 +955,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 129
+   "arquivos_puxados": 130
   },
   {
    "protegida": true,
@@ -4237,17 +4241,20 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "notas_fiscais",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
     "user_onboarding_progress"
    ],
    "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config"
    ],
    "edges": [
     "bling-proxy",
-    "copilot-global"
+    "copilot-global",
+    "guardar-xml-nfe-autorizada"
    ],
    "canais_realtime": [
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -4266,7 +4273,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 119
+   "arquivos_puxados": 120
   },
   {
    "protegida": true,
@@ -8258,6 +8265,7 @@
     "itens_lista_iss",
     "metas_financeiras",
     "ncms",
+    "notas_fiscais",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "recomendacoes_metas_ia",
@@ -8273,6 +8281,7 @@
     "vw_contas_receber_painel"
    ],
    "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config",
     "totais_contas_pagar",
     "totais_contas_receber"
@@ -8285,6 +8294,7 @@
     "copilot-global",
     "external-data",
     "gerar-acoes-recomendadas",
+    "guardar-xml-nfe-autorizada",
     "send-push-notification"
    ],
    "canais_realtime": [
@@ -8308,7 +8318,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 211
+   "arquivos_puxados": 212
   },
   {
    "protegida": true,
@@ -10586,6 +10596,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "notas_fiscais",
     "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
@@ -10595,12 +10606,14 @@
     "vw_contas_receber_painel"
    ],
    "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config"
    ],
    "edges": [
     "bling-proxy",
     "copilot-global",
-    "external-data"
+    "external-data",
+    "guardar-xml-nfe-autorizada"
    ],
    "canais_realtime": [
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -11391,6 +11404,7 @@
     "useComparativoRegimes",
     "useConciliacaoTributaria",
     "useContext",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -11462,6 +11476,7 @@
     "useCashbackSimulador",
     "useComparativoRegimes",
     "useConciliacaoTributaria",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -11504,29 +11519,40 @@
    "tabelas": [
     "alertas",
     "alertas_tributarios",
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "apuracoes_irpj_csll",
     "apuracoes_tributarias",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
+    "cnaes",
     "contas_pagar",
     "contas_receber",
     "creditos_tributarios",
     "darfs",
     "empresas",
+    "faixas_simples_nacional",
     "fechamentos_tributarios",
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
     "incentivos_fiscais",
+    "itens_lista_iss",
+    "ncms",
     "notas_fiscais",
     "operacoes_tributaveis",
     "per_dcomp",
     "prejuizos_fiscais",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
     "regimes_especiais_empresa",
     "retencoes_fonte",
     "solicitacoes_aprovacao",
     "split_payment_transacoes",
+    "ufs",
     "user_anomalia_preferences",
     "user_empresas",
     "user_onboarding_progress"
@@ -11564,7 +11590,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 218
+   "arquivos_puxados": 231
   },
   {
    "protegida": true,
@@ -11597,6 +11623,7 @@
     "useComparativoRegimes",
     "useConciliacaoTributaria",
     "useContext",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -11668,6 +11695,7 @@
     "useCashbackSimulador",
     "useComparativoRegimes",
     "useConciliacaoTributaria",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -11710,29 +11738,40 @@
    "tabelas": [
     "alertas",
     "alertas_tributarios",
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "apuracoes_irpj_csll",
     "apuracoes_tributarias",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
+    "cnaes",
     "contas_pagar",
     "contas_receber",
     "creditos_tributarios",
     "darfs",
     "empresas",
+    "faixas_simples_nacional",
     "fechamentos_tributarios",
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
     "incentivos_fiscais",
+    "itens_lista_iss",
+    "ncms",
     "notas_fiscais",
     "operacoes_tributaveis",
     "per_dcomp",
     "prejuizos_fiscais",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
     "regimes_especiais_empresa",
     "retencoes_fonte",
     "solicitacoes_aprovacao",
     "split_payment_transacoes",
+    "ufs",
     "user_anomalia_preferences",
     "user_empresas",
     "user_onboarding_progress"
@@ -11770,7 +11809,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 218
+   "arquivos_puxados": 231
   },
   {
    "protegida": true,
@@ -12672,6 +12711,8 @@
     "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
     "cnaes",
     "conformidade_snapshots",
@@ -12749,7 +12790,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 218
+   "arquivos_puxados": 220
   },
   {
    "protegida": true,
@@ -13859,6 +13900,8 @@
     "useCallback",
     "useConciliacaoTributaria",
     "useContext",
+    "useCreditosPorChaves",
+    "useCreditosTributarios",
     "useCriarAlerta",
     "useDefinirEmpresaPadrao",
     "useEffect",
@@ -13906,6 +13949,8 @@
     "useAprovacoesPendentesCount",
     "useAuth",
     "useConciliacaoTributaria",
+    "useCreditosPorChaves",
+    "useCreditosTributarios",
     "useCriarAlerta",
     "useDefinirEmpresaPadrao",
     "useEmpresaScope",
@@ -13973,7 +14018,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 118
+   "arquivos_puxados": 121
   },
   {
    "protegida": true,
@@ -14402,6 +14447,8 @@
     "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
     "cnaes",
     "conformidade_snapshots",
@@ -14479,7 +14526,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 218
+   "arquivos_puxados": 220
   },
   {
    "protegida": true,
@@ -15193,16 +15240,27 @@
    ],
    "tabelas": [
     "alertas",
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
+    "cnaes",
     "contas_pagar",
     "contas_receber",
     "empresas",
+    "faixas_simples_nacional",
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "itens_lista_iss",
+    "ncms",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
     "solicitacoes_aprovacao",
+    "ufs",
     "user_anomalia_preferences",
     "user_empresas",
     "user_onboarding_progress"
@@ -15232,7 +15290,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 119
+   "arquivos_puxados": 131
   },
   {
    "protegida": true,
@@ -16244,16 +16302,27 @@
     "useReativarEmpresa"
    ],
    "tabelas": [
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
+    "cnaes",
     "elisao_alertas",
     "elisao_creditos_auditoria",
     "elisao_tarefas_acionaveis",
     "empresas",
     "estrategias_elisao_catalogo",
+    "faixas_simples_nacional",
     "faturamento_mensal",
     "folha_pagamento",
     "frontend_error_logs",
     "frontend_performance_logs",
-    "oportunidades_elisao"
+    "itens_lista_iss",
+    "ncms",
+    "oportunidades_elisao",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
+    "ufs"
    ],
    "rpcs": [],
    "edges": [
@@ -16265,7 +16334,7 @@
     "alert",
     "progressbar"
    ],
-   "arquivos_puxados": 76
+   "arquivos_puxados": 86
   },
   {
    "protegida": true,
@@ -16292,6 +16361,7 @@
     "useAuth",
     "useCallback",
     "useContext",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -16345,6 +16415,7 @@
     "useAprovacoesPendentesCount",
     "useAtualizarEmpresa",
     "useAuth",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -16850,6 +16921,7 @@
     "useAuth",
     "useCallback",
     "useContext",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -16904,6 +16976,7 @@
     "useApuracoesTributarias",
     "useAtualizarEmpresa",
     "useAuth",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -17229,6 +17302,8 @@
    "tabelas": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "cnaes",
     "elisao_alertas",
     "elisao_creditos_auditoria",
@@ -17260,7 +17335,7 @@
     "img",
     "status"
    ],
-   "arquivos_puxados": 96
+   "arquivos_puxados": 97
   },
   {
    "protegida": true,
@@ -17288,6 +17363,7 @@
     "useAuth",
     "useCallback",
     "useContext",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -17342,6 +17418,7 @@
     "useApuracoesTributarias",
     "useAtualizarEmpresa",
     "useAuth",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -17415,7 +17492,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 127
+   "arquivos_puxados": 126
   },
   {
    "protegida": true,

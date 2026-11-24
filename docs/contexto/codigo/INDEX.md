@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2c2486f2e6536a482e3bedc8d153f3e154309513` (2026-11-22T13:06:33-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `6a46049884e6f22c7b893491f24413437e76a2ee` (2026-11-23T21:18:59-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2376), SQL (1140), Markdown (224), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2399), SQL (1146), Markdown (225), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,31 +34,31 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4011 |
-| arquivos_codigo | 2495 |
-| linhas_codigo | 445321 |
+| arquivos_total | 4041 |
+| arquivos_codigo | 2518 |
+| linhas_codigo | 450531 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
 | modulos | 129 |
-| componentes | 992 |
-| hooks | 274 |
-| edge_functions | 106 |
+| componentes | 993 |
+| hooks | 275 |
+| edge_functions | 108 |
 | tabelas | 317 |
-| migrations | 1067 |
-| cron_jobs | 22 |
-| testes | 490 |
+| migrations | 1073 |
+| cron_jobs | 23 |
+| testes | 505 |
 | workflows | 20 |
 | scripts | 116 |
-| docs_md | 224 |
+| docs_md | 225 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (778), src/pages (210), src/hooks (2)
-- hooks: src/hooks (238), src/components (27), src/pages (5)
-- servicos_logica: src/lib (266), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (289), outro (112), co-localizado (*.test) (48)
+- componentes: src/components (779), src/pages (210), src/hooks (2)
+- hooks: src/hooks (239), src/components (27), src/pages (5)
+- servicos_logica: src/lib (268), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (302), outro (112), co-localizado (*.test) (49)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -69,7 +69,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Módulos (menu → domínio)
 | módulo | itens de menu | telas/rotas | arquivos | hooks locais | edges | tabelas |
 |---|---|---|---|---|---|---|
-| components/admin | 0 | 0 | 101 | 69 | 10 | 39 |
+| components/admin | 0 | 0 | 101 | 69 | 10 | 40 |
 | components/analytics | 0 | 0 | 6 | 10 | 0 | 12 |
 | components/aprovacoes | 0 | 0 | 6 | 16 | 0 | 7 |
 | components/asaas | 0 | 0 | 26 | 6 | 2 | 14 |
@@ -77,7 +77,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/auth | 0 | 0 | 15 | 10 | 2 | 8 |
 | components/bi | 0 | 0 | 6 | 0 | 0 | 0 |
 | components/bitrix | 0 | 0 | 6 | 0 | 0 | 0 |
-| components/bling | 0 | 0 | 13 | 33 | 1 | 4 |
+| components/bling | 0 | 0 | 13 | 36 | 2 | 7 |
 | components/boletos | 0 | 0 | 5 | 1 | 0 | 5 |
 | components/charts | 0 | 0 | 5 | 0 | 0 | 0 |
 | components/clientes | 0 | 0 | 5 | 24 | 1 | 15 |
@@ -89,7 +89,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
 | components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
 | components/contas-receber | 0 | 0 | 36 | 32 | 3 | 26 |
-| components/dashboard | 0 | 0 | 26 | 93 | 8 | 41 |
+| components/dashboard | 0 | 0 | 26 | 93 | 9 | 42 |
 | components/demonstrativos | 0 | 0 | 9 | 22 | 1 | 16 |
 | components/empresas | 0 | 0 | 9 | 11 | 0 | 12 |
 | components/expert | 0 | 0 | 7 | 8 | 2 | 12 |
@@ -99,16 +99,16 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/integracoes | 0 | 0 | 6 | 1 | 3 | 5 |
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
 | components/navigation | 0 | 0 | 5 | 3 | 0 | 2 |
-| components/nfe | 0 | 0 | 31 | 17 | 2 | 13 |
-| components/reforma-tributaria | 0 | 0 | 66 | 24 | 1 | 17 |
+| components/nfe | 0 | 0 | 31 | 20 | 3 | 15 |
+| components/reforma-tributaria | 0 | 0 | 67 | 25 | 1 | 28 |
 | components/relatorios | 0 | 0 | 22 | 27 | 3 | 16 |
 | components/security | 0 | 0 | 6 | 5 | 2 | 10 |
 | components/shared | 0 | 0 | 15 | 4 | 0 | 6 |
 | components/tesouraria | 0 | 0 | 5 | 16 | 1 | 14 |
-| components/tributario | 0 | 0 | 50 | 34 | 13 | 30 |
+| components/tributario | 0 | 0 | 50 | 34 | 13 | 32 |
 | components/ui | 0 | 0 | 102 | 17 | 0 | 3 |
-| hooks | 0 | 0 | 228 | 440 | 59 | 182 |
-| hooks/bling | 0 | 0 | 11 | 33 | 1 | 4 |
+| hooks | 0 | 0 | 229 | 442 | 60 | 184 |
+| hooks/bling | 0 | 0 | 11 | 36 | 2 | 7 |
 | hooks/financial | 0 | 0 | 10 | 18 | 1 | 13 |
 | lib | 0 | 0 | 68 | 10 | 3 | 9 |
 | lib/brazilian-validators | 0 | 0 | 9 | 0 | 0 | 0 |
@@ -119,10 +119,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/reforma-tributaria | 0 | 0 | 9 | 0 | 0 | 0 |
 | lib/sefaz-contingency | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
-| lib/sped-generator | 0 | 0 | 5 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
-| lib/tributario | 0 | 0 | 118 | 0 | 0 | 11 |
-| pages | 58 | 64 | 109 | 360 | 44 | 165 |
+| lib/tributario | 0 | 0 | 120 | 0 | 0 | 13 |
+| pages | 58 | 64 | 109 | 361 | 45 | 167 |
 | pages/admin | 4 | 15 | 24 | 118 | 14 | 55 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
@@ -130,8 +129,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | pages/configuracoes | 1 | 4 | 14 | 32 | 1 | 19 |
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
 | pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
-| pages/tributario | 33 | 41 | 89 | 100 | 22 | 56 |
-| routes | 0 | 0 | 16 | 456 | 64 | 200 |
+| pages/tributario | 33 | 41 | 89 | 101 | 22 | 58 |
+| routes | 0 | 0 | 16 | 457 | 65 | 202 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -343,11 +342,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `gerar-acoes-recomendadas` — tabelas: acoes_recomendadas, alertas_tributarios, anomalias_detectadas, apuracoes_tributarias, empresas, health_scores_operacionais, solicitacoes_lgpd; chamada por 1 arquivo(s) do front
 - `gerar-alertas` (verify_jwt=false) — tabelas: alertas, contas_pagar, contas_receber, metas_financeiras; chamada por 0 arquivo(s) do front
 - `gerar-alertas-dispatcher` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
-- `gerar-alertas-tributarios` (verify_jwt=false) — tabelas: alertas_tributarios, apuracoes_tributarias, benchmarks_setoriais, edge_function_logs, empresas, faturamento_mensal, folha_pagamento, movimentacoes; chamada por 0 arquivo(s) do front
+- `gerar-alertas-tributarios` (verify_jwt=false) — tabelas: alertas_tributarios, apuracoes_tributarias, benchmarks_setoriais, edge_function_logs, empresas, faturamento_mensal, folha_pagamento, movimentacoes, notas_fiscais; chamada por 0 arquivo(s) do front
 - `gerar-dre-tributaria` (verify_jwt=false) — tabelas: empresas, faturamento_mensal, user_empresas; chamada por 1 arquivo(s) do front
 - `gerar-heatmap-tributario` (verify_jwt=false) — tabelas: faturamento_mensal, user_empresas; chamada por 1 arquivo(s) do front
 - `gerar-pacote-evidencias` — tabelas: evidencias_pacotes, user_empresas, user_roles; chamada por 2 arquivo(s) do front
-- `gerar-pdf-tributario` (verify_jwt=false) — tabelas: empresas, user_empresas; chamada por 1 arquivo(s) do front
+- `gerar-pdf-tributario` (verify_jwt=false) — tabelas: apuracoes_tributarias, empresas, user_empresas; chamada por 1 arquivo(s) do front
 - `gerar-relatorio-anual` — tabelas: alertas_tributarios, empresas, user_empresas, user_roles, vw_tributario_dashboard; chamada por 1 arquivo(s) do front
 - `gerar-resumo-executivo-semanal` — tabelas: alertas_tributarios, contas_pagar, contas_receber, empresas, relatorios_tributarios_agendados, resumos_executivos_semanais; chamada por 1 arquivo(s) do front
 - `gerar-resumo-financeiro-diario` — tabelas: asaas_config, asaas_payments, asaas_sync_queue, empresas; chamada por 1 arquivo(s) do front
@@ -356,6 +355,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `gerar-sped-ecf` — tabelas: empresas, lancamentos_contabeis, plano_contas, sped_contabil_arquivos, user_empresas, user_roles; chamada por 1 arquivo(s) do front
 - `get-mapbox-token` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `get-vapid-key` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
+- `guardar-xml-nfe-autorizada` (verify_jwt=false) — tabelas: empresas; chamada por 1 arquivo(s) do front
 - `health` (verify_jwt=false) — tabelas: asaas_config; chamada por 1 arquivo(s) do front
 - `insights-relatorio` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
 - `log-sped-bitrix24` — tabelas: audit_logs; chamada por 1 arquivo(s) do front
@@ -376,6 +376,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `processar-solicitacao-lgpd` — tabelas: alertas, audit_logs, auditoria_tributaria, profiles, solicitacoes_lgpd; chamada por 1 arquivo(s) do front
 - `projecao-reforma` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `relatorio-diario-anomalias` — tabelas: alertas, anomalias_detectadas, profiles, user_roles; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `reprocessar-creditos-ibscbs` (verify_jwt=false) — tabelas: nfe_recebidas; chamada por 0 arquivo(s) do front, por SQL/cron
 - `scim-server` (verify_jwt=false) — tabelas: profiles, scim_operations_log, scim_tokens, sso_providers, sso_role_mappings, user_empresas, user_roles; chamada por 2 arquivo(s) do front
 - `sefaz-dfe-dispatcher` (verify_jwt=false) — tabelas: cron_job_logs, empresas_certificados, sefaz_dfe_cursor; chamada por 0 arquivo(s) do front
 - `sefaz-dfe-puxar` (verify_jwt=false) — tabelas: empresas_certificados, query_telemetry, sefaz_dfe_cursor; chamada por 0 arquivo(s) do front
@@ -396,7 +397,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `upload-anexo` — tabelas: anexos_financeiros, user_empresas; chamada por 1 arquivo(s) do front
 - `validar-token-contador` (verify_jwt=false) — tabelas: convites_contador, empresas; chamada por 1 arquivo(s) do front
 - `validate-ip-geo` (verify_jwt=false) — tabelas: auth_logs; chamada por 1 arquivo(s) do front
-- `verificar-conformidade-fiscal` — tabelas: alertas_tributarios, apuracoes_tributarias, contas_pagar, empresas, regime_decision_cache, relatorios_tributarios_agendados, user_empresas, user_roles, verificacoes_conformidade; chamada por 1 arquivo(s) do front
+- `verificar-conformidade-fiscal` — tabelas: alertas_tributarios, apuracoes_tributarias, contas_pagar, empresas, notas_fiscais, regime_decision_cache, relatorios_tributarios_agendados, user_empresas, user_roles, verificacoes_conformidade; chamada por 1 arquivo(s) do front
 - `webhook-replay` (verify_jwt=false) — tabelas: webhooks_log; chamada por 0 arquivo(s) do front
 - `webhook-retry-worker` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
 - `webhook-simulator` — tabelas: webhook_simulation_results, webhook_simulation_runs; chamada por 1 arquivo(s) do front
@@ -426,12 +427,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `processar-regua-cobranca-diario` 0 9 * * * (20260825130000_fixes_phd_validation.sql)
 - `refresh-benchmark-setorial-weekly` 0 3 * * 0 (20260418140233_7d5861e9-57bc-4df3-827b-b9fda80cc806.sql)
 - `refresh-performance-alerts-weekly` 45 3 * * * (20260712194623_6779ec03-860d-4d19-89b2-044aa6594ba8.sql)
+- `reprocessar-creditos-ibscbs` 20 * * * * → edge reprocessar-creditos-ibscbs (20261122150000_cron_reprocessar_creditos_ibscbs.sql)
 - `sefaz-observability-hourly` 5 * * * * (20260723120954_26546526-ca79-48e8-b067-571d2d02a16d.sql)
 
 ## Integrações externas
 - SDKs: Sentry, Supabase, i18next, react-query, zod
 - hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, api.supabase.com, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, exemplo.com, idp.acme, x.supabase.co, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, api.asaas.com
-- webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
+- webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, guardar-xml-nfe-autorizada, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, reprocessar-creditos-ibscbs, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
 - env de integração (só nomes): ASAAS_API_KEY, ASAAS_WEBHOOK_TOKEN, BITRIX24_ACCESS_TOKEN, BITRIX24_CLIENT_ID, BITRIX24_CLIENT_SECRET, BLING_CLIENT_ID, BLING_CLIENT_SECRET, CI_GATE_LOG_SECRET, CNPJA_API_KEY, CONTADOR_INVITE_SECRET, CRON_DISPATCH_SECRET, EDGE_SENTRY_DSN, LOVABLE_API_KEY, MAPBOX_ACCESS_TOKEN, N8N_DISPATCH_SECRET, OPENAI_API_KEY, OPEN_FINANCE_CLIENT_ID, OPEN_FINANCE_CLIENT_SECRET, REGUA_CRON_SECRET, RESEND_API_KEY, RESEND_FROM, SEFAZ_CRON_SECRET, SENTRY_DSN, SENTRY_ENVIRONMENT, SLACK_WEBHOOK_URL, SUPABASE_JWT_SECRET, VITE_BLING_CLIENT_ID, VITE_SENTRY_DSN
 
 ## Permissões / papéis
@@ -448,12 +450,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
-- tabelas_com_drift_migration_vs_types: 155 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
+- tabelas_com_drift_migration_vs_types: 156 — ex.: acessos_suspeitos, acoes_recomendadas, alertas_preditivos
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
-- componentes_orfaos: 39 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx
+- componentes_orfaos: 38 — ex.: src/components/charts/RechartsExample.tsx, src/components/contabilidade/SpedEcdDownloadStep.tsx, src/components/empresa/EmpresaActionPicker.tsx
 - componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
 - scripts_orfaos: 1 — ex.: scripts/db/test-vw-fluxo-caixa.sql
-- env_usadas_nao_declaradas: 6 — ex.: DEV, MODE, NODE_ENV
+- env_usadas_nao_declaradas: 7 — ex.: DEV, MODE, NODE_ENV
 - ciclos_de_import: 7
 - possiveis_segredos_no_codigo: 0
 
@@ -470,12 +472,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - analise-prs/progresso.json (8)
 - env.manifest.json (8)
 - scripts/automation.config.json (8)
+- src/integrations/supabase/types.ts (8)
 - .github/workflows/prod-migrate.yml (7)
 - analise-prs/RELATORIO_PRS.md (7)
+- scripts/integrity/baseline/schema-counts.json (7)
 - scripts/security/test-canonical-db-gates.mjs (7)
-- src/integrations/supabase/types.ts (7)
 - supabase/functions/n8n-callback/index.ts (7)
-- .github/workflows/schema-drift.yml (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -558,7 +560,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `AGENTS.md` — AGENTS.md — Promo_Finance_V2 (67 linhas)
 - `AI_RULES.md` — AI_RULES (78 linhas)
 - `AUDITORIA.md` — AUDITORIA — Promo Finance V2 (647 linhas)
-- `CHANGELOG.md` — Changelog (113 linhas)
+- `CHANGELOG.md` — Changelog (123 linhas)
 - `CLAUDE.md` (1 linhas)
 - `CONTRIBUTING.md` — 🤝 Guia de Contribuição (289 linhas)
 - `ESTADO_ATUAL.md` — ESTADO ATUAL DO SISTEMA — Promo Finance v2 (778 linhas)
@@ -632,10 +634,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (907 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/receitafederal (8), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/receitafederal (9), docs/execucao-cline (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-23 `6a46049` feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)
 - 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
 - 2026-11-22 `f423b99` chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)
 - 2026-11-22 `60ece16` fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)
@@ -650,7 +653,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-22 `4d50a6f` infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)
 - 2026-11-22 `81d3613` feat: regimes especiais LC 214/2025 — etapas 15-16
 - 2026-11-22 `2463d97` fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS
-- 2026-11-22 `7db0fc4` infra: grupo IS por item (etapa 34 RT/RFB) (#513)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

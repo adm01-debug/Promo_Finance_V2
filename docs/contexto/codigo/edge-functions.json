@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "pasta": "supabase/functions",
- "total": 106,
+ "total": 108,
  "verify_jwt_false": [
   "analise-fluxo-ia",
   "analyze-document",
@@ -34,6 +34,7 @@
   "gerar-heatmap-tributario",
   "gerar-pdf-tributario",
   "get-vapid-key",
+  "guardar-xml-nfe-autorizada",
   "health",
   "insights-relatorio",
   "mcp-query",
@@ -42,6 +43,7 @@
   "n8n-callback",
   "notify-performance-alert",
   "prever-carga-tributaria",
+  "reprocessar-creditos-ibscbs",
   "scim-server",
   "sefaz-dfe-dispatcher",
   "sefaz-dfe-puxar",
@@ -83,6 +85,10 @@
   "supabase/functions/_shared/logger.ts",
   "supabase/functions/_shared/magic-bytes.ts",
   "supabase/functions/_shared/magic-bytes_test.ts",
+  "supabase/functions/_shared/nfe/__tests__/ibscbs_test.ts",
+  "supabase/functions/_shared/nfe/__tests__/itens_test.ts",
+  "supabase/functions/_shared/nfe/ibscbs.ts",
+  "supabase/functions/_shared/nfe/itens.ts",
   "supabase/functions/_shared/nfe/xml-storage.ts",
   "supabase/functions/_shared/nfe/xml-storage_test.ts",
   "supabase/functions/_shared/obrigacoes/alertas.ts",
@@ -597,7 +603,9 @@
     "src/hooks/bling/client.ts",
     "src/hooks/useBlingNFe.ts"
    ],
-   "chamada_por_edges": [],
+   "chamada_por_edges": [
+    "guardar-xml-nfe-autorizada"
+   ],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
    "testes": 0
@@ -1846,7 +1854,7 @@
    "nome": "exportar-sped-contribuicoes",
    "entrada": "supabase/functions/exportar-sped-contribuicoes/index.ts",
    "arquivos": 2,
-   "linhas": 347,
+   "linhas": 365,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2053,7 +2061,7 @@
    "nome": "gerar-alertas-tributarios",
    "entrada": "supabase/functions/gerar-alertas-tributarios/index.ts",
    "arquivos": 1,
-   "linhas": 404,
+   "linhas": 517,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2066,7 +2074,8 @@
     "empresas",
     "faturamento_mensal",
     "folha_pagamento",
-    "movimentacoes"
+    "movimentacoes",
+    "notas_fiscais"
    ],
    "rpcs": [],
    "env": [
@@ -2087,7 +2096,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 1
+   "testes": 2
   },
   {
    "nome": "gerar-dre-tributaria",
@@ -2213,12 +2222,13 @@
    "nome": "gerar-pdf-tributario",
    "entrada": "supabase/functions/gerar-pdf-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 362,
+   "linhas": 439,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
    ],
    "tabelas": [
+    "apuracoes_tributarias",
     "empresas",
     "user_empresas"
    ],
@@ -2570,6 +2580,51 @@
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
    "testes": 0
+  },
+  {
+   "nome": "guardar-xml-nfe-autorizada",
+   "entrada": "supabase/functions/guardar-xml-nfe-autorizada/index.ts",
+   "arquivos": 1,
+   "linhas": 338,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "empresas"
+   ],
+   "rpcs": [
+    "salvar_nfe_autorizada"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "bling-proxy"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "ibscbs.ts",
+    "itens.ts",
+    "observability.ts",
+    "parser.ts",
+    "xml-storage.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useBlingNFe.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
   },
   {
    "nome": "health",
@@ -3362,6 +3417,44 @@
    "testes": 0
   },
   {
+   "nome": "reprocessar-creditos-ibscbs",
+   "entrada": "supabase/functions/reprocessar-creditos-ibscbs/index.ts",
+   "arquivos": 1,
+   "linhas": 336,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "nfe_recebidas"
+   ],
+   "rpcs": [
+    "reprocessar_creditos_nfe"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "ibscbs.ts",
+    "observability.ts",
+    "xml-storage.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 1
+  },
+  {
    "nome": "scim-server",
    "entrada": "supabase/functions/scim-server/index.ts",
    "arquivos": 1,
@@ -3450,7 +3543,7 @@
    "nome": "sefaz-dfe-puxar",
    "entrada": "supabase/functions/sefaz-dfe-puxar/index.ts",
    "arquivos": 1,
-   "linhas": 585,
+   "linhas": 593,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3476,6 +3569,7 @@
     "edge-observability.ts",
     "endpoints.ts",
     "gunzip.ts",
+    "ibscbs.ts",
     "observability.ts",
     "parser.ts",
     "pfx.ts",
@@ -4118,7 +4212,7 @@
    "nome": "verificar-conformidade-fiscal",
    "entrada": "supabase/functions/verificar-conformidade-fiscal/index.ts",
    "arquivos": 1,
-   "linhas": 322,
+   "linhas": 370,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -4128,6 +4222,7 @@
     "apuracoes_tributarias",
     "contas_pagar",
     "empresas",
+    "notas_fiscais",
     "regime_decision_cache",
     "relatorios_tributarios_agendados",
     "user_empresas",

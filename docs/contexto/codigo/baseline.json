@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "2c2486f2e6536a482e3bedc8d153f3e154309513",
+  "commit": "6a46049884e6f22c7b893491f24413437e76a2ee",
   "branch": "main",
-  "data_commit": "2026-11-22T13:06:33-03:00",
+  "data_commit": "2026-11-23T21:18:59-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6a46049",
+    "data": "2026-11-23",
+    "assunto": "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)"
+   },
    {
     "sha": "2c2486f",
     "data": "2026-11-22",
@@ -126,29 +131,32 @@
     "sha": "9e6fc7b",
     "data": "2026-11-21",
     "assunto": "feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)"
-   },
-   {
-    "sha": "2a68642",
-    "data": "2026-11-21",
-    "assunto": "fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação"
    }
   ],
-  "arquivos_mudados_7d": 491,
+  "arquivos_mudados_7d": 475,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 43
+    "mudancas": 54
    },
    {
     "pasta": "src/pages/tributario",
     "mudancas": 43
    },
    {
+    "pasta": "src/lib/tributario",
+    "mudancas": 38
+   },
+   {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 38
+   },
+   {
     "pasta": "src/components/contabilidade",
     "mudancas": 37
    },
    {
-    "pasta": "supabase/functions/_shared",
+    "pasta": "src/components/nfe",
     "mudancas": 31
    },
    {
@@ -156,40 +164,32 @@
     "mudancas": 30
    },
    {
-    "pasta": "src/lib/tributario",
-    "mudancas": 30
-   },
-   {
-    "pasta": "src/components/nfe",
-    "mudancas": 29
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 27
    },
    {
     "pasta": "package.json",
     "mudancas": 24
    },
    {
-    "pasta": "src/hooks/__tests__",
+    "pasta": "src/lib/__tests__",
     "mudancas": 24
+   },
+   {
+    "pasta": "src/lib/reforma-tributaria",
+    "mudancas": 23
    },
    {
     "pasta": "bun.lock",
     "mudancas": 22
    },
    {
-    "pasta": "src/components/contas-pagar",
+    "pasta": "src/components/admin",
     "mudancas": 22
    },
    {
-    "pasta": "src/lib/reforma-tributaria",
-    "mudancas": 21
-   },
-   {
-    "pasta": "src/components/admin",
-    "mudancas": 20
-   },
-   {
-    "pasta": "src/lib/__tests__",
-    "mudancas": 20
+    "pasta": "src/components/contas-pagar",
+    "mudancas": 22
    },
    {
     "pasta": "src/components/conciliacao",
@@ -234,6 +234,10 @@
     "mudancas": 8
    },
    {
+    "arquivo": "src/integrations/supabase/types.ts",
+    "mudancas": 8
+   },
+   {
     "arquivo": ".github/workflows/prod-migrate.yml",
     "mudancas": 7
    },
@@ -242,11 +246,11 @@
     "mudancas": 7
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
     "mudancas": 7
    },
    {
-    "arquivo": "src/integrations/supabase/types.ts",
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 7
    },
    {
@@ -263,10 +267,6 @@
    },
    {
     "arquivo": "docs/prod-readiness.md",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "scripts/integrity/baseline/schema-counts.json",
     "mudancas": 6
    },
    {
@@ -294,14 +294,14 @@
     "mudancas": 5
    },
    {
-    "arquivo": "scripts/security/test-migration-replay-safety.sh",
+    "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 275
+    "commits": 276
    },
    {
     "autor": "dependabot[bot]",
@@ -318,24 +318,24 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4011,
-  "arquivos_codigo": 2495,
-  "linhas_codigo": 445321,
+  "arquivos_total": 4041,
+  "arquivos_codigo": 2518,
+  "linhas_codigo": 450531,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 129,
-  "componentes": 992,
-  "hooks": 274,
-  "edge_functions": 106,
+  "componentes": 993,
+  "hooks": 275,
+  "edge_functions": 108,
   "tabelas": 317,
-  "migrations": 1067,
-  "cron_jobs": 22,
-  "testes": 490,
+  "migrations": 1073,
+  "cron_jobs": 23,
+  "testes": 505,
   "workflows": 20,
   "scripts": 116,
-  "docs_md": 224
+  "docs_md": 225
  },
  "por_pasta": {
   "docs/auditoria-20260912": {
@@ -418,6 +418,10 @@
    "arquivos": 1,
    "linhas": 314
   },
+  "e2e/rt-ponta-a-ponta.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 57
+  },
   "e2e/sefaz-observabilidade.e2e.ts": {
    "arquivos": 1,
    "linhas": 38
@@ -468,7 +472,7 @@
   },
   "playwright.financeiro.config.ts": {
    "arquivos": 1,
-   "linhas": 126
+   "linhas": 129
   },
   "postcss.config.js": {
    "arquivos": 1,
@@ -639,8 +643,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 999,
-   "linhas": 164324
+   "arquivos": 1003,
+   "linhas": 165173
   },
   "src/config": {
    "arquivos": 2,
@@ -651,8 +655,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 322,
-   "linhas": 47495
+   "arquivos": 326,
+   "linhas": 48556
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -660,11 +664,11 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 20162
+   "linhas": 20177
   },
   "src/lib": {
-   "arquivos": 423,
-   "linhas": 55939
+   "arquivos": 428,
+   "linhas": 57099
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -687,8 +691,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 237,
-   "linhas": 52084
+   "arquivos": 246,
+   "linhas": 54149
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -710,7 +714,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 20026
+   "linhas": 20041
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
@@ -789,8 +793,12 @@
    "linhas": 705
   },
   {
+   "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
+   "linhas": 595
+  },
+  {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",
-   "linhas": 585
+   "linhas": 593
   },
   {
    "arquivo": "supabase/functions/executar-relatorios/index.ts",
@@ -803,19 +811,15 @@
   {
    "arquivo": "supabase/functions/mcp-query/index.ts",
    "linhas": 552
-  },
-  {
-   "arquivo": "scripts/inventario/gerar-rotas.mjs",
-   "linhas": 536
   }
  ],
  "qualidade": {
-  "any": 353,
+  "any": 373,
   "console_log": 237,
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,
-  "arquivos_acima_500_linhas": 28
+  "arquivos_acima_500_linhas": 30
  },
  "todos": [
   {
@@ -1022,6 +1026,7 @@
    "negativacoes",
    "new_device_alerts",
    "notas_fiscais",
+   "notas_fiscais_itens",
    "notas_fiscais_ocr",
    "open_finance_consents",
    "operacoes_icms",
@@ -1087,7 +1092,6 @@
    "pg_try_advisory_lock"
   ],
   "componentes_orfaos": [
-   "src/components/admin/FiscalHealthBadge.tsx",
    "src/components/charts/RechartsExample.tsx",
    "src/components/contabilidade/SpedEcdDownloadStep.tsx",
    "src/components/empresa/EmpresaActionPicker.tsx",
@@ -1172,6 +1176,7 @@
    "MODE",
    "NODE_ENV",
    "SCENARIOS_COUNT",
+   "TZ",
    "VITE_RT_REF_CBS",
    "VITE_RT_REF_IBS"
   ],

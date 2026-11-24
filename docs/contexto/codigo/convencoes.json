@@ -6,24 +6,24 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (778)",
+   "src/components (779)",
    "src/pages (210)",
    "src/hooks (2)"
   ],
   "hooks": [
-   "src/hooks (238)",
+   "src/hooks (239)",
    "src/components (27)",
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (266)",
+   "src/lib (268)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (289)",
+   "co-localizado (__tests__) (302)",
    "outro (112)",
-   "co-localizado (*.test) (48)"
+   "co-localizado (*.test) (49)"
   ],
   "edge_functions": "supabase/functions",
   "migrations": "supabase/migrations",
@@ -45,9 +45,9 @@
   "edge_functions": "kebab-case (99%)",
   "tabelas": "snake_case (79%)"
  },
- "barrels_index": 30,
+ "barrels_index": 33,
  "extensao_componentes": [
-  ".tsx (992)"
+  ".tsx (993)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)",
    "chore: adiciona plano de UX de navegacao em 200 etapas (#529)",
    "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)",
    "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)",
-   "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)",
-   "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)"
+   "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

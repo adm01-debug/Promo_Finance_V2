@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 286,
+ "total": 288,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 266,
+  "lib": 268,
   "python": 14
  },
  "arquivos": [
@@ -752,7 +752,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 311,
+   "usado_por": 313,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -822,7 +822,7 @@
     "TablesUpdate"
    ],
    "export_default": null,
-   "linhas": 20026,
+   "linhas": 20041,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -982,7 +982,7 @@
     "violacoesDeCamada"
    ],
    "export_default": null,
-   "linhas": 307,
+   "linhas": 308,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -1873,7 +1873,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 6,
    "usado_por_modulos": [
     "hooks"
    ],
@@ -2758,7 +2758,7 @@
     "parseItemIs"
    ],
    "export_default": null,
-   "linhas": 202,
+   "linhas": 212,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -2771,8 +2771,38 @@
    "usado_por_modulos": [
     "hooks"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
+  },
+  {
+   "arquivo": "src/lib/nfe/pre-validar-ibscbs.ts",
+   "camada": "lib",
+   "exports": [
+    "AchadoValidacao",
+    "ContextoValidacao",
+    "INICIO_OBRIGATORIEDADE_IBSCBS",
+    "ItemNFeIbscbs",
+    "ItemNotaComGrupo",
+    "ResultadoPreValidacao",
+    "Severidade",
+    "TotaisNFeIbscbs",
+    "adaptarItem",
+    "preValidarIbscbs"
+   ],
+   "export_default": null,
+   "linhas": 269,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 1,
+   "orfao": true
   },
   {
    "arquivo": "src/lib/offline/fiscal-cache.ts",
@@ -3562,7 +3592,7 @@
     "simularComparativo"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 136,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3614,7 +3644,7 @@
     "ResultadoSimulacao"
    ],
    "export_default": null,
-   "linhas": 155,
+   "linhas": 162,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3918,7 +3948,7 @@
     "registrarEvento"
    ],
    "export_default": null,
-   "linhas": 152,
+   "linhas": 182,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3927,9 +3957,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 6,
+   "usado_por": 7,
    "usado_por_modulos": [
     "components/nfe",
+    "hooks",
     "lib"
    ],
    "coberto_por_testes": 1,
@@ -4275,7 +4306,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 2,
    "usado_por_modulos": [
     "lib/sped-generator"
    ],
@@ -4289,32 +4320,7 @@
     "gerarEFD_Contribuicoes"
    ],
    "export_default": null,
-   "linhas": 63,
-   "tabelas": [],
-   "rpcs": [],
-   "edges": [],
-   "env": [],
-   "externos": [
-    "date-fns"
-   ],
-   "zod_schemas": 0,
-   "flags": [],
-   "papeis": [],
-   "usado_por": 1,
-   "usado_por_modulos": [
-    "lib/sped-generator"
-   ],
-   "coberto_por_testes": 0,
-   "orfao": false
-  },
-  {
-   "arquivo": "src/lib/sped-generator/efd-ibs-cbs.ts",
-   "camada": "lib",
-   "exports": [
-    "gerarEFD_IBS_CBS"
-   ],
-   "export_default": null,
-   "linhas": 272,
+   "linhas": 71,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -4337,7 +4343,7 @@
    "camada": "lib",
    "exports": [],
    "export_default": null,
-   "linhas": 4,
+   "linhas": 3,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5324,6 +5330,36 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/tributario/catalogos/cclasstrib.ts",
+   "camada": "lib",
+   "exports": [
+    "CclasstribCatalogo",
+    "NcmCatalogo",
+    "ReferenciasFiscais",
+    "buscarReferenciasFiscais"
+   ],
+   "export_default": null,
+   "linhas": 122,
+   "tabelas": [
+    "catalogo_cclasstrib",
+    "catalogo_ncm"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/tributario/catalogos/coerencia-iss.ts",
    "camada": "lib",
    "exports": [
@@ -5562,9 +5598,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 4,
    "usado_por_modulos": [
-    "hooks"
+    "hooks",
+    "lib/tributario"
    ],
    "coberto_por_testes": 1,
    "orfao": false
@@ -5651,6 +5688,35 @@
     "lib/tributario"
    ],
    "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/conciliacao-extrato.ts",
+   "camada": "lib",
+   "exports": [
+    "LinhaDiff",
+    "LinhaExtrato",
+    "StatusLinha",
+    "TOLERANCIA",
+    "buildDiff",
+    "paraNumero",
+    "parseCsv"
+   ],
+   "export_default": null,
+   "linhas": 114,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/reforma-tributaria"
+   ],
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -7410,7 +7476,7 @@
     "ultimoDiaUtil"
    ],
    "export_default": null,
-   "linhas": 243,
+   "linhas": 286,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -7430,11 +7496,12 @@
    "arquivo": "src/lib/tributario/obrigacoes/catalogo.ts",
    "camada": "lib",
    "exports": [
+    "MARCOS_RT",
     "OBRIGACOES",
     "buscarObrigacao"
    ],
    "export_default": null,
-   "linhas": 165,
+   "linhas": 263,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -7756,7 +7823,7 @@
     "SituacaoObrigacao"
    ],
    "export_default": null,
-   "linhas": 85,
+   "linhas": 90,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -8330,11 +8397,15 @@
    "arquivo": "src/lib/tributario/validador-ncm-cst.ts",
    "camada": "lib",
    "exports": [
+    "DivergenciaFiscal",
+    "ItemFiscalValidavel",
     "ValidacaoNCM",
-    "validarConsistenciaNcmCst"
+    "validarConsistenciaNcmCst",
+    "validarItemFiscal",
+    "validarItensFiscais"
    ],
    "export_default": null,
-   "linhas": 61,
+   "linhas": 147,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -8343,7 +8414,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "hooks"
    ],

@@ -92,8 +92,8 @@
   {
    "modulo": "components/admin",
    "arquivos": 101,
-   "testes": 6,
-   "linhas": 15267,
+   "testes": 7,
+   "linhas": 15312,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -225,6 +225,7 @@
     "transacoes_bancarias",
     "user_anomalia_preferences",
     "user_empresas",
+    "verificacoes_conformidade",
     "vw_auditoria_tributaria_recente",
     "vw_contas_pagar_painel",
     "vw_contas_receber_painel",
@@ -298,6 +299,7 @@
      "permissions",
      "profiles",
      "role_permissions",
+     "verificacoes_conformidade",
      "vw_auditoria_tributaria_recente",
      "webhook_simulation_results",
      "webhook_simulation_runs"
@@ -321,6 +323,7 @@
    },
    "importado_por_outros_modulos": [
     "components/auth",
+    "components/compliance",
     "components/security",
     "hooks",
     "lib/sso",
@@ -922,6 +925,7 @@
    "rotas_http": [],
    "componentes": 12,
    "hooks_locais": [
+    "useAuth",
     "useBlingBorderos",
     "useBlingCategoriasFinanceiras",
     "useBlingContasContabeis",
@@ -954,19 +958,28 @@
     "useBlingTiposContato",
     "useBlingVariacoes",
     "useBlingVariacoesMutations",
-    "useBlingWebhookEvents"
+    "useBlingWebhookEvents",
+    "useDefinirEmpresaPadrao",
+    "useUserEmpresas"
    ],
    "hooks_definidos": [],
    "edges": [
-    "bling-proxy"
+    "bling-proxy",
+    "guardar-xml-nfe-autorizada"
    ],
    "tabelas": [
     "bling_sync_logs",
     "bling_webhook_events",
+    "empresas",
     "frontend_error_logs",
-    "frontend_performance_logs"
+    "frontend_performance_logs",
+    "notas_fiscais",
+    "user_empresas"
    ],
-   "rpcs": [],
+   "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
+    "registrar_auditoria_config"
+   ],
    "buckets": [],
    "canais_realtime": [],
    "env": [
@@ -1552,7 +1565,7 @@
    "modulo": "components/compliance",
    "arquivos": 16,
    "testes": 0,
-   "linhas": 2041,
+   "linhas": 2049,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -1578,7 +1591,9 @@
     "frontend_performance_logs",
     "verificacoes_conformidade"
    ],
-   "rpcs": [],
+   "rpcs": [
+    "get_catalogos_tributarios_health"
+   ],
    "buckets": [
     "relatorios-tributarios"
    ],
@@ -1606,6 +1621,7 @@
     "pages/admin"
    ],
    "depende_de_modulos": [
+    "components/admin",
     "components/audit",
     "components/ui",
     "hooks",
@@ -2785,6 +2801,7 @@
     "calcular-health-score-operacional",
     "external-data",
     "gerar-acoes-recomendadas",
+    "guardar-xml-nfe-autorizada",
     "send-push-notification"
    ],
    "tabelas": [
@@ -2817,6 +2834,7 @@
     "kpis_operacionais",
     "metas_financeiras",
     "ncms",
+    "notas_fiscais",
     "planos_acao",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
@@ -2831,6 +2849,7 @@
     "vw_contas_receber_painel"
    ],
    "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config",
     "totais_contas_pagar",
     "totais_contas_receber"
@@ -4174,12 +4193,13 @@
    "modulo": "components/nfe",
    "arquivos": 31,
    "testes": 3,
-   "linhas": 5960,
+   "linhas": 5967,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
    "componentes": 25,
    "hooks_locais": [
+    "useAuth",
     "useBlingNFe",
     "useCentrosCusto",
     "useClientes",
@@ -4191,17 +4211,20 @@
     "useContasReceberPaginated",
     "useCreateContaPagar",
     "useDashboardKPIs",
+    "useDefinirEmpresaPadrao",
     "useDeleteContaPagar",
     "useEmpresas",
     "useFornecedores",
     "useFornecedoresPaginated",
     "useSoundFeedback",
-    "useUpdateContaPagar"
+    "useUpdateContaPagar",
+    "useUserEmpresas"
    ],
    "hooks_definidos": [],
    "edges": [
     "bling-proxy",
-    "external-data"
+    "external-data",
+    "guardar-xml-nfe-autorizada"
    ],
    "tabelas": [
     "boletos",
@@ -4214,11 +4237,16 @@
     "fornecedores",
     "frontend_error_logs",
     "frontend_performance_logs",
+    "notas_fiscais",
     "regras_roteamento_financeiro",
+    "user_empresas",
     "vw_contas_pagar_painel",
     "vw_contas_receber_painel"
    ],
-   "rpcs": [],
+   "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
+    "registrar_auditoria_config"
+   ],
    "buckets": [],
    "canais_realtime": [],
    "env": [
@@ -4886,6 +4914,7 @@
     "external-data",
     "gerar-acoes-recomendadas",
     "get-vapid-key",
+    "guardar-xml-nfe-autorizada",
     "insights-relatorio",
     "notify-saved-filter",
     "open-finance",
@@ -4952,6 +4981,7 @@
     "logs_conciliacao_retroativa",
     "metas_financeiras",
     "ncms",
+    "notas_fiscais",
     "open_finance_consents",
     "partidas_contabeis",
     "password_reset_requests",
@@ -4987,6 +5017,7 @@
    ],
    "rpcs": [
     "aprovar_solicitacao_pagamento",
+    "cancelar_nfe_estornar_xml_destacado",
     "delete_cron_job",
     "duplicate_saved_filter",
     "get_cron_jobs",
@@ -5136,13 +5167,13 @@
   },
   {
    "modulo": "components/reforma-tributaria",
-   "arquivos": 66,
-   "testes": 6,
-   "linhas": 11187,
+   "arquivos": 67,
+   "testes": 8,
+   "linhas": 11662,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
-   "componentes": 55,
+   "componentes": 56,
    "hooks_locais": [
     "useAlertasTributarios",
     "useAllEmpresas",
@@ -5152,6 +5183,7 @@
     "useCashbackSimulador",
     "useComparativoRegimes",
     "useConciliacaoTributaria",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarEmpresa",
     "useExcluirEmpresa",
@@ -5175,22 +5207,33 @@
    ],
    "tabelas": [
     "alertas_tributarios",
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
     "apuracoes_irpj_csll",
     "apuracoes_tributarias",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
+    "cnaes",
     "creditos_tributarios",
     "darfs",
     "empresas",
+    "faixas_simples_nacional",
     "fechamentos_tributarios",
     "frontend_error_logs",
     "frontend_performance_logs",
     "incentivos_fiscais",
+    "itens_lista_iss",
+    "ncms",
     "notas_fiscais",
     "operacoes_tributaveis",
     "per_dcomp",
     "prejuizos_fiscais",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
     "regimes_especiais_empresa",
     "retencoes_fonte",
-    "split_payment_transacoes"
+    "split_payment_transacoes",
+    "ufs"
    ],
    "rpcs": [
     "gerar_darf_retencoes",
@@ -5237,6 +5280,7 @@
     "hooks",
     "lib",
     "lib/reforma-tributaria",
+    "lib/tributario",
     "types",
     "types/reforma-tributaria"
    ],
@@ -5808,6 +5852,8 @@
     "alertas_tributarios",
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "cnaes",
     "conformidade_snapshots",
     "creditos_tributarios",
@@ -6439,9 +6485,9 @@
   },
   {
    "modulo": "hooks",
-   "arquivos": 228,
-   "testes": 8,
-   "linhas": 35546,
+   "arquivos": 229,
+   "testes": 9,
+   "linhas": 36013,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -6527,6 +6573,7 @@
     "useBulkActions",
     "useCalculadoraDadosReais",
     "useCancelTransferencia",
+    "useCancelamentoNFe",
     "useCashbackSimulador",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
@@ -6591,6 +6638,7 @@
     "useCreateTransferencia",
     "useCreateVendedor",
     "useCreateWhatsAppCobranca",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarCentroCusto",
@@ -6956,6 +7004,7 @@
     "useUpdateBudget",
     "useBulkActions",
     "useCalculadoraDadosReais",
+    "useCancelamentoNFe",
     "useCashbackSimulador",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
@@ -7015,6 +7064,7 @@
     "useDeleteContrato",
     "useUpdateContrato",
     "useCountUp",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCustomFieldDefinitions",
     "useDeleteCustomFieldDefinition",
@@ -7347,6 +7397,7 @@
     "gerar-sped-ecd",
     "gerar-sped-ecf",
     "get-vapid-key",
+    "guardar-xml-nfe-autorizada",
     "insights-relatorio",
     "log-sped-bitrix24",
     "nfe-upload-certificado",
@@ -7404,6 +7455,8 @@
     "bloqueios_duplicidade",
     "boletos",
     "budgets",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "categorias",
     "centros_custo",
     "clientes",
@@ -7558,6 +7611,7 @@
    ],
    "rpcs": [
     "aprovar_solicitacao_pagamento",
+    "cancelar_nfe_estornar_xml_destacado",
     "confirmar_envio_cobranca",
     "delete_cron_job",
     "duplicate_saved_filter",
@@ -7670,6 +7724,7 @@
      "gerar-sped-ecd",
      "gerar-sped-ecf",
      "get-vapid-key",
+     "guardar-xml-nfe-autorizada",
      "log-sped-bitrix24",
      "nfe-upload-certificado",
      "nfe-vinculo-proxy",
@@ -7851,6 +7906,7 @@
     ],
     "rpcs": [
      "aprovar_solicitacao_pagamento",
+     "cancelar_nfe_estornar_xml_destacado",
      "confirmar_envio_cobranca",
      "duplicate_saved_filter",
      "fn_balancete",
@@ -7928,6 +7984,7 @@
     "components/vendedores",
     "components/wrappers",
     "contexts",
+    "hooks/bling",
     "hooks/saved-filter-alerts",
     "lib",
     "pages",
@@ -7980,7 +8037,7 @@
   {
    "modulo": "hooks/__tests__",
    "arquivos": 0,
-   "testes": 51,
+   "testes": 53,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -8009,12 +8066,13 @@
    "modulo": "hooks/bling",
    "arquivos": 11,
    "testes": 0,
-   "linhas": 689,
+   "linhas": 695,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
    "componentes": 0,
    "hooks_locais": [
+    "useAuth",
     "useBlingBorderos",
     "useBlingCategoriasFinanceiras",
     "useBlingContasContabeis",
@@ -8047,7 +8105,9 @@
     "useBlingTiposContato",
     "useBlingVariacoes",
     "useBlingVariacoesMutations",
-    "useBlingWebhookEvents"
+    "useBlingWebhookEvents",
+    "useDefinirEmpresaPadrao",
+    "useUserEmpresas"
    ],
    "hooks_definidos": [
     "useBlingContatoDetail",
@@ -8085,15 +8145,22 @@
     "useBlingWebhookEvents"
    ],
    "edges": [
-    "bling-proxy"
+    "bling-proxy",
+    "guardar-xml-nfe-autorizada"
    ],
    "tabelas": [
     "bling_sync_logs",
     "bling_webhook_events",
+    "empresas",
     "frontend_error_logs",
-    "frontend_performance_logs"
+    "frontend_performance_logs",
+    "notas_fiscais",
+    "user_empresas"
    ],
-   "rpcs": [],
+   "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado",
+    "registrar_auditoria_config"
+   ],
    "buckets": [],
    "canais_realtime": [],
    "env": [
@@ -8122,6 +8189,7 @@
    ],
    "depende_de_modulos": [
     "config",
+    "hooks",
     "integrations/supabase",
     "lib"
    ],
@@ -8440,7 +8508,7 @@
    "modulo": "integrations/supabase",
    "arquivos": 2,
    "testes": 0,
-   "linhas": 20124,
+   "linhas": 20139,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -8537,7 +8605,7 @@
    "modulo": "lib",
    "arquivos": 68,
    "testes": 2,
-   "linhas": 9590,
+   "linhas": 9620,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -8729,7 +8797,7 @@
   {
    "modulo": "lib/__tests__",
    "arquivos": 0,
-   "testes": 56,
+   "testes": 57,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -8758,7 +8826,7 @@
    "modulo": "lib/arquitetura",
    "arquivos": 3,
    "testes": 5,
-   "linhas": 733,
+   "linhas": 734,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -8999,9 +9067,9 @@
   },
   {
    "modulo": "lib/nfe",
-   "arquivos": 1,
-   "testes": 1,
-   "linhas": 202,
+   "arquivos": 2,
+   "testes": 2,
+   "linhas": 481,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9159,7 +9227,7 @@
    "modulo": "lib/reforma-tributaria",
    "arquivos": 9,
    "testes": 2,
-   "linhas": 944,
+   "linhas": 969,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9290,9 +9358,9 @@
   },
   {
    "modulo": "lib/sped-generator",
-   "arquivos": 5,
+   "arquivos": 4,
    "testes": 0,
-   "linhas": 450,
+   "linhas": 185,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9403,9 +9471,9 @@
   },
   {
    "modulo": "lib/tributario",
-   "arquivos": 118,
-   "testes": 79,
-   "linhas": 16789,
+   "arquivos": 120,
+   "testes": 80,
+   "linhas": 17257,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9416,6 +9484,8 @@
    "tabelas": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "cnaes",
     "faixas_simples_nacional",
     "frontend_error_logs",
@@ -9452,6 +9522,8 @@
     "tabelas": [
      "aliquotas_interestaduais",
      "aliquotas_iss_municipal",
+     "catalogo_cclasstrib",
+     "catalogo_ncm",
      "cnaes",
      "faixas_simples_nacional",
      "itens_lista_iss",
@@ -9466,6 +9538,7 @@
     "components/dashboard",
     "components/empresa",
     "components/empresas",
+    "components/reforma-tributaria",
     "components/tributario",
     "hooks",
     "pages/tributario"
@@ -9747,6 +9820,7 @@
     "useCreateTransferencia",
     "useCreateVendedor",
     "useCreateWhatsAppCobranca",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarCentroCusto",
@@ -10003,6 +10077,7 @@
     "gerar-sped-ecd",
     "gerar-sped-ecf",
     "get-vapid-key",
+    "guardar-xml-nfe-autorizada",
     "health",
     "insights-relatorio",
     "log-sped-bitrix24",
@@ -10055,6 +10130,8 @@
     "bloqueios_duplicidade",
     "boletos",
     "budgets",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "categorias",
     "centros_custo",
     "clientes",
@@ -10193,6 +10270,7 @@
    "rpcs": [
     "aprovar_solicitacao_pagamento",
     "calcular_potencial_elisao",
+    "cancelar_nfe_estornar_xml_destacado",
     "confirmar_envio_cobranca",
     "delete_cron_job",
     "duplicate_saved_filter",
@@ -11750,6 +11828,7 @@
     "useConsultaCNAE",
     "useConsultaNCM",
     "useConsultaUF",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarContaDaNfe",
@@ -11856,6 +11935,8 @@
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "apuracoes_tributarias",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
     "cnaes",
     "conformidade_snapshots",
@@ -12151,6 +12232,7 @@
     "useCreateTransferencia",
     "useCreateVendedor",
     "useCreateWhatsAppCobranca",
+    "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarAlerta",
     "useCriarCentroCusto",
@@ -12498,6 +12580,7 @@
     "gerar-sped-ecd",
     "gerar-sped-ecf",
     "get-vapid-key",
+    "guardar-xml-nfe-autorizada",
     "insights-relatorio",
     "log-sped-bitrix24",
     "nfe-upload-certificado",
@@ -12555,6 +12638,8 @@
     "bloqueios_duplicidade",
     "boletos",
     "budgets",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "categorias",
     "centros_custo",
     "clientes",
@@ -12727,6 +12812,7 @@
    "rpcs": [
     "aprovar_solicitacao_pagamento",
     "calcular_potencial_elisao",
+    "cancelar_nfe_estornar_xml_destacado",
     "confirmar_envio_cobranca",
     "delete_cron_job",
     "duplicate_saved_filter",

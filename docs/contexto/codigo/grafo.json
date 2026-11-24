@@ -1,28 +1,28 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2012,
- "arestas": 8490,
+ "nos": 2020,
+ "arestas": 8527,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
-   "importado_por": 531
+   "importado_por": 532
   },
   {
    "arquivo": "src/components/ui/card.tsx",
-   "importado_por": 481
+   "importado_por": 482
   },
   {
    "arquivo": "src/components/ui/badge.tsx",
-   "importado_por": 450
+   "importado_por": 451
+  },
+  {
+   "arquivo": "src/integrations/supabase/client.ts",
+   "importado_por": 315
   },
   {
    "arquivo": "src/lib/utils.ts",
    "importado_por": 315
-  },
-  {
-   "arquivo": "src/integrations/supabase/client.ts",
-   "importado_por": 313
   },
   {
    "arquivo": "src/lib/formatters.ts",
@@ -46,7 +46,7 @@
   },
   {
    "arquivo": "src/components/ui/table.tsx",
-   "importado_por": 129
+   "importado_por": 130
   },
   {
    "arquivo": "src/components/ui/skeleton.tsx",
@@ -54,11 +54,11 @@
   },
   {
    "arquivo": "supabase/functions/_shared/edge-observability.ts",
-   "importado_por": 108
+   "importado_por": 110
   },
   {
    "arquivo": "src/hooks/useAuth.tsx",
-   "importado_por": 107
+   "importado_por": 109
   },
   {
    "arquivo": "supabase/functions/_shared/cors.ts",
@@ -86,7 +86,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/observability.ts",
-   "importado_por": 74
+   "importado_por": 76
   },
   {
    "arquivo": "src/components/ui/scroll-area.tsx",
@@ -106,11 +106,11 @@
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
-   "importado_por": 52
+   "importado_por": 54
   },
   {
    "arquivo": "supabase/functions/_shared/erros.ts",
-   "importado_por": 50
+   "importado_por": 52
   },
   {
    "arquivo": "supabase/functions/_shared/validation.ts",
@@ -122,7 +122,7 @@
   },
   {
    "arquivo": "src/components/ui/textarea.tsx",
-   "importado_por": 47
+   "importado_por": 48
   },
   {
    "arquivo": "src/components/ui/dropdown-menu.tsx",
@@ -150,7 +150,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/zod.ts",
-   "importado_por": 28
+   "importado_por": 30
   },
   {
    "arquivo": "src/hooks/useEmpresas.ts",
@@ -158,11 +158,11 @@
   },
   {
    "arquivo": "supabase/functions/_shared/contract-validator.ts",
-   "importado_por": 25
+   "importado_por": 26
   },
   {
-   "arquivo": "src/lib/ofx-parser.ts",
-   "importado_por": 24
+   "arquivo": "supabase/functions/_shared/contract-response.ts",
+   "importado_por": 25
   }
  ],
  "ciclos": {
@@ -228,7 +228,6 @@
   "docs/auditoria-20260912/reproduzir-lacunas.cjs",
   "public/sw-push.js",
   "public/sw.js",
-  "src/components/admin/FiscalHealthBadge.tsx",
   "src/components/auth/PermissionGate.hoc.tsx",
   "src/components/charts/RechartsExample.tsx",
   "src/components/contabilidade/SpedEcdDownloadStep.tsx",
@@ -276,9 +275,11 @@
   "src/components/ui/tag-input.tsx",
   "src/components/ui/tree-view.tsx",
   "src/components/ui/wizard.tsx",
+  "src/hooks/useCancelamentoNFe.ts",
   "src/hooks/useGlobalFilterSync.ts",
   "src/hooks/usePrefetchRoutes.tsx",
   "src/lib/arquitetura/escopo-empresa.ts",
+  "src/lib/nfe/pre-validar-ibscbs.ts",
   "src/lib/reforma-tributaria/base-calculo.ts",
   "src/lib/reforma-tributaria/totalizar.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",
@@ -294,7 +295,7 @@
   {
    "modulo": "hooks",
    "depende_de": 23,
-   "importado_por": 66
+   "importado_por": 67
   },
   {
    "modulo": "components/ui",
@@ -319,7 +320,7 @@
   {
    "modulo": "components/admin",
    "depende_de": 9,
-   "importado_por": 7
+   "importado_por": 8
   },
   {
    "modulo": "pages/admin",
@@ -335,6 +336,11 @@
    "modulo": "components/contas-receber",
    "depende_de": 11,
    "importado_por": 2
+  },
+  {
+   "modulo": "components/reforma-tributaria",
+   "depende_de": 9,
+   "importado_por": 3
   },
   {
    "modulo": "components/shared",
@@ -367,11 +373,6 @@
    "importado_por": 1
   },
   {
-   "modulo": "components/reforma-tributaria",
-   "depende_de": 8,
-   "importado_por": 3
-  },
-  {
    "modulo": "components/auth",
    "depende_de": 7,
    "importado_por": 3
@@ -382,9 +383,9 @@
    "importado_por": 1
   },
   {
-   "modulo": "components/empresas",
-   "depende_de": 5,
-   "importado_por": 3
+   "modulo": "lib/tributario",
+   "depende_de": 2,
+   "importado_por": 7
   }
  ],
  "arestas_em": "docs/contexto/codigo/grafo-arestas.json"

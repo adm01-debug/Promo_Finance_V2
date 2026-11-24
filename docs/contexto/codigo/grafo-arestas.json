@@ -262,6 +262,8 @@
   "src/components/admin/FiscalHealthBadge.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/skeleton.tsx",
+   "src/hooks/useAuth.tsx",
+   "src/integrations/supabase/client.ts",
    "src/lib/supabase-dynamic.ts",
    "src/lib/utils.ts"
   ],
@@ -1812,6 +1814,7 @@
    "src/hooks/useComplianceKpis.ts"
   ],
   "src/components/compliance/ConformidadeFiscalTab.tsx": [
+   "src/components/admin/FiscalHealthBadge.tsx",
    "src/components/compliance/TrilhaTable.tsx",
    "src/components/ui/badge.tsx"
   ],
@@ -4927,7 +4930,18 @@
    "src/hooks/useRegimesEspeciais.ts",
    "src/lib/formatters.ts"
   ],
+  "src/components/reforma-tributaria/ConciliacaoExtratoAssistido.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/table.tsx",
+   "src/components/ui/textarea.tsx",
+   "src/hooks/useCreditosTributarios.ts",
+   "src/lib/formatters.ts",
+   "src/lib/tributario/conciliacao-extrato.ts"
+  ],
   "src/components/reforma-tributaria/ConciliacaoTributariaPanel.tsx": [
+   "src/components/reforma-tributaria/ConciliacaoExtratoAssistido.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -6496,7 +6510,8 @@
    "src/hooks/bling/client.ts"
   ],
   "src/hooks/bling/useNFe.ts": [
-   "src/hooks/bling/client.ts"
+   "src/hooks/bling/client.ts",
+   "src/hooks/useBlingNFe.ts"
   ],
   "src/hooks/bling/useOAuth.ts": [
    "src/config/env.ts",
@@ -6734,6 +6749,7 @@
    "src/hooks/bling/index.ts"
   ],
   "src/hooks/useBlingNFe.ts": [
+   "src/hooks/useUserEmpresas.ts",
    "src/integrations/supabase/client.ts"
   ],
   "src/hooks/useBoletos.helpers.ts": [
@@ -6760,6 +6776,10 @@
   "src/hooks/useCalculadoraDadosReais.ts": [
    "src/integrations/supabase/client.ts",
    "src/lib/financeiro/valor-recebido-efetivo.ts"
+  ],
+  "src/hooks/useCancelamentoNFe.ts": [
+   "src/integrations/supabase/client.ts",
+   "src/lib/sefaz-event-logger.ts"
   ],
   "src/hooks/useCashbackSimulador.ts": [
    "src/types/reforma-tributaria.ts"
@@ -7021,7 +7041,7 @@
    "src/integrations/supabase/types.ts"
   ],
   "src/hooks/useExportarSped.ts": [
-   "src/integrations/supabase/client.ts"
+   "src/lib/edge-function-error.ts"
   ],
   "src/hooks/useExtratoWebhooks.ts": [
    "src/integrations/supabase/client.ts",
@@ -7101,10 +7121,11 @@
   ],
   "src/hooks/useImportacaoXMLNFe.ts": [
    "src/integrations/supabase/client.ts",
-   "src/lib/formatters.ts",
    "src/lib/logger.ts",
    "src/lib/nfe/parse-ibscbs.ts",
    "src/lib/supabase-write.ts",
+   "src/lib/tributario/catalogos/cclasstrib.ts",
+   "src/lib/tributario/validador-ncm-cst.ts",
    "src/types/reforma-tributaria.ts"
   ],
   "src/hooks/useInadimplenciaSegmentada.ts": [
@@ -7781,13 +7802,9 @@
   "src/lib/sped-generator/efd-contribuicoes.ts": [
    "src/lib/sped-generator/core.ts"
   ],
-  "src/lib/sped-generator/efd-ibs-cbs.ts": [
-   "src/lib/sped-generator/core.ts"
-  ],
   "src/lib/sped-generator/index.ts": [
    "src/lib/sped-generator/core.ts",
    "src/lib/sped-generator/efd-contribuicoes.ts",
-   "src/lib/sped-generator/efd-ibs-cbs.ts",
    "src/lib/sped-generator/io.ts"
   ],
   "src/lib/sso-slo-audit.ts": [
@@ -7890,6 +7907,10 @@
    "src/lib/tributario/catalogos/coerencia.ts",
    "src/lib/tributario/catalogos/painel.ts",
    "src/lib/tributario/catalogos/types.ts"
+  ],
+  "src/lib/tributario/catalogos/cclasstrib.ts": [
+   "src/integrations/supabase/client.ts",
+   "src/lib/tributario/catalogos/repositorio.ts"
   ],
   "src/lib/tributario/catalogos/coerencia-iss.ts": [
    "src/lib/tributario/ipi-iss/tabelas.ts"
@@ -8301,6 +8322,9 @@
   "src/lib/tributario/simular-simples.ts": [
    "src/lib/tributario/shared-logic.ts",
    "src/lib/tributario/types.ts"
+  ],
+  "src/lib/tributario/validador-ncm-cst.ts": [
+   "src/lib/tributario/catalogos/cclasstrib.ts"
   ],
   "src/lib/validators.ts": [
    "src/lib/brazilian-validators.ts"
@@ -11477,6 +11501,18 @@
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts"
   ],
+  "supabase/functions/guardar-xml-nfe-autorizada/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/contract-validator.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/erros.ts",
+   "supabase/functions/_shared/nfe/ibscbs.ts",
+   "supabase/functions/_shared/nfe/itens.ts",
+   "supabase/functions/_shared/nfe/xml-storage.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/sefaz/parser.ts",
+   "supabase/functions/_shared/zod.ts"
+  ],
   "supabase/functions/health/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
    "supabase/functions/_shared/cors.ts",
@@ -11637,6 +11673,16 @@
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts"
   ],
+  "supabase/functions/reprocessar-creditos-ibscbs/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/contract-response.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/erros.ts",
+   "supabase/functions/_shared/nfe/ibscbs.ts",
+   "supabase/functions/_shared/nfe/xml-storage.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/zod.ts"
+  ],
   "supabase/functions/scim-server/index.ts": [
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts"
@@ -11653,6 +11699,7 @@
    "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/nfe/ibscbs.ts",
    "supabase/functions/_shared/nfe/xml-storage.ts",
    "supabase/functions/_shared/observability.ts",
    "supabase/functions/_shared/sefaz/endpoints.ts",

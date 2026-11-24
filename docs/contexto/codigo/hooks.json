@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 274,
+ "total": 275,
  "hooks": [
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
@@ -732,7 +732,7 @@
     "useBlingNFeDetail",
     "useBlingNFeMutations"
    ],
-   "linhas": 85,
+   "linhas": 91,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -1623,10 +1623,12 @@
    "hooks_exportados": [
     "useApuracoesTributarias"
    ],
-   "linhas": 338,
+   "linhas": 395,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_tributarias",
+    "creditos_tributarios",
+    "notas_fiscais",
     "operacoes_tributaveis"
    ],
    "rpcs": [],
@@ -1878,10 +1880,11 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 107,
+   "usado_por": 108,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",
+    "src/components/admin/FiscalHealthBadge.tsx",
     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
     "src/components/aprovacoes/PasswordResetApprovals.tsx",
     "src/components/auth/EmpresaSelectionGate.tsx",
@@ -1908,10 +1911,9 @@
     "src/components/fornecedores/FornecedorForm.tsx",
     "src/components/layout/Header.tsx",
     "src/components/layout/sidebar/SidebarNavGroups.tsx",
-    "src/components/providers/NavigationTracker.tsx",
-    "src/components/security/GeoRestrictionPanel.tsx"
+    "src/components/providers/NavigationTracker.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useAuthValidation.ts",
@@ -2072,21 +2074,27 @@
    "hooks_exportados": [
     "useBlingNFe"
    ],
-   "linhas": 335,
+   "linhas": 418,
    "dominio": "hooks",
-   "tabelas": [],
-   "rpcs": [],
+   "tabelas": [
+    "notas_fiscais"
+   ],
+   "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado"
+   ],
    "edges": [
-    "bling-proxy"
+    "bling-proxy",
+    "guardar-xml-nfe-autorizada"
    ],
    "hooks_internos": [
     "useCallback",
     "useState"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
-    "src/components/nfe/BlingNFePanel.tsx"
+    "src/components/nfe/BlingNFePanel.tsx",
+    "src/hooks/bling/useNFe.ts"
    ],
    "coberto_por_testes": 0
   },
@@ -2243,6 +2251,26 @@
     "src/pages/tributario/CalculadoraTributaria.tsx"
    ],
    "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCancelamentoNFe.ts",
+   "hooks_exportados": [
+    "useCancelamentoNFe"
+   ],
+   "linhas": 70,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "cancelar_nfe_estornar_xml_destacado"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useCashbackSimulador.ts",
@@ -3081,9 +3109,10 @@
   {
    "arquivo": "src/hooks/useCreditosTributarios.ts",
    "hooks_exportados": [
+    "useCreditosPorChaves",
     "useCreditosTributarios"
    ],
-   "linhas": 390,
+   "linhas": 445,
    "dominio": "hooks",
    "tabelas": [
     "creditos_tributarios",
@@ -3097,8 +3126,9 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 7,
+   "usado_por": 8,
    "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ConciliacaoExtratoAssistido.tsx",
     "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts",
     "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
     "src/components/reforma-tributaria/ExportacaoSPED.tsx",
@@ -3107,7 +3137,7 @@
     "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx",
     "src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useCustomFields.ts",
@@ -3621,7 +3651,7 @@
    "hooks_exportados": [
     "useExportarSped"
    ],
-   "linhas": 28,
+   "linhas": 30,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4154,7 +4184,7 @@
    "hooks_exportados": [
     "useImportacaoXMLNFe"
    ],
-   "linhas": 401,
+   "linhas": 595,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -4171,7 +4201,7 @@
    "usado_por_arquivos": [
     "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx"
    ],
-   "coberto_por_testes": 2
+   "coberto_por_testes": 4
   },
   {
    "arquivo": "src/hooks/useImportPlanoContas.ts",
@@ -4879,7 +4909,7 @@
    "hooks_exportados": [
     "useOportunidadesElisao"
    ],
-   "linhas": 339,
+   "linhas": 343,
    "dominio": "hooks",
    "tabelas": [
     "elisao_alertas",
@@ -6423,7 +6453,7 @@
    "hooks_exportados": [
     "useSplitPayment"
    ],
-   "linhas": 199,
+   "linhas": 201,
    "dominio": "hooks",
    "tabelas": [
     "split_payment_transacoes"
@@ -6801,7 +6831,7 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 11,
+   "usado_por": 12,
    "usado_por_arquivos": [
     "src/components/auth/EmpresaGuard.tsx",
     "src/components/auth/EmpresaSelectionGate.tsx",
@@ -6812,6 +6842,7 @@
     "src/contexts/EmpresaScopeContext.tsx",
     "src/contexts/useEmpresaScope.ts",
     "src/hooks/AuthProvider.tsx",
+    "src/hooks/useBlingNFe.ts",
     "src/hooks/useGlobalFinancialFilter.ts",
     "src/pages/tributario/ComparativoConformidade.tsx"
    ],
