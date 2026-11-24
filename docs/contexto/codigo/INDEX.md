@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `04504efaa1a7f39a73bcf0b8b6a8261c4a49127a` (2026-11-24T14:41:27-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `274d1f75a06fea6b699fabc8bc857bf9fd3e20f1` (2026-11-24T14:47:22-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -638,6 +638,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-24 `274d1f7` chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)
 - 2026-11-24 `04504ef` chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)
 - 2026-11-24 `6ef837b` chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)
 - 2026-11-24 `3f209ea` chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)
@@ -652,7 +653,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-22 `60ece16` fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)
 - 2026-11-22 `856fef0` fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)
 - 2026-11-22 `00b7588` fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)
-- 2026-11-22 `f2e0d56` chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "04504efaa1a7f39a73bcf0b8b6a8261c4a49127a",
+  "sha": "274d1f75a06fea6b699fabc8bc857bf9fd3e20f1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 17:45 UTC",
+  "generated_at": "2026-11-24 17:49 UTC",
   "files_total": 4087,
   "code_files": 3668,
   "code_lines": 522984
@@ -249228,10 +249228,20 @@
   }
  },
  "git": {
-  "sha": "04504efaa1a7f39a73bcf0b8b6a8261c4a49127a",
+  "sha": "274d1f75a06fea6b699fabc8bc857bf9fd3e20f1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "274d1f7",
+    "date": "2026-11-24",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "04504ef",
     "date": "2026-11-24",
@@ -249621,25 +249631,16 @@
      "supabase/migrations/20261122022500_catalogo_cclasstrib.sql",
      "supabase/migrations/20261122023500_corrige_pk_catalogo_cclasstrib_vigencia.sql"
     ]
-   },
-   {
-    "sha": "ebf034f",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "docs: inventário do schema fiscal atual (etapa 31 RT/RFB) (#510)",
-    "files": [
-     "docs/receitafederal/SCHEMA_FISCAL_ATUAL.md"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    5
+    6
    ],
    [
     "package.json",
-    5
+    6
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
