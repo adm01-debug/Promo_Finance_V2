@@ -15,6 +15,15 @@
 --
 -- numeric(7,6) acomoda fracao com seis casas (0,000001 = 0,0001%) mantendo
 -- folga no inteiro (limite 9,999999) para aliquota cheia de 2033.
+--
+-- A troca de tipo reescreve a tabela sob ACCESS EXCLUSIVE. Em producao a tabela
+-- esta vazia: ela nasceu em 20261122020000 (#511) e os dois unicos caminhos de
+-- escrita — 20261122160000 e 20261124095500 — entram no mesmo deploy, sempre
+-- depois deste horario; o trigger de totais (20261122021500) apenas le. Ainda
+-- assim o ALTER nao pode virar fila de bloqueio do app: lock_timeout curto faz
+-- a migration falhar rapido (e o deploy parar) em vez de segurar a tabela.
+SET lock_timeout = '5s';
+
 ALTER TABLE public.notas_fiscais_itens
   ALTER COLUMN p_ibs_uf   TYPE numeric(7,6),
   ALTER COLUMN p_ibs_mun  TYPE numeric(7,6),
