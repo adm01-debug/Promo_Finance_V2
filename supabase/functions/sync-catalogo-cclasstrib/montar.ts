@@ -171,24 +171,38 @@ export function montarLinhas(
   const sem_cst: string[] = [];
   const ignoradas: string[] = [];
   const vistos = new Set<string>();
+  // Uma ocorrencia sem descricao nao pode consumir o codigo: a Receita manda o
+  // mesmo codigo primeiro sem descricao e depois completo, e e a segunda
+  // ocorrencia que vira linha. `decididos` guarda quem ja produziu linha ou sem
+  // CST; `sem_descricao` quem so apareceu sem descricao ate agora.
+  const decididos = new Set<string>();
+  const sem_descricao = new Set<string>();
 
   for (const classificacao of classificacoes ?? []) {
     const codigo = String(classificacao?.codigo ?? '').trim();
     const descricao = String(classificacao?.descricao ?? '').trim();
-    if (!CC_6.test(codigo) || vistos.has(codigo)) {
+    if (!CC_6.test(codigo)) {
       ignoradas.push(codigo);
       continue;
     }
-    vistos.add(codigo);
     // Presenca = "a Receita publicou", nao "virou linha": o contrato de
     // `presentes` inclui codigo sem CST, e vale igual para codigo publicado sem
     // descricao. Antes do fix ele entrava so em `ignoradas` e o encerramento de
     // vigencia fechava um codigo que segue no catalogo oficial.
-    presentes.push(codigo);
+    if (!vistos.has(codigo)) {
+      vistos.add(codigo);
+      presentes.push(codigo);
+    }
     if (!descricao) {
+      sem_descricao.add(codigo);
+      continue;
+    }
+    if (decididos.has(codigo)) {
       ignoradas.push(codigo);
       continue;
     }
+    decididos.add(codigo);
+    sem_descricao.delete(codigo);
     const cst = porCclasstrib.get(codigo);
     if (!cst) {
       sem_cst.push(codigo);
@@ -206,6 +220,9 @@ export function montarLinhas(
       fim_vigencia: null,
     });
   }
+
+  // Sobrou sem descricao em nenhuma ocorrencia: publicado, mas nao gravavel.
+  for (const codigo of sem_descricao) ignoradas.push(codigo);
 
   return { linhas, presentes, sem_cst, ignoradas, ambiguas: [...ambiguas] };
 }

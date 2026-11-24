@@ -220,10 +220,61 @@ Deno.test('montarLinhas — codigo sem descricao continua presente e nao vira li
   assertEquals(m.presentes, ['200032', '200033', '200034']);
   // Segue observavel no resumo como nao-aproveitado.
   assertEquals(m.ignoradas, ['200033', '200034']);
+});
+
+Deno.test('montarLinhas — ocorrencia sem descricao nao consome a ocorrencia completa', () => {
+  // A Receita repete o codigo: primeiro sem descricao, depois completo. Antes do
+  // fix a primeira ocorrencia adicionava o codigo a `vistos`, a segunda era
+  // descartada como duplicata e a linha nunca era gravada — o catalogo ficava
+  // com o valor antigo (ou sem o codigo).
+  const publicadas: ClassificacaoApi[] = [
+    { codigo: '200032', descricao: '' },
+    { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
+  ];
+  const vinculos: SituacaoApi[] = [
+    { codigo: '200', classificacoesTributarias: [{ codigo: '200032' }] },
+  ];
+
+  const m = montarLinhas(publicadas, vinculos, 'V0073');
+  assertEquals(m.presentes, ['200032']);
   assertEquals(
-    decidirEncerramentos(['200032', '200033', '200034'], m.presentes, '2026-11-24').encerrar,
-    []
+    m.linhas.map((l) => [l.cclasstrib, l.cst, l.descricao]),
+    [['200032', '200', 'Medicamentos registrados na Anvisa']]
   );
+  assertEquals(m.sem_cst, []);
+  assertEquals(m.ignoradas, []);
+});
+
+Deno.test('montarLinhas — presenca preserva a vigencia acima do piso da API', () => {
+  // Com menos de MIN_CLASSIFICACOES_API recebidos o encerramento fica bloqueado
+  // por resposta curta, e a assercao de "nao encerrou" passa sem testar nada.
+  // 170 codigos passam o piso e deixam a decisao real acontecer.
+  const publicadas: ClassificacaoApi[] = Array.from({ length: 170 }, (_, i) => ({
+    codigo: String(100000 + i),
+    descricao: i === 120 ? '' : `Classificacao ${i}`,
+  }));
+  const vinculos: SituacaoApi[] = [
+    { codigo: '200', classificacoesTributarias: publicadas },
+  ];
+
+  const m = montarLinhas(publicadas, vinculos, 'V0073');
+  assertEquals(m.linhas.length, 169);
+  assertEquals(m.presentes.length, 170);
+  assertEquals(m.ignoradas, ['100120']);
+
+  const abertos = publicadas.map((c) => String(c.codigo));
+  const porPresenca = decidirEncerramentos(abertos, m.presentes, '2026-11-24');
+  assertEquals(porPresenca.bloqueado, false);
+  assertEquals(porPresenca.encerrar, []);
+  // Controle negativo: se a presenca viesse de `linhas`, a vigencia de 100120
+  // seria encerrada mesmo ele seguindo publicado pela Receita.
+  const porLinhas = decidirEncerramentos(
+    abertos,
+    m.linhas.map((l) => l.cclasstrib),
+    '2026-11-24'
+  );
+  assertEquals(porLinhas.bloqueado, false);
+  assertEquals(porLinhas.encerrar, [{ cclasstrib: '100120', fim_vigencia: '2026-11-24' }]);
 });
 
 Deno.test('decidirEncerramentos — encerra o que sumiu dentro do limite', () => {
