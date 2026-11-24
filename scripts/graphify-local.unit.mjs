@@ -352,6 +352,50 @@ test('install preserva ambiente individual válido sem chamar CLI global', async
   await assert.rejects(readFile(f.graph), /ENOENT/);
 });
 
+test('install ressincroniza ambiente existente quando o pin muda, mantendo hashes', async (t) => {
+  const f = await fixture(t),
+    log = path.join(f.dir, 'uv.log');
+  await mkdir(path.join(f.root, 'scripts/graphify'), { recursive: true });
+  await writeFile(
+    path.join(f.root, 'scripts/graphify/requirements.lock'),
+    'graphifyy[sql]==0.9.115 --hash=sha256:aa\ntree-sitter==0.21.0 --hash=sha256:bb\n'
+  );
+  // uv falso: registra o argv e, no sync, troca os binários pelo pin do lock —
+  // mesmo efeito da instalação real, sem rede.
+  const uv = [
+    `#!${process.execPath}`,
+    "const fs=require('node:fs'),path=require('node:path');",
+    'const a=process.argv.slice(2);',
+    `fs.appendFileSync(${JSON.stringify(log)},a.join(' ')+'\\n');`,
+    "if(a[0]==='venv')process.exit(0);",
+    "const pin=(fs.readFileSync(a[a.length-1],'utf8').match(/graphifyy(?:\\[sql\\])?==([0-9.]+)/)||[])[1];",
+    `const env=${JSON.stringify(f.env)};`,
+    "fs.writeFileSync(path.join(env,'bin/python'),'#!'+process.execPath+'\\n'+'const path=require(\"node:path\");const prefix=path.resolve(__dirname,\"..\");console.log(JSON.stringify({version:\"'+pin+'\",prefix,module:path.join(prefix,\"lib/graphify/__init__.py\")}));\\n',{mode:0o700});",
+    "fs.writeFileSync(path.join(env,'bin/graphify'),'#!'+process.execPath+'\\n'+'if(process.argv[2]===\"--version\")console.log(\"graphify '+pin+'\");\\n',{mode:0o700});",
+    '',
+  ].join('\n');
+  await mkdir(path.join(f.dir, '.local/bin'), { recursive: true });
+  await writeFile(path.join(f.dir, '.local/bin/uv'), uv, { mode: 0o700 });
+  // environment() monta o PATH a partir de homedir(): HOME da fixture isola o uv falso.
+  const homeAntes = process.env.HOME;
+  process.env.HOME = f.dir;
+  t.after(() => {
+    process.env.HOME = homeAntes;
+  });
+  await writeFile(f.configFile, JSON.stringify({ ...f.config, pin: '0.9.115' }));
+  const divergente = await f.call('ensure');
+  assert.equal(divergente.report.status, 'missing_runtime', JSON.stringify(divergente.report));
+  const result = await f.call('install');
+  assert.equal(result.exitCode, 0, JSON.stringify(result.report));
+  assert.equal(result.report.status, 'installed');
+  assert.equal(result.report.runtime.version, '0.9.115');
+  const argv = await readFile(log, 'utf8');
+  assert.match(argv, /^venv --allow-existing --python 3\.11 /m);
+  assert.match(argv, /^pip sync --python .*--require-hashes --link-mode copy .*requirements\.lock$/m);
+  // Ressincroniza pelo lock com hashes: nunca cai em install sem hashes.
+  assert.doesNotMatch(argv, /^pip install /m);
+});
+
 test('chaves do processo pai não chegam ao extrator', async (t) => {
   const f = await fixture(t);
   process.env.GRAPHIFY_FIXTURE_SECRET = 'private-fixture-value';
