@@ -133,7 +133,8 @@ Deno.test('montarLinhas — grava vigencia do catalogo e fracao, sem CST suposto
   assertEquals(linhas.find((l) => l.cclasstrib === '000001')!.p_red_cbs, 0);
 
   assertEquals(sem_cst, ['900001']);
-  assertEquals(ignoradas, ['200032', 'ABC', '200099']);
+  // Derivado: 200032 repetiu na resposta mas virou linha, entao nao e ignorado.
+  assertEquals(ignoradas, ['ABC', '200099']);
   assertEquals(ambiguas, []);
 
   // `exige_gibscbs` e `ind_dir` nao entram no payload: a API nao os publica e
@@ -246,9 +247,10 @@ Deno.test('montarLinhas — ocorrencia sem descricao nao consome a ocorrencia co
 });
 
 Deno.test('montarLinhas — ordem dos duplicados nao muda resumo nem catalogo', () => {
-  // Mesmo codigo publicado com e sem descricao. A linha gravada e a mesma nas duas
-  // ordens, mas o resumo so listava o codigo em `ignoradas` quando a ocorrencia sem
-  // descricao vinha por ultimo: um codigo gravado aparecia como nao-aproveitado.
+  // Duplicata com ou sem descricao, em qualquer ordem: a linha gravada e a mesma e
+  // o resumo nao pode marcar como nao-aproveitado um codigo que gerou linha. O
+  // resumo e derivado dos conjuntos, nao acumulado durante a leitura (achado do
+  // Devin Review na #549).
   const semDescricaoPrimeiro: ClassificacaoApi[] = [
     { codigo: '200032', descricao: '' },
     { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
@@ -257,17 +259,23 @@ Deno.test('montarLinhas — ordem dos duplicados nao muda resumo nem catalogo', 
     { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
     { codigo: '200032', descricao: '' },
   ];
+  const repetidaComDescricao: ClassificacaoApi[] = [
+    { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
+    { codigo: '200032', descricao: 'Medicamentos registrados na Anvisa' },
+  ];
   const vinculos: SituacaoApi[] = [
     { codigo: '200', classificacoesTributarias: [{ codigo: '200032' }] },
   ];
 
   const primeiro = montarLinhas(semDescricaoPrimeiro, vinculos, 'V0073');
   const ultimo = montarLinhas(semDescricaoUltimo, vinculos, 'V0073');
+  const repetida = montarLinhas(repetidaComDescricao, vinculos, 'V0073');
 
-  assertEquals(primeiro.linhas, ultimo.linhas);
-  assertEquals(primeiro.presentes, ['200032']);
-  assertEquals(primeiro.ignoradas, []);
-  assertEquals(ultimo.ignoradas, []);
+  for (const m of [primeiro, ultimo, repetida]) {
+    assertEquals(m.linhas, primeiro.linhas);
+    assertEquals(m.presentes, ['200032']);
+    assertEquals(m.ignoradas, []);
+  }
 });
 
 Deno.test('montarLinhas — presenca preserva a vigencia acima do piso da API', () => {

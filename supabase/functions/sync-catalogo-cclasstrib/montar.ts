@@ -73,7 +73,11 @@ export interface Mapeamento {
   presentes: string[];
   /** Codigos validos que nenhuma situacao tributaria reivindica. */
   sem_cst: string[];
-  /** Codigos invalidos, vazios, sem descricao ou repetidos na resposta. */
+  /**
+   * Codigos que a resposta publicou e que nao foram aproveitados de nenhuma
+   * forma: invalidos, vazios, sem descricao ou repetidos quando nenhuma
+   * ocorrencia virou linha nem entrou em `sem_cst`.
+   */
   ignoradas: string[];
   /** Codigos que duas situacoes diferentes reivindicam — descartados. */
   ambiguas: string[];
@@ -169,20 +173,19 @@ export function montarLinhas(
   const linhas: LinhaCatalogo[] = [];
   const presentes: string[] = [];
   const sem_cst: string[] = [];
-  const ignoradas: string[] = [];
   const vistos = new Set<string>();
   // Uma ocorrencia sem descricao nao pode consumir o codigo: a Receita manda o
   // mesmo codigo primeiro sem descricao e depois completo, e e a segunda
-  // ocorrencia que vira linha. `decididos` guarda quem ja produziu linha ou sem
-  // CST; `sem_descricao` quem so apareceu sem descricao ate agora.
+  // ocorrencia que vira linha. `decididos` guarda quem produziu linha ou entrou
+  // em `sem_cst`; `apareceram` guarda todo codigo que veio na resposta.
   const decididos = new Set<string>();
-  const sem_descricao = new Set<string>();
+  const apareceram = new Set<string>();
 
   for (const classificacao of classificacoes ?? []) {
     const codigo = String(classificacao?.codigo ?? '').trim();
     const descricao = String(classificacao?.descricao ?? '').trim();
+    apareceram.add(codigo);
     if (!CC_6.test(codigo)) {
-      ignoradas.push(codigo);
       continue;
     }
     // Presenca = "a Receita publicou", nao "virou linha": o contrato de
@@ -194,15 +197,12 @@ export function montarLinhas(
       presentes.push(codigo);
     }
     if (!descricao) {
-      sem_descricao.add(codigo);
       continue;
     }
     if (decididos.has(codigo)) {
-      ignoradas.push(codigo);
       continue;
     }
     decididos.add(codigo);
-    sem_descricao.delete(codigo);
     const cst = porCclasstrib.get(codigo);
     if (!cst) {
       sem_cst.push(codigo);
@@ -221,12 +221,11 @@ export function montarLinhas(
     });
   }
 
-  // Sobrou sem descricao: publicado, mas nao gravavel. Quem ja virou linha numa
-  // ocorrencia anterior fica de fora — a linha existe, entao listar o codigo como
-  // ignorado faria o resumo depender da ordem dos duplicados na resposta da API.
-  for (const codigo of sem_descricao) {
-    if (!decididos.has(codigo)) ignoradas.push(codigo);
-  }
+  // Derivado, nao acumulado na leitura: todo codigo que a resposta publicou e que
+  // nao gerou linha nem entrada em `sem_cst`. Acumular fazia o resumo depender da
+  // ordem das ocorrencias e tratava duplicata com e sem descricao de forma
+  // diferente (achado do Devin Review na #549).
+  const ignoradas = [...apareceram].filter((codigo) => !decididos.has(codigo));
 
   return { linhas, presentes, sem_cst, ignoradas, ambiguas: [...ambiguas] };
 }
