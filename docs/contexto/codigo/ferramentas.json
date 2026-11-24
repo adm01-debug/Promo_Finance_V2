@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2402)",
    "SQL (1146)",
-   "Markdown (225)",
+   "Markdown (229)",
    "JavaScript (76)",
    "JSON (45)",
    "Python (45)",
@@ -112,7 +112,7 @@
    "react-day-picker": "^9.13.0",
    "react-dom": "^19.3.1",
    "react-hook-form": "^7.91.0",
-   "react-i18next": "^17.0.7",
+   "react-i18next": "^18.0.3",
    "react-joyride": "^3.2.0",
    "react-markdown": "^10.1.0",
    "react-resizable-panels": "^4.7.1",
@@ -1274,6 +1274,10 @@
    "arquivos_md": 5
   },
   {
+   "pasta": "docs/qa",
+   "arquivos_md": 4
+  },
+  {
    "pasta": "docs/auditoria",
    "arquivos_md": 2
   },
@@ -1513,7 +1517,7 @@
    {
     "pacote": "react-i18next",
     "servico": "i18next",
-    "versao": "^17.0.7"
+    "versao": "^18.0.3"
    },
    {
     "pacote": "@tanstack/react-query",

@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)",
+   "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)",
    "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)",
    "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)",
-   "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)",
-   "chore: adiciona plano de UX de navegacao em 200 etapas (#529)",
-   "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)"
+   "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
