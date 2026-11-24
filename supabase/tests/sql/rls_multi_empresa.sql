@@ -325,11 +325,31 @@ END $$;
 DO $$
 DECLARE
   requer_update text[] := ARRAY['elisao_creditos_auditoria'];
+  -- Migration que restaura a policy de UPDATE e os GRANTs por coluna da lista
+  -- acima. A exigência só vale quando ela já está no ledger do banco: esta
+  -- suíte roda contra o Postgres de produção (ci.yml usa PROD_DB_URL), onde o
+  -- estado esperado só existe depois do `db push` — sem esta guarda o gate
+  -- reprova o próprio PR que corrige o gap e o check obrigatório trava o merge.
+  versao_que_restaura text := '20261124095000';
+  aplicada boolean;
   t text;
   colunas text[];
   c text;
   offenders text := '';
 BEGIN
+  BEGIN
+    SELECT EXISTS (
+      SELECT 1 FROM supabase_migrations.schema_migrations
+       WHERE version = versao_que_restaura
+    ) INTO aplicada;
+  EXCEPTION
+    -- Sem ledger legível (banco sem o schema de migrations) mantém a exigência:
+    -- não há como provar que a correção já foi aplicada.
+    WHEN undefined_table OR undefined_column OR insufficient_privilege THEN
+      aplicada := true;
+  END;
+
+  IF aplicada THEN
   FOREACH t IN ARRAY requer_update LOOP
     IF NOT EXISTS (
       SELECT 1 FROM pg_policies p
@@ -372,6 +392,9 @@ BEGIN
       END IF;
     END LOOP;
   END LOOP;
+  ELSE
+    RAISE NOTICE '7) migration % ausente do ledger deste banco: exigência de policy/GRANT de UPDATE pulada', versao_que_restaura;
+  END IF;
 
   IF offenders <> '' THEN
     RAISE EXCEPTION 'Tabelas escrevíveis por UPDATE sem policy correspondente:%', offenders;
