@@ -4,5 +4,5 @@ Schemas internos do Supabase ficam fora da introspecção geral (`_analytics, _r
 
 | schema | owner | USAGE para roles da API | comentário |
 |---|---|---|---|
-| private | postgres | authenticated, service_role |  |
+| private | postgres | authenticated, service_role | Namespace PostgreSQL do projeto Supabase: private. Organiza os objetos do schema; este comentário documenta apenas a função de namespace e não define permissões, exposição pela API ou políticas de segurança. |
 | public | pg_database_owner | anon, authenticated, service_role | standard public schema |

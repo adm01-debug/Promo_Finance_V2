@@ -107576,7 +107576,7 @@
     ],
     "schemas": [
       {
-        "comment": null,
+        "comment": "Namespace PostgreSQL do projeto Supabase: private. Organiza os objetos do schema; este comentário documenta apenas a função de namespace e não define permissões, exposição pela API ou políticas de segurança.",
         "name": "private",
         "owner": "postgres",
         "usage_api_roles": "authenticated, service_role"
