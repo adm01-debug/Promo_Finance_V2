@@ -180,7 +180,12 @@ BEGIN
            v_ibs_mun = NULL, v_cbs = NULL, v_is = NULL
      WHERE id = v_nota.id;
 
-    -- Passo 2: troca do conjunto de itens (idempotente se a RPC for rechamada).
+    -- Passo 2: o DELETE deixa a insercao abaixo como unico conjunto de itens
+    -- desta nota. Esta RPC sempre cria uma nota nova (o INSERT do passo 0 nao
+    -- tem upsert), entao rechamar com a mesma `chave_acesso` nao substitui os
+    -- itens da nota existente: bate na constraint UNIQUE e desfaz tudo. Nota
+    -- importada antes da etapa 45 continua sem itens — a reimportacao nao a
+    -- completa.
     DELETE FROM public.notas_fiscais_itens WHERE nota_fiscal_id = v_nota.id;
 
     INSERT INTO public.notas_fiscais_itens (

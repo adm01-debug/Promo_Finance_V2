@@ -468,8 +468,9 @@ export function useImportacaoXMLNFe(empresaId: string) {
           //
           // `v_ibs` não vai daqui de propósito: a RPC o deriva de
           // `v_ibs_uf + v_ibs_mun` para a constraint
-          // `notas_fiscais_itens_v_ibs_soma_ck`. O `ad_rem_is` também não: não
-          // existe no leiaute do IS no XML (só o ICMS tem `adRemICMS`).
+          // `notas_fiscais_itens_v_ibs_soma_ck`. O `ad_rem_is` recebe o
+          // `pISEspec` do IS: é alíquota por unidade (R$), não percentual, então
+          // vai como veio do XML, sem divisão por 100.
           const itens = nfe.itens.map((item, idx) => ({
             n_item: idx + 1,
             c_prod: item.codigo,
@@ -498,6 +499,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
             cclasstrib_is: item.is?.cClassTribIs,
             v_bc_is: item.is?.vBCIs,
             p_is: item.is?.pIs,
+            ad_rem_is: item.is?.pIsEspec,
             v_is: item.is?.vIs,
           }));
 
