@@ -44,6 +44,8 @@ const FUNCOES_PRIVILEGIADAS_AUDITADAS: Record<string, RegExp> = {
   'bitrix24-webhook': /authenticateWebhook\s*\(/,
   'whatsapp-webhook': /authenticateWebhook\s*\(/,
   'calcular-slo-metrics-diario': /exigirChamadaInterna\s*\(/,
+  // Sync do catalogo cClassTrib da RFB (etapa 79): job de pg_cron, sem JWT.
+  'sync-catalogo-cclasstrib': /exigirChamadaInterna\s*\(/,
   'webhook-retry-worker': /exigirChamadaInterna\s*\(/,
   'expert-agent': /exigirUsuario\s*\(/,
   health: /exigirUsuario\s*\(/,
