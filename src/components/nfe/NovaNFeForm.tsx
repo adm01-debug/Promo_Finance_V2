@@ -16,6 +16,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useCatalogoCclasstrib } from '@/hooks/useCatalogoCclasstrib';
 import { calcularGrupoIbscbs, resolverCclassTribPadrao } from '@/lib/nfe/grupo-ibscbs-item';
+import { calcularBaseCalculo } from '@/lib/reforma-tributaria/base-calculo';
 import { toast } from 'sonner';
 import { NotaFiscal, ItemNFe } from './nfe-types';
 
@@ -74,6 +75,14 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
   };
 
   /**
+   * Base oficial do grupo IBS/CBS (art. 11 da LC 214/2025): valor do item menos
+   * ICMS, FCP e (em 2026) PIS/COFINS. O formulario ainda nao coleta esses campos,
+   * entao a base sai pelo valor do item e o aviso da Fase 2 aparece no rodape.
+   */
+  const calcularBaseItem = (item: ItemNFe) =>
+    calcularBaseCalculo({ vProd: item.valorTotal }, ANO_REFERENCIA);
+
+  /**
    * Recalcula o grupo IBS/CBS do item a partir do cClassTrib vigente no catalogo.
    * Sem codigo escolhido o grupo fica limpo: nao ha valor a destacar.
    */
@@ -94,7 +103,7 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
         vIBS: undefined,
       };
     }
-    const grupo = calcularGrupoIbscbs(item.valorTotal, linha, ANO_REFERENCIA);
+    const grupo = calcularGrupoIbscbs(calcularBaseItem(item).baseRG, linha, ANO_REFERENCIA);
     return {
       ...item,
       cClassTrib: linha.cclasstrib,
@@ -120,7 +129,7 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
     if (field === 'quantidade' || field === 'valorUnitario') {
       newItens[index].valorTotal = newItens[index].quantidade * newItens[index].valorUnitario;
     }
-    // NCM completo e sem codigo escolhido assume o padrao de brinde (000001).
+    // NCM completo e sem codigo escolhido assume tributacao integral (000001).
     const padrao =
       field === 'ncm'
         ? resolverCclassTribPadrao(String(value), newItens[index].cClassTrib, codigos)
@@ -131,6 +140,7 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
 
   const totalProdutos = itens.reduce((acc, item) => acc + item.valorTotal, 0);
   const totalIbscbs = itens.reduce((acc, item) => acc + (item.vCBS ?? 0) + (item.vIBS ?? 0), 0);
+  const avisosBase = Array.from(new Set(itens.flatMap((item) => calcularBaseItem(item).avisos)));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -337,6 +347,17 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
             <p className="text-xl font-bold">{formatCurrency(totalIbscbs)}</p>
           </div>
         </div>
+
+        {avisosBase.length > 0 && (
+          <div className="space-y-1 text-xs text-muted-foreground">
+            {avisosBase.map((aviso) => (
+              <p key={aviso} className="flex gap-2">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-warning" />
+                {aviso}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
       <Separator />

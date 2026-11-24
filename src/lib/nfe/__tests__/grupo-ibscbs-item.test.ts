@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CCLASS_TRIB_PADRAO_BRINDE,
+  CCLASS_TRIB_TRIBUTACAO_INTEGRAL,
   calcularGrupoIbscbs,
   resolverCclassTribPadrao,
 } from '../grupo-ibscbs-item';
@@ -38,6 +38,34 @@ describe('calcularGrupoIbscbs', () => {
     expect(calcularGrupoIbscbs(33.33, SEM_REDUCAO, 2026).vCBS).toBe(0.3);
   });
 
+  it('aliquota de 0,9% sobre R$ 5,01 destaca 0,05 (sem dupla rodada)', () => {
+    const grupo = calcularGrupoIbscbs(5.01, SEM_REDUCAO, 2026);
+    expect(grupo.vCBS).toBe(0.05);
+    expect(grupo.vIBSUF).toBe(0.01);
+    expect(grupo.vIBS).toBe(0.01);
+  });
+
+  it('empate exato segue a regra do par (ABNT NBR 5891)', () => {
+    // 5,00 x 0,9% = 0,045 -> 0,04 (centavo par fica)
+    expect(calcularGrupoIbscbs(5, SEM_REDUCAO, 2026).vCBS).toBe(0.04);
+    // 15,00 x 0,1% = 0,015 -> 0,02 (centavo impar sobe para o par)
+    expect(calcularGrupoIbscbs(15, SEM_REDUCAO, 2026).vIBSUF).toBe(0.02);
+    // 5,00 x 0,1% = 0,005 -> 0,00
+    expect(calcularGrupoIbscbs(5, SEM_REDUCAO, 2026).vIBSUF).toBe(0);
+  });
+
+  it('codigo que dispensa o grupo de valores nao destaca tributo', () => {
+    const grupo = calcularGrupoIbscbs(
+      100,
+      { pRedCbs: 1, pRedIbsUf: 1, pRedIbsMun: 1, exigeGibscbs: false },
+      2026
+    );
+    expect(grupo.vBC).toBe(100);
+    expect(grupo.vCBS).toBe(0);
+    expect(grupo.vIBSUF).toBe(0);
+    expect(grupo.vIBS).toBe(0);
+  });
+
   it('reducao acima de 100% ou corrompida nao vira aliquota negativa', () => {
     const acima = calcularGrupoIbscbs(100, { pRedCbs: 1.5, pRedIbsUf: 1.5, pRedIbsMun: 1.5 }, 2026);
     expect(acima.vCBS).toBe(0);
@@ -68,11 +96,11 @@ describe('calcularGrupoIbscbs', () => {
 });
 
 describe('resolverCclassTribPadrao', () => {
-  const comCatalogo = new Set([CCLASS_TRIB_PADRAO_BRINDE, '200032']);
+  const comCatalogo = new Set([CCLASS_TRIB_TRIBUTACAO_INTEGRAL, '200032']);
 
-  it('NCM completo sem codigo escolhido assume o padrao de brinde', () => {
+  it('NCM completo sem codigo escolhido assume tributacao integral', () => {
     expect(resolverCclassTribPadrao('9505.90.00', undefined, comCatalogo)).toBe(
-      CCLASS_TRIB_PADRAO_BRINDE
+      CCLASS_TRIB_TRIBUTACAO_INTEGRAL
     );
   });
 
