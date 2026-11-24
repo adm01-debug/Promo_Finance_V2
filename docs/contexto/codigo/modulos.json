@@ -4193,7 +4193,7 @@
    "modulo": "components/nfe",
    "arquivos": 31,
    "testes": 3,
-   "linhas": 5967,
+   "linhas": 6091,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -4201,6 +4201,7 @@
    "hooks_locais": [
     "useAuth",
     "useBlingNFe",
+    "useCatalogoCclasstrib",
     "useCentrosCusto",
     "useClientes",
     "useClientesPaginated",
@@ -4227,18 +4228,29 @@
     "guardar-xml-nfe-autorizada"
    ],
    "tabelas": [
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
     "boletos",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "centros_custo",
     "clientes",
+    "cnaes",
     "contas_pagar",
     "contas_receber",
     "divergencias_conciliacao",
     "empresas",
+    "faixas_simples_nacional",
     "fornecedores",
     "frontend_error_logs",
     "frontend_performance_logs",
+    "itens_lista_iss",
+    "ncms",
     "notas_fiscais",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
     "regras_roteamento_financeiro",
+    "ufs",
     "user_empresas",
     "vw_contas_pagar_painel",
     "vw_contas_receber_painel"
@@ -4253,6 +4265,8 @@
     "DEV",
     "MODE",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -4275,7 +4289,9 @@
    "depende_de_modulos": [
     "components/ui",
     "hooks",
-    "lib"
+    "lib",
+    "lib/nfe",
+    "lib/reforma-tributaria"
    ],
    "pacotes_externos": [
     "framer-motion",
@@ -4723,6 +4739,7 @@
     "useBudgets",
     "useBudgetsWithSpent",
     "useBulkActions",
+    "useCatalogoCclasstrib",
     "useCatalogosFiscais",
     "useCategoria",
     "useCategorias",
@@ -4943,6 +4960,8 @@
     "bloqueios_duplicidade",
     "boletos",
     "budgets",
+    "catalogo_cclasstrib",
+    "catalogo_ncm",
     "categorias",
     "centros_custo",
     "clientes",
@@ -5045,6 +5064,8 @@
     "DEV",
     "MODE",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -6485,9 +6506,9 @@
   },
   {
    "modulo": "hooks",
-   "arquivos": 229,
+   "arquivos": 230,
    "testes": 9,
-   "linhas": 36013,
+   "linhas": 36047,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -6575,6 +6596,7 @@
     "useCancelTransferencia",
     "useCancelamentoNFe",
     "useCashbackSimulador",
+    "useCatalogoCclasstrib",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
     "useCategoria",
@@ -7006,6 +7028,7 @@
     "useCalculadoraDadosReais",
     "useCancelamentoNFe",
     "useCashbackSimulador",
+    "useCatalogoCclasstrib",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
     "useCategoria",
@@ -9067,9 +9090,9 @@
   },
   {
    "modulo": "lib/nfe",
-   "arquivos": 2,
-   "testes": 2,
-   "linhas": 481,
+   "arquivos": 3,
+   "testes": 3,
+   "linhas": 613,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9081,7 +9104,10 @@
    "rpcs": [],
    "buckets": [],
    "canais_realtime": [],
-   "env": [],
+   "env": [
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS"
+   ],
    "flags": [],
    "papeis": [],
    "diretos": {
@@ -9090,9 +9116,12 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "components/nfe",
     "hooks"
    ],
-   "depende_de_modulos": [],
+   "depende_de_modulos": [
+    "lib/reforma-tributaria"
+   ],
    "pacotes_externos": []
   },
   {
@@ -9251,8 +9280,10 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "components/nfe",
     "components/reforma-tributaria",
     "lib",
+    "lib/nfe",
     "lib/tributario",
     "types/reforma-tributaria"
    ],
@@ -9473,7 +9504,7 @@
    "modulo": "lib/tributario",
    "arquivos": 120,
    "testes": 80,
-   "linhas": 17257,
+   "linhas": 17297,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9765,6 +9796,7 @@
     "useBulkActions",
     "useCancelTransferencia",
     "useCashbackSimulador",
+    "useCatalogoCclasstrib",
     "useCatalogosFiscais",
     "useCategoria",
     "useCategorias",
@@ -12162,6 +12194,7 @@
     "useCalculadoraDadosReais",
     "useCancelTransferencia",
     "useCashbackSimulador",
+    "useCatalogoCclasstrib",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
     "useCategoria",

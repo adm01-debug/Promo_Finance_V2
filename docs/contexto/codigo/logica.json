@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 288,
+ "total": 289,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 268,
+  "lib": 269,
   "python": 14
  },
  "arquivos": [
@@ -2746,6 +2746,33 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/nfe/grupo-ibscbs-item.ts",
+   "camada": "lib",
+   "exports": [
+    "CCLASS_TRIB_TRIBUTACAO_INTEGRAL",
+    "GrupoIbscbsItem",
+    "ReducaoCatalogo",
+    "calcularGrupoIbscbs",
+    "resolverCclassTribPadrao"
+   ],
+   "export_default": null,
+   "linhas": 132,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/nfe/parse-ibscbs.ts",
    "camada": "lib",
    "exports": [
@@ -3452,8 +3479,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
+    "lib/nfe",
     "lib/reforma-tributaria"
    ],
    "coberto_por_testes": 1,
@@ -3477,10 +3505,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 0,
-   "usado_por_modulos": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
    "coberto_por_testes": 0,
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "src/lib/reforma-tributaria/calcular-tributos.ts",
@@ -3577,9 +3607,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_modulos": [
     "lib",
+    "lib/nfe",
     "lib/reforma-tributaria"
    ],
    "coberto_por_testes": 0,
@@ -5336,10 +5367,11 @@
     "CclasstribCatalogo",
     "NcmCatalogo",
     "ReferenciasFiscais",
-    "buscarReferenciasFiscais"
+    "buscarReferenciasFiscais",
+    "listarCclasstribVigentes"
    ],
    "export_default": null,
-   "linhas": 122,
+   "linhas": 162,
    "tabelas": [
     "catalogo_cclasstrib",
     "catalogo_ncm"
@@ -5351,7 +5383,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "usado_por_modulos": [
     "hooks",
     "lib/tributario"

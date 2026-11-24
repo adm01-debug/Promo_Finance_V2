@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 505,
+ "total": 506,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 427
+  "unit": 428
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 302
+   "arquivos": 303
   },
   {
    "padrao": "outro",
@@ -2581,6 +2581,15 @@
    "casos": 1
   },
   {
+   "arquivo": "src/lib/nfe/__tests__/grupo-ibscbs-item.test.ts",
+   "tipo": "unit",
+   "linhas": 116,
+   "testa": [
+    "src/lib/nfe/grupo-ibscbs-item.ts"
+   ],
+   "casos": 13
+  },
+  {
    "arquivo": "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
    "tipo": "unit",
    "linhas": 145,
@@ -4705,6 +4714,7 @@
   "src/lib/masks.ts": 1,
   "src/lib/navigation-intent.ts": 1,
   "src/lib/navigation.ts": 3,
+  "src/lib/nfe/grupo-ibscbs-item.ts": 1,
   "src/lib/nfe/parse-ibscbs.ts": 2,
   "src/lib/nfe/pre-validar-ibscbs.ts": 1,
   "src/lib/offline/fiscal-cache.ts": 1,
@@ -5108,6 +5118,7 @@
    "src/hooks/useBoletos.types.ts",
    "src/hooks/useBudget.ts",
    "src/hooks/useCalculadoraDadosReais.ts",
+   "src/hooks/useCatalogoCclasstrib.ts",
    "src/hooks/useCatalogoIssMunicipal.ts",
    "src/hooks/useCatalogosFiscais.ts",
    "src/hooks/useCategorizacaoIA.ts",

@@ -4620,8 +4620,11 @@
    "src/components/ui/select.tsx",
    "src/components/ui/separator.tsx",
    "src/components/ui/textarea.tsx",
+   "src/hooks/useCatalogoCclasstrib.ts",
    "src/hooks/useFinancialData.ts",
-   "src/lib/formatters.ts"
+   "src/lib/formatters.ts",
+   "src/lib/nfe/grupo-ibscbs-item.ts",
+   "src/lib/reforma-tributaria/base-calculo.ts"
   ],
   "src/components/nfe/SefazAnalytics.tsx": [
    "src/components/nfe/CustomTooltip.tsx",
@@ -6784,6 +6787,9 @@
   "src/hooks/useCashbackSimulador.ts": [
    "src/types/reforma-tributaria.ts"
   ],
+  "src/hooks/useCatalogoCclasstrib.ts": [
+   "src/lib/tributario/catalogos/cclasstrib.ts"
+  ],
   "src/hooks/useCatalogoIssMunicipal.ts": [
    "src/lib/tributario/catalogos/repositorio.ts",
    "src/lib/tributario/ipi-iss/overlay-iss.ts"
@@ -7649,6 +7655,10 @@
   ],
   "src/lib/navigation.ts": [
    "src/hooks/useAuth.tsx"
+  ],
+  "src/lib/nfe/grupo-ibscbs-item.ts": [
+   "src/lib/reforma-tributaria/arredondamento.ts",
+   "src/lib/reforma-tributaria/regras.ts"
   ],
   "src/lib/ofx-parser.ts": [
    "src/lib/ofx-parser/index.ts"

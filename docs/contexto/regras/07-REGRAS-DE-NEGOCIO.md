@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6a46049884` · branch `main` · 2026-11-24 00:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f7e08e4371` · branch `main` · 2026-11-24 14:19 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2646,6 +2646,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text(`0 - ENTRADA / 1 - SAÍDA`, pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie …
   ```
+- **calcularBaseItem(item: ItemNFe)** — `src/components/nfe/NovaNFeForm.tsx`
+  ```
+  
+  ```
 - **CalculadoraTributos()** — `src/components/reforma-tributaria/CalculadoraTributos.tsx`
   ```
   const { anoReferencia, calcularTributos, regimesEspeciais, impostosSeletivos, faseAtual } = useReformaTributaria(); // Estado do formulário const [valorOperacao, setValorOperacao] = useState<number>(10000); const [tipoOperacao, setTipoOperacao] = useState<TipoOperacao>('venda'); const [ufOrigem, setUfOrigem] = useState('SP'); const [ufDestino, setUfDestino] = useState('RJ'); const [cfop, setCfop] = useState('5102'); const [ncm, setNcm] = useState(''); const [regimeEspecial, setRegimeEspecial] = …
@@ -3097,6 +3101,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **valorRecebidoEfetivo(c: { valor_recebido?: number | null; valor?: number | null; metadata?: unknown; })** — `src/lib/financeiro/valor-recebido-efetivo.ts`
   ```
   if (c.valor_recebido == null) return c.valor ?? 0; if (c.valor_recebido === 0) { const meta = c.metadata && typeof c.metadata === 'object' && !Array.isArray(c.metadata) ? (c.metadata as Record<string, unknown>) : null; if (meta?.acordo_rateio == null) return c.valor ?? 0; } return c.valor_recebido;
+  ```
+- **calcularTributo(base: number, aliquota: number)** — `src/lib/nfe/grupo-ibscbs-item.ts`
+  ```
+  const centavos = Math.round(base * 100); const aliquotaEscala4 = Math.round(arredondarAliquota(aliquota) * 10_000); return centavosPorRegraDoPar(centavos * aliquotaEscala4, 1_000_000) / 100;
   ```
 - **preValidarIbscbs(ctx: ContextoValidacao)** — `src/lib/nfe/pre-validar-ibscbs.ts`
   ```
@@ -4024,6 +4032,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// existe mais na tabela. Falha 100% das vezes, em toda linha.` | `src/lib/supabase-write.ts` |
 | `particleCount: Math.floor(config.particleCount! * 0.5),` | `src/lib/toast-confetti.tsx` |
 | `// de fato" (cota zero do rateio de acordo com 100% de desconto ou` | `src/lib/financeiro/valor-recebido-efetivo.ts` |
+| `* Reducao do catalogo nunca extrapola 0-100%: valor ausente ou corrompido vira` | `src/lib/nfe/grupo-ibscbs-item.ts` |
 | `ibsMun: (REF_IBS * 0.1) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | `ibsMun: (REF_IBS * 0.2) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
 | `ibsMun: (REF_IBS * 0.3) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
@@ -4118,8 +4127,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// 1ª quota sem juros; demais com SELIC acumulada + 1% no mês do pagamento.` | `src/lib/tributario/darf/consolidar.ts` |
 | `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
 | `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
-| `// Bonificação reduz base ICMS/PIS/COFINS — economia estimada de 2-9% sobre volume` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
-| … +200 linhas — lista completa em `context.json` | |
+| … +201 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -4496,6 +4504,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `staleTime: 30 * 60 * 1000,` | `src/hooks/useBenchmarkSetorial.ts` |
 | `const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);` | `src/hooks/useBlingNFe.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useCalculadoraDadosReais.ts` |
+| `staleTime: 30 * 60 * 1000,` | `src/hooks/useCatalogoCclasstrib.ts` |
 | `staleTime: 10 * 60 * 1000,` | `src/hooks/useCatalogoIssMunicipal.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useCatalogosFiscais.ts` |
 | `gcTime: 60 * 60 * 1000,` | `src/hooks/useCnaes.ts` |
@@ -5158,7 +5167,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3802 testes em 338 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3817 testes em 339 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5233,6 +5242,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/ui/__tests__/button.test.tsx` | 15 | Button · renders with text · renders default variant with bg-acc (Vela) · renders destructive variant … |
 | `src/components/ui/__tests__/input.test.tsx` | 15 | Input · renders with placeholder · renders default variant with border · renders filled variant … |
 | `src/hooks/__tests__/savedFilterDedup.test.ts` | 15 | savedFilterDedup > checkShouldDispatch · aceita evento novo nunca visto · rejeita duplicata in-session via Set · rejeita evento mais antigo ou igual ao last_seen_at (cross-refresh) … |
+| `src/lib/nfe/__tests__/grupo-ibscbs-item.test.ts` | 15 | calcularGrupoIbscbs · sem reducao aplica a aliquota cheia de 2026 · reducao de 60% corta a aliquota efetiva, nao o valor de base · arredonda o valor destacado em 2 casas (politica ABNT NBR 5891) … |
 | `src/lib/tributario/__tests__/comparativo-conformidade.test.ts` | 15 | comparativo multiempresa — invariantes estruturais · mantém invariantes em 400 grupos pseudoaleatórios · é determinístico: mesma entrada ⇒ mesma saída · comparativo multiempresa — regras de negócio … |
 | `src/lib/tributario/__tests__/irpj-csll.test.ts` | 15 | IRPJ/CSLL — Lucro Real · aplica 15% + adicional 10% sobre o excedente trimestral · não gera adicional quando a base fica no limite de R$ 20 mil/mês · respeita a trava de 30% na compensação de prejuízo … |
 | `src/lib/tributario/__tests__/overlay-monofasico.test.ts` | 15 | aplicarOverlayMonofasico · não gera override quando o banco confirma o catálogo embarcado · registra inclusão de NCM não coberto pelo motor · registra exclusão de NCM classificado pelo motor … |
@@ -5461,8 +5471,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
 | `src/hooks/__tests__/useFluxoCaixaPage.saldo.test.tsx` | 3 | useFluxoCaixaPage — saldo final zero e projeção vazia (F07) · saldo final legitimamente ZERO nao e trocado pelo saldo inicial · projecao vazia preserva o saldo inicial e variacao zero |
 | `src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts` | 3 | relatórios do EXPERT com contas vencidas · o fluxo de caixa pede contas a pagar vencidas, não só pendentes · o relatório de contas a pagar pede as vencidas e as soma no total |
-| `src/lib/__tests__/brazilian-validators.regression.test.ts` | 3 | brazilian-validators — regressão de API pública · preserva exports históricos · validateCPF/CNPJ geram e validam consistentes |
-| … +38 linhas — lista completa em `context.json` | | |
+| … +39 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6055,4 +6064,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Regra de camadas: um módulo nunca pode depender de uma camada mais alta | `src/lib/arquitetura/modulos.ts` |
 | (número menor). Ex.: domínio (3) não pode depender de apresentação (1). | `src/lib/arquitetura/modulos.ts` |
 | * Calcula apenas métricas sustentadas pelos pedidos persistidos. Lead time e | `src/lib/compras/pedidos.ts` |
-| … +455 linhas — lista completa em `context.json` | |
+| … +457 linhas — lista completa em `context.json` | |

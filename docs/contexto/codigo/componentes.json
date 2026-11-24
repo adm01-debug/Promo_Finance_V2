@@ -8220,9 +8220,10 @@
     "NovaNFeForm"
    ],
    "export_default": null,
-   "linhas": 262,
+   "linhas": 386,
    "dominio": "components/nfe",
    "hooks_locais": [
+    "useCatalogoCclasstrib",
     "useEmpresas"
    ],
    "tabelas": [],

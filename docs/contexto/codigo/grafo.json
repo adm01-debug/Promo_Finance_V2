@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2020,
- "arestas": 8527,
+ "nos": 2022,
+ "arestas": 8533,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -280,7 +280,6 @@
   "src/hooks/usePrefetchRoutes.tsx",
   "src/lib/arquitetura/escopo-empresa.ts",
   "src/lib/nfe/pre-validar-ibscbs.ts",
-  "src/lib/reforma-tributaria/base-calculo.ts",
   "src/lib/reforma-tributaria/totalizar.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",
   "supabase/functions/external-data/validate_contract.ts",

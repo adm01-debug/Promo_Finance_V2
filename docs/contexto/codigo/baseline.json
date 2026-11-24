@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "6a46049884e6f22c7b893491f24413437e76a2ee",
+  "commit": "f7e08e4371a55c7699aa588380588fc4d5d47954",
   "branch": "main",
-  "data_commit": "2026-11-23T21:18:59-03:00",
+  "data_commit": "2026-11-24T11:16:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f7e08e4",
+    "data": "2026-11-24",
+    "assunto": "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)"
+   },
    {
     "sha": "6a46049",
     "data": "2026-11-23",
@@ -126,14 +131,9 @@
     "sha": "ce2dfdb",
     "data": "2026-11-21",
     "assunto": "chore: remove baseline histórica pré-correção (etapa 30)"
-   },
-   {
-    "sha": "9e6fc7b",
-    "data": "2026-11-21",
-    "assunto": "feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)"
    }
   ],
-  "arquivos_mudados_7d": 475,
+  "arquivos_mudados_7d": 356,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -145,7 +145,7 @@
    },
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 38
+    "mudancas": 39
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -157,7 +157,7 @@
    },
    {
     "pasta": "src/components/nfe",
-    "mudancas": 31
+    "mudancas": 32
    },
    {
     "pasta": "src/components/contas-receber",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 276
+    "commits": 277
    },
    {
     "autor": "dependabot[bot]",
@@ -318,21 +318,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4041,
-  "arquivos_codigo": 2518,
-  "linhas_codigo": 450531,
+  "arquivos_total": 4044,
+  "arquivos_codigo": 2521,
+  "linhas_codigo": 450977,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 129,
   "componentes": 993,
-  "hooks": 275,
+  "hooks": 276,
   "edge_functions": 108,
   "tabelas": 317,
   "migrations": 1073,
   "cron_jobs": 23,
-  "testes": 505,
+  "testes": 506,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 225
@@ -644,7 +644,7 @@
   },
   "src/components": {
    "arquivos": 1003,
-   "linhas": 165173
+   "linhas": 165297
   },
   "src/config": {
    "arquivos": 2,
@@ -655,8 +655,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 326,
-   "linhas": 48556
+   "arquivos": 327,
+   "linhas": 48590
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -667,8 +667,8 @@
    "linhas": 20177
   },
   "src/lib": {
-   "arquivos": 428,
-   "linhas": 57099
+   "arquivos": 430,
+   "linhas": 57387
   },
   "src/main.tsx": {
    "arquivos": 1,
