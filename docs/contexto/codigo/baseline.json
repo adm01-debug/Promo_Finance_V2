@@ -2,11 +2,26 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "4d880db6e91d659d2107c9b77bbe964c67f0a640",
+  "commit": "6ef837b49caa15a692ddb517e0d01e4828b844cb",
   "branch": "main",
-  "data_commit": "2026-11-24T14:29:04-03:00",
+  "data_commit": "2026-11-24T14:29:26-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6ef837b",
+    "data": "2026-11-24",
+    "assunto": "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)"
+   },
+   {
+    "sha": "3f209ea",
+    "data": "2026-11-24",
+    "assunto": "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)"
+   },
+   {
+    "sha": "62b115c",
+    "data": "2026-11-24",
+    "assunto": "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)"
+   },
    {
     "sha": "4d880db",
     "data": "2026-11-24",
@@ -116,21 +131,6 @@
     "sha": "96b4a9b",
     "data": "2026-11-21",
     "assunto": "infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)"
-   },
-   {
-    "sha": "e76f879",
-    "data": "2026-11-21",
-    "assunto": "infra: cria notas_fiscais_itens (etapa 32 RT/RFB) (#511)"
-   },
-   {
-    "sha": "5148e34",
-    "data": "2026-11-21",
-    "assunto": "infra: catalogos NCM, NBS e aliquota de referencia (etapa 38 RT/RFB) (#517)"
-   },
-   {
-    "sha": "77c3f5d",
-    "data": "2026-11-21",
-    "assunto": "infra: cria catalogo_cclasstrib (etapa 37 RT/RFB) (#516)"
    }
   ],
   "arquivos_mudados_7d": 306,
@@ -164,20 +164,20 @@
     "mudancas": 30
    },
    {
+    "pasta": "package.json",
+    "mudancas": 28
+   },
+   {
     "pasta": "src/hooks/__tests__",
     "mudancas": 27
    },
    {
-    "pasta": "package.json",
-    "mudancas": 25
+    "pasta": "bun.lock",
+    "mudancas": 26
    },
    {
     "pasta": "src/lib/__tests__",
     "mudancas": 24
-   },
-   {
-    "pasta": "bun.lock",
-    "mudancas": 23
    },
    {
     "pasta": "src/lib/reforma-tributaria",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 32
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 30
+    "mudancas": 31
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -305,7 +305,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 15
+    "commits": 18
    },
    {
     "autor": "devin-ai-integration[bot]",

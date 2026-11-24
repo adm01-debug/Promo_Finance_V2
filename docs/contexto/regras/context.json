@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "4d880db6e91d659d2107c9b77bbe964c67f0a640",
+  "sha": "6ef837b49caa15a692ddb517e0d01e4828b844cb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 17:29 UTC",
+  "generated_at": "2026-11-24 17:30 UTC",
   "files_total": 4087,
   "code_files": 3668,
   "code_lines": 522984
@@ -249228,10 +249228,40 @@
   }
  },
  "git": {
-  "sha": "4d880db6e91d659d2107c9b77bbe964c67f0a640",
+  "sha": "6ef837b49caa15a692ddb517e0d01e4828b844cb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "6ef837b",
+    "date": "2026-11-24",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
+   {
+    "sha": "3f209ea",
+    "date": "2026-11-24",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
+   {
+    "sha": "62b115c",
+    "date": "2026-11-24",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "4d880db",
     "date": "2026-11-24",
@@ -249600,47 +249630,17 @@
      "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
      "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
     ]
-   },
-   {
-    "sha": "ce2dfdb",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "chore: remove baseline histórica pré-correção (etapa 30)",
-    "files": [
-     "src/lib/__tests__/__snapshots__/rt-snapshot-pre-correcao.test.ts.snap",
-     "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
-    ]
-   },
-   {
-    "sha": "9e6fc7b",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "feat: locacao_imovel (LC 227/2026) + aplicarOrdemBeneficios (etapa 16 RT) (#503)",
-    "files": [
-     "src/types/reforma-tributaria/enums.ts",
-     "src/types/reforma-tributaria/regimes.ts"
-    ]
-   },
-   {
-    "sha": "2a68642",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "fix: motor de cálculo RT etapas 19-29 — CBS/IBS/split payment/CFOP exportação",
-    "files": [
-     "src/components/reforma-tributaria/ResultadoTributos.tsx",
-     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-     "src/lib/reforma-tributaria/arredondamento.ts",
-     "src/lib/reforma-tributaria/base-calculo.ts",
-     "src/lib/reforma-tributaria/calcular-tributos.ts",
-     "src/lib/reforma-tributaria/creditos.ts",
-     "src/lib/reforma-tributaria/regras.ts",
-     "src/lib/reforma-tributaria/totalizar.ts",
-     "src/lib/reforma-tributaria/types.ts",
-     "src/lib/tributario/calculadora/reforma-tributaria.ts"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "bun.lock",
+    4
+   ],
+   [
+    "package.json",
+    4
+   ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     4
@@ -249686,39 +249686,31 @@
     2
    ],
    [
-    "src/lib/reforma-tributaria/types.ts",
-    2
-   ],
-   [
-    "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts",
-    2
-   ],
-   [
     "docs/receitafederal/ADR-004-TOPOLOGIA-RFB.md",
     2
    ],
    [
-    "src/types/reforma-tributaria/enums.ts",
-    2
+    "docs/qa/01-INVENTARIO.md",
+    1
    ],
    [
-    "src/types/reforma-tributaria/regimes.ts",
-    2
+    "docs/qa/02-CENARIOS.md",
+    1
    ],
    [
-    "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    2
+    "docs/qa/03-ACHADOS.md",
+    1
    ],
    [
-    "src/lib/reforma-tributaria/arredondamento.ts",
-    2
+    "docs/qa/04-PLANO.md",
+    1
    ],
    [
-    "src/lib/reforma-tributaria/calcular-tributos.ts",
-    2
+    "graphify-out/GRAPH_REPORT.md",
+    1
    ],
    [
-    "bun.lock",
+    "graphify-out/manifest.json",
     1
    ]
   ]

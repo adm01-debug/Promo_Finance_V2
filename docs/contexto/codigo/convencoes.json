@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)",
+   "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)",
+   "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)",
    "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)",
-   "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)",
-   "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)",
-   "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)",
-   "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)"
+   "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
