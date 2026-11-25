@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { iconeCategoria } from './categoriaIcones';
+import { iconeCategoria } from './categoria-icones';
 
 interface CategoriaTableProps {
   categorias: Categoria[];

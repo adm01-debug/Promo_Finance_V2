@@ -35,7 +35,7 @@ import {
 } from '@/hooks/useCategorias';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import { iconeCategoria } from './categoriaIcones';
+import { iconeCategoria } from './categoria-icones';
 import { cn } from '@/lib/utils';
 
 const categoriaSchema = z.object({
