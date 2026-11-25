@@ -356,6 +356,9 @@ verify_jwt = false
 [functions.sync-catalogo-ncm-nbs]
 verify_jwt = false
 
+[functions.sync-aliquota-referencia]
+verify_jwt = false
+
 [functions.calculo-iva]
 verify_jwt = true
 

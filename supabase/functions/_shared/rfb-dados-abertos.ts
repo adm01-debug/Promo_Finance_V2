@@ -130,3 +130,22 @@ export function decidirEncerramentos(
   }
   return { ausentes, bloqueado: false };
 }
+
+/**
+ * Erro de status HTTP especifico. A API responde `404` com corpo JSON
+ * ("aliquota de referencia ou padrao nao encontrada") quando a aliquota do ente
+ * ainda nao foi publicada — a partir de 2027, por exemplo. Isso e ausencia de
+ * dado, nao falha: o sync registra e segue.
+ */
+export function erroHttp(e: unknown, status: number): boolean {
+  return e instanceof Error && e.message === `dados_abertos_http_${status}`;
+}
+
+/**
+ * Corpo nao-JSON: o WAF respondeu 200 com HTML, ou seja, bloqueio por taxa. Quem
+ * chama deve parar de insistir — cada tentativa nova renova o bloqueio — e
+ * retomar na proxima execucao.
+ */
+export function erroNaoJson(e: unknown): boolean {
+  return e instanceof Error && e.message.startsWith('dados_abertos_nao_json');
+}

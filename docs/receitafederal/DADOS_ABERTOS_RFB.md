@@ -43,9 +43,18 @@ abaixo vem desse código-fonte, lido em 2026-11-26.
 | `GET /versao` | — | `{versaoApp, descricaoVersaoApp, versaoDb, descricaoVersaoDb, dataVersaoDb, ambiente}` |
 
 `/aliquota-uf` e `/aliquota-municipio` respondem `400` sem o código do ente — é
-parâmetro obrigatório, não ausência de dado. Verificado ao vivo: `/aliquota-uniao`
-respondeu `{"aliquotaReferencia":0.9}` para CBS em 2026, em **pontos
-percentuais** — o banco guarda fração (`0.0090`), como nos `p_red_*`.
+parâmetro obrigatório, não ausência de dado. Verificado ao vivo em 2026-11-26,
+com `data=2026-06-01`: `/aliquota-uniao` respondeu `0.9` para a CBS, `/aliquota-uf`
+`0.1` para `codigoUf=43` e `/aliquota-municipio` `0.0` para
+`codigoMunicipio=4314902`, em **pontos percentuais** — o banco guarda fração
+(`0.0090` / `0.0010` / `0.0000`), como nos `p_red_*`. Nenhuma das três rotas
+publicou `aliquotaPropria` ou `formaAplicacao` em 2026, então guardar só
+`aliquotaReferencia` não perde dado.
+
+Para `data` a partir de 2027 as três rotas de alíquota respondem **404 com corpo
+JSON** (`"Alíquota de referencia ou padrão não encontrada para o tributo…"`): é a
+alíquota ainda não publicada, não falha nem valor zero. O consumidor trata 404
+como ausência e grava o ente em `nao_publicadas`.
 
 ## WAF
 
@@ -145,6 +154,37 @@ NCM do item.
    apenas menos códigos — o que os pisos e o teto já cobrem. `versaoDb` continua
    indo para log e resumo.
 
+## Guardas do sync (etapa 81)
+
+`supabase/functions/sync-aliquota-referencia` espelha `catalogo_aliquota_referencia`
+— tabela criada na etapa 38 e vazia desde então, de modo que a alíquota de
+referência de cada ano da transição não existia em lugar nenhum do sistema.
+
+1. Uma linha por ente e ano: `cbs` (nacional), `ibs_uf` (por UF) e `ibs_mun` (por
+   município). O ano vem de `data`, então `?data=2027-06-01` grava a vigência de
+   2027 sem tocar em 2026.
+2. Gravação por `id`, não por `on_conflict`: a unicidade da tabela são **três
+   índices únicos parciais** (`cbs_uk`, `ibs_uf_uk`, `ibs_mun_uk`, migration
+   `20261122023600`), que o PostgREST não consegue inferir em `on_conflict`. A
+   função lê os ids existentes e faz `upsert` sobre a chave primária.
+3. **404 = não publicada**, não falha: o ente entra em `nao_publicadas` do resumo e
+   a rodada continua. `aliquotaReferencia` ausente ou fora de `[0, 10)` em pontos
+   percentuais também gera ausência, nunca zero — zero é valor válido publicado
+   (o IBS municipal de 2026 é 0,0%) e não pode ser confundido com falta de dado.
+4. Incremental por causa do limitador de taxa: o que falta para o ano é consultado
+   primeiro, o que já existe só completa a rodada depois, e há teto de requisições
+   por execução (`MAX_UFS` 27, `MAX_MUNICIPIOS` 40). A função é idempotente, então
+   a tabela converge em poucas rodadas.
+5. Resposta **não-JSON** (o `200` com HTML `Request Rejected` do limitador)
+   interrompe a rodada: o que já foi gravado fica, e a próxima execução retoma.
+   Não confundir com o 404, que é JSON legítimo.
+6. Universo de municípios = `aliquotas_iss_municipal` (o que o sistema realmente
+   usa, `src/lib/tributario/ipi-iss/overlay-iss.ts`) mais os municípios que já
+   estão no catálogo — consultar os 5.570 municípios seria inútil e impossível sob
+   o limitador. Sigla da UF vem de `/ufs` a cada execução (a tabela guarda sigla,
+   como `uf_brasil`), com aborto se a rota devolver menos de 27 UFs.
+7. Pausa de 1,2 s entre requisições, todas sequenciais.
+
 ## Vigência e o consumidor (etapa 46)
 
 `buscarReferenciasFiscais` (`src/lib/tributario/catalogos/cclasstrib.ts`)
@@ -165,13 +205,21 @@ GET /functions/v1/sync-catalogo-cclasstrib?forcar=true   # ignora a guarda de ve
 
 GET /functions/v1/sync-catalogo-ncm-nbs                  # data = hoje (Brasília)
 GET /functions/v1/sync-catalogo-ncm-nbs?data=2026-12-01
+
+GET /functions/v1/sync-aliquota-referencia?escopo=uf        # CBS + 27 UFs
+GET /functions/v1/sync-aliquota-referencia?escopo=municipio # municípios do ISS
+GET /functions/v1/sync-aliquota-referencia?escopo=todos&data=2027-06-01
+GET /functions/v1/sync-aliquota-referencia?escopo=uf&limite=5
 ```
 
 Autenticação: `x-cron-secret` (`exigirChamadaInterna`, segredo `internal_jobs`).
 Agendamento: pg_cron `40 4 * * *` para o cClassTrib
-(`20261124121000_cron_sync_catalogo_cclasstrib.sql`) e `0 5 * * *` para NCM/NBS
-(`20261126060000_cron_sync_catalogo_ncm_nbs.sql`) — 20 minutos de intervalo
-porque as duas consultam a mesma base oficial e disputam o mesmo limite de taxa.
+(`20261124121000_cron_sync_catalogo_cclasstrib.sql`), `0 5 * * *` para NCM/NBS
+(`20261126060000_cron_sync_catalogo_ncm_nbs.sql`), `20 5 * * *` para as alíquotas
+de UF/CBS (`20261126080000_cron_sync_aliquota_referencia.sql`) e `50 5 * * 0`
+(domingo) para as municipais. O intervalo de 20 minutos entre os jobs não é
+decorativo: os quatro consultam a mesma base oficial e disputam o mesmo limite de
+taxa por IP.
 
 Os jobs só passam a valer depois de deploy da function
 (`functions-deploy.yml`, `deploy_all = true`) e aplicação da migration em
