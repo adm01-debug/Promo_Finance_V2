@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "0f6d93666853e86cdf35b9b2d1009489da2d1822",
+  "sha": "ba276565d6ea7bf695798b2df626c0666bc1aca7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-24 22:14 UTC",
-  "files_total": 4088,
-  "code_files": 3668,
-  "code_lines": 522984
+  "generated_at": "2026-11-25 10:38 UTC",
+  "files_total": 4091,
+  "code_files": 3671,
+  "code_lines": 523510
  },
  "version": "1.3.2",
- "facts_hash": "56ade479769af8e3",
+ "facts_hash": "9948bda084000fb3",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,8 +341,8 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1278,
-   ".sql": 1146,
-   ".tsx": 1124,
+   ".sql": 1148,
+   ".tsx": 1125,
    ".mjs": 67,
    ".py": 45,
    ".js": 8,
@@ -28411,7 +28411,7 @@
      },
      {
       "name": "p_ibs_uf",
-      "type": "numeric(5,4)",
+      "type": "numeric(7,6)",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
@@ -28425,7 +28425,7 @@
      },
      {
       "name": "p_ibs_mun",
-      "type": "numeric(5,4)",
+      "type": "numeric(7,6)",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
@@ -28439,7 +28439,7 @@
      },
      {
       "name": "p_cbs",
-      "type": "numeric(5,4)",
+      "type": "numeric(7,6)",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
@@ -28460,14 +28460,14 @@
      },
      {
       "name": "p_red_aliq",
-      "type": "numeric(5,4)",
+      "type": "numeric(7,6)",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
      },
      {
       "name": "p_aliq_efet",
-      "type": "numeric(5,4)",
+      "type": "numeric(7,6)",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
@@ -28495,7 +28495,7 @@
      },
      {
       "name": "p_is",
-      "type": "numeric(5,4)",
+      "type": "numeric(7,6)",
       "fk": "",
       "generated": "",
       "src": "supabase/migrations/20261122021000_grupo_is_por_item.sql"
@@ -43561,34 +43561,6 @@
      "v_ids"
     ]
    },
-   "registrar_nfe_com_creditos": {
-    "args": "p_empresa_id uuid, p_nota jsonb, p_creditos jsonb DEFAULT '[]'::jsonb",
-    "returns": "public.notas_fiscais",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql",
-    "security_definer": false,
-    "search_path": true,
-    "body": "DECLARE v_nota public.notas_fiscais; v_desconhecidas text; v_colunas text; v_esperados integer := COALESCE(jsonb_array_length(COALESCE(p_creditos, '[]'::jsonb)), 0); v_linhas integer; BEGIN IF auth.uid() IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; IF NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'forbidden_empresa_access' USING ERRCODE = '42501'; END IF; IF p_nota IS NULL OR jsonb_typeof(p_nota) <> 'object' THEN RAISE EXCEPTION 'nota_invalida' USING ERRCODE = '22023'; END IF; SELECT string_agg(k.chave, ', ' ORDER BY k.chave) INTO v_desconhecidas FROM jsonb_object_keys(p_nota) AS k(chave) WHERE k.chave NOT IN ('id', 'empresa_id') AND NOT …",
-    "raises": [
-     "not_authenticated",
-     "forbidden_empresa_access",
-     "nota_invalida",
-     "colunas_inexistentes_em_notas_fiscais: %",
-     "nota_sem_campos",
-     "creditos_nao_gravados: % de % linhas"
-    ],
-    "tables": [
-     "creditos_tributarios",
-     "information_schema",
-     "jsonb_object_keys",
-     "jsonb_populate_record",
-     "jsonb_to_recordset",
-     "notas_fiscais",
-     "v_colunas",
-     "v_desconhecidas",
-     "v_nota"
-    ]
-   },
    "obter_totais_movimentacoes": {
     "args": "p_start date, p_end date, p_tipo text DEFAULT NULL, p_search text DEFAULT NULL",
     "returns": "TABLE (total_entradas numeric, total_saidas numeric)",
@@ -43946,6 +43918,42 @@
      "notas_fiscais",
      "user_empresas",
      "v_empresa_id"
+    ]
+   },
+   "registrar_nfe_com_creditos": {
+    "args": "p_empresa_id uuid, p_nota jsonb, p_creditos jsonb DEFAULT '[]'::jsonb, p_itens jsonb DEFAULT '[]'::jsonb",
+    "returns": "public.notas_fiscais",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "DECLARE v_nota public.notas_fiscais; v_desconhecidas text; v_itens_desconhecidos text; v_colunas text; v_esperados integer := COALESCE(jsonb_array_length(COALESCE(p_creditos, '[]'::jsonb)), 0); v_itens_esperados integer := COALESCE(jsonb_array_length(COALESCE(p_itens, '[]'::jsonb)), 0); v_linhas integer; v_itens_gravados integer; v_soma record; v_tem_grupo boolean := false; BEGIN IF auth.uid() IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; IF NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'forbidden_empresa_access' USING ERRCODE = '42501'; END IF; IF p_nota IS NULL OR jsonb_typeof(p_nota) <> 'object' THEN RAISE EXCEPTION 'nota_invalida' USI …",
+    "raises": [
+     "not_authenticated",
+     "forbidden_empresa_access",
+     "nota_invalida",
+     "itens_invalidos",
+     "colunas_inexistentes_em_notas_fiscais: %",
+     "colunas_inexistentes_em_notas_fiscais_itens: %",
+     "nota_sem_campos",
+     "creditos_nao_gravados: % de % linhas",
+     "itens_nao_gravados: % de % linhas"
+    ],
+    "tables": [
+     "LATERAL",
+     "creditos_tributarios",
+     "information_schema",
+     "jsonb_array_elements",
+     "jsonb_object_keys",
+     "jsonb_populate_record",
+     "jsonb_to_recordset",
+     "notas_fiscais",
+     "notas_fiscais_itens",
+     "v_colunas",
+     "v_desconhecidas",
+     "v_itens_desconhecidos",
+     "v_nota",
+     "v_soma"
     ]
    },
    "exec_sql": {
@@ -51372,6 +51380,8 @@
    "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
    "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
+   "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+   "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -59697,6 +59707,22 @@
     "objkind": "function",
     "roles": "authenticated, service_role",
     "src": "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "registrar_nfe_com_creditos",
+    "objkind": "function",
+    "roles": "PUBLIC, anon",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "registrar_nfe_com_creditos",
+    "objkind": "function",
+    "roles": "authenticated, service_role",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
    }
   ],
   "raises": [
@@ -60411,36 +60437,6 @@
     "src": "supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql"
    },
    {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "not_authenticated",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "forbidden_empresa_access",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "nota_invalida",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "colunas_inexistentes_em_notas_fiscais: %",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "nota_sem_campos",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "creditos_nao_gravados: % de % linhas",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
     "function": "sefaz_process_batch",
     "msg": "sefaz_process_batch: kind desconhecido \"%\"",
     "src": "supabase/migrations/20261122130000_sefaz_batch_grava_grupo_ibscbs.sql"
@@ -60534,6 +60530,51 @@
     "function": "cancelar_nfe_estornar_xml_destacado",
     "msg": "nota_ja_cancelada",
     "src": "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "not_authenticated",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "forbidden_empresa_access",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "nota_invalida",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "itens_invalidos",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "colunas_inexistentes_em_notas_fiscais: %",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "colunas_inexistentes_em_notas_fiscais_itens: %",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "nota_sem_campos",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "creditos_nao_gravados: % de % linhas",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "itens_nao_gravados: % de % linhas",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
    }
   ],
   "seed": [
@@ -71053,8 +71094,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 327,
-   "lines": 48917,
+   "files": 328,
+   "lines": 49084,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -72216,8 +72257,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1073,
-   "lines": 82755,
+   "files": 1075,
+   "lines": 83114,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -126169,6 +126210,22 @@
     "name": "nota emitida 31/12 à noite no Brasil não cai no exercício seguinte"
    },
    {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    "name": "useImportacaoXMLNFe — itens no payload da RPC (etapa 45)"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    "name": "manda um item por det da nota, com o grupo IBS/CBS em fração decimal"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    "name": "não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    "name": "preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100"
+   },
+   {
     "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
     "name": "importarNFes ? valida??o contra cat?logo (etapa 46)"
    },
@@ -152954,34 +153011,6 @@
      "v_ids"
     ]
    },
-   "registrar_nfe_com_creditos": {
-    "args": "p_empresa_id uuid, p_nota jsonb, p_creditos jsonb DEFAULT '[]'::jsonb",
-    "returns": "public.notas_fiscais",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql",
-    "security_definer": false,
-    "search_path": true,
-    "body": "DECLARE v_nota public.notas_fiscais; v_desconhecidas text; v_colunas text; v_esperados integer := COALESCE(jsonb_array_length(COALESCE(p_creditos, '[]'::jsonb)), 0); v_linhas integer; BEGIN IF auth.uid() IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; IF NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'forbidden_empresa_access' USING ERRCODE = '42501'; END IF; IF p_nota IS NULL OR jsonb_typeof(p_nota) <> 'object' THEN RAISE EXCEPTION 'nota_invalida' USING ERRCODE = '22023'; END IF; SELECT string_agg(k.chave, ', ' ORDER BY k.chave) INTO v_desconhecidas FROM jsonb_object_keys(p_nota) AS k(chave) WHERE k.chave NOT IN ('id', 'empresa_id') AND NOT …",
-    "raises": [
-     "not_authenticated",
-     "forbidden_empresa_access",
-     "nota_invalida",
-     "colunas_inexistentes_em_notas_fiscais: %",
-     "nota_sem_campos",
-     "creditos_nao_gravados: % de % linhas"
-    ],
-    "tables": [
-     "creditos_tributarios",
-     "information_schema",
-     "jsonb_object_keys",
-     "jsonb_populate_record",
-     "jsonb_to_recordset",
-     "notas_fiscais",
-     "v_colunas",
-     "v_desconhecidas",
-     "v_nota"
-    ]
-   },
    "obter_totais_movimentacoes": {
     "args": "p_start date, p_end date, p_tipo text DEFAULT NULL, p_search text DEFAULT NULL",
     "returns": "TABLE (total_entradas numeric, total_saidas numeric)",
@@ -153339,6 +153368,42 @@
      "notas_fiscais",
      "user_empresas",
      "v_empresa_id"
+    ]
+   },
+   "registrar_nfe_com_creditos": {
+    "args": "p_empresa_id uuid, p_nota jsonb, p_creditos jsonb DEFAULT '[]'::jsonb, p_itens jsonb DEFAULT '[]'::jsonb",
+    "returns": "public.notas_fiscais",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "DECLARE v_nota public.notas_fiscais; v_desconhecidas text; v_itens_desconhecidos text; v_colunas text; v_esperados integer := COALESCE(jsonb_array_length(COALESCE(p_creditos, '[]'::jsonb)), 0); v_itens_esperados integer := COALESCE(jsonb_array_length(COALESCE(p_itens, '[]'::jsonb)), 0); v_linhas integer; v_itens_gravados integer; v_soma record; v_tem_grupo boolean := false; BEGIN IF auth.uid() IS NULL THEN RAISE EXCEPTION 'not_authenticated' USING ERRCODE = '42501'; END IF; IF NOT public.empresa_acessivel(p_empresa_id) THEN RAISE EXCEPTION 'forbidden_empresa_access' USING ERRCODE = '42501'; END IF; IF p_nota IS NULL OR jsonb_typeof(p_nota) <> 'object' THEN RAISE EXCEPTION 'nota_invalida' USI …",
+    "raises": [
+     "not_authenticated",
+     "forbidden_empresa_access",
+     "nota_invalida",
+     "itens_invalidos",
+     "colunas_inexistentes_em_notas_fiscais: %",
+     "colunas_inexistentes_em_notas_fiscais_itens: %",
+     "nota_sem_campos",
+     "creditos_nao_gravados: % de % linhas",
+     "itens_nao_gravados: % de % linhas"
+    ],
+    "tables": [
+     "LATERAL",
+     "creditos_tributarios",
+     "information_schema",
+     "jsonb_array_elements",
+     "jsonb_object_keys",
+     "jsonb_populate_record",
+     "jsonb_to_recordset",
+     "notas_fiscais",
+     "notas_fiscais_itens",
+     "v_colunas",
+     "v_desconhecidas",
+     "v_itens_desconhecidos",
+     "v_nota",
+     "v_soma"
     ]
    },
    "exec_sql": {
@@ -154385,36 +154450,6 @@
     "src": "supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql"
    },
    {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "not_authenticated",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "forbidden_empresa_access",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "nota_invalida",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "colunas_inexistentes_em_notas_fiscais: %",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "nota_sem_campos",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
-    "function": "registrar_nfe_com_creditos",
-    "msg": "creditos_nao_gravados: % de % linhas",
-    "src": "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql"
-   },
-   {
     "function": "sefaz_process_batch",
     "msg": "sefaz_process_batch: kind desconhecido \"%\"",
     "src": "supabase/migrations/20261122130000_sefaz_batch_grava_grupo_ibscbs.sql"
@@ -154508,6 +154543,51 @@
     "function": "cancelar_nfe_estornar_xml_destacado",
     "msg": "nota_ja_cancelada",
     "src": "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "not_authenticated",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "forbidden_empresa_access",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "nota_invalida",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "itens_invalidos",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "colunas_inexistentes_em_notas_fiscais: %",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "colunas_inexistentes_em_notas_fiscais_itens: %",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "nota_sem_campos",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "creditos_nao_gravados: % de % linhas",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "function": "registrar_nfe_com_creditos",
+    "msg": "itens_nao_gravados: % de % linhas",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
    }
   ],
   "db_generated": [
@@ -163593,6 +163673,7 @@
    "supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql",
    "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
+   "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -171907,6 +171988,22 @@
     "objkind": "function",
     "roles": "authenticated, service_role",
     "src": "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "registrar_nfe_com_creditos",
+    "objkind": "function",
+    "roles": "PUBLIC, anon",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "registrar_nfe_com_creditos",
+    "objkind": "function",
+    "roles": "authenticated, service_role",
+    "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
    }
   ],
   "guards": [
@@ -206182,7 +206279,7 @@
   },
   "src/hooks/useImportacaoXMLNFe.ts": {
    "path": "src/hooks/useImportacaoXMLNFe.ts",
-   "lines": 596,
+   "lines": 639,
    "exports": [
     "const FUSO_PADRAO_BR",
     "const ANO_INICIO_APROPRIACAO",
@@ -211873,6 +211970,18 @@
     "nota sem grupo IBS/CBS cai no estimado, marcado como tal",
     "resumo separa o que veio do XML do que foi estimado",
     "nota emitida 31/12 à noite no Brasil não cai no exercício seguinte"
+   ]
+  },
+  "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx": {
+   "path": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+   "lines": 124,
+   "is_test": true,
+   "doc": "Testes — useImportacaoXMLNFe: itens da nota no payload (etapa 45) A etapa 45 fez os itens subirem na mesma chamada de `registrar_nfe_com_creditos` que grava a nota e os créditos. Antes, a nota importada por XML ficava sem itens e não havia como conferir os totais IBS/CBS (rejeição 1091) nem apurar c …",
+   "tests": [
+    "useImportacaoXMLNFe — itens no payload da RPC (etapa 45)",
+    "manda um item por det da nota, com o grupo IBS/CBS em fração decimal",
+    "não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint",
+    "preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100"
    ]
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx": {
@@ -249115,6 +249224,15 @@
    "lines": 117,
    "uses_service_role": true
   },
+  "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql": {
+   "path": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+   "lines": 318,
+   "uses_service_role": true
+  },
+  "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql": {
+   "path": "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
+   "lines": 41
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -249228,10 +249346,23 @@
   }
  },
  "git": {
-  "sha": "0f6d93666853e86cdf35b9b2d1009489da2d1822",
+  "sha": "ba276565d6ea7bf695798b2df626c0666bc1aca7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ba27656",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)",
+    "files": [
+     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+     "src/hooks/useImportacaoXMLNFe.ts",
+     "src/integrations/supabase/types.ts",
+     "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+     "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql"
+    ]
+   },
    {
     "sha": "0f6d936",
     "date": "2026-11-24",
@@ -249619,15 +249750,6 @@
     "files": [
      "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
     ]
-   },
-   {
-    "sha": "96b4a9b",
-    "date": "2026-11-21",
-    "author": "adm01-debug",
-    "subject": "infra: origem e efeito tributario em creditos_tributarios (etapa 36 RT/RFB) (#515)",
-    "files": [
-     "supabase/migrations/20261122022000_creditos_origem_efeito_tributario.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -249640,11 +249762,15 @@
     6
    ],
    [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    "src/integrations/supabase/types.ts",
+    4
+   ],
+   [
+    "src/hooks/useImportacaoXMLNFe.ts",
     3
    ],
    [
-    "src/integrations/supabase/types.ts",
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     3
    ],
    [
@@ -249680,10 +249806,6 @@
     2
    ],
    [
-    "src/hooks/useImportacaoXMLNFe.ts",
-    2
-   ],
-   [
     "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
     2
    ],
@@ -249692,23 +249814,23 @@
     2
    ],
    [
+    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    1
+   ],
+   [
+    "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
+    1
+   ],
+   [
     "docs/ci/MATRIZ_EDGE_TABELA.md",
     1
    ],
    [
     "docs/receitafederal/rfb-changelog-state.json",
-    1
-   ],
-   [
-    "docs/qa/05-PROGRESSO.md",
-    1
-   ],
-   [
-    "docs/qa/01-INVENTARIO.md",
-    1
-   ],
-   [
-    "docs/qa/02-CENARIOS.md",
     1
    ]
   ]

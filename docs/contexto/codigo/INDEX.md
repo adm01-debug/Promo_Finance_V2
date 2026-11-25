@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0f6d93666853e86cdf35b9b2d1009489da2d1822` (2026-11-24T18:53:01-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ba276565d6ea7bf695798b2df626c0666bc1aca7` (2026-11-25T07:35:32-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2402), SQL (1146), Markdown (230), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2403), SQL (1148), Markdown (230), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4049 |
-| arquivos_codigo | 2521 |
-| linhas_codigo | 451039 |
+| arquivos_total | 4052 |
+| arquivos_codigo | 2522 |
+| linhas_codigo | 451205 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,9 +46,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 276 |
 | edge_functions | 108 |
 | tabelas | 317 |
-| migrations | 1073 |
+| migrations | 1075 |
 | cron_jobs | 23 |
-| testes | 506 |
+| testes | 507 |
 | workflows | 20 |
 | scripts | 116 |
 | docs_md | 230 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (779), src/pages (210), src/hooks (2)
 - hooks: src/hooks (240), src/components (27), src/pages (5)
 - servicos_logica: src/lib (269), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (303), outro (112), co-localizado (*.test) (49)
+- testes: co-localizado (__tests__) (304), outro (112), co-localizado (*.test) (49)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -465,14 +465,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (32)
 - bun.lock (30)
-- .github/workflows/ci.yml (16)
+- .github/workflows/ci.yml (15)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
+- src/integrations/supabase/types.ts (9)
 - supabase/functions/asaas-proxy/index.ts (9)
 - analise-prs/progresso.json (8)
 - env.manifest.json (8)
 - scripts/automation.config.json (8)
-- src/integrations/supabase/types.ts (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - docs/ci/README.md (7)
 - scripts/integrity/baseline/schema-counts.json (7)
@@ -638,6 +638,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-25 `ba27656` feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)
 - 2026-11-24 `0f6d936` fix(docs): regenera README de CI a partir do kpi.json vigente (#553)
 - 2026-11-24 `45de89c` chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)
 - 2026-11-24 `8b0db85` docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)
@@ -652,7 +653,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-24 `f7e08e4` feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)
 - 2026-11-23 `6a46049` feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)
 - 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
-- 2026-11-22 `f423b99` chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

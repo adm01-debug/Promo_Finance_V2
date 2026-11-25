@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `0f6d936668` · branch `main` · 2026-11-24 22:14 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ba276565d6` · branch `main` · 2026-11-25 10:38 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1066,12 +1066,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20261121103000_alinhar_ddl_catalogos.sql` |
 | `verificar_totais_ibscbs_nota` | rejeicao_1091_total_divergente_dos_itens | `supabase/migrations/20261122021500_totais_nota_ibscbs.sql` |
 | `verificar_totais_ibscbs_por_id` | rejeicao_1091_total_divergente_dos_itens | `supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql` |
-| `registrar_nfe_com_creditos` | not_authenticated | `supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql` |
-| `registrar_nfe_com_creditos` | forbidden_empresa_access | `supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql` |
-| `registrar_nfe_com_creditos` | nota_invalida | `supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql` |
-| `registrar_nfe_com_creditos` | colunas_inexistentes_em_notas_fiscais: % | `supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql` |
-| `registrar_nfe_com_creditos` | nota_sem_campos | `supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql` |
-| `registrar_nfe_com_creditos` | creditos_nao_gravados: % de % linhas | `supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql` |
 | `sefaz_process_batch` | sefaz_process_batch: kind desconhecido "%" | `supabase/migrations/20261122130000_sefaz_batch_grava_grupo_ibscbs.sql` |
 | `reprocessar_creditos_nfe` | chave_acesso invalida: % | `supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql` |
 | `reprocessar_creditos_nfe` | creditos devem ser um array jsonb | `supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql` |
@@ -1091,6 +1085,15 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `cancelar_nfe_estornar_xml_destacado` | protocolo_obrigatorio | `supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql` |
 | `cancelar_nfe_estornar_xml_destacado` | sefaz_nao_confirmado | `supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql` |
 | `cancelar_nfe_estornar_xml_destacado` | nota_ja_cancelada | `supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql` |
+| `registrar_nfe_com_creditos` | not_authenticated | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | forbidden_empresa_access | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | nota_invalida | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | itens_invalidos | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | colunas_inexistentes_em_notas_fiscais: % | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | colunas_inexistentes_em_notas_fiscais_itens: % | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | nota_sem_campos | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | creditos_nao_gravados: % de % linhas | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
+| `registrar_nfe_com_creditos` | itens_nao_gravados: % de % linhas | `supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql` |
 
 ## E. Estados, máquinas de estado e transições
 
@@ -5167,7 +5170,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3817 testes em 339 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3821 testes em 340 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5436,6 +5439,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
+| `src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx` | 4 | useImportacaoXMLNFe — itens no payload da RPC (etapa 45) · manda um item por det da nota, com o grupo IBS/CBS em fração decimal · não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint · preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100 |
 | `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 4 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
@@ -5470,8 +5474,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
 | `src/hooks/__tests__/useFluxoCaixaPage.saldo.test.tsx` | 3 | useFluxoCaixaPage — saldo final zero e projeção vazia (F07) · saldo final legitimamente ZERO nao e trocado pelo saldo inicial · projecao vazia preserva o saldo inicial e variacao zero |
-| `src/hooks/expert-actions/__tests__/report-actions.vencido.test.ts` | 3 | relatórios do EXPERT com contas vencidas · o fluxo de caixa pede contas a pagar vencidas, não só pendentes · o relatório de contas a pagar pede as vencidas e as soma no total |
-| … +39 linhas — lista completa em `context.json` | | |
+| … +40 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (303)",
+   "co-localizado (__tests__) (304)",
    "outro (112)",
    "co-localizado (*.test) (49)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)",
    "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)",
    "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)",
    "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)",
-   "chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)",
-   "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)"
+   "chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

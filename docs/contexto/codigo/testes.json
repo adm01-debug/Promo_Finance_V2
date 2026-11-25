@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 506,
+ "total": 507,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 428
+  "unit": 429
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 303
+   "arquivos": 304
   },
   {
    "padrao": "outro",
@@ -1699,6 +1699,15 @@
     "src/hooks/useImportacaoXMLNFe.ts"
    ],
    "casos": 9
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+   "tipo": "unit",
+   "linhas": 123,
+   "testa": [
+    "src/hooks/useImportacaoXMLNFe.ts"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
@@ -4656,7 +4665,7 @@
   "src/hooks/useFluxoCaixa.ts": 3,
   "src/hooks/useFluxoCaixaPage.ts": 2,
   "src/hooks/useGlobalFilterSync.ts": 1,
-  "src/hooks/useImportacaoXMLNFe.ts": 4,
+  "src/hooks/useImportacaoXMLNFe.ts": 5,
   "src/hooks/useIndicesContabeis.ts": 1,
   "src/hooks/useKeyboardNavigation.ts": 1,
   "src/hooks/useKeyboardShortcuts.ts": 1,

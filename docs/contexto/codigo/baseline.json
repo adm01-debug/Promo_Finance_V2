@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "0f6d93666853e86cdf35b9b2d1009489da2d1822",
+  "commit": "ba276565d6ea7bf695798b2df626c0666bc1aca7",
   "branch": "main",
-  "data_commit": "2026-11-24T18:53:01-03:00",
+  "data_commit": "2026-11-25T07:35:32-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ba27656",
+    "data": "2026-11-25",
+    "assunto": "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)"
+   },
    {
     "sha": "0f6d936",
     "data": "2026-11-24",
@@ -126,14 +131,9 @@
     "sha": "a570395",
     "data": "2026-11-22",
     "assunto": "chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)"
-   },
-   {
-    "sha": "4d50a6f",
-    "data": "2026-11-22",
-    "assunto": "infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)"
    }
   ],
-  "arquivos_mudados_7d": 266,
+  "arquivos_mudados_7d": 257,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/components/reforma-tributaria",
@@ -173,7 +173,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 27
+    "mudancas": 28
    },
    {
     "pasta": "src/lib/__tests__",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 16
+    "mudancas": 15
    },
    {
     "arquivo": "PENDENCIAS.md",
@@ -216,6 +216,10 @@
    {
     "arquivo": "RELATORIO_CI.md",
     "mudancas": 11
+   },
+   {
+    "arquivo": "src/integrations/supabase/types.ts",
+    "mudancas": 9
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -231,10 +235,6 @@
    },
    {
     "arquivo": "scripts/automation.config.json",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 8
    },
    {
@@ -278,10 +278,6 @@
     "mudancas": 6
    },
    {
-    "arquivo": ".github/workflows/schema-drift.yml",
-    "mudancas": 5
-   },
-   {
     "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
     "mudancas": 5
    },
@@ -296,12 +292,16 @@
    {
     "arquivo": "scripts/security/test-migration-replay-safety.sh",
     "mudancas": 5
+   },
+   {
+    "arquivo": "src/components/dashboard/DashboardExecutivo.tsx",
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 282
+    "commits": 283
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4049,
-  "arquivos_codigo": 2521,
-  "linhas_codigo": 451039,
+  "arquivos_total": 4052,
+  "arquivos_codigo": 2522,
+  "linhas_codigo": 451205,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,9 +330,9 @@
   "hooks": 276,
   "edge_functions": 108,
   "tabelas": 317,
-  "migrations": 1073,
+  "migrations": 1075,
   "cron_jobs": 23,
-  "testes": 506,
+  "testes": 507,
   "workflows": 20,
   "scripts": 116,
   "docs_md": 230
@@ -655,8 +655,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 327,
-   "linhas": 48590
+   "arquivos": 328,
+   "linhas": 48756
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -794,7 +794,7 @@
   },
   {
    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-   "linhas": 595
+   "linhas": 638
   },
   {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",
