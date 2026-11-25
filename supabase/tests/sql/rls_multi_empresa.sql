@@ -19,36 +19,24 @@
 BEGIN;
 
 -- Helper compartilhado pelos gates 7 e 7c: a exigencia sobre o estado POS-migration
--- so vale depois que a migration que o estabelece chega ao banco. Este suite roda
--- contra o Postgres de producao (ci.yml usa PROD_DB_URL), onde o estado esperado so
--- existe depois do `db push` — sem esta guarda o gate reprova o proprio PR que
--- corrige o gap e o check obrigatorio trava o merge.
--- Nao basta olhar o ledger: o caminho `db_query` direto via MCP (AGENTS.md 4)
--- aplica o DDL sem registrar a versao, e ai o gate ficaria pulado para sempre
--- (verde falso). Por isso qualquer evidencia de que a migration ja rodou tambem
--- arma a exigencia, mesmo com ledger vazio.
--- A evidencia e so o que a migration 20261124095000 cria e nada antes dela:
--- a policy "Admin/financeiro can update creditos auditoria" e o GRANT de UPDATE
--- por coluna. A funcao e o gatilho existem desde 20260508142905 e por isso NAO
--- servem de sinal — um banco que ainda os tenha (antes do endurecimento) seria
--- cobrado a exigir a policy antes do restauro.
--- Sem ledger legivel e sem evidencia, mantem a exigencia (fail-safe): nao ha como
--- provar que a correcao foi aplicada.
-CREATE OR REPLACE FUNCTION pg_temp.estado_final_exigido(versao text) RETURNS boolean
+-- so vale depois que a migration que o estabelece entra no ledger do banco. Este
+-- suite roda contra o Postgres de producao (ci.yml usa PROD_DB_URL), onde o estado
+-- esperado so existe depois do `db push` — sem esta guarda o gate reprova o proprio
+-- PR que corrige o gap e o check obrigatorio trava o merge.
+-- Nao da para inferir "migration aplicada" pelo estado dos objetos: em 2026-11-25 o
+-- GRANT de UPDATE por coluna existia em producao sem a policy e sem o gatilho, e uma
+-- inferencia por evidencia parcial reprovava o CI antes da migration ser aplicada.
+-- Quem aplica sem passar pelo `db push` (db_query via MCP, AGENTS.md 4) deixa o
+-- ledger vazio: nesse caso o gate avisa em WARNING com o que esta faltando, em vez
+-- de pular em silencio.
+-- Sem ledger legivel mantem a exigencia (fail-safe): nao ha como provar que a
+-- correcao foi aplicada.
+CREATE OR REPLACE FUNCTION pg_temp.migration_aplicada(versao text) RETURNS boolean
 LANGUAGE plpgsql AS $gate$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = versao
-  )
-  OR EXISTS (
-    SELECT 1 FROM pg_policies p
-     WHERE p.schemaname = 'public'
-       AND p.tablename = 'elisao_creditos_auditoria'
-       AND p.policyname = 'Admin/financeiro can update creditos auditoria'
-  )
-  OR has_column_privilege('authenticated',
-                          'public.elisao_creditos_auditoria',
-                          'status_aprovacao', 'UPDATE');
+  );
 EXCEPTION
   WHEN undefined_table OR undefined_column OR invalid_schema_name OR insufficient_privilege THEN
     RETURN true;
@@ -363,14 +351,14 @@ DO $$
 DECLARE
   requer_update text[] := ARRAY['elisao_creditos_auditoria'];
   -- Migration que restaura a policy de UPDATE, os GRANTs por coluna e o gatilho
-  -- da trilha de decisao. Ver pg_temp.estado_final_exigido para a razao da guarda.
+  -- da trilha de decisao. Ver pg_temp.migration_aplicada para a razao da guarda.
   versao_que_restaura text := '20261124095000';
   t text;
   colunas text[];
   c text;
   offenders text := '';
 BEGIN
-  IF pg_temp.estado_final_exigido(versao_que_restaura) THEN
+  IF pg_temp.migration_aplicada(versao_que_restaura) THEN
   FOREACH t IN ARRAY requer_update LOOP
     IF NOT EXISTS (
       SELECT 1 FROM pg_policies p
@@ -431,7 +419,28 @@ BEGIN
       offenders := offenders || E'\n  - public.elisao_creditos_auditoria: gatilho tr_registrar_decisao_elisao ausente (trilha de decisao nao e gravada)';
     END IF;
   ELSE
-    RAISE NOTICE '7) migration % ainda nao aplicada neste banco: exigência de policy/GRANT de UPDATE pulada', versao_que_restaura;
+    -- A migration ainda nao esta no ledger: exigir o estado final aqui reprovaria o
+    -- proprio PR que restaura o gap. Pular em silencio, porem, esconderia um DDL
+    -- aplicado fora do `db push` que deixou o caminho de escrita pela metade, entao
+    -- o WARNING abaixo nomeia o que falta hoje.
+    RAISE WARNING '7) migration % ainda nao aplicada neste banco (ledger): exigencia de policy/GRANT de UPDATE pulada; estado atual: policy UPDATE=%, gatilho tr_registrar_decisao_elisao=%',
+      versao_que_restaura,
+      EXISTS (
+        SELECT 1 FROM pg_policies p
+        WHERE p.schemaname = 'public'
+          AND p.tablename = 'elisao_creditos_auditoria'
+          AND p.policyname = 'Admin/financeiro can update creditos auditoria'
+      ),
+      EXISTS (
+        SELECT 1
+          FROM pg_trigger tg
+          JOIN pg_class c ON c.oid = tg.tgrelid
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+         WHERE n.nspname = 'public'
+           AND c.relname = 'elisao_creditos_auditoria'
+           AND tg.tgname = 'tr_registrar_decisao_elisao'
+           AND NOT tg.tgisinternal
+      );
   END IF;
 
   IF offenders <> '' THEN
@@ -460,9 +469,9 @@ DECLARE
   data_primeira timestamptz;
 BEGIN
   -- Mesma razao do gate 7: o gatilho real so existe depois que a migration
-  -- 20261124095000 chega ao banco (pelo ledger ou por aplicacao direta).
-  IF NOT pg_temp.estado_final_exigido('20261124095000') THEN
-    RAISE NOTICE '7c) migration 20261124095000 ainda nao aplicada neste banco: checagem comportamental do gatilho pulada';
+  -- 20261124095000 entra no ledger do banco.
+  IF NOT pg_temp.migration_aplicada('20261124095000') THEN
+    RAISE WARNING '7c) migration 20261124095000 ainda nao aplicada neste banco (ledger): checagem comportamental do gatilho pulada';
     RETURN;
   END IF;
 
