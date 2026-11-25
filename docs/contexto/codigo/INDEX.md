@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `729184f29e353e4c35da88ad4ab80ca9f2f129fe` (2026-11-25T13:25:38-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b449a652bf22e9722162735c9b34ad780163c9d8` (2026-11-25T16:17:35-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2407), SQL (1152), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2409), SQL (1152), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4063 |
-| arquivos_codigo | 2528 |
-| linhas_codigo | 452595 |
+| arquivos_total | 4065 |
+| arquivos_codigo | 2530 |
+| linhas_codigo | 452740 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 317 |
 | migrations | 1079 |
 | cron_jobs | 24 |
-| testes | 510 |
+| testes | 511 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 231 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (779), src/pages (210), src/hooks (2)
 - hooks: src/hooks (240), src/components (27), src/pages (5)
 - servicos_logica: src/lib (269), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (306), outro (113), co-localizado (*.test) (49)
+- testes: co-localizado (__tests__) (307), outro (113), co-localizado (*.test) (49)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -465,9 +465,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (33)
-- bun.lock (31)
-- .github/workflows/ci.yml (14)
+- package.json (34)
+- bun.lock (32)
+- .github/workflows/ci.yml (12)
 - src/integrations/supabase/types.ts (10)
 - supabase/functions/asaas-proxy/index.ts (10)
 - env.manifest.json (9)
@@ -640,6 +640,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-25 `b449a65` fix: remove import wildcard de lucide-react no chunk de Categorias (#559)
 - 2026-11-25 `729184f` fix: migra react-day-picker para v10 (calendar + callers) (#544)
 - 2026-11-25 `448f7ea` fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)
 - 2026-11-25 `d32f10e` fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)
@@ -654,7 +655,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-24 `8b0db85` docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)
 - 2026-11-24 `274d1f7` chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)
 - 2026-11-24 `04504ef` chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)
-- 2026-11-24 `6ef837b` chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

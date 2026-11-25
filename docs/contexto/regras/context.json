@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "729184f29e353e4c35da88ad4ab80ca9f2f129fe",
+  "sha": "b449a652bf22e9722162735c9b34ad780163c9d8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 16:26 UTC",
-  "files_total": 4102,
-  "code_files": 3681,
-  "code_lines": 525631
+  "generated_at": "2026-11-25 19:18 UTC",
+  "files_total": 4104,
+  "code_files": 3683,
+  "code_lines": 525778
  },
  "version": "1.3.2",
- "facts_hash": "b2b23aaa346db786",
+ "facts_hash": "b55b6e83e72428c6",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -47,7 +47,7 @@
     "in": "package.json"
    },
    "lucide-react": {
-    "version": "^0.577.0",
+    "version": "^1.77.0",
     "role": "Ícones Lucide",
     "in": "package.json"
    },
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1281,
+   ".ts": 1283,
    ".sql": 1152,
    ".tsx": 1126,
    ".mjs": 68,
@@ -61971,7 +61971,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 105
+    "deps_count": 106
    },
    {
     "path": "/centro-custos",
@@ -67817,7 +67817,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1006,
+  "components_count": 1008,
   "hooks": [
    {
     "name": "useContacts",
@@ -70866,8 +70866,8 @@
   },
   {
    "module": "src/components",
-   "files": 1004,
-   "lines": 166360,
+   "files": 1006,
+   "lines": 166507,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -122642,6 +122642,26 @@
    {
     "file": "src/components/boletos/__tests__/BoletoBarcode.test.tsx",
     "name": "copia so digitos da linha digitavel formatada"
+   },
+   {
+    "file": "src/components/categorias/__tests__/categoria-icones.test.ts",
+    "name": "iconeCategoria"
+   },
+   {
+    "file": "src/components/categorias/__tests__/categoria-icones.test.ts",
+    "name": "resolve todos os ícones oferecidos pelo seletor"
+   },
+   {
+    "file": "src/components/categorias/__tests__/categoria-icones.test.ts",
+    "name": "resolve os ícones gravados pela carga inicial de categorias"
+   },
+   {
+    "file": "src/components/categorias/__tests__/categoria-icones.test.ts",
+    "name": "cai no Tag quando o nome não está no mapa"
+   },
+   {
+    "file": "src/components/categorias/__tests__/categoria-icones.test.ts",
+    "name": "não resolve chaves herdadas do protótipo do objeto"
    },
    {
     "file": "src/components/cobranca/__tests__/CustomerDeepScore.test.tsx",
@@ -185800,7 +185820,7 @@
   },
   "src/components/categorias/CategoriaForm.tsx": {
    "path": "src/components/categorias/CategoriaForm.tsx",
-   "lines": 213,
+   "lines": 212,
    "exports": [
     "function CategoriaForm"
    ],
@@ -185816,9 +185836,32 @@
   },
   "src/components/categorias/CategoriaTable.tsx": {
    "path": "src/components/categorias/CategoriaTable.tsx",
-   "lines": 116,
+   "lines": 115,
    "exports": [
     "function CategoriaTable"
+   ]
+  },
+  "src/components/categorias/categoria-icones.ts": {
+   "path": "src/components/categorias/categoria-icones.ts",
+   "lines": 81,
+   "exports": [
+    "const CATEGORIA_ICONES",
+    "function iconeCategoria"
+   ]
+  },
+  "src/components/categorias/__tests__/categoria-icones.test.ts": {
+   "path": "src/components/categorias/__tests__/categoria-icones.test.ts",
+   "lines": 68,
+   "is_test": true,
+   "rule_comments": [
+    "todas elas, e não apenas \"ao menos uma\", para que uma linha que o extrator"
+   ],
+   "tests": [
+    "iconeCategoria",
+    "resolve todos os ícones oferecidos pelo seletor",
+    "resolve os ícones gravados pela carga inicial de categorias",
+    "cai no Tag quando o nome não está no mapa",
+    "não resolve chaves herdadas do protótipo do objeto"
    ]
   },
   "src/components/centros-custo/CentroCustoExport.tsx": {
@@ -249706,10 +249749,24 @@
   }
  },
  "git": {
-  "sha": "729184f29e353e4c35da88ad4ab80ca9f2f129fe",
+  "sha": "b449a652bf22e9722162735c9b34ad780163c9d8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b449a65",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "fix: remove import wildcard de lucide-react no chunk de Categorias (#559)",
+    "files": [
+     "bun.lock",
+     "package.json",
+     "src/components/categorias/CategoriaForm.tsx",
+     "src/components/categorias/CategoriaTable.tsx",
+     "src/components/categorias/__tests__/categoria-icones.test.ts",
+     "src/components/categorias/categoria-icones.ts"
+    ]
+   },
    {
     "sha": "729184f",
     "date": "2026-11-25",
@@ -250118,25 +250175,16 @@
     "files": [
      "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
     ]
-   },
-   {
-    "sha": "8254da0",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)",
-    "files": [
-     "supabase/functions/projecao-reforma/index.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    7
+    8
    ],
    [
     "package.json",
-    7
+    8
    ],
    [
     "src/lib/tributario/catalogos/cclasstrib.ts",

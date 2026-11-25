@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `729184f29e` · branch `main` · 2026-11-25 16:26 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b449a652bf` · branch `main` · 2026-11-25 19:18 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5177,7 +5177,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3840 testes em 342 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3845 testes em 343 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5420,6 +5420,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/__tests__/regression-fixes.test.tsx` | 5 | EmpresaHeroKPI (regressão: require() no render quebrava a página) · renderiza sem lançar com dados consolidados · PageHeader (regressão: prop icon era aceito e nunca renderizado) · renderiza o ícone quando fornecido … |
 | `src/components/admin/telemetry/__tests__/RetentionPoliciesPanel.test.tsx` | 5 | RetentionPoliciesPanel · sinaliza cobertura total quando todas as tabelas têm política · destaca tabelas sem política de retenção · filtra apenas as tabelas com registros vencidos … |
 | `src/components/boletos/__tests__/BoletoBarcode.test.tsx` | 5 | BoletoBarcode · mostra o codigo do PROVEDOR, sem fabricar nada · o tamanho exibido e o do codigo recebido, nao um rotulo fixo de 44 · sem codigo do provedor, diz que nao tem -- e nao oferece copia … |
+| `src/components/categorias/__tests__/categoria-icones.test.ts` | 5 | iconeCategoria · resolve todos os ícones oferecidos pelo seletor · resolve os ícones gravados pela carga inicial de categorias · cai no Tag quando o nome não está no mapa … |
 | `src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx` | 5 | ValidacoesPreSpedDialog — bloqueio de download por erros · desabilita .txt e .zip quando há erros em validacoes.erros · habilita .txt e .zip quando validacoes.erros está vazio (mesmo com avisos) · habilita downloads quando não há erros nem avisos … |
 | `src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx` | 5 | NF-e nao anuncia ato fiscal que nao aconteceu (F12) · inutilizacao: botao desabilitado, aviso na tela e simulador nunca chamado · cancelamento: botao desabilitado e sem chamada ao simulador · contingencia: transmissao de pendentes desabilitada … |
 | `src/hooks/useCancelamentoNFe.test.ts` | 5 | useCancelamentoNFe -- estorno xml_destacado (etapa 58) · sefazConfirmado=false -> retorna early, nao chama rpc nem registra evento · sefazConfirmado=true + rpc ok -> ok=true, creditosEstornados=2, evento gravado com chaveAcesso · sefazConfirmado=true + rpc erro -> ok=false com reason … |
@@ -5480,8 +5481,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/onboarding/__tests__/OnboardingTour.zIndex.test.tsx` | 3 | OnboardingTour — prioridade visual (zIndex) · passa options.zIndex=10000 para o Joyride (sobreposição do tour) · mantém styles.tooltip.zIndex=10000 (tooltip do tour) |
 | `src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx` | 3 | GestorCreditosTributarios - coluna Disponível (etapa 48/88) · crédito informativo não exibe saldo disponível na linha · crédito apropriável exibe o saldo na linha |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
-| `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
-| … +42 linhas — lista completa em `context.json` | | |
+| … +43 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

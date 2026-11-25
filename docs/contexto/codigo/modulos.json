@@ -1076,9 +1076,9 @@
   },
   {
    "modulo": "components/categorias",
-   "arquivos": 2,
-   "testes": 0,
-   "linhas": 327,
+   "arquivos": 3,
+   "testes": 1,
+   "linhas": 405,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

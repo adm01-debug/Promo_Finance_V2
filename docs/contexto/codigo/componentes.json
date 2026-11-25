@@ -2734,7 +2734,7 @@
     "CategoriaForm"
    ],
    "export_default": null,
-   "linhas": 212,
+   "linhas": 211,
    "dominio": "components/categorias",
    "hooks_locais": [
     "useAuth",
@@ -2752,7 +2752,7 @@
     "CategoriaTable"
    ],
    "export_default": null,
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "components/categorias",
    "hooks_locais": [
     "useDeleteCategoria"

@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 510,
+ "total": 511,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 432
+  "unit": 433
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 306
+   "arquivos": 307
   },
   {
    "padrao": "outro",
@@ -861,6 +861,16 @@
    "linhas": 65,
    "testa": [
     "src/components/boletos/BoletoBarcode.tsx"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/components/categorias/__tests__/categoria-icones.test.ts",
+   "tipo": "unit",
+   "linhas": 67,
+   "testa": [
+    "src/components/categorias/categoria-icones.ts",
+    "src/hooks/useCategorias.ts"
    ],
    "casos": 4
   },
@@ -4575,6 +4585,7 @@
   "src/components/admin/telemetry/TelemetryCharts.tsx": 1,
   "src/components/admin/telemetry/performance-alerts-deeplink.ts": 1,
   "src/components/boletos/BoletoBarcode.tsx": 1,
+  "src/components/categorias/categoria-icones.ts": 1,
   "src/components/cobranca/CustomerDeepScore.tsx": 1,
   "src/components/cobranca/MetricasPorCanal.tsx": 1,
   "src/components/cobranca/PrevisaoInadimplencia.tsx": 2,
@@ -4672,7 +4683,7 @@
   "src/hooks/useBulkActions.ts": 1,
   "src/hooks/useCancelamentoNFe.ts": 1,
   "src/hooks/useCashbackSimulador.ts": 1,
-  "src/hooks/useCategorias.ts": 1,
+  "src/hooks/useCategorias.ts": 2,
   "src/hooks/useCentrosCusto.ts": 1,
   "src/hooks/useCertificadosDigitais.ts": 1,
   "src/hooks/useConciliacao.ts": 1,
