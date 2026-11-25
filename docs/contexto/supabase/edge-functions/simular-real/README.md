@@ -4,7 +4,7 @@
 |---|---|
 | nome | simular-real |
 | status | ACTIVE |
-| versão | 156 |
+| versão | 157 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/simular-real/index.ts |
 | import_map |  |

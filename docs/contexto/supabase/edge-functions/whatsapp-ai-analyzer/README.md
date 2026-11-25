@@ -4,7 +4,7 @@
 |---|---|
 | nome | whatsapp-ai-analyzer |
 | status | ACTIVE |
-| versão | 160 |
+| versão | 161 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/whatsapp-ai-analyzer/index.ts |
 | import_map |  |

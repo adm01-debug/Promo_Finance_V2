@@ -2,6 +2,21 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-25 13:18 UTC
+
+- **colunas** adicionado (1): `public.notas_fiscais_itens.x_prod`
+- **colunas** alterado (6): `public.notas_fiscais_itens.p_aliq_efet`, `public.notas_fiscais_itens.p_cbs`, `public.notas_fiscais_itens.p_ibs_mun`, `public.notas_fiscais_itens.p_ibs_uf`, `public.notas_fiscais_itens.p_is`, `public.notas_fiscais_itens.p_red_aliq`
+- **cron jobs** adicionado (2): `50:reprocessar-creditos-ibscbs`, `51:sync-catalogo-cclasstrib`
+- **edge functions** adicionado (3): `guardar-xml-nfe-autorizada`, `reprocessar-creditos-ibscbs`, `sync-catalogo-cclasstrib`
+- **edge functions** alterado (106): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+66)
+- **functions** adicionado (5): `public.cancelar_nfe_estornar_xml_destacado(p_nota_id uuid, p_protocolo text, p_chave_acesso text, p_sefaz_confirmado boolean)`, `public.registrar_decisao_elisao()`, `public.registrar_nfe_com_creditos(p_empresa_id uuid, p_nota jsonb, p_creditos jsonb, p_itens jsonb)`, `public.reprocessar_creditos_nfe(p_chave_acesso text, p_creditos jsonb)`, `public.salvar_nfe_autorizada(p_empresa_id uuid, p_nota jsonb, p_itens jsonb)`
+- **functions** removido (1): `public.registrar_nfe_com_creditos(p_empresa_id uuid, p_nota jsonb, p_creditos jsonb)`
+- **functions** alterado (2): `public.empresa_acessivel(_empresa_id uuid)`, `public.has_role(_user_id uuid, _role app_role)`
+- **lints** adicionado (1): `policy_auth_fn_not_wrapped:public.elisao_creditos_auditoria.Admin/financeiro can update creditos auditoria`
+- **migrations** adicionado (10): `20261122140000_rpc_reprocessar_creditos_nfe`, `20261122150000_cron_reprocessar_creditos_ibscbs`, `20261122160000_rpc_salvar_nfe_autorizada_itens`, `20261122170000_rpc_cancelar_nfe_estornar_xml_destacado`, `20261124095000_restaura_rls_update_auditoria_elisao`, `20261124095500_rpc_registrar_nfe_grava_itens`, `20261124110000_carga_catalogo_cclasstrib_rfb`, `20261124121000_cron_sync_catalogo_cclasstrib`, `20261124150000_amplia_escala_aliquotas_itens`, `20261124220000_indice_fk_kpis_operacionais`
+- **policies (RLS)** adicionado (1): `public.elisao_creditos_auditoria.Admin/financeiro can update creditos auditoria`
+- **triggers** adicionado (1): `public.elisao_creditos_auditoria.tr_registrar_decisao_elisao`
+
 ## 2026-11-25 11:17 UTC
 
 - **functions** alterado (3): `public.empresa_acessivel(_empresa_id uuid)`, `public.has_any_role(_user_id uuid, _roles app_role[])`, `public.registrar_nfe_com_creditos(p_empresa_id uuid, p_nota jsonb, p_creditos jsonb)`

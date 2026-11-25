@@ -1073,3 +1073,13 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261122040000 | [corrige_trigger_totais_ibscbs_so_header](migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql) | 0 |
 | 20261122123557 | [rpc_registrar_nfe_propaga_origem_credito](migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql) | 2 |
 | 20261122130000 | [sefaz_batch_grava_grupo_ibscbs](migrations/20261122130000_sefaz_batch_grava_grupo_ibscbs.sql) | 1 |
+| 20261122140000 | [rpc_reprocessar_creditos_nfe](migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql) | 6 |
+| 20261122150000 | [cron_reprocessar_creditos_ibscbs](migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql) | 3 |
+| 20261122160000 | [rpc_salvar_nfe_autorizada_itens](migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql) | 5 |
+| 20261122170000 | [rpc_cancelar_nfe_estornar_xml_destacado](migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql) | 4 |
+| 20261124095000 | [restaura_rls_update_auditoria_elisao](migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql) | 8 |
+| 20261124095500 | [rpc_registrar_nfe_grava_itens](migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql) | 6 |
+| 20261124110000 | [carga_catalogo_cclasstrib_rfb](migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql) | 1 |
+| 20261124121000 | [cron_sync_catalogo_cclasstrib](migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql) | 3 |
+| 20261124150000 | [amplia_escala_aliquotas_itens](migrations/20261124150000_amplia_escala_aliquotas_itens.sql) | 4 |
+| 20261124220000 | [indice_fk_kpis_operacionais](migrations/20261124220000_indice_fk_kpis_operacionais.sql) | 1 |

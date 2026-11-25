@@ -8,7 +8,7 @@
 | owner | postgres |
 | RLS habilitado | sim |
 | RLS forçado (owner) | não |
-| policies | 3 |
+| policies | 4 |
 | realtime (publication) | não |
 | replica identity | default |
 | vem de extensão | não |
@@ -65,6 +65,16 @@
 
 ## Policies (RLS)
 
+### `Admin/financeiro can update creditos auditoria`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+| WITH CHECK | `(has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id))` |
+
 ### `creditos_auditoria_delete_admin`
 
 | campo | valor |
@@ -100,6 +110,7 @@
 
 | nome | timing | eventos | nível | status | função |
 |---|---|---|---|---|---|
+| tr_registrar_decisao_elisao | BEFORE | UPDATE | ROW | enabled | public.registrar_decisao_elisao |
 | trg_cred_aud_updated_at | BEFORE | UPDATE | ROW | enabled | public.handle_updated_at |
 
 

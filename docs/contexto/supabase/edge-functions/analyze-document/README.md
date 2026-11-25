@@ -4,7 +4,7 @@
 |---|---|
 | nome | analyze-document |
 | status | ACTIVE |
-| versão | 162 |
+| versão | 163 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/analyze-document/index.ts |
 | import_map |  |

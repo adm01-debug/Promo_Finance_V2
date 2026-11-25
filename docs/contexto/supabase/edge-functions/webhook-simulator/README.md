@@ -4,7 +4,7 @@
 |---|---|
 | nome | webhook-simulator |
 | status | ACTIVE |
-| versão | 158 |
+| versão | 159 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/webhook-simulator/index.ts |
 | import_map |  |
