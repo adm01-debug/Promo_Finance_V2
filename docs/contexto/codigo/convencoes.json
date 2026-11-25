@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)",
    "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)",
    "feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)",
    "feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)",
-   "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)",
-   "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)"
+   "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "f5e0e4882a6906dff88f0f200227dd30b48cd4de",
+  "sha": "cdaca4dca707cba1fac05fb9eb7090b94ba0ec5d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 10:41 UTC",
+  "generated_at": "2026-11-25 11:48 UTC",
   "files_total": 4100,
   "code_files": 3679,
   "code_lines": 525507
@@ -249674,10 +249674,19 @@
   }
  },
  "git": {
-  "sha": "f5e0e4882a6906dff88f0f200227dd30b48cd4de",
+  "sha": "cdaca4dca707cba1fac05fb9eb7090b94ba0ec5d",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "cdaca4d",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)",
+    "files": [
+     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx"
+    ]
+   },
    {
     "sha": "f5e0e48",
     "date": "2026-11-25",
@@ -250080,16 +250089,6 @@
      "supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql",
      "supabase/tests/sql/notas_fiscais_totais_ibscbs.test.sql"
     ]
-   },
-   {
-    "sha": "81d3613",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "feat: regimes especiais LC 214/2025 — etapas 15-16",
-    "files": [
-     "src/types/reforma-tributaria/enums.ts",
-     "src/types/reforma-tributaria/regimes.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -250124,6 +250123,10 @@
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
+   ],
+   [
+    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    2
    ],
    [
     "src/lib/__tests__/edge-functions.security.test.ts",
@@ -250167,10 +250170,6 @@
    ],
    [
     "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
-    1
-   ],
-   [
-    "supabase/tests/sql/rls_multi_empresa.sql",
     1
    ]
   ]

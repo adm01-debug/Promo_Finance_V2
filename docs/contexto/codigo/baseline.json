@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f5e0e4882a6906dff88f0f200227dd30b48cd4de",
+  "commit": "cdaca4dca707cba1fac05fb9eb7090b94ba0ec5d",
   "branch": "main",
-  "data_commit": "2026-11-25T07:36:11-03:00",
+  "data_commit": "2026-11-25T08:47:18-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cdaca4d",
+    "data": "2026-11-25",
+    "assunto": "fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)"
+   },
    {
     "sha": "f5e0e48",
     "data": "2026-11-25",
@@ -126,74 +131,69 @@
     "sha": "5faafbe",
     "data": "2026-11-22",
     "assunto": "chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório"
-   },
-   {
-    "sha": "8254da0",
-    "data": "2026-11-22",
-    "assunto": "fix: projecao-reforma exclui CBS/IBS do total líquido 2026 (art. 348 LC 214/2025)"
    }
   ],
   "arquivos_mudados_7d": 267,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 232
+    "mudancas": 424
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 128
-   },
-   {
-    "pasta": "src/components/admin",
-    "mudancas": 118
-   },
-   {
-    "pasta": "src/pages/tributario",
-    "mudancas": 110
+    "mudancas": 219
    },
    {
     "pasta": "src/components/ui",
-    "mudancas": 109
+    "mudancas": 216
    },
    {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 107
+    "pasta": "src/components/admin",
+    "mudancas": 214
+   },
+   {
+    "pasta": "src/pages/tributario",
+    "mudancas": 177
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 105
+    "mudancas": 172
+   },
+   {
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 160
    },
    {
     "pasta": "src/lib/__tests__",
-    "mudancas": 75
-   },
-   {
-    "pasta": "src/hooks/__tests__",
-    "mudancas": 68
-   },
-   {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 62
+    "mudancas": 124
    },
    {
     "pasta": "src/components/tributario",
-    "mudancas": 59
+    "mudancas": 108
+   },
+   {
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 107
+   },
+   {
+    "pasta": "src/components/contas-receber",
+    "mudancas": 94
    },
    {
     "pasta": "src/components/nfe",
-    "mudancas": 56
-   },
-   {
-    "pasta": "src/components/conciliacao",
-    "mudancas": 41
+    "mudancas": 80
    },
    {
     "pasta": "src/components/layout",
-    "mudancas": 40
+    "mudancas": 69
    },
    {
-    "pasta": "src/components/dashboard",
-    "mudancas": 35
+    "pasta": "docs/archive/sql",
+    "mudancas": 68
+   },
+   {
+    "pasta": "src/components/conciliacao",
+    "mudancas": 66
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 16
+    "mudancas": 15
    },
    {
     "arquivo": "src/integrations/supabase/types.ts",
@@ -250,10 +250,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 7
-   },
-   {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 7
    },
@@ -276,6 +272,10 @@
    {
     "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "mudancas": 7
+   },
+   {
+    "arquivo": ".github/workflows/prod-migrate.yml",
+    "mudancas": 6
    },
    {
     "arquivo": "docs/prod-readiness.md",
