@@ -1,4 +1,4 @@
-﻿-- Etapa 55 do plano RT/RFB: guardar o XML autorizado e materializar os itens.
+-- Etapa 55 do plano RT/RFB: guardar o XML autorizado e materializar os itens.
 --
 -- Até aqui `notas_fiscais_itens` tinha as colunas do grupo IBS/CBS (etapas 33/34)
 -- e da conferência de totais (etapa 35), mas NENHUM produtor: nenhuma linha do

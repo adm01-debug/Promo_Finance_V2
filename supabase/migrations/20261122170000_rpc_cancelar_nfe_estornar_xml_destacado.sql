@@ -1,4 +1,4 @@
-﻿-- Etapa 58: cancelamento/evento estorna creditos xml_destacado e marca
+-- Etapa 58: cancelamento/evento estorna creditos xml_destacado e marca
 -- a nota como cancelada. Regra: creditos de origem 'xml_destacado' so sao
 -- validos enquanto a NF-e esta autorizada; cancelamento os invalida.
 
