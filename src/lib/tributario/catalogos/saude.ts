@@ -155,3 +155,134 @@ function montarResumo(
   }
   return partes.join(' · ');
 }
+
+// ---------------------------------------------------------------------------
+// Etapa 83: frescor dos catálogos espelhados da Receita Federal (etapas 79-82)
+// ---------------------------------------------------------------------------
+//
+// Os catálogos RFB entram por job diário e não havia nada que avisasse quando o
+// job parava: um catálogo congelado em janeiro seguia "saudável", porque as
+// invariantes de integridade continuam passando — o dado só envelhece.
+
+/** Catálogos espelhados da API de dados abertos da RFB. */
+export type CatalogoRfbId = 'cclasstrib' | 'ncm' | 'aliquota' | 'fundamentacao';
+
+export const TITULOS_CATALOGO_RFB: Record<CatalogoRfbId, string> = {
+  cclasstrib: 'cClassTrib (CBS/IBS)',
+  ncm: 'NCM/NBS',
+  aliquota: 'Alíquotas de referência',
+  fundamentacao: 'Fundamentações legais',
+};
+
+/** Dias sem sincronização a partir dos quais o catálogo vira alerta. */
+export const DIAS_ALERTA_CATALOGO_RFB = 7;
+
+export type StatusFrescorRfb = 'ok' | 'atencao' | 'critico';
+
+export interface EntradaFrescorCatalogoRfb {
+  id: CatalogoRfbId;
+  /** Carga mais recente da tabela. null = nunca sincronizado. */
+  ultimaCarga: string | Date | null;
+  /** Versão IT gravada na carga mais recente (catálogos versionados). */
+  versaoIt?: string | null;
+}
+
+export interface FrescorCatalogoRfb {
+  id: CatalogoRfbId;
+  titulo: string;
+  /** ISO da carga mais recente; null quando nunca sincronizou. */
+  ultimaCarga: string | null;
+  /** Dias inteiros desde a última carga; null quando nunca sincronizou. */
+  diasSemSync: number | null;
+  versaoIt: string | null;
+  status: StatusFrescorRfb;
+  /** Frase curta para a linha do painel. */
+  detalhe: string;
+}
+
+export interface SaudeCatalogosRfb {
+  status: StatusFrescorRfb;
+  catalogos: FrescorCatalogoRfb[];
+  /** Catálogos com mais de `DIAS_ALERTA_CATALOGO_RFB` dias. */
+  desatualizados: number;
+  /** Catálogos sem nenhuma carga. */
+  nuncaSincronizados: number;
+  resumo: string;
+}
+
+const MS_POR_DIA = 86_400_000;
+
+function diasDesde(ultimaCarga: string | Date | null, hoje: Date): number | null {
+  if (!ultimaCarga) return null;
+  const data = ultimaCarga instanceof Date ? ultimaCarga : new Date(ultimaCarga);
+  const ms = data.getTime();
+  if (!Number.isFinite(ms)) return null;
+  // Relógio adiantado não vira "-1 dia".
+  return Math.max(0, Math.floor((hoje.getTime() - ms) / MS_POR_DIA));
+}
+
+function isoOuNulo(valor: string | Date | null): string | null {
+  if (!valor) return null;
+  const data = valor instanceof Date ? valor : new Date(valor);
+  return Number.isFinite(data.getTime()) ? data.toISOString() : null;
+}
+
+/**
+ * Avalia o frescor de cada catálogo RFB contra a data de referência.
+ *
+ * Critério: nunca sincronizado é crítico (o catálogo inteiro está ausente);
+ * acima de `DIAS_ALERTA_CATALOGO_RFB` dias é atenção (o job parou e o dado
+ * envelheceu); dentro da janela é ok. Função pura: a data de referência entra
+ * por parâmetro para o teste não depender do relógio.
+ */
+export function avaliarFrescorCatalogosRfb(
+  entradas: readonly EntradaFrescorCatalogoRfb[],
+  hoje: Date | string = new Date()
+): SaudeCatalogosRfb {
+  const referencia = hoje instanceof Date ? hoje : new Date(hoje);
+  const base = Number.isFinite(referencia.getTime()) ? referencia : new Date();
+
+  const catalogos: FrescorCatalogoRfb[] = (entradas ?? []).map((entrada) => {
+    const dias = diasDesde(entrada.ultimaCarga, base);
+    const status: StatusFrescorRfb =
+      dias === null ? 'critico' : dias > DIAS_ALERTA_CATALOGO_RFB ? 'atencao' : 'ok';
+    const detalhe =
+      dias === null
+        ? 'Nunca sincronizado'
+        : dias === 0
+          ? 'Sincronizado hoje'
+          : `Sem sincronizar há ${plural(dias, 'dia', 'dias')}`;
+    return {
+      id: entrada.id,
+      titulo: TITULOS_CATALOGO_RFB[entrada.id] ?? entrada.id,
+      ultimaCarga: dias === null ? null : isoOuNulo(entrada.ultimaCarga),
+      diasSemSync: dias,
+      versaoIt: entrada.versaoIt ?? null,
+      status,
+      detalhe,
+    };
+  });
+
+  const desatualizados = catalogos.filter((c) => c.status === 'atencao').length;
+  const nuncaSincronizados = catalogos.filter((c) => c.status === 'critico').length;
+  const status: StatusFrescorRfb =
+    nuncaSincronizados > 0 ? 'critico' : desatualizados > 0 ? 'atencao' : 'ok';
+
+  const partes: string[] = [];
+  if (nuncaSincronizados > 0) {
+    partes.push(
+      plural(nuncaSincronizados, 'catálogo nunca sincronizado', 'catálogos nunca sincronizados')
+    );
+  }
+  if (desatualizados > 0) {
+    partes.push(
+      `${plural(desatualizados, 'catálogo', 'catálogos')} sem sincronizar há mais de ${DIAS_ALERTA_CATALOGO_RFB} dias`
+    );
+  }
+  const resumo =
+    partes.length > 0
+      ? partes.join(' · ')
+      : `Catálogos RFB sincronizados nos últimos ${DIAS_ALERTA_CATALOGO_RFB} dias`;
+
+  return { status, catalogos, desatualizados, nuncaSincronizados, resumo };
+}
