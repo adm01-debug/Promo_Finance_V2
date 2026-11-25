@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "1c79a8ffcde2a30d99b071e001442123851d70ca",
+  "commit": "d32f10ed75a359808bccf97d17c9ee054a2df5c3",
   "branch": "main",
-  "data_commit": "2026-11-25T09:02:30-03:00",
+  "data_commit": "2026-11-25T09:49:16-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d32f10e",
+    "data": "2026-11-25",
+    "assunto": "fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)"
+   },
    {
     "sha": "1c79a8f",
     "data": "2026-11-25",
@@ -126,11 +131,6 @@
     "sha": "00b7588",
     "data": "2026-11-22",
     "assunto": "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)"
-   },
-   {
-    "sha": "f2e0d56",
-    "data": "2026-11-22",
-    "assunto": "chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)"
    }
   ],
   "arquivos_mudados_7d": 268,
@@ -242,14 +242,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": "PENDENCIAS.md",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "RELATORIO_CI.md",
-    "mudancas": 7
-   },
-   {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 7
    },
@@ -278,6 +270,10 @@
     "mudancas": 6
    },
    {
+    "arquivo": "RELATORIO_CI.md",
+    "mudancas": 6
+   },
+   {
     "arquivo": "docs/prod-readiness.md",
     "mudancas": 6
    },
@@ -296,6 +292,10 @@
    {
     "arquivo": "src/components/fornecedores/FornecedorForm.tsx",
     "mudancas": 6
+   },
+   {
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 6
    }
   ],
   "autores_30d": [
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 6
+    "commits": 5
    },
    {
     "autor": "Joaquim Ataides",

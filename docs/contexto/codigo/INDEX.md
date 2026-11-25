@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1c79a8ffcde2a30d99b071e001442123851d70ca` (2026-11-25T09:02:30-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d32f10ed75a359808bccf97d17c9ee054a2df5c3` (2026-11-25T09:49:16-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -476,10 +476,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - scripts/integrity/baseline/schema-counts.json (8)
 - scripts/security/test-canonical-db-gates.mjs (8)
 - supabase/functions/n8n-callback/index.ts (8)
-- PENDENCIAS.md (7)
-- RELATORIO_CI.md (7)
 - analise-prs/RELATORIO_PRS.md (7)
 - docs/ci/README.md (7)
+- supabase/config.toml (7)
+- supabase/functions/bitrix24-sync/index.ts (7)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -640,6 +640,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-25 `d32f10e` fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)
 - 2026-11-25 `1c79a8f` chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)
 - 2026-11-25 `cdaca4d` fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)
 - 2026-11-25 `f5e0e48` fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)
@@ -654,7 +655,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-24 `6ef837b` chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)
 - 2026-11-24 `3f209ea` chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)
 - 2026-11-24 `62b115c` chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)
-- 2026-11-24 `4d880db` chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

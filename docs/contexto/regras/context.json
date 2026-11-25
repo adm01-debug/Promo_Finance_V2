@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "1c79a8ffcde2a30d99b071e001442123851d70ca",
+  "sha": "d32f10ed75a359808bccf97d17c9ee054a2df5c3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 12:05 UTC",
+  "generated_at": "2026-11-25 12:50 UTC",
   "files_total": 4101,
   "code_files": 3680,
   "code_lines": 525571
@@ -249679,10 +249679,22 @@
   }
  },
  "git": {
-  "sha": "1c79a8ffcde2a30d99b071e001442123851d70ca",
+  "sha": "d32f10ed75a359808bccf97d17c9ee054a2df5c3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d32f10e",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)",
+    "files": [
+     "supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql",
+     "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
+     "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
+     "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
+    ]
+   },
    {
     "sha": "1c79a8f",
     "date": "2026-11-25",
@@ -250081,16 +250093,6 @@
      "src/lib/nfe/parse-ibscbs.ts",
      "supabase/functions/_shared/sefaz/__fixtures__/procNFe-ibscbs-2026.xml"
     ]
-   },
-   {
-    "sha": "a570395",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "chore: regenera types.ts com IBS/CBS/IS (etapa 40 RT/RFB) (#519)",
-    "files": [
-     "src/hooks/useCreditosTributarios.ts",
-     "src/integrations/supabase/types.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -250101,10 +250103,6 @@
    [
     "package.json",
     6
-   ],
-   [
-    "src/integrations/supabase/types.ts",
-    4
    ],
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
@@ -250119,12 +250117,32 @@
     3
    ],
    [
+    "src/integrations/supabase/types.ts",
+    3
+   ],
+   [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     3
    ],
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
+   ],
+   [
+    "supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql",
+    2
+   ],
+   [
+    "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
+    2
+   ],
+   [
+    "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
+    2
+   ],
+   [
+    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
+    2
    ],
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
@@ -250155,24 +250173,8 @@
     2
    ],
    [
-    "src/hooks/useCreditosTributarios.ts",
-    2
-   ],
-   [
     "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
     2
-   ],
-   [
-    "src/lib/nfe/parse-ibscbs.ts",
-    2
-   ],
-   [
-    "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
-    1
    ]
   ]
  }
