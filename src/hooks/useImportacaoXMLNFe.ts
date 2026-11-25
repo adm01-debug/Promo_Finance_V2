@@ -33,6 +33,13 @@ export interface NFeParsed {
   numero: string;
   serie: string;
   dataEmissao: Date;
+  /**
+   * Data civil declarada no próprio `dhEmi` (`YYYY-MM-DD`), sem conversão de
+   * fuso. `dataEmissao` é o instante; esta é a data que o emitente escreveu e é
+   * a que decide a vigência dos catálogos: uma nota de Manaus (`-04:00`) às
+   * 23:30 pertence ao dia declarado, não ao dia seguinte em Brasília.
+   */
+  dataEmissaoDeclarada?: string;
   cnpjEmitente: string;
   nomeEmitente: string;
   cnpjDestinatario: string;
@@ -142,6 +149,14 @@ const dataEmissaoISO = (data: Date): string =>
     day: '2-digit',
   }).format(data);
 
+/**
+ * Data civil usada para escolher a vigência do catálogo: a declarada no XML,
+ * com fallback para a conversão de fuso. Só a conferência fiscal usa este
+ * valor; `data_origem` e `competencia_origem` seguem a data em Brasília.
+ */
+const dataVigenciaNota = (nota: { dataEmissao: Date; dataEmissaoDeclarada?: string }): string =>
+  nota.dataEmissaoDeclarada ?? dataEmissaoISO(nota.dataEmissao);
+
 export function useImportacaoXMLNFe(empresaId: string) {
   const queryClient = useQueryClient();
   const [arquivos, setArquivos] = useState<File[]>([]);
@@ -169,13 +184,20 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const chaveAcesso = infNFe?.getAttribute('Id')?.replace('NFe', '') || '';
       const numero = ide?.querySelector('nNF')?.textContent || '';
       const serie = ide?.querySelector('serie')?.textContent || '';
-      const dataEmissao = new Date(ide?.querySelector('dhEmi')?.textContent || '');
+      const dhEmi = ide?.querySelector('dhEmi')?.textContent || '';
+      const dataEmissao = new Date(dhEmi);
       // Data inválida vira Invalid Date e só estoura na tela, dentro de
       // format(), derrubando a prévia do lote inteiro. Falhar aqui marca a nota
       // como erro e preserva as demais.
       if (Number.isNaN(dataEmissao.getTime())) {
         throw new Error('Data de emissão (dhEmi) ausente ou inválida');
       }
+      // Lido do texto, antes de qualquer conversão: `dhEmi` carrega o offset do
+      // emitente, e o dia civil declarado não é necessariamente o dia civil de
+      // Brasília. É esta a data usada na vigência dos catálogos.
+      const dataEmissaoDeclarada = /^\d{4}-\d{2}-\d{2}/.test(dhEmi)
+        ? dhEmi.slice(0, 10)
+        : undefined;
       const cnpjEmitente = emit?.querySelector('CNPJ')?.textContent || '';
       const nomeEmitente = emit?.querySelector('xNome')?.textContent || '';
       const cnpjDestinatario = dest?.querySelector('CNPJ')?.textContent || '';
@@ -218,6 +240,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
         numero,
         serie,
         dataEmissao,
+        dataEmissaoDeclarada,
         cnpjEmitente,
         nomeEmitente,
         cnpjDestinatario,
@@ -327,29 +350,34 @@ export function useImportacaoXMLNFe(empresaId: string) {
       let notasComAlertaFiscal = 0;
       const processadas = [...nfesParsed];
 
-      // Etapa 46: uma leitura de catálogo por exercício presente no lote, e só
-      // dos códigos daquele exercício. Os catálogos são versionados por
+      // Etapa 46: uma leitura de catálogo por data civil de emissão presente no
+      // lote, e só dos códigos daquela data. Os catálogos são versionados por
       // inicio_vigencia/fim_vigencia: consultar uma vez com a data do relógio
-      // validaria nota de 2025 contra a tabela de 2027. Agrupar por ano de
-      // emissão mantém a economia de rede (poucos grupos por lote) sem perder a
-      // vigência correta de cada nota.
-      const referenciasPorAno = new Map<
-        number,
+      // validaria nota de 2025 contra a tabela de 2027.
+      //
+      // Antes o recorte era 31/12 do exercício. Com o catálogo de NCM vazio isso
+      // era inofensivo, mas a carga da etapa 80 grava `fim_vigencia` no meio do
+      // ano: um NCM vigente em março e encerrado em setembro recebia REG-012 ao
+      // ser importado, porque não constava no recorte de dezembro. Agrupar pela
+      // data da nota custa 3 consultas por data distinta do lote (não por nota)
+      // e acerta a vigência de cada documento.
+      const referenciasPorData = new Map<
+        string,
         Awaited<ReturnType<typeof buscarReferenciasFiscais>>
       >();
       for (const n of processadas) {
         if (n.status === 'erro') continue;
-        const ano = anoEmissao(n.dataEmissao);
-        if (referenciasPorAno.has(ano)) continue;
-        const doAno = processadas.filter(
-          (o) => o.status !== 'erro' && anoEmissao(o.dataEmissao) === ano
+        const dataRef = dataVigenciaNota(n);
+        if (referenciasPorData.has(dataRef)) continue;
+        const doDia = processadas.filter(
+          (o) => o.status !== 'erro' && dataVigenciaNota(o) === dataRef
         );
-        referenciasPorAno.set(
-          ano,
+        referenciasPorData.set(
+          dataRef,
           await buscarReferenciasFiscais(
-            doAno.flatMap((o) => o.itens.map((i) => i.ibscbs?.cClassTrib ?? '')),
-            doAno.flatMap((o) => o.itens.map((i) => i.ncm)),
-            ano + '-12-31'
+            doDia.flatMap((o) => o.itens.map((i) => i.ibscbs?.cClassTrib ?? '')),
+            doDia.flatMap((o) => o.itens.map((i) => i.ncm)),
+            dataRef
           )
         );
       }
@@ -549,8 +577,8 @@ export function useImportacaoXMLNFe(empresaId: string) {
               cstIbscbs: i.ibscbs?.cst,
               cClassTrib: i.ibscbs?.cClassTrib,
             })),
-            referenciasPorAno.get(anoFatoGerador) ??
-              (await buscarReferenciasFiscais([], [], anoFatoGerador + '-12-31'))
+            referenciasPorData.get(dataVigenciaNota(nfe)) ??
+              (await buscarReferenciasFiscais([], [], dataVigenciaNota(nfe)))
           );
 
           processadas[i] = {
