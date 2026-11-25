@@ -5,21 +5,26 @@
 -- A coluna existe no banco canônico (constraint kpis_operacionais_empresa_id_fkey,
 -- ver src/integrations/supabase/types.ts:9358) mas nenhuma migration a declara: nem as
 -- duas que criam a tabela (20260509123749:27, 20260728161227:69) nem a reconciliação
--- de colunas (20260825100000:3895). As quatro colunas que o canônico tem além dessas
--- duas definições (empresa_id, valor, periodo, referencia) são exatamente as do DDL
--- ad-hoc docs/archive/sql/scripts/tabelas_ausentes_r5.sql:23-33, que é portanto a
--- origem da tabela viva e a única definição da coluna no repositório.
+-- de colunas (20260825100000:3895). As colunas que o canônico tem além dessas duas
+-- definições (empresa_id, valor, periodo, referencia — evidencias.json:29360-29406)
+-- são exatamente as do DDL ad-hoc docs/archive/sql/scripts/tabelas_ausentes_r5.sql:
+-- 23-33, que é portanto a origem da tabela viva e a única definição da coluna no
+-- repositório. Num banco vazio a tabela nasce sem ela e o CREATE INDEX abortava o
+-- replay com "column empresa_id does not exist"; a FK também ficou fora da cadeia e o
+-- replay aceitava empresa_id apontando para empresa inexistente, o oposto do canônico.
 --
--- Num banco vazio a tabela nasce sem a coluna e o CREATE INDEX abortava o replay com
--- "column empresa_id does not exist"; a FK também ficou de fora da cadeia e o replay
--- aceitava empresa_id apontando para empresa inexistente, o oposto do canônico, que
--- rejeita. Versionar coluna, FK e índice, na ordem que a FK exige, mantém o replay
--- fiel ao banco real.
+-- ON DELETE CASCADE vem dessa mesma definição (r5:25); NO ACTION seria suposição por
+-- analogia e faria o replay bloquear uma exclusão de empresa que o canônico permite.
 --
--- ON DELETE CASCADE vem dessa mesma definição (r5:25). NO ACTION seria suposição por
--- analogia, e o replay passaria a bloquear uma exclusão de empresa que o canônico
--- permite. Em produção os três objetos já existem e nenhum DDL é executado: os guards
--- são por catálogo, não por IF NOT EXISTS (que pede o lock antes de checar).
+-- Dono do índice: o nome `_fk` foi invenção desta migration. O repositório nomeia
+-- índice sem sufixo (194 de 194 CREATE INDEX em supabase/migrations) e o snapshot
+-- canônico de 24/11 registra idx_kpis_operacionais_empresa_id como btree válido em
+-- empresa_id sem predicado — por isso a criação passou a usar esse nome, e o guard
+-- procura por QUALQUER índice válido liderado por empresa_id, não por um nome.
+--
+-- Em produção coluna, FK e índice já existem: os guards são por catálogo, não por
+-- IF NOT EXISTS (que pede o lock da tabela antes de checar), então ali a migration
+-- não executa DDL nenhum e não há ALTER TABLE nem CREATE INDEX.
 DO $reconcile$
 BEGIN
   IF to_regclass('public.kpis_operacionais') IS NULL THEN
@@ -42,11 +47,16 @@ BEGIN
          || 'FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE';
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM pg_class c
-                   JOIN pg_namespace n ON n.oid = c.relnamespace
-                  WHERE c.relname = 'idx_kpis_operacionais_empresa_id_fk'
-                    AND n.nspname = 'public') THEN
-    EXECUTE 'CREATE INDEX idx_kpis_operacionais_empresa_id_fk '
+  IF NOT EXISTS (SELECT 1
+                   FROM pg_index i
+                   JOIN pg_class tc ON tc.oid = i.indrelid
+                   JOIN pg_namespace n ON n.oid = tc.relnamespace
+                  WHERE n.nspname = 'public'
+                    AND tc.relname = 'kpis_operacionais'
+                    AND i.indisvalid
+                    AND i.indpred IS NULL
+                    AND pg_get_indexdef(i.indexrelid, 1, true) = 'empresa_id') THEN
+    EXECUTE 'CREATE INDEX idx_kpis_operacionais_empresa_id '
          || 'ON public.kpis_operacionais USING btree (empresa_id)';
   END IF;
 END
