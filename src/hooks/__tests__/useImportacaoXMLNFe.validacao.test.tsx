@@ -292,6 +292,36 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
     ).toHaveLength(1);
   });
 
+  it('nota de fuso fora de Brasília usa o dia declarado no dhEmi para a vigência', async () => {
+    // dhEmi 2026-09-01T23:30:00-04:00 (Manaus) é 2026-09-02 00:30 em Brasília.
+    // O NCM teve 2026-09-01 como último dia vigente (fim inclusivo): validando
+    // pelo dia de Brasília a nota cairia no dia seguinte e levaria REG-012.
+    const xmlManaus = XML_COM_GRUPO.replace(
+      '2026-03-31T22:30:00-03:00',
+      '2026-09-01T23:30:00-04:00'
+    );
+    const { resumo } = await importar(
+      {
+        catalogo_cclasstrib: CATALOGO.catalogo_cclasstrib,
+        catalogo_ncm: {
+          data: [
+            {
+              ncm: '02013000',
+              descricao: 'Carnes de bovino',
+              inicio_vigencia: '2022-04-01',
+              fim_vigencia: '2026-09-01',
+            },
+          ],
+          error: null,
+        },
+      },
+      xmlManaus
+    );
+
+    const [nota] = resumo.nfesProcessadas;
+    expect((nota.alertasFiscais ?? []).map((a) => a.codigo)).not.toContain('REG-012');
+  });
+
   it('nota anterior à vigência do catálogo não gera alerta (sem referência na data)', async () => {
     // Catálogo cheio, mas com inicio_vigencia 2026-01-01, e a nota é de 2025.
     // A consulta por código volta com linha e a sonda de cobertura volta vazia:

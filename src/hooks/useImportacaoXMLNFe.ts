@@ -33,6 +33,13 @@ export interface NFeParsed {
   numero: string;
   serie: string;
   dataEmissao: Date;
+  /**
+   * Data civil declarada no próprio `dhEmi` (`YYYY-MM-DD`), sem conversão de
+   * fuso. `dataEmissao` é o instante; esta é a data que o emitente escreveu e é
+   * a que decide a vigência dos catálogos: uma nota de Manaus (`-04:00`) às
+   * 23:30 pertence ao dia declarado, não ao dia seguinte em Brasília.
+   */
+  dataEmissaoDeclarada?: string;
   cnpjEmitente: string;
   nomeEmitente: string;
   cnpjDestinatario: string;
@@ -142,6 +149,14 @@ const dataEmissaoISO = (data: Date): string =>
     day: '2-digit',
   }).format(data);
 
+/**
+ * Data civil usada para escolher a vigência do catálogo: a declarada no XML,
+ * com fallback para a conversão de fuso. Só a conferência fiscal usa este
+ * valor; `data_origem` e `competencia_origem` seguem a data em Brasília.
+ */
+const dataVigenciaNota = (nota: { dataEmissao: Date; dataEmissaoDeclarada?: string }): string =>
+  nota.dataEmissaoDeclarada ?? dataEmissaoISO(nota.dataEmissao);
+
 export function useImportacaoXMLNFe(empresaId: string) {
   const queryClient = useQueryClient();
   const [arquivos, setArquivos] = useState<File[]>([]);
@@ -169,13 +184,20 @@ export function useImportacaoXMLNFe(empresaId: string) {
       const chaveAcesso = infNFe?.getAttribute('Id')?.replace('NFe', '') || '';
       const numero = ide?.querySelector('nNF')?.textContent || '';
       const serie = ide?.querySelector('serie')?.textContent || '';
-      const dataEmissao = new Date(ide?.querySelector('dhEmi')?.textContent || '');
+      const dhEmi = ide?.querySelector('dhEmi')?.textContent || '';
+      const dataEmissao = new Date(dhEmi);
       // Data inválida vira Invalid Date e só estoura na tela, dentro de
       // format(), derrubando a prévia do lote inteiro. Falhar aqui marca a nota
       // como erro e preserva as demais.
       if (Number.isNaN(dataEmissao.getTime())) {
         throw new Error('Data de emissão (dhEmi) ausente ou inválida');
       }
+      // Lido do texto, antes de qualquer conversão: `dhEmi` carrega o offset do
+      // emitente, e o dia civil declarado não é necessariamente o dia civil de
+      // Brasília. É esta a data usada na vigência dos catálogos.
+      const dataEmissaoDeclarada = /^\d{4}-\d{2}-\d{2}/.test(dhEmi)
+        ? dhEmi.slice(0, 10)
+        : undefined;
       const cnpjEmitente = emit?.querySelector('CNPJ')?.textContent || '';
       const nomeEmitente = emit?.querySelector('xNome')?.textContent || '';
       const cnpjDestinatario = dest?.querySelector('CNPJ')?.textContent || '';
@@ -218,6 +240,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
         numero,
         serie,
         dataEmissao,
+        dataEmissaoDeclarada,
         cnpjEmitente,
         nomeEmitente,
         cnpjDestinatario,
@@ -344,10 +367,10 @@ export function useImportacaoXMLNFe(empresaId: string) {
       >();
       for (const n of processadas) {
         if (n.status === 'erro') continue;
-        const dataRef = dataEmissaoISO(n.dataEmissao);
+        const dataRef = dataVigenciaNota(n);
         if (referenciasPorData.has(dataRef)) continue;
         const doDia = processadas.filter(
-          (o) => o.status !== 'erro' && dataEmissaoISO(o.dataEmissao) === dataRef
+          (o) => o.status !== 'erro' && dataVigenciaNota(o) === dataRef
         );
         referenciasPorData.set(
           dataRef,
@@ -554,8 +577,8 @@ export function useImportacaoXMLNFe(empresaId: string) {
               cstIbscbs: i.ibscbs?.cst,
               cClassTrib: i.ibscbs?.cClassTrib,
             })),
-            referenciasPorData.get(dataEmissaoISO(nfe.dataEmissao)) ??
-              (await buscarReferenciasFiscais([], [], dataEmissaoISO(nfe.dataEmissao)))
+            referenciasPorData.get(dataVigenciaNota(nfe)) ??
+              (await buscarReferenciasFiscais([], [], dataVigenciaNota(nfe)))
           );
 
           processadas[i] = {

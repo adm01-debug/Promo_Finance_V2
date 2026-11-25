@@ -174,6 +174,21 @@ export function montarNcms(
   );
 }
 
+/**
+ * Dia civil anterior a `data` (`YYYY-MM-DD`), calculado em UTC para nao depender
+ * do fuso do processo.
+ *
+ * `fim_vigencia` e lido como ultimo dia vigente, inclusive (`vigenteEm`). Quem
+ * encerra uma linha precisa gravar o dia anterior ao recorte, nao o dia do
+ * recorte: caso contrario uma nota emitida no proprio dia da carga ja sai como
+ * fora de vigencia.
+ */
+export function diaAnterior(data: string): string {
+  const d = new Date(`${data}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
 export function montarNbs(
   itens: ReadonlyArray<ItemListaApi> | null | undefined,
   inicioVigencia: string = VIGENCIA_BASE_CATALOGO

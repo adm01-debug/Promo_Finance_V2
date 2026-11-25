@@ -15,7 +15,14 @@ import {
   normalizarData,
   VIGENCIA_BASE_CATALOGO,
 } from '../../_shared/rfb-dados-abertos.ts';
-import { MIN_NBS_API, MIN_NCM_API, montarNbs, montarNcms, separarReativados } from '../montar.ts';
+import {
+  diaAnterior,
+  MIN_NBS_API,
+  MIN_NCM_API,
+  montarNbs,
+  montarNcms,
+  separarReativados,
+} from '../montar.ts';
 
 Deno.test('montarNcms grava so NCM de 8 digitos e mantem a vigencia base', () => {
   const m = montarNcms([
@@ -203,4 +210,16 @@ Deno.test('separarReativados nao reativa na data-base do catalogo', () => {
 
   assertEquals(base.length, 1);
   assertEquals(reativadas.length, 0);
+});
+
+Deno.test('diaAnterior devolve o ultimo dia vigente antes do recorte', () => {
+  // `fim_vigencia` e inclusivo: o codigo que desapareceu da lista consultada em
+  // 2026-09-01 ficou valido ate 2026-08-31, e nao ate 2026-09-01.
+  assertEquals(diaAnterior('2026-09-01'), '2026-08-31');
+});
+
+Deno.test('diaAnterior atravessa virada de mes, ano e ano bissexto', () => {
+  assertEquals(diaAnterior('2026-01-01'), '2025-12-31');
+  assertEquals(diaAnterior('2026-03-01'), '2026-02-28');
+  assertEquals(diaAnterior('2024-03-01'), '2024-02-29');
 });

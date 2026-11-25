@@ -26,6 +26,7 @@ import {
   type VersaoApi,
 } from '../_shared/rfb-dados-abertos.ts';
 import {
+  diaAnterior,
   MIN_NBS_API,
   MIN_NCM_API,
   montarNbs,
@@ -171,13 +172,20 @@ async function gravar<T extends { inicio_vigencia: string }>(
   // Em lotes: `in(...)` com o teto de 10% de ~10 mil NCMs estoura o tamanho de
   // URL do PostgREST e a carga inteira falharia no unico momento em que o
   // encerramento importa (atualizacao anual da RFB).
+  // A lista que acabamos de ler ja nao traz o codigo: o ultimo dia em que ele
+  // constava na fonte oficial e o dia anterior ao recorte, nao o dia da carga.
+  // Gravar a propria `data` encurtava a vigencia em um dia e fazia a nota
+  // emitida no ultimo dia valido sair com REG-012. O `lte` evita inverter o
+  // periodo de uma linha aberta na propria data da carga (inicio > fim).
+  const ultimoDiaVigente = diaAnterior(data);
   for (let i = 0; i < decisao.ausentes.length; i += LOTE_ENCERRAMENTO) {
     const lote = decisao.ausentes.slice(i, i + LOTE_ENCERRAMENTO);
     const { error: erroEncerrar, count } = await sb
       .from(tabela)
-      .update({ fim_vigencia: data }, { count: 'exact' })
+      .update({ fim_vigencia: ultimoDiaVigente }, { count: 'exact' })
       .in(coluna, lote)
-      .is('fim_vigencia', null);
+      .is('fim_vigencia', null)
+      .lte('inicio_vigencia', ultimoDiaVigente);
     if (erroEncerrar) throw erroEncerrar;
     resultado.encerrados += count ?? lote.length;
   }

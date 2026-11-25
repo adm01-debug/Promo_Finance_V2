@@ -10,11 +10,11 @@ Ambiente: **piloto / apr**, não é produção. Não há autenticação nem toke
 
 ## Endpoints verificados
 
-| Rota | `data` obrigatório | Conteúdo |
-| --- | --- | --- |
-| `GET /versao` | não | `ambiente`, `dataVersaoDb`, `versaoDb`, `descricaoVersaoDb` |
-| `GET /classificacoes-tributarias/cbs-ibs` | **sim** | 170 classificações CBS/IBS |
-| `GET /situacoes-tributarias/cbs-ibs` | **sim** | 18 situações tributárias (CST) |
+| Rota                                      | `data` obrigatório | Conteúdo                                                    |
+| ----------------------------------------- | ------------------ | ----------------------------------------------------------- |
+| `GET /versao`                             | não                | `ambiente`, `dataVersaoDb`, `versaoDb`, `descricaoVersaoDb` |
+| `GET /classificacoes-tributarias/cbs-ibs` | **sim**            | 170 classificações CBS/IBS                                  |
+| `GET /situacoes-tributarias/cbs-ibs`      | **sim**            | 18 situações tributárias (CST)                              |
 
 Sem `data`, a resposta é `400`. `data` no formato `AAAA-MM-DD` e define a
 **vigência consultada**; não é paginação.
@@ -32,15 +32,15 @@ repositório oficial `ReceitaFederal/calculadora-rtc-regime-regular`
 (`DadosAbertosController.java` + DTOs `*DadosAbertosOutput.java`). O contrato
 abaixo vem desse código-fonte, lido em 2026-11-26.
 
-| Rota | Parâmetros | Corpo |
-| --- | --- | --- |
-| `GET /ncm/vigentes` | `data` | `[{ncm, descricao}]` — `ncm` de 8 dígitos |
-| `GET /nbs/lista` | `data` | `[{codigo, descricao}]` |
-| `GET /fundamentacoes-legais` | `data` | `[{codigoClassificacaoTributaria, descricaoClassificacaoTributaria, codigoSituacaoTributaria, descricaoSituacaoTributaria, conjuntoTributo, texto, textoCurto, referenciaNormativa}]` |
-| `GET /aliquota-uniao` | `data` | `{aliquotaReferencia, aliquotaPropria, formaAplicacao}` |
-| `GET /aliquota-uf` | `data`, `codigoUf` | idem — `codigoUf` é **código IBGE da UF** (ex.: 43) |
-| `GET /aliquota-municipio` | `data`, `codigoMunicipio` | idem — **código IBGE do município** (7 dígitos) |
-| `GET /versao` | — | `{versaoApp, descricaoVersaoApp, versaoDb, descricaoVersaoDb, dataVersaoDb, ambiente}` |
+| Rota                         | Parâmetros                | Corpo                                                                                                                                                                                 |
+| ---------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /ncm/vigentes`          | `data`                    | `[{ncm, descricao}]` — `ncm` de 8 dígitos                                                                                                                                             |
+| `GET /nbs/lista`             | `data`                    | `[{codigo, descricao}]`                                                                                                                                                               |
+| `GET /fundamentacoes-legais` | `data`                    | `[{codigoClassificacaoTributaria, descricaoClassificacaoTributaria, codigoSituacaoTributaria, descricaoSituacaoTributaria, conjuntoTributo, texto, textoCurto, referenciaNormativa}]` |
+| `GET /aliquota-uniao`        | `data`                    | `{aliquotaReferencia, aliquotaPropria, formaAplicacao}`                                                                                                                               |
+| `GET /aliquota-uf`           | `data`, `codigoUf`        | idem — `codigoUf` é **código IBGE da UF** (ex.: 43)                                                                                                                                   |
+| `GET /aliquota-municipio`    | `data`, `codigoMunicipio` | idem — **código IBGE do município** (7 dígitos)                                                                                                                                       |
+| `GET /versao`                | —                         | `{versaoApp, descricaoVersaoApp, versaoDb, descricaoVersaoDb, dataVersaoDb, ambiente}`                                                                                                |
 
 `/aliquota-uf` e `/aliquota-municipio` respondem `400` sem o código do ente — é
 parâmetro obrigatório, não ausência de dado. Verificado ao vivo em 2026-11-26,
@@ -213,11 +213,16 @@ GET /functions/v1/sync-aliquota-referencia?escopo=uf&limite=5
 ```
 
 Autenticação: `x-cron-secret` (`exigirChamadaInterna`, segredo `internal_jobs`).
-Agendamento: pg_cron `40 4 * * *` para o cClassTrib
-(`20261124121000_cron_sync_catalogo_cclasstrib.sql`), `0 5 * * *` para NCM/NBS
-(`20261126060000_cron_sync_catalogo_ncm_nbs.sql`), `20 5 * * *` para as alíquotas
-de UF/CBS (`20261126080000_cron_sync_aliquota_referencia.sql`) e `50 5 * * 0`
-(domingo) para as municipais. O intervalo de 20 minutos entre os jobs não é
+Agendamento: pg_cron dispara em **UTC** (Brasília = UTC−3). A cadeia dos
+quatro jobs começa às 07:40 UTC: `40 7 * * *` para o cClassTrib
+(`20261124121000_cron_sync_catalogo_cclasstrib.sql`, com o fuso corrigido por
+`20261126100000_cron_sync_catalogo_cclasstrib_utc.sql`), `0 8 * * *` para NCM/NBS
+(`20261126060000_cron_sync_catalogo_ncm_nbs.sql`), `20 8 * * *` para as alíquotas
+de UF/CBS (`20261126080000_cron_sync_aliquota_referencia.sql`) e `50 8 * * 0`
+(domingo) para as municipais — 07:40/08:00/08:20/08:50 UTC, ou seja
+04:40/05:00/05:20/05:50 em Brasília. Cada disparo fixa `timeout_milliseconds`
+(60 s a 150 s): o padrão de `net.http_post` é 5 s e expira antes de a função
+responder. O intervalo de 20 minutos entre os jobs não é
 decorativo: os quatro consultam a mesma base oficial e disputam o mesmo limite de
 taxa por IP.
 
