@@ -85,7 +85,10 @@ async function listarCodigos(
     const inicio = pagina * PAGINA;
     let consulta = sb.from(tabela).select(coluna);
     if (apenasAbertos) consulta = consulta.is('fim_vigencia', null);
-    const { data, error } = await consulta.range(inicio, inicio + PAGINA - 1);
+    // `range` sem `order` nao tem ordem estavel: o Postgres pode devolver as
+    // linhas em ordem diferente entre duas paginas e a leitura repetiria ou
+    // pularia codigos — justamente os que decidem o encerramento.
+    const { data, error } = await consulta.order(coluna).range(inicio, inicio + PAGINA - 1);
     if (error) throw error;
     const linhas = (data ?? []) as unknown as Array<Record<string, unknown>>;
     for (const linha of linhas) codigos.push(String(linha[coluna] ?? '').trim());

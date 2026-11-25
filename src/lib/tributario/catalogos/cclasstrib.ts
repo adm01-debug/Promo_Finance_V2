@@ -82,6 +82,56 @@ const temCobertura = async (
 };
 
 /**
+ * Teto de codigos por consulta `.in()`.
+ *
+ * O PostgREST corta a resposta em `db-max-rows` (1000 linhas no padrao do
+ * Supabase) sem avisar: um lote com mais codigos que isso receberia so parte do
+ * catalogo e o validador trataria os codigos omitidos como ausentes. 300 deixa
+ * margem para o caso de um codigo ter mais de uma vigencia (o historico da
+ * etapa 80 preserva periodos encerrados), entao cada resposta fica muito abaixo
+ * do corte.
+ */
+const LOTE_CODIGOS = 300;
+
+const consultarCclasstrib = (codigos: string[]) =>
+  supabase
+    .from('catalogo_cclasstrib')
+    .select(
+      'cclasstrib, cst, descricao, exige_gibscbs, p_red_cbs, p_red_ibs_uf, p_red_ibs_mun, versao_it, inicio_vigencia, fim_vigencia'
+    )
+    .in('cclasstrib', codigos);
+
+const consultarNcm = (codigos: string[]) =>
+  supabase
+    .from('catalogo_ncm')
+    .select('ncm, descricao, inicio_vigencia, fim_vigencia')
+    .in('ncm', codigos);
+
+type LinhaCclasstrib = NonNullable<Awaited<ReturnType<typeof consultarCclasstrib>>['data']>[number];
+type LinhaNcm = NonNullable<Awaited<ReturnType<typeof consultarNcm>>['data']>[number];
+
+/** Le em lotes; `null` significa erro de leitura (mesmo silencio de antes). */
+async function lerCclasstrib(codigos: string[]): Promise<LinhaCclasstrib[] | null> {
+  const linhas: LinhaCclasstrib[] = [];
+  for (let i = 0; i < codigos.length; i += LOTE_CODIGOS) {
+    const { data, error } = await consultarCclasstrib(codigos.slice(i, i + LOTE_CODIGOS));
+    if (error) return null;
+    linhas.push(...(data ?? []));
+  }
+  return linhas;
+}
+
+async function lerNcm(codigos: string[]): Promise<LinhaNcm[] | null> {
+  const linhas: LinhaNcm[] = [];
+  for (let i = 0; i < codigos.length; i += LOTE_CODIGOS) {
+    const { data, error } = await consultarNcm(codigos.slice(i, i + LOTE_CODIGOS));
+    if (error) return null;
+    linhas.push(...(data ?? []));
+  }
+  return linhas;
+}
+
+/**
  * Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o
  * realmente tocou. Um XML de 200 itens costuma trazer menos de 10 cClassTrib
  * distintos; carregar o cat?logo inteiro (~10 mil NCMs) s? para conferir
@@ -102,21 +152,16 @@ export async function buscarReferenciasFiscais(
   const resultado = VAZIO(referencia);
 
   if (codigosTrib.length > 0) {
-    const { data, error } = await supabase
-      .from('catalogo_cclasstrib')
-      .select(
-        'cclasstrib, cst, descricao, exige_gibscbs, p_red_cbs, p_red_ibs_uf, p_red_ibs_mun, versao_it, inicio_vigencia, fim_vigencia'
-      )
-      .in('cclasstrib', codigosTrib);
+    const lidas = await lerCclasstrib(codigosTrib);
 
-    if (!error) {
+    if (lidas) {
       // `carregado` significa "ha referencia para esta data", nao "o catalogo
       // tem linhas" nem "esta consulta achou o codigo". Um lote so com codigos
       // desconhecidos deixa a consulta filtrada vazia em cima de um catalogo
       // cheio, e o alerta de divergencia (REG-013) era suprimido justamente no
       // caso que precisa dele. A sonda mantem a supressao para catalogo
       // realmente vazio, para data sem cobertura e para erro de consulta.
-      const vigentes = (data ?? []).filter((linha) =>
+      const vigentes = lidas.filter((linha) =>
         vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)
       );
       resultado.cclasstribCarregado =
@@ -137,18 +182,15 @@ export async function buscarReferenciasFiscais(
   }
 
   if (codigosNcm.length > 0) {
-    const { data, error } = await supabase
-      .from('catalogo_ncm')
-      .select('ncm, descricao, inicio_vigencia, fim_vigencia')
-      .in('ncm', codigosNcm);
+    const lidas = await lerNcm(codigosNcm);
 
-    if (!error) {
+    if (lidas) {
       // Mesma semantica do cClassTrib: o mapa de NCM tambem e recortado pelos
       // codigos do lote, entao consulta vazia nao prova catalogo vazio. E a
       // vigencia conta: o espelho da etapa 80 grava inicio_vigencia 2026-01-01,
       // logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar
       // REG-012 por isso.
-      const vigentes = (data ?? []).filter((linha) =>
+      const vigentes = lidas.filter((linha) =>
         vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)
       );
       resultado.ncmCarregado =
