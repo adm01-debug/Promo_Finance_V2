@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "cdaca4dca707cba1fac05fb9eb7090b94ba0ec5d",
+  "sha": "1c79a8ffcde2a30d99b071e001442123851d70ca",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 11:48 UTC",
-  "files_total": 4100,
-  "code_files": 3679,
-  "code_lines": 525507
+  "generated_at": "2026-11-25 12:05 UTC",
+  "files_total": 4101,
+  "code_files": 3680,
+  "code_lines": 525571
  },
  "version": "1.3.2",
- "facts_hash": "dd17ffd78fd80745",
+ "facts_hash": "6d4ab66edfcd12bb",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -341,7 +341,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1281,
-   ".sql": 1151,
+   ".sql": 1152,
    ".tsx": 1125,
    ".mjs": 68,
    ".py": 46,
@@ -18674,10 +18674,10 @@
      },
      {
       "name": "empresa_id",
-      "type": "string | null",
+      "type": "uuid",
       "fk": "",
       "generated": "",
-      "src": "src/integrations/supabase/types.ts"
+      "src": "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql"
      },
      {
       "name": "periodo",
@@ -51397,6 +51397,7 @@
    "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql",
    "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql",
    "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
+   "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -72300,8 +72301,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1078,
-   "lines": 83487,
+   "files": 1079,
+   "lines": 83551,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -249555,6 +249556,10 @@
    "path": "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
    "lines": 41
   },
+  "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql": {
+   "path": "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql",
+   "lines": 64
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -249674,10 +249679,19 @@
   }
  },
  "git": {
-  "sha": "cdaca4dca707cba1fac05fb9eb7090b94ba0ec5d",
+  "sha": "1c79a8ffcde2a30d99b071e001442123851d70ca",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1c79a8f",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)",
+    "files": [
+     "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql"
+    ]
+   },
    {
     "sha": "cdaca4d",
     "date": "2026-11-25",
@@ -250077,18 +250091,6 @@
      "src/hooks/useCreditosTributarios.ts",
      "src/integrations/supabase/types.ts"
     ]
-   },
-   {
-    "sha": "4d50a6f",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "infra: totais IBS/CBS/IS na nota + trigger de conferência (etapa 35 RT/RFB) (#514)",
-    "files": [
-     "scripts/integrity/baseline/schema-counts.json",
-     "supabase/migrations/20261122021500_totais_nota_ibscbs.sql",
-     "supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql",
-     "supabase/tests/sql/notas_fiscais_totais_ibscbs.test.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -250153,10 +250155,6 @@
     2
    ],
    [
-    "scripts/integrity/baseline/schema-counts.json",
-    2
-   ],
-   [
     "src/hooks/useCreditosTributarios.ts",
     2
    ],
@@ -250167,6 +250165,10 @@
    [
     "src/lib/nfe/parse-ibscbs.ts",
     2
+   ],
+   [
+    "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql",
+    1
    ],
    [
     "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",

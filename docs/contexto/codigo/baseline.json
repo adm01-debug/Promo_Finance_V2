@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "cdaca4dca707cba1fac05fb9eb7090b94ba0ec5d",
+  "commit": "1c79a8ffcde2a30d99b071e001442123851d70ca",
   "branch": "main",
-  "data_commit": "2026-11-25T08:47:18-03:00",
+  "data_commit": "2026-11-25T09:02:30-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "1c79a8f",
+    "data": "2026-11-25",
+    "assunto": "chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)"
+   },
    {
     "sha": "cdaca4d",
     "data": "2026-11-25",
@@ -126,14 +131,9 @@
     "sha": "f2e0d56",
     "data": "2026-11-22",
     "assunto": "chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)"
-   },
-   {
-    "sha": "5faafbe",
-    "data": "2026-11-22",
-    "assunto": "chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório"
    }
   ],
-  "arquivos_mudados_7d": 267,
+  "arquivos_mudados_7d": 268,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -226,14 +226,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "PENDENCIAS.md",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "RELATORIO_CI.md",
-    "mudancas": 8
-   },
-   {
     "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
    },
@@ -248,6 +240,14 @@
    {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 8
+   },
+   {
+    "arquivo": "PENDENCIAS.md",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "RELATORIO_CI.md",
+    "mudancas": 7
    },
    {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 7
+    "commits": 6
    },
    {
     "autor": "Joaquim Ataides",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4061,
+  "arquivos_total": 4062,
   "arquivos_codigo": 2527,
   "linhas_codigo": 452536,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 276,
   "edge_functions": 109,
   "tabelas": 317,
-  "migrations": 1078,
+  "migrations": 1079,
   "cron_jobs": 24,
   "testes": 509,
   "workflows": 20,

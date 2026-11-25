@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1078,
+ "migrations": 1079,
  "seeds": [],
  "avisos": [
-  "202 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "203 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -27652,6 +27652,13 @@
      "default": "now()",
      "ref": null
     },
+    "empresa_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "id": {
      "tipo": "uuid",
      "nn": false,
@@ -27748,7 +27755,6 @@
    "drift": {
     "so_na_migration": [],
     "so_no_types": [
-     "empresa_id",
      "periodo",
      "referencia",
      "valor"
