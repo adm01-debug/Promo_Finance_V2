@@ -190,7 +190,7 @@ export function AdvancedFiltersPopover({
                     selected={filters.dataVencimentoInicio}
                     onSelect={(date) => updateFilter('dataVencimentoInicio', date)}
                     locale={ptBR as unknown as Record<string, unknown>}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>
@@ -219,7 +219,7 @@ export function AdvancedFiltersPopover({
                     selected={filters.dataVencimentoFim}
                     onSelect={(date) => updateFilter('dataVencimentoFim', date)}
                     locale={ptBR as unknown as Record<string, unknown>}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>

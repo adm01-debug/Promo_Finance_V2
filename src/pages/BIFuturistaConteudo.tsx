@@ -248,7 +248,7 @@ export function BIFuturistaConteudo({
                     mode="single"
                     selected={item.state}
                     onSelect={item.setter}
-                    initialFocus
+                    autoFocus
                     className="pointer-events-auto"
                   />
                 </PopoverContent>
