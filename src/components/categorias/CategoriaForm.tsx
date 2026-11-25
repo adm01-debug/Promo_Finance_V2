@@ -35,7 +35,7 @@ import {
 } from '@/hooks/useCategorias';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import * as Icons from 'lucide-react';
+import { iconeCategoria } from './categoriaIcones';
 import { cn } from '@/lib/utils';
 
 const categoriaSchema = z.object({
@@ -181,8 +181,7 @@ export function CategoriaForm({
                     .split('-')
                     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
                     .join('');
-                  const IconComponent =
-                    (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
+                  const IconComponent = iconeCategoria(pascalName);
                   return (
                     <Button
                       key={iconName}
