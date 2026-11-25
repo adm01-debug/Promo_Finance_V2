@@ -219,6 +219,10 @@ apenas sem a norma. A tela exibe a norma no `GlossarioTooltip` do badge de alert
 e o botão **Alertas (PDF)** (`src/lib/tributario/relatorio-pdf/alertas-fiscais.ts`)
 leva a lista de divergências com a fundamentação integral.
 
+O frescor dos quatro catálogos (cClassTrib, NCM/NBS, alíquotas e fundamentações)
+é medido pelo `CatalogosTributariosHealthPanel`: idade da última carga, versão IT e
+alerta acima de 7 dias sem sincronização (`avaliarFrescorCatalogosRfb`).
+
 ## Vigência e o consumidor (etapa 46)
 
 `buscarReferenciasFiscais` (`src/lib/tributario/catalogos/cclasstrib.ts`)

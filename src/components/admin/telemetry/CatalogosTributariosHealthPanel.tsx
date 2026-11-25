@@ -1,5 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  avaliarFrescorCatalogosRfb,
+  type EntradaFrescorCatalogoRfb,
+  type SaudeCatalogosRfb,
+  type StatusFrescorRfb,
+} from '@/lib/tributario/catalogos/saude';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +51,67 @@ const ROTULO_SEVERIDADE: Record<Severidade, string> = {
   info: 'Informativo',
 };
 
+const ESTILO_FRESCOR: Record<StatusFrescorRfb, string> = {
+  ok: 'bg-success/10 text-success border-success/30',
+  atencao: 'bg-warning/10 text-warning border-warning/30',
+  critico: 'bg-destructive/10 text-destructive border-destructive/30',
+};
+
+const ROTULO_FRESCOR: Record<StatusFrescorRfb, string> = {
+  ok: 'Em dia',
+  atencao: 'Desatualizado',
+  critico: 'Nunca sincronizado',
+};
+
+/**
+ * Etapa 83: carga mais recente de cada catálogo RFB.
+ *
+ * Uma leitura por tabela (limit 1, ordenada pela carga) em paralelo: os quatro
+ * catálogos guardam o carimbo em colunas diferentes, então cada consulta é
+ * explícita em vez de uma varredura genérica. Erro em uma tabela não derruba as
+ * outras — a entrada volta com `ultimaCarga: null`, que o avaliador trata como
+ * "nunca sincronizado".
+ */
+async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[]> {
+  const [cclasstrib, ncm, aliquota, fundamentacao] = await Promise.all([
+    supabase
+      .from('catalogo_cclasstrib')
+      .select('created_at, versao_it')
+      .order('created_at', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_ncm')
+      .select('carregado_em')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_aliquota_referencia')
+      .select('carregado_em')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_fundamentacao')
+      .select('created_at, versao_it')
+      .order('created_at', { ascending: false })
+      .limit(1),
+  ]);
+
+  return [
+    {
+      id: 'cclasstrib',
+      ultimaCarga: cclasstrib.data?.[0]?.created_at ?? null,
+      versaoIt: cclasstrib.data?.[0]?.versao_it ?? null,
+    },
+    { id: 'ncm', ultimaCarga: ncm.data?.[0]?.carregado_em ?? null },
+    { id: 'aliquota', ultimaCarga: aliquota.data?.[0]?.carregado_em ?? null },
+    {
+      id: 'fundamentacao',
+      ultimaCarga: fundamentacao.data?.[0]?.created_at ?? null,
+      versaoIt: fundamentacao.data?.[0]?.versao_it ?? null,
+    },
+  ];
+}
+
 function formatarData(iso: string | null): string {
   if (!iso) return '—';
   return new Date(iso).toLocaleString('pt-BR', {
@@ -74,6 +142,14 @@ export function CatalogosTributariosHealthPanel() {
   });
 
   const achados = data?.achados ?? [];
+
+  // Frescor dos catálogos espelhados da RFB (etapas 79-82). Consulta separada
+  // da RPC de integridade: uma mede invariante, a outra mede envelhecimento.
+  const frescor = useQuery<SaudeCatalogosRfb>({
+    queryKey: ['catalogos-rfb-frescor'],
+    queryFn: async () => avaliarFrescorCatalogosRfb(await carregarFrescorCatalogosRfb()),
+    staleTime: 300_000,
+  });
 
   return (
     <Card>
@@ -179,6 +255,50 @@ export function CatalogosTributariosHealthPanel() {
             )}
           </>
         )}
+
+        <div className="space-y-2 rounded-lg border border-border p-3">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Catálogos RFB (dados abertos)</p>
+              <p className="text-xs text-muted-foreground">
+                {frescor.isLoading
+                  ? 'Verificando frescor...'
+                  : (frescor.data?.resumo ?? 'Sem leitura')}
+              </p>
+            </div>
+            {frescor.data && (
+              <Badge
+                variant="outline"
+                className={ESTILO_FRESCOR[frescor.data.status]}
+                title={`Limite de ${7} dias sem sincronização`}
+              >
+                {ROTULO_FRESCOR[frescor.data.status]}
+              </Badge>
+            )}
+          </div>
+          <ul className="divide-y divide-border">
+            {(frescor.data?.catalogos ?? []).map((catalogo) => (
+              <li
+                key={catalogo.id}
+                className="flex flex-col gap-1 py-2 text-sm md:flex-row md:items-center md:justify-between"
+              >
+                <span className="truncate font-medium">{catalogo.titulo}</span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{catalogo.detalhe}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {catalogo.ultimaCarga ? formatarData(catalogo.ultimaCarga) : '—'}
+                  </span>
+                  <Badge variant="secondary">
+                    {catalogo.versaoIt ? `IT ${catalogo.versaoIt}` : 'sem versão IT'}
+                  </Badge>
+                  <Badge variant="outline" className={ESTILO_FRESCOR[catalogo.status]}>
+                    {ROTULO_FRESCOR[catalogo.status]}
+                  </Badge>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );
