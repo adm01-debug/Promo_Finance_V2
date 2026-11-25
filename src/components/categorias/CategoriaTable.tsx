@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import * as Icons from 'lucide-react';
+import { iconeCategoria } from './categoria-icones';
 
 interface CategoriaTableProps {
   categorias: Categoria[];
@@ -62,8 +62,7 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
               ?.split('-')
               .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
               .join('') ?? '';
-          const IconComponent =
-            (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
+          const IconComponent = iconeCategoria(pascalName);
 
           return (
             <TableRow
