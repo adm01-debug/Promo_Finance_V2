@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ba276565d6ea7bf695798b2df626c0666bc1aca7",
+  "sha": "f5e0e4882a6906dff88f0f200227dd30b48cd4de",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 10:38 UTC",
-  "files_total": 4091,
-  "code_files": 3671,
-  "code_lines": 523510
+  "generated_at": "2026-11-25 10:41 UTC",
+  "files_total": 4100,
+  "code_files": 3679,
+  "code_lines": 525507
  },
  "version": "1.3.2",
- "facts_hash": "9948bda084000fb3",
+ "facts_hash": "dd17ffd78fd80745",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,11 +340,11 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1278,
-   ".sql": 1148,
+   ".ts": 1281,
+   ".sql": 1151,
    ".tsx": 1125,
-   ".mjs": 67,
-   ".py": 45,
+   ".mjs": 68,
+   ".py": 46,
    ".js": 8,
    ".cjs": 1
   },
@@ -408,7 +408,8 @@
     "whatsapp-ai-analyzer",
     "whatsapp-webhook",
     "monitor-health",
-    "reprocessar-creditos-ibscbs"
+    "reprocessar-creditos-ibscbs",
+    "sync-catalogo-cclasstrib"
    ],
    "auth": {}
   },
@@ -31946,16 +31947,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "name": "oportunidades_elisao_acesso",
-    "table": "oportunidades_elisao",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_acessivel(empresa_id)",
-    "check": "public.empresa_acessivel(empresa_id)",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "name": "per_dcomp_acesso",
     "table": "per_dcomp",
     "cmd": "ALL",
@@ -36706,16 +36697,6 @@
     "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
    },
    {
-    "name": "Users can manage company audit logs",
-    "table": "elisao_creditos_auditoria",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
-   },
-   {
     "name": "Users can manage company action tasks",
     "table": "elisao_tarefas_acionaveis",
     "cmd": "ALL",
@@ -37364,6 +37345,16 @@
     "using": "true",
     "check": "true",
     "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "Admin/financeiro can update creditos auditoria",
+    "table": "elisao_creditos_auditoria",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
+    "check": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
+    "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
    }
   ],
   "triggers": [
@@ -38275,15 +38266,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260508141018_3734da48-26e4-4973-8f1d-5838ebb235c4.sql"
-   },
-   {
-    "name": "tr_registrar_decisao_elisao",
-    "when": "BEFORE UPDATE",
-    "table": "elisao_creditos_auditoria",
-    "function": "registrar_decisao_elisao",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql"
    },
    {
     "name": "update_asaas_sync_queue_updated_at",
@@ -40030,6 +40012,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql"
+   },
+   {
+    "name": "tr_registrar_decisao_elisao",
+    "when": "BEFORE UPDATE",
+    "table": "elisao_creditos_auditoria",
+    "function": "registrar_decisao_elisao",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
    }
   ],
   "functions": {
@@ -40663,12 +40654,14 @@
     "args": "",
     "returns": "TRIGGER",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql",
+    "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
     "security_definer": false,
     "search_path": false,
-    "body": "BEGIN IF (TG_OP = 'UPDATE') AND (NEW.status_aprovacao <> OLD.status_aprovacao) THEN NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object( 'status', NEW.status_aprovacao, 'usuario_id', auth.uid(), 'data', now(), 'comentario', NEW.motivo_rejeicao ); END IF; RETURN NEW; END;",
+    "body": "BEGIN IF NEW.status_aprovacao IS NOT DISTINCT FROM OLD.status_aprovacao THEN NEW.aprovador_id := OLD.aprovador_id; NEW.data_aprovacao := OLD.data_aprovacao; ELSIF NEW.status_aprovacao = 'pendente' THEN NEW.aprovador_id := NULL; NEW.data_aprovacao := NULL; ELSE NEW.aprovador_id := COALESCE(auth.uid(), NEW.aprovador_id); NEW.data_aprovacao := now(); END IF; IF TG_OP = 'UPDATE' AND NEW.status_aprovacao IS DISTINCT FROM OLD.status_aprovacao THEN NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object( 'status', NEW.status_aprovacao, 'usuario_id', auth.uid(), 'data', now(), 'comentario', NEW.motivo_rejeicao ); END IF; RETURN NEW; END;",
     "raises": [],
-    "tables": []
+    "tables": [
+     "OLD"
+    ]
    },
    "check_asaas_queue_failures": {
     "args": "",
@@ -43954,6 +43947,19 @@
      "v_itens_desconhecidos",
      "v_nota",
      "v_soma"
+    ]
+   },
+   "migration_aplicada": {
+    "args": "versao text",
+    "returns": "boolean",
+    "lang": "plpgsql",
+    "src": "supabase/tests/sql/rls_multi_empresa.sql",
+    "security_definer": false,
+    "search_path": false,
+    "body": "BEGIN RETURN EXISTS ( SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = versao ); EXCEPTION WHEN undefined_table OR undefined_column OR invalid_schema_name OR insufficient_privilege THEN RETURN true; END;",
+    "raises": [],
+    "tables": [
+     "supabase_migrations"
     ]
    },
    "exec_sql": {
@@ -50206,6 +50212,12 @@
     "schedule": "20 * * * *",
     "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/reprocessar-creditos-ibscbs', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\": …",
     "src": "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql"
+   },
+   {
+    "job": "sync-catalogo-cclasstrib",
+    "schedule": "40 4 * * *",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-cclasstrib', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\":\"pg …",
+    "src": "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql"
    }
   ],
   "views": {
@@ -51380,7 +51392,10 @@
    "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
    "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
+   "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
    "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+   "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql",
+   "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql",
    "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
@@ -65895,6 +65910,34 @@
     "idempotency": false
    },
    {
+    "name": "sync-catalogo-cclasstrib",
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "methods": [
+     "OPTIONS"
+    ],
+    "auth": "PÚBLICA (verify_jwt=false em config.toml)",
+    "tables": [
+     "edge_function_logs",
+     "integration_secrets",
+     "user_empresas",
+     "user_roles"
+    ],
+    "env": [
+     "SUPABASE_SERVICE_ROLE_KEY",
+     "SUPABASE_URL"
+    ],
+    "external": [],
+    "invokes": [],
+    "doc": "Edge: sync-catalogo-cclasstrib (etapa 79 do plano RT/RFB) Mantem o espelho local do catalogo cClassTrib alinhado com a API publica de dados abertos da RFB. Sem o espelho atualizado, uma nota com cClassTrib novo (ou com percentual de reducao revisado) faz o validador acusar divergencia contra um cata …",
+    "errors": [
+     "dados_abertos_http_${resposta.status}",
+     "dados_abertos_nao_json: ${inicio}"
+    ],
+    "side_effects": [],
+    "webhook_events": [],
+    "idempotency": false
+   },
+   {
     "name": "sync-profile-to-bitrix",
     "file": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "methods": [
@@ -70522,8 +70565,8 @@
   },
   {
    "module": "scripts",
-   "files": 152,
-   "lines": 50441,
+   "files": 154,
+   "lines": 50833,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -71095,7 +71138,7 @@
   {
    "module": "src/hooks",
    "files": 328,
-   "lines": 49084,
+   "lines": 49124,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71435,7 +71478,7 @@
   {
    "module": "src/lib",
    "files": 430,
-   "lines": 57817,
+   "lines": 57834,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -71995,8 +72038,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 246,
-   "lines": 54395,
+   "files": 249,
+   "lines": 55281,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72257,8 +72300,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1075,
-   "lines": 83114,
+   "files": 1078,
+   "lines": 83487,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -72352,7 +72395,7 @@
   {
    "module": "supabase/tests",
    "files": 9,
-   "lines": 3255,
+   "lines": 3544,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -76481,6 +76524,7 @@
     "supabase/functions/sso-logout/index.ts",
     "supabase/functions/sso-test-login/index.ts",
     "supabase/functions/stress_test.ts",
+    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "supabase/functions/sync-profile-to-bitrix/index.ts",
     "supabase/functions/upload-anexo/index.ts",
     "supabase/functions/validar-token-contador/index.ts",
@@ -76580,6 +76624,7 @@
     "supabase/functions/sso-logout/index.ts",
     "supabase/functions/sso-test-login/index.ts",
     "supabase/functions/stress_test.ts",
+    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "supabase/functions/sync-profile-to-bitrix/index.ts",
     "supabase/functions/upload-anexo/index.ts",
     "supabase/functions/validar-token-contador/index.ts",
@@ -77232,6 +77277,10 @@
    {
     "file": "supabase/functions/n8n-callback/index.ts",
     "count": 1
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "count": 4
    },
    {
     "file": "supabase/functions/upload-anexo/index.ts",
@@ -84480,6 +84529,14 @@
     "msg": "[fetch-mock] Nenhum matcher para ${method} ${url}. "
    },
    {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "msg": "dados_abertos_http_${resposta.status}"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "msg": "dados_abertos_nao_json: ${inicio}"
+   },
+   {
     "file": "supabase/functions/sync-profile-to-bitrix/index.ts",
     "msg": "bitrix_api_error:${data.error || res.status}:${data.error_description || "
    },
@@ -87694,6 +87751,18 @@
    {
     "file": "supabase/functions/sso-validate-config/index.ts",
     "text": "Validação manual"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "text": "codigo publicado cujo vinculo de CST falhou continua na Receita e nao pode"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
+    "text": "publicado cujo vinculo de CST falhou continua na Receita e nao pode ser"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
+    "text": "Uma ocorrencia sem descricao nao pode consumir o codigo: a Receita manda o"
    },
    {
     "file": "supabase/functions/sync-profile-to-bitrix/index.ts",
@@ -102241,6 +102310,26 @@
     "file": "supabase/functions/sso-generate-metadata/index.ts",
     "name": "PROJECT_REF",
     "value": "'bwwbeyolnnzppeuhgkcd'"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "name": "TABELA",
+    "value": "'catalogo_cclasstrib'"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "name": "TIMEOUT_MS",
+    "value": "30"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
+    "name": "VIGENCIA_BASE_CATALOGO",
+    "value": "'2026-01-01'"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
+    "name": "MAX_PCT_AUSENTES",
+    "value": "10"
    },
    {
     "file": "supabase/functions/upload-anexo/index.ts",
@@ -126242,6 +126331,10 @@
     "name": "catálogo vazio não gera alerta (carga da RFB ainda não rodou)"
    },
    {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)"
+   },
+   {
     "file": "src/hooks/__tests__/useIndicesContabeis.test.ts",
     "name": "normalizarAgregados"
    },
@@ -137400,6 +137493,62 @@
    {
     "file": "supabase/functions/sso-test-login/pipeline.test.ts",
     "name": "integração: pipeline + fetch-mock — zero rede mesmo simulando ipapi"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "normalizarData — aceita ISO valida e cai para hoje em Brasilia no resto"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "fracaoReducao — pontos percentuais viram fracao 0-1"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "mapearCst — junta CST pelas situacoes e descarta codigo em duas situacoes"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "mapearCst — terceira ocorrencia nao ressuscita codigo ambiguo"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — grava vigencia do catalogo e fracao, sem CST suposto"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — presente conta o publicado, nao so o que tem CST"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — lista vazia nao inventa linha"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — codigo sem descricao continua presente e nao vira linha"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — ocorrencia sem descricao nao consome a ocorrencia completa"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — ordem dos duplicados nao muda resumo nem catalogo"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "montarLinhas — presenca preserva a vigencia acima do piso da API"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "decidirEncerramentos — encerra o que sumiu dentro do limite"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "decidirEncerramentos — nao encerra nada com resposta curta ou sumico grande"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+    "name": "compararVersao — V0073 depois de V0072 e antes de V0080"
    }
   ],
   "webhook_events": [
@@ -141388,16 +141537,6 @@
    {
     "name": "operacoes_icms_acesso",
     "table": "operacoes_icms",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "public.empresa_acessivel(empresa_id)",
-    "check": "public.empresa_acessivel(empresa_id)",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
-    "name": "oportunidades_elisao_acesso",
-    "table": "oportunidades_elisao",
     "cmd": "ALL",
     "roles": "authenticated",
     "mode": "permissive",
@@ -146156,16 +146295,6 @@
     "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
    },
    {
-    "name": "Users can manage company audit logs",
-    "table": "elisao_creditos_auditoria",
-    "cmd": "ALL",
-    "roles": "public",
-    "mode": "permissive",
-    "using": "empresa_acessivel(empresa_id)",
-    "check": "",
-    "src": "supabase/migrations/20260902230000_fix_rls_tautologia_empresas_asaas_elisao.sql"
-   },
-   {
     "name": "Users can manage company action tasks",
     "table": "elisao_tarefas_acionaveis",
     "cmd": "ALL",
@@ -146814,6 +146943,16 @@
     "using": "true",
     "check": "true",
     "src": "supabase/migrations/20261122023000_catalogos_ncm_nbs_aliquota_referencia.sql"
+   },
+   {
+    "name": "Admin/financeiro can update creditos auditoria",
+    "table": "elisao_creditos_auditoria",
+    "cmd": "UPDATE",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
+    "check": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
+    "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
    }
   ],
   "db_triggers": [
@@ -147725,15 +147864,6 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20260508141018_3734da48-26e4-4973-8f1d-5838ebb235c4.sql"
-   },
-   {
-    "name": "tr_registrar_decisao_elisao",
-    "when": "BEFORE UPDATE",
-    "table": "elisao_creditos_auditoria",
-    "function": "registrar_decisao_elisao",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql"
    },
    {
     "name": "update_asaas_sync_queue_updated_at",
@@ -149480,6 +149610,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261122040000_corrige_trigger_totais_ibscbs_so_header.sql"
+   },
+   {
+    "name": "tr_registrar_decisao_elisao",
+    "when": "BEFORE UPDATE",
+    "table": "elisao_creditos_auditoria",
+    "function": "registrar_decisao_elisao",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
    }
   ],
   "db_functions": {
@@ -150113,12 +150252,14 @@
     "args": "",
     "returns": "TRIGGER",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql",
+    "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
     "security_definer": false,
     "search_path": false,
-    "body": "BEGIN IF (TG_OP = 'UPDATE') AND (NEW.status_aprovacao <> OLD.status_aprovacao) THEN NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object( 'status', NEW.status_aprovacao, 'usuario_id', auth.uid(), 'data', now(), 'comentario', NEW.motivo_rejeicao ); END IF; RETURN NEW; END;",
+    "body": "BEGIN IF NEW.status_aprovacao IS NOT DISTINCT FROM OLD.status_aprovacao THEN NEW.aprovador_id := OLD.aprovador_id; NEW.data_aprovacao := OLD.data_aprovacao; ELSIF NEW.status_aprovacao = 'pendente' THEN NEW.aprovador_id := NULL; NEW.data_aprovacao := NULL; ELSE NEW.aprovador_id := COALESCE(auth.uid(), NEW.aprovador_id); NEW.data_aprovacao := now(); END IF; IF TG_OP = 'UPDATE' AND NEW.status_aprovacao IS DISTINCT FROM OLD.status_aprovacao THEN NEW.historico_decisoes = COALESCE(OLD.historico_decisoes, '[]'::jsonb) || jsonb_build_object( 'status', NEW.status_aprovacao, 'usuario_id', auth.uid(), 'data', now(), 'comentario', NEW.motivo_rejeicao ); END IF; RETURN NEW; END;",
     "raises": [],
-    "tables": []
+    "tables": [
+     "OLD"
+    ]
    },
    "check_asaas_queue_failures": {
     "args": "",
@@ -153406,6 +153547,19 @@
      "v_soma"
     ]
    },
+   "migration_aplicada": {
+    "args": "versao text",
+    "returns": "boolean",
+    "lang": "plpgsql",
+    "src": "supabase/tests/sql/rls_multi_empresa.sql",
+    "security_definer": false,
+    "search_path": false,
+    "body": "BEGIN RETURN EXISTS ( SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = versao ); EXCEPTION WHEN undefined_table OR undefined_column OR invalid_schema_name OR insufficient_privilege THEN RETURN true; END;",
+    "raises": [],
+    "tables": [
+     "supabase_migrations"
+    ]
+   },
    "exec_sql": {
     "args": "",
     "returns": "?",
@@ -154993,6 +155147,10 @@
     "limit": "500"
    },
    {
+    "file": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "limit": "1"
+   },
+   {
     "file": "src/pages/AdminEdgeHealth.tsx",
     "limit": "50"
    },
@@ -155151,6 +155309,14 @@
    {
     "file": "supabase/functions/sso-callback/index.ts",
     "limit": "1"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "limit": "1"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "limit": "1000"
    },
    {
     "file": "supabase/functions/sync-profile-to-bitrix/index.ts",
@@ -160384,19 +160550,16 @@
    "elisao_creditos_auditoria": {
     "rls": "enabled",
     "SELECT": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
-     "public: empresa_acessivel(empresa_id)"
+     "authenticated: public.empresa_acessivel(empresa_id)"
     ],
     "INSERT": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
-     "public: empresa_acessivel(empresa_id)"
+     "authenticated: public.empresa_acessivel(empresa_id)"
     ],
     "UPDATE": [
-     "public: empresa_acessivel(empresa_id)"
+     "authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)"
     ],
     "DELETE": [
-     "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))",
-     "public: empresa_acessivel(empresa_id)"
+     "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
    },
    "elisao_regras_creditos": {
@@ -161605,19 +161768,15 @@
    "oportunidades_elisao": {
     "rls": "enabled",
     "SELECT": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
      "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro','operacional','visualizador']::app_role[]) AND empresa_acessivel(e …"
     ],
     "INSERT": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
      "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro','operacional']::app_role[]) AND empresa_acessivel(empresa_id)"
     ],
     "UPDATE": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
      "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)"
     ],
     "DELETE": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
      "authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)"
     ]
    },
@@ -163460,6 +163619,7 @@
    "supabase/functions/sso-logout/index.ts",
    "supabase/functions/sso-test-login/index.ts",
    "supabase/functions/stress_test.ts",
+   "supabase/functions/sync-catalogo-cclasstrib/index.ts",
    "supabase/functions/sync-profile-to-bitrix/index.ts",
    "supabase/functions/upload-anexo/index.ts",
    "supabase/functions/validar-token-contador/index.ts",
@@ -163929,7 +164089,8 @@
    "whatsapp-ai-analyzer",
    "whatsapp-webhook",
    "monitor-health",
-   "reprocessar-creditos-ibscbs"
+   "reprocessar-creditos-ibscbs",
+   "sync-catalogo-cclasstrib"
   ],
   "auth_config": {},
   "grants": [
@@ -176538,6 +176699,13 @@
    },
    {
     "kind": "dinâmico",
+    "msg": "4 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
+    "where": [
+     "supabase/functions/sync-catalogo-cclasstrib/index.ts"
+    ]
+   },
+   {
+    "kind": "dinâmico",
     "msg": "1 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
     "where": [
      "supabase/functions/upload-anexo/index.ts"
@@ -181399,6 +181567,28 @@
     "\"--remote\", \"dono/repo\", *FONTES], capture_output=True, text=True, timeout=60,",
     "ajuda = subprocess.run([sys.executable, str(SCRIPT), \"--help\"], capture_output=True, text=True, timeout=60, check=False)"
    ]
+  },
+  "scripts/rfb/gerar_carga_cclasstrib.py": {
+   "path": "scripts/rfb/gerar_carga_cclasstrib.py",
+   "lines": 274,
+   "exports": [
+    "def montar_base",
+    "def sql_text",
+    "def fracao",
+    "def gerar",
+    "def resolver_commit",
+    "def main"
+   ],
+   "doc": "!/usr/bin/env python3"
+  },
+  "scripts/rfb/gerar_carga_cclasstrib.unit.mjs": {
+   "path": "scripts/rfb/gerar_carga_cclasstrib.unit.mjs",
+   "lines": 118,
+   "rule_comments": [
+    "required=True/);",
+    "required=True/);"
+   ],
+   "doc": "Guard da carga inicial de `catalogo_cclasstrib` (etapa 86): o SQL versionado e gerado por scripts/rfb/gerar_carga_cclasstrib.py e ninguem o executa na CI (a suite pgTAP de catalogos depende de PROD_DB_URL). Este teste le o arquivo gerado e trava as invariantes que, se violadas, quebram o consumidor …"
   },
   "scripts/security/check-view-replay-order.mjs": {
    "path": "scripts/security/check-view-replay-order.mjs",
@@ -211986,14 +212176,21 @@
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx": {
    "path": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-   "lines": 167,
+   "lines": 207,
    "is_test": true,
-   "doc": "Testes ? useImportacaoXMLNFe: valida??o contra cat?logo (etapa 46) A importa??o deixou de aplicar regras de exemplo embutidas (PIS/COFINS monof?sico por prefixo de NCM) e passou a conferir o que a nota declarou contra `catalogo_cclasstrib` e `catalogo_ncm`. O checklist da etapa exige que a diverg?nc …",
+   "rule_comments": [
+    "e, se a consulta voltar vazia, sonda o cat?logo com `.limit(1)`. A fila segue",
+    "Duas consultas: o lote e a sonda. A sonda é `.limit(1)`, não um select"
+   ],
    "tests": [
     "importarNFes ? valida??o contra cat?logo (etapa 46)",
     "consulta cclasstrib e catalogo_ncm uma vez por lote",
     "anexa REG-011 ? nota e ainda assim a importa",
-    "catálogo vazio não gera alerta (carga da RFB ainda não rodou)"
+    "catálogo vazio não gera alerta (carga da RFB ainda não rodou)",
+    "catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)"
+   ],
+   "pagination": [
+    "1"
    ]
   },
   "src/hooks/__tests__/useIndicesContabeis.test.ts": {
@@ -215687,7 +215884,7 @@
   },
   "src/lib/__tests__/edge-functions.security.test.ts": {
    "path": "src/lib/__tests__/edge-functions.security.test.ts",
-   "lines": 225,
+   "lines": 227,
    "is_test": true,
    "errors": [
     ": /exigirUsuario\\s*\\(/,\n  "
@@ -221985,7 +222182,7 @@
   },
   "src/lib/tributario/catalogos/cclasstrib.ts": {
    "path": "src/lib/tributario/catalogos/cclasstrib.ts",
-   "lines": 163,
+   "lines": 178,
    "exports": [
     "interface CclasstribCatalogo",
     "interface NcmCatalogo",
@@ -221996,6 +222193,14 @@
    "tables": [
     {
      "table": "catalogo_cclasstrib",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_cclasstrib",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_ncm",
      "op": "select"
     },
     {
@@ -222030,7 +222235,10 @@
    "rule_comments": [
     "* Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o"
    ],
-   "doc": "Leitura do cat?logo oficial de cClassTrib (LC 214/2025) e do cat?logo de NCM. As duas tabelas nascem vazias: o conte?do vem das cargas da RFB (etapas 79-81). Por isso toda leitura aqui ? *best effort*: cat?logo vazio significa \"sem refer?ncia para comparar\", nunca \"registro inv?lido\". Quem valida (e …"
+   "doc": "Leitura do cat?logo oficial de cClassTrib (LC 214/2025) e do cat?logo de NCM. As duas tabelas nascem vazias: o conte?do vem das cargas da RFB (etapas 79-81). Por isso toda leitura aqui ? *best effort*: cat?logo vazio significa \"sem refer?ncia para comparar\", nunca \"registro inv?lido\". Quem valida (e …",
+   "pagination": [
+    "1"
+   ]
   },
   "src/lib/tributario/catalogos/coerencia-iss.ts": {
    "path": "src/lib/tributario/catalogos/coerencia-iss.ts",
@@ -243244,6 +243452,108 @@
     "Validação manual"
    ]
   },
+  "supabase/functions/sync-catalogo-cclasstrib/index.ts": {
+   "path": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+   "lines": 259,
+   "exports": [
+    "const BASE_DADOS_ABERTOS",
+    "interface VersaoApi",
+    "function buscarDadosAbertos",
+    "const handler"
+   ],
+   "dyn_from": 4,
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "errors": [
+    "dados_abertos_http_${resposta.status}",
+    "dados_abertos_nao_json: ${inicio}"
+   ],
+   "params": [
+    {
+     "name": "TABELA",
+     "value": "'catalogo_cclasstrib'"
+    },
+    {
+     "name": "TIMEOUT_MS",
+     "value": "30"
+    }
+   ],
+   "rule_comments": [
+    "codigo publicado cujo vinculo de CST falhou continua na Receita e nao pode"
+   ],
+   "doc": "Edge: sync-catalogo-cclasstrib (etapa 79 do plano RT/RFB) Mantem o espelho local do catalogo cClassTrib alinhado com a API publica de dados abertos da RFB. Sem o espelho atualizado, uma nota com cClassTrib novo (ou com percentual de reducao revisado) faz o validador acusar divergencia contra um cata …",
+   "pagination": [
+    "1",
+    "1000"
+   ],
+   "uses_service_role": true
+  },
+  "supabase/functions/sync-catalogo-cclasstrib/montar.ts": {
+   "path": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
+   "lines": 276,
+   "exports": [
+    "const VIGENCIA_BASE_CATALOGO",
+    "const MIN_CLASSIFICACOES_API",
+    "const MAX_PCT_AUSENTES",
+    "interface ClassificacaoApi",
+    "interface SituacaoApi",
+    "interface LinhaCatalogo",
+    "interface Mapeamento",
+    "interface Encerramento",
+    "interface DecisaoEncerramento",
+    "function hojeBrasilia",
+    "function normalizarData",
+    "function fracaoReducao",
+    "function mapearCst",
+    "function montarLinhas",
+    "function decidirEncerramentos",
+    "function compararVersao"
+   ],
+   "params": [
+    {
+     "name": "VIGENCIA_BASE_CATALOGO",
+     "value": "'2026-01-01'"
+    },
+    {
+     "name": "MAX_PCT_AUSENTES",
+     "value": "10"
+    }
+   ],
+   "rule_comments": [
+    "publicado cujo vinculo de CST falhou continua na Receita e nao pode ser",
+    "Uma ocorrencia sem descricao nao pode consumir o codigo: a Receita manda o"
+   ]
+  },
+  "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts": {
+   "path": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+   "lines": 351,
+   "is_test": true,
+   "rule_comments": [
+    "A Receita publicou o codigo e nao publicou a descricao. Ele nao pode virar",
+    "linha (a tabela exige descricao), mas tambem nao pode sair de `presentes`:",
+    "o resumo nao pode marcar como nao-aproveitado um codigo que gerou linha. O",
+    "150 de 170 presentes: 11,7% fora do limite."
+   ],
+   "doc": "Etapa 79 — mapeamento da API de dados abertos da RFB para a tabela `catalogo_cclasstrib`. O caro de errar aqui nao e o transporte, e o conteudo: um CST suposto ou uma vigencia inventada viram alerta fiscal falso (REG-011 / REG-013) em cima de nota correta. Os casos abaixo fixam exatamente esses dois …",
+   "tests": [
+    "normalizarData — aceita ISO valida e cai para hoje em Brasilia no resto",
+    "fracaoReducao — pontos percentuais viram fracao 0-1",
+    "mapearCst — junta CST pelas situacoes e descarta codigo em duas situacoes",
+    "mapearCst — terceira ocorrencia nao ressuscita codigo ambiguo",
+    "montarLinhas — grava vigencia do catalogo e fracao, sem CST suposto",
+    "montarLinhas — presente conta o publicado, nao so o que tem CST",
+    "montarLinhas — lista vazia nao inventa linha",
+    "montarLinhas — codigo sem descricao continua presente e nao vira linha",
+    "montarLinhas — ocorrencia sem descricao nao consome a ocorrencia completa",
+    "montarLinhas — ordem dos duplicados nao muda resumo nem catalogo",
+    "montarLinhas — presenca preserva a vigencia acima do piso da API",
+    "decidirEncerramentos — encerra o que sumiu dentro do limite",
+    "decidirEncerramentos — nao encerra nada com resposta curta ou sumico grande",
+    "compararVersao — V0073 depois de V0072 e antes de V0080"
+   ]
+  },
   "supabase/functions/sync-profile-to-bitrix/index.ts": {
    "path": "supabase/functions/sync-profile-to-bitrix/index.ts",
    "lines": 315,
@@ -249224,10 +249534,22 @@
    "lines": 117,
    "uses_service_role": true
   },
+  "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql": {
+   "path": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
+   "lines": 109
+  },
   "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql": {
    "path": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
    "lines": 318,
    "uses_service_role": true
+  },
+  "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql": {
+   "path": "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql",
+   "lines": 215
+  },
+  "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql": {
+   "path": "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql",
+   "lines": 49
   },
   "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql": {
    "path": "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
@@ -249340,16 +249662,63 @@
   },
   "supabase/tests/sql/rls_multi_empresa.sql": {
    "path": "supabase/tests/sql/rls_multi_empresa.sql",
-   "lines": 310,
+   "lines": 599,
    "is_test": true,
+   "rule_comments": [
+    "*e** não pode ter policy permissiva"
+   ],
+   "temporal": [
+    "OR linha.data_aprovacao < now() - interval '5 minutes' THEN"
+   ],
    "uses_service_role": true
   }
  },
  "git": {
-  "sha": "ba276565d6ea7bf695798b2df626c0666bc1aca7",
+  "sha": "f5e0e4882a6906dff88f0f200227dd30b48cd4de",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f5e0e48",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)",
+    "files": [
+     "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
+     "supabase/tests/sql/rls_multi_empresa.sql"
+    ]
+   },
+   {
+    "sha": "de045cd",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)",
+    "files": [
+     "SECURITY_RULES.md",
+     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+     "src/lib/__tests__/edge-functions.security.test.ts",
+     "supabase/config.toml",
+     "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+     "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
+     "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql"
+    ]
+   },
+   {
+    "sha": "7a3a58d",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)",
+    "files": [
+     "scripts/automation.config.json",
+     "scripts/rfb/gerar_carga_cclasstrib.py",
+     "scripts/rfb/gerar_carga_cclasstrib.unit.mjs",
+     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+     "src/lib/tributario/catalogos/cclasstrib.ts",
+     "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql"
+    ]
+   },
    {
     "sha": "ba27656",
     "date": "2026-11-25",
@@ -249721,35 +250090,6 @@
      "src/types/reforma-tributaria/enums.ts",
      "src/types/reforma-tributaria/regimes.ts"
     ]
-   },
-   {
-    "sha": "2463d97",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "fix: ABNT NBR 5891 arredondamento half-to-even + calcularComArredondamento CBS/IBS",
-    "files": [
-     "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-     "src/lib/reforma-tributaria/arredondamento.ts",
-     "src/lib/reforma-tributaria/calcular-tributos.ts"
-    ]
-   },
-   {
-    "sha": "7db0fc4",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "infra: grupo IS por item (etapa 34 RT/RFB) (#513)",
-    "files": [
-     "supabase/migrations/20261122021000_grupo_is_por_item.sql"
-    ]
-   },
-   {
-    "sha": "d32ac55",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "infra: grupo IBS/CBS por item (etapa 33 RT/RFB) (#512)",
-    "files": [
-     "supabase/migrations/20261122020500_grupo_ibscbs_por_item.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -249766,6 +250106,14 @@
     4
    ],
    [
+    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    3
+   ],
+   [
+    "src/lib/tributario/catalogos/cclasstrib.ts",
+    3
+   ],
+   [
     "src/hooks/useImportacaoXMLNFe.ts",
     3
    ],
@@ -249776,6 +250124,18 @@
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
+   ],
+   [
+    "src/lib/__tests__/edge-functions.security.test.ts",
+    2
+   ],
+   [
+    "supabase/config.toml",
+    2
+   ],
+   [
+    "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    2
    ],
    [
     "docs/ci/README.md",
@@ -249790,15 +250150,7 @@
     2
    ],
    [
-    "src/lib/tributario/catalogos/cclasstrib.ts",
-    2
-   ],
-   [
     "scripts/integrity/baseline/schema-counts.json",
-    2
-   ],
-   [
-    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
     2
    ],
    [
@@ -249814,23 +250166,11 @@
     2
    ],
    [
-    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql",
     1
    ],
    [
-    "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
-    1
-   ],
-   [
-    "docs/ci/MATRIZ_EDGE_TABELA.md",
-    1
-   ],
-   [
-    "docs/receitafederal/rfb-changelog-state.json",
+    "supabase/tests/sql/rls_multi_empresa.sql",
     1
    ]
   ]

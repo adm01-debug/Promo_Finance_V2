@@ -21,8 +21,8 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (304)",
-   "outro (112)",
+   "co-localizado (__tests__) (305)",
+   "outro (113)",
    "co-localizado (*.test) (49)"
   ],
   "edge_functions": "supabase/functions",
@@ -45,7 +45,7 @@
   "edge_functions": "kebab-case (99%)",
   "tabelas": "snake_case (79%)"
  },
- "barrels_index": 33,
+ "barrels_index": 34,
  "extensao_componentes": [
   ".tsx (993)"
  ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)",
+   "feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)",
+   "feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)",
    "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)",
-   "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)",
-   "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)",
-   "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)",
-   "chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)"
+   "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

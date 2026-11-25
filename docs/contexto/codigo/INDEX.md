@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ba276565d6ea7bf695798b2df626c0666bc1aca7` (2026-11-25T07:35:32-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f5e0e4882a6906dff88f0f200227dd30b48cd4de` (2026-11-25T07:36:11-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2403), SQL (1148), Markdown (230), JavaScript (76), JSON (45), Python (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2406), SQL (1151), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4052 |
-| arquivos_codigo | 2522 |
-| linhas_codigo | 451205 |
+| arquivos_total | 4061 |
+| arquivos_codigo | 2527 |
+| linhas_codigo | 452536 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -44,21 +44,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | modulos | 129 |
 | componentes | 993 |
 | hooks | 276 |
-| edge_functions | 108 |
+| edge_functions | 109 |
 | tabelas | 317 |
-| migrations | 1075 |
-| cron_jobs | 23 |
-| testes | 507 |
+| migrations | 1078 |
+| cron_jobs | 24 |
+| testes | 509 |
 | workflows | 20 |
-| scripts | 116 |
-| docs_md | 230 |
+| scripts | 117 |
+| docs_md | 231 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
 - componentes: src/components (779), src/pages (210), src/hooks (2)
 - hooks: src/hooks (240), src/components (27), src/pages (5)
 - servicos_logica: src/lib (269), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (304), outro (112), co-localizado (*.test) (49)
+- testes: co-localizado (__tests__) (305), outro (113), co-localizado (*.test) (49)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -393,6 +393,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `sso-logout` (verify_jwt=false) — tabelas: audit_logs, sso_login_attempts, sso_providers; chamada por 2 arquivo(s) do front
 - `sso-test-login` — tabelas: sso_providers, sso_role_mappings, user_roles; chamada por 2 arquivo(s) do front
 - `sso-validate-config` — tabelas: -; chamada por 1 arquivo(s) do front
+- `sync-catalogo-cclasstrib` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front, por SQL/cron
 - `sync-profile-to-bitrix` — tabelas: audit_logs, bitrix_oauth_tokens, profiles; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `upload-anexo` — tabelas: anexos_financeiros, user_empresas; chamada por 1 arquivo(s) do front
 - `validar-token-contador` (verify_jwt=false) — tabelas: convites_contador, empresas; chamada por 1 arquivo(s) do front
@@ -429,11 +430,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `refresh-performance-alerts-weekly` 45 3 * * * (20260712194623_6779ec03-860d-4d19-89b2-044aa6594ba8.sql)
 - `reprocessar-creditos-ibscbs` 20 * * * * → edge reprocessar-creditos-ibscbs (20261122150000_cron_reprocessar_creditos_ibscbs.sql)
 - `sefaz-observability-hourly` 5 * * * * (20260723120954_26546526-ca79-48e8-b067-571d2d02a16d.sql)
+- `sync-catalogo-cclasstrib` 40 4 * * * → edge sync-catalogo-cclasstrib (20261124121000_cron_sync_catalogo_cclasstrib.sql)
 
 ## Integrações externas
 - SDKs: Sentry, Supabase, i18next, react-query, zod
 - hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, api.supabase.com, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, exemplo.com, idp.acme, x.supabase.co, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, api.asaas.com
-- webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, guardar-xml-nfe-autorizada, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, reprocessar-creditos-ibscbs, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
+- webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, guardar-xml-nfe-autorizada, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, reprocessar-creditos-ibscbs, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, sync-catalogo-cclasstrib, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
 - env de integração (só nomes): ASAAS_API_KEY, ASAAS_WEBHOOK_TOKEN, BITRIX24_ACCESS_TOKEN, BITRIX24_CLIENT_ID, BITRIX24_CLIENT_SECRET, BLING_CLIENT_ID, BLING_CLIENT_SECRET, CI_GATE_LOG_SECRET, CNPJA_API_KEY, CONTADOR_INVITE_SECRET, CRON_DISPATCH_SECRET, EDGE_SENTRY_DSN, LOVABLE_API_KEY, MAPBOX_ACCESS_TOKEN, N8N_DISPATCH_SECRET, OPENAI_API_KEY, OPEN_FINANCE_CLIENT_ID, OPEN_FINANCE_CLIENT_SECRET, REGUA_CRON_SECRET, RESEND_API_KEY, RESEND_FROM, SEFAZ_CRON_SECRET, SENTRY_DSN, SENTRY_ENVIRONMENT, SLACK_WEBHOOK_URL, SUPABASE_JWT_SECRET, VITE_BLING_CLIENT_ID, VITE_SENTRY_DSN
 
 ## Permissões / papéis
@@ -465,19 +467,19 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (32)
 - bun.lock (30)
-- .github/workflows/ci.yml (15)
-- PENDENCIAS.md (11)
-- RELATORIO_CI.md (11)
-- src/integrations/supabase/types.ts (9)
-- supabase/functions/asaas-proxy/index.ts (9)
+- .github/workflows/ci.yml (16)
+- src/integrations/supabase/types.ts (10)
+- supabase/functions/asaas-proxy/index.ts (10)
+- env.manifest.json (9)
+- scripts/automation.config.json (9)
+- PENDENCIAS.md (8)
+- RELATORIO_CI.md (8)
 - analise-prs/progresso.json (8)
-- env.manifest.json (8)
-- scripts/automation.config.json (8)
+- scripts/integrity/baseline/schema-counts.json (8)
+- scripts/security/test-canonical-db-gates.mjs (8)
+- supabase/functions/n8n-callback/index.ts (8)
+- .github/workflows/prod-migrate.yml (7)
 - analise-prs/RELATORIO_PRS.md (7)
-- docs/ci/README.md (7)
-- scripts/integrity/baseline/schema-counts.json (7)
-- scripts/security/test-canonical-db-gates.mjs (7)
-- supabase/functions/n8n-callback/index.ts (7)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -575,7 +577,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `RELATORIO_CI.md` — RELATÓRIO CI — Promo Finance V2 (339 linhas)
 - `RELATORIO_IMPLEMENTACAO_EXAUSTIVO.md` — RELATÓRIO DE IMPLEMENTAÇÃO EXAUSTIVO — Epic Vela-dark (180 linhas)
 - `SECURITY.md` — Política de Segurança — Promo Finance V2 (50 linhas)
-- `SECURITY_RULES.md` — SECURITY_RULES (101 linhas)
+- `SECURITY_RULES.md` — SECURITY_RULES (102 linhas)
 - `docs/ACCESSIBILITY.md` — ♿ Guia de Acessibilidade - Promo Finance (310 linhas)
 - `docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md` — ADR-001 — Exclusão do módulo de logística/Lalamove (56 linhas)
 - `docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md` — ADR-002 — Funções essenciais do Promo Finance V2 (56 linhas)
@@ -634,10 +636,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (907 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/guides (9), docs/receitafederal (9), docs/execucao-cline (5), docs/qa (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/receitafederal (10), docs/guides (9), docs/execucao-cline (5), docs/qa (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-25 `f5e0e48` fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)
+- 2026-11-25 `de045cd` feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)
+- 2026-11-25 `7a3a58d` feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)
 - 2026-11-25 `ba27656` feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)
 - 2026-11-24 `0f6d936` fix(docs): regenera README de CI a partir do kpi.json vigente (#553)
 - 2026-11-24 `45de89c` chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)
@@ -650,9 +655,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-24 `4d880db` chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)
 - 2026-11-24 `5e77362` chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)
 - 2026-11-24 `d3af1cc` chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)
-- 2026-11-24 `f7e08e4` feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)
-- 2026-11-23 `6a46049` feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)
-- 2026-11-22 `2c2486f` chore: adiciona plano de UX de navegacao em 200 etapas (#529)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

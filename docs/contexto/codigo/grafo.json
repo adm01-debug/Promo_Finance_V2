@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2022,
- "arestas": 8533,
+ "nos": 2025,
+ "arestas": 8541,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -54,7 +54,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/edge-observability.ts",
-   "importado_por": 110
+   "importado_por": 111
   },
   {
    "arquivo": "src/hooks/useAuth.tsx",
@@ -86,7 +86,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/observability.ts",
-   "importado_por": 76
+   "importado_por": 77
   },
   {
    "arquivo": "src/components/ui/scroll-area.tsx",
@@ -101,20 +101,20 @@
    "importado_por": 59
   },
   {
+   "arquivo": "supabase/functions/_shared/auth-guard.ts",
+   "importado_por": 55
+  },
+  {
    "arquivo": "src/hooks/useFinancialData.ts",
    "importado_por": 54
   },
   {
-   "arquivo": "supabase/functions/_shared/auth-guard.ts",
-   "importado_por": 54
-  },
-  {
    "arquivo": "supabase/functions/_shared/erros.ts",
-   "importado_por": 52
+   "importado_por": 53
   },
   {
    "arquivo": "supabase/functions/_shared/validation.ts",
-   "importado_por": 50
+   "importado_por": 51
   },
   {
    "arquivo": "src/components/ui/separator.tsx",
@@ -145,11 +145,11 @@
    "importado_por": 31
   },
   {
-   "arquivo": "src/components/ui/checkbox.tsx",
-   "importado_por": 30
+   "arquivo": "supabase/functions/_shared/zod.ts",
+   "importado_por": 31
   },
   {
-   "arquivo": "supabase/functions/_shared/zod.ts",
+   "arquivo": "src/components/ui/checkbox.tsx",
    "importado_por": 30
   },
   {
@@ -157,12 +157,12 @@
    "importado_por": 26
   },
   {
-   "arquivo": "supabase/functions/_shared/contract-validator.ts",
+   "arquivo": "supabase/functions/_shared/contract-response.ts",
    "importado_por": 26
   },
   {
-   "arquivo": "supabase/functions/_shared/contract-response.ts",
-   "importado_por": 25
+   "arquivo": "supabase/functions/_shared/contract-validator.ts",
+   "importado_por": 26
   }
  ],
  "ciclos": {

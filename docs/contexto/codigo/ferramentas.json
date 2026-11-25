@@ -3,12 +3,12 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2403)",
-   "SQL (1148)",
-   "Markdown (230)",
-   "JavaScript (76)",
+   "TypeScript (2406)",
+   "SQL (1151)",
+   "Markdown (231)",
+   "JavaScript (77)",
+   "Python (46)",
    "JSON (45)",
-   "Python (45)",
    "Shell (29)",
    "YAML (26)"
   ],
@@ -955,7 +955,7 @@
   {
    "arquivo": "SECURITY_RULES.md",
    "titulo": "SECURITY_RULES",
-   "linhas": 101
+   "linhas": 102
   },
   {
    "arquivo": "docs/ACCESSIBILITY.md",
@@ -1258,11 +1258,11 @@
    "arquivos_md": 13
   },
   {
-   "pasta": "docs/guides",
-   "arquivos_md": 9
+   "pasta": "docs/receitafederal",
+   "arquivos_md": 10
   },
   {
-   "pasta": "docs/receitafederal",
+   "pasta": "docs/guides",
    "arquivos_md": 9
   },
   {
@@ -1874,6 +1874,10 @@
     "arquivos": 1
    },
    {
+    "host": "piloto-cbs.tributos.gov.br",
+    "arquivos": 1
+   },
+   {
     "host": "precedencia.invalido",
     "arquivos": 1
    },
@@ -2049,6 +2053,7 @@
    "sso-callback",
    "sso-initiate",
    "sso-logout",
+   "sync-catalogo-cclasstrib",
    "validar-token-contador",
    "validate-ip-geo",
    "webhook-replay",

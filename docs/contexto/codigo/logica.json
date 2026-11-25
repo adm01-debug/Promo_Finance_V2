@@ -1,13 +1,13 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 289,
+ "total": 290,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
   "lib": 269,
-  "python": 14
+  "python": 15
  },
  "arquivos": [
   {
@@ -448,6 +448,37 @@
     "re",
     "subprocess",
     "sys"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/rfb/gerar_carga_cclasstrib.py",
+   "camada": "python",
+   "exports": [
+    "fracao",
+    "gerar",
+    "main",
+    "montar_base",
+    "resolver_commit",
+    "sql_text"
+   ],
+   "linhas": 273,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "datetime",
+    "glob",
+    "os",
+    "sqlite3",
+    "subprocess",
+    "tempfile"
    ],
    "rotas_http": 0,
    "usado_por": 0,
@@ -5371,7 +5402,7 @@
     "listarCclasstribVigentes"
    ],
    "export_default": null,
-   "linhas": 162,
+   "linhas": 177,
    "tabelas": [
     "catalogo_cclasstrib",
     "catalogo_ncm"

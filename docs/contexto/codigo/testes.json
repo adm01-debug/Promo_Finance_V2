@@ -5,21 +5,21 @@
   "vitest",
   "playwright"
  ],
- "total": 507,
+ "total": 509,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 429
+  "unit": 431
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 304
+   "arquivos": 305
   },
   {
    "padrao": "outro",
-   "arquivos": 112
+   "arquivos": 113
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -662,6 +662,13 @@
    "linhas": 441,
    "testa": [],
    "casos": 0
+  },
+  {
+   "arquivo": "scripts/rfb/gerar_carga_cclasstrib.unit.mjs",
+   "tipo": "unit",
+   "linhas": 118,
+   "testa": [],
+   "casos": 8
   },
   {
    "arquivo": "scripts/scripts-ts.unit.mjs",
@@ -1712,11 +1719,11 @@
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
    "tipo": "unit",
-   "linhas": 166,
+   "linhas": 206,
    "testa": [
     "src/hooks/useImportacaoXMLNFe.ts"
    ],
-   "casos": 3
+   "casos": 4
   },
   {
    "arquivo": "src/hooks/__tests__/useIndicesContabeis.test.ts",
@@ -2134,7 +2141,7 @@
   {
    "arquivo": "src/lib/__tests__/edge-functions.security.test.ts",
    "tipo": "unit",
-   "linhas": 224,
+   "linhas": 226,
    "testa": [],
    "casos": 6
   },
@@ -4464,6 +4471,15 @@
    "casos": 0
   },
   {
+   "arquivo": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
+   "tipo": "unit",
+   "linhas": 350,
+   "testa": [
+    "supabase/functions/sync-catalogo-cclasstrib/montar.ts"
+   ],
+   "casos": 14
+  },
+  {
    "arquivo": "supabase/functions/webhook-simulator/contract_test.ts",
    "tipo": "contrato",
    "linhas": 112,
@@ -4923,6 +4939,7 @@
   "supabase/functions/sso-callback/profile-sync-delta.ts": 1,
   "supabase/functions/sso-test-login/mocks.ts": 1,
   "supabase/functions/sso-test-login/pipeline.ts": 1,
+  "supabase/functions/sync-catalogo-cclasstrib/montar.ts": 1,
   "supabase/functions/whatsapp-ia-proativo/index.ts": 1,
   "supabase/functions/whatsapp-webhook/index.ts": 1
  },

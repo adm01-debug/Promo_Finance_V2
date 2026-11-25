@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ba276565d6` · branch `main` · 2026-11-25 10:38 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f5e0e4882a` · branch `main` · 2026-11-25 10:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -107,7 +107,7 @@
 | `drivers` | não encontrado | sem RLS | sem RLS | sem RLS | sem RLS |
 | `edge_function_logs` | enabled | authenticated: public.has_role(auth.uid(), 'admin')<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | service_role: true | — | — |
 | `elisao_alertas` | enabled | public: EXISTS ( SELECT 1 FROM public.user_empresas WHERE empresa_id = elisao_alertas.empresa_id AND user_id = auth.uid() )<br>authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) |
-| `elisao_creditos_auditoria` | enabled | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | public: empresa_acessivel(empresa_id) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))<br>public: empresa_acessivel(empresa_id) |
+| `elisao_creditos_auditoria` | enabled | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
 | `elisao_regras_creditos` | enabled | public: true<br>authenticated: true<br>authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
 | `elisao_simulacoes_regime` | enabled | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) |
 | `elisao_tarefas_acionaveis` | enabled | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>public: empresa_acessivel(empresa_id) |
@@ -189,7 +189,7 @@
 | `open_finance_consents` | enabled | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id) | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id) | public: auth.uid() = user_id<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: ((SELECT auth.uid()) = user_id) |
 | `operacoes_icms` | enabled | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) |
 | `operacoes_tributaveis` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | — | — | — |
-| `oportunidades_elisao` | enabled | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro','operacional','visualizador']::app_role[]) AND empresa_acessivel(e … | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro','operacional']::app_role[]) AND empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id) |
+| `oportunidades_elisao` | enabled | authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro','operacional','visualizador']::app_role[]) AND empresa_acessivel(e … | authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro','operacional']::app_role[]) AND empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id) |
 | `organizacao_membros` | enabled | authenticated: (is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role))<br>authenticated: ((usuario_id = (SELECT auth.uid())) OR is_org_membro(organizacao_id, (SELECT auth.uid())) OR is_org_responsavel(organizacao_i … | authenticated: (is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) | authenticated: (is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) | authenticated: (is_org_responsavel(organizacao_id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) |
 | `organizacoes` | enabled | authenticated: ((responsavel_id = (SELECT auth.uid())) OR is_org_membro(id, (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::a … | authenticated: (responsavel_id = (SELECT auth.uid())) | authenticated: ((responsavel_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) | authenticated: ((responsavel_id = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) |
 | `overlay_rejeicoes_auditoria` | enabled | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'manager … | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'manager … | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'manager … | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) OR has_role(( SELECT (SELECT auth.uid()) AS uid), 'manager … |
@@ -304,7 +304,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 369 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 370 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -456,7 +456,7 @@
 - `supabase/functions/sso-initiate/index.ts`
 - `supabase/functions/sso-logout/index.ts`
 - `supabase/functions/sso-test-login/index.ts`
-- … +219 (lista completa em `context.json`)
+- … +220 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -711,6 +711,7 @@
 - `whatsapp-webhook`
 - `monitor-health`
 - `reprocessar-creditos-ibscbs`
+- `sync-catalogo-cclasstrib`
 
 ## Rotas protegidas no front
 

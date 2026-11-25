@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 116,
+ "total": 117,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -994,6 +994,15 @@
    "workflows": [
     "contexto.yml"
    ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/rfb/gerar_carga_cclasstrib.py",
+   "descricao": "Gera a carga de `public.catalogo_cclasstrib` a partir da base oficial da RFB.",
+   "linhas": 273,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
    "orfao": false
   },
   {

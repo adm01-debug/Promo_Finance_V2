@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ba276565d6` · branch `main` · 2026-11-25 10:38 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f5e0e4882a` · branch `main` · 2026-11-25 10:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -299,7 +299,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `ncms` | ncms_select_authenticated | SELECT | authenticated | permissive | `true` |  |
 | `notas_fiscais_ocr` | notas_fiscais_ocr_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `operacoes_icms` | operacoes_icms_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
-| `oportunidades_elisao` | oportunidades_elisao_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `per_dcomp` | per_dcomp_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `projecoes_reforma` | projecoes_reforma_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `protocolos_st` | protocolos_st_select_authenticated | SELECT | authenticated | permissive | `true` |  |
@@ -311,7 +310,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `simulacoes` | simulacoes_acesso | ALL | authenticated | permissive | `public.empresa_acessivel(empresa_id)` | `public.empresa_acessivel(empresa_id)` |
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
-| … +530 linhas — lista completa em `context.json` | | | | | | |
+| `solicitacoes_lgpd` | lgpd_scoped_update | UPDATE | authenticated | permissive | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` |
+| … +529 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -724,7 +724,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trigger_conciliacao_retroativa_error | AFTER UPDATE | `logs_conciliacao_retroativa` | `handle_conciliacao_retroativa_error` |  |
 | update_elisao_simulacoes_updated_at | BEFORE UPDATE | `elisao_simulacoes_regime` | `update_updated_at_column` |  |
 | update_elisao_tarefas_updated_at | BEFORE UPDATE | `elisao_tarefas_acionaveis` | `update_updated_at_column` |  |
-| tr_registrar_decisao_elisao | BEFORE UPDATE | `elisao_creditos_auditoria` | `registrar_decisao_elisao` |  |
 | update_asaas_sync_queue_updated_at | BEFORE UPDATE | `asaas_sync_queue` | `update_updated_at_column` |  |
 | update_asaas_config_updated_at | BEFORE UPDATE | `asaas_config` | `update_updated_at_column` |  |
 | tr_check_asaas_queue_failures | AFTER UPDATE | `asaas_sync_queue` | `check_asaas_queue_failures` | `NEW.status = 'failed'` |
@@ -919,6 +918,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | tr_user_preferences_updated_at | BEFORE UPDATE | `user_preferences` | `handle_updated_at` |  |
 | notas_fiscais_verifica_totais_ibscbs | BEFORE INSERT OR UPDATE OF V_BC_IBSCBS, V_IBS, V_IBS_UF, V_IBS_MUN, V_CBS, V_IS | `notas_fiscais` | `verificar_totais_ibscbs_nota` |  |
 | notas_fiscais_itens_verifica_totais_ibscbs | AFTER INSERT OR UPDATE OR DELETE | `notas_fiscais_itens` | `verificar_totais_ibscbs_item` |  |
+| tr_registrar_decisao_elisao | BEFORE UPDATE | `elisao_creditos_auditoria` | `registrar_decisao_elisao` |  |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -4406,6 +4406,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MAX_BATCHES_PER_CNPJ` | `10` | `supabase/functions/sefaz-dfe-puxar/index.ts` |
 | `SSO_FINALIZE_JANELA_MS` | `10` | `supabase/functions/sso-callback/index.ts` |
 | `PROJECT_REF` | `'bwwbeyolnnzppeuhgkcd'` | `supabase/functions/sso-generate-metadata/index.ts` |
+| `TABELA` | `'catalogo_cclasstrib'` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
+| `TIMEOUT_MS` | `30` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
+| `VIGENCIA_BASE_CATALOGO` | `'2026-01-01'` | `supabase/functions/sync-catalogo-cclasstrib/montar.ts` |
+| `MAX_PCT_AUSENTES` | `10` | `supabase/functions/sync-catalogo-cclasstrib/montar.ts` |
 | `BUCKET` | `'financeiro'` | `supabase/functions/upload-anexo/index.ts` |
 | `TAMANHO_MAX` | `10` | `supabase/functions/upload-anexo/index.ts` |
 | `EMPRESA_AUTORIZADA` | `'11111111-1111-4111-8111-111111111111'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
@@ -4761,6 +4765,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 1000 | `src/hooks/financial/useContasPagar.ts` |
 | 1000 | `src/hooks/financial/useContasReceber.ts` |
 | 500 | `src/lib/conciliacao-page-helpers.ts` |
+| 1 | `src/lib/tributario/catalogos/cclasstrib.ts` |
 | 50 | `src/pages/AdminEdgeHealth.tsx` |
 | 500 | `src/pages/AdminTelemetria.tsx` |
 | 500 | `src/pages/AuditLogs.tsx` |
@@ -4801,6 +4806,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 2000 | `supabase/functions/relatorio-diario-anomalias/index.ts` |
 | 1 | `supabase/functions/sefaz-manifestar/index.ts` |
 | 1 | `supabase/functions/sso-callback/index.ts` |
+| 1 | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
+| 1000 | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
 | 1 | `supabase/functions/sync-profile-to-bitrix/index.ts` |
 | 1 | `supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | 12 | `supabase/functions/verificar-conformidade-fiscal/index.ts` |
@@ -5111,7 +5118,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +805 linhas — lista completa em `context.json` | |
+| … +807 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5170,7 +5177,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3821 testes em 340 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3836 testes em 341 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5263,6 +5270,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/pf-vinculada.test.ts` | 14 | Tributação PF vinculada — Lei 15.270/2025 · isenta IRPF até R$ 5.000/mês · aplica redutor linear entre R$ 5.000 e R$ 7.350 · não aplica IRPFM para renda total de R$ 480k … |
 | `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 14 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `supabase/functions/sso-test-login/pipeline.test.ts` | 14 | pipeline: JIT + role por grupo (usuário não existe) · pipeline: usuário JÁ existe → não provisiona · pipeline: auto_provision_users=false bloqueia JIT com motivo · pipeline: múltiplos grupos — primeiro match vence, demais  … |
+| `supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts` | 14 | normalizarData — aceita ISO valida e cai para hoje em Brasilia no resto · fracaoReducao — pontos percentuais viram fracao 0-1 · mapearCst — junta CST pelas situacoes e descarta codigo em duas situacoes · mapearCst — terceira ocorrencia nao ressuscita codigo ambiguo … |
 | `src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx` | 13 | AnimatedCounter · Renderização inicial · renderiza com classe tabular-nums · renderiza prefix … |
 | `src/components/ui/__tests__/badge.test.tsx` | 13 | Badge · renders with children · renders default variant with bg-acc (Vela) · renders secondary variant … |
 | `src/hooks/__tests__/useIndicesContabeis.test.ts` | 13 | normalizarAgregados · aceita retorno em array (RPC set-returning) · preenche zeros quando o campo está ausente · nunca produz NaN a partir de lixo … |
@@ -5420,6 +5428,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useDashboardConfig.test.tsx` | 5 | useDashboardConfig · ocultar/exibir e redimensionar persistem e sobrevivem ao recarregar · valores inválidos salvos voltam ao padrão · DashboardConfigDialog … |
 | `src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx` | 5 | useFluxoCaixaKPIs · filtra as três consultas pela empresa selecionada · a previsão de 30 dias ignora vencimento fora da janela · título vencido fora da janela não entra na previsão de 30 dias … |
 | `src/hooks/__tests__/useGlobalFilterSync.test.ts` | 5 | useGlobalFilterSync · deve registrar o listener de evento ao montar · deve disparar toast quando o evento current-empresa-changed ocorre · não deve disparar se o detalhe do evento estiver vazio … |
+| `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 5 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) … |
 | `src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx` | 5 | useSugestoesContaPagar — formato do payload · devolve a lista quando o proxy responde o formato esperado · devolve lista vazia — não um objeto — quando o proxy responde fora do formato · trata null como ausência de candidatas, sem alarde … |
 | `src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx` | 5 | persistirOportunidades — substituição sem transação · insere a nova leva antes de apagar a anterior, e apaga só os ids lidos · o delete revalida o status: oportunidade aprovada no meio do caminho nao e apagada · insert que falha não apaga o histórico anterior e propaga o erro … |
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |
@@ -5440,7 +5449,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx` | 4 | useImportacaoXMLNFe — itens no payload da RPC (etapa 45) · manda um item por det da nota, com o grupo IBS/CBS em fração decimal · não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint · preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100 |
-| `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 4 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
@@ -5473,8 +5481,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
-| `src/hooks/__tests__/useFluxoCaixaPage.saldo.test.tsx` | 3 | useFluxoCaixaPage — saldo final zero e projeção vazia (F07) · saldo final legitimamente ZERO nao e trocado pelo saldo inicial · projecao vazia preserva o saldo inicial e variacao zero |
-| … +40 linhas — lista completa em `context.json` | | |
+| … +41 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6067,4 +6074,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Regra de camadas: um módulo nunca pode depender de uma camada mais alta | `src/lib/arquitetura/modulos.ts` |
 | (número menor). Ex.: domínio (3) não pode depender de apresentação (1). | `src/lib/arquitetura/modulos.ts` |
 | * Calcula apenas métricas sustentadas pelos pedidos persistidos. Lead time e | `src/lib/compras/pedidos.ts` |
-| … +457 linhas — lista completa em `context.json` | |
+| … +460 linhas — lista completa em `context.json` | |

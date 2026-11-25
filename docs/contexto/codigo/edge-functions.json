@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "pasta": "supabase/functions",
- "total": 108,
+ "total": 109,
  "verify_jwt_false": [
   "analise-fluxo-ia",
   "analyze-document",
@@ -52,6 +52,7 @@
   "sso-callback",
   "sso-initiate",
   "sso-logout",
+  "sync-catalogo-cclasstrib",
   "validar-token-contador",
   "validate-ip-geo",
   "webhook-replay",
@@ -4048,6 +4049,41 @@
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
    "testes": 0
+  },
+  {
+   "nome": "sync-catalogo-cclasstrib",
+   "entrada": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+   "arquivos": 2,
+   "linhas": 533,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "piloto-cbs.tributos.gov.br"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 1
   },
   {
    "nome": "sync-profile-to-bitrix",

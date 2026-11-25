@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1075,
+ "migrations": 1078,
  "seeds": [],
  "avisos": [
   "202 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -2768,6 +2768,12 @@
    "nome": "sefaz-observability-hourly",
    "agenda": "5 * * * *",
    "migration": "20260723120954_26546526-ca79-48e8-b067-571d2d02a16d.sql"
+  },
+  {
+   "nome": "sync-catalogo-cclasstrib",
+   "agenda": "40 4 * * *",
+   "migration": "20261124121000_cron_sync_catalogo_cclasstrib.sql",
+   "chama_edge": "sync-catalogo-cclasstrib"
   }
  ],
  "buckets": [
@@ -19359,6 +19365,12 @@
    "rls": true,
    "policies": [
     {
+     "nome": "Admin/financeiro can update creditos auditoria",
+     "comando": "update",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
      "nome": "creditos_auditoria_delete_admin",
      "comando": "delete",
      "para": "authenticated",
@@ -19374,12 +19386,6 @@
      "nome": "creditos_auditoria_select",
      "comando": "select",
      "para": "authenticated",
-     "tipo": "permissive"
-    },
-    {
-     "nome": "Users can manage company audit logs",
-     "comando": "all",
-     "para": "public",
      "tipo": "permissive"
     }
    ],
@@ -32685,12 +32691,6 @@
     {
      "nome": "Authorized roles can view oportunidades elisao",
      "comando": "select",
-     "para": "authenticated",
-     "tipo": "permissive"
-    },
-    {
-     "nome": "oportunidades_elisao_acesso",
-     "comando": "all",
      "para": "authenticated",
      "tipo": "permissive"
     }
