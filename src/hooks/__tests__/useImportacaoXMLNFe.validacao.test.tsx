@@ -250,7 +250,10 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
             {
               ncm: '02013000',
               descricao: 'Carnes de bovino',
-              inicio_vigencia: '2022-04-01',
+              // Vigência de um dia só: qualquer outra data de referência
+              // (31/08 ou 02/09) deixa o código fora do catálogo, então o teste
+              // só passa se a consulta usar exatamente 2026-09-01.
+              inicio_vigencia: '2026-09-01',
               fim_vigencia: '2026-09-01',
             },
           ],
