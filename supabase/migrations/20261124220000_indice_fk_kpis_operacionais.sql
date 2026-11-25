@@ -16,11 +16,12 @@
 -- ON DELETE CASCADE vem dessa mesma definição (r5:25); NO ACTION seria suposição por
 -- analogia e faria o replay bloquear uma exclusão de empresa que o canônico permite.
 --
--- Dono do índice: o nome `_fk` foi invenção desta migration. O repositório nomeia
--- índice sem sufixo (194 de 194 CREATE INDEX em supabase/migrations) e o snapshot
--- canônico de 24/11 registra idx_kpis_operacionais_empresa_id como btree válido em
--- empresa_id sem predicado — por isso a criação passou a usar esse nome, e o guard
--- procura por QUALQUER índice válido liderado por empresa_id, não por um nome.
+-- Nome do índice: a cadeia usa as duas formas (896 CREATE INDEX sem sufixo e 151 com
+-- `_fk` em supabase/migrations), então convenção não decide. Decide o objeto no
+-- canônico: o snapshot de 24/11 registra idx_kpis_operacionais_empresa_id como btree
+-- válido em empresa_id, sem predicado, e é o nome usado. O guard não depende do nome:
+-- procura QUALQUER índice válido liderado por empresa_id, então um já existente com
+-- nome diferente não gera duplicata.
 --
 -- Em produção coluna, FK e índice já existem: os guards são por catálogo, não por
 -- IF NOT EXISTS (que pede o lock da tabela antes de checar), então ali a migration
