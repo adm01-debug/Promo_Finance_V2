@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `448f7ea263` · branch `main` · 2026-11-25 14:17 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `729184f29e` · branch `main` · 2026-11-25 16:26 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5177,7 +5177,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3836 testes em 341 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3840 testes em 342 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5446,6 +5446,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx` | 4 | painel do Open Finance não promete integração que não existe · o botão Conectar Banco fica desabilitado com o motivo à mostra · o texto não anuncia sincronização automática de saldos · avisa que nada é importado para a conciliação |
 | `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
+| `src/components/ui/__tests__/calendar.test.tsx` | 4 | Calendar (react-day-picker v10 mapping) · renderiza grid, cabecalho de semana e navegacao · aplica aria-selected e as classes de estado na celula do dia · mantem range middle/end com classes proprias |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx` | 4 | useImportacaoXMLNFe — itens no payload da RPC (etapa 45) · manda um item por det da nota, com o grupo IBS/CBS em fração decimal · não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint · preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100 |
@@ -5480,8 +5481,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx` | 3 | GestorCreditosTributarios - coluna Disponível (etapa 48/88) · crédito informativo não exibe saldo disponível na linha · crédito apropriável exibe o saldo na linha |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
-| `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
-| … +41 linhas — lista completa em `context.json` | | |
+| … +42 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 

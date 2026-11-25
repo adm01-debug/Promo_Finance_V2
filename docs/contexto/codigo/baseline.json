@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "448f7ea2634d4c471df6e57a42a1003d87fff0df",
+  "commit": "729184f29e353e4c35da88ad4ab80ca9f2f129fe",
   "branch": "main",
-  "data_commit": "2026-11-25T10:28:43-03:00",
+  "data_commit": "2026-11-25T13:25:38-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "729184f",
+    "data": "2026-11-25",
+    "assunto": "fix: migra react-day-picker para v10 (calendar + callers) (#544)"
+   },
    {
     "sha": "448f7ea",
     "data": "2026-11-25",
@@ -126,14 +131,9 @@
     "sha": "60ece16",
     "data": "2026-11-22",
     "assunto": "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)"
-   },
-   {
-    "sha": "856fef0",
-    "data": "2026-11-22",
-    "assunto": "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)"
    }
   ],
-  "arquivos_mudados_7d": 259,
+  "arquivos_mudados_7d": 270,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -141,11 +141,11 @@
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 219
+    "mudancas": 221
    },
    {
     "pasta": "src/components/ui",
-    "mudancas": 216
+    "mudancas": 219
    },
    {
     "pasta": "src/components/admin",
@@ -157,7 +157,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 170
+    "mudancas": 169
    },
    {
     "pasta": "src/components/reforma-tributaria",
@@ -184,30 +184,30 @@
     "mudancas": 80
    },
    {
-    "pasta": "src/components/layout",
-    "mudancas": 69
-   },
-   {
     "pasta": "docs/archive/sql",
     "mudancas": 68
    },
    {
     "pasta": "src/components/conciliacao",
+    "mudancas": 67
+   },
+   {
+    "pasta": "src/components/layout",
     "mudancas": 66
    }
   ],
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 32
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 30
+    "mudancas": 31
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 15
+    "mudancas": 14
    },
    {
     "arquivo": "src/integrations/supabase/types.ts",
@@ -301,15 +301,15 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 286
+    "commits": 285
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 20
+    "commits": 21
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 4
+    "commits": 3
    },
    {
     "autor": "Joaquim Ataides",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4062,
-  "arquivos_codigo": 2527,
-  "linhas_codigo": 452536,
+  "arquivos_total": 4063,
+  "arquivos_codigo": 2528,
+  "linhas_codigo": 452595,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 317,
   "migrations": 1079,
   "cron_jobs": 24,
-  "testes": 509,
+  "testes": 510,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -647,8 +647,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1003,
-   "linhas": 165297
+   "arquivos": 1004,
+   "linhas": 165356
   },
   "src/config": {
    "arquivos": 2,

@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 509,
+ "total": 510,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 431
+  "unit": 432
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 305
+   "arquivos": 306
   },
   {
    "padrao": "outro",
@@ -1313,6 +1313,15 @@
     "src/components/ui/button.tsx"
    ],
    "casos": 14
+  },
+  {
+   "arquivo": "src/components/ui/__tests__/calendar.test.tsx",
+   "tipo": "unit",
+   "linhas": 57,
+   "testa": [
+    "src/components/ui/calendar.tsx"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/components/ui/__tests__/card.test.tsx",
@@ -4628,6 +4637,7 @@
   "src/components/ui/alert.tsx": 1,
   "src/components/ui/badge.tsx": 1,
   "src/components/ui/button.tsx": 2,
+  "src/components/ui/calendar.tsx": 1,
   "src/components/ui/card.tsx": 1,
   "src/components/ui/input.tsx": 2,
   "src/components/ui/label.tsx": 1,
