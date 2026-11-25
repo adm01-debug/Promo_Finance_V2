@@ -16,13 +16,22 @@ const pascal = (iconName: string) =>
  * Lê os ícones realmente gravados por `create_default_categories_for_user` em
  * 003_seed_data.sql, em vez de manter uma lista fixa: se o SQL passar a gravar
  * um ícone novo, este teste falha até o mapa ser atualizado.
+ *
+ * Cada categoria semeada é uma linha de VALUES iniciada por `('`; o teste cobra
+ * todas elas, e não apenas "ao menos uma", para que uma linha que o extrator
+ * não entenda não passe em silêncio.
  */
-function iconesDaCargaInicial(): string[] {
+function linhasDaCargaInicial(): string[] {
   const sql = readFileSync(join(process.cwd(), 'supabase/migrations/003_seed_data.sql'), 'utf8');
-  const linhaCategoria = /\(\s*'[^']*',\s*'[^']*',\s*'#[0-9a-fA-F]{3,8}',\s*'([a-z0-9-]+)'/g;
-  const nomes = new Set<string>();
-  for (const achado of sql.matchAll(linhaCategoria)) nomes.add(achado[1]);
-  return [...nomes];
+  return sql.split('\n').filter((linha) => /^\s*\('/.test(linha));
+}
+
+// `'(?:[^']|'')*'` cobre apóstrofo escapado do SQL ('Caixa d''água').
+function iconeDaLinha(linha: string): string | null {
+  const achado = linha.match(
+    /\(\s*'(?:[^']|'')*',\s*'(?:[^']|'')*',\s*'#[0-9a-fA-F]{3,8}',\s*'([a-z0-9-]+)'/
+  );
+  return achado ? achado[1] : null;
 }
 
 describe('iconeCategoria', () => {
@@ -36,11 +45,13 @@ describe('iconeCategoria', () => {
   });
 
   it('resolve os ícones gravados pela carga inicial de categorias', () => {
-    const icones = iconesDaCargaInicial();
-    expect(icones.length, 'nenhum ícone encontrado em 003_seed_data.sql').toBeGreaterThan(0);
-    for (const iconName of icones) {
+    const linhas = linhasDaCargaInicial();
+    expect(linhas.length, 'nenhuma categoria encontrada em 003_seed_data.sql').toBeGreaterThan(0);
+    for (const linha of linhas) {
+      const iconName = iconeDaLinha(linha);
+      expect(iconName, `linha de categoria sem ícone reconhecido: ${linha.trim()}`).not.toBeNull();
       expect(
-        CATEGORIA_ICONES[pascal(iconName)],
+        CATEGORIA_ICONES[pascal(iconName as string)],
         `ícone ausente no mapa: ${iconName}`
       ).toBeDefined();
     }
