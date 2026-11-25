@@ -2,6 +2,6 @@
   "tables": 269,
   "views": 17,
   "indexes": 753,
-  "functions": 216,
-    "policies": 592
+  "functions": 220,
+  "policies": 593
 }
