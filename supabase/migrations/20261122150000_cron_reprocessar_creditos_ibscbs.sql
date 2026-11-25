@@ -1,4 +1,4 @@
-﻿-- Etapa 50 do plano RT/RFB: agendamento do reprocessamento retroativo do
+-- Etapa 50 do plano RT/RFB: agendamento do reprocessamento retroativo do
 -- grupo IBS/CBS das NF-e ja ingeridas.
 --
 -- Sem este job, toda NF-e puxada antes da etapa 49 fica com credito

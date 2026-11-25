@@ -1,4 +1,4 @@
-﻿-- Etapa 50 do plano RT/RFB: RPC idempotente de regravação do crédito de uma
+-- Etapa 50 do plano RT/RFB: RPC idempotente de regravação do crédito de uma
 -- NF-e recebida a partir do grupo IBS/CBS do próprio XML.
 --
 -- Por que a troca é destrutiva e transacional: o crédito de uma nota pode
