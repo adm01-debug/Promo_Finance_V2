@@ -225,6 +225,73 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
     expect(selecoes.filter((c) => c.metodo === 'limit')).toHaveLength(1);
   });
 
+  it('NCM encerrado no meio do ano só alerta a nota emitida depois do encerramento', async () => {
+    // Duas notas do mesmo exercício, mesmo NCM: uma de março (antes do
+    // encerramento em 2026-09-01) e uma de outubro (depois). Com o recorte por
+    // 31/12 as duas levavam REG-012; o recorte passa a ser a data de emissão.
+    const xmlOutubro = XML_COM_GRUPO.replace(
+      '2026-03-31T22:30:00-03:00',
+      '2026-10-05T10:00:00-03:00'
+    )
+      .replace(
+        'Id="NFe35260312345678000199550010000000011000000017"',
+        'Id="NFe35261012345678000199550010000000021000000028"'
+      )
+      .replace('<nNF>1</nNF>', '<nNF>2</nNF>');
+
+    const chamadas = montaCliente({
+      catalogo_cclasstrib: CATALOGO.catalogo_cclasstrib,
+      // Ordem das consultas de NCM: março (linha aberta), outubro (linha já
+      // encerrada) e a sonda de cobertura de outubro (catálogo tem conteúdo).
+      catalogo_ncm: [
+        CATALOGO.catalogo_ncm,
+        {
+          data: [
+            {
+              ncm: '02013000',
+              descricao: 'Carnes de bovino',
+              inicio_vigencia: '2022-04-01',
+              fim_vigencia: '2026-09-01',
+            },
+          ],
+          error: null,
+        },
+        CATALOGO.catalogo_ncm,
+      ],
+    });
+
+    const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
+    const arquivos = [
+      { name: 'marco.xml', text: () => Promise.resolve(XML_COM_GRUPO) },
+      { name: 'outubro.xml', text: () => Promise.resolve(xmlOutubro) },
+    ] as unknown as FileList;
+
+    await act(async () => {
+      await result.current.processarArquivos(arquivos);
+    });
+    await waitFor(() => expect(result.current.nfesParsed).toHaveLength(2));
+
+    let resumo!: Awaited<ReturnType<typeof result.current.importarNFes.mutateAsync>>;
+    await act(async () => {
+      resumo = await result.current.importarNFes.mutateAsync();
+    });
+
+    expect(resumo.sucesso).toBe(2);
+    const [marco, outubro] = resumo.nfesProcessadas;
+    expect((marco.alertasFiscais ?? []).map((a) => a.codigo)).toEqual(['REG-011']);
+    expect((outubro.alertasFiscais ?? []).map((a) => a.codigo)).toContain('REG-012');
+
+    // Uma leitura de NCM por data distinta do lote (2), não por nota, mais a
+    // sonda de cobertura `.limit(1)` da data em que o código não estava vigente.
+    const selecoesNcm = chamadas.filter(
+      (c) => c.tabela === 'catalogo_ncm' && c.metodo === 'select'
+    );
+    expect(selecoesNcm).toHaveLength(3);
+    expect(
+      chamadas.filter((c) => c.tabela === 'catalogo_ncm' && c.metodo === 'limit')
+    ).toHaveLength(1);
+  });
+
   it('nota anterior à vigência do catálogo não gera alerta (sem referência na data)', async () => {
     // Catálogo cheio, mas com inicio_vigencia 2026-01-01, e a nota é de 2025.
     // A consulta por código volta com linha e a sonda de cobertura volta vazia:

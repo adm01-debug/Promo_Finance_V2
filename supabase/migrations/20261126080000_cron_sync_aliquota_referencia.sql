@@ -43,12 +43,17 @@ WHERE EXISTS (
   SELECT 1 FROM cron.job WHERE jobname = 'sync-aliquota-referencia-municipio'
 );
 
--- Diario as 05:20 (Brasilia): 20 min depois do job de NCM/NBS (05:00) e 40 depois
--- do cClassTrib (04:40). Os tres consultam a mesma base oficial e sofrem o mesmo
--- limite de taxa por IP; em sequencia, um nao derruba o outro.
+-- Diario as 08:20 UTC = 05:20 em Brasilia (o pg_cron agenda em UTC): 20 min
+-- depois do job de NCM/NBS (08:00 UTC) e 40 depois do cClassTrib (07:40 UTC).
+-- Os tres consultam a mesma base oficial e sofrem o mesmo limite de taxa por IP;
+-- em sequencia, um nao derruba o outro.
+--
+-- `timeout_milliseconds`: a rodada estadual faz 27 consultas com pausa de 1,2 s
+-- entre elas (~40 s) e so grava o lote no fim. O timeout padrao do pg_net (5 s)
+-- expirava antes de a funcao responder.
 SELECT cron.schedule(
   'sync-aliquota-referencia-uf',
-  '20 5 * * *',
+  '20 8 * * *',
   $$
     SELECT net.http_post(
       url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-aliquota-referencia?escopo=uf',
@@ -58,17 +63,19 @@ SELECT cron.schedule(
           SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1
         )
       ),
-      body    := '{"source":"pg_cron"}'::jsonb
+      body    := '{"source":"pg_cron"}'::jsonb,
+      timeout_milliseconds := 90000
     );
   $$
 );
 
--- Semanal, domingo as 05:50 (Brasilia). A aliquota municipal publicada em 2026 e
--- 0,0% para todos os entes, entao nao ha ganho em consultar todo dia — e cada
--- rodada de municipio consome a cota de requisicoes do WAF.
+-- Semanal, domingo as 08:50 UTC = 05:50 em Brasilia. A aliquota municipal
+-- publicada em 2026 e 0,0% para todos os entes, entao nao ha ganho em consultar
+-- todo dia — e cada rodada de municipio consome a cota de requisicoes do WAF.
+-- A varredura de municipios e a mais longa das quatro: 150 s de timeout.
 SELECT cron.schedule(
   'sync-aliquota-referencia-municipio',
-  '50 5 * * 0',
+  '50 8 * * 0',
   $$
     SELECT net.http_post(
       url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-aliquota-referencia?escopo=municipio',
@@ -78,7 +85,8 @@ SELECT cron.schedule(
           SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1
         )
       ),
-      body    := '{"source":"pg_cron"}'::jsonb
+      body    := '{"source":"pg_cron"}'::jsonb,
+      timeout_milliseconds := 150000
     );
   $$
 );

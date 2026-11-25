@@ -32,12 +32,17 @@ WHERE EXISTS (
   SELECT 1 FROM cron.job WHERE jobname = 'sync-catalogo-ncm-nbs'
 );
 
--- Diario as 05:00 (Brasilia): 20 min depois do job do cClassTrib (04:40), que
+-- Diario as 08:00 UTC = 05:00 em Brasilia (o pg_cron agenda em UTC; `0 5 * * *`
+-- disparava as 02:00 de Brasilia): 20 min depois do job do cClassTrib, que
 -- consulta a mesma base oficial e sofre o mesmo limite de taxa do WAF. Rodar em
 -- sequencia evita que os dois disputem a janela e leva o bloqueio por IP.
+--
+-- `timeout_milliseconds`: o pg_net espera 5 s por padrao, mas a carga baixa as
+-- duas listas (~10 mil NCMs e ~2 mil NBS) e grava por upsert; sem o parametro o
+-- disparo expira sempre, mesmo com a API respondendo normalmente.
 SELECT cron.schedule(
   'sync-catalogo-ncm-nbs',
-  '0 5 * * *',
+  '0 8 * * *',
   $$
     SELECT net.http_post(
       url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-ncm-nbs',
@@ -47,7 +52,8 @@ SELECT cron.schedule(
           SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1
         )
       ),
-      body    := '{"source":"pg_cron"}'::jsonb
+      body    := '{"source":"pg_cron"}'::jsonb,
+      timeout_milliseconds := 60000
     );
   $$
 );

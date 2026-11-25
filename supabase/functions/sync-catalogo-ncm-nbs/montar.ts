@@ -104,6 +104,58 @@ function mapear<T>(
   return { linhas, presentes, ignoradas };
 }
 
+/** Conjuntos de vigencia lidos do banco antes da carga. */
+export interface ConjuntosVigencia {
+  /** Codigos com periodo aberto (`fim_vigencia IS NULL`). */
+  abertos: Iterable<string>;
+  /** Codigos com qualquer linha na tabela (aberta ou encerrada). */
+  conhecidos: Iterable<string>;
+}
+
+export interface LinhasPorVigencia<T> {
+  /** Linhas que mantem a data-base do catalogo (`2026-01-01`). */
+  base: T[];
+  /** Linhas de codigo reativado: abrem periodo novo na data da observacao. */
+  reativadas: T[];
+}
+
+/**
+ * Separa as linhas da carga entre o periodo base e os periodos novos.
+ *
+ * A chave primaria e (codigo, inicio_vigencia): gravar um codigo que estava
+ * encerrado com o inicio do periodo base nao cria linha nova — ela colide com a
+ * linha encerrada e o upsert zera o `fim_vigencia`, apagando o encerramento. O
+ * catalogo passaria a considerar o codigo valido no intervalo em que ele esteve
+ * fora da lista.
+ *
+ * Codigo reativado recebe `inicio_vigencia = dataObservacao`, entao ocupa uma
+ * chave propria e o periodo encerrado continua no historico. Codigo nunca visto
+ * segue na data-base: nao ha periodo anterior para preservar.
+ */
+export function separarReativados<T extends { inicio_vigencia: string }>(
+  linhas: readonly T[],
+  codigoDe: (linha: T) => string,
+  conjuntos: ConjuntosVigencia,
+  dataObservacao: string,
+  base: string = VIGENCIA_BASE_CATALOGO
+): LinhasPorVigencia<T> {
+  // Sem data posterior a base nao existe periodo novo: inicio = data colidiria
+  // com a linha encerrada e a reabriria, que e exatamente o que se quer evitar.
+  if (!(dataObservacao > base)) return { base: [...linhas], reativadas: [] };
+
+  const abertos = new Set(conjuntos.abertos);
+  const reativados = new Set([...conjuntos.conhecidos].filter((codigo) => !abertos.has(codigo)));
+
+  const baseLinhas: T[] = [];
+  const reativadas: T[] = [];
+  for (const linha of linhas) {
+    const codigo = String(codigoDe(linha) ?? '').trim();
+    if (reativados.has(codigo)) reativadas.push({ ...linha, inicio_vigencia: dataObservacao });
+    else baseLinhas.push(linha);
+  }
+  return { base: baseLinhas, reativadas };
+}
+
 export function montarNcms(
   itens: ReadonlyArray<ItemListaApi> | null | undefined,
   inicioVigencia: string = VIGENCIA_BASE_CATALOGO

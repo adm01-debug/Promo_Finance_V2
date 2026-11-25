@@ -15,7 +15,7 @@ import {
   normalizarData,
   VIGENCIA_BASE_CATALOGO,
 } from '../../_shared/rfb-dados-abertos.ts';
-import { MIN_NBS_API, MIN_NCM_API, montarNbs, montarNcms } from '../montar.ts';
+import { MIN_NBS_API, MIN_NCM_API, montarNbs, montarNcms, separarReativados } from '../montar.ts';
 
 Deno.test('montarNcms grava so NCM de 8 digitos e mantem a vigencia base', () => {
   const m = montarNcms([
@@ -148,4 +148,59 @@ Deno.test('compararVersao compara numericamente e trata ilegivel como anterior',
   assert(compararVersao('V0072', 'V0073') < 0);
   assertEquals(compararVersao('V0073', 'V0073'), 0);
   assert(compararVersao('', 'V0073') < 0);
+});
+
+Deno.test('separarReativados abre periodo novo para codigo que voltou a aparecer', () => {
+  // Tres cargas: A e B entram na primeira; B desaparece na segunda (encerrado
+  // em 2026-03-10); B volta na terceira, junto de um codigo nunca visto. Sem a
+  // separacao, B seria gravado na data-base, colidiria com a linha encerrada e
+  // o upsert apagaria o fim de vigencia — B passaria a valer em abril.
+  const linhas = montarNcms([
+    { ncm: '22030000', descricao: 'A' },
+    { ncm: '27101100', descricao: 'B' },
+    { ncm: '99999999', descricao: 'Novo' },
+  ]).linhas;
+
+  const { base, reativadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: ['22030000'], conhecidos: ['22030000', '27101100'] },
+    '2026-06-01'
+  );
+
+  assertEquals(base.map((linha) => linha.ncm).sort(), ['22030000', '99999999']);
+  for (const linha of base) assertEquals(linha.inicio_vigencia, VIGENCIA_BASE_CATALOGO);
+
+  assertEquals(reativadas.length, 1);
+  assertEquals(reativadas[0].ncm, '27101100');
+  assertEquals(reativadas[0].inicio_vigencia, '2026-06-01');
+  assertEquals(reativadas[0].fim_vigencia, null);
+});
+
+Deno.test('separarReativados nao reativa codigo que continua aberto', () => {
+  const linhas = montarNcms([{ ncm: '22030000', descricao: 'A' }]).linhas;
+  const { base, reativadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: ['22030000'], conhecidos: ['22030000'] },
+    '2026-06-01'
+  );
+
+  assertEquals(base.length, 1);
+  assertEquals(reativadas.length, 0);
+});
+
+Deno.test('separarReativados nao reativa na data-base do catalogo', () => {
+  // Com data de observacao igual a base nao existe periodo novo: usar a data
+  // colidiria com a linha encerrada e a reabriria.
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
+  const { base, reativadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: [], conhecidos: ['27101100'] },
+    VIGENCIA_BASE_CATALOGO
+  );
+
+  assertEquals(base.length, 1);
+  assertEquals(reativadas.length, 0);
 });

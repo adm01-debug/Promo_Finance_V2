@@ -30,6 +30,7 @@ import {
   MIN_NCM_API,
   montarNbs,
   montarNcms,
+  separarReativados,
   type ItemListaApi,
   type Mapeamento,
 } from './montar.ts';
@@ -59,22 +60,32 @@ interface ResultadoCatalogo {
   publicados: number;
   gravados: number;
   encerrados: number;
+  /** Codigos que voltaram a aparecer e abriram periodo novo na data da carga. */
+  reativados: number;
   ausentes: number;
   encerramento_bloqueado: string | null;
   ignoradas: string[];
 }
 
-/** Codigos com vigencia aberta na vigencia base, paginados. */
-async function listarAbertos(sb: Cliente, tabela: string, coluna: string): Promise<string[]> {
+/**
+ * Codigos da tabela, paginados.
+ *
+ * `apenasAbertos` restringe a `fim_vigencia IS NULL` (universo que a guarda de
+ * ausentes protege); sem ele, traz todo codigo com qualquer linha, aberta ou
+ * encerrada (usado para distinguir codigo novo de codigo reativado).
+ */
+async function listarCodigos(
+  sb: Cliente,
+  tabela: string,
+  coluna: string,
+  apenasAbertos: boolean
+): Promise<string[]> {
   const codigos: string[] = [];
   for (let pagina = 0; pagina < MAX_PAGINAS; pagina += 1) {
     const inicio = pagina * PAGINA;
-    const { data, error } = await sb
-      .from(tabela)
-      .select(coluna)
-      .eq('inicio_vigencia', VIGENCIA_BASE_CATALOGO)
-      .is('fim_vigencia', null)
-      .range(inicio, inicio + PAGINA - 1);
+    let consulta = sb.from(tabela).select(coluna);
+    if (apenasAbertos) consulta = consulta.is('fim_vigencia', null);
+    const { data, error } = await consulta.range(inicio, inicio + PAGINA - 1);
     if (error) throw error;
     const linhas = (data ?? []) as unknown as Array<Record<string, unknown>>;
     for (const linha of linhas) codigos.push(String(linha[coluna] ?? '').trim());
@@ -82,6 +93,9 @@ async function listarAbertos(sb: Cliente, tabela: string, coluna: string): Promi
   }
   return codigos.filter(Boolean);
 }
+
+/** Teto de codigos por `IN (...)` no encerramento. */
+const LOTE_ENCERRAMENTO = 200;
 
 /**
  * Grava um catalogo e fecha a vigencia do que desapareceu da API.
@@ -103,6 +117,7 @@ async function gravar<T extends { inicio_vigencia: string }>(
     publicados: mapeamento.presentes.length,
     gravados: 0,
     encerrados: 0,
+    reativados: 0,
     ausentes: 0,
     encerramento_bloqueado: null,
     ignoradas: mapeamento.ignoradas,
@@ -114,28 +129,54 @@ async function gravar<T extends { inicio_vigencia: string }>(
     return resultado;
   }
 
-  const { error: erroUpsert } = await sb
-    .from(tabela)
-    .upsert(mapeamento.linhas, { onConflict: `${coluna},inicio_vigencia` });
-  if (erroUpsert) throw erroUpsert;
-  resultado.gravados = mapeamento.linhas.length;
+  // Os dois conjuntos sao lidos ANTES do upsert:
+  //  - `abertos` e o universo que a guarda de ausentes protege. Ler depois
+  //    misturaria ao denominador os codigos que a propria carga acabou de
+  //    inserir, diluindo a porcentagem e permitindo encerrar acima do teto;
+  //  - `conhecidos` separa codigo novo de codigo reativado (ver
+  //    `separarReativados`: reabrir o periodo antigo apagaria o encerramento).
+  const abertos = await listarCodigos(sb, tabela, coluna, true);
+  const conhecidos = await listarCodigos(sb, tabela, coluna, false);
+  const { base, reativadas } = separarReativados(
+    mapeamento.linhas,
+    (linha) => String((linha as unknown as Record<string, unknown>)[coluna] ?? ''),
+    { abertos, conhecidos },
+    data
+  );
 
-  const abertos = await listarAbertos(sb, tabela, coluna);
+  if (base.length > 0) {
+    const { error: erroUpsert } = await sb
+      .from(tabela)
+      .upsert(base, { onConflict: `${coluna},inicio_vigencia` });
+    if (erroUpsert) throw erroUpsert;
+  }
+  if (reativadas.length > 0) {
+    const { error: erroReativar } = await sb
+      .from(tabela)
+      .upsert(reativadas, { onConflict: `${coluna},inicio_vigencia` });
+    if (erroReativar) throw erroReativar;
+  }
+  resultado.gravados = mapeamento.linhas.length;
+  resultado.reativados = reativadas.length;
+
   const decisao = decidirEncerramentos(abertos, mapeamento.presentes, minimo);
   resultado.ausentes = decisao.ausentes.length;
   if (decisao.bloqueado) {
     resultado.encerramento_bloqueado = decisao.motivo ?? 'bloqueado';
     return resultado;
   }
-  if (decisao.ausentes.length > 0) {
+  // Em lotes: `in(...)` com o teto de 10% de ~10 mil NCMs estoura o tamanho de
+  // URL do PostgREST e a carga inteira falharia no unico momento em que o
+  // encerramento importa (atualizacao anual da RFB).
+  for (let i = 0; i < decisao.ausentes.length; i += LOTE_ENCERRAMENTO) {
+    const lote = decisao.ausentes.slice(i, i + LOTE_ENCERRAMENTO);
     const { error: erroEncerrar, count } = await sb
       .from(tabela)
       .update({ fim_vigencia: data }, { count: 'exact' })
-      .in(coluna, decisao.ausentes)
-      .eq('inicio_vigencia', VIGENCIA_BASE_CATALOGO)
+      .in(coluna, lote)
       .is('fim_vigencia', null);
     if (erroEncerrar) throw erroEncerrar;
-    resultado.encerrados = count ?? decisao.ausentes.length;
+    resultado.encerrados += count ?? lote.length;
   }
   return resultado;
 }
