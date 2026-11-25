@@ -346,6 +346,11 @@ verify_jwt = true
 # (integration_secrets.internal_jobs).
 verify_jwt = false
 
+# verify_jwt=false: sync do catalogo cClassTrib da RFB (etapa 79), chamado so
+# pelo pg_cron com x-cron-secret; a guarda e exigirChamadaInterna.
+[functions.sync-catalogo-cclasstrib]
+verify_jwt = false
+
 [functions.calculo-iva]
 verify_jwt = true
 

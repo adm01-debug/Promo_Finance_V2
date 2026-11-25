@@ -75,6 +75,7 @@ Opções aceitas (escolher uma):
 | `bling-webhook` | Validação por secret do Bling |
 | `bitrix24-webhook` | Validação por token do Bitrix24 |
 | `n8n-callback` | Validação por `CRON_SECRET` |
+| `sync-catalogo-cclasstrib` | Chamada só pelo pg_cron, com `x-cron-secret` (`integration_secrets.internal_jobs`) validado por `exigirChamadaInterna` |
 
 Toda nova function com `verify_jwt = false` deve ser adicionada à tabela acima com justificativa antes do merge.
 

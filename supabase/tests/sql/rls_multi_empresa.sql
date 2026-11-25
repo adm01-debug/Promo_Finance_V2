@@ -18,6 +18,31 @@
 
 BEGIN;
 
+-- Helper compartilhado pelos gates 7 e 7c: a exigencia sobre o estado POS-migration
+-- so vale depois que a migration que o estabelece entra no ledger do banco. Este
+-- suite roda contra o Postgres de producao (ci.yml usa PROD_DB_URL), onde o estado
+-- esperado so existe depois do `db push` — sem esta guarda o gate reprova o proprio
+-- PR que corrige o gap e o check obrigatorio trava o merge.
+-- Nao da para inferir "migration aplicada" pelo estado dos objetos: em 2026-11-25 o
+-- GRANT de UPDATE por coluna existia em producao sem a policy e sem o gatilho, e uma
+-- inferencia por evidencia parcial reprovava o CI antes da migration ser aplicada.
+-- Quem aplica sem passar pelo `db push` (db_query via MCP, AGENTS.md 4) deixa o
+-- ledger vazio: nesse caso o gate avisa em WARNING com o que esta faltando, em vez
+-- de pular em silencio.
+-- Sem ledger legivel mantem a exigencia (fail-safe): nao ha como provar que a
+-- correcao foi aplicada.
+CREATE OR REPLACE FUNCTION pg_temp.migration_aplicada(versao text) RETURNS boolean
+LANGUAGE plpgsql AS $gate$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = versao
+  );
+EXCEPTION
+  WHEN undefined_table OR undefined_column OR invalid_schema_name OR insufficient_privilege THEN
+    RETURN true;
+END;
+$gate$;
+
 -- 1) Tabelas com empresa_id SEM RLS habilitado
 DO $$
 DECLARE
@@ -302,6 +327,270 @@ BEGIN
   IF offenders <> '' THEN
     RAISE EXCEPTION 'Policies sem NENHUMA referência a empresa (FK indireta) em tabelas multi-empresa:%', offenders;
   END IF;
+END $$;
+
+-- 7) Cobertura de comandos de escrita nas tabelas cujo fluxo de app escreve
+--    pelo cliente autenticado.
+--
+--    Origem do gap: a checagem 3 valida apenas que cada policy remanescente
+--    referencia a coluna empresa_id — não valida que os quatro comandos estão
+--    cobertos. O endurecimento de RLS de 2026-11-24 removeu as policies
+--    permissivas (ALL) e as substituiu por específicas; em
+--    elisao_creditos_auditoria sobraram SELECT/INSERT/DELETE e NENHUMA de
+--    UPDATE, sem nenhum gate acusar. O sintoma é silencioso: PostgREST
+--    devolve `error: null` e zero linhas em UPDATE bloqueado por RLS, então
+--    o app exibe sucesso e a decisão não persiste.
+--
+--    Lista explícita (firebreak): toda tabela cuja escrita por UPDATE vem do
+--    cliente precisa de policy de UPDATE **e** não pode ter policy permissiva
+--    (ALL) sobrando: policies permissivas são combinadas por OR, então uma ALL
+--    anula a específica e o endurecimento vira fachada. Antes desta correção a
+--    checagem aceitava `cmd = 'ALL'` como cobertura e passava trivialmente no
+--    estado de reapply do zero (achado do Devin Review na PR #546).
+DO $$
+DECLARE
+  requer_update text[] := ARRAY['elisao_creditos_auditoria'];
+  -- Migration que restaura a policy de UPDATE, os GRANTs por coluna e o gatilho
+  -- da trilha de decisao. Ver pg_temp.migration_aplicada para a razao da guarda.
+  versao_que_restaura text := '20261124095000';
+  t text;
+  colunas text[];
+  c text;
+  offenders text := '';
+BEGIN
+  IF pg_temp.migration_aplicada(versao_que_restaura) THEN
+  FOREACH t IN ARRAY requer_update LOOP
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_policies p
+      WHERE p.schemaname = 'public'
+        AND p.tablename = t
+        AND p.cmd = 'UPDATE'
+    ) THEN
+      offenders := offenders || format(E'\n  - public.%s: sem policy de UPDATE', t);
+    END IF;
+
+    IF EXISTS (
+      SELECT 1 FROM pg_policies p
+      WHERE p.schemaname = 'public'
+        AND p.tablename = t
+        AND p.cmd = 'ALL'
+        AND p.permissive = 'PERMISSIVE'
+    ) THEN
+      offenders := offenders || format(
+        E'\n  - public.%s: policy permissiva (ALL) sobrepondo o endurecimento', t);
+    END IF;
+
+    -- Policy sem privilegio nao escreve nada: o endurecimento revoga UPDATE de
+    -- `authenticated` nestas tabelas e o GRANT (por coluna) da migration de
+    -- restauro e o que devolve a escrita. Sem esta checagem o gate ficava verde
+    -- com o fluxo de aprovacao quebrado (achado do Devin Review na #546).
+    -- Coluna a coluna, e nao `has_any_column_privilege`: um GRANT de uma unica
+    -- coluna satisfazia o "qualquer" e o gate continuava verde, mas um UPDATE
+    -- que nomeia qualquer coluna sem privilegio e rejeitado por inteiro — a
+    -- decisao do credito nao persistiria. A lista e exatamente o que
+    -- `decidirCredito` (src/hooks/useOportunidadesElisao.ts:288-296) escreve.
+    colunas := CASE t
+      WHEN 'elisao_creditos_auditoria' THEN
+        ARRAY['status_aprovacao', 'motivo_rejeicao', 'aprovador_id', 'data_aprovacao']
+      ELSE ARRAY[]::text[]
+    END;
+    FOREACH c IN ARRAY colunas LOOP
+      IF NOT has_column_privilege('authenticated', format('public.%I', t), c, 'UPDATE') THEN
+        offenders := offenders || format(
+          E'\n  - public.%s: authenticated sem privilegio de UPDATE na coluna %s', t, c);
+      END IF;
+    END LOOP;
+  END LOOP;
+
+    -- O endurecimento dropou a funcao e o gatilho da trilha junto com as policies
+    -- (prova: este gate acusou "function public.registrar_decisao_elisao() does not
+    -- exist" em producao em 2026-11-24). Restaurar apenas a funcao deixaria a
+    -- trilha morta — nenhum UPDATE passa por um gatilho inexistente.
+    IF NOT EXISTS (
+      SELECT 1
+        FROM pg_trigger tg
+        JOIN pg_class c ON c.oid = tg.tgrelid
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+       WHERE n.nspname = 'public'
+         AND c.relname = 'elisao_creditos_auditoria'
+         AND tg.tgname = 'tr_registrar_decisao_elisao'
+         AND NOT tg.tgisinternal
+    ) THEN
+      offenders := offenders || E'\n  - public.elisao_creditos_auditoria: gatilho tr_registrar_decisao_elisao ausente (trilha de decisao nao e gravada)';
+    END IF;
+  ELSE
+    -- A migration ainda nao esta no ledger: exigir o estado final aqui reprovaria o
+    -- proprio PR que restaura o gap. Pular em silencio, porem, esconderia um DDL
+    -- aplicado fora do `db push` que deixou o caminho de escrita pela metade, entao
+    -- o WARNING abaixo nomeia o que falta hoje.
+    RAISE WARNING '7) migration % ainda nao aplicada neste banco (ledger): exigencia de policy/GRANT de UPDATE pulada; estado atual: policy UPDATE=%, gatilho tr_registrar_decisao_elisao=%',
+      versao_que_restaura,
+      EXISTS (
+        SELECT 1 FROM pg_policies p
+        WHERE p.schemaname = 'public'
+          AND p.tablename = 'elisao_creditos_auditoria'
+          AND p.policyname = 'Admin/financeiro can update creditos auditoria'
+      ),
+      EXISTS (
+        SELECT 1
+          FROM pg_trigger tg
+          JOIN pg_class c ON c.oid = tg.tgrelid
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+         WHERE n.nspname = 'public'
+           AND c.relname = 'elisao_creditos_auditoria'
+           AND tg.tgname = 'tr_registrar_decisao_elisao'
+           AND NOT tg.tgisinternal
+      );
+  END IF;
+
+  IF offenders <> '' THEN
+    RAISE EXCEPTION 'Tabelas escrevíveis por UPDATE sem policy correspondente:%', offenders;
+  END IF;
+END $$;
+
+-- 7c) Trilha da decisao de credito (firebreak comportamental).
+--
+--     O gatilho e o unico registro de quem decidiu e quando: `decidirCredito`
+--     (src/hooks/useOportunidadesElisao.ts:293-294) envia `user?.id` e
+--     `new Date().toISOString()` no payload e pode ser chamado sobre linha ja
+--     decidida. Derivar autoria/data do banco e congelar quando o status nao muda
+--     e o que impede o cliente de reescrever a trilha.
+--
+--     Roda o gatilho REAL de producao contra uma tabela temporaria com as mesmas
+--     colunas e constraints: valida comportamento sem escrever em linha de
+--     negocio (achado do Devin Review na #546).
+DO $$
+DECLARE
+  autor_a uuid := '00000000-0000-4000-8000-0000000000a1';
+  autor_b uuid := '00000000-0000-4000-8000-0000000000b2';
+  forjado uuid := '00000000-0000-4000-8000-00000000ff44';
+  linha record;
+    coluna text;
+  data_primeira timestamptz;
+BEGIN
+  -- Mesma razao do gate 7: o gatilho real so existe depois que a migration
+  -- 20261124095000 entra no ledger do banco.
+  IF NOT pg_temp.migration_aplicada('20261124095000') THEN
+    RAISE WARNING '7c) migration 20261124095000 ainda nao aplicada neste banco (ledger): checagem comportamental do gatilho pulada';
+    RETURN;
+  END IF;
+
+  CREATE TEMP TABLE tmp_decisao_credito (
+    LIKE public.elisao_creditos_auditoria INCLUDING DEFAULTS INCLUDING CONSTRAINTS
+  );
+    -- A copia herda o NOT NULL das colunas do dominio (empresa_id, nota_fiscal_id,
+    -- ncm, valores) que a decisao de credito nao preenche. A tabela so existe para
+    -- exercitar o gatilho, entao relaxar esse NOT NULL evita que o teste dependa de
+    -- um schema de producao igual ao arquivo de migration e falhe no INSERT antes
+    -- de chegar ao comportamento que ele mede (achado do Devin Review na #546).
+    FOR coluna IN
+      SELECT a.attname
+        FROM pg_attribute a
+        JOIN pg_class c ON c.oid = a.attrelid
+       WHERE c.relnamespace = pg_my_temp_schema()
+         AND c.relname = 'tmp_decisao_credito'
+         AND a.attnum > 0
+         AND a.attnotnull
+         AND NOT a.atthasdef
+         AND a.attname <> ALL (ARRAY['status_aprovacao', 'aprovador_id',
+                                     'data_aprovacao', 'historico_decisoes'])
+    LOOP
+      EXECUTE format('ALTER TABLE tmp_decisao_credito ALTER COLUMN %I DROP NOT NULL', coluna);
+    END LOOP;
+  CREATE TRIGGER trg_tmp_decisao_credito
+    BEFORE UPDATE ON tmp_decisao_credito
+    FOR EACH ROW EXECUTE FUNCTION public.registrar_decisao_elisao();
+  INSERT INTO tmp_decisao_credito (status_aprovacao, historico_decisoes)
+  VALUES ('pendente', '[]'::jsonb);
+
+  -- Primeira decisao: autoria e data vem da sessao, nao do payload.
+  PERFORM set_config('request.jwt.claim.sub', autor_a::text, true);
+  UPDATE tmp_decisao_credito
+     SET status_aprovacao = 'aprovado',
+         aprovador_id    = forjado,
+         data_aprovacao  = timestamptz '2020-01-01 00:00:00+00';
+
+  SELECT aprovador_id, data_aprovacao, historico_decisoes INTO linha
+    FROM tmp_decisao_credito;
+  data_primeira := linha.data_aprovacao;
+
+  IF linha.aprovador_id IS DISTINCT FROM autor_a THEN
+    RAISE EXCEPTION 'Trilha de decisao: autoria deveria ser a da sessao (%), veio %',
+      autor_a, COALESCE(linha.aprovador_id::text, 'NULL');
+  END IF;
+  IF linha.data_aprovacao IS NULL
+     OR linha.data_aprovacao < now() - interval '5 minutes' THEN
+    RAISE EXCEPTION 'Trilha de decisao: data deveria ser now(), veio %',
+      COALESCE(linha.data_aprovacao::text, 'NULL');
+  END IF;
+  IF linha.historico_decisoes -> -1 ->> 'usuario_id' IS DISTINCT FROM autor_a::text THEN
+    RAISE EXCEPTION 'Historico de decisao sem o autor da sessao: %', linha.historico_decisoes;
+  END IF;
+
+  -- Linha ja decidida, outro usuario tentando reescrever: congela.
+  PERFORM set_config('request.jwt.claim.sub', autor_b::text, true);
+  UPDATE tmp_decisao_credito
+     SET aprovador_id   = forjado,
+         data_aprovacao = timestamptz '1999-01-01 00:00:00+00';
+
+  SELECT aprovador_id, data_aprovacao INTO linha FROM tmp_decisao_credito;
+  IF linha.aprovador_id IS DISTINCT FROM autor_a THEN
+    RAISE EXCEPTION 'Trilha de decisao: autoria reescrita na mesma decisao (% no lugar de %)',
+      COALESCE(linha.aprovador_id::text, 'NULL'), autor_a;
+  END IF;
+  IF linha.data_aprovacao IS DISTINCT FROM data_primeira THEN
+    RAISE EXCEPTION 'Trilha de decisao: data reescrita na mesma decisao (% no lugar de %)',
+      COALESCE(linha.data_aprovacao::text, 'NULL'), data_primeira;
+  END IF;
+
+  -- Reabertura para pendente: nao ha decisao para atribuir.
+  UPDATE tmp_decisao_credito
+     SET status_aprovacao = 'pendente',
+         aprovador_id     = forjado,
+         data_aprovacao   = now();
+
+  SELECT aprovador_id, data_aprovacao INTO linha FROM tmp_decisao_credito;
+  IF linha.aprovador_id IS NOT NULL OR linha.data_aprovacao IS NOT NULL THEN
+    RAISE EXCEPTION 'Trilha de decisao: linha reaberta manteve autoria/data (%, %)',
+      COALESCE(linha.aprovador_id::text, 'NULL'),
+      COALESCE(linha.data_aprovacao::text, 'NULL');
+  END IF;
+
+  DROP TABLE tmp_decisao_credito;
+END $$;
+
+-- 7b) Informativo (não falha o build): mesma classe de gap no restante do
+--     schema — GRANT de escrita para authenticated sem policy do comando.
+--     Há legado em prod sem uso de cliente, então isso aparece como WARNING
+--     no log em vez de reprovar o gate.
+DO $$
+DECLARE
+  r record;
+BEGIN
+  FOR r IN
+    SELECT g.table_name, g.privilege_type, array_agg(DISTINCT p.cmd) AS cmds
+    FROM information_schema.role_table_grants g
+    LEFT JOIN pg_policies p
+      ON p.schemaname = 'public' AND p.tablename = g.table_name
+    WHERE g.table_schema = 'public'
+      AND g.grantee = 'authenticated'
+      AND g.privilege_type IN ('UPDATE', 'INSERT', 'DELETE')
+      AND EXISTS (
+        SELECT 1 FROM information_schema.columns c
+        WHERE c.table_schema = 'public'
+          AND c.table_name = g.table_name
+          AND c.column_name = 'empresa_id'
+      )
+    GROUP BY g.table_name, g.privilege_type
+  LOOP
+    IF NOT (
+      r.privilege_type = ANY (COALESCE(r.cmds, ARRAY[]::text[]))
+      OR 'ALL' = ANY (COALESCE(r.cmds, ARRAY[]::text[]))
+    ) THEN
+      RAISE WARNING 'Gap de RLS: %.% concedido a authenticated sem policy do comando (policies atuais: %)',
+        'public', r.table_name, COALESCE(r.cmds::text, 'nenhuma');
+    END IF;
+  END LOOP;
 END $$;
 
 ROLLBACK;

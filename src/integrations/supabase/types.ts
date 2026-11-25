@@ -19367,7 +19367,7 @@ export type Database = {
             Returns: string
           }
       registrar_nfe_com_creditos: {
-        Args: { p_creditos?: Json; p_empresa_id: string; p_nota: Json }
+        Args: { p_creditos?: Json; p_empresa_id: string; p_itens?: Json; p_nota: Json }
         Returns: {
           chave_acesso: string | null
           cliente_cnpj: string | null

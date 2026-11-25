@@ -461,6 +461,48 @@ export function useImportacaoXMLNFe(empresaId: string) {
             });
           }
 
+          // Etapa 45: os itens sobem na mesma chamada — e portanto na mesma
+          // transação da nota e dos créditos. Antes, a nota importada por XML
+          // ficava sem itens: não havia como conferir os totais IBS/CBS
+          // (rejeição 1091) nem apurar crédito por item nessa via.
+          //
+          // `v_ibs` não vai daqui de propósito: a RPC o deriva de
+          // `v_ibs_uf + v_ibs_mun` para a constraint
+          // `notas_fiscais_itens_v_ibs_soma_ck`. O `ad_rem_is` recebe o
+          // `pISEspec` do IS: é alíquota por unidade (R$), não percentual, então
+          // vai como veio do XML, sem divisão por 100.
+          const itens = nfe.itens.map((item, idx) => ({
+            n_item: idx + 1,
+            c_prod: item.codigo,
+            x_prod: item.descricao,
+            ncm: item.ncm,
+            cfop: item.cfop,
+            q_com: item.quantidade,
+            v_un_com: item.valorUnitario,
+            v_prod: item.valorTotal,
+            // Os `p*` chegam do parser já em fração decimal (0-1), que é o que
+            // a coluna guarda.
+            cst_ibscbs: item.ibscbs?.cst,
+            cclasstrib: item.ibscbs?.cClassTrib,
+            v_bc_ibscbs: item.ibscbs?.vBC,
+            p_ibs_uf: item.ibscbs?.pIBSUF,
+            v_ibs_uf: item.ibscbs?.vIBSUF,
+            p_ibs_mun: item.ibscbs?.pIBSMun,
+            v_ibs_mun: item.ibscbs?.vIBSMun,
+            p_cbs: item.ibscbs?.pCBS,
+            v_cbs: item.ibscbs?.vCBS,
+            // Cada tributo tem o seu próprio `gRed` no leiaute; só o do IBS UF
+            // tem coluna correspondente na tabela de itens.
+            p_red_aliq: item.ibscbs?.gRedUF?.pRedAliq,
+            p_aliq_efet: item.ibscbs?.gRedUF?.pAliqEfet,
+            cst_is: item.is?.cstIs,
+            cclasstrib_is: item.is?.cClassTribIs,
+            v_bc_is: item.is?.vBCIs,
+            p_is: item.is?.pIs,
+            ad_rem_is: item.is?.pIsEspec,
+            v_is: item.is?.vIs,
+          }));
+
           await mustSucceed(
             supabase.rpc('registrar_nfe_com_creditos', {
               p_empresa_id: empresaId,
@@ -479,6 +521,7 @@ export function useImportacaoXMLNFe(empresaId: string) {
                 created_by: userData.user.id,
               },
               p_creditos: creditos,
+              p_itens: itens,
             }),
             `registrar a nota ${nfe.numero} e seus créditos de CBS/IBS`
           );
