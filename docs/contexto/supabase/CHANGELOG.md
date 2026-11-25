@@ -2,6 +2,11 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-25 00:37 UTC
+
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_28`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_21`
+
 ## 2026-11-24 17:15 UTC
 
 - **colunas** alterado (3649): `public.acessos_suspeitos.baseline`, `public.acessos_suspeitos.created_at`, `public.acessos_suspeitos.details`, `public.acessos_suspeitos.detalhes`, `public.acessos_suspeitos.empresa_id`, `public.acessos_suspeitos.event_type`, `public.acessos_suspeitos.id`, `public.acessos_suspeitos.ip_address`, `public.acessos_suspeitos.janela_fim`, `public.acessos_suspeitos.janela_inicio`, `public.acessos_suspeitos.ocorrencias`, `public.acessos_suspeitos.revisado_em`, `public.acessos_suspeitos.revisado_por`, `public.acessos_suspeitos.severidade`, `public.acessos_suspeitos.table_name`, `public.acessos_suspeitos.tipo`, `public.acessos_suspeitos.user_agent`, `public.acessos_suspeitos.user_email`, `public.acessos_suspeitos.user_id`, `public.acoes_recomendadas.created_at`, `public.acoes_recomendadas.descricao`, `public.acoes_recomendadas.empresa_id`, `public.acoes_recomendadas.expires_at`, `public.acoes_recomendadas.fonte`, `public.acoes_recomendadas.gerado_em`, `public.acoes_recomendadas.id`, `public.acoes_recomendadas.impacto_estimado`, `public.acoes_recomendadas.impacto_tipo`, `public.acoes_recomendadas.link_resolucao`, `public.acoes_recomendadas.ordem`, `public.acoes_recomendadas.prioridade`, `public.acoes_recomendadas.score`, `public.acoes_recomendadas.status`, `public.acoes_recomendadas.titulo`, `public.acoes_recomendadas.urgencia`, `public.acordos_parcelamento.cliente_email`, `public.acordos_parcelamento.cliente_id`, `public.acordos_parcelamento.cliente_nome`, `public.acordos_parcelamento.cliente_telefone`, `public.acordos_parcelamento.conta_receber_id` … (+3609)
