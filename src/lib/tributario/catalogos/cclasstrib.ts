@@ -86,7 +86,16 @@ export async function buscarReferenciasFiscais(
       .in('cclasstrib', codigosTrib);
 
     if (!error) {
+      // `carregado` significa "o catalogo tem dados", nao "esta consulta achou o
+      // codigo". Um lote so com codigos desconhecidos deixa a consulta filtrada
+      // vazia em cima de um catalogo cheio, e o alerta de divergencia (REG-013)
+      // era suprimido justamente no caso que precisa dele. A sonda mantem a
+      // supressao para catalogo realmente vazio e para erro de consulta.
       resultado.cclasstribCarregado = (data ?? []).length > 0;
+      if (!resultado.cclasstribCarregado) {
+        const sonda = await supabase.from('catalogo_cclasstrib').select('cclasstrib').limit(1);
+        resultado.cclasstribCarregado = !sonda.error && (sonda.data ?? []).length > 0;
+      }
       for (const linha of data ?? []) {
         if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
         resultado.cclasstrib.set(linha.cclasstrib, {
@@ -110,7 +119,13 @@ export async function buscarReferenciasFiscais(
       .in('ncm', codigosNcm);
 
     if (!error) {
+      // Mesma semantica do cClassTrib: o mapa de NCM tambem e recortado pelos
+      // codigos do lote, entao consulta vazia nao prova catalogo vazio.
       resultado.ncmCarregado = (data ?? []).length > 0;
+      if (!resultado.ncmCarregado) {
+        const sonda = await supabase.from('catalogo_ncm').select('ncm').limit(1);
+        resultado.ncmCarregado = !sonda.error && (sonda.data ?? []).length > 0;
+      }
       for (const linha of data ?? []) {
         if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
         resultado.ncm.set(linha.ncm, { ncm: linha.ncm, descricao: linha.descricao });

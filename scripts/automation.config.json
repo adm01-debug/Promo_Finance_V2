@@ -5,7 +5,8 @@
   "testSuites": [
     "scripts/automation.unit.mjs",
     "scripts/maintenance/maintenance.unit.mjs",
-    "scripts/graphify-local.unit.mjs"
+    "scripts/graphify-local.unit.mjs",
+    "scripts/rfb/gerar_carga_cclasstrib.unit.mjs"
   ],
   "motor": ["sh", "scripts/maintenance/run.sh"],
   "motorConfig": "scripts/maintenance/config.json",
@@ -37,7 +38,8 @@
       "files": [
         "scripts/automation.unit.mjs",
         "scripts/maintenance/maintenance.unit.mjs",
-        "scripts/graphify-local.unit.mjs"
+        "scripts/graphify-local.unit.mjs",
+        "scripts/rfb/gerar_carga_cclasstrib.unit.mjs"
       ],
       "manual": ["node", "scripts/automation.mjs", "test"],
       "triggers": ["manual", "precommit", "prepush", "PR", "pushmain"]
@@ -1213,6 +1215,21 @@
       "manual": ["bash", "scripts/db/replay-migrations.sh"],
       "triggers": ["manual"],
       "reason": "Replay das migrations num Postgres local efêmero (issue #90). Execução manual: exige postgresql-16 no host e não roda em PR; o dispatcher não executa esta operação."
+    },
+    {
+      "id": "legacy-7579d941b7d2015d",
+      "kind": "legacy",
+      "files": ["scripts/rfb/gerar_carga_cclasstrib.py"],
+      "manual": [
+        "python3",
+        "scripts/rfb/gerar_carga_cclasstrib.py",
+        "--calc-repo",
+        "/tmp/rfbcalc",
+        "--out",
+        "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql"
+      ],
+      "triggers": ["manual"],
+      "reason": "Gerador da carga inicial do catalogo cClassTrib (etapa 79): reaplica as migracoes Flyway do clone oficial da RFB (ReceitaFederal/calculadora-rtc-regime-regular, MIT) e emite a migration com o seed. Execucao manual e pontual, com o clone feito a parte, porque exige rede para clonar o repositorio oficial; o dispatcher nao executa esta operacao."
     }
   ],
   "ci": [
