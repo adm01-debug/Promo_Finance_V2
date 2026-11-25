@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-25 11:17 UTC
+
+- **functions** alterado (3): `public.empresa_acessivel(_empresa_id uuid)`, `public.has_any_role(_user_id uuid, _roles app_role[])`, `public.registrar_nfe_com_creditos(p_empresa_id uuid, p_nota jsonb, p_creditos jsonb)`
+
 ## 2026-11-25 00:37 UTC
 
 - **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_28`
