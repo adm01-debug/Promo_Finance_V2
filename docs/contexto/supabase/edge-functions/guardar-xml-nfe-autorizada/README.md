@@ -4,7 +4,7 @@
 |---|---|
 | nome | guardar-xml-nfe-autorizada |
 | status | ACTIVE |
-| versão | 1 |
+| versão | 2 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/guardar-xml-nfe-autorizada/index.ts |
 | import_map |  |

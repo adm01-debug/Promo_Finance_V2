@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-resumo-executivo-semanal |
 | status | ACTIVE |
-| versão | 159 |
+| versão | 160 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/gerar-resumo-executivo-semanal/index.ts |
 | import_map |  |

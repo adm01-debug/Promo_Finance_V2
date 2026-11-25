@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)",
    "fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)",
    "chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)",
    "fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)",
-   "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)",
-   "feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)"
+   "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

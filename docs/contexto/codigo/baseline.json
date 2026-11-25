@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d32f10ed75a359808bccf97d17c9ee054a2df5c3",
+  "commit": "448f7ea2634d4c471df6e57a42a1003d87fff0df",
   "branch": "main",
-  "data_commit": "2026-11-25T09:49:16-03:00",
+  "data_commit": "2026-11-25T10:28:43-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "448f7ea",
+    "data": "2026-11-25",
+    "assunto": "fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)"
+   },
    {
     "sha": "d32f10e",
     "data": "2026-11-25",
@@ -126,14 +131,9 @@
     "sha": "856fef0",
     "data": "2026-11-22",
     "assunto": "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)"
-   },
-   {
-    "sha": "00b7588",
-    "data": "2026-11-22",
-    "assunto": "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)"
    }
   ],
-  "arquivos_mudados_7d": 268,
+  "arquivos_mudados_7d": 259,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -157,7 +157,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 172
+    "mudancas": 170
    },
    {
     "pasta": "src/components/reforma-tributaria",
@@ -226,11 +226,11 @@
     "mudancas": 9
    },
    {
-    "arquivo": "analise-prs/progresso.json",
-    "mudancas": 8
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "mudancas": 9
    },
    {
-    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
    },
    {
@@ -250,11 +250,11 @@
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "scripts/integrity/baseline/expected-policies.json",
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
+    "arquivo": "supabase/config.toml",
     "mudancas": 7
    },
    {
@@ -262,23 +262,11 @@
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
-    "mudancas": 7
-   },
-   {
     "arquivo": ".github/workflows/prod-migrate.yml",
     "mudancas": 6
    },
    {
-    "arquivo": "RELATORIO_CI.md",
-    "mudancas": 6
-   },
-   {
     "arquivo": "docs/prod-readiness.md",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "scripts/integrity/baseline/expected-policies.json",
     "mudancas": 6
    },
    {
@@ -296,6 +284,18 @@
    {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/reforma-tributaria/regras.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    "mudancas": 6
    }
   ],
   "autores_30d": [
@@ -309,7 +309,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 5
+    "commits": 4
    },
    {
     "autor": "Joaquim Ataides",

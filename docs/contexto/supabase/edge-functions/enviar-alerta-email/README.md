@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-alerta-email |
 | status | ACTIVE |
-| versão | 163 |
+| versão | 164 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/enviar-alerta-email/index.ts |
 | import_map |  |

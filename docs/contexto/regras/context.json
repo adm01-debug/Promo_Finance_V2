@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "d32f10ed75a359808bccf97d17c9ee054a2df5c3",
+  "sha": "448f7ea2634d4c471df6e57a42a1003d87fff0df",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 12:50 UTC",
+  "generated_at": "2026-11-25 14:17 UTC",
   "files_total": 4101,
   "code_files": 3680,
   "code_lines": 525571
@@ -249679,10 +249679,20 @@
   }
  },
  "git": {
-  "sha": "d32f10ed75a359808bccf97d17c9ee054a2df5c3",
+  "sha": "448f7ea2634d4c471df6e57a42a1003d87fff0df",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "448f7ea",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)",
+    "files": [
+     "scripts/integrity/baseline/expected-policies.json",
+     "scripts/integrity/baseline/schema-counts.json"
+    ]
+   },
    {
     "sha": "d32f10e",
     "date": "2026-11-25",
@@ -250080,19 +250090,6 @@
      "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
      "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
     ]
-   },
-   {
-    "sha": "19a3b16",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "feat: parser do XML lê grupo IBS/CBS/IS real da nota (etapa 41 RT/RFB) (#520)",
-    "files": [
-     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
-     "src/hooks/useImportacaoXMLNFe.ts",
-     "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
-     "src/lib/nfe/parse-ibscbs.ts",
-     "supabase/functions/_shared/sefaz/__fixtures__/procNFe-ibscbs-2026.xml"
-    ]
    }
   ],
   "hot_files": [
@@ -250105,15 +250102,7 @@
     6
    ],
    [
-    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
-    3
-   ],
-   [
     "src/lib/tributario/catalogos/cclasstrib.ts",
-    3
-   ],
-   [
-    "src/hooks/useImportacaoXMLNFe.ts",
     3
    ],
    [
@@ -250127,6 +250116,14 @@
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
+   ],
+   [
+    "scripts/integrity/baseline/expected-policies.json",
+    2
+   ],
+   [
+    "scripts/integrity/baseline/schema-counts.json",
+    2
    ],
    [
     "supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql",
@@ -250157,7 +250154,15 @@
     2
    ],
    [
+    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    2
+   ],
+   [
     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    2
+   ],
+   [
+    "src/hooks/useImportacaoXMLNFe.ts",
     2
    ],
    [
@@ -250166,14 +250171,6 @@
    ],
    [
     "docs/ci/kpi.json",
-    2
-   ],
-   [
-    "docs/qa/04-PLANO.md",
-    2
-   ],
-   [
-    "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
     2
    ]
   ]
