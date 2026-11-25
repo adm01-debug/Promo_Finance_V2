@@ -1,8 +1,8 @@
 # API de dados abertos da RFB (calculadora RT)
 
 Contrato da API pública da Calculadora de Reforma Tributária, verificado por
-requisição real em **2026-11-24**. É a fonte do sync do catálogo cClassTrib
-(etapa 79).
+requisição real em **2026-11-24** e completado em **2026-11-26**. É a fonte dos
+syncs de catálogo das etapas 79 e 80 e o contrato verificado das etapas 81 e 82.
 
 Base: `https://piloto-cbs.tributos.gov.br/servico/calculadora-consumo/api/calculadora/dados-abertos`
 
@@ -23,21 +23,37 @@ Sem `data`, a resposta é `400`. `data` no formato `AAAA-MM-DD` e define a
 repositório oficial `ReceitaFederal/calculadora-rtc-regime-regular`, o que
 permite detectar divergência por número de versão antes de gravar.
 
-## Rotas NÃO verificadas
+## Contratos antes tidos como indisponíveis
 
-`/ncm`, `/nbs`, `/classificacoes-tributarias/ncm`, `/classificacoes-tributarias/nbs`
-e `/classificacoes-tributarias/imposto-seletivo` respondem `400` sem `data`
-(portanto existem), mas o payload **nunca foi lido**: as tentativas com `data`
-foram barradas pelo WAF. Não há, hoje, contrato conhecido para NCM/NBS. As
-etapas 80, 81 e 86 não podem ser implementadas por API até esse contrato ser
-lido — o caminho disponível é a base oficial (ver `scripts/rfb/`).
+Até 2026-11-24 este documento registrava NCM/NBS como "sem contrato conhecido,
+barrado pelo WAF". Estava errado em dois pontos: o WAF é **limitador de taxa**
+(volta depois de alguns minutos, ver seção seguinte) e o contrato é público no
+repositório oficial `ReceitaFederal/calculadora-rtc-regime-regular`
+(`DadosAbertosController.java` + DTOs `*DadosAbertosOutput.java`). O contrato
+abaixo vem desse código-fonte, lido em 2026-11-26.
+
+| Rota | Parâmetros | Corpo |
+| --- | --- | --- |
+| `GET /ncm/vigentes` | `data` | `[{ncm, descricao}]` — `ncm` de 8 dígitos |
+| `GET /nbs/lista` | `data` | `[{codigo, descricao}]` |
+| `GET /fundamentacoes-legais` | `data` | `[{codigoClassificacaoTributaria, descricaoClassificacaoTributaria, codigoSituacaoTributaria, descricaoSituacaoTributaria, conjuntoTributo, texto, textoCurto, referenciaNormativa}]` |
+| `GET /aliquota-uniao` | `data` | `{aliquotaReferencia, aliquotaPropria, formaAplicacao}` |
+| `GET /aliquota-uf` | `data`, `codigoUf` | idem — `codigoUf` é **código IBGE da UF** (ex.: 43) |
+| `GET /aliquota-municipio` | `data`, `codigoMunicipio` | idem — **código IBGE do município** (7 dígitos) |
+| `GET /versao` | — | `{versaoApp, descricaoVersaoApp, versaoDb, descricaoVersaoDb, dataVersaoDb, ambiente}` |
+
+`/aliquota-uf` e `/aliquota-municipio` respondem `400` sem o código do ente — é
+parâmetro obrigatório, não ausência de dado. Verificado ao vivo: `/aliquota-uniao`
+respondeu `{"aliquotaReferencia":0.9}` para CBS em 2026, em **pontos
+percentuais** — o banco guarda fração (`0.0090`), como nos `p_red_*`.
 
 ## WAF
 
 O piloto bloqueia por IP e responde **HTTP 200 com HTML** `Request Rejected` e
 um `support ID`, não 403. Ocorreu em 2026-11-24 depois de ~30 requisições
-seguidas, inclusive na rota `/versao` que antes respondia. Consequências para o
-sync:
+seguidas, inclusive na rota `/versao` que antes respondia; em 2026-11-25 voltou
+a responder normalmente, o que confirma bloqueio temporário por taxa (não
+bloqueio permanente). Consequências para os syncs:
 
 - resposta não-JSON é erro explícito (`dados_abertos_nao_json`), nunca lista
   vazia — senão o piso de 100 classificações leria "catálogo vazio" e encerraria
@@ -105,14 +121,58 @@ aplicar CST de IS em nota de CBS/IBS.
 5. Grava só as 9 colunas publicadas pela API; `exige_gibscbs` e `ind_dir` nunca
    são sobrescritos.
 
+## Guardas do sync (etapa 80)
+
+`supabase/functions/sync-catalogo-ncm-nbs` espelha `catalogo_ncm` e
+`catalogo_nbs` — tabelas criadas na etapa 16 e vazias desde então, o que deixava
+o validador da etapa 46 (`validador-ncm-cst.ts`) sem referência para comparar o
+NCM do item.
+
+1. Piso de **1.000 NCM** e **200 NBS** (a lista oficial tem ~10 mil e ~2 mil):
+   resposta menor é falha da API, não catálogo reduzido.
+2. Teto de **10% de ausentes** antes de encerrar vigência, aplicado por catálogo.
+3. `inicio_vigencia = 2026-01-01`: a API publica o conjunto vigente na data e não
+   desde quando cada código vale. Uma linha por ano faria `vigenteEm()` casar
+   duas linhas do mesmo código.
+4. Código publicado **sem descrição** conta como presente (não pode ser
+   encerrado) mas não vira linha — `descricao` é `not null` e descrição inventada
+   apareceria para o usuário.
+5. A leitura dos códigos já abertos é **paginada** (1.000 por página): o
+   PostgREST corta a resposta no `max-rows`, e sem paginação a decisão de
+   encerrar seria tomada sobre 1.000 dos ~10 mil NCMs.
+6. Sem guarda de versão, ao contrário da etapa 79: as duas tabelas não guardam
+   `versao_it` e as listas não trazem percentual, então base anterior significa
+   apenas menos códigos — o que os pisos e o teto já cobrem. `versaoDb` continua
+   indo para log e resumo.
+
+## Vigência e o consumidor (etapa 46)
+
+`buscarReferenciasFiscais` (`src/lib/tributario/catalogos/cclasstrib.ts`)
+devolve `cclasstribCarregado` / `ncmCarregado` com o significado **"há
+referência para esta data"**, não "a tabela tem linhas". A diferença importa
+porque todas as cargas gravam `inicio_vigencia = 2026-01-01`: uma nota de 2025
+consulta um catálogo cheio, mas sem nenhuma linha vigente na data, e a comparação
+com o mapa vazio acusava REG-011/REG-012/REG-013 em nota correta. Hoje a
+cobertura é sondada com recorte de vigência e, sem cobertura, o validador fica em
+silêncio — o mesmo comportamento de catálogo vazio.
+
 ## Chamada
 
 ```
 GET /functions/v1/sync-catalogo-cclasstrib               # data = hoje (Brasília)
 GET /functions/v1/sync-catalogo-cclasstrib?data=2026-12-01
 GET /functions/v1/sync-catalogo-cclasstrib?forcar=true   # ignora a guarda de versão
+
+GET /functions/v1/sync-catalogo-ncm-nbs                  # data = hoje (Brasília)
+GET /functions/v1/sync-catalogo-ncm-nbs?data=2026-12-01
 ```
 
 Autenticação: `x-cron-secret` (`exigirChamadaInterna`, segredo `internal_jobs`).
-Agendamento: pg_cron `40 4 * * *` (Brasília), ver
-`supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql`.
+Agendamento: pg_cron `40 4 * * *` para o cClassTrib
+(`20261124121000_cron_sync_catalogo_cclasstrib.sql`) e `0 5 * * *` para NCM/NBS
+(`20261126060000_cron_sync_catalogo_ncm_nbs.sql`) — 20 minutos de intervalo
+porque as duas consultam a mesma base oficial e disputam o mesmo limite de taxa.
+
+Os jobs só passam a valer depois de deploy da function
+(`functions-deploy.yml`, `deploy_all = true`) e aplicação da migration em
+produção (regra 8: `prod-migrate`, disparo manual).

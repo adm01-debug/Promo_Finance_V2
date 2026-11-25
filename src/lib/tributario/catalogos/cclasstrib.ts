@@ -58,6 +58,30 @@ const vigenteEm = (inicio: string | null, fim: string | null, referencia: string
 };
 
 /**
+ * O catalogo cobre a data de referencia?
+ *
+ * `carregado` responde "posso afirmar algo sobre este codigo nesta data?", nao
+ * "a tabela tem linhas". As cargas da RFB (etapas 79-81) marcam
+ * `inicio_vigencia = 2026-01-01`: para uma nota de 2025 a consulta por codigo
+ * volta com linha (a tabela esta cheia), mas nenhuma linha vigente na data, e
+ * comparar com o mapa vazio acusava REG-011/REG-013 em nota correta. Sem
+ * cobertura para a data, a resposta certa e "nao ha referencia", o mesmo
+ * silencio de catalogo vazio.
+ */
+const temCobertura = async (
+  tabela: 'catalogo_cclasstrib' | 'catalogo_ncm',
+  referencia: string
+): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from(tabela)
+    .select(tabela === 'catalogo_cclasstrib' ? 'cclasstrib' : 'ncm')
+    .lte('inicio_vigencia', referencia)
+    .or(`fim_vigencia.is.null,fim_vigencia.gte.${referencia}`)
+    .limit(1);
+  return !error && (data ?? []).length > 0;
+};
+
+/**
  * Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o
  * realmente tocou. Um XML de 200 itens costuma trazer menos de 10 cClassTrib
  * distintos; carregar o cat?logo inteiro (~10 mil NCMs) s? para conferir
@@ -86,18 +110,18 @@ export async function buscarReferenciasFiscais(
       .in('cclasstrib', codigosTrib);
 
     if (!error) {
-      // `carregado` significa "o catalogo tem dados", nao "esta consulta achou o
-      // codigo". Um lote so com codigos desconhecidos deixa a consulta filtrada
-      // vazia em cima de um catalogo cheio, e o alerta de divergencia (REG-013)
-      // era suprimido justamente no caso que precisa dele. A sonda mantem a
-      // supressao para catalogo realmente vazio e para erro de consulta.
-      resultado.cclasstribCarregado = (data ?? []).length > 0;
-      if (!resultado.cclasstribCarregado) {
-        const sonda = await supabase.from('catalogo_cclasstrib').select('cclasstrib').limit(1);
-        resultado.cclasstribCarregado = !sonda.error && (sonda.data ?? []).length > 0;
-      }
-      for (const linha of data ?? []) {
-        if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
+      // `carregado` significa "ha referencia para esta data", nao "o catalogo
+      // tem linhas" nem "esta consulta achou o codigo". Um lote so com codigos
+      // desconhecidos deixa a consulta filtrada vazia em cima de um catalogo
+      // cheio, e o alerta de divergencia (REG-013) era suprimido justamente no
+      // caso que precisa dele. A sonda mantem a supressao para catalogo
+      // realmente vazio, para data sem cobertura e para erro de consulta.
+      const vigentes = (data ?? []).filter((linha) =>
+        vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)
+      );
+      resultado.cclasstribCarregado =
+        vigentes.length > 0 || (await temCobertura('catalogo_cclasstrib', referencia));
+      for (const linha of vigentes) {
         resultado.cclasstrib.set(linha.cclasstrib, {
           cclasstrib: linha.cclasstrib,
           cst: linha.cst,
@@ -120,14 +144,16 @@ export async function buscarReferenciasFiscais(
 
     if (!error) {
       // Mesma semantica do cClassTrib: o mapa de NCM tambem e recortado pelos
-      // codigos do lote, entao consulta vazia nao prova catalogo vazio.
-      resultado.ncmCarregado = (data ?? []).length > 0;
-      if (!resultado.ncmCarregado) {
-        const sonda = await supabase.from('catalogo_ncm').select('ncm').limit(1);
-        resultado.ncmCarregado = !sonda.error && (sonda.data ?? []).length > 0;
-      }
-      for (const linha of data ?? []) {
-        if (!vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)) continue;
+      // codigos do lote, entao consulta vazia nao prova catalogo vazio. E a
+      // vigencia conta: o espelho da etapa 80 grava inicio_vigencia 2026-01-01,
+      // logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar
+      // REG-012 por isso.
+      const vigentes = (data ?? []).filter((linha) =>
+        vigenteEm(linha.inicio_vigencia, linha.fim_vigencia, referencia)
+      );
+      resultado.ncmCarregado =
+        vigentes.length > 0 || (await temCobertura('catalogo_ncm', referencia));
+      for (const linha of vigentes) {
         resultado.ncm.set(linha.ncm, { ncm: linha.ncm, descricao: linha.descricao });
       }
     }

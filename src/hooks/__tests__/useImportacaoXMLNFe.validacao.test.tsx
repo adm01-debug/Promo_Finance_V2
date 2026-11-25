@@ -47,6 +47,16 @@ const XML_COM_GRUPO = `<?xml version="1.0" encoding="UTF-8"?>
     <total><ICMSTot><vNF>100.00</vNF><vProd>100.00</vProd><vBC>100.00</vBC><vICMS>18.00</vICMS></ICMSTot></total>
   </infNFe></NFe></nfeProc>`;
 
+/**
+ * Mesma nota, emitida em 2025. Serve para o recorte de vigencia dos catalogos:
+ * as cargas da RFB comecam em 2026-01-01, entao uma nota de 2025 nao tem
+ * referencia de catalogo e nao pode gerar divergencia por isso.
+ */
+const XML_COM_GRUPO_2025 = XML_COM_GRUPO.replace(
+  '<dhEmi>2026-03-31T22:30:00-03:00</dhEmi>',
+  '<dhEmi>2025-03-31T22:30:00-03:00</dhEmi>'
+);
+
 type Resposta = { data: unknown; error: unknown };
 type Registro = { tabela: string; metodo: string };
 
@@ -70,7 +80,18 @@ function montaCliente(catalogos: Record<string, Resposta | Resposta[]>) {
   };
   mockFrom.mockImplementation((tabela: string) => {
     const chain: Record<string, unknown> = {};
-    for (const metodo of ['select', 'insert', 'update', 'delete', 'eq', 'in', 'limit', 'single']) {
+    for (const metodo of [
+      'select',
+      'insert',
+      'update',
+      'delete',
+      'eq',
+      'in',
+      'lte',
+      'or',
+      'limit',
+      'single',
+    ]) {
       chain[metodo] = vi.fn(() => {
         chamadas.push({ tabela, metodo });
         return chain;
@@ -83,8 +104,8 @@ function montaCliente(catalogos: Record<string, Resposta | Resposta[]>) {
   return chamadas;
 }
 
-function arquivo(): File {
-  return { name: 'nfe.xml', text: () => Promise.resolve(XML_COM_GRUPO) } as unknown as File;
+function arquivo(xml: string = XML_COM_GRUPO): File {
+  return { name: 'nfe.xml', text: () => Promise.resolve(xml) } as unknown as File;
 }
 
 let queryClient: QueryClient;
@@ -101,11 +122,11 @@ beforeEach(() => {
   mockRpc.mockResolvedValue({ data: { id: 'nf-1' }, error: null });
 });
 
-async function importar(catalogos: Record<string, Resposta>) {
+async function importar(catalogos: Record<string, Resposta>, xml: string = XML_COM_GRUPO) {
   const chamadas = montaCliente(catalogos);
   const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
   await act(async () => {
-    await result.current.processarArquivos([arquivo()] as unknown as FileList);
+    await result.current.processarArquivos([arquivo(xml)] as unknown as FileList);
   });
   await waitFor(() => expect(result.current.nfesParsed).toHaveLength(1));
 
@@ -202,5 +223,38 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
     const selecoes = chamadas.filter((c) => c.tabela === 'catalogo_cclasstrib');
     expect(selecoes.filter((c) => c.metodo === 'select')).toHaveLength(2);
     expect(selecoes.filter((c) => c.metodo === 'limit')).toHaveLength(1);
+  });
+
+  it('nota anterior à vigência do catálogo não gera alerta (sem referência na data)', async () => {
+    // Catálogo cheio, mas com inicio_vigencia 2026-01-01, e a nota é de 2025.
+    // A consulta por código volta com linha e a sonda de cobertura volta vazia:
+    // não há referência para aquela data, então não há o que divergir.
+    const { resumo } = await importar(
+      {
+        catalogo_cclasstrib: [
+          { data: CATALOGO.catalogo_cclasstrib.data, error: null },
+          { data: [], error: null },
+        ],
+        catalogo_ncm: [
+          {
+            data: [
+              {
+                ncm: '02013000',
+                descricao: 'Carnes de bovino',
+                inicio_vigencia: '2026-01-01',
+                fim_vigencia: null,
+              },
+            ],
+            error: null,
+          },
+          { data: [], error: null },
+        ],
+      },
+      XML_COM_GRUPO_2025
+    );
+
+    expect(resumo.sucesso).toBe(1);
+    expect(resumo.notasComAlertaFiscal).toBe(0);
+    expect(resumo.nfesProcessadas[0].alertasFiscais).toBeUndefined();
   });
 });
