@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-25 16:00:00 | succeeded | 0.22 | 1 row |
+| 2026-11-25 15:00:00 | succeeded | 0.29 | 1 row |
 | 2026-11-25 14:00:00 | succeeded | 0.32 | 1 row |
-| 2026-11-25 13:00:01 | succeeded | 0.96 | 1 row |
-| 2026-11-25 12:00:00 | succeeded | 0.46 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-25 14:00:00 | succeeded | 0.95 | 1 row |
-| 2026-11-25 13:30:00 | succeeded | 0.40 | 1 row |
-| 2026-11-25 13:00:01 | succeeded | 1.43 | 1 row |
+| 2026-11-25 16:00:00 | succeeded | 0.23 | 1 row |
+| 2026-11-25 15:30:00 | succeeded | 0.49 | 1 row |
+| 2026-11-25 15:00:00 | succeeded | 0.38 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-25 15:45:00 | succeeded | 0.01 | 1 row |
+| 2026-11-25 14:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-25 13:45:00 | succeeded | 0.02 | 1 row |
-| 2026-11-25 12:45:00 | succeeded | 0.00 | 1 row |
-| 2026-11-25 11:45:00 | succeeded | 0.05 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-25 16:15:00 | succeeded | 0.09 | 1 row |
+| 2026-11-25 15:15:00 | succeeded | 0.10 | 1 row |
 | 2026-11-25 14:15:00 | succeeded | 0.08 | 1 row |
-| 2026-11-25 13:15:00 | succeeded | 0.13 | 1 row |
-| 2026-11-25 12:15:00 | succeeded | 0.16 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-25 16:10:00 | succeeded | 2.18 | 1 row |
+| 2026-11-25 15:10:00 | succeeded | 2.19 | 1 row |
 | 2026-11-25 14:10:00 | succeeded | 1.79 | 1 row |
-| 2026-11-25 13:10:00 | succeeded | 11.96 | 1 row |
-| 2026-11-25 12:10:00 | succeeded | 10.84 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-25 14:15:00 | succeeded | 0.05 | 1 row |
-| 2026-11-25 14:00:00 | succeeded | 0.08 | 1 row |
-| 2026-11-25 13:45:00 | succeeded | 0.12 | 1 row |
+| 2026-11-25 16:15:00 | succeeded | 0.03 | 1 row |
+| 2026-11-25 16:00:00 | succeeded | 0.07 | 1 row |
+| 2026-11-25 15:45:00 | succeeded | 0.05 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-25 14:17:00 | succeeded | 0.01 | 1 row |
-| 2026-11-25 14:16:00 | succeeded | 0.01 | 1 row |
-| 2026-11-25 14:15:00 | succeeded | 0.00 | 1 row |
+| 2026-11-25 16:21:00 | succeeded | 0.01 | 1 row |
+| 2026-11-25 16:20:00 | succeeded | 0.02 | 1 row |
+| 2026-11-25 16:19:00 | succeeded | 0.01 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-25 16:10:00 | succeeded | 0.05 | 1 row |
+| 2026-11-25 15:10:00 | succeeded | 0.06 | 1 row |
 | 2026-11-25 14:10:00 | succeeded | 0.06 | 1 row |
-| 2026-11-25 13:10:00 | succeeded | 0.08 | 1 row |
-| 2026-11-25 12:10:00 | succeeded | 0.07 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-25 14:00:00 | succeeded | 0.03 | 1 row |
-| 2026-11-25 13:30:00 | succeeded | 0.06 | 1 row |
-| 2026-11-25 13:00:01 | succeeded | 0.10 | 1 row |
+| 2026-11-25 16:00:00 | succeeded | 0.02 | 1 row |
+| 2026-11-25 15:30:00 | succeeded | 0.10 | 1 row |
+| 2026-11-25 15:00:00 | succeeded | 0.10 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,9 +250,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-25 15:30:00 | succeeded | 0.09 | 1 row |
+| 2026-11-25 14:30:00 | succeeded | 0.05 | 1 row |
 | 2026-11-25 13:30:00 | succeeded | 0.02 | 1 row |
-| 2026-11-25 12:30:00 | succeeded | 0.01 | 1 row |
-| 2026-11-25 11:30:00 | succeeded | 0.02 | 1 row |
 
 
 ## 43 · enviar-digest-conformidade-diario
@@ -268,9 +268,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-25 14:00:00 | succeeded | 0.03 | 1 row |
-| 2026-11-25 13:30:00 | succeeded | 0.01 | 1 row |
-| 2026-11-25 13:00:01 | succeeded | 0.04 | 1 row |
+| 2026-11-25 16:00:00 | succeeded | 0.04 | 1 row |
+| 2026-11-25 15:30:00 | succeeded | 0.01 | 1 row |
+| 2026-11-25 15:00:00 | succeeded | 0.01 | 1 row |
 
 
 ## 49 · marcar-contas-vencidas
@@ -286,7 +286,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-25 13:20:00 | succeeded | 0.02 | 1 row |
+| 2026-11-25 16:20:00 | succeeded | 0.01 | 1 row |
+| 2026-11-25 15:20:00 | succeeded | 0.03 | 1 row |
+| 2026-11-25 14:20:00 | succeeded | 0.01 | 1 row |
 
 
 ## 51 · sync-catalogo-cclasstrib
