@@ -134,7 +134,7 @@ export function LancamentosTabConteudo({
                   setDataInicio(d);
                   filtersController.setField('preset', 'custom');
                 }}
-                initialFocus
+                autoFocus
                 className={cn('p-3 pointer-events-auto')}
               />
             </PopoverContent>
@@ -165,7 +165,7 @@ export function LancamentosTabConteudo({
                   setDataFim(d);
                   filtersController.setField('preset', 'custom');
                 }}
-                initialFocus
+                autoFocus
                 className={cn('p-3 pointer-events-auto')}
               />
             </PopoverContent>

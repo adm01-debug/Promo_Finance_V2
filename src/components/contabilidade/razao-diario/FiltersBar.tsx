@@ -111,7 +111,7 @@ export function FiltersBar({
                   setPreset('custom');
                 }
               }}
-              initialFocus
+              autoFocus
               className={cn('p-3 pointer-events-auto')}
             />
           </PopoverContent>
@@ -146,7 +146,7 @@ export function FiltersBar({
                   setPreset('custom');
                 }
               }}
-              initialFocus
+              autoFocus
               className={cn('p-3 pointer-events-auto')}
             />
           </PopoverContent>
