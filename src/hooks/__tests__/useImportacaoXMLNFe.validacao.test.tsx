@@ -300,7 +300,7 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
       '2026-03-31T22:30:00-03:00',
       '2026-09-01T23:30:00-04:00'
     );
-    const { resumo } = await importar(
+    const { resumo, chamadas } = await importar(
       {
         catalogo_cclasstrib: CATALOGO.catalogo_cclasstrib,
         catalogo_ncm: {
@@ -318,8 +318,21 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
       xmlManaus
     );
 
+    // Sem estas provas o teste passaria de graça: nota com erro não gera alerta
+    // nenhum. REG-011 só aparece quando a conferência roda de fato.
+    expect(resumo.sucesso).toBe(1);
     const [nota] = resumo.nfesProcessadas;
-    expect((nota.alertasFiscais ?? []).map((a) => a.codigo)).not.toContain('REG-012');
+    const codigos = (nota.alertasFiscais ?? []).map((a) => a.codigo);
+    expect(codigos).toContain('REG-011');
+    expect(codigos).not.toContain('REG-012');
+    // O código foi achado vigente na data declarada: com 2026-09-02 (dia de
+    // Brasília) a linha viria expirada e o hook dispararia a sonda de cobertura.
+    expect(
+      chamadas.filter((c) => c.tabela === 'catalogo_ncm' && c.metodo === 'select')
+    ).toHaveLength(1);
+    expect(
+      chamadas.filter((c) => c.tabela === 'catalogo_ncm' && c.metodo === 'limit')
+    ).toHaveLength(0);
   });
 
   it('nota anterior à vigência do catálogo não gera alerta (sem referência na data)', async () => {

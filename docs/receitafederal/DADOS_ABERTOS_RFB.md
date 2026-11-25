@@ -10,11 +10,11 @@ Ambiente: **piloto / apr**, não é produção. Não há autenticação nem toke
 
 ## Endpoints verificados
 
-| Rota                                      | `data` obrigatório | Conteúdo                                                    |
-| ----------------------------------------- | ------------------ | ----------------------------------------------------------- |
-| `GET /versao`                             | não                | `ambiente`, `dataVersaoDb`, `versaoDb`, `descricaoVersaoDb` |
-| `GET /classificacoes-tributarias/cbs-ibs` | **sim**            | 170 classificações CBS/IBS                                  |
-| `GET /situacoes-tributarias/cbs-ibs`      | **sim**            | 18 situações tributárias (CST)                              |
+| Rota | `data` obrigatório | Conteúdo |
+| --- | --- | --- |
+| `GET /versao` | não | `ambiente`, `dataVersaoDb`, `versaoDb`, `descricaoVersaoDb` |
+| `GET /classificacoes-tributarias/cbs-ibs` | **sim** | 170 classificações CBS/IBS |
+| `GET /situacoes-tributarias/cbs-ibs` | **sim** | 18 situações tributárias (CST) |
 
 Sem `data`, a resposta é `400`. `data` no formato `AAAA-MM-DD` e define a
 **vigência consultada**; não é paginação.
@@ -32,15 +32,15 @@ repositório oficial `ReceitaFederal/calculadora-rtc-regime-regular`
 (`DadosAbertosController.java` + DTOs `*DadosAbertosOutput.java`). O contrato
 abaixo vem desse código-fonte, lido em 2026-11-26.
 
-| Rota                         | Parâmetros                | Corpo                                                                                                                                                                                 |
-| ---------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /ncm/vigentes`          | `data`                    | `[{ncm, descricao}]` — `ncm` de 8 dígitos                                                                                                                                             |
-| `GET /nbs/lista`             | `data`                    | `[{codigo, descricao}]`                                                                                                                                                               |
-| `GET /fundamentacoes-legais` | `data`                    | `[{codigoClassificacaoTributaria, descricaoClassificacaoTributaria, codigoSituacaoTributaria, descricaoSituacaoTributaria, conjuntoTributo, texto, textoCurto, referenciaNormativa}]` |
-| `GET /aliquota-uniao`        | `data`                    | `{aliquotaReferencia, aliquotaPropria, formaAplicacao}`                                                                                                                               |
-| `GET /aliquota-uf`           | `data`, `codigoUf`        | idem — `codigoUf` é **código IBGE da UF** (ex.: 43)                                                                                                                                   |
-| `GET /aliquota-municipio`    | `data`, `codigoMunicipio` | idem — **código IBGE do município** (7 dígitos)                                                                                                                                       |
-| `GET /versao`                | —                         | `{versaoApp, descricaoVersaoApp, versaoDb, descricaoVersaoDb, dataVersaoDb, ambiente}`                                                                                                |
+| Rota | Parâmetros | Corpo |
+| --- | --- | --- |
+| `GET /ncm/vigentes` | `data` | `[{ncm, descricao}]` — `ncm` de 8 dígitos |
+| `GET /nbs/lista` | `data` | `[{codigo, descricao}]` |
+| `GET /fundamentacoes-legais` | `data` | `[{codigoClassificacaoTributaria, descricaoClassificacaoTributaria, codigoSituacaoTributaria, descricaoSituacaoTributaria, conjuntoTributo, texto, textoCurto, referenciaNormativa}]` |
+| `GET /aliquota-uniao` | `data` | `{aliquotaReferencia, aliquotaPropria, formaAplicacao}` |
+| `GET /aliquota-uf` | `data`, `codigoUf` | idem — `codigoUf` é **código IBGE da UF** (ex.: 43) |
+| `GET /aliquota-municipio` | `data`, `codigoMunicipio` | idem — **código IBGE do município** (7 dígitos) |
+| `GET /versao` | — | `{versaoApp, descricaoVersaoApp, versaoDb, descricaoVersaoDb, dataVersaoDb, ambiente}` |
 
 `/aliquota-uf` e `/aliquota-municipio` respondem `400` sem o código do ente — é
 parâmetro obrigatório, não ausência de dado. Verificado ao vivo em 2026-11-26,

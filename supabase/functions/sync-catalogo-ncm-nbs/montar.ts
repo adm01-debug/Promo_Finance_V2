@@ -180,8 +180,8 @@ export function montarNcms(
  *
  * `fim_vigencia` e lido como ultimo dia vigente, inclusive (`vigenteEm`). Quem
  * encerra uma linha precisa gravar o dia anterior ao recorte, nao o dia do
- * recorte: caso contrario uma nota emitida no proprio dia da carga ja sai como
- * fora de vigencia.
+ * recorte: com o dia do recorte o codigo seguiria vigente no dia em que ja saiu
+ * da lista oficial, e a nota emitida nesse dia passaria sem alerta.
  */
 export function diaAnterior(data: string): string {
   const d = new Date(`${data}T00:00:00Z`);
