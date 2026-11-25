@@ -359,6 +359,11 @@ verify_jwt = false
 [functions.sync-aliquota-referencia]
 verify_jwt = false
 
+# verify_jwt=false: sync das fundamentacoes legais por cClassTrib/CST da RFB
+# (etapa 82), pelo mesmo motivo dos catalogos acima.
+[functions.sync-fundamentacao-legal]
+verify_jwt = false
+
 [functions.calculo-iva]
 verify_jwt = true
 

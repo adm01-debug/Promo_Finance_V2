@@ -12,12 +12,23 @@
  * diverg?ncia ? sem refer?ncia, n?o h? o que afirmar.
  */
 import type { ReferenciasFiscais } from './catalogos/cclasstrib';
+import {
+  escolherFundamento,
+  resumoFundamento,
+  type FundamentoLegalResumo,
+} from './catalogos/fundamentacao-legal';
 
 export interface DivergenciaFiscal {
   /** C?digo est?vel da regra, usado em log, badge e teste. */
   codigo: string;
   campo: string;
   mensagem: string;
+  /**
+   * Etapa 82: norma que sustenta o apontamento. Ausente quando o catalogo de
+   * fundamentacoes nao tem linha vigente para o codigo - o alerta continua
+   * valido, apenas sem o texto legal.
+   */
+  fundamento?: FundamentoLegalResumo;
 }
 
 export interface ValidacaoNCM {
@@ -75,6 +86,9 @@ export function validarItemFiscal(
           codigo: 'REG-013',
           campo: 'cClassTrib',
           mensagem: `cClassTrib ${cClassTrib} n?o consta do cat?logo vigente em ${referencias.referencia}.`,
+          fundamento: resumoFundamento(
+            escolherFundamento(referencias.fundamentos, cClassTrib, cst)
+          ),
         });
       }
     } else if (cst.length > 0 && soDigitos(referencia.cst) !== cst) {
@@ -84,6 +98,9 @@ export function validarItemFiscal(
         mensagem:
           `cClassTrib ${cClassTrib} (${referencia.descricao}) tem CST ${referencia.cst}, ` +
           `mas o item declarou CST ${cst}.`,
+        fundamento: resumoFundamento(
+          escolherFundamento(referencias.fundamentos, cClassTrib, soDigitos(referencia.cst))
+        ),
       });
     }
   }

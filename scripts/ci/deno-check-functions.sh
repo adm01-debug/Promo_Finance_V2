@@ -50,6 +50,7 @@ supabase/functions/gerar-alertas-tributarios/index.ts
 supabase/functions/whatsapp-ia-proativo/index.ts
 supabase/functions/sync-catalogo-ncm-nbs/index.ts
 supabase/functions/sync-aliquota-referencia/index.ts
+supabase/functions/sync-fundamentacao-legal/index.ts
 EOF
 
 for arquivo in "${alvos[@]}"; do

@@ -7,6 +7,11 @@
 // afirmar sobre o NCM do contribuinte.
 import { supabase } from '@/integrations/supabase/client';
 import { hojeIso, normalizarReferencia } from './repositorio';
+import {
+  buscarFundamentosLegais,
+  fundamentosVazios,
+  type FundamentosLegais,
+} from './fundamentacao-legal';
 
 /** Linha vigente de `catalogo_cclasstrib`. */
 export interface CclasstribCatalogo {
@@ -40,6 +45,11 @@ export interface ReferenciasFiscais {
    */
   cclasstribCarregado: boolean;
   ncmCarregado: boolean;
+  /**
+   * Etapa 82: fundamentacao legal vigente dos cClassTrib do lote. Mesma leitura
+   * *best effort* dos catalogos acima - sem linha, o alerta sai sem a norma.
+   */
+  fundamentos: FundamentosLegais;
 }
 
 const VAZIO = (referencia: string): ReferenciasFiscais => ({
@@ -48,6 +58,7 @@ const VAZIO = (referencia: string): ReferenciasFiscais => ({
   referencia,
   cclasstribCarregado: false,
   ncmCarregado: false,
+  fundamentos: fundamentosVazios(referencia),
 });
 
 /** Mant?m s? a linha que estava vigente na data de refer?ncia. */
@@ -200,6 +211,11 @@ export async function buscarReferenciasFiscais(
       }
     }
   }
+
+  // Etapa 82: o texto legal dos mesmos cClassTrib. Consulta separada porque a
+  // fundamentacao so interessa a quem teve divergencia; best effort como as
+  // demais - sem catalogo, o alerta continua saindo, apenas sem a norma.
+  resultado.fundamentos = await buscarFundamentosLegais(codigosTrib, referencia);
 
   return resultado;
 }

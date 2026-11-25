@@ -5,6 +5,7 @@ import {
   validarItensFiscais,
 } from '../validador-ncm-cst';
 import type { ReferenciasFiscais } from '../catalogos/cclasstrib';
+import { fundamentosVazios } from '../catalogos/fundamentacao-legal';
 
 // Etapa 46: a valida??o passou a conferir o documento contra os cat?logos
 // oficiais, n?o contra regras de exemplo embutidas. As refer?ncias abaixo s?o
@@ -43,6 +44,7 @@ const comCatalogo = (): ReferenciasFiscais => ({
   // catálogo carregado: um código fora dele é divergência de verdade
   cclasstribCarregado: true,
   ncmCarregado: true,
+  fundamentos: fundamentosVazios('2026-11-22'),
 });
 
 const vazio = (): ReferenciasFiscais => ({
@@ -51,6 +53,7 @@ const vazio = (): ReferenciasFiscais => ({
   ncm: new Map(),
   cclasstribCarregado: false,
   ncmCarregado: false,
+  fundamentos: fundamentosVazios('2026-11-22'),
 });
 
 describe('validarItemFiscal', () => {
@@ -167,5 +170,41 @@ describe('validarConsistenciaNcmCst (compatibilidade)', () => {
 
   it('normaliza pontua??o no NCM', () => {
     expect(validarConsistenciaNcmCst('6109.10.00', '00').score).toBe(100);
+  });
+});
+
+describe('fundamento legal do apontamento (etapa 82)', () => {
+  const linhaFundamento = {
+    cclasstrib: '200035',
+    cst: '000',
+    conjuntoTributo: 'CBS e IBS',
+    descricaoCClassTrib: null,
+    descricaoCST: null,
+    texto: 'Art. 11. Texto do artigo.',
+    textoCurto: 'LC 214/2025',
+    referenciaNormativa: 'LC 214/2025',
+  };
+
+  it('REG-011 sai com o fundamento do cClassTrib declarado', () => {
+    const refs = comCatalogo();
+    refs.fundamentos = {
+      referencia: '2026-11-22',
+      carregado: true,
+      porCst: new Map([['200035|000', linhaFundamento]]),
+      porCclasstrib: new Map([['200035', [linhaFundamento]]]),
+    };
+    const d = validarItemFiscal({ ncm: '02013000', cClassTrib: '200035', cstIbscbs: '200' }, refs);
+    expect(d[0].codigo).toBe('REG-011');
+    expect(d[0].fundamento).toEqual({
+      referencia: 'LC 214/2025',
+      texto: 'Art. 11. Texto do artigo.',
+    });
+  });
+
+  it('sem linha no catalogo de fundamentacoes o alerta continua sem norma', () => {
+    const d = validarItemFiscal({ ncm: '99999999', cClassTrib: '999999' }, comCatalogo());
+    const reg013 = d.find((x) => x.codigo === 'REG-013');
+    expect(reg013).toBeDefined();
+    expect(reg013?.fundamento).toBeUndefined();
   });
 });
