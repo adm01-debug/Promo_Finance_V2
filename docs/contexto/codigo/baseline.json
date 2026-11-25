@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b449a652bf22e9722162735c9b34ad780163c9d8",
+  "commit": "26cb299cea973a1281443d882f8afaddbd13d6ae",
   "branch": "main",
-  "data_commit": "2026-11-25T16:17:35-03:00",
+  "data_commit": "2026-11-25T23:35:27Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "26cb299",
+    "data": "2026-11-25",
+    "assunto": "feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)"
+   },
    {
     "sha": "b449a65",
     "data": "2026-11-25",
@@ -126,18 +131,13 @@
     "sha": "2c2486f",
     "data": "2026-11-22",
     "assunto": "chore: adiciona plano de UX de navegacao em 200 etapas (#529)"
-   },
-   {
-    "sha": "f423b99",
-    "data": "2026-11-22",
-    "assunto": "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)"
    }
   ],
-  "arquivos_mudados_7d": 270,
+  "arquivos_mudados_7d": 283,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 424
+    "mudancas": 426
    },
    {
     "pasta": "src/components/contabilidade",
@@ -157,7 +157,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 169
+    "mudancas": 170
    },
    {
     "pasta": "src/components/reforma-tributaria",
@@ -168,16 +168,16 @@
     "mudancas": 124
    },
    {
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 109
+   },
+   {
     "pasta": "src/components/tributario",
     "mudancas": 108
    },
    {
-    "pasta": "src/hooks/__tests__",
-    "mudancas": 107
-   },
-   {
     "pasta": "src/components/contas-receber",
-    "mudancas": 94
+    "mudancas": 93
    },
    {
     "pasta": "src/components/nfe",
@@ -238,6 +238,10 @@
     "mudancas": 8
    },
    {
+    "arquivo": "supabase/config.toml",
+    "mudancas": 8
+   },
+   {
     "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 8
    },
@@ -254,10 +258,6 @@
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 7
-   },
-   {
     "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 7
    },
@@ -267,6 +267,10 @@
    },
    {
     "arquivo": "docs/prod-readiness.md",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     "mudancas": 6
    },
    {
@@ -286,15 +290,11 @@
     "mudancas": 6
    },
    {
+    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
+    "mudancas": 6
+   },
+   {
     "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/reforma-tributaria/regras.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "mudancas": 6
    }
   ],
@@ -308,19 +308,19 @@
     "commits": 21
    },
    {
-    "autor": "devin-ai-integration[bot]",
-    "commits": 2
+    "autor": "Joaquim Ataides",
+    "commits": 1
    },
    {
-    "autor": "Joaquim Ataides",
+    "autor": "devin-ai-integration[bot]",
     "commits": 1
    }
   ]
  },
  "contagens": {
-  "arquivos_total": 4065,
-  "arquivos_codigo": 2530,
-  "linhas_codigo": 452740,
+  "arquivos_total": 4076,
+  "arquivos_codigo": 2538,
+  "linhas_codigo": 454759,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -328,11 +328,11 @@
   "modulos": 129,
   "componentes": 993,
   "hooks": 276,
-  "edge_functions": 109,
+  "edge_functions": 111,
   "tabelas": 317,
-  "migrations": 1079,
-  "cron_jobs": 24,
-  "testes": 511,
+  "migrations": 1082,
+  "cron_jobs": 27,
+  "testes": 514,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -660,7 +660,7 @@
   },
   "src/hooks": {
    "arquivos": 328,
-   "linhas": 48796
+   "linhas": 49013
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -671,8 +671,8 @@
    "linhas": 20177
   },
   "src/lib": {
-   "arquivos": 430,
-   "linhas": 57404
+   "arquivos": 431,
+   "linhas": 57587
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -695,8 +695,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 249,
-   "linhas": 55032
+   "arquivos": 256,
+   "linhas": 56651
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -798,7 +798,7 @@
   },
   {
    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-   "linhas": 638
+   "linhas": 666
   },
   {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",

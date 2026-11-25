@@ -11809,6 +11809,17 @@
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/validation.ts"
   ],
+  "supabase/functions/sync-aliquota-referencia/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/contract-response.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/erros.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/rfb-dados-abertos.ts",
+   "supabase/functions/_shared/validation.ts",
+   "supabase/functions/_shared/zod.ts",
+   "supabase/functions/sync-aliquota-referencia/montar.ts"
+  ],
   "supabase/functions/sync-catalogo-cclasstrib/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
    "supabase/functions/_shared/contract-response.ts",
@@ -11818,6 +11829,20 @@
    "supabase/functions/_shared/validation.ts",
    "supabase/functions/_shared/zod.ts",
    "supabase/functions/sync-catalogo-cclasstrib/montar.ts"
+  ],
+  "supabase/functions/sync-catalogo-ncm-nbs/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/contract-response.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/erros.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/rfb-dados-abertos.ts",
+   "supabase/functions/_shared/validation.ts",
+   "supabase/functions/_shared/zod.ts",
+   "supabase/functions/sync-catalogo-ncm-nbs/montar.ts"
+  ],
+  "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": [
+   "supabase/functions/_shared/rfb-dados-abertos.ts"
   ],
   "supabase/functions/sync-profile-to-bitrix/index.ts": [
    "supabase/functions/_shared/contract-response.ts",

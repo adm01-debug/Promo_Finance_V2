@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1079,
+ "migrations": 1082,
  "seeds": [],
  "avisos": [
   "203 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -2770,10 +2770,28 @@
    "migration": "20260723120954_26546526-ca79-48e8-b067-571d2d02a16d.sql"
   },
   {
+   "nome": "sync-aliquota-referencia-municipio",
+   "agenda": "50 8 * * 0",
+   "migration": "20261126080000_cron_sync_aliquota_referencia.sql",
+   "chama_edge": "sync-aliquota-referencia"
+  },
+  {
+   "nome": "sync-aliquota-referencia-uf",
+   "agenda": "20 8 * * *",
+   "migration": "20261126080000_cron_sync_aliquota_referencia.sql",
+   "chama_edge": "sync-aliquota-referencia"
+  },
+  {
    "nome": "sync-catalogo-cclasstrib",
-   "agenda": "40 4 * * *",
-   "migration": "20261124121000_cron_sync_catalogo_cclasstrib.sql",
+   "agenda": "40 7 * * *",
+   "migration": "20261126100000_cron_sync_catalogo_cclasstrib_utc.sql",
    "chama_edge": "sync-catalogo-cclasstrib"
+  },
+  {
+   "nome": "sync-catalogo-ncm-nbs",
+   "agenda": "0 8 * * *",
+   "migration": "20261126060000_cron_sync_catalogo_ncm_nbs.sql",
+   "chama_edge": "sync-catalogo-ncm-nbs"
   }
  ],
  "buckets": [

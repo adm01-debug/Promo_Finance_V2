@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (307)",
+   "co-localizado (__tests__) (310)",
    "outro (113)",
    "co-localizado (*.test) (49)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)",
    "fix: remove import wildcard de lucide-react no chunk de Categorias (#559)",
    "fix: migra react-day-picker para v10 (calendar + callers) (#544)",
    "fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)",
-   "fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)",
-   "chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)"
+   "fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

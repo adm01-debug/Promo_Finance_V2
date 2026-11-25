@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "b449a652bf22e9722162735c9b34ad780163c9d8",
+  "sha": "26cb299cea973a1281443d882f8afaddbd13d6ae",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 19:18 UTC",
-  "files_total": 4104,
-  "code_files": 3683,
-  "code_lines": 525778
+  "generated_at": "2026-11-25 23:45 UTC",
+  "files_total": 4115,
+  "code_files": 3694,
+  "code_lines": 528002
  },
  "version": "1.3.2",
- "facts_hash": "b55b6e83e72428c6",
+ "facts_hash": "fc410b845450b315",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,8 +340,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1283,
-   ".sql": 1152,
+   ".ts": 1291,
+   ".sql": 1155,
    ".tsx": 1126,
    ".mjs": 68,
    ".py": 46,
@@ -409,7 +409,9 @@
     "whatsapp-webhook",
     "monitor-health",
     "reprocessar-creditos-ibscbs",
-    "sync-catalogo-cclasstrib"
+    "sync-catalogo-cclasstrib",
+    "sync-catalogo-ncm-nbs",
+    "sync-aliquota-referencia"
    ],
    "auth": {}
   },
@@ -50214,10 +50216,28 @@
     "src": "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql"
    },
    {
+    "job": "sync-catalogo-ncm-nbs",
+    "schedule": "0 8 * * *",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-ncm-nbs', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\":\"pg_cr …",
+    "src": "supabase/migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql"
+   },
+   {
+    "job": "sync-aliquota-referencia-uf",
+    "schedule": "20 8 * * *",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-aliquota-referencia?escopo=uf', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"s …",
+    "src": "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql"
+   },
+   {
+    "job": "sync-aliquota-referencia-municipio",
+    "schedule": "50 8 * * 0",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-aliquota-referencia?escopo=municipio', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body …",
+    "src": "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql"
+   },
+   {
     "job": "sync-catalogo-cclasstrib",
-    "schedule": "40 4 * * *",
+    "schedule": "40 7 * * *",
     "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-cclasstrib', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\":\"pg …",
-    "src": "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql"
+    "src": "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql"
    }
   ],
   "views": {
@@ -51398,6 +51418,9 @@
    "supabase/migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql",
    "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql",
    "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql",
+   "supabase/migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql",
+   "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql",
+   "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -65911,6 +65934,31 @@
     "idempotency": false
    },
    {
+    "name": "sync-aliquota-referencia",
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "methods": [
+     "OPTIONS"
+    ],
+    "auth": "PÚBLICA (verify_jwt=false em config.toml)",
+    "tables": [
+     "edge_function_logs",
+     "integration_secrets",
+     "user_empresas",
+     "user_roles"
+    ],
+    "env": [
+     "SUPABASE_SERVICE_ROLE_KEY",
+     "SUPABASE_URL"
+    ],
+    "external": [],
+    "invokes": [],
+    "doc": "Edge: sync-aliquota-referencia (etapa 81 do plano RT/RFB) Mantem `catalogo_aliquota_referencia` alinhado com a API publica de dados abertos da RFB: uma linha por ano e ente (CBS nacional, IBS por UF, IBS por municipio). E a serie que diz quanto e a aliquota de referencia em cada ano da transicao — s …",
+    "errors": [],
+    "side_effects": [],
+    "webhook_events": [],
+    "idempotency": false
+   },
+   {
     "name": "sync-catalogo-cclasstrib",
     "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "methods": [
@@ -65934,6 +65982,31 @@
      "dados_abertos_http_${resposta.status}",
      "dados_abertos_nao_json: ${inicio}"
     ],
+    "side_effects": [],
+    "webhook_events": [],
+    "idempotency": false
+   },
+   {
+    "name": "sync-catalogo-ncm-nbs",
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "methods": [
+     "OPTIONS"
+    ],
+    "auth": "PÚBLICA (verify_jwt=false em config.toml)",
+    "tables": [
+     "edge_function_logs",
+     "integration_secrets",
+     "user_empresas",
+     "user_roles"
+    ],
+    "env": [
+     "SUPABASE_SERVICE_ROLE_KEY",
+     "SUPABASE_URL"
+    ],
+    "external": [],
+    "invokes": [],
+    "doc": "Edge: sync-catalogo-ncm-nbs (etapa 80 do plano RT/RFB) Mantem os espelhos locais de NCM (`catalogo_ncm`) e NBS (`catalogo_nbs`) alinhados com a API publica de dados abertos da RFB. Sem eles, o validador da etapa 46 (`src/lib/tributario/validador-ncm-cst.ts`) nao tem contra o que comparar o NCM do it …",
+    "errors": [],
     "side_effects": [],
     "webhook_events": [],
     "idempotency": false
@@ -71139,7 +71212,7 @@
   {
    "module": "src/hooks",
    "files": 328,
-   "lines": 49124,
+   "lines": 49341,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71478,8 +71551,8 @@
   },
   {
    "module": "src/lib",
-   "files": 430,
-   "lines": 57834,
+   "files": 431,
+   "lines": 58018,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -72039,8 +72112,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 249,
-   "lines": 55281,
+   "files": 256,
+   "lines": 56907,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72174,6 +72247,7 @@
     "proxy-audit.ts: AuditContext, beginAudit, withCorrelation, auditedRpc, finalizeAudit",
     "rate-limit.ts: RateLimitOptions, RateLimitResult, checkRateLimit, rateLimitResponse",
     "resilience.ts: RetryOptions, withRetry, createCircuitBreaker, integracaoDesativada, respostaIntegracaoDesativada, withTimeout",
+    "rfb-dados-abertos.ts: BASE_DADOS_ABERTOS, VIGENCIA_BASE_CATALOGO, VersaoApi, hojeBrasilia, normalizarData, compararVersao",
     "sentry.ts: captureException",
     "sql-write-guard.ts: ComandoSqlMcp, AnaliseSqlMcp, removerComentariosELiterais, analisarSqlMcp, validarEscritaEscopada",
     "string-utils.ts: timingSafeEqual",
@@ -72192,8 +72266,7 @@
     "dias-uteis.ts: isDiaUtil, anteciparDiaUtil, parsePeriodo, round2",
     "digest.ts: AlertaDigest, BlocoEmpresaDigest, DigestConformidade, OpcoesDigest, normalizarSeveridade, escaparHtml",
     "preferencias-digest.ts: SEVERIDADES_DIGEST, SeveridadeDigest, FREQUENCIAS_DIGEST, FrequenciaDigest, PreferenciaDigest, PreferenciaDigestRaw",
-    "types.ts: RegimeAplicavel, Periodicidade, Orgao, RegraPrazo, AjusteDiaNaoUtil, BaseMulta",
-    "endpoints.ts: Ambiente, DistDFeEndpoint, distDFeEndpoint, UF_IBGE, cUFAutor, ambienteToTpAmb"
+    "types.ts: RegimeAplicavel, Periodicidade, Orgao, RegraPrazo, AjusteDiaNaoUtil, BaseMulta"
    ],
    "docs": [
     "asaas-config.ts: Leitura das configurações do Asaas. A tela de configuração (src/hooks/useAsaas.ts) grava tudo dentro da coluna JSONB `asaas_config.configuracoes` — a tabela não tem colunas planas para esses parâmetros. As edge functions, porém, liam `config?.retry_limit`, `config?.alert_email_address` e companhia d …",
@@ -72250,6 +72323,7 @@
     "supabase/functions/_shared/rate-limit_test.ts",
     "supabase/functions/_shared/resilience.ts",
     "supabase/functions/_shared/resilience_test.ts",
+    "supabase/functions/_shared/rfb-dados-abertos.ts",
     "supabase/functions/_shared/sentry.ts",
     "supabase/functions/_shared/sql-write-guard.ts",
     "supabase/functions/_shared/sql-write-guard_test.ts",
@@ -72295,14 +72369,13 @@
     "supabase/functions/analise-fluxo-ia/index.ts",
     "supabase/functions/analise-preditiva/index.ts",
     "supabase/functions/analyze-document/index.ts",
-    "supabase/functions/api-keys-manage/index.test.ts",
-    "supabase/functions/api-keys-manage/index.ts"
+    "supabase/functions/api-keys-manage/index.test.ts"
    ]
   },
   {
    "module": "supabase/migrations",
-   "files": 1079,
-   "lines": 83551,
+   "files": 1082,
+   "lines": 83748,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -76525,7 +76598,9 @@
     "supabase/functions/sso-logout/index.ts",
     "supabase/functions/sso-test-login/index.ts",
     "supabase/functions/stress_test.ts",
+    "supabase/functions/sync-aliquota-referencia/index.ts",
     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
     "supabase/functions/sync-profile-to-bitrix/index.ts",
     "supabase/functions/upload-anexo/index.ts",
     "supabase/functions/validar-token-contador/index.ts",
@@ -76625,7 +76700,9 @@
     "supabase/functions/sso-logout/index.ts",
     "supabase/functions/sso-test-login/index.ts",
     "supabase/functions/stress_test.ts",
+    "supabase/functions/sync-aliquota-referencia/index.ts",
     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
     "supabase/functions/sync-profile-to-bitrix/index.ts",
     "supabase/functions/upload-anexo/index.ts",
     "supabase/functions/validar-token-contador/index.ts",
@@ -77264,6 +77341,10 @@
     "count": 2
    },
    {
+    "file": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "count": 1
+   },
+   {
     "file": "supabase/functions/_shared/validation.ts",
     "count": 1
    },
@@ -77280,7 +77361,15 @@
     "count": 1
    },
    {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "count": 4
+   },
+   {
     "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    "count": 4
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
     "count": 4
    },
    {
@@ -80210,6 +80299,11 @@
     "file": "supabase/functions/executar-regua-cobranca/domain.ts",
     "name": "CANAIS_REGUA",
     "values": "'email', 'whatsapp', 'sms', 'telefone'"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/montar.ts",
+    "name": "TributoAliquota",
+    "values": "cbs | ibs_uf | ibs_mun"
    }
   ],
   "error_messages": [
@@ -84018,6 +84112,14 @@
     "msg": "Operation timed out after ${timeoutMs}ms"
    },
    {
+    "file": "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "msg": "dados_abertos_http_${resposta.status}"
+   },
+   {
+    "file": "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "msg": "dados_abertos_nao_json: ${inicio}"
+   },
+   {
     "file": "supabase/functions/_shared/webhook-idempotency.ts",
     "msg": "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY ausentes"
    },
@@ -86346,6 +86448,10 @@
     "text": "* Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o"
    },
    {
+    "file": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "text": "logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar"
+   },
+   {
     "file": "src/lib/tributario/catalogos/coerencia-mva.ts",
     "text": "* Valor esperado pela regra legal / pelo catálogo de NCMs. */"
    },
@@ -87086,6 +87192,10 @@
     "text": "limite por até N-1 (Devin 🔴 / Codex P2 na #438). Juntar as duas no"
    },
    {
+    "file": "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "text": "chama deve parar de insistir — cada tentativa nova renova o bloqueio — e"
+   },
+   {
     "file": "supabase/functions/_shared/sql-write-guard.ts",
     "text": "- permitir leituras `SELECT` e `WITH ... SELECT` somente leitura;"
    },
@@ -87754,6 +87864,14 @@
     "text": "Validação manual"
    },
    {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "text": "erro sobe: falha de rede nao pode virar \"sem aliquota\" em silencio."
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/montar.ts",
+    "text": "depois o resto, cortado em `limite`."
+   },
+   {
     "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "text": "codigo publicado cujo vinculo de CST falhou continua na Receita e nao pode"
    },
@@ -87764,6 +87882,10 @@
    {
     "file": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
     "text": "Uma ocorrencia sem descricao nao pode consumir o codigo: a Receita manda o"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+    "text": "descricao continua na Receita e nao pode ser encerrado por falha nossa."
    },
    {
     "file": "supabase/functions/sync-profile-to-bitrix/index.ts",
@@ -101578,6 +101700,11 @@
     "value": "0.28"
    },
    {
+    "file": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "name": "LOTE_CODIGOS",
+    "value": "300"
+   },
+   {
     "file": "src/lib/tributario/catalogos/coerencia-iss.ts",
     "name": "ISS_PISO_LEGAL",
     "value": "0.02"
@@ -102043,6 +102170,16 @@
     "value": "500"
    },
    {
+    "file": "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "name": "VIGENCIA_BASE_CATALOGO",
+    "value": "'2026-01-01'"
+   },
+   {
+    "file": "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "name": "TIMEOUT_MS",
+    "value": "30"
+   },
+   {
     "file": "supabase/functions/_shared/tributario-logic.ts",
     "name": "LIMITE_SIMPLES",
     "value": "4800000"
@@ -102313,6 +102450,61 @@
     "value": "'bwwbeyolnnzppeuhgkcd'"
    },
    {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "TABELA",
+    "value": "'catalogo_aliquota_referencia'"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "TABELA_ISS",
+    "value": "'aliquotas_iss_municipal'"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "PAUSA_MS",
+    "value": "1200"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "MAX_UFS",
+    "value": "27"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "MAX_MUNICIPIOS",
+    "value": "40"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "MAX_REQUISICOES",
+    "value": "70"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "PAGINA",
+    "value": "1000"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/index.ts",
+    "name": "MAX_PAGINAS",
+    "value": "100"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/montar.ts",
+    "name": "MIN_UFS",
+    "value": "27"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/montar.ts",
+    "name": "CASAS",
+    "value": "4"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/montar.ts",
+    "name": "MAX_FRACAO",
+    "value": "10"
+   },
+   {
     "file": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "name": "TABELA",
     "value": "'catalogo_cclasstrib'"
@@ -102331,6 +102523,41 @@
     "file": "supabase/functions/sync-catalogo-cclasstrib/montar.ts",
     "name": "MAX_PCT_AUSENTES",
     "value": "10"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "name": "TABELA_NCM",
+    "value": "'catalogo_ncm'"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "name": "TABELA_NBS",
+    "value": "'catalogo_nbs'"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "name": "PAGINA",
+    "value": "1000"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "name": "MAX_PAGINAS",
+    "value": "100"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "name": "LOTE_ENCERRAMENTO",
+    "value": "200"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+    "name": "MIN_NCM_API",
+    "value": "1000"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+    "name": "MIN_NBS_API",
+    "value": "200"
    },
    {
     "file": "supabase/functions/upload-anexo/index.ts",
@@ -122204,6 +122431,18 @@
    {
     "file": "supabase/functions/sso-test-login/pipeline.ts",
     "line": "* Isso permite testes 100% determinísticos e offline. O handler HTTP em `index.ts`"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/montar.ts",
+    "line": "* Trocar de unidade aqui e o que evita 0,9% virar 0,9 no documento."
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "line": "// Em lotes: `in(...)` com o teto de 10% de ~10 mil NCMs estoura o tamanho de"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+    "line": "* ~10% disso, o bastante para barrar resposta truncada sem impedir um catalogo"
    }
   ],
   "tests": [
@@ -126370,6 +126609,18 @@
    {
     "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
     "name": "catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "NCM encerrado no meio do ano só alerta a nota emitida depois do encerramento"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "nota de fuso fora de Brasília usa o dia declarado no dhEmi para a vigência"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "nota anterior à vigência do catálogo não gera alerta (sem referência na data)"
    },
    {
     "file": "src/hooks/__tests__/useIndicesContabeis.test.ts",
@@ -132020,6 +132271,22 @@
     "name": "descreve divergências de forma legível"
    },
    {
+    "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+    "name": "buscarReferenciasFiscais — leitura em lotes"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+    "name": "divide 301 NCMs em dois lotes e soma as linhas dos dois"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+    "name": "divide cClassTribs no mesmo tamanho de lote"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+    "name": "uma consulta só quando o lote cabe no limite"
+   },
+   {
     "file": "src/lib/tributario/__tests__/catalogos-painel.test.ts",
     "name": "painel de catálogos fiscais"
    },
@@ -137532,6 +137799,58 @@
     "name": "integração: pipeline + fetch-mock — zero rede mesmo simulando ipapi"
    },
    {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "paraFracao converte pontos percentuais em fracao de 4 casas"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "paraFracao recusa ausencia, valor invalido e o que nao cabe em numeric(5,4)"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "montarUniao grava CBS nacional sem ente"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "montarUniao devolve null quando a aliquota nao foi publicada"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "montarUf normaliza a sigla e recusa ente invalido"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "montarMunicipio exige codigo IBGE de 7 digitos e guarda a sigla da UF"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "extrairUfs traduz codigo IBGE em sigla e ignora entrada invalida"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "extrairUfs cobre as 27 UFs quando a rota responde o pais inteiro"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "ordenarPorPendencia prioriza o que falta e respeita o teto"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "ordenarPorPendencia completa a rodada com o que ja existe quando nada falta"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "ordenarPorPendencia deduplica, descarta vazio e aceita teto invalido"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "erroHttp distingue 404 (nao publicada) de outros status"
+   },
+   {
+    "file": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+    "name": "erroNaoJson identifica o bloqueio por taxa do WAF (200 com HTML)"
+   },
+   {
     "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
     "name": "normalizarData — aceita ISO valida e cai para hoje em Brasilia no resto"
    },
@@ -137586,6 +137905,74 @@
    {
     "file": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
     "name": "compararVersao — V0073 depois de V0072 e antes de V0080"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "montarNcms grava so NCM de 8 digitos e mantem a vigencia base"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "montarNcms usa a descricao da ocorrencia util quando a primeira vem vazia"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "montarNcms aceita a chave "
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "montarNbs aceita codigo de 2 a 9 digitos e descarta o resto"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "montarNcms respeita uma vigencia de inicio explicita"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "decidirEncerramentos bloqueia resposta curta"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "decidirEncerramentos bloqueia desaparecimento acima do teto"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "decidirEncerramentos libera desaparecimento pequeno e catalogo vazio"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "buscarDadosAbertos trata HTML 200 do WAF como erro explicito"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "buscarDadosAbertos propaga o status HTTP e devolve o JSON valido"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "normalizarData aceita AAAA-MM-DD e cai para hoje quando malformada"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "compararVersao compara numericamente e trata ilegivel como anterior"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados abre periodo novo para codigo que voltou a aparecer"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados nao reativa codigo que continua aberto"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados nao reativa na data-base do catalogo"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "diaAnterior devolve o ultimo dia vigente antes do recorte"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "diaAnterior atravessa virada de mes, ano e ano bissexto"
    }
   ],
   "webhook_events": [
@@ -163656,7 +164043,9 @@
    "supabase/functions/sso-logout/index.ts",
    "supabase/functions/sso-test-login/index.ts",
    "supabase/functions/stress_test.ts",
+   "supabase/functions/sync-aliquota-referencia/index.ts",
    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+   "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
    "supabase/functions/sync-profile-to-bitrix/index.ts",
    "supabase/functions/upload-anexo/index.ts",
    "supabase/functions/validar-token-contador/index.ts",
@@ -164127,7 +164516,9 @@
    "whatsapp-webhook",
    "monitor-health",
    "reprocessar-creditos-ibscbs",
-   "sync-catalogo-cclasstrib"
+   "sync-catalogo-cclasstrib",
+   "sync-catalogo-ncm-nbs",
+   "sync-aliquota-referencia"
   ],
   "auth_config": {},
   "grants": [
@@ -176710,6 +177101,13 @@
     "kind": "dinâmico",
     "msg": "1 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
     "where": [
+     "src/lib/tributario/catalogos/cclasstrib.ts"
+    ]
+   },
+   {
+    "kind": "dinâmico",
+    "msg": "1 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
+    "where": [
      "supabase/functions/_shared/validation.ts"
     ]
    },
@@ -176738,7 +177136,21 @@
     "kind": "dinâmico",
     "msg": "4 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
     "where": [
+     "supabase/functions/sync-aliquota-referencia/index.ts"
+    ]
+   },
+   {
+    "kind": "dinâmico",
+    "msg": "4 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
+    "where": [
      "supabase/functions/sync-catalogo-cclasstrib/index.ts"
+    ]
+   },
+   {
+    "kind": "dinâmico",
+    "msg": "4 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
+    "where": [
+     "supabase/functions/sync-catalogo-ncm-nbs/index.ts"
     ]
    },
    {
@@ -206540,7 +206952,7 @@
   },
   "src/hooks/useImportacaoXMLNFe.ts": {
    "path": "src/hooks/useImportacaoXMLNFe.ts",
-   "lines": 639,
+   "lines": 667,
    "exports": [
     "const FUSO_PADRAO_BR",
     "const ANO_INICIO_APROPRIACAO",
@@ -212210,7 +212622,7 @@
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx": {
    "path": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
-   "lines": 322,
+   "lines": 333,
    "is_test": true,
    "env": [
     "TZ"
@@ -212235,7 +212647,7 @@
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx": {
    "path": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
-   "lines": 124,
+   "lines": 135,
    "is_test": true,
    "doc": "Testes — useImportacaoXMLNFe: itens da nota no payload (etapa 45) A etapa 45 fez os itens subirem na mesma chamada de `registrar_nfe_com_creditos` que grava a nota e os créditos. Antes, a nota importada por XML ficava sem itens e não havia como conferir os totais IBS/CBS (rejeição 1091) nem apurar c …",
    "tests": [
@@ -212247,18 +212659,23 @@
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx": {
    "path": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-   "lines": 207,
+   "lines": 374,
    "is_test": true,
    "rule_comments": [
+    "referencia de catalogo e nao pode gerar divergencia por isso.",
     "e, se a consulta voltar vazia, sonda o cat?logo com `.limit(1)`. A fila segue",
-    "Duas consultas: o lote e a sonda. A sonda é `.limit(1)`, não um select"
+    "Duas consultas: o lote e a sonda. A sonda é `.limit(1)`, não um select",
+    "sonda de cobertura `.limit(1)` da data em que o código não estava vigente."
    ],
    "tests": [
     "importarNFes ? valida??o contra cat?logo (etapa 46)",
     "consulta cclasstrib e catalogo_ncm uma vez por lote",
     "anexa REG-011 ? nota e ainda assim a importa",
     "catálogo vazio não gera alerta (carga da RFB ainda não rodou)",
-    "catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)"
+    "catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)",
+    "NCM encerrado no meio do ano só alerta a nota emitida depois do encerramento",
+    "nota de fuso fora de Brasília usa o dia declarado no dhEmi para a vigência",
+    "nota anterior à vigência do catálogo não gera alerta (sem referência na data)"
    ],
    "pagination": [
     "1"
@@ -220503,6 +220920,21 @@
     "descreve divergências de forma legível"
    ]
   },
+  "src/lib/tributario/__tests__/catalogos-lotes.test.ts": {
+   "path": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+   "lines": 116,
+   "is_test": true,
+   "rule_comments": [
+    "os lotes que cada `.in()` recebeu. Também registra `limit` (a sonda de"
+   ],
+   "doc": "Testes — leitura do catálogo em lotes (etapa 46 / review da PR #561). O PostgREST corta a resposta em `db-max-rows` (1000 linhas no padrão) sem avisar. `buscarReferenciasFiscais` consulta só os códigos do lote, mas um lote grande (importação de muitas notas) pode passar desse corte — e o validador t …",
+   "tests": [
+    "buscarReferenciasFiscais — leitura em lotes",
+    "divide 301 NCMs em dois lotes e soma as linhas dos dois",
+    "divide cClassTribs no mesmo tamanho de lote",
+    "uma consulta só quando o lote cabe no limite"
+   ]
+  },
   "src/lib/tributario/__tests__/catalogos-painel.test.ts": {
    "path": "src/lib/tributario/__tests__/catalogos-painel.test.ts",
    "lines": 185,
@@ -222253,7 +222685,7 @@
   },
   "src/lib/tributario/catalogos/cclasstrib.ts": {
    "path": "src/lib/tributario/catalogos/cclasstrib.ts",
-   "lines": 178,
+   "lines": 246,
    "exports": [
     "interface CclasstribCatalogo",
     "interface NcmCatalogo",
@@ -222264,14 +222696,6 @@
    "tables": [
     {
      "table": "catalogo_cclasstrib",
-     "op": "select"
-    },
-    {
-     "table": "catalogo_cclasstrib",
-     "op": "select"
-    },
-    {
-     "table": "catalogo_ncm",
      "op": "select"
     },
     {
@@ -222303,8 +222727,16 @@
      "ncm"
     ]
    },
+   "dyn_from": 1,
+   "params": [
+    {
+     "name": "LOTE_CODIGOS",
+     "value": "300"
+    }
+   ],
    "rule_comments": [
-    "* Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o"
+    "* Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o",
+    "logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar"
    ],
    "doc": "Leitura do cat?logo oficial de cClassTrib (LC 214/2025) e do cat?logo de NCM. As duas tabelas nascem vazias: o conte?do vem das cargas da RFB (etapas 79-81). Por isso toda leitura aqui ? *best effort*: cat?logo vazio significa \"sem refer?ncia para comparar\", nunca \"registro inv?lido\". Quem valida (e …",
    "pagination": [
@@ -232903,6 +233335,40 @@
    "lines": 74,
    "side_effects": [
     "asaas"
+   ]
+  },
+  "supabase/functions/_shared/rfb-dados-abertos.ts": {
+   "path": "supabase/functions/_shared/rfb-dados-abertos.ts",
+   "lines": 152,
+   "exports": [
+    "const BASE_DADOS_ABERTOS",
+    "const VIGENCIA_BASE_CATALOGO",
+    "interface VersaoApi",
+    "function hojeBrasilia",
+    "function normalizarData",
+    "function compararVersao",
+    "function buscarDadosAbertos",
+    "interface DecisaoEncerramento",
+    "function decidirEncerramentos",
+    "function erroHttp",
+    "function erroNaoJson"
+   ],
+   "errors": [
+    "dados_abertos_http_${resposta.status}",
+    "dados_abertos_nao_json: ${inicio}"
+   ],
+   "params": [
+    {
+     "name": "VIGENCIA_BASE_CATALOGO",
+     "value": "'2026-01-01'"
+    },
+    {
+     "name": "TIMEOUT_MS",
+     "value": "30"
+    }
+   ],
+   "rule_comments": [
+    "chama deve parar de insistir — cada tentativa nova renova o bloqueio — e"
    ]
   },
   "supabase/functions/_shared/sentry.ts": {
@@ -243523,6 +243989,120 @@
     "Validação manual"
    ]
   },
+  "supabase/functions/sync-aliquota-referencia/index.ts": {
+   "path": "supabase/functions/sync-aliquota-referencia/index.ts",
+   "lines": 423,
+   "exports": [
+    "const handler"
+   ],
+   "dyn_from": 4,
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "params": [
+    {
+     "name": "TABELA",
+     "value": "'catalogo_aliquota_referencia'"
+    },
+    {
+     "name": "TABELA_ISS",
+     "value": "'aliquotas_iss_municipal'"
+    },
+    {
+     "name": "PAUSA_MS",
+     "value": "1200"
+    },
+    {
+     "name": "MAX_UFS",
+     "value": "27"
+    },
+    {
+     "name": "MAX_MUNICIPIOS",
+     "value": "40"
+    },
+    {
+     "name": "MAX_REQUISICOES",
+     "value": "70"
+    },
+    {
+     "name": "PAGINA",
+     "value": "1000"
+    },
+    {
+     "name": "MAX_PAGINAS",
+     "value": "100"
+    }
+   ],
+   "rule_comments": [
+    "erro sobe: falha de rede nao pode virar \"sem aliquota\" em silencio."
+   ],
+   "doc": "Edge: sync-aliquota-referencia (etapa 81 do plano RT/RFB) Mantem `catalogo_aliquota_referencia` alinhado com a API publica de dados abertos da RFB: uma linha por ano e ente (CBS nacional, IBS por UF, IBS por municipio). E a serie que diz quanto e a aliquota de referencia em cada ano da transicao — s …",
+   "uses_service_role": true
+  },
+  "supabase/functions/sync-aliquota-referencia/montar.ts": {
+   "path": "supabase/functions/sync-aliquota-referencia/montar.ts",
+   "lines": 157,
+   "exports": [
+    "interface AliquotaApi",
+    "type TributoAliquota",
+    "interface LinhaAliquota",
+    "const MIN_UFS",
+    "function paraFracao",
+    "function montarUniao",
+    "function montarUf",
+    "function montarMunicipio",
+    "function extrairUfs",
+    "function ordenarPorPendencia"
+   ],
+   "enums": [
+    {
+     "name": "TributoAliquota",
+     "values": "cbs | ibs_uf | ibs_mun"
+    }
+   ],
+   "params": [
+    {
+     "name": "MIN_UFS",
+     "value": "27"
+    },
+    {
+     "name": "CASAS",
+     "value": "4"
+    },
+    {
+     "name": "MAX_FRACAO",
+     "value": "10"
+    }
+   ],
+   "rule_comments": [
+    "depois o resto, cortado em `limite`."
+   ],
+   "doc": "Mapeamento das aliquotas de referencia da API de dados abertos da RFB para `catalogo_aliquota_referencia` (etapa 81 do plano RT/RFB). Modulo puro: sem I/O, sem banco. O que ele garante e a unidade do numero — a API publica **pontos percentuais** (CBS 0.9 = 0,9%) e a tabela guarda fracao (`numeric(5, …",
+   "percents": [
+    "* Trocar de unidade aqui e o que evita 0,9% virar 0,9 no documento."
+   ]
+  },
+  "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts": {
+   "path": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+   "lines": 174,
+   "is_test": true,
+   "tests": [
+    "paraFracao converte pontos percentuais em fracao de 4 casas",
+    "paraFracao recusa ausencia, valor invalido e o que nao cabe em numeric(5,4)",
+    "montarUniao grava CBS nacional sem ente",
+    "montarUniao devolve null quando a aliquota nao foi publicada",
+    "montarUf normaliza a sigla e recusa ente invalido",
+    "montarMunicipio exige codigo IBGE de 7 digitos e guarda a sigla da UF",
+    "extrairUfs traduz codigo IBGE em sigla e ignora entrada invalida",
+    "extrairUfs cobre as 27 UFs quando a rota responde o pais inteiro",
+    "ordenarPorPendencia prioriza o que falta e respeita o teto",
+    "ordenarPorPendencia completa a rodada com o que ja existe quando nada falta",
+    "ordenarPorPendencia deduplica, descarta vazio e aceita teto invalido",
+    "erroHttp distingue 404 (nao publicada) de outros status",
+    "erroNaoJson identifica o bloqueio por taxa do WAF (200 com HTML)"
+   ]
+  },
   "supabase/functions/sync-catalogo-cclasstrib/index.ts": {
    "path": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
    "lines": 259,
@@ -243623,6 +244203,107 @@
     "decidirEncerramentos — encerra o que sumiu dentro do limite",
     "decidirEncerramentos — nao encerra nada com resposta curta ou sumico grande",
     "compararVersao — V0073 depois de V0072 e antes de V0080"
+   ]
+  },
+  "supabase/functions/sync-catalogo-ncm-nbs/index.ts": {
+   "path": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+   "lines": 285,
+   "exports": [
+    "const handler"
+   ],
+   "dyn_from": 4,
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "params": [
+    {
+     "name": "TABELA_NCM",
+     "value": "'catalogo_ncm'"
+    },
+    {
+     "name": "TABELA_NBS",
+     "value": "'catalogo_nbs'"
+    },
+    {
+     "name": "PAGINA",
+     "value": "1000"
+    },
+    {
+     "name": "MAX_PAGINAS",
+     "value": "100"
+    },
+    {
+     "name": "LOTE_ENCERRAMENTO",
+     "value": "200"
+    }
+   ],
+   "doc": "Edge: sync-catalogo-ncm-nbs (etapa 80 do plano RT/RFB) Mantem os espelhos locais de NCM (`catalogo_ncm`) e NBS (`catalogo_nbs`) alinhados com a API publica de dados abertos da RFB. Sem eles, o validador da etapa 46 (`src/lib/tributario/validador-ncm-cst.ts`) nao tem contra o que comparar o NCM do it …",
+   "percents": [
+    "// Em lotes: `in(...)` com o teto de 10% de ~10 mil NCMs estoura o tamanho de"
+   ],
+   "uses_service_role": true
+  },
+  "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": {
+   "path": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+   "lines": 209,
+   "exports": [
+    "const MIN_NCM_API",
+    "const MIN_NBS_API",
+    "interface ItemListaApi",
+    "interface LinhaNcm",
+    "interface LinhaNbs",
+    "interface Mapeamento",
+    "interface ConjuntosVigencia",
+    "interface LinhasPorVigencia",
+    "function separarReativados",
+    "function montarNcms",
+    "function diaAnterior",
+    "function montarNbs"
+   ],
+   "params": [
+    {
+     "name": "MIN_NCM_API",
+     "value": "1000"
+    },
+    {
+     "name": "MIN_NBS_API",
+     "value": "200"
+    }
+   ],
+   "rule_comments": [
+    "descricao continua na Receita e nao pode ser encerrado por falha nossa."
+   ],
+   "percents": [
+    "* ~10% disso, o bastante para barrar resposta truncada sem impedir um catalogo"
+   ]
+  },
+  "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts": {
+   "path": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+   "lines": 226,
+   "is_test": true,
+   "rule_comments": [
+    "(logo nao pode ser encerrado) e nao vira linha."
+   ],
+   "doc": "Etapa 80 — mapeamento das listas NCM/NBS para `catalogo_ncm` / `catalogo_nbs` e guardas do cliente da API de dados abertos. O caro de errar aqui nao e o transporte, e o conteudo: um codigo gravado com descricao suposta aparece para o usuario, e um encerramento de vigencia indevido faz o validador ac …",
+   "tests": [
+    "montarNcms grava so NCM de 8 digitos e mantem a vigencia base",
+    "montarNcms usa a descricao da ocorrencia util quando a primeira vem vazia",
+    "montarNcms aceita a chave ",
+    "montarNbs aceita codigo de 2 a 9 digitos e descarta o resto",
+    "montarNcms respeita uma vigencia de inicio explicita",
+    "decidirEncerramentos bloqueia resposta curta",
+    "decidirEncerramentos bloqueia desaparecimento acima do teto",
+    "decidirEncerramentos libera desaparecimento pequeno e catalogo vazio",
+    "buscarDadosAbertos trata HTML 200 do WAF como erro explicito",
+    "buscarDadosAbertos propaga o status HTTP e devolve o JSON valido",
+    "normalizarData aceita AAAA-MM-DD e cai para hoje quando malformada",
+    "compararVersao compara numericamente e trata ilegivel como anterior",
+    "separarReativados abre periodo novo para codigo que voltou a aparecer",
+    "separarReativados nao reativa codigo que continua aberto",
+    "separarReativados nao reativa na data-base do catalogo",
+    "diaAnterior devolve o ultimo dia vigente antes do recorte",
+    "diaAnterior atravessa virada de mes, ano e ano bissexto"
    ]
   },
   "supabase/functions/sync-profile-to-bitrix/index.ts": {
@@ -249630,6 +250311,18 @@
    "path": "supabase/migrations/20261124220000_indice_fk_kpis_operacionais.sql",
    "lines": 64
   },
+  "supabase/migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql": {
+   "path": "supabase/migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql",
+   "lines": 59
+  },
+  "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql": {
+   "path": "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql",
+   "lines": 93
+  },
+  "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql": {
+   "path": "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql",
+   "lines": 45
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -249749,10 +250442,40 @@
   }
  },
  "git": {
-  "sha": "b449a652bf22e9722162735c9b34ad780163c9d8",
+  "sha": "26cb299cea973a1281443d882f8afaddbd13d6ae",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "26cb299",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)",
+    "files": [
+     "deno.lock",
+     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+     "scripts/ci/deno-check-functions.sh",
+     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+     "src/hooks/useImportacaoXMLNFe.ts",
+     "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+     "src/lib/tributario/catalogos/cclasstrib.ts",
+     "supabase/config.toml",
+     "supabase/functions/_shared/rfb-dados-abertos.ts",
+     "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+     "supabase/functions/sync-aliquota-referencia/index.ts",
+     "supabase/functions/sync-aliquota-referencia/montar.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+     "supabase/migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql",
+     "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql",
+     "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql"
+    ]
+   },
    {
     "sha": "b449a65",
     "date": "2026-11-25",
@@ -250166,15 +250889,6 @@
     "files": [
      "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
     ]
-   },
-   {
-    "sha": "5faafbe",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "chore: adiciona PLANO_100_ETAPAS_RT_RFB.md ao repositório",
-    "files": [
-     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
-    ]
    }
   ],
   "hot_files": [
@@ -250188,11 +250902,43 @@
    ],
    [
     "src/lib/tributario/catalogos/cclasstrib.ts",
+    4
+   ],
+   [
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    3
+   ],
+   [
+    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
+    3
+   ],
+   [
+    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    3
+   ],
+   [
+    "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    3
+   ],
+   [
+    "src/hooks/useImportacaoXMLNFe.ts",
+    3
+   ],
+   [
+    "supabase/config.toml",
     3
    ],
    [
     "src/integrations/supabase/types.ts",
     3
+   ],
+   [
+    "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+    2
+   ],
+   [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    2
    ],
    [
     "scripts/integrity/baseline/expected-policies.json",
@@ -250219,43 +250965,11 @@
     2
    ],
    [
-    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
-    2
-   ],
-   [
     "src/lib/__tests__/edge-functions.security.test.ts",
     2
    ],
    [
-    "supabase/config.toml",
-    2
-   ],
-   [
-    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
-    2
-   ],
-   [
-    "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-    2
-   ],
-   [
-    "src/hooks/useImportacaoXMLNFe.ts",
-    2
-   ],
-   [
     "docs/ci/README.md",
-    2
-   ],
-   [
-    "docs/ci/kpi.json",
-    2
-   ],
-   [
-    "docs/qa/04-PLANO.md",
-    2
-   ],
-   [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     2
    ]
   ]

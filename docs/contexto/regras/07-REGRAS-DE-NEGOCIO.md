@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b449a652bf` · branch `main` · 2026-11-25 19:18 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `26cb299cea` · branch `main` · 2026-11-25 23:45 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1794,6 +1794,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | SchemaTipo | procNFe \| resNFe \| procEventoNFe \| resEvento | `supabase/functions/_shared/sefaz/parser.ts` |
 | SefazResponseKind | batch \| empty \| rate_limit \| service_down \| timeout \| network_error \| gzip_corrupt \| xml_corrupt \| malformed_envelope \| nsu_gap \| duplicate | `supabase/functions/_shared/sefaz/__mocks__/soap-mock.ts` |
 | CANAIS_REGUA | 'email', 'whatsapp', 'sms', 'telefone' | `supabase/functions/executar-regua-cobranca/domain.ts` |
+| TributoAliquota | cbs \| ibs_uf \| ibs_mun | `supabase/functions/sync-aliquota-referencia/montar.ts` |
 
 ## F. Validações de entrada
 
@@ -4130,7 +4131,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// 1ª quota sem juros; demais com SELIC acumulada + 1% no mês do pagamento.` | `src/lib/tributario/darf/consolidar.ts` |
 | `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
 | `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
-| … +201 linhas — lista completa em `context.json` | |
+| … +204 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -4259,6 +4260,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `LIMITE_ANUAL` | `4` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `SUBLIMITE_PADRAO` | `3` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `FATOR_R_CORTE` | `0.28` | `src/lib/tributario/calculadora/simples-nacional.ts` |
+| `LOTE_CODIGOS` | `300` | `src/lib/tributario/catalogos/cclasstrib.ts` |
 | `ISS_PISO_LEGAL` | `0.02` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
 | `ISS_TETO_LEGAL` | `0.05` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
 | `EPSILON` | `1` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
@@ -4352,6 +4354,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `VALIDATION_ERROR_CODE` | `'VALIDATION_ERROR'` | `supabase/functions/_shared/contract-response.ts` |
 | `CORRELATION_HEADER` | `'x-request-id'` | `supabase/functions/_shared/correlation.ts` |
 | `MAX_BUFFER` | `500` | `supabase/functions/_shared/observability.ts` |
+| `VIGENCIA_BASE_CATALOGO` | `'2026-01-01'` | `supabase/functions/_shared/rfb-dados-abertos.ts` |
+| `TIMEOUT_MS` | `30` | `supabase/functions/_shared/rfb-dados-abertos.ts` |
 | `LIMITE_SIMPLES` | `4800000` | `supabase/functions/_shared/tributario-logic.ts` |
 | `LIMITE_PRESUMIDO` | `78000000` | `supabase/functions/_shared/tributario-logic.ts` |
 | `TERCEIROS_PADRAO` | `0.058` | `supabase/functions/_shared/tributario-logic.ts` |
@@ -4406,10 +4410,28 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MAX_BATCHES_PER_CNPJ` | `10` | `supabase/functions/sefaz-dfe-puxar/index.ts` |
 | `SSO_FINALIZE_JANELA_MS` | `10` | `supabase/functions/sso-callback/index.ts` |
 | `PROJECT_REF` | `'bwwbeyolnnzppeuhgkcd'` | `supabase/functions/sso-generate-metadata/index.ts` |
+| `TABELA` | `'catalogo_aliquota_referencia'` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `TABELA_ISS` | `'aliquotas_iss_municipal'` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `PAUSA_MS` | `1200` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `MAX_UFS` | `27` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `MAX_MUNICIPIOS` | `40` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `MAX_REQUISICOES` | `70` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `PAGINA` | `1000` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `MAX_PAGINAS` | `100` | `supabase/functions/sync-aliquota-referencia/index.ts` |
+| `MIN_UFS` | `27` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
+| `CASAS` | `4` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
+| `MAX_FRACAO` | `10` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
 | `TABELA` | `'catalogo_cclasstrib'` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
 | `TIMEOUT_MS` | `30` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
 | `VIGENCIA_BASE_CATALOGO` | `'2026-01-01'` | `supabase/functions/sync-catalogo-cclasstrib/montar.ts` |
 | `MAX_PCT_AUSENTES` | `10` | `supabase/functions/sync-catalogo-cclasstrib/montar.ts` |
+| `TABELA_NCM` | `'catalogo_ncm'` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
+| `TABELA_NBS` | `'catalogo_nbs'` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
+| `PAGINA` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
+| `MAX_PAGINAS` | `100` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
+| `LOTE_ENCERRAMENTO` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
+| `MIN_NCM_API` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
+| `MIN_NBS_API` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
 | `BUCKET` | `'financeiro'` | `supabase/functions/upload-anexo/index.ts` |
 | `TAMANHO_MAX` | `10` | `supabase/functions/upload-anexo/index.ts` |
 | `EMPRESA_AUTORIZADA` | `'11111111-1111-4111-8111-111111111111'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
@@ -4417,7 +4439,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `CLIENTE_AUTORIZADO` | `'33333333-3333-4333-8333-333333333333'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
 | `CLIENTE_ALHEIO` | `'44444444-4444-4444-8444-444444444444'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
 | `CONTA_AUTORIZADA` | `'55555555-5555-4555-8555-555555555555'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
-| `CONTA_ALHEIA` | `'66666666-6666-4666-8666-666666666666'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
+| … +1 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -5118,7 +5140,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +807 linhas — lista completa em `context.json` | |
+| … +809 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5177,7 +5199,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3845 testes em 343 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3882 testes em 346 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5243,6 +5265,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts` | 17 | LinhaCronograma — shape e campos obrigatórios (etapa 13) · todos os 10 campos obrigatórios presentes em cada linha · cobertura: há linhas para cada ano de 2026 a 2033 · 2026 — ibsMun=0 (ano-teste, art. 343 LC 214/2025) … |
 | `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 17 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
+| `supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts` | 17 | montarNcms grava so NCM de 8 digitos e mantem a vigencia base · montarNcms usa a descricao da ocorrencia util quando a primeira vem vazia · montarNcms aceita a chave  · montarNbs aceita codigo de 2 a 9 digitos e descarta o resto … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
@@ -5282,6 +5305,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/conciliacao-extrato.test.ts` | 13 | conciliacao-extrato (etapa 89) · parseCsv · parseia CSV com virgula · parseia CSV com ponto-e-virgula … |
 | `src/lib/tributario/__tests__/digest-conformidade.test.ts` | 13 | digest de conformidade — utilitários · escapa os cinco caracteres perigosos · normaliza severidades desconhecidas para baixa · formata competência e tolera formatos inesperados … |
 | `src/lib/tributario/__tests__/snapshot-normalizacao.test.ts` | 13 | normalizarParametrosSnapshot — contrato · rejeita payloads que não são objeto · rejeita snapshot sem faturamento anual finito · coage faturamento anual persistido como string numérica … |
+| `supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts` | 13 | paraFracao converte pontos percentuais em fracao de 4 casas · paraFracao recusa ausencia, valor invalido e o que nao cabe em numeric(5,4) · montarUniao grava CBS nacional sem ente · montarUniao devolve null quando a aliquota nao foi publicada … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
 | `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 12 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
 | `src/components/navigation/__tests__/BackButton.test.tsx` | 12 | BackButton · renders on non-home pages · does NOT render on home page · does NOT render on /dashboard … |
@@ -5349,6 +5373,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx` | 8 | painel da SEFAZ não exibe métrica fabricada (F11) · status desconhecido: banner diz  · status desconhecido:  · sem medição, os cards não mostram latência nem uptime numéricos … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
+| `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 8 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
 | `src/hooks/__tests__/useKeyboardShortcuts.test.ts` | 8 | useKeyboardShortcuts · registra o listener de keydown UMA única vez mesmo com re-renders · remove o listener de keydown no unmount · Alt+D navega para o dashboard … |
 | `src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts` | 8 | aprovarPagamento · aprova as duas tabelas numa transação só, sem escrita do cliente · usa o fornecedor lido dentro da transação, não o retrato anterior · não confirma ao usuário quando a função recusa a gravação … |
@@ -5429,7 +5454,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useDashboardConfig.test.tsx` | 5 | useDashboardConfig · ocultar/exibir e redimensionar persistem e sobrevivem ao recarregar · valores inválidos salvos voltam ao padrão · DashboardConfigDialog … |
 | `src/hooks/__tests__/useFluxoCaixa.escopo.test.tsx` | 5 | useFluxoCaixaKPIs · filtra as três consultas pela empresa selecionada · a previsão de 30 dias ignora vencimento fora da janela · título vencido fora da janela não entra na previsão de 30 dias … |
 | `src/hooks/__tests__/useGlobalFilterSync.test.ts` | 5 | useGlobalFilterSync · deve registrar o listener de evento ao montar · deve disparar toast quando o evento current-empresa-changed ocorre · não deve disparar se o detalhe do evento estiver vazio … |
-| `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 5 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) … |
 | `src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx` | 5 | useSugestoesContaPagar — formato do payload · devolve a lista quando o proxy responde o formato esperado · devolve lista vazia — não um objeto — quando o proxy responde fora do formato · trata null como ausência de candidatas, sem alarde … |
 | `src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx` | 5 | persistirOportunidades — substituição sem transação · insere a nova leva antes de apagar a anterior, e apaga só os ids lidos · o delete revalida o status: oportunidade aprovada no meio do caminho nao e apagada · insert que falha não apaga o histórico anterior e propaga o erro … |
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |
@@ -5458,6 +5482,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sso-error-messages.test.ts` | 4 | SSO_ERROR_MESSAGES · possui título, descrição e hint para todos os códigos · inferSsoErrorCode · inferindo  |
 | `src/lib/arquitetura/__tests__/snapshot-grafo.test.ts` | 4 | snapshot do grafo de arquitetura · lista de arestas está sincronizada com o código · contagem de imports analisados está sincronizada · resumo de drift está sincronizado e zerado |
 | `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
+| `src/lib/tributario/__tests__/catalogos-lotes.test.ts` | 4 | buscarReferenciasFiscais — leitura em lotes · divide 301 NCMs em dois lotes e soma as linhas dos dois · divide cClassTribs no mesmo tamanho de lote · uma consulta só quando o lote cabe no limite |
 | `src/lib/tributario/__tests__/catalogos-vigencia.test.ts` | 4 | normalizarReferencia · mantém datas ISO válidas · aceita Date e converte para ISO · degrada para hoje em entradas ausentes ou inválidas |
 | `src/lib/tributario/__tests__/drift-guard-motor.test.ts` | 4 | Drift guard: motor tributário front x Edge Function · a função %s é logicamente idêntica nas duas cópias · mantém as constantes fiscais e a tabela de anexos idênticas · mantém as assinaturas de tipo públicas alinhadas |
 | `src/lib/tributario/__tests__/drift-guard-obrigacoes.test.ts` | 4 | Drift guard: obrigações acessórias (web × Edge Function) · o módulo  · expõe exatamente a mesma superfície pública por módulo · mantém as funções de dias úteis do espelho idênticas às do módulo DARF |
@@ -5478,10 +5503,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx` | 3 | WhatsAppHistoryIA — envio sem provedor · por padrao nao oferece campo de envio, e explica por que · com permitirEnvio o campo volta (para quando houver provedor) |
 | `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
 | `src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx` | 3 | monitor da SEFAZ não verifica em laço (regressão #423) · com status CONHECIDO verifica uma vez e respeita o intervalo · com status desconhecido não verifica nada e o rodapé não promete monitoramento |
-| `src/components/onboarding/__tests__/OnboardingTour.zIndex.test.tsx` | 3 | OnboardingTour — prioridade visual (zIndex) · passa options.zIndex=10000 para o Joyride (sobreposição do tour) · mantém styles.tooltip.zIndex=10000 (tooltip do tour) |
-| `src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx` | 3 | GestorCreditosTributarios - coluna Disponível (etapa 48/88) · crédito informativo não exibe saldo disponível na linha · crédito apropriável exibe o saldo na linha |
-| `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
-| … +43 linhas — lista completa em `context.json` | | |
+| … +46 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6074,4 +6096,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Regra de camadas: um módulo nunca pode depender de uma camada mais alta | `src/lib/arquitetura/modulos.ts` |
 | (número menor). Ex.: domínio (3) não pode depender de apresentação (1). | `src/lib/arquitetura/modulos.ts` |
 | * Calcula apenas métricas sustentadas pelos pedidos persistidos. Lead time e | `src/lib/compras/pedidos.ts` |
-| … +460 linhas — lista completa em `context.json` | |
+| … +465 linhas — lista completa em `context.json` | |

@@ -5402,7 +5402,7 @@
     "listarCclasstribVigentes"
    ],
    "export_default": null,
-   "linhas": 177,
+   "linhas": 245,
    "tabelas": [
     "catalogo_cclasstrib",
     "catalogo_ncm"
@@ -5419,7 +5419,7 @@
     "hooks",
     "lib/tributario"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {

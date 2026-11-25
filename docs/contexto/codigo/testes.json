@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 511,
+ "total": 514,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 433
+  "unit": 436
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 307
+   "arquivos": 310
   },
   {
    "padrao": "outro",
@@ -1720,7 +1720,7 @@
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
    "tipo": "unit",
-   "linhas": 321,
+   "linhas": 332,
    "testa": [
     "src/hooks/useImportacaoXMLNFe.ts"
    ],
@@ -1729,7 +1729,7 @@
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
    "tipo": "unit",
-   "linhas": 123,
+   "linhas": 134,
    "testa": [
     "src/hooks/useImportacaoXMLNFe.ts"
    ],
@@ -1738,11 +1738,11 @@
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
    "tipo": "unit",
-   "linhas": 206,
+   "linhas": 373,
    "testa": [
     "src/hooks/useImportacaoXMLNFe.ts"
    ],
-   "casos": 4
+   "casos": 7
   },
   {
    "arquivo": "src/hooks/__tests__/useIndicesContabeis.test.ts",
@@ -2840,6 +2840,15 @@
     "src/lib/tributario/types.ts"
    ],
    "casos": 8
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+   "tipo": "unit",
+   "linhas": 115,
+   "testa": [
+    "src/lib/tributario/catalogos/cclasstrib.ts"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/lib/tributario/__tests__/catalogos-painel.test.ts",
@@ -4490,6 +4499,16 @@
    "casos": 0
   },
   {
+   "arquivo": "supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts",
+   "tipo": "unit",
+   "linhas": 173,
+   "testa": [
+    "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "supabase/functions/sync-aliquota-referencia/montar.ts"
+   ],
+   "casos": 13
+  },
+  {
    "arquivo": "supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts",
    "tipo": "unit",
    "linhas": 350,
@@ -4497,6 +4516,16 @@
     "supabase/functions/sync-catalogo-cclasstrib/montar.ts"
    ],
    "casos": 14
+  },
+  {
+   "arquivo": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+   "tipo": "unit",
+   "linhas": 225,
+   "testa": [
+    "supabase/functions/_shared/rfb-dados-abertos.ts",
+    "supabase/functions/sync-catalogo-ncm-nbs/montar.ts"
+   ],
+   "casos": 17
   },
   {
    "arquivo": "supabase/functions/webhook-simulator/contract_test.ts",
@@ -4807,7 +4836,7 @@
   "src/lib/tributario/calculadora/simples-nacional.ts": 1,
   "src/lib/tributario/calculadora/types.ts": 3,
   "src/lib/tributario/catalogos/alertas.ts": 3,
-  "src/lib/tributario/catalogos/cclasstrib.ts": 1,
+  "src/lib/tributario/catalogos/cclasstrib.ts": 2,
   "src/lib/tributario/catalogos/coerencia-iss.ts": 1,
   "src/lib/tributario/catalogos/coerencia-mva.ts": 1,
   "src/lib/tributario/catalogos/coerencia-ncm.ts": 2,
@@ -4904,6 +4933,7 @@
   "supabase/functions/_shared/obrigacoes/conformidade.ts": 1,
   "supabase/functions/_shared/rate-limit.ts": 1,
   "supabase/functions/_shared/resilience.ts": 1,
+  "supabase/functions/_shared/rfb-dados-abertos.ts": 2,
   "supabase/functions/_shared/sefaz/gunzip.ts": 3,
   "supabase/functions/_shared/sefaz/manifestacao.ts": 2,
   "supabase/functions/_shared/sefaz/parser.ts": 1,
@@ -4960,7 +4990,9 @@
   "supabase/functions/sso-callback/profile-sync-delta.ts": 1,
   "supabase/functions/sso-test-login/mocks.ts": 1,
   "supabase/functions/sso-test-login/pipeline.ts": 1,
+  "supabase/functions/sync-aliquota-referencia/montar.ts": 1,
   "supabase/functions/sync-catalogo-cclasstrib/montar.ts": 1,
+  "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": 1,
   "supabase/functions/whatsapp-ia-proativo/index.ts": 1,
   "supabase/functions/whatsapp-webhook/index.ts": 1
  },

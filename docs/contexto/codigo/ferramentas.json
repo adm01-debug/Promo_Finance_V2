@@ -3,8 +3,8 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2409)",
-   "SQL (1152)",
+   "TypeScript (2417)",
+   "SQL (1155)",
    "Markdown (231)",
    "JavaScript (77)",
    "Python (46)",
@@ -1642,6 +1642,10 @@
     "arquivos": 2
    },
    {
+    "host": "piloto-cbs.tributos.gov.br",
+    "arquivos": 2
+   },
+   {
     "host": "worker.example.dev",
     "arquivos": 2
    },
@@ -1874,10 +1878,6 @@
     "arquivos": 1
    },
    {
-    "host": "piloto-cbs.tributos.gov.br",
-    "arquivos": 1
-   },
-   {
     "host": "precedencia.invalido",
     "arquivos": 1
    },
@@ -2053,7 +2053,9 @@
    "sso-callback",
    "sso-initiate",
    "sso-logout",
+   "sync-aliquota-referencia",
    "sync-catalogo-cclasstrib",
+   "sync-catalogo-ncm-nbs",
    "validar-token-contador",
    "validate-ip-geo",
    "webhook-replay",
