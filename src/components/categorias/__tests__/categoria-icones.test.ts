@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { Tag } from 'lucide-react';
 import { CATEGORY_ICONS } from '@/hooks/useCategorias';
@@ -10,14 +12,18 @@ const pascal = (iconName: string) =>
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .join('');
 
-// Ícones gravados por create_default_categories_for_user (003_seed_data.sql).
-const ICONES_DA_CARGA_INICIAL = [
-  'clipboard',
-  'cloud',
-  'more-horizontal',
-  'trending-up',
-  'refresh-cw',
-];
+/**
+ * Lê os ícones realmente gravados por `create_default_categories_for_user` em
+ * 003_seed_data.sql, em vez de manter uma lista fixa: se o SQL passar a gravar
+ * um ícone novo, este teste falha até o mapa ser atualizado.
+ */
+function iconesDaCargaInicial(): string[] {
+  const sql = readFileSync(join(process.cwd(), 'supabase/migrations/003_seed_data.sql'), 'utf8');
+  const linhaCategoria = /\(\s*'[^']*',\s*'[^']*',\s*'#[0-9a-fA-F]{3,8}',\s*'([a-z0-9-]+)'/g;
+  const nomes = new Set<string>();
+  for (const achado of sql.matchAll(linhaCategoria)) nomes.add(achado[1]);
+  return [...nomes];
+}
 
 describe('iconeCategoria', () => {
   it('resolve todos os ícones oferecidos pelo seletor', () => {
@@ -30,8 +36,13 @@ describe('iconeCategoria', () => {
   });
 
   it('resolve os ícones gravados pela carga inicial de categorias', () => {
-    for (const iconName of ICONES_DA_CARGA_INICIAL) {
-      expect(iconeCategoria(pascal(iconName)), `ícone ausente no mapa: ${iconName}`).not.toBe(Tag);
+    const icones = iconesDaCargaInicial();
+    expect(icones.length, 'nenhum ícone encontrado em 003_seed_data.sql').toBeGreaterThan(0);
+    for (const iconName of icones) {
+      expect(
+        CATEGORIA_ICONES[pascal(iconName)],
+        `ícone ausente no mapa: ${iconName}`
+      ).toBeDefined();
     }
   });
 
