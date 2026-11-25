@@ -25,8 +25,13 @@ BEGIN;
 -- corrige o gap e o check obrigatorio trava o merge.
 -- Nao basta olhar o ledger: o caminho `db_query` direto via MCP (AGENTS.md 4)
 -- aplica o DDL sem registrar a versao, e ai o gate ficaria pulado para sempre
--- (verde falso). Por isso qualquer evidencia de que a migration ja rodou — um dos
--- objetos que so ela cria — tambem arma a exigencia, mesmo com ledger vazio.
+-- (verde falso). Por isso qualquer evidencia de que a migration ja rodou tambem
+-- arma a exigencia, mesmo com ledger vazio.
+-- A evidencia e so o que a migration 20261124095000 cria e nada antes dela:
+-- a policy "Admin/financeiro can update creditos auditoria" e o GRANT de UPDATE
+-- por coluna. A funcao e o gatilho existem desde 20260508142905 e por isso NAO
+-- servem de sinal — um banco que ainda os tenha (antes do endurecimento) seria
+-- cobrado a exigir a policy antes do restauro.
 -- Sem ledger legivel e sem evidencia, mantem a exigencia (fail-safe): nao ha como
 -- provar que a correcao foi aplicada.
 CREATE OR REPLACE FUNCTION pg_temp.estado_final_exigido(versao text) RETURNS boolean
@@ -36,24 +41,14 @@ BEGIN
     SELECT 1 FROM supabase_migrations.schema_migrations WHERE version = versao
   )
   OR EXISTS (
-    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-     WHERE n.nspname = 'public' AND p.proname = 'registrar_decisao_elisao'
-  )
-  OR EXISTS (
-    SELECT 1 FROM pg_trigger tg
-      JOIN pg_class c ON c.oid = tg.tgrelid
-      JOIN pg_namespace n ON n.oid = c.relnamespace
-     WHERE n.nspname = 'public'
-       AND c.relname = 'elisao_creditos_auditoria'
-       AND tg.tgname = 'tr_registrar_decisao_elisao'
-       AND NOT tg.tgisinternal
-  )
-  OR EXISTS (
     SELECT 1 FROM pg_policies p
      WHERE p.schemaname = 'public'
        AND p.tablename = 'elisao_creditos_auditoria'
        AND p.policyname = 'Admin/financeiro can update creditos auditoria'
-  );
+  )
+  OR has_column_privilege('authenticated',
+                          'public.elisao_creditos_auditoria',
+                          'status_aprovacao', 'UPDATE');
 EXCEPTION
   WHEN undefined_table OR undefined_column OR invalid_schema_name OR insufficient_privilege THEN
     RETURN true;
