@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-alertas-tributarios |
 | status | ACTIVE |
-| versão | 162 |
+| versão | 163 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/gerar-alertas-tributarios/index.ts |
 | import_map |  |
