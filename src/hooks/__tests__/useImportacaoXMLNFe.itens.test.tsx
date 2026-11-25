@@ -54,7 +54,7 @@ beforeEach(() => {
   mockRpc.mockResolvedValue({ data: { id: 'nf-1' }, error: null });
   mockFrom.mockImplementation(() => {
     const chain: Record<string, unknown> = {};
-    for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'in', 'single']) {
+    for (const m of ['select', 'insert', 'update', 'delete', 'eq', 'in', 'single', 'limit']) {
       chain[m] = vi.fn(() => chain);
     }
     chain.then = (r: (v: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(r);
