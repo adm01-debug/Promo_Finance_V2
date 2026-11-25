@@ -96,7 +96,7 @@ describe('buscarReferenciasFiscais — leitura em lotes', () => {
 
   it('divide cClassTribs no mesmo tamanho de lote', async () => {
     const { lotesTrib } = montaCliente();
-    const tributos = codigos(301, '2000', 2); // 6 dígitos: 200000..200300
+    const tributos = codigos(301, '200', 3); // 6 dígitos: 200000..200300
 
     const referencias = await buscarReferenciasFiscais(tributos, [], '2026-06-01');
 

@@ -22,7 +22,6 @@ import {
   buscarDadosAbertos,
   decidirEncerramentos,
   normalizarData,
-  VIGENCIA_BASE_CATALOGO,
   type VersaoApi,
 } from '../_shared/rfb-dados-abertos.ts';
 import {
