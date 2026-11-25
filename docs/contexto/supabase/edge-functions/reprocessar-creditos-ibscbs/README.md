@@ -4,7 +4,7 @@
 |---|---|
 | nome | reprocessar-creditos-ibscbs |
 | status | ACTIVE |
-| versão | 2 |
+| versão | 3 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/reprocessar-creditos-ibscbs/index.ts |
 | import_map |  |

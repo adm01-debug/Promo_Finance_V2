@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-acoes-recomendadas |
 | status | ACTIVE |
-| versão | 157 |
+| versão | 158 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/gerar-acoes-recomendadas/index.ts |
 | import_map |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | sync-catalogo-cclasstrib |
 | status | ACTIVE |
-| versão | 2 |
+| versão | 3 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/sync-catalogo-cclasstrib/index.ts |
 | import_map |  |
