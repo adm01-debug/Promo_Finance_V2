@@ -189,40 +189,86 @@ jobs:
           wc -l /tmp/prod-schema-antes.sql
 
       - name: Aplicar migrations em PROD
+        id: apply
         if: '!inputs.dry_run'
         run: |
           set -o pipefail
           supabase db push --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/db-push.log
 
       - name: Verificação pós-apply (drift)
-        if: '!inputs.dry_run'
+        # Roda também quando o apply falha (é aí que o estado real de PROD mais
+        # importa) e nunca deixa as 3 verificações seguintes caírem em
+        # "skipped". Antes, um erro neste passo saía com exit 1 e buckets,
+        # supabase_realtime e security_invoker eram pulados em silêncio.
+        if: ${{ !cancelled() && !inputs.dry_run && steps.apply.outcome != 'skipped' }}
         run: |
-          set -o pipefail
-          # Schemas mantidos pelas migrations: public + storage (bucket e
-          # policies de storage.objects criados por migration dedicada).
-          if ! supabase db diff --db-url "$PROD_DB_URL" --schema public,storage \
-            > /tmp/prod-diff-pos.sql 2>&1; then
-            echo "::error::supabase db diff falhou — paridade não verificada. Revisar artefato."
-            exit 1
-          fi
-          # O CLI mistura logs operacionais ("Creating shadow database",
-          # "No schema changes found") com o DDL no stdout. Statement de
-          # verdade = divergência; o marcador do próprio CLI = paridade;
-          # nem um nem outro = não podemos afirmar nada — falha por segurança.
-          if grep -qiE '^\s*(create|alter|drop|grant|revoke|insert into|update |delete from|comment on|truncate )\b' /tmp/prod-diff-pos.sql; then
-            # Diff residual = apply não convergiu PROD para migrations/ — a
-            # execução tem que falhar, não terminar verde com warning.
-            echo "::error::Ainda há diff entre migrations/ e PROD — revisar artefato."
-            exit 1
-          elif grep -qi 'no schema changes' /tmp/prod-diff-pos.sql; then
-            echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
+          set -uo pipefail
+          FALHA=0
+
+          # 1) Convergência do ledger — não depende de shadow DB.
+          #    Depois do apply, nenhuma migration local pode seguir pendente.
+          if psql "$PROD_DB_URL" -Atc \
+               "SELECT version FROM supabase_migrations.schema_migrations" \
+               | sort -n > /tmp/ledger-pos.txt && [ -s /tmp/ledger-pos.txt ]; then
+            PENDENTES=0
+            for f in supabase/migrations/*.sql; do
+              bn=$(basename "$f")
+              # Mesmas exclusões do gate de ledger: artefatos fora do fluxo
+              # rastreável não contam como migration pendente.
+              case "$bn" in
+                001_*|002_*|003_*) continue ;;
+                20241231000000_*|20241231000001_*) continue ;;
+                20251231000001_*|20251231000002_*|20251231000003_*) continue ;;
+                20251231000100_*|20251231000200_*|20251231000300_*) continue ;;
+                *_ledger_reconciliado.sql) continue ;;
+                *_????????-????-????-????-????????????.sql) continue ;;
+              esac
+              V=$(echo "$bn" | cut -d_ -f1)
+              if ! grep -qx "$V" /tmp/ledger-pos.txt; then
+                echo "  pendente no ledger: $bn"
+                PENDENTES=$((PENDENTES + 1))
+              fi
+            done
+            if [ "$PENDENTES" -gt 0 ]; then
+              echo "::error::db push não convergiu: $PENDENTES migration(s) local(is) seguem fora do ledger de PROD."
+              FALHA=1
+            else
+              echo "Ledger em paridade: todas as migrations locais estão aplicadas em PROD."
+            fi
           else
-            echo "::error::db diff não retornou DDL nem marcador de paridade — revisar artefato."
-            exit 1
+            echo "::error::ledger de PROD ilegível ou vazio — convergência não verificada."
+            FALHA=1
           fi
 
+          # 2) Diff de DDL — advisory, por limitação comprovada do harness.
+          #    `supabase db diff` replica TODA a história de supabase/migrations/
+          #    dentro de um shadow DB e a replicação aborta em statements que
+          #    dependem de ownership/estado de PROD. Evidência (run real
+          #    45617479444, artefato prod-diff-pos.sql, 20260825090000:88):
+          #      ERROR: must be owner of extension pg_stat_statements (SQLSTATE 42501)
+          #    Falhar por isso era falso negativo permanente — e ainda escondia
+          #    as verificações seguintes. Só é divergência quando o CLI roda e
+          #    devolve DDL.
+          if supabase db diff --db-url "$PROD_DB_URL" --schema public,storage \
+               > /tmp/prod-diff-pos.sql 2>&1; then
+            if grep -qiE '^\s*(create|alter|drop|grant|revoke|insert into|update |delete from|comment on|truncate )\b' /tmp/prod-diff-pos.sql; then
+              echo "::error::Ainda há diff entre migrations/ e PROD — revisar o artefato prod-diff-pos.sql."
+              FALHA=1
+            elif grep -qi 'no schema changes' /tmp/prod-diff-pos.sql; then
+              echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
+            else
+              echo "::error::db diff não retornou DDL nem marcador de paridade — revisar o artefato."
+              FALHA=1
+            fi
+          else
+            echo "::warning::Diff de DDL não verificável: o shadow replay abortou no harness. Paridade verificada pelo ledger; detalhe no artefato."
+            grep -m1 -E '^ERROR' /tmp/prod-diff-pos.sql || true
+          fi
+
+          exit "$FALHA"
+
       - name: Verificar buckets esperados em PROD
-        if: '!inputs.dry_run'
+        if: ${{ !cancelled() && !inputs.dry_run && steps.apply.outcome != 'skipped' }}
         # db diff não rastreia DML — buckets criados por INSERT INTO
         # storage.buckets nas migrations precisam de verificação explícita.
         run: |
@@ -255,7 +301,7 @@ jobs:
           echo "Buckets esperados presentes, privados e com limites/MIME corretos."
 
       - name: Verificar publicação supabase_realtime em PROD
-        if: '!inputs.dry_run'
+        if: ${{ !cancelled() && !inputs.dry_run && steps.apply.outcome != 'skipped' }}
         # db diff (engine legado) não cobre membership de publicação — uma
         # tabela removida de supabase_realtime em PROD sairia como paridade.
         # Esperado = união dos ADD TABLE das migrations (incl. EXECUTE
@@ -277,7 +323,7 @@ jobs:
           echo "Publicação supabase_realtime em paridade com migrations/."
 
       - name: Verificar security_invoker das views em PROD
-        if: '!inputs.dry_run'
+        if: ${{ !cancelled() && !inputs.dry_run && steps.apply.outcome != 'skipped' }}
         # O db diff do engine legado (migra) pode não detectar
         # security_invoker de views — uma view que perdeu o atributo em PROD
         # sairia como paridade rodando com privilégio do owner (bypass de
