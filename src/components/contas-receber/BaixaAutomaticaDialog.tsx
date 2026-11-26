@@ -229,11 +229,13 @@ export function BaixaAutomaticaDialog({
   ): Promise<DivergenciaPendente[]> => {
     const falhas: DivergenciaPendente[] = [];
     for (const pendente of pendentes) {
-      const { empresaId: empresaAlvo, origemConta, transacao: t } = pendente;
-      // A origem e a referência do banco entram no alerta: sem elas, um extrato com
-      // várias contas ou vários créditos iguais não permite reencontrar o lançamento.
+      const { empresaId: empresaAlvo, transacao: t } = pendente;
+      // A origem exibida é a do próprio crédito: quando o bloco do extrato não
+      // declara a conta, afirmar a conta do arquivo mandaria o reprocessamento
+      // para o extrato errado. A referência bancária vai sempre.
+      const origemDaTransacaoPendente = origemDaTransacao(t);
       const rastro = [
-        origemConta ? `Conta de origem: ${origemConta}.` : null,
+        origemDaTransacaoPendente ? `Conta de origem: ${origemDaTransacaoPendente}.` : null,
         t.numeroReferencia ? `Referência bancária: ${t.numeroReferencia}.` : null,
       ]
         .filter(Boolean)
@@ -398,7 +400,9 @@ export function BaixaAutomaticaDialog({
         // A conta de origem vem do próprio extrato, não do destino escolhido agora:
         // o FITID só identifica o crédito dentro da conta que o emitiu, e trocar o
         // destino entre importações não muda o crédito. Um arquivo com vários blocos
-        // tem uma origem por transação; sem ela, vale a conta do lote.
+        // tem uma origem por transação; sem ela, a conta do lote serve só como
+        // identidade interna de deduplicação — o alerta mostra apenas a origem da
+        // própria transação e a referência bancária.
         const novasPendentes = [...unmatched, ...naoConfirmadas].map((transacao) => ({
           empresaId: empresaAlvo,
           origemConta: origemDaTransacao(transacao) ?? origemDoLote,

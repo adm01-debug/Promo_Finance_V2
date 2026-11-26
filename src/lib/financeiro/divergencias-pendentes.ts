@@ -55,37 +55,68 @@ export type ContaCadastrada = {
   codigo_banco?: string | null;
 };
 
-/** Só os dígitos relevantes: "001" e "1" são o mesmo código. */
-function digitos(valor: string | null | undefined): string {
-  return (valor ?? '').replace(/\D/g, '').replace(/^0+/, '');
+/** Grupos de dígitos do número da conta, já sem zeros à esquerda. */
+function numeroDaConta(valor: string | null | undefined): {
+  principal: string;
+  digitoVerificador: string;
+  grupos: string[];
+} {
+  const grupos = (valor ?? '')
+    .split(/\D+/)
+    .map((grupo) => grupo.replace(/^0+/, ''))
+    .filter(Boolean);
+  return {
+    principal: grupos[0] ?? '',
+    // Só grupo curto depois do número pode ser dígito verificador; "1234 5678"
+    // é agência e conta no mesmo campo, não verificador.
+    digitoVerificador: grupos
+      .slice(1)
+      .filter((grupo) => grupo.length <= 2)
+      .join(''),
+    grupos,
+  };
 }
 
 /**
  * Diz se a conta de origem do extrato é a conta cadastrada escolhida como destino.
- * O cadastro é digitado à mão ("1234-5", "00005678-9") e o arquivo traz só o número,
- * então a identidade é confirmada pelo número da conta — aceitando que um seja o
- * começo do outro, porque o dígito verificador costuma existir apenas de um lado.
- * Devolve `null` quando não há número nem código de banco para comparar: aí o
- * chamador não pode afirmar que o destino está errado.
+ * O cadastro é digitado à mão ("00005678-9") e o arquivo traz o número puro, então a
+ * comparação é por igualdade do número — aceitando o dígito verificador de apenas um
+ * dos lados, porque ele só aparece quando o formatador o separa. Prefixo comum com
+ * dígitos extras é outra conta. Devolve `null` quando falta número e código de banco
+ * para comparar: aí o chamador não pode afirmar que o destino está errado.
  */
 export function origemCompativelComCadastro(
   origem: string | null,
   cadastro: ContaCadastrada | undefined
 ): boolean | null {
   if (!origem || !cadastro) return null;
-  const segmentos = origem.split('/').map(digitos).filter(Boolean);
-  const numero = segmentos[segmentos.length - 1] ?? '';
-  const banco = segmentos.length > 1 ? segmentos[0] : '';
-  const numerosCadastrados = [digitos(cadastro.conta), digitos(cadastro.numero_conta)].filter(
-    Boolean
-  );
+  const segmentos = origem.split('/');
+  const contaOrigem = numeroDaConta(segmentos[segmentos.length - 1]);
+  const banco = segmentos.length > 1 ? segmentos[0].replace(/\D/g, '') : '';
+  const cadastradas = [cadastro.conta, cadastro.numero_conta]
+    .map(numeroDaConta)
+    .filter((conta) => conta.principal);
 
-  if (numero.length >= 4 && numerosCadastrados.length > 0) {
-    return numerosCadastrados.some(
-      (cadastrado) => numero.startsWith(cadastrado) || cadastrado.startsWith(numero)
-    );
+  if (contaOrigem.principal.length >= 4 && cadastradas.length > 0) {
+    return cadastradas.some((conta) => {
+      // Cadastro com agência e conta no mesmo campo: o número inteiro basta.
+      if (conta.grupos.includes(contaOrigem.principal)) return true;
+      if (conta.principal !== contaOrigem.principal) {
+        // "00005678-9" contra "56789": o verificador existe só no cadastro.
+        return (
+          Boolean(conta.digitoVerificador) &&
+          conta.principal + conta.digitoVerificador === contaOrigem.principal
+        );
+      }
+      return (
+        !conta.digitoVerificador ||
+        !contaOrigem.digitoVerificador ||
+        conta.digitoVerificador === contaOrigem.digitoVerificador
+      );
+    });
   }
-  const codigoBanco = digitos(cadastro.codigo_banco);
+  // Código de banco é comparado como digitado (3 dígitos, zeros à esquerda valem).
+  const codigoBanco = (cadastro.codigo_banco ?? '').replace(/\D/g, '');
   if (banco && codigoBanco) return banco === codigoBanco;
   return null;
 }

@@ -502,6 +502,12 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     const gravados = alertas.slice(4).map((c) => (c.args[0] as { mensagem: string }).mensagem);
     expect(gravados.filter((m) => m.includes('PIX SEM PAR'))).toHaveLength(1);
     expect(gravados.filter((m) => m.includes('TED SEM PAR'))).toHaveLength(1);
+
+    // Estes créditos não declaram conta de bloco: o alerta não pode afirmar a
+    // conta do arquivo, mas precisa manter a referência bancária do crédito.
+    const mensagens = alertas.map((c) => (c.args[0] as { mensagem: string }).mensagem);
+    expect(mensagens.some((m) => m.includes('Conta de origem'))).toBe(false);
+    expect(mensagens.some((m) => m.includes('Referência bancária: 999'))).toBe(true);
   });
 
   it('não deixa o crédito de outra conta da mesma empresa ocupar a pendência', async () => {

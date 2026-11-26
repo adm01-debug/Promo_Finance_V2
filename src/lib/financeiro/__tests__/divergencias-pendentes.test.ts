@@ -197,7 +197,17 @@ describe('mesclarPendentes', () => {
 describe('origemCompativelComCadastro', () => {
   it('reconhece a mesma conta quando o cadastro traz o dígito verificador', () => {
     expect(origemCompativelComCadastro(BB, { conta: '00005678-9' })).toBe(true);
+    expect(origemCompativelComCadastro('001/1234/56789', { conta: '00005678-9' })).toBe(true);
     expect(origemCompativelComCadastro(ITAU, { conta: '1111' })).toBe(true);
+  });
+
+  it('aceita o número inteiro quando o cadastro junta agência e conta', () => {
+    expect(origemCompativelComCadastro(BB, { conta: '1234 5678' })).toBe(true);
+  });
+
+  it('recusa número com dígitos extras apesar do prefixo comum', () => {
+    // 5678912 começa com 56789, mas é outra conta da mesma agência.
+    expect(origemCompativelComCadastro('001/1234/56789', { conta: '5678912-3' })).toBe(false);
   });
 
   it('recusa a conta cadastrada de outro número', () => {
