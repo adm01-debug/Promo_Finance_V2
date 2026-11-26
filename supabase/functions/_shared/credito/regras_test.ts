@@ -5,6 +5,7 @@ import {
   formatarCnpj,
   mesesDesde,
   normalizarCnpj,
+  vinculoDesatualizado,
 } from './regras.ts';
 
 const HOJE = new Date('2026-11-26T12:00:00Z');
@@ -70,4 +71,21 @@ Deno.test('filtro do cadastro casa o CNPJ com e sem máscara', () => {
     filtroCnpjCliente('12345678000195'),
     'cnpj_cpf.eq."12345678000195",cnpj_cpf.eq."12.345.678/0001-95"'
   );
+});
+
+Deno.test('vinculoDesatualizado só descarta vínculo casado pelo CNPJ anterior', () => {
+  // Cadastro vinculado pelo CNPJ antigo → precisa ser refeito.
+  assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', '98765432000110'), true);
+  assertEquals(
+    vinculoDesatualizado('12.345.678/0001-95', '12345678000195', '98765432000110'),
+    true
+  );
+  // Vínculo por e-mail (documento diferente) → preservado.
+  assertEquals(vinculoDesatualizado('11222333000181', '12345678000195', '98765432000110'), false);
+  // Cliente pessoa física → preservado (normalizarCnpj não reconhece CPF).
+  assertEquals(vinculoDesatualizado('12345678909', '12345678000195', '98765432000110'), false);
+  // Sem mudança de CNPJ, sem CNPJ anterior ou sem CNPJ novo → nada a refazer.
+  assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', '12345678000195'), false);
+  assertEquals(vinculoDesatualizado('12345678000195', null, '98765432000110'), false);
+  assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', null), false);
 });

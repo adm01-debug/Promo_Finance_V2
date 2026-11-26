@@ -177,7 +177,7 @@ export function financeiroRoutes() {
       <Route
         path="/clientes/analise-credito"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
             <AnaliseCreditoPage />
           </ProtectedRoute>
         }

@@ -69,8 +69,10 @@ export function AnaliseCreditoPanel() {
   const [dialogo, setDialogo] = useState<DialogoState | null>(null);
   const {
     analises,
+    total,
     isLoading,
     isError,
+    erroCarga,
     decidir,
     isDecidindo,
     atualizarDados,
@@ -78,6 +80,7 @@ export function AnaliseCreditoPanel() {
     reenviarCallback,
     isReenviando,
   } = useAnalisesCredito(filtro);
+  const truncada = total > analises.length;
 
   return (
     <div className="space-y-4">
@@ -90,6 +93,13 @@ export function AnaliseCreditoPanel() {
         </TabsList>
       </Tabs>
 
+      {truncada && (
+        <p className="text-xs text-muted-foreground">
+          Mostrando as {analises.length} análises mais recentes de {total}. Filtre por status para
+          ver as demais.
+        </p>
+      )}
+
       {isLoading && (
         <div className="space-y-3">
           <Skeleton className="h-36 rounded-xl" />
@@ -100,7 +110,7 @@ export function AnaliseCreditoPanel() {
       {isError && (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            Não foi possível carregar a fila. Verifique se a função credito-analise está publicada.
+            {erroCarga ?? 'Não foi possível carregar a fila de análise de crédito.'}
           </CardContent>
         </Card>
       )}

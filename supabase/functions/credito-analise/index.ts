@@ -19,7 +19,12 @@ import { clientDeServico, exigirPapel } from '../_shared/auth-guard.ts';
 import { createErrorResponse, parseJsonBody, validatePayload } from '../_shared/validation.ts';
 import { CreditoAnaliseSchema } from '../_shared/credito/schemas.ts';
 import { consultarCnpjInterno } from '../_shared/credito/cnpja.ts';
-import { avaliarAlertas, filtroCnpjCliente, normalizarCnpj } from '../_shared/credito/regras.ts';
+import {
+  avaliarAlertas,
+  filtroCnpjCliente,
+  normalizarCnpj,
+  vinculoDesatualizado,
+} from '../_shared/credito/regras.ts';
 
 const DEFAULT_CALLBACK_URL =
   'https://usyxfpqlsspldubptrdl.supabase.co/functions/v1/receive-credit-decision';
@@ -55,6 +60,7 @@ interface Analise {
   status: string;
   cnpj: string | null;
   cliente_id: string | null;
+  empresa_id: string | null;
   valor_pedido: number | null;
   dados_cnpja: unknown;
   dados_escavador: unknown;
@@ -67,7 +73,21 @@ interface Analise {
 }
 
 const CAMPOS_ANALISE =
-  'id, referencia_externa, status, cnpj, cliente_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira, limite_aprovado, parcelas_max, parecer, decidido_em, callback_status';
+  'id, referencia_externa, status, cnpj, cliente_id, empresa_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira, limite_aprovado, parcelas_max, parecer, decidido_em, callback_status';
+
+/** IDs das empresas ativas do usuário (mesma regra da policy da tabela). */
+async function empresasAcessiveis(
+  admin: ReturnType<typeof clientDeServico>,
+  userId: string
+): Promise<string[]> {
+  const { data, error } = await admin
+    .from('user_empresas')
+    .select('empresa_id')
+    .eq('user_id', userId)
+    .eq('ativo', true);
+  if (error) throw error;
+  return (data ?? []).map((linha) => (linha as { empresa_id: string }).empresa_id);
+}
 
 async function notificarChampions(
   analise: Analise,
@@ -160,17 +180,25 @@ Deno.serve(
 
     try {
       if (input.action === 'listar') {
+        const empresas = await empresasAcessiveis(admin, guard.dados.userId);
         let query = admin
           .from('analises_credito')
-          .select('*')
+          .select('*', { count: 'exact' })
           .order('created_at', { ascending: false })
           .limit(input.limite ?? 100);
+        // Escopo por empresa: linhas sem empresa (1ª venda de um cliente que o
+        // Finance ainda não cadastrou) ficam visíveis a qualquer
+        // admin/financeiro ativo — a policy da tabela aplica a mesma regra.
+        query =
+          empresas.length > 0
+            ? query.or(`empresa_id.is.null,empresa_id.in.(${empresas.join(',')})`)
+            : query.is('empresa_id', null);
         const status = input.status ?? 'pendente';
         if (status === 'pendente') query = query.in('status', STATUS_ABERTOS);
         else if (status !== 'todos') query = query.eq('status', status);
-        const { data, error } = await query;
+        const { data, error, count } = await query;
         if (error) throw error;
-        return responder(req, 200, { analises: data ?? [] });
+        return responder(req, 200, { analises: data ?? [], total: count ?? data?.length ?? 0 });
       }
 
       const { data: analiseRaw, error: getError } = await admin
@@ -182,6 +210,14 @@ Deno.serve(
       if (!analiseRaw) return responder(req, 404, { error: 'Análise não encontrada' });
       const analise = analiseRaw as Analise;
       const decidida = analise.status === 'aprovado' || analise.status === 'reprovado';
+
+      // Empresa da análise fora do escopo do usuário: nem leitura, nem ação.
+      if (analise.empresa_id) {
+        const empresas = await empresasAcessiveis(admin, guard.dados.userId);
+        if (!empresas.includes(analise.empresa_id)) {
+          return responder(req, 403, { error: 'empresa_sem_acesso' });
+        }
+      }
 
       if (input.action === 'reenviar_callback') {
         if (!decidida) return responder(req, 409, { error: 'Análise ainda sem decisão' });
@@ -238,16 +274,30 @@ Deno.serve(
             patch.alertas = avaliarAlertas(null, analise.valor_pedido);
           }
         }
-        // CNPJ corrigido: o vínculo com o cadastro segue o novo documento
-        // (ou cai para null) — nunca fica preso ao cliente anterior.
+        // CNPJ corrigido: o vínculo com o cadastro segue o novo documento.
+        // Só desfaz o vínculo antigo quando ele era mesmo do CNPJ anterior —
+        // vínculo por e-mail (cliente sem CNPJ) precisa ser preservado.
         if (novoCnpj && cnpjMudou) {
           const { data: cli } = await admin
             .from('clientes')
-            .select('id')
+            .select('id, empresa_id')
             .or(filtroCnpjCliente(novoCnpj))
             .limit(1)
             .maybeSingle();
-          patch.cliente_id = cli?.id ?? null;
+          if (cli?.id) {
+            patch.cliente_id = cli.id;
+            patch.empresa_id = (cli as { empresa_id: string | null }).empresa_id;
+          } else if (analise.cliente_id) {
+            const { data: atual } = await admin
+              .from('clientes')
+              .select('cnpj_cpf')
+              .eq('id', analise.cliente_id)
+              .maybeSingle();
+            if (vinculoDesatualizado(atual?.cnpj_cpf, analise.cnpj, novoCnpj)) {
+              patch.cliente_id = null;
+              patch.empresa_id = null;
+            }
+          }
         }
         const { data: atualizada, error: updError } = await admin
           .from('analises_credito')
@@ -284,21 +334,23 @@ Deno.serve(
         })
         .eq('id', analise.id)
         .in('status', STATUS_ABERTOS)
-        .select('id')
+        .select('id, cliente_id')
         .maybeSingle();
       if (decError) throw decError;
       if (!decidido) {
         return responder(req, 409, { error: 'Análise foi decidida por outro analista' });
       }
+      const clienteVinculado = (decidido as { cliente_id: string | null }).cliente_id;
 
       if (input.decisao === 'aprovado' && limite !== null) {
-        // Limite segue o documento da análise (todos os cadastros com esse
-        // CNPJ, com ou sem máscara); sem CNPJ, o vínculo por e-mail.
+        // O limite vai para o cadastro vinculado à análise (inclusive o vínculo
+        // por e-mail, que é o único existente quando o CNPJ ainda não consta no
+        // cadastro); sem vínculo, para os cadastros com o mesmo documento.
         const alvo = admin.from('clientes').update({ limite_credito: limite });
-        const { error: limError } = analise.cnpj
-          ? await alvo.or(filtroCnpjCliente(analise.cnpj))
-          : analise.cliente_id
-            ? await alvo.eq('id', analise.cliente_id)
+        const { error: limError } = clienteVinculado
+          ? await alvo.eq('id', clienteVinculado)
+          : analise.cnpj
+            ? await alvo.or(filtroCnpjCliente(analise.cnpj))
             : { error: null };
         if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
       }

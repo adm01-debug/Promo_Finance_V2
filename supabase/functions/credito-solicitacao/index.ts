@@ -105,23 +105,26 @@ Deno.serve(
 
     // Vincula ao cadastro do Finance quando o CNPJ (ou e-mail) já existe.
     let clienteId: string | null = null;
+    let empresaId: string | null = null;
     if (cnpj) {
       const { data } = await admin
         .from('clientes')
-        .select('id')
+        .select('id, empresa_id')
         .or(filtroCnpjCliente(cnpj))
         .limit(1)
         .maybeSingle();
       clienteId = data?.id ?? null;
+      empresaId = (data as { empresa_id: string | null } | null)?.empresa_id ?? null;
     }
     if (!clienteId && cliente.email) {
       const { data } = await admin
         .from('clientes')
-        .select('id')
+        .select('id, empresa_id')
         .ilike('email', cliente.email.trim())
         .limit(1)
         .maybeSingle();
       clienteId = data?.id ?? null;
+      empresaId = (data as { empresa_id: string | null } | null)?.empresa_id ?? null;
     }
 
     const { data: inserida, error: insertError } = await admin
@@ -133,6 +136,7 @@ Deno.serve(
         pedido_numero: payload.pedido_numero ?? null,
         valor_pedido: Number.isFinite(valorPedido) ? valorPedido : null,
         cliente_id: clienteId,
+        empresa_id: empresaId,
         cliente_nome: cliente.nome ?? null,
         cliente_empresa: cliente.empresa ?? null,
         cliente_email: cliente.email ?? null,
@@ -173,7 +177,10 @@ Deno.serve(
             dados_cnpja: consulta.dados,
             alertas: avaliarAlertas(consulta.dados, valorPedido),
           })
-          .eq('id', analiseId);
+          .eq('id', analiseId)
+          // O CNPJ pode ter sido corrigido pelo analista enquanto a consulta
+          // rodava: nesse caso o resultado é do documento errado e é descartado.
+          .eq('cnpj', cnpj);
         if (updError) logger.warn('cnpja_update_failed', { error_message: updError.message });
         logger.info('cnpja_consultado', {
           context: { analise_id: analiseId, origem: consulta.origem },

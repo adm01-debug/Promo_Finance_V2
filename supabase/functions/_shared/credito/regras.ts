@@ -108,3 +108,20 @@ export function formatarCnpj(cnpj: string): string {
 export function filtroCnpjCliente(cnpj: string): string {
   return `cnpj_cpf.eq."${cnpj}",cnpj_cpf.eq."${formatarCnpj(cnpj)}"`;
 }
+
+/**
+ * O vínculo com um cadastro de cliente veio do CNPJ anterior e precisa ser
+ * refeito: senão a aprovação grava o limite no cliente errado depois de o
+ * analista corrigir o CNPJ. Vínculo que não aponta para o CNPJ antigo (casado
+ * por e-mail, ou cliente pessoa física) é preservado.
+ */
+export function vinculoDesatualizado(
+  cnpjDoClienteVinculado: string | null | undefined,
+  cnpjAnterior: string | null | undefined,
+  cnpjNovo: string | null | undefined
+): boolean {
+  const anterior = normalizarCnpj(cnpjAnterior ?? null);
+  const novo = normalizarCnpj(cnpjNovo ?? null);
+  if (!anterior || !novo || anterior === novo) return false;
+  return normalizarCnpj(cnpjDoClienteVinculado ?? null) === anterior;
+}

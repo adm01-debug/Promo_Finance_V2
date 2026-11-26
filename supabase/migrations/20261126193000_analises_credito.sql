@@ -7,7 +7,11 @@
 -- compra no Supply.
 --
 -- Escrita: só service_role (edge functions credito-solicitacao / credito-analise).
--- Leitura: admin e financeiro.
+-- Leitura: admin e financeiro COM acesso à empresa da análise (padrão do
+-- sistema: has_any_role + empresa_acessivel). Linhas ainda sem empresa
+-- (cliente não cadastrado no Finance) não têm empresa para escopar e ficam
+-- visíveis a qualquer admin/financeiro ativo — a edge function aplica a mesma
+-- regra, para a fila não divergir da policy.
 
 CREATE TABLE IF NOT EXISTS public.analises_credito (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -17,6 +21,11 @@ CREATE TABLE IF NOT EXISTS public.analises_credito (
   pedido_numero text,
   valor_pedido numeric(14,2),
   cliente_id uuid REFERENCES public.clientes(id) ON DELETE SET NULL,
+  -- Empresa do pedido, herdada do cadastro do cliente quando o Finance já o
+  -- conhece. NULL = pedido ainda não atribuível a uma empresa (1ª venda de um
+  -- cliente que o Finance não tem cadastrado): nesse caso não existe empresa
+  -- para escopar, e a linha fica visível a qualquer admin/financeiro ativo.
+  empresa_id uuid REFERENCES public.empresas(id) ON DELETE SET NULL,
   cliente_nome text,
   cliente_empresa text,
   cliente_email text,
@@ -53,6 +62,9 @@ CREATE INDEX IF NOT EXISTS idx_analises_credito_cnpj
   ON public.analises_credito (cnpj)
   WHERE cnpj IS NOT NULL;
 
+CREATE INDEX IF NOT EXISTS idx_analises_credito_empresa_id
+  ON public.analises_credito (empresa_id);
+
 ALTER TABLE public.analises_credito ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.analises_credito FROM anon, authenticated;
 GRANT SELECT ON public.analises_credito TO authenticated;
@@ -62,14 +74,8 @@ DROP POLICY IF EXISTS analises_credito_leitura_financeiro ON public.analises_cre
 CREATE POLICY analises_credito_leitura_financeiro ON public.analises_credito
   FOR SELECT TO authenticated
   USING (
-    EXISTS (
-      SELECT 1
-        FROM public.user_roles ur
-       WHERE ur.user_id = auth.uid()
-         AND ur.is_active = true
-         AND ur.role IN ('admin', 'financeiro')
-         AND (ur.expires_at IS NULL OR ur.expires_at > now())
-    )
+    has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])
+    AND (empresa_id IS NULL OR empresa_acessivel(empresa_id))
   );
 
 CREATE OR REPLACE FUNCTION public.tg_analises_credito_updated_at()
