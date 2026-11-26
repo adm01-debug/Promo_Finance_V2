@@ -219,6 +219,19 @@ apenas sem a norma. A tela exibe a norma no `GlossarioTooltip` do badge de alert
 e o botão **Alertas (PDF)** (`src/lib/tributario/relatorio-pdf/alertas-fiscais.ts`)
 leva a lista de divergências com a fundamentação integral.
 
+O frescor dos quatro catálogos (cClassTrib, NCM/NBS, alíquotas e fundamentações)
+é medido pelo `CatalogosTributariosHealthPanel`: idade da última carga, versão IT e
+alerta acima de 7 dias sem sincronização (`avaliarFrescorCatalogosRfb`, com prazo próprio por cadência: `DIAS_ALERTA_CATALOGO_RFB` = 7 dias para cClassTrib, NCM, NBS, CBS, IBS/UF e fundamentações, e `DIAS_ALERTA_CATALOGO_RFB_SEMANAL` = 9 dias para o IBS municipal, que roda aos domingos — o intervalo exato de 7 dias não daria margem para a rodada terminar).
+O frescor tem duas evidências: o carimbo da linha mais nova do catálogo (que
+congela quando a carga só reescreve chaves existentes, porque o `upsert` preserva
+`created_at`/`carregado_em`) e o último run bem-sucedido do job em `edge_function_logs`
+(um `request_end` por request, com o status HTTP real) — vale a mais recente das duas.
+As alíquotas aparecem por escopo (CBS, IBS/UF — diários — e IBS municipal, semanal) e
+o NBS tem linha própria, para que um escopo sem carga não fique escondido atrás do outro.
+
+Como o job de alíquotas e o de NCM/NBS atendem mais de um escopo, o 2xx do job não serve como prova de carga para todos eles: o painel casa o `request_end` com o `sync concluido` da mesma requisição e só aceita o run quando o `metadata` mostra o escopo consultado (`recebidos_ncm`, `recebidos_nbs`, `municipio_consultados`). Assim a rodada diária, que não consulta município, não data o IBS municipal.
+
+
 ## Vigência e o consumidor (etapa 46)
 
 `buscarReferenciasFiscais` (`src/lib/tributario/catalogos/cclasstrib.ts`)
