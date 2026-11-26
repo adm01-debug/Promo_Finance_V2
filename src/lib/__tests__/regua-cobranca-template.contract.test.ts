@@ -21,6 +21,9 @@ const lerFonte = (...partes: string[]) => readFileSync(join(process.cwd(), ...pa
 const fonte = readFileSync(EXECUTOR, 'utf8');
 const dominio = lerFonte('supabase', 'functions', 'executar-regua-cobranca', 'domain.ts');
 
+const provedor = lerFonte('supabase', 'functions', 'enviar-alerta-email', 'index.ts');
+const sanitizador = lerFonte('supabase', 'functions', 'enviar-alerta-email', 'html.ts');
+
 describe('executar-regua-cobranca — usa o template real', () => {
   it('consulta templates_cobranca', () => {
     expect(fonte).toContain(".from('templates_cobranca')");
@@ -92,11 +95,19 @@ describe('executar-regua-cobranca — envio que realmente chega ao provedor', ()
     expect(dominio).toContain('export function aplicarVariaveis(');
   });
 
-  it('escapa o HTML do corpo e protege o assunto do e-mail', () => {
-    expect(fonte).toContain('mensagem: escaparHtml(mensagem)');
-    expect(fonte).toContain('titulo: assuntoSeguro(assunto)');
-    expect(dominio).toContain('export function escaparHtml(');
-    expect(dominio).toContain('export function assuntoSeguro(');
+  it('entrega o texto cru e deixa a escapagem com quem monta o HTML', () => {
+    expect(fonte).toContain('titulo: assunto,');
+    expect(fonte).toContain('mensagem: mensagem,');
+    expect(fonte).not.toContain('escaparHtml(');
+    expect(fonte).not.toContain('assuntoSeguro(');
+    expect(dominio).not.toContain('export function escaparHtml(');
+    expect(provedor).toContain('textoParaHtml(dados.titulo)');
+    expect(provedor).toContain('textoParaHtml(dados.mensagem)');
+    expect(provedor).toContain('escaparHtml(dados.urlAcao');
+    expect(provedor).toContain('assuntoSeguro(dados.titulo)');
+    expect(sanitizador).toContain('export function escaparHtml(');
+    expect(sanitizador).toContain('export function assuntoSeguro(');
+    expect(sanitizador).toContain('export function textoParaHtml(');
   });
 
   it('finaliza a reserva mesmo quando o envio lança', () => {

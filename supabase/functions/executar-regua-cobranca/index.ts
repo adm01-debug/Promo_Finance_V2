@@ -1,9 +1,7 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import {
   aplicarVariaveis,
-  assuntoSeguro,
   dataAlvoUtc,
-  escaparHtml,
   normalizarCanais,
   normalizarDiasGatilho,
   type CanalRegua,
@@ -231,14 +229,17 @@ async function enviarCobranca(
   );
 
   if (canal === 'email' && cliente?.email) {
+    // Texto cru: quem monta o HTML do e-mail (`enviar-alerta-email`) e que
+    // escapa. Escapar aqui mostrava entidades ao cliente no WhatsApp, que usa
+    // a mesma mensagem, e apagava o trecho entre `<` e `>` do assunto.
     const { error } = await supabase.functions.invoke('enviar-alerta-email', {
       headers: correlationHeaders(requestId),
       body: {
         tipo: 'vencimento',
         destinatario: cliente.email,
         dados: {
-          titulo: assuntoSeguro(assunto),
-          mensagem: escaparHtml(mensagem),
+          titulo: assunto,
+          mensagem: mensagem,
           valor: conta.valor,
           dataVencimento: conta.data_vencimento,
         },
