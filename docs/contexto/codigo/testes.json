@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 533,
+ "total": 534,
  "por_tipo": {
   "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 454
+  "unit": 455
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 328
+   "arquivos": 329
   },
   {
    "padrao": "outro",
@@ -3344,6 +3344,15 @@
    "casos": 22
   },
   {
+   "arquivo": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+   "tipo": "unit",
+   "linhas": 57,
+   "testa": [
+    "src/lib/tributario/natureza-operacao.ts"
+   ],
+   "casos": 7
+  },
+  {
    "arquivo": "src/lib/tributario/__tests__/obrigacoes-acessorias.test.ts",
    "tipo": "unit",
    "linhas": 322,
@@ -5087,6 +5096,7 @@
   "src/lib/tributario/monofasico/classificar.ts": 2,
   "src/lib/tributario/monofasico/index.ts": 1,
   "src/lib/tributario/monofasico/overlay-monofasico.ts": 1,
+  "src/lib/tributario/natureza-operacao.ts": 1,
   "src/lib/tributario/obrigacoes/alertas.ts": 1,
   "src/lib/tributario/obrigacoes/calendario.ts": 1,
   "src/lib/tributario/obrigacoes/catalogo.ts": 1,

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5",
+  "commit": "acf2202a69c7f1cab59f91fc97c5fe8e83003269",
   "branch": "main",
-  "data_commit": "2026-11-26T14:18:50-03:00",
+  "data_commit": "2026-11-26T16:59:13-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "acf2202",
+    "data": "2026-11-26",
+    "assunto": "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)"
+   },
    {
     "sha": "f2dbe02",
     "data": "2026-11-26",
@@ -126,18 +131,13 @@
     "sha": "04504ef",
     "data": "2026-11-24",
     "assunto": "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)"
-   },
-   {
-    "sha": "6ef837b",
-    "data": "2026-11-24",
-    "assunto": "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)"
    }
   ],
-  "arquivos_mudados_7d": 333,
+  "arquivos_mudados_7d": 335,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 250
+    "mudancas": 252
    },
    {
     "pasta": "src/components/contabilidade",
@@ -161,7 +161,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 103
+    "mudancas": 102
    },
    {
     "pasta": "src/hooks/__tests__",
@@ -238,10 +238,6 @@
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 8
-   },
-   {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 7
    },
@@ -259,6 +255,10 @@
    },
    {
     "arquivo": "supabase/config.toml",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 7
    },
    {
@@ -301,18 +301,18 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 279
+    "commits": 280
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 21
+    "commits": 20
    }
   ]
  },
  "contagens": {
-  "arquivos_total": 4106,
-  "arquivos_codigo": 2566,
-  "linhas_codigo": 462719,
+  "arquivos_total": 4108,
+  "arquivos_codigo": 2568,
+  "linhas_codigo": 462834,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -324,7 +324,7 @@
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 533,
+  "testes": 534,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -663,8 +663,8 @@
    "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 446,
-   "linhas": 61702
+   "arquivos": 448,
+   "linhas": 61817
   },
   "src/main.tsx": {
    "arquivos": 1,

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f2dbe02136` · branch `main` · 2026-11-26 17:23 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `acf2202a69` · branch `main` · 2026-11-26 20:04 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4301,6 +4301,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TERCEIROS_PADRAO` | `0.058` | `src/lib/tributario/encargos-folha.ts` |
 | `IRPFM_LIMITE_ISENCAO_MENSAL` | `50` | `src/lib/tributario/irpfm.ts` |
 | `IRPFM_LIMITE_ANUAL_BASE` | `600` | `src/lib/tributario/irpfm.ts` |
+| `NATUREZA_VENDA_DENTRO_ESTADO` | `'VENDAS DE MERCADORIAS DENTRO DO ESTADO'` | `src/lib/tributario/natureza-operacao.ts` |
+| `NATUREZA_VENDA_FORA_ESTADO` | `'VENDAS DE MERCADORIAS FORA DO ESTADO'` | `src/lib/tributario/natureza-operacao.ts` |
+| `CFOP_VENDA_DENTRO_ESTADO` | `'5102'` | `src/lib/tributario/natureza-operacao.ts` |
+| `CFOP_VENDA_FORA_ESTADO` | `'6102'` | `src/lib/tributario/natureza-operacao.ts` |
 | `PF_LIMITE_IRRF_DIVIDENDOS_MENSAL` | `50` | `src/lib/tributario/pf-vinculada.ts` |
 | `PF_ALIQUOTA_IRRF_DIVIDENDOS` | `0.1` | `src/lib/tributario/pf-vinculada.ts` |
 | `PF_IRPFM_PISO_ANUAL` | `600` | `src/lib/tributario/pf-vinculada.ts` |
@@ -4486,11 +4490,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `PAGINA` | `1000` | `supabase/functions/sync-aliquota-referencia/index.ts` |
 | `MAX_PAGINAS` | `100` | `supabase/functions/sync-aliquota-referencia/index.ts` |
 | `MIN_UFS` | `27` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
-| `CASAS` | `4` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
-| `MAX_FRACAO` | `10` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
-| `TABELA` | `'catalogo_cclasstrib'` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
-| `TIMEOUT_MS` | `30` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
-| … +23 linhas — lista completa em `context.json` | | |
+| … +27 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -5254,7 +5254,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4149 testes em 365 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4157 testes em 366 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5452,6 +5452,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/arquitetura/__tests__/edge-functions-imports.test.ts` | 8 | Edge Functions — conformidade de imports Deno · encontra arquivos de função para auditar · usa uma única versão canônica de @supabase/supabase-js · não importa @supabase/supabase-js sem versão fixada … |
 | `src/lib/tributario/__tests__/catalogos-alertas.test.ts` | 8 | alertas proativos de catálogos fiscais · não gera alerta quando todos os catálogos estão coerentes · aponta o item e o campo divergentes de uma UF adulterada · sinaliza catálogo vazio como divergência crítica … |
 | `src/lib/tributario/__tests__/diagnostico-parametros.test.ts` | 8 | diagnosticarParametros · não reporta ajustes para parâmetros válidos · não reporta campos omitidos (defaults do motor não são ajustes) · reporta percentual de serviços acima de 100% como ajuste … |
+| `src/lib/tributario/__tests__/natureza-operacao.test.ts` | 8 | natureza da operação de venda pela UF do emissor e do destinatário · Brasil Marcas (SP) vendendo para SP é venda dentro do estado, CFOP 5102 · Brasil Marcas (SP) vendendo para GO é venda fora do estado, CFOP 6102 · João Batista (RR) vendendo para RR é dentro do estado — regra que o Bitrix tinha fixa … |
 | `src/lib/tributario/__tests__/prejuizo-fiscal-trava-30.test.ts` | 8 | Trava dos 30% na compensação de prejuízos (Lei 9.065/95, arts. 15 e 16) · limita a compensação a 30% do lucro do período · compensa integralmente quando o estoque é menor que a trava · não compensa em período com prejuízo e acumula ao estoque … |
 | `src/lib/tributario/__tests__/rejeicoes-auditoria.test.ts` | 8 | rejeicoes-auditoria · normaliza rejeições dos quatro overlays com campo e motivo · classifica duplicidade como atenção e o restante como crítico · aceita entrada parcial sem quebrar … |
 | `src/lib/tributario/__tests__/sublimite-iss-retido.test.ts` | 8 | Sublimite estadual e ISS retido no Simples Nacional · não altera o DAS quando o RBT12 está abaixo do sublimite · retira ICMS do DAS quando o RBT12 supera o sublimite (comércio) · retira ISS do DAS quando o RBT12 supera o sublimite (serviços Anexo III) … |
@@ -5557,8 +5558,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/arquitetura/__tests__/snapshot-grafo.test.ts` | 4 | snapshot do grafo de arquitetura · lista de arestas está sincronizada com o código · contagem de imports analisados está sincronizada · resumo de drift está sincronizado e zerado |
 | `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
 | `src/lib/tributario/__tests__/catalogos-vigencia.test.ts` | 4 | normalizarReferencia · mantém datas ISO válidas · aceita Date e converte para ISO · degrada para hoje em entradas ausentes ou inválidas |
-| `src/lib/tributario/__tests__/drift-guard-motor.test.ts` | 4 | Drift guard: motor tributário front x Edge Function · a função %s é logicamente idêntica nas duas cópias · mantém as constantes fiscais e a tabela de anexos idênticas · mantém as assinaturas de tipo públicas alinhadas |
-| … +65 linhas — lista completa em `context.json` | | |
+| … +66 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6153,4 +6153,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | mas também não deve sumir. Nunca lança. | `src/lib/supabase-write.ts` |
 | O flush de unload não pode await getUser() — user.id fica em cache aqui. | `src/lib/telemetry.ts` |
 | casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts). | `src/lib/telemetry.ts` |
-| … +498 linhas — lista completa em `context.json` | |
+| … +501 linhas — lista completa em `context.json` | |

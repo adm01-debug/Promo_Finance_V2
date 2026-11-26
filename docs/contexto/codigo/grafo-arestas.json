@@ -8286,6 +8286,10 @@
    "src/lib/tributario/motor/base.ts",
    "src/lib/tributario/parametros.ts"
   ],
+  "src/lib/tributario/natureza-operacao.ts": [
+   "src/lib/tributario/icms/tabelas.ts",
+   "src/lib/tributario/icms/types.ts"
+  ],
   "src/lib/tributario/obrigacoes/alertas.ts": [
    "src/lib/tributario/obrigacoes/historico.ts"
   ],

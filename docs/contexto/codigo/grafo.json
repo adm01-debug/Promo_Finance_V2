@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2040,
- "arestas": 8630,
+ "nos": 2041,
+ "arestas": 8632,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -281,6 +281,7 @@
   "src/lib/arquitetura/escopo-empresa.ts",
   "src/lib/nfe/pre-validar-ibscbs.ts",
   "src/lib/reforma-tributaria/totalizar.ts",
+  "src/lib/tributario/natureza-operacao.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",
   "supabase/functions/external-data/validate_contract.ts",
   "supabase/functions/sso-test-login/mocks.ts"

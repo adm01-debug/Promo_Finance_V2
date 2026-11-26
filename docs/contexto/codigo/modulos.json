@@ -9652,9 +9652,9 @@
   },
   {
    "modulo": "lib/tributario",
-   "arquivos": 124,
-   "testes": 86,
-   "linhas": 18421,
+   "arquivos": 125,
+   "testes": 87,
+   "linhas": 18479,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

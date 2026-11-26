@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5",
+  "sha": "acf2202a69c7f1cab59f91fc97c5fe8e83003269",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 17:23 UTC",
-  "files_total": 4145,
-  "code_files": 3724,
-  "code_lines": 536063
+  "generated_at": "2026-11-26 20:04 UTC",
+  "files_total": 4147,
+  "code_files": 3726,
+  "code_lines": 536180
  },
  "version": "1.3.2",
- "facts_hash": "763201b845cf7bde",
+ "facts_hash": "56732774d49bc852",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1313,
+   ".ts": 1315,
    ".sql": 1157,
    ".tsx": 1132,
    ".mjs": 68,
@@ -71758,8 +71758,8 @@
   },
   {
    "module": "src/lib",
-   "files": 446,
-   "lines": 62148,
+   "files": 448,
+   "lines": 62265,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -86825,6 +86825,18 @@
    {
     "file": "src/lib/tributario/irpfm.ts",
     "text": "Aplica alíquota progressiva sobre o excedente do limite de R$ 50k/mês."
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "text": "// Regra resgatada do Bitrix24 (SPA NF | Faturamento, robô da etapa de entrada e processo"
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "text": "empresa (Brasil Marcas = SP, João Batista = RR) e a terceira empresa não tinha regra; aqui a UF"
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "text": "vazia ou inválida: sem as duas UFs não há como decidir e a emissão não deve seguir com um"
    },
    {
     "file": "src/lib/tributario/parametros.ts",
@@ -102194,6 +102206,26 @@
     "file": "src/lib/tributario/irpfm.ts",
     "name": "IRPFM_LIMITE_ANUAL_BASE",
     "value": "600"
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "name": "NATUREZA_VENDA_DENTRO_ESTADO",
+    "value": "'VENDAS DE MERCADORIAS DENTRO DO ESTADO'"
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "name": "NATUREZA_VENDA_FORA_ESTADO",
+    "value": "'VENDAS DE MERCADORIAS FORA DO ESTADO'"
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "name": "CFOP_VENDA_DENTRO_ESTADO",
+    "value": "'5102'"
+   },
+   {
+    "file": "src/lib/tributario/natureza-operacao.ts",
+    "name": "CFOP_VENDA_FORA_ESTADO",
+    "value": "'6102'"
    },
    {
     "file": "src/lib/tributario/pf-vinculada.ts",
@@ -136025,6 +136057,38 @@
    {
     "file": "src/lib/tributario/__tests__/motor.test.ts",
     "name": "calcula economia vs regime atual"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "natureza da operação de venda pela UF do emissor e do destinatário"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "Brasil Marcas (SP) vendendo para SP é venda dentro do estado, CFOP 5102"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "Brasil Marcas (SP) vendendo para GO é venda fora do estado, CFOP 6102"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "João Batista (RR) vendendo para RR é dentro do estado — regra que o Bitrix tinha fixa"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "vale para qualquer empresa emissora, não só para as duas do Bitrix"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "aceita sigla em minúsculas e com espaços"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "sem UF do emissor ou do destinatário não decide (null), em vez de assumir um valor fixo"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+    "name": "normalizarUf reconhece as 27 UFs e rejeita o resto"
    },
    {
     "file": "src/lib/tributario/__tests__/obrigacoes-acessorias.test.ts",
@@ -223146,6 +223210,43 @@
     "* - excede até R$ 50k (total mensal R$ 100k) → 5%"
    ]
   },
+  "src/lib/tributario/natureza-operacao.ts": {
+   "path": "src/lib/tributario/natureza-operacao.ts",
+   "lines": 59,
+   "exports": [
+    "const NATUREZA_VENDA_DENTRO_ESTADO",
+    "const NATUREZA_VENDA_FORA_ESTADO",
+    "const CFOP_VENDA_DENTRO_ESTADO",
+    "const CFOP_VENDA_FORA_ESTADO",
+    "interface NaturezaOperacaoVenda",
+    "function normalizarUf",
+    "function resolverNaturezaOperacaoVenda"
+   ],
+   "params": [
+    {
+     "name": "NATUREZA_VENDA_DENTRO_ESTADO",
+     "value": "'VENDAS DE MERCADORIAS DENTRO DO ESTADO'"
+    },
+    {
+     "name": "NATUREZA_VENDA_FORA_ESTADO",
+     "value": "'VENDAS DE MERCADORIAS FORA DO ESTADO'"
+    },
+    {
+     "name": "CFOP_VENDA_DENTRO_ESTADO",
+     "value": "'5102'"
+    },
+    {
+     "name": "CFOP_VENDA_FORA_ESTADO",
+     "value": "'6102'"
+    }
+   ],
+   "rule_comments": [
+    "// Regra resgatada do Bitrix24 (SPA NF | Faturamento, robô da etapa de entrada e processo",
+    "empresa (Brasil Marcas = SP, João Batista = RR) e a terceira empresa não tinha regra; aqui a UF",
+    "vazia ou inválida: sem as duas UFs não há como decidir e a emissão não deve seguir com um"
+   ],
+   "doc": "Natureza da operação e CFOP de venda a partir da UF da empresa emissora e da UF do destinatário. Regra resgatada do Bitrix24 (SPA NF | Faturamento, robô da etapa de entrada e processo \"Tipo de Faturamento\"): mesma UF do emissor e do cliente → \"VENDAS DE MERCADORIAS DENTRO DO ESTADO\"; UF diferente → …"
+  },
   "src/lib/tributario/parametros.ts": {
    "path": "src/lib/tributario/parametros.ts",
    "lines": 30,
@@ -224582,6 +224683,21 @@
     "retorna 3 cenários e recomendação",
     "Lucro Real é fallback acima do limite Presumido",
     "calcula economia vs regime atual"
+   ]
+  },
+  "src/lib/tributario/__tests__/natureza-operacao.test.ts": {
+   "path": "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+   "lines": 58,
+   "is_test": true,
+   "tests": [
+    "natureza da operação de venda pela UF do emissor e do destinatário",
+    "Brasil Marcas (SP) vendendo para SP é venda dentro do estado, CFOP 5102",
+    "Brasil Marcas (SP) vendendo para GO é venda fora do estado, CFOP 6102",
+    "João Batista (RR) vendendo para RR é dentro do estado — regra que o Bitrix tinha fixa",
+    "vale para qualquer empresa emissora, não só para as duas do Bitrix",
+    "aceita sigla em minúsculas e com espaços",
+    "sem UF do emissor ou do destinatário não decide (null), em vez de assumir um valor fixo",
+    "normalizarUf reconhece as 27 UFs e rejeita o resto"
    ]
   },
   "src/lib/tributario/__tests__/obrigacoes-acessorias.test.ts": {
@@ -253518,10 +253634,20 @@
   }
  },
  "git": {
-  "sha": "f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5",
+  "sha": "acf2202a69c7f1cab59f91fc97c5fe8e83003269",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "acf2202",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)",
+    "files": [
+     "src/lib/tributario/__tests__/natureza-operacao.test.ts",
+     "src/lib/tributario/natureza-operacao.ts"
+    ]
+   },
    {
     "sha": "f2dbe02",
     "date": "2026-11-26",
@@ -253948,22 +254074,6 @@
      "docs/qa/02-CENARIOS.md",
      "docs/qa/03-ACHADOS.md",
      "docs/qa/04-PLANO.md"
-    ]
-   },
-   {
-    "sha": "d3af1cc",
-    "date": "2026-11-24",
-    "author": "adm01-debug",
-    "subject": "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)",
-    "files": [
-     "graphify-out/GRAPH_REPORT.md",
-     "graphify-out/manifest.json",
-     "graphify.local.json",
-     "scripts/graphify-local.mjs",
-     "scripts/graphify-local.unit.mjs",
-     "scripts/graphify/config.json",
-     "scripts/graphify/requirements-linux-py311.lock",
-     "scripts/graphify/requirements.in"
     ]
    }
   ],

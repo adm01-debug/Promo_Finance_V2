@@ -16,12 +16,12 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (275)",
+   "src/lib (276)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (328)",
+   "co-localizado (__tests__) (329)",
    "outro (113)",
    "co-localizado (*.test) (50)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)",
    "feat: simulador de elisão calcula e grava cenário com dados reais (#575)",
    "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)",
    "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)",
-   "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)",
-   "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)"
+   "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
