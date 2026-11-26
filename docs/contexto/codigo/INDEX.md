@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `6d2275fcd8e4c813d95f723ac494c631389747c1` (2026-11-25T21:44:55-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `455790afad7767dec23f4032ae7a3ef77bfd1147` (2026-11-25T22:10:15-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 4085 |
 | arquivos_codigo | 2545 |
-| linhas_codigo | 456284 |
+| linhas_codigo | 456286 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -472,21 +472,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (34)
-- bun.lock (32)
-- .github/workflows/ci.yml (12)
+- package.json (33)
+- bun.lock (31)
+- .github/workflows/ci.yml (11)
 - src/integrations/supabase/types.ts (11)
-- supabase/functions/asaas-proxy/index.ts (10)
+- scripts/integrity/baseline/schema-counts.json (10)
 - env.manifest.json (9)
 - scripts/automation.config.json (9)
-- scripts/integrity/baseline/schema-counts.json (9)
-- supabase/config.toml (9)
+- supabase/functions/asaas-proxy/index.ts (9)
 - analise-prs/progresso.json (8)
+- scripts/integrity/baseline/expected-policies.json (8)
+- supabase/config.toml (8)
 - supabase/functions/n8n-callback/index.ts (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - docs/ci/README.md (7)
 - docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (7)
-- scripts/integrity/baseline/expected-policies.json (7)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-25 `455790a` fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)
 - 2026-11-25 `6d2275f` feat: fundamentacao legal por item da nota (etapa 82) (#563)
 - 2026-11-25 `26cb299` feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)
 - 2026-11-25 `b449a65` fix: remove import wildcard de lucide-react no chunk de Categorias (#559)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `ba27656` feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)
 - 2026-11-24 `0f6d936` fix(docs): regenera README de CI a partir do kpi.json vigente (#553)
 - 2026-11-24 `45de89c` chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)
-- 2026-11-24 `8b0db85` docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

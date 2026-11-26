@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "6d2275fcd8e4c813d95f723ac494c631389747c1",
+  "commit": "455790afad7767dec23f4032ae7a3ef77bfd1147",
   "branch": "main",
-  "data_commit": "2026-11-25T21:44:55-03:00",
+  "data_commit": "2026-11-25T22:10:15-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "455790a",
+    "data": "2026-11-25",
+    "assunto": "fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)"
+   },
    {
     "sha": "6d2275f",
     "data": "2026-11-25",
@@ -126,11 +131,6 @@
     "sha": "f7e08e4",
     "data": "2026-11-24",
     "assunto": "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)"
-   },
-   {
-    "sha": "6a46049",
-    "data": "2026-11-23",
-    "assunto": "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)"
    }
   ],
   "arquivos_mudados_7d": 292,
@@ -199,22 +199,22 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 34
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 32
+    "mudancas": 31
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 12
+    "mudancas": 11
    },
    {
     "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
     "mudancas": 10
    },
    {
@@ -226,15 +226,19 @@
     "mudancas": 9
    },
    {
-    "arquivo": "scripts/integrity/baseline/schema-counts.json",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 9
    },
    {
     "arquivo": "analise-prs/progresso.json",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "scripts/integrity/baseline/expected-policies.json",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "supabase/config.toml",
     "mudancas": 8
    },
    {
@@ -254,10 +258,6 @@
     "mudancas": 7
    },
    {
-    "arquivo": "scripts/integrity/baseline/expected-policies.json",
-    "mudancas": 7
-   },
-   {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 7
    },
@@ -268,10 +268,6 @@
    {
     "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 7
-   },
-   {
-    "arquivo": ".github/workflows/prod-migrate.yml",
-    "mudancas": 6
    },
    {
     "arquivo": "docs/prod-readiness.md",
@@ -294,14 +290,18 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/components/fornecedores/FornecedorForm.tsx",
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 285
+    "commits": 284
    },
    {
     "autor": "dependabot[bot]",
@@ -316,7 +316,7 @@
  "contagens": {
   "arquivos_total": 4085,
   "arquivos_codigo": 2545,
-  "linhas_codigo": 456284,
+  "linhas_codigo": 456286,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -592,7 +592,7 @@
   },
   "scripts/security": {
    "arquivos": 13,
-   "linhas": 4510
+   "linhas": 4512
   },
   "scripts/simular-observabilidade-digest.ts": {
    "arquivos": 1,
@@ -790,7 +790,7 @@
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-   "linhas": 705
+   "linhas": 707
   },
   {
    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",

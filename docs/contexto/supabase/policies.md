@@ -139,6 +139,8 @@ Visão consolidada (inclui `storage.objects` e `realtime.messages`); detalhes po
 | public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_service_role_all | ALL | PERMISSIVE | service_role | `true` | `true` |
 | public.catalogo_cclasstrib | catalogo_cclasstrib_select_authenticated | SELECT | PERMISSIVE | authenticated | `true` |  |
 | public.catalogo_cclasstrib | catalogo_cclasstrib_service_role_all | ALL | PERMISSIVE | service_role | `true` | `true` |
+| public.catalogo_fundamentacao | catalogo_fundamentacao_select_authenticated | SELECT | PERMISSIVE | authenticated | `true` |  |
+| public.catalogo_fundamentacao | catalogo_fundamentacao_service_role_all | ALL | PERMISSIVE | service_role | `true` | `true` |
 | public.catalogo_nbs | catalogo_nbs_select_authenticated | SELECT | PERMISSIVE | authenticated | `true` |  |
 | public.catalogo_nbs | catalogo_nbs_service_role_all | ALL | PERMISSIVE | service_role | `true` | `true` |
 | public.catalogo_ncm | catalogo_ncm_select_authenticated | SELECT | PERMISSIVE | authenticated | `true` |  |

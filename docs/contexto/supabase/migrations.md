@@ -1086,3 +1086,5 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261126060000 | [cron_sync_catalogo_ncm_nbs](migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql) | 3 |
 | 20261126080000 | [cron_sync_aliquota_referencia](migrations/20261126080000_cron_sync_aliquota_referencia.sql) | 5 |
 | 20261126100000 | [cron_sync_catalogo_cclasstrib_utc](migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql) | 2 |
+| 20261126110000 | [catalogo_fundamentacao](migrations/20261126110000_catalogo_fundamentacao.sql) | 5 |
+| 20261126111000 | [cron_sync_fundamentacao_legal](migrations/20261126111000_cron_sync_fundamentacao_legal.sql) | 3 |

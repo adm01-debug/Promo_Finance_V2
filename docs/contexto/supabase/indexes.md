@@ -145,6 +145,8 @@ Uso e tamanho em `stats.md`.
 | public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_ibs_uf_uk | btree | ano, uf | sim | sim | `(tributo = 'ibs_uf'::text)` |
 | public.catalogo_aliquota_referencia | catalogo_aliquota_referencia_pkey | btree | id | sim | sim |  |
 | public.catalogo_cclasstrib | catalogo_cclasstrib_pkey | btree | cclasstrib, inicio_vigencia | sim | sim |  |
+| public.catalogo_fundamentacao | catalogo_fundamentacao_pkey | btree | cclasstrib, cst, conjunto_tributo, inicio_vigencia | sim | sim |  |
+| public.catalogo_fundamentacao | catalogo_fundamentacao_vigencia_idx | btree | inicio_vigencia, fim_vigencia | não | sim |  |
 | public.catalogo_nbs | catalogo_nbs_pkey | btree | nbs, inicio_vigencia | sim | sim |  |
 | public.catalogo_ncm | catalogo_ncm_pkey | btree | ncm, inicio_vigencia | sim | sim |  |
 | public.catalogos_fiscais_cargas | catalogos_fiscais_cargas_checksum_key | btree | checksum | sim | sim |  |

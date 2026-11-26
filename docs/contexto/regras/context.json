@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "6d2275fcd8e4c813d95f723ac494c631389747c1",
+  "sha": "455790afad7767dec23f4032ae7a3ef77bfd1147",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 00:55 UTC",
+  "generated_at": "2026-11-26 01:20 UTC",
   "files_total": 4124,
   "code_files": 3703,
-  "code_lines": 529607
+  "code_lines": 529609
  },
  "version": "1.3.2",
- "facts_hash": "30cecb79afc04039",
+ "facts_hash": "df2fc3ba989961b0",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70799,7 +70799,7 @@
   {
    "module": "scripts",
    "files": 154,
-   "lines": 50833,
+   "lines": 50835,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -182631,7 +182631,7 @@
   },
   "scripts/security/test-canonical-db-gates.mjs": {
    "path": "scripts/security/test-canonical-db-gates.mjs",
-   "lines": 706,
+   "lines": 708,
    "exports": [
     "const EXPECTED_PROJECT_REF",
     "const REQUIRED_MIGRATIONS",
@@ -251216,10 +251216,22 @@
   }
  },
  "git": {
-  "sha": "6d2275fcd8e4c813d95f723ac494c631389747c1",
+  "sha": "455790afad7767dec23f4032ae7a3ef77bfd1147",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "455790a",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)",
+    "files": [
+     "scripts/integrity/baseline/expected-crons.json",
+     "scripts/integrity/baseline/expected-policies.json",
+     "scripts/integrity/baseline/schema-counts.json",
+     "scripts/security/test-canonical-db-gates.mjs"
+    ]
+   },
    {
     "sha": "6d2275f",
     "date": "2026-11-25",
@@ -251676,17 +251688,6 @@
     "files": [
      "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
     ]
-   },
-   {
-    "sha": "00b7588",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "fix(db): sincroniza types.ts com o schema real de producao (drift 2026-11-22) (#523)",
-    "files": [
-     ".prettierignore",
-     "src/hooks/usePreferenciasSistema.ts",
-     "src/integrations/supabase/types.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -251715,12 +251716,16 @@
     4
    ],
    [
-    "src/integrations/supabase/types.ts",
+    "supabase/config.toml",
     4
    ],
    [
-    "supabase/config.toml",
-    4
+    "scripts/integrity/baseline/expected-policies.json",
+    3
+   ],
+   [
+    "scripts/integrity/baseline/schema-counts.json",
+    3
    ],
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
@@ -251731,12 +251736,20 @@
     3
    ],
    [
+    "src/integrations/supabase/types.ts",
+    3
+   ],
+   [
     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
     3
    ],
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
     3
+   ],
+   [
+    "scripts/integrity/baseline/expected-crons.json",
+    2
    ],
    [
     "SECURITY_RULES.md",
@@ -251756,18 +251769,6 @@
    ],
    [
     "src/lib/arquitetura/modulos.ts",
-    2
-   ],
-   [
-    "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
-    2
-   ],
-   [
-    "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
-    2
-   ],
-   [
-    "src/lib/tributario/validador-ncm-cst.ts",
     2
    ]
   ]

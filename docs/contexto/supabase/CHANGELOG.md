@@ -2,6 +2,18 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-26 01:21 UTC
+
+- **colunas** adicionado (12): `public.catalogo_fundamentacao.cclasstrib`, `public.catalogo_fundamentacao.conjunto_tributo`, `public.catalogo_fundamentacao.created_at`, `public.catalogo_fundamentacao.cst`, `public.catalogo_fundamentacao.descricao_cclasstrib`, `public.catalogo_fundamentacao.descricao_cst`, `public.catalogo_fundamentacao.fim_vigencia`, `public.catalogo_fundamentacao.inicio_vigencia`, `public.catalogo_fundamentacao.referencia_normativa`, `public.catalogo_fundamentacao.texto`, `public.catalogo_fundamentacao.texto_curto`, `public.catalogo_fundamentacao.versao_it`
+- **constraints** adicionado (1): `public.catalogo_fundamentacao.catalogo_fundamentacao_pkey`
+- **cron jobs** adicionado (1): `56:sync-fundamentacao-legal`
+- **grants** adicionado (2): `public.catalogo_fundamentacao:authenticated`, `public.catalogo_fundamentacao:service_role`
+- **indexes** adicionado (2): `public.catalogo_fundamentacao_pkey`, `public.catalogo_fundamentacao_vigencia_idx`
+- **migrations** adicionado (2): `20261126110000_catalogo_fundamentacao`, `20261126111000_cron_sync_fundamentacao_legal`
+- **policies (RLS)** adicionado (2): `public.catalogo_fundamentacao.catalogo_fundamentacao_select_authenticated`, `public.catalogo_fundamentacao.catalogo_fundamentacao_service_role_all`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_22`
+- **tabelas** adicionado (1): `public.catalogo_fundamentacao`
+
 ## 2026-11-26 00:39 UTC
 
 - **cron jobs** adicionado (4): `52:sync-catalogo-ncm-nbs`, `53:sync-aliquota-referencia-uf`, `54:sync-aliquota-referencia-municipio`, `55:sync-catalogo-cclasstrib`
