@@ -119,7 +119,8 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
       toast.success('Cenário criado com os dados reais do período.');
       onOpenChange(false);
     },
-    onError: (erro: unknown) => toast.error(`Não foi possível salvar o cenário: ${mensagemErro(erro)}`),
+    onError: (erro: unknown) =>
+      toast.error(`Não foi possível salvar o cenário: ${mensagemErro(erro)}`),
   });
 
   useEffect(() => {
@@ -172,9 +173,7 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
               <Label htmlFor="cenario-ano">Ano de referência</Label>
               <Select
                 value={String(premissas.anoReferencia)}
-                onValueChange={(v) =>
-                  setPremissas({ ...premissas, anoReferencia: Number(v) })
-                }
+                onValueChange={(v) => setPremissas({ ...premissas, anoReferencia: Number(v) })}
               >
                 <SelectTrigger id="cenario-ano">
                   <SelectValue />
@@ -260,9 +259,7 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
               <Label htmlFor="cenario-cbs">Cenário de alíquota CBS</Label>
               <Select
                 value={premissas.cenarioCbs}
-                onValueChange={(v) =>
-                  setPremissas({ ...premissas, cenarioCbs: v as CenarioCbs })
-                }
+                onValueChange={(v) => setPremissas({ ...premissas, cenarioCbs: v as CenarioCbs })}
               >
                 <SelectTrigger id="cenario-cbs">
                   <SelectValue />

@@ -35,10 +35,12 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
     .gte('data_emissao', inicio)
     .limit(5000);
   if (notas.error) throw notas.error;
-  const notasValidas = ((notas.data ?? []) as Array<{
-    valor_total: number | null;
-    status: string | null;
-  }>).filter((n) => (n.status ?? '').toLowerCase() !== 'cancelada');
+  const notasValidas = (
+    (notas.data ?? []) as Array<{
+      valor_total: number | null;
+      status: string | null;
+    }>
+  ).filter((n) => (n.status ?? '').toLowerCase() !== 'cancelada');
 
   let faturamento = somar(notasValidas);
   let titulosConsiderados = 0;

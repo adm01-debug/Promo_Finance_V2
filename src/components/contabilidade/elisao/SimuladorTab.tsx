@@ -114,9 +114,7 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
         <DialogContent className="sm:max-w-[560px]">
           <DialogHeader>
             <DialogTitle>{detalhe ? nomeDoCenario(detalhe.premissas) : 'Cenário'}</DialogTitle>
-            <DialogDescription>
-              Memória de cálculo gravada na criação do cenário.
-            </DialogDescription>
+            <DialogDescription>Memória de cálculo gravada na criação do cenário.</DialogDescription>
           </DialogHeader>
           {detalhe && (
             <div className="space-y-3 text-xs">

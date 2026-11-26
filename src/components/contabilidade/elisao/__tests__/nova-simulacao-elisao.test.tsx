@@ -70,9 +70,7 @@ beforeEach(() => {
 describe('NovaSimulacaoElisaoDialog', () => {
   it('preenche faturamento e compras com os dados reais do período', async () => {
     renderDialog();
-    await waitFor(() =>
-      expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(100000)
-    );
+    await waitFor(() => expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(100000));
     expect(screen.getByLabelText('Compras/serviços 12m (R$)')).toHaveValue(15000);
     // nota cancelada é descartada da apuração
     expect(screen.getByText(/2 nota\(s\)/)).toBeInTheDocument();
@@ -80,9 +78,7 @@ describe('NovaSimulacaoElisaoDialog', () => {
 
   it('só habilita a criação quando há nome e base apurada, e grava a memória de cálculo', async () => {
     renderDialog();
-    await waitFor(() =>
-      expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(100000)
-    );
+    await waitFor(() => expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(100000));
 
     const botao = screen.getByRole('button', { name: 'Criar Cenário' });
     expect(botao).toBeDisabled();
@@ -103,10 +99,7 @@ describe('NovaSimulacaoElisaoDialog', () => {
     expect(payload.regime_simulado).toContain('CBS/IBS');
     expect(payload.carga_atual).toBeGreaterThan(0);
     expect(payload.carga_simulada).toBeGreaterThanOrEqual(0);
-    expect(payload.economia_estimada).toBeCloseTo(
-      payload.carga_atual - payload.carga_simulada,
-      2
-    );
+    expect(payload.economia_estimada).toBeCloseTo(payload.carga_atual - payload.carga_simulada, 2);
     expect(payload.premissas.nome).toBe('Planejamento 2027');
     expect(payload.premissas.dados_simulacao.faturamentoAnual).toBe(100000);
     expect(payload.detalhes.fontes.faturamento12m).toBe(100000);
@@ -119,9 +112,7 @@ describe('NovaSimulacaoElisaoDialog', () => {
     notas = [];
     titulos = [{ valor: 80_000, status: 'recebido' }];
     renderDialog();
-    await waitFor(() =>
-      expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(80000)
-    );
+    await waitFor(() => expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(80000));
     expect(screen.getByText(/Títulos a receber/)).toBeInTheDocument();
   });
 
@@ -141,9 +132,7 @@ describe('NovaSimulacaoElisaoDialog', () => {
   it('mostra o erro do banco quando o insert falha', async () => {
     erroInsert = { message: 'permission denied' };
     renderDialog();
-    await waitFor(() =>
-      expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(100000)
-    );
+    await waitFor(() => expect(screen.getByLabelText('Faturamento 12m (R$)')).toHaveValue(100000));
     fireEvent.change(screen.getByLabelText('Nome do Cenário'), { target: { value: 'Falha' } });
     fireEvent.click(screen.getByRole('button', { name: 'Criar Cenário' }));
     await waitFor(() => expect(toastError).toHaveBeenCalled());

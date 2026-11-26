@@ -37,8 +37,12 @@ describe('montarDadosSimulacao', () => {
   });
 
   it('trava o percentual de vendas no intervalo 0..100', () => {
-    expect(montarDadosSimulacao(fontes, premissas({ percentualVendas: 140 })).percentualVendas).toBe(100);
-    expect(montarDadosSimulacao(fontes, premissas({ percentualVendas: -10 })).percentualVendas).toBe(0);
+    expect(
+      montarDadosSimulacao(fontes, premissas({ percentualVendas: 140 })).percentualVendas
+    ).toBe(100);
+    expect(
+      montarDadosSimulacao(fontes, premissas({ percentualVendas: -10 })).percentualVendas
+    ).toBe(0);
   });
 
   it('só envia alíquota CBS livre quando o cenário é livre', () => {
