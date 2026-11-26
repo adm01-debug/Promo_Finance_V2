@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5991337ab6a2745313b2e065a125d1be3bcf536a` (2026-11-26T01:14:02-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ae407b8d61d7030c52a0c62b161a31a7f4ea8517` (2026-11-26T09:05:11-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2433), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2436), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,31 +34,31 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4094 |
-| arquivos_codigo | 2554 |
-| linhas_codigo | 458636 |
+| arquivos_total | 4097 |
+| arquivos_codigo | 2557 |
+| linhas_codigo | 459126 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
 | modulos | 129 |
-| componentes | 994 |
+| componentes | 992 |
 | hooks | 276 |
 | edge_functions | 112 |
 | tabelas | 318 |
 | migrations | 1084 |
 | cron_jobs | 28 |
-| testes | 523 |
+| testes | 527 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 231 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (782), src/pages (208), src/hooks (2)
+- componentes: src/components (780), src/pages (208), src/hooks (2)
 - hooks: src/hooks (240), src/components (27), src/pages (5)
 - servicos_logica: src/lib (273), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (319), outro (113), co-localizado (*.test) (49)
+- testes: co-localizado (__tests__) (322), outro (113), co-localizado (*.test) (50)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -81,10 +81,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/boletos | 0 | 0 | 5 | 1 | 0 | 5 |
 | components/charts | 0 | 0 | 5 | 0 | 0 | 0 |
 | components/clientes | 0 | 0 | 5 | 24 | 1 | 15 |
-| components/cobranca | 0 | 0 | 18 | 31 | 3 | 21 |
+| components/cobranca | 0 | 0 | 18 | 36 | 3 | 23 |
 | components/compliance | 0 | 0 | 16 | 6 | 1 | 5 |
 | components/conciliacao | 0 | 0 | 30 | 36 | 3 | 32 |
-| components/configuracoes | 0 | 0 | 11 | 6 | 2 | 10 |
+| components/configuracoes | 0 | 0 | 9 | 6 | 2 | 10 |
 | components/contabilidade | 0 | 0 | 106 | 45 | 5 | 29 |
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
 | components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
@@ -107,7 +107,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/tesouraria | 0 | 0 | 5 | 16 | 1 | 14 |
 | components/tributario | 0 | 0 | 55 | 36 | 13 | 33 |
 | components/ui | 0 | 0 | 102 | 17 | 0 | 3 |
-| hooks | 0 | 0 | 230 | 444 | 60 | 185 |
+| hooks | 0 | 0 | 230 | 446 | 60 | 185 |
 | hooks/bling | 0 | 0 | 11 | 36 | 2 | 7 |
 | hooks/financial | 0 | 0 | 10 | 18 | 1 | 13 |
 | lib | 0 | 0 | 68 | 10 | 3 | 9 |
@@ -121,7 +121,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/tributario | 0 | 0 | 124 | 0 | 0 | 14 |
-| pages | 58 | 64 | 109 | 363 | 45 | 170 |
+| pages | 58 | 64 | 109 | 365 | 45 | 170 |
 | pages/admin | 4 | 15 | 24 | 118 | 14 | 60 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
@@ -130,7 +130,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
 | pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
 | pages/tributario | 33 | 41 | 85 | 103 | 22 | 59 |
-| routes | 0 | 0 | 16 | 459 | 65 | 205 |
+| routes | 0 | 0 | 16 | 461 | 65 | 205 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -334,7 +334,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `enviar-relatorios-tributarios-agendados` — tabelas: empresas, relatorios_tributarios_agendados; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `executar-analise-preditiva` (verify_jwt=false) — tabelas: alertas_preditivos, clientes, contas_bancarias, contas_pagar, contas_receber, empresas, historico_analises_preditivas, historico_score_saude, metas_financeiras, recomendacoes_metas_ia, transacoes_bancarias, user_empresas; chamada por 0 arquivo(s) do front
 - `executar-fechamento-tributario` — tabelas: apuracoes_tributarias, contas_bancarias, empresas, fechamentos_tributarios, regime_decision_cache, relatorios_tributarios, transacoes_bancarias, user_roles, verificacoes_conformidade; chamada por 1 arquivo(s) do front
-- `executar-regua-cobranca` (verify_jwt=false) — tabelas: contas_receber, execucoes_regua_cobranca, regua_cobranca; chamada por 0 arquivo(s) do front, por SQL/cron
+- `executar-regua-cobranca` (verify_jwt=false) — tabelas: contas_receber, execucoes_regua_cobranca, regua_cobranca, templates_cobranca; chamada por 0 arquivo(s) do front, por SQL/cron
 - `executar-relatorios` (verify_jwt=false) — tabelas: contas_bancarias, contas_pagar, contas_receber, historico_relatorios, relatorios_agendados, user_empresas; chamada por 1 arquivo(s) do front
 - `expert-agent` (verify_jwt=false) — tabelas: -; chamada por 2 arquivo(s) do front
 - `exportar-sped-contribuicoes` — tabelas: apuracoes_tributarias, empresas, user_empresas, user_roles; chamada por 1 arquivo(s) do front
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `ae407b8` fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)
 - 2026-11-26 `5991337` docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)
 - 2026-11-26 `aeb9a5f` feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)
 - 2026-11-26 `377e5cf` feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `cdaca4d` fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)
 - 2026-11-25 `f5e0e48` fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)
 - 2026-11-25 `de045cd` feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)
-- 2026-11-25 `7a3a58d` feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

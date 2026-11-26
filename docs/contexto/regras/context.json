@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5991337ab6a2745313b2e065a125d1be3bcf536a",
+  "sha": "ae407b8d61d7030c52a0c62b161a31a7f4ea8517",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 04:18 UTC",
-  "files_total": 4133,
-  "code_files": 3712,
-  "code_lines": 531968
+  "generated_at": "2026-11-26 12:07 UTC",
+  "files_total": 4136,
+  "code_files": 3715,
+  "code_lines": 532461
  },
  "version": "1.3.2",
- "facts_hash": "546be9591ee88f70",
+ "facts_hash": "cf3712902ec5e56d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1303,
+   ".ts": 1307,
    ".sql": 1157,
-   ".tsx": 1130,
+   ".tsx": 1129,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -61397,6 +61397,9 @@
      "configuracoes_duplicidade",
      "contas_bancarias",
      "contratos",
+     "empresas",
+     "execucoes_cobranca",
+     "fila_cobrancas",
      "frontend_error_logs",
      "frontend_performance_logs",
      "login_attempts",
@@ -61404,7 +61407,10 @@
      "profiles",
      "push_subscriptions",
      "regras_conciliacao",
+     "regua_cobranca",
      "security_settings",
+     "templates_cobranca",
+     "user_empresas",
      "user_preferences",
      "webauthn_credentials"
     ],
@@ -61412,15 +61418,19 @@
      "analyze-document",
      "get-vapid-key",
      "open-finance",
+     "processar-fila-cobrancas",
      "send-push-notification",
      "whatsapp-ia-proativo"
     ],
     "rpc_transitive": [
+     "confirmar_envio_cobranca",
      "delete_cron_job",
      "get_cron_run_history",
+     "processar_regua_cobranca",
+     "registrar_auditoria_config",
      "toggle_cron_job"
     ],
-    "deps_count": 68
+    "deps_count": 69
    },
    {
     "path": "",
@@ -62239,7 +62249,7 @@
      "processar_regua_cobranca",
      "registrar_auditoria_config"
     ],
-    "deps_count": 134
+    "deps_count": 135
    },
    {
     "path": "/compras",
@@ -64402,7 +64412,8 @@
      "contas_receber",
      "edge_function_logs",
      "execucoes_regua_cobranca",
-     "regua_cobranca"
+     "regua_cobranca",
+     "templates_cobranca"
     ],
     "env": [
      "REGUA_CRON_SECRET",
@@ -68055,7 +68066,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1016,
+  "components_count": 1014,
   "hooks": [
    {
     "name": "useContacts",
@@ -69638,6 +69649,14 @@
     "file": "src/hooks/useReguaCobranca.ts"
    },
    {
+    "name": "useCriarTemplate",
+    "file": "src/hooks/useReguaCobranca.ts"
+   },
+   {
+    "name": "useExcluirTemplate",
+    "file": "src/hooks/useReguaCobranca.ts"
+   },
+   {
     "name": "useFilaCobrancas",
     "file": "src/hooks/useReguaCobranca.ts"
    },
@@ -71108,8 +71127,8 @@
   },
   {
    "module": "src/components",
-   "files": 1014,
-   "lines": 167322,
+   "files": 1012,
+   "lines": 167454,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71387,8 +71406,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 330,
-   "lines": 49674,
+   "files": 331,
+   "lines": 49838,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71727,8 +71746,8 @@
   },
   {
    "module": "src/lib",
-   "files": 440,
-   "lines": 60295,
+   "files": 442,
+   "lines": 60466,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -71750,6 +71769,7 @@
     "push_subscriptions",
     "regua_cobranca_status",
     "t",
+    "templates_cobranca",
     "transacoes_bancarias",
     "ufs",
     "user_action_audit",
@@ -71928,7 +71948,7 @@
   {
    "module": "src/pages",
    "files": 267,
-   "lines": 46985,
+   "lines": 46847,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -72030,8 +72050,7 @@
     "src/contexts",
     "src/hooks",
     "src/integrations",
-    "src/lib",
-    "src/types"
+    "src/lib"
    ],
    "file_list": [
     "src/pages/AdminEdgeHealth.tsx",
@@ -72289,8 +72308,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 259,
-   "lines": 57522,
+   "files": 261,
+   "lines": 57686,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72393,6 +72412,7 @@
     "sso_role_mappings",
     "sso_user_groups",
     "tax_audit_trail",
+    "templates_cobranca",
     "transacoes_bancarias",
     "user_digest_preferences",
     "user_empresas",
@@ -74834,9 +74854,16 @@
    },
    "templates_cobranca": {
     "select": [
-     "src/hooks/useReguaCobranca.ts"
+     "src/hooks/useReguaCobranca.ts",
+     "supabase/functions/executar-regua-cobranca/index.ts"
     ],
     "update": [
+     "src/hooks/useReguaCobranca.ts"
+    ],
+    "insert": [
+     "src/hooks/useReguaCobranca.ts"
+    ],
+    "delete": [
      "src/hooks/useReguaCobranca.ts"
     ]
    },
@@ -76302,6 +76329,12 @@
     "user_id"
    ],
    "templates_cobranca": [
+    "assunto",
+    "ativo",
+    "canal",
+    "corpo",
+    "empresa_id",
+    "etapa",
     "id"
    ],
    "transacoes_bancarias": [
@@ -83403,6 +83436,10 @@
     "msg": "Erro: ${e.message}"
    },
    {
+    "file": "src/hooks/useReguaCobranca.ts",
+    "msg": "Sem permissão para ${acao}: nenhum registro foi alterado."
+   },
+   {
     "file": "src/hooks/useRelatorioAnual.ts",
     "msg": "Dados do relatório ainda não disponíveis"
    },
@@ -87920,7 +87957,11 @@
    },
    {
     "file": "supabase/functions/enviar-alerta-email/index.ts",
-    "text": "6b7280;\">Vencimento: ${dados.dataVencimento}</p>`"
+    "text": "perde apenas CR/LF e nao ganha entidades."
+   },
+   {
+    "file": "supabase/functions/enviar-alerta-email/index.ts",
+    "text": "6b7280;\">Vencimento: ${vencimentoHtml}</p>`"
    },
    {
     "file": "supabase/functions/enviar-convite-organizacao/index.ts",
@@ -104418,6 +104459,18 @@
     "kind": "filtra"
    },
    {
+    "file": "src/components/cobranca/ReguaCobrancaConfig.tsx",
+    "field": "etapa",
+    "value": "preventiva",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/components/cobranca/ReguaCobrancaConfig.tsx",
+    "field": "etapa",
+    "value": "preventiva",
+    "kind": "escreve"
+   },
+   {
     "file": "src/components/cobranca/ReguaCobrancaVisual.tsx",
     "field": "type",
     "value": "spring",
@@ -105298,12 +105351,6 @@
     "field": "tipo",
     "value": "tipo_compativel",
     "kind": "compara"
-   },
-   {
-    "file": "src/components/configuracoes/TemplatesTab.tsx",
-    "field": "tipo",
-    "value": "email",
-    "kind": "escreve"
    },
    {
     "file": "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
@@ -113754,66 +113801,6 @@
     "kind": "compara"
    },
    {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "tipo",
-    "value": "email",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "etapa",
-    "value": "preventiva",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "etapa",
-    "value": "lembrete",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "etapa",
-    "value": "cobranca",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "etapa",
-    "value": "cobranca",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "etapa",
-    "value": "negociacao",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "etapa",
-    "value": "juridico",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "tipo",
-    "value": "email",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "tipo",
-    "value": "whatsapp",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/pages/Configuracoes.constants.ts",
-    "field": "tipo",
-    "value": "email",
-    "kind": "escreve"
-   },
-   {
     "file": "src/pages/Contabilidade.tsx",
     "field": "tipo",
     "value": "ECD",
@@ -119684,6 +119671,12 @@
     "body": "const pdf = await PDFDocument.create(); const font = await pdf.embedFont(StandardFonts.Helvetica); const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold); const page = pdf.addPage([595, 842]); const { height } = page.getSize(); let y = height - 60; page.drawText('Relatório Anual Tributário', { x: 50, y, size: 22, font: fontBold, color: rgb(0.1, 0.2, 0.5), }); y -= 30; page.drawText(`${empresa} · Ano ${ano}`, { x: 50, y, size: 12, font, color: rgb(0.3, 0.3, 0.3) }); y -= 40; const kpis …"
    },
    {
+    "file": "supabase/functions/executar-regua-cobranca/domain.ts",
+    "name": "aplicarVariaveis",
+    "params": "texto: string, dados: DadosMensagem",
+    "body": "return texto .replaceAll('{{cliente}}', dados.cliente) .replaceAll('{{nome_cliente}}', dados.cliente) .replaceAll('{{valor}}', dados.valor) .replaceAll('{{vencimento}}', dados.vencimento) .replaceAll('{{data_vencimento}}', dados.vencimento);"
+   },
+   {
     "file": "supabase/functions/executar-relatorios/index.ts",
     "name": "gerarDadosRelatorio",
     "params": "supabase: any, relatorio: any",
@@ -123506,6 +123499,82 @@
    {
     "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
     "name": "exibe switches Ativo para cada etapa"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "Prop secao (uso nas Configuracoes)"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "secao="
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "secao="
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "Estado vazio"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "avisa quando nao ha etapas de regua cadastradas"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "Templates: lista real por etapa"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "mostra o template cadastrado na aba da sua etapa"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "não mostra o template de outra etapa na aba atual"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "troca de aba e passa a mostrar o template daquela etapa"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "avisa quando a etapa não tem template"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "Templates: dono do registro"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "mostra a empresa de cada template quando nenhuma está em escopo"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "usa a razão social e esconde o rótulo quando há empresa em escopo"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "Templates: criação"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "bloqueia a criação quando nenhuma empresa está em escopo"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "cria o template na empresa em escopo com os campos do formulário"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "Templates: exclusão"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "exclui o template depois da confirmação"
+   },
+   {
+    "file": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+    "name": "não exclui quando o usuário cancela"
    },
    {
     "file": "src/components/cobranca/previsao/__tests__/risco.test.ts",
@@ -127512,6 +127581,34 @@
     "name": "retorna null quando nenhuma regra bate"
    },
    {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "useReguaCobranca — escrita barrada por RLS"
+   },
+   {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "useUpdateTemplate falha quando nenhuma linha é devolvida"
+   },
+   {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "useUpdateTemplate conclui quando a linha volta"
+   },
+   {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "useUpdateReguaCobranca falha quando nenhuma linha é devolvida"
+   },
+   {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "useCriarTemplate falha quando o insert não devolve linha"
+   },
+   {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "useExcluirTemplate falha quando o delete não devolve linha"
+   },
+   {
+    "file": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+    "name": "propaga o erro do banco quando existe"
+   },
+   {
     "file": "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx",
     "name": "gerarDARF"
    },
@@ -130698,6 +130795,94 @@
    {
     "file": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
     "name": "ALIQUOTAS_TRANSICAO deriva de REF_CBS_2027/REF_IBS, não de constantes fixas"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+    "name": "executar-regua-cobranca — texto da cobrança"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+    "name": "substitui as variáveis do catálogo no corpo e no assunto"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+    "name": "mantém o texto quando o assunto não tem variável"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+    "name": "o provedor de e-mail neutraliza marcação vinda do template"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+    "name": "o provedor de e-mail preserva as quebras de linha do template"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+    "name": "o assunto mantém o texto entre < e > e corta CR/LF (cabeçalho do e-mail)"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "executar-regua-cobranca — usa o template real"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "consulta templates_cobranca"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "carrega o template em cada envio (chamada real, não código morto)"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "seleciona assunto e corpo do template"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "filtra por empresa, etapa, canal e template ativo"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "usa o corpo do template como mensagem"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "usa o assunto do template como título do e-mail"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "substitui as variáveis publicadas no catálogo da tela"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "recebe empresa e etapa de cada envio (não usa template global)"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "executar-regua-cobranca — envio que realmente chega ao provedor"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "chama o WhatsApp no contrato do provedor (action + data.telefone/data.mensagem)"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "não oferece na tela canal sem provedor no executor"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "aplica as variáveis do catálogo também no assunto"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "entrega o texto cru e deixa a escapagem com quem monta o HTML"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "finaliza a reserva mesmo quando o envio lança"
+   },
+   {
+    "file": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+    "name": "a reserva usa status aceito pela constraint da tabela"
    },
    {
     "file": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
@@ -138136,6 +138321,18 @@
     "name": "convite de usuário: falha ao remover papel padrão também compensa a conta"
    },
    {
+    "file": "supabase/functions/enviar-alerta-email/html.test.ts",
+    "name": "escaparHtml neutraliza a marcação do template"
+   },
+   {
+    "file": "supabase/functions/enviar-alerta-email/html.test.ts",
+    "name": "textoParaHtml preserva as quebras de linha do template"
+   },
+   {
+    "file": "supabase/functions/enviar-alerta-email/html.test.ts",
+    "name": "assuntoSeguro mantém o nome entre < e > e corta CR/LF"
+   },
+   {
     "file": "supabase/functions/enviar-alerta-email/index.test.ts",
     "name": "enviar-alerta-email rejeita chamada sem credencial antes de acessar serviços"
    },
@@ -139574,6 +139771,10 @@
    {
     "file": "supabase/functions/copilot-global/index.ts",
     "call": "enqueue("
+   },
+   {
+    "file": "supabase/functions/enviar-alerta-email/html.ts",
+    "call": "asaas"
    },
    {
     "file": "supabase/functions/enviar-alerta-email/index.ts",
@@ -156644,6 +156845,10 @@
     "limit": "1"
    },
    {
+    "file": "supabase/functions/executar-regua-cobranca/index.ts",
+    "limit": "1"
+   },
+   {
     "file": "supabase/functions/executar-relatorios/index.ts",
     "limit": "100"
    },
@@ -159585,10 +159790,6 @@
       "compara:src/components/conciliacao/ia/DetalhesExpandidosDialog.tsx",
       "compara:src/components/conciliacao/ia/SugestoesMatchSections.tsx"
      ],
-     "email": [
-      "escreve:src/components/configuracoes/TemplatesTab.tsx",
-      "escreve:src/pages/Configuracoes.constants.ts"
-     ],
      "analitica": [
       "compara:src/components/contabilidade/LancamentosTab.tsx",
       "compara:src/components/contabilidade/PlanoContasTab.tsx",
@@ -160144,9 +160345,6 @@
       "escreve:supabase/functions/_shared/obrigacoes/catalogo.ts",
       "escreve:supabase/functions/_shared/obrigacoes/types.ts"
      ],
-     "whatsapp": [
-      "escreve:src/pages/Configuracoes.constants.ts"
-     ],
      "210210": [
       "compara:supabase/functions/_shared/sefaz/manifestacao.ts"
      ],
@@ -160272,6 +160470,11 @@
       "compara:src/components/quick-create/QuickCreateModal.tsx"
      ]
     },
+    "etapa": {
+     "preventiva": [
+      "escreve:src/components/cobranca/ReguaCobrancaConfig.tsx"
+     ]
+    },
     "state": {
      "loading": [
       "compara:src/components/ui/action-button.tsx"
@@ -160369,23 +160572,6 @@
      ],
      "entregue": [
       "compara:src/pages/tributario/ObrigacoesAcessorias.tsx"
-     ]
-    },
-    "etapa": {
-     "preventiva": [
-      "escreve:src/pages/Configuracoes.constants.ts"
-     ],
-     "lembrete": [
-      "escreve:src/pages/Configuracoes.constants.ts"
-     ],
-     "cobranca": [
-      "escreve:src/pages/Configuracoes.constants.ts"
-     ],
-     "negociacao": [
-      "escreve:src/pages/Configuracoes.constants.ts"
-     ],
-     "juridico": [
-      "escreve:src/pages/Configuracoes.constants.ts"
      ]
     },
     "manifestacao_status": {
@@ -187876,9 +188062,21 @@
   },
   "src/components/cobranca/ReguaCobrancaConfig.tsx": {
    "path": "src/components/cobranca/ReguaCobrancaConfig.tsx",
-   "lines": 252,
+   "lines": 530,
    "exports": [
     "function ReguaCobrancaConfig"
+   ],
+   "status_values": [
+    {
+     "field": "etapa",
+     "value": "preventiva",
+     "kind": "escreve"
+    },
+    {
+     "field": "etapa",
+     "value": "preventiva",
+     "kind": "escreve"
+    }
    ]
   },
   "src/components/cobranca/ReguaCobrancaVisual.tsx": {
@@ -188016,7 +188214,7 @@
   },
   "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx": {
    "path": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
-   "lines": 117,
+   "lines": 304,
    "is_test": true,
    "tests": [
     "ReguaCobrancaConfig",
@@ -188028,7 +188226,26 @@
     "exibe descrição das etapas",
     "Switches de configuração",
     "exibe switches Auto para cada etapa",
-    "exibe switches Ativo para cada etapa"
+    "exibe switches Ativo para cada etapa",
+    "Prop secao (uso nas Configuracoes)",
+    "secao=",
+    "secao=",
+    "Estado vazio",
+    "avisa quando nao ha etapas de regua cadastradas",
+    "Templates: lista real por etapa",
+    "mostra o template cadastrado na aba da sua etapa",
+    "não mostra o template de outra etapa na aba atual",
+    "troca de aba e passa a mostrar o template daquela etapa",
+    "avisa quando a etapa não tem template",
+    "Templates: dono do registro",
+    "mostra a empresa de cada template quando nenhuma está em escopo",
+    "usa a razão social e esconde o rótulo quando há empresa em escopo",
+    "Templates: criação",
+    "bloqueia a criação quando nenhuma empresa está em escopo",
+    "cria o template na empresa em escopo com os campos do formulário",
+    "Templates: exclusão",
+    "exclui o template depois da confirmação",
+    "não exclui quando o usuário cancela"
    ]
   },
   "src/components/cobranca/previsao/PrevisaoClienteCard.tsx": {
@@ -189810,13 +190027,6 @@
     "transition={{ delay: index * 0.1 }}"
    ]
   },
-  "src/components/configuracoes/ReguaCobrancaTab.tsx": {
-   "path": "src/components/configuracoes/ReguaCobrancaTab.tsx",
-   "lines": 135,
-   "exports": [
-    "function ReguaCobrancaTab"
-   ]
-  },
   "src/components/configuracoes/SecuritySettings.tsx": {
    "path": "src/components/configuracoes/SecuritySettings.tsx",
    "lines": 425,
@@ -189891,21 +190101,6 @@
    "lines": 291,
    "exports": [
     "function SistemaTab"
-   ]
-  },
-  "src/components/configuracoes/TemplatesTab.tsx": {
-   "path": "src/components/configuracoes/TemplatesTab.tsx",
-   "lines": 198,
-   "exports": [
-    "interface Template",
-    "function TemplatesTab"
-   ],
-   "status_values": [
-    {
-     "field": "tipo",
-     "value": "email",
-     "kind": "escreve"
-    }
    ]
   },
   "src/components/contabilidade/AuditoriaCFCKpis.tsx": {
@@ -210691,12 +210886,15 @@
   },
   "src/hooks/useReguaCobranca.ts": {
    "path": "src/hooks/useReguaCobranca.ts",
-   "lines": 197,
+   "lines": 269,
    "exports": [
     "function useReguaCobranca",
     "function useUpdateReguaCobranca",
+    "interface NovoTemplateCobranca",
     "function useTemplatesCobranca",
     "function useUpdateTemplate",
+    "function useCriarTemplate",
+    "function useExcluirTemplate",
     "function useFilaCobrancas",
     "function useExecucoesCobranca",
     "function useProcessarRegua",
@@ -210710,7 +210908,7 @@
     },
     {
      "table": "regua_cobranca",
-     "op": "update"
+     "op": "select,update"
     },
     {
      "table": "templates_cobranca",
@@ -210718,7 +210916,15 @@
     },
     {
      "table": "templates_cobranca",
-     "op": "update"
+     "op": "select,update"
+    },
+    {
+     "table": "templates_cobranca",
+     "op": "insert,select"
+    },
+    {
+     "table": "templates_cobranca",
+     "op": "delete,select"
     },
     {
      "table": "fila_cobrancas",
@@ -210748,13 +210954,16 @@
     "Erro ao confirmar envio: ${e.message}",
     "Erro ao processar fila: ${e.message}",
     "Erro ao processar régua: ${e.message}",
-    "Erro: ${e.message}"
+    "Erro: ${e.message}",
+    "Sem permissão para ${acao}: nenhum registro foi alterado."
    ],
    "hooks": [
     "useReguaCobranca",
     "useUpdateReguaCobranca",
     "useTemplatesCobranca",
     "useUpdateTemplate",
+    "useCriarTemplate",
+    "useExcluirTemplate",
     "useFilaCobrancas",
     "useExecucoesCobranca",
     "useProcessarRegua",
@@ -214053,6 +214262,20 @@
     "propaga erro da leitura em vez de exibir lista vazia",
     "retorna primeira regra correspondente e incrementa uso",
     "retorna null quando nenhuma regra bate"
+   ]
+  },
+  "src/hooks/__tests__/useReguaCobranca.rls.test.tsx": {
+   "path": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+   "lines": 92,
+   "is_test": true,
+   "tests": [
+    "useReguaCobranca — escrita barrada por RLS",
+    "useUpdateTemplate falha quando nenhuma linha é devolvida",
+    "useUpdateTemplate conclui quando a linha volta",
+    "useUpdateReguaCobranca falha quando nenhuma linha é devolvida",
+    "useCriarTemplate falha quando o insert não devolve linha",
+    "useExcluirTemplate falha quando o delete não devolve linha",
+    "propaga o erro do banco quando existe"
    ]
   },
   "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx": {
@@ -218361,6 +218584,48 @@
     "types/reforma-tributaria — regressão de API pública",
     "preserva catálogos exportados",
     "ALIQUOTAS_TRANSICAO deriva de REF_CBS_2027/REF_IBS, não de constantes fixas"
+   ]
+  },
+  "src/lib/__tests__/regua-cobranca-mensagem.test.ts": {
+   "path": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+   "lines": 44,
+   "is_test": true,
+   "tests": [
+    "executar-regua-cobranca — texto da cobrança",
+    "substitui as variáveis do catálogo no corpo e no assunto",
+    "mantém o texto quando o assunto não tem variável",
+    "o provedor de e-mail neutraliza marcação vinda do template",
+    "o provedor de e-mail preserva as quebras de linha do template",
+    "o assunto mantém o texto entre < e > e corta CR/LF (cabeçalho do e-mail)"
+   ]
+  },
+  "src/lib/__tests__/regua-cobranca-template.contract.test.ts": {
+   "path": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+   "lines": 127,
+   "is_test": true,
+   "tables": [
+    {
+     "table": "templates_cobranca",
+     "op": "ref"
+    }
+   ],
+   "tests": [
+    "executar-regua-cobranca — usa o template real",
+    "consulta templates_cobranca",
+    "carrega o template em cada envio (chamada real, não código morto)",
+    "seleciona assunto e corpo do template",
+    "filtra por empresa, etapa, canal e template ativo",
+    "usa o corpo do template como mensagem",
+    "usa o assunto do template como título do e-mail",
+    "substitui as variáveis publicadas no catálogo da tela",
+    "recebe empresa e etapa de cada envio (não usa template global)",
+    "executar-regua-cobranca — envio que realmente chega ao provedor",
+    "chama o WhatsApp no contrato do provedor (action + data.telefone/data.mensagem)",
+    "não oferece na tela canal sem provedor no executor",
+    "aplica as variáveis do catálogo também no assunto",
+    "entrega o texto cru e deixa a escapagem com quem monta o HTML",
+    "finaliza a reserva mesmo quando o envio lança",
+    "a reserva usa status aceito pela constraint da tabela"
    ]
   },
   "src/lib/__tests__/relatorio-pdf.regression.test.ts": {
@@ -228528,65 +228793,9 @@
   },
   "src/pages/Configuracoes.constants.ts": {
    "path": "src/pages/Configuracoes.constants.ts",
-   "lines": 123,
+   "lines": 10,
    "exports": [
-    "const containerVariants",
-    "interface EtapaConfig",
-    "interface Template",
-    "const etapasIniciais",
-    "const templatesIniciais"
-   ],
-   "status_values": [
-    {
-     "field": "tipo",
-     "value": "email",
-     "kind": "escreve"
-    },
-    {
-     "field": "etapa",
-     "value": "preventiva",
-     "kind": "escreve"
-    },
-    {
-     "field": "etapa",
-     "value": "lembrete",
-     "kind": "escreve"
-    },
-    {
-     "field": "etapa",
-     "value": "cobranca",
-     "kind": "escreve"
-    },
-    {
-     "field": "etapa",
-     "value": "cobranca",
-     "kind": "escreve"
-    },
-    {
-     "field": "etapa",
-     "value": "negociacao",
-     "kind": "escreve"
-    },
-    {
-     "field": "etapa",
-     "value": "juridico",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "email",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "whatsapp",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "email",
-     "kind": "escreve"
-    }
+    "const containerVariants"
    ],
    "doc": "Constantes e configuração inicial da página Configuracoes — extraídas para zerar max-lines."
   },
@@ -228600,7 +228809,7 @@
   },
   "src/pages/Configuracoes.tsx": {
    "path": "src/pages/Configuracoes.tsx",
-   "lines": 419,
+   "lines": 394,
    "exports": [
     "function Configuracoes"
    ],
@@ -239371,6 +239580,29 @@
    ],
    "uses_service_role": true
   },
+  "supabase/functions/enviar-alerta-email/html.test.ts": {
+   "path": "supabase/functions/enviar-alerta-email/html.test.ts",
+   "lines": 23,
+   "is_test": true,
+   "tests": [
+    "escaparHtml neutraliza a marcação do template",
+    "textoParaHtml preserva as quebras de linha do template",
+    "assuntoSeguro mantém o nome entre < e > e corta CR/LF"
+   ]
+  },
+  "supabase/functions/enviar-alerta-email/html.ts": {
+   "path": "supabase/functions/enviar-alerta-email/html.ts",
+   "lines": 38,
+   "exports": [
+    "function escaparHtml",
+    "function textoParaHtml",
+    "function assuntoSeguro"
+   ],
+   "doc": "Sanitização do texto que chega pelos fluxos que disparam e-mail (`executar-regua-cobranca`, `gerar-resumo-financeiro-diario`, alertas do `asaas-proxy`). O template monta o HTML desta função, então a conversão fica aqui — no dono da marcação — e não nos chamadores: assim todo remetente fica protegido …",
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "supabase/functions/enviar-alerta-email/index.test.ts": {
    "path": "supabase/functions/enviar-alerta-email/index.test.ts",
    "lines": 82,
@@ -239387,7 +239619,7 @@
   },
   "supabase/functions/enviar-alerta-email/index.ts": {
    "path": "supabase/functions/enviar-alerta-email/index.ts",
-   "lines": 281,
+   "lines": 292,
    "exports": [
     "const handler"
    ],
@@ -239433,7 +239665,8 @@
     }
    ],
    "rule_comments": [
-    "6b7280;\">Vencimento: ${dados.dataVencimento}</p>`"
+    "perde apenas CR/LF e nao ganha entidades.",
+    "6b7280;\">Vencimento: ${vencimentoHtml}</p>`"
    ],
    "side_effects": [
     "asaas"
@@ -240070,10 +240303,13 @@
   },
   "supabase/functions/executar-regua-cobranca/domain.ts": {
    "path": "supabase/functions/executar-regua-cobranca/domain.ts",
-   "lines": 34,
+   "lines": 55,
    "exports": [
     "const CANAIS_REGUA",
     "type CanalRegua",
+    "interface TemplateCobranca",
+    "interface DadosMensagem",
+    "function aplicarVariaveis",
     "function normalizarDiasGatilho",
     "function normalizarCanais",
     "function dataAlvoUtc"
@@ -240083,11 +240319,18 @@
      "name": "CANAIS_REGUA",
      "values": "'email', 'whatsapp', 'sms', 'telefone'"
     }
+   ],
+   "calc_fns": [
+    {
+     "name": "aplicarVariaveis",
+     "params": "texto: string, dados: DadosMensagem",
+     "body": "return texto .replaceAll('{{cliente}}', dados.cliente) .replaceAll('{{nome_cliente}}', dados.cliente) .replaceAll('{{valor}}', dados.valor) .replaceAll('{{vencimento}}', dados.vencimento) .replaceAll('{{data_vencimento}}', dados.vencimento);"
+    }
    ]
   },
   "supabase/functions/executar-regua-cobranca/index.ts": {
    "path": "supabase/functions/executar-regua-cobranca/index.ts",
-   "lines": 204,
+   "lines": 275,
    "tables": [
     {
      "table": "regua_cobranca",
@@ -240104,6 +240347,10 @@
     {
      "table": "execucoes_regua_cobranca",
      "op": "update"
+    },
+    {
+     "table": "templates_cobranca",
+     "op": "select"
     }
    ],
    "table_cols": {
@@ -240128,6 +240375,14 @@
     ],
     "execucoes_regua_cobranca": [
      "id"
+    ],
+    "templates_cobranca": [
+     "assunto",
+     "ativo",
+     "canal",
+     "corpo",
+     "empresa_id",
+     "etapa"
     ]
    },
    "invokes": [
@@ -240167,6 +240422,9 @@
    ],
    "side_effects": [
     "invoke("
+   ],
+   "pagination": [
+    "1"
    ],
    "uses_service_role": true
   },
@@ -252021,10 +252279,33 @@
   }
  },
  "git": {
-  "sha": "5991337ab6a2745313b2e065a125d1be3bcf536a",
+  "sha": "ae407b8d61d7030c52a0c62b161a31a7f4ea8517",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ae407b8",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)",
+    "files": [
+     "src/components/cobranca/ReguaCobrancaConfig.tsx",
+     "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+     "src/components/configuracoes/ReguaCobrancaTab.tsx",
+     "src/components/configuracoes/TemplatesTab.tsx",
+     "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+     "src/hooks/useReguaCobranca.ts",
+     "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+     "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+     "src/pages/Configuracoes.constants.ts",
+     "src/pages/Configuracoes.tsx",
+     "supabase/functions/enviar-alerta-email/html.test.ts",
+     "supabase/functions/enviar-alerta-email/html.ts",
+     "supabase/functions/enviar-alerta-email/index.ts",
+     "supabase/functions/executar-regua-cobranca/domain.ts",
+     "supabase/functions/executar-regua-cobranca/index.ts"
+    ]
+   },
    {
     "sha": "5991337",
     "date": "2026-11-26",
@@ -252513,15 +252794,6 @@
      "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
      "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
      "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
-    ]
-   },
-   {
-    "sha": "2c2486f",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "chore: adiciona plano de UX de navegacao em 200 etapas (#529)",
-    "files": [
-     "docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md"
     ]
    }
   ],

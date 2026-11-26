@@ -726,8 +726,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 11,
+   "usado_por": 12,
    "usado_por_modulos": [
+    "components/cobranca",
     "components/dashboard",
     "components/empresa",
     "components/layout",
@@ -736,7 +737,7 @@
     "pages",
     "pages/tributario"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -8721,7 +8722,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 314,
+   "usado_por": 312,
    "usado_por_modulos": [
     "components/admin",
     "components/alertas",
@@ -8737,7 +8738,6 @@
     "components/command-palette",
     "components/comprovantes",
     "components/conciliacao",
-    "components/configuracoes",
     "components/contabilidade",
     "components/contas-bancarias",
     "components/contas-pagar",

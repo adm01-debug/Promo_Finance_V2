@@ -1424,8 +1424,8 @@
   {
    "nome": "enviar-alerta-email",
    "entrada": "supabase/functions/enviar-alerta-email/index.ts",
-   "arquivos": 1,
-   "linhas": 280,
+   "arquivos": 2,
+   "linhas": 328,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1462,7 +1462,7 @@
    ],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 1
+   "testes": 2
   },
   {
    "nome": "enviar-bitrix24-tributario",
@@ -1738,7 +1738,7 @@
    "nome": "executar-regua-cobranca",
    "entrada": "supabase/functions/executar-regua-cobranca/index.ts",
    "arquivos": 2,
-   "linhas": 236,
+   "linhas": 328,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -1747,7 +1747,8 @@
    "tabelas": [
     "contas_receber",
     "execucoes_regua_cobranca",
-    "regua_cobranca"
+    "regua_cobranca",
+    "templates_cobranca"
    ],
    "rpcs": [],
    "env": [

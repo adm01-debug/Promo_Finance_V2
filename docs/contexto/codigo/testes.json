@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 523,
+ "total": 527,
  "por_tipo": {
-  "contrato": 4,
+  "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 445
+  "unit": 448
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 319
+   "arquivos": 322
   },
   {
    "padrao": "outro",
@@ -23,7 +23,7 @@
   },
   {
    "padrao": "co-localizado (*.test)",
-   "arquivos": 49
+   "arquivos": 50
   },
   {
    "padrao": "e2e/",
@@ -913,11 +913,12 @@
   {
    "arquivo": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
    "tipo": "unit",
-   "linhas": 116,
+   "linhas": 303,
    "testa": [
-    "src/components/cobranca/ReguaCobrancaConfig.tsx"
+    "src/components/cobranca/ReguaCobrancaConfig.tsx",
+    "src/contexts/useEmpresaScope.ts"
    ],
-   "casos": 7
+   "casos": 20
   },
   {
    "arquivo": "src/components/cobranca/previsao/__tests__/risco.test.ts",
@@ -1886,6 +1887,15 @@
    "casos": 8
   },
   {
+   "arquivo": "src/hooks/__tests__/useReguaCobranca.rls.test.tsx",
+   "tipo": "unit",
+   "linhas": 91,
+   "testa": [
+    "src/hooks/useReguaCobranca.ts"
+   ],
+   "casos": 6
+  },
+  {
    "arquivo": "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx",
    "tipo": "unit",
    "linhas": 267,
@@ -2390,6 +2400,23 @@
     "src/types/reforma-tributaria.ts"
    ],
    "casos": 2
+  },
+  {
+   "arquivo": "src/lib/__tests__/regua-cobranca-mensagem.test.ts",
+   "tipo": "unit",
+   "linhas": 43,
+   "testa": [
+    "supabase/functions/enviar-alerta-email/html.ts",
+    "supabase/functions/executar-regua-cobranca/domain.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/__tests__/regua-cobranca-template.contract.test.ts",
+   "tipo": "contrato",
+   "linhas": 126,
+   "testa": [],
+   "casos": 14
   },
   {
    "arquivo": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
@@ -4251,6 +4278,15 @@
    "casos": 10
   },
   {
+   "arquivo": "supabase/functions/enviar-alerta-email/html.test.ts",
+   "tipo": "unit",
+   "linhas": 22,
+   "testa": [
+    "supabase/functions/enviar-alerta-email/html.ts"
+   ],
+   "casos": 3
+  },
+  {
    "arquivo": "supabase/functions/enviar-alerta-email/index.test.ts",
    "tipo": "unit",
    "linhas": 81,
@@ -4780,7 +4816,7 @@
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
   "src/config/reforma-tributaria.ts": 6,
   "src/contexts/EmpresaScopeContext.tsx": 1,
-  "src/contexts/useEmpresaScope.ts": 1,
+  "src/contexts/useEmpresaScope.ts": 2,
   "src/hooks/anomaliaPreferencesValidation.ts": 1,
   "src/hooks/conciliacaoPage.types.ts": 1,
   "src/hooks/expert-actions/financial-actions.ts": 3,
@@ -4839,6 +4875,7 @@
   "src/hooks/usePreferenciasSistema.ts": 1,
   "src/hooks/useQueuedMessage.ts": 1,
   "src/hooks/useRegrasConciliacao.ts": 1,
+  "src/hooks/useReguaCobranca.ts": 1,
   "src/hooks/useRetencoesFonte.ts": 1,
   "src/hooks/useSelectiveEmpresaInvalidation.ts": 1,
   "src/hooks/useSimulacaoRegimes.ts": 1,
@@ -5059,9 +5096,10 @@
   "supabase/functions/consulta-tributaria/helpers.ts": 1,
   "supabase/functions/contabilizar-evento/index.ts": 1,
   "supabase/functions/convidar-usuario/index.ts": 1,
+  "supabase/functions/enviar-alerta-email/html.ts": 2,
   "supabase/functions/enviar-alerta-email/index.ts": 1,
   "supabase/functions/executar-analise-preditiva/index.ts": 1,
-  "supabase/functions/executar-regua-cobranca/domain.ts": 1,
+  "supabase/functions/executar-regua-cobranca/domain.ts": 2,
   "supabase/functions/exportar-sped-contribuicoes/layout.ts": 2,
   "supabase/functions/gerar-alertas-tributarios/index.ts": 2,
   "supabase/functions/gerar-heatmap-tributario/index.ts": 1,
@@ -5389,7 +5427,6 @@
    "src/hooks/useRefetchAnomaliasOnFocus.ts",
    "src/hooks/useReformaTributaria.ts",
    "src/hooks/useRegimesEspeciais.ts",
-   "src/hooks/useReguaCobranca.ts",
    "src/hooks/useRelatorioAnual.ts",
    "src/hooks/useRelatoriosAgendados.ts",
    "src/hooks/useRelatoriosData.ts",

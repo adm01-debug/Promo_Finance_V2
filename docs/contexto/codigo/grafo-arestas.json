@@ -1717,13 +1717,19 @@
    "src/lib/paginar-postgrest.ts"
   ],
   "src/components/cobranca/ReguaCobrancaConfig.tsx": [
+   "src/components/ui/alert-dialog.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
    "src/components/ui/skeleton.tsx",
    "src/components/ui/switch.tsx",
    "src/components/ui/tabs.tsx",
    "src/components/ui/textarea.tsx",
+   "src/contexts/useEmpresaScope.ts",
    "src/hooks/useReguaCobranca.ts"
   ],
   "src/components/cobranca/ReguaCobrancaVisual.tsx": [
@@ -2230,14 +2236,6 @@
    "src/components/ui/switch.tsx",
    "src/hooks/use-toast.ts"
   ],
-  "src/components/configuracoes/ReguaCobrancaTab.tsx": [
-   "src/components/ui/badge.tsx",
-   "src/components/ui/button.tsx",
-   "src/components/ui/card.tsx",
-   "src/components/ui/separator.tsx",
-   "src/components/ui/switch.tsx",
-   "src/lib/utils.ts"
-  ],
   "src/components/configuracoes/SecuritySettings.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
@@ -2261,17 +2259,6 @@
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx"
-  ],
-  "src/components/configuracoes/TemplatesTab.tsx": [
-   "src/components/ui/badge.tsx",
-   "src/components/ui/button.tsx",
-   "src/components/ui/card.tsx",
-   "src/components/ui/dialog.tsx",
-   "src/components/ui/input.tsx",
-   "src/components/ui/label.tsx",
-   "src/components/ui/select.tsx",
-   "src/components/ui/textarea.tsx",
-   "src/lib/utils.ts"
   ],
   "src/components/contabilidade/AuditoriaCFCKpis.tsx": [
    "src/components/ui/badge.tsx",
@@ -8909,9 +8896,6 @@
    "src/components/conciliacao/conciliacao-toolbar.constants.ts",
    "src/hooks/useSavedFilters.ts"
   ],
-  "src/pages/Configuracoes.constants.ts": [
-   "src/types/financial.ts"
-  ],
   "src/pages/Configuracoes.parts.tsx": [
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx"
@@ -8919,6 +8903,7 @@
   "src/pages/Configuracoes.tsx": [
    "src/components/admin/CronJobsStatus.tsx",
    "src/components/api/DocumentacaoAPI.tsx",
+   "src/components/cobranca/ReguaCobrancaConfig.tsx",
    "src/components/comprovantes/ComprovanteOCR.tsx",
    "src/components/conciliacao/ConfiguracaoConciliacaoPanel.tsx",
    "src/components/conciliacao/RegrasConciliacaoPanel.tsx",
@@ -8927,11 +8912,9 @@
    "src/components/configuracoes/NotificacoesPreferencias.tsx",
    "src/components/configuracoes/RegrasDuplicidadeTab.tsx",
    "src/components/configuracoes/RegrasRoteamentoTab.tsx",
-   "src/components/configuracoes/ReguaCobrancaTab.tsx",
    "src/components/configuracoes/SecuritySettings.tsx",
    "src/components/configuracoes/SecurityStatusBanner.tsx",
    "src/components/configuracoes/SistemaTab.tsx",
-   "src/components/configuracoes/TemplatesTab.tsx",
    "src/components/contratos/GestaoContratos.tsx",
    "src/components/documentos/AssinaturaDigital.tsx",
    "src/components/integracoes/OpenFinancePanel.tsx",
@@ -11337,7 +11320,8 @@
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts",
-   "supabase/functions/_shared/validation.ts"
+   "supabase/functions/_shared/validation.ts",
+   "supabase/functions/enviar-alerta-email/html.ts"
   ],
   "supabase/functions/enviar-bitrix24-tributario/index.ts": [
    "supabase/functions/_shared/contract-validator.ts",

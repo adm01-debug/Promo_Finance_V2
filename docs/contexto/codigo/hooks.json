@@ -607,8 +607,9 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 11,
+   "usado_por": 12,
    "usado_por_arquivos": [
+    "src/components/cobranca/ReguaCobrancaConfig.tsx",
     "src/components/dashboard/PrevisaoIA.tsx",
     "src/components/empresa/EmpresaActionPicker.tsx",
     "src/components/empresa/EmpresaBadge.tsx",
@@ -621,7 +622,7 @@
     "src/pages/Orcamentos.tsx",
     "src/pages/tributario/ObrigacoesAcessorias.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/bling/useContatos.ts",
@@ -5758,6 +5759,8 @@
    "arquivo": "src/hooks/useReguaCobranca.ts",
    "hooks_exportados": [
     "useConfirmarEnvio",
+    "useCriarTemplate",
+    "useExcluirTemplate",
     "useExecucoesCobranca",
     "useFilaCobrancas",
     "useProcessarFila",
@@ -5767,7 +5770,7 @@
     "useUpdateReguaCobranca",
     "useUpdateTemplate"
    ],
-   "linhas": 196,
+   "linhas": 268,
    "dominio": "hooks",
    "tabelas": [
     "execucoes_cobranca",
@@ -5793,7 +5796,7 @@
     "src/components/cobranca/FilaCobrancasPanel.tsx",
     "src/components/cobranca/ReguaCobrancaConfig.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useRelatorioAnual.ts",

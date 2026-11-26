@@ -45383,7 +45383,9 @@
     "so_no_types": []
    },
    "usada_no_front": 1,
-   "usada_em_edges": [],
+   "usada_em_edges": [
+    "executar-regua-cobranca"
+   ],
    "triggers": [
     "set_updated_at_3e8011f6fa0d13424163",
     "update_templates_cobranca_updated_at"

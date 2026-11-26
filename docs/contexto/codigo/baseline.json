@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5991337ab6a2745313b2e065a125d1be3bcf536a",
+  "commit": "ae407b8d61d7030c52a0c62b161a31a7f4ea8517",
   "branch": "main",
-  "data_commit": "2026-11-26T01:14:02-03:00",
+  "data_commit": "2026-11-26T09:05:11-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ae407b8",
+    "data": "2026-11-26",
+    "assunto": "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)"
+   },
    {
     "sha": "5991337",
     "data": "2026-11-26",
@@ -126,14 +131,9 @@
     "sha": "62b115c",
     "data": "2026-11-24",
     "assunto": "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)"
-   },
-   {
-    "sha": "4d880db",
-    "data": "2026-11-24",
-    "assunto": "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)"
    }
   ],
-  "arquivos_mudados_7d": 314,
+  "arquivos_mudados_7d": 328,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -165,7 +165,7 @@
    },
    {
     "pasta": "src/lib/__tests__",
-    "mudancas": 124
+    "mudancas": 126
    },
    {
     "pasta": "src/components/tributario",
@@ -173,7 +173,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 111
+    "mudancas": 112
    },
    {
     "pasta": "src/components/contas-receber",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 281
+    "commits": 280
    },
    {
     "autor": "dependabot[bot]",
@@ -310,21 +310,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4094,
-  "arquivos_codigo": 2554,
-  "linhas_codigo": 458636,
+  "arquivos_total": 4097,
+  "arquivos_codigo": 2557,
+  "linhas_codigo": 459126,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 129,
-  "componentes": 994,
+  "componentes": 992,
   "hooks": 276,
   "edge_functions": 112,
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 523,
+  "testes": 527,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -639,8 +639,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1014,
-   "linhas": 166308
+   "arquivos": 1012,
+   "linhas": 166442
   },
   "src/config": {
    "arquivos": 2,
@@ -651,8 +651,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 330,
-   "linhas": 49344
+   "arquivos": 331,
+   "linhas": 49507
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -663,8 +663,8 @@
    "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 440,
-   "linhas": 59855
+   "arquivos": 442,
+   "linhas": 60024
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -672,7 +672,7 @@
   },
   "src/pages": {
    "arquivos": 267,
-   "linhas": 46718
+   "linhas": 46580
   },
   "src/routes": {
    "arquivos": 16,
@@ -687,8 +687,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 259,
-   "linhas": 57263
+   "arquivos": 261,
+   "linhas": 57425
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -815,7 +815,7 @@
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,
-  "arquivos_acima_500_linhas": 31
+  "arquivos_acima_500_linhas": 32
  },
  "todos": [
   {

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5991337ab6` · branch `main` · 2026-11-26 04:18 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ae407b8d61` · branch `main` · 2026-11-26 12:07 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1517,7 +1517,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `9999` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| … +225 linhas — lista completa em `context.json` | | | |
+| … +219 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
@@ -3732,6 +3732,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const pdf = await PDFDocument.create(); const font = await pdf.embedFont(StandardFonts.Helvetica); const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold); const page = pdf.addPage([595, 842]); const { height } = page.getSize(); let y = height - 60; page.drawText('Relatório Anual Tributário', { x: 50, y, size: 22, font: fontBold, color: rgb(0.1, 0.2, 0.5), }); y -= 30; page.drawText(`${empresa} · Ano ${ano}`, { x: 50, y, size: 12, font, color: rgb(0.3, 0.3, 0.3) }); y -= 40; const kpis …
   ```
+- **aplicarVariaveis(texto: string, dados: DadosMensagem)** — `supabase/functions/executar-regua-cobranca/domain.ts`
+  ```
+  return texto .replaceAll('{{cliente}}', dados.cliente) .replaceAll('{{nome_cliente}}', dados.cliente) .replaceAll('{{valor}}', dados.valor) .replaceAll('{{vencimento}}', dados.vencimento) .replaceAll('{{data_vencimento}}', dados.vencimento);
+  ```
 - **gerarDadosRelatorio(supabase: any, relatorio: any)** — `supabase/functions/executar-relatorios/index.ts`
   ```
   const empresaFilter = relatorio.empresa_id; const centroCustoFilter = relatorio.centro_custo_id; switch (relatorio.tipo_relatorio) { case 'fluxo_caixa': return await gerarFluxoCaixa(supabase, empresaFilter); case 'contas_pagar': return await gerarContasPagar(supabase, empresaFilter, centroCustoFilter); case 'contas_receber': return await gerarContasReceber(supabase, empresaFilter, centroCustoFilter); case 'dre': return await gerarDRE(supabase, empresaFilter); case 'balanco': return await gerarBa …
@@ -4829,6 +4833,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 5000 | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | 50 | `supabase/functions/enviar-relatorios-tributarios-agendados/index.ts` |
 | 1 | `supabase/functions/executar-fechamento-tributario/index.ts` |
+| 1 | `supabase/functions/executar-regua-cobranca/index.ts` |
 | 100 | `supabase/functions/executar-relatorios/index.ts` |
 | 1 | `supabase/functions/external-data/index.ts` |
 | 1 | `supabase/functions/gerar-acoes-recomendadas/index.ts` |
@@ -5157,7 +5162,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +809 linhas — lista completa em `context.json` | |
+| … +810 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5216,7 +5221,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4001 testes em 355 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4052 testes em 359 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5236,6 +5241,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sso-callback/claims.test.ts` | 31 | OIDC: extrai picture como avatar_url quando claim padrão presente · OIDC: extrai phone_number como telefone quando claim padrão presente · OIDC: avatar_url vazio retorna null (não sobrescreve valor existente) · OIDC: phone_number só com espaços retorna null … |
 | `src/hooks/__tests__/useContasReceberLogic.test.ts` | 30 | useContasReceberLogic - KPI calculation · Gap #5 - Cálculo vence hoje · identifica contas que vencem hoje · exclui contas pagas do vence hoje … |
 | `src/lib/tributario/__tests__/motor.test.ts` | 30 | Motor Tributário · RBT12 · calcula soma simples para 12+ meses · proporcionaliza para empresa com <13 meses (início de atividade) … |
+| `src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx` | 29 | ReguaCobrancaConfig · Renderização da régua · exibe título da configuração · exibe etapa Preventiva … |
 | `src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts` | 29 | avaliarFrescorCatalogosRfb · marca como critico o catalogo nunca sincronizado · mantem em dia o catalogo carregado hoje · trata o dia do limite como em dia e o excedente (mesmo parcial) como alerta … |
 | `src/lib/tributario/__tests__/conformidade-historico.test.ts` | 29 | competenciaValida · aceita apenas AAAA-MM válido · construirHistorico · retorna série vazia sem itens … |
 | `src/components/contas-receber/__tests__/ContasReceberKPIs.test.tsx` | 28 | ContasReceberKPIs · Gap #4 - Comparativo temporal · exibe variação positiva com seta para cima · exibe variação negativa corretamente … |
@@ -5286,6 +5292,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts` | 17 | montarNcms grava so NCM de 8 digitos e mantem a vigencia base · montarNcms usa a descricao da ocorrencia util quando a primeira vem vazia · montarNcms aceita a chave  · montarNbs aceita codigo de 2 a 9 digitos e descarta o resto … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
+| `src/lib/__tests__/regua-cobranca-template.contract.test.ts` | 16 | executar-regua-cobranca — usa o template real · consulta templates_cobranca · carrega o template em cada envio (chamada real, não código morto) · seleciona assunto e corpo do template … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts` | 16 | normalizarItemIss · padroniza zeros à esquerda e espaços · devolve o valor original quando o formato é inesperado · compararItensIssComCatalogo … |
 | `src/lib/tributario/__tests__/icms-overlay-mva.test.ts` | 16 | overlay de MVA/ST — validação defensiva · normaliza MVA em percentual e indexa por NCM · rejeita NCM fora do formato, MVA acima do teto e duplicidade · rejeita vínculo sem UF signatária válida … |
 | `src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx` | 15 | AplicarDescontoDialog · Gap #12 - Aplicar desconto · renderiza dialog quando open=true · não renderiza quando conta é null … |
@@ -5355,7 +5362,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/_shared/nfe/__tests__/ibscbs_test.ts` | 11 | procNFe completo extrai item com CST, cClassTrib e CBS destacada · procNFe completo extrai o grupo IS do item · procNFe completo extrai os totais do grupo · resNFe (resumo) nao produz grupo IBS/CBS nem credito … |
 | `src/__tests__/validators.test.ts` | 10 | Validators · validateCPF · should return true for valid CPF · should return false for invalid CPF … |
 | `src/components/cobranca/__tests__/PrevisaoInadimplencia.dados.test.tsx` | 10 | PrevisaoInadimplencia — escala do score e atraso no historico · score 250 (escala 0-1000) pontua risco, e nao passa por cliente bom · score nulo e exibido como nao calculado, sem inventar 100 · titulo sem cadastro de cliente NAO derruba a previsao dos demais … |
-| `src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx` | 10 | ReguaCobrancaConfig · Renderização da régua · exibe título da configuração · exibe etapa Preventiva … |
 | `src/hooks/useSelectiveEmpresaInvalidation.test.tsx` | 10 | deveRemoverNaTrocaDeEmpresa · remove queries escopadas por empresa · remove chaves que a heurística antiga deixava passar · preserva identidade do usuário e catálogos nacionais … |
 | `src/hooks/__tests__/useConciliacaoPage.mutations.test.tsx` | 10 | useConciliacaoPage — confirmação e conciliação manual · persiste conta a pagar e só então altera o estado local · fluxo manual: o diálogo já persistiu — handleManualSuccess NÃO confirma de novo, só atualiza o estado · preserva estado não conciliado após rejeição da mutation … |
 | `src/hooks/__tests__/useConciliacaoPage.test.tsx` | 10 | useConciliacaoPage — seleção, lote, filtros e KPIs · não confirma em lote sem lançamento vinculado · handleBulkIgnorar só abre a confirmação — não persiste antes da confirmação (E-022) · remove em lote somente após cada persistência confirmada … |
@@ -5421,6 +5427,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/tributario/consulta-rapida/__tests__/shared.test.ts` | 7 | pct · trata nulos e NaN como travessão · converte frações em percentual · mantém valores já expressos em pontos percentuais … |
 | `src/hooks/__tests__/tenant-mutations.test.tsx` | 7 | isolamento multiempresa em categorias · não consulta categorias sem empresa ativa · lista categorias somente da empresa ativa · vincula criação, atualização e exclusão à empresa ativa e ignora empresa forjada … |
 | `src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx` | 7 | importarNFes — créditos CBS/IBS · grava nota e créditos numa chamada só, e contabiliza depois de confirmado · manda natureza_operacao e created_by para a função decidir, não os descarta · usa a data local da emissão, não a conversão para UTC … |
+| `src/hooks/__tests__/useReguaCobranca.rls.test.tsx` | 7 | useReguaCobranca — escrita barrada por RLS · useUpdateTemplate falha quando nenhuma linha é devolvida · useUpdateTemplate conclui quando a linha volta · useUpdateReguaCobranca falha quando nenhuma linha é devolvida … |
 | `src/hooks/financial/__tests__/views.schemas.test.ts` | 7 | views.schemas — parseRows · aceita linhas válidas mínimas de contas a receber · aceita linhas válidas mínimas de contas a pagar · preserva colunas adicionais via passthrough … |
 | `src/lib/__tests__/adaptive-chunk.test.ts` | 7 | adaptive-chunk (AIMD) · respeita clamp inicial entre min e max · cresce aditivamente quando latência ≤ alvo · reduz multiplicativamente quando latência acima da tolerância … |
 | `src/lib/__tests__/edge-functions.security.test.ts` | 7 | Edge Functions — superfície com service_role · encontra as edge functions do projeto · as funções privilegiadas auditadas provam a origem antes da ação · webhooks públicos autenticam a origem e falham fechados … |
@@ -5451,6 +5458,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useLancamentosContabeis.rollback.test.tsx` | 6 | useImportLancamentosLote — rollback do cabeçalho órfão · importa sem remover nada quando as partidas gravam · remove o cabeçalho quando as partidas falham · denuncia no relatório quando o próprio rollback é recusado … |
 | `src/hooks/expert-actions/__tests__/financial-actions.colunas.test.ts` | 6 | criarContaPagar · grava user_id do autor e data_emissao · criarContaReceber · grava user_id do autor (e não created_by) … |
 | `src/lib/__tests__/concurrency-limiter.test.ts` | 6 | concurrency-limiter · nunca ultrapassa o limite configurado · setLimit aumenta libera tarefas pendentes imediatamente · setLimit trata valores inválidos (mínimo 1) … |
+| `src/lib/__tests__/regua-cobranca-mensagem.test.ts` | 6 | executar-regua-cobranca — texto da cobrança · substitui as variáveis do catálogo no corpo e no assunto · mantém o texto quando o assunto não tem variável · o provedor de e-mail neutraliza marcação vinda do template … |
 | `src/lib/sso/__tests__/sandbox-bulk-aggregator.test.ts` | 6 | aggregateBulk · soma counts por outcome · agrupa motivos de bloqueio ordenados desc · distribui papéis resolvidos … |
 | `src/lib/tributario/__tests__/aliquotas-simples.test.ts` | 6 | aliquotas-simples · LIMITE_SIMPLES_NACIONAL = 4.800.000 · identificarFaixa retorna faixa correta · identificarFaixa retorna null acima do teto … |
 | `src/lib/tributario/__tests__/cpp-anexo-iv.test.ts` | 6 | CPP fora do DAS — Anexo IV · classifica construção civil no Anexo IV e cobra CPP por fora · o total inclui a CPP por fora, acima do DAS puro · respeita a alíquota RAT informada e a limita a 6% … |
@@ -5517,10 +5525,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/test/a11y/critical-pages.test.tsx` | 4 | A11y — componentes críticos WCAG 2.1 AA · SkipLinks não possui violações · Formulário básico (Label + Input + Button) não possui violações · Botão com aria-label não possui violações |
 | `supabase/functions/guardar-xml-nfe-autorizada/__tests__/guardar_test.ts` | 4 | statusDoProc — cStat 100 vira autorizada · statusDoProc — 101 cancelada, 110 denegada, ausente pendente · montarNota — XML manda nos campos, Bling so completa o que falta · montarNota — sem XML parseavel cai no Bling sem quebrar NOT NULL |
 | `supabase/functions/processar-solicitacao-lgpd/escrita.test.ts` | 4 | anonimização grava só colunas que existem em profiles · erro na anonimização propaga e impede o fechamento · fechamento guarda atendida_por dentro de payload_resposta · erro no fechamento propaga em vez de responder sucesso |
-| `supabase/functions/sefaz-dfe-puxar/__tests__/soap_test.ts` | 4 | buildDistDFeEnvelope inclui CNPJ, tpAmb e ultNSU 15 dígitos · parseDistDFeResponse extrai cStat/ultNSU/maxNSU e docs · classifyCStat mapeia códigos corretamente · parseDistDFeResponse lança em envelope malformado |
-| `supabase/functions/sso-test-login/index.test.ts` | 4 | JIT + group mapping: payload completo quando usuário não existe e grupo mapeia role · JIT + múltiplos grupos: apenas o primeiro match define a role; demais ficam  · JIT bloqueado: auto_provision_users=false retorna would_jit_provision=false com motivo · Domínio fora da allowlist: success=false e payload ainda preserva role mapping |
-| `src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx` | 3 | IntegrityAlertsPanel · consulta invariantes usando os parâmetros canônicos · resolve alerta com p_alert_id |
-| … +55 linhas — lista completa em `context.json` | | |
+| … +59 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5694,6 +5699,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `supabase/functions/asaas-webhook/index.ts` |
 | `asaas` | `supabase/functions/bling-proxy/index.ts` |
 | `enqueue(` | `supabase/functions/copilot-global/index.ts` |
+| `asaas` | `supabase/functions/enviar-alerta-email/html.ts` |
 | `asaas` | `supabase/functions/enviar-alerta-email/index.ts` |
 | `invoke(` | `supabase/functions/enviar-relatorios-tributarios-agendados/index.ts` |
 | `invoke(` | `supabase/functions/executar-analise-preditiva/index.ts` |
@@ -6113,4 +6119,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Cores temáticas para confetti (hex required by canvas-confetti library) | `src/lib/toast-confetti.tsx` |
 | porque roda apenas em ambiente de teste/CI — nunca é importado pelo bundle | `src/lib/arquitetura/analisador-imports.ts` |
 | * Regra arquitetural: se o `queryFn` de uma query filtra por `empresa_id`, | `src/lib/arquitetura/escopo-empresa.ts` |
-| … +486 linhas — lista completa em `context.json` | |
+| … +487 linhas — lista completa em `context.json` | |

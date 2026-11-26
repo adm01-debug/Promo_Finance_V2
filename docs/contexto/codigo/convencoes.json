@@ -6,7 +6,7 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (782)",
+   "src/components (780)",
    "src/pages (208)",
    "src/hooks (2)"
   ],
@@ -21,9 +21,9 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (319)",
+   "co-localizado (__tests__) (322)",
    "outro (113)",
-   "co-localizado (*.test) (49)"
+   "co-localizado (*.test) (50)"
   ],
   "edge_functions": "supabase/functions",
   "migrations": "supabase/migrations",
@@ -47,7 +47,7 @@
  },
  "barrels_index": 34,
  "extensao_componentes": [
-  ".tsx (994)"
+  ".tsx (992)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)",
    "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)",
    "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)",
    "feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)",
-   "fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)",
-   "feat: fundamentacao legal por item da nota (etapa 82) (#563)"
+   "fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

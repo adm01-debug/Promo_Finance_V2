@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 994,
+ "total": 992,
  "orfaos": 38,
  "nomes_duplicados": {
   "Accordion": [
@@ -3138,9 +3138,11 @@
     "ReguaCobrancaConfig"
    ],
    "export_default": null,
-   "linhas": 251,
+   "linhas": 529,
    "dominio": "components/cobranca",
    "hooks_locais": [
+    "useCriarTemplate",
+    "useExcluirTemplate",
     "useReguaCobranca",
     "useTemplatesCobranca",
     "useUpdateReguaCobranca",
@@ -3148,7 +3150,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "orfao": false
   },
   {
@@ -4002,20 +4004,6 @@
    "orfao": false
   },
   {
-   "arquivo": "src/components/configuracoes/ReguaCobrancaTab.tsx",
-   "exports": [
-    "ReguaCobrancaTab"
-   ],
-   "export_default": null,
-   "linhas": 134,
-   "dominio": "components/configuracoes",
-   "hooks_locais": [],
-   "tabelas": [],
-   "edges": [],
-   "usado_por": 1,
-   "orfao": false
-  },
-  {
    "arquivo": "src/components/configuracoes/SecuritySettings.tsx",
    "exports": [
     "SecuritySettings"
@@ -4058,21 +4046,6 @@
    ],
    "export_default": null,
    "linhas": 290,
-   "dominio": "components/configuracoes",
-   "hooks_locais": [],
-   "tabelas": [],
-   "edges": [],
-   "usado_por": 1,
-   "orfao": false
-  },
-  {
-   "arquivo": "src/components/configuracoes/TemplatesTab.tsx",
-   "exports": [
-    "Template",
-    "TemplatesTab"
-   ],
-   "export_default": null,
-   "linhas": 197,
    "dominio": "components/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -11013,7 +10986,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 14,
+   "usado_por": 15,
    "orfao": false
   },
   {
@@ -11067,7 +11040,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 451,
+   "usado_por": 449,
    "orfao": false
   },
   {
@@ -11116,7 +11089,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 530,
+   "usado_por": 528,
    "orfao": false
   },
   {
@@ -11157,7 +11130,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 481,
+   "usado_por": 479,
    "orfao": false
   },
   {
@@ -12020,7 +11993,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 49,
+   "usado_por": 48,
    "orfao": false
   },
   {
@@ -12179,7 +12152,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 70,
+   "usado_por": 69,
    "orfao": false
   },
   {
@@ -12267,7 +12240,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 48,
+   "usado_por": 47,
    "orfao": false
   },
   {
@@ -13702,7 +13675,7 @@
     "Configuracoes"
    ],
    "export_default": "Configuracoes",
-   "linhas": 418,
+   "linhas": 393,
    "dominio": "pages",
    "hooks_locais": [
     "usePreferenciasSistema",
