@@ -212,18 +212,6 @@ export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
     'ALL',
     'service_role'
   ),
-  allowPolicy(
-    'catalogo_fundamentacao',
-    'catalogo_fundamentacao_select_authenticated',
-    'SELECT',
-    'authenticated'
-  ),
-  allowPolicy(
-    'catalogo_fundamentacao',
-    'catalogo_fundamentacao_service_role_all',
-    'ALL',
-    'service_role'
-  ),
 ]);
 
 export const ALLOWED_ANON_WRITE_GRANTS = Object.freeze([
