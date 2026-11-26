@@ -3,6 +3,7 @@ import type { ExtratoOFX } from '@/lib/ofx-parser';
 import {
   chaveBancaria,
   mesclarPendentes,
+  origemDaTransacao,
   origemDoExtrato,
   type DivergenciaPendente,
 } from '../divergencias-pendentes';
@@ -58,6 +59,18 @@ describe('origemDoExtrato', () => {
     expect(
       origemDoExtrato(extrato({ banco: 'Importado via CSV', agencia: '', conta: '' }))
     ).toBeNull();
+  });
+});
+
+describe('origemDaTransacao', () => {
+  it('prefere a conta do bloco que emitiu a transação', () => {
+    const transacao = { ...pix('emp-1', 'ofx-123-1', '123', ITAU).transacao, origemConta: ITAU };
+
+    expect(origemDaTransacao(transacao)).toBe(ITAU);
+  });
+
+  it('devolve null quando a transação veio de arquivo sem conta declarada', () => {
+    expect(origemDaTransacao(pix('emp-1', 'csv-1-1').transacao)).toBeNull();
   });
 });
 

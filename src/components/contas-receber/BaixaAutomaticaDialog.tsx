@@ -38,6 +38,7 @@ import { BaixaAutomaticaDialogCorrespondenciasAutomaticas } from './BaixaAutomat
 import type { ContaCandidata } from './VincularManualmenteDialog';
 import {
   mesclarPendentes,
+  origemDaTransacao,
   origemDoExtrato,
   type DivergenciaPendente,
 } from '@/lib/financeiro/divergencias-pendentes';
@@ -351,12 +352,13 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        // A conta de origem vem do arquivo, não do destino escolhido agora: o
-        // FITID só identifica o crédito dentro da conta que o emitiu, e trocar o
-        // destino entre importações não muda o crédito.
+        // A conta de origem vem do próprio extrato, não do destino escolhido agora:
+        // o FITID só identifica o crédito dentro da conta que o emitiu, e trocar o
+        // destino entre importações não muda o crédito. Um arquivo com vários blocos
+        // tem uma origem por transação; sem ela, vale a conta do lote.
         const novasPendentes = [...unmatched, ...naoConfirmadas].map((transacao) => ({
           empresaId: empresaAlvo,
-          origemConta: origemDoLote,
+          origemConta: origemDaTransacao(transacao) ?? origemDoLote,
           transacao,
         }));
         const falhasDeAlerta = await registrarDivergencias(user.id, novasPendentes);

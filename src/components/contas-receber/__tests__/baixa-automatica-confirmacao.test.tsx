@@ -548,6 +548,62 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(gravados.filter((m) => m.includes('TED CONTA B'))).toHaveLength(1);
   });
 
+  it('preserva a divergência de outra conta quando o mesmo FITID volta na conta certa', async () => {
+    erroAoGravarAlerta = true;
+    const credito = (
+      valor: number,
+      descricao: string,
+      referencia: string,
+      origemConta?: string
+    ) => ({
+      ...transacaoCredito(valor, descricao, '2026-04-20'),
+      numeroReferencia: referencia,
+      ...(origemConta ? { origemConta } : {}),
+    });
+
+    // Um único arquivo com dois blocos de extrato: o mesmo FITID 123 nas duas
+    // contas. Cada crédito carrega a conta que o emitiu.
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        credito(400, 'PIX CONTA B', '123', '341/9999/1111'),
+        credito(250, 'PIX CONTA A', '123', '001/1234/5678'),
+      ])
+    );
+    abrirDialogo();
+    await importar(2);
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    // O extrato seguinte é só da conta A e o alerta de A é gravado com sucesso.
+    // A fila tem que sair com a pendência de B (mesma referência, outra conta).
+    fireEvent.click(screen.getByText('FECHAR'));
+    await waitFor(() =>
+      expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
+    );
+    erroAoGravarAlerta = false;
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([credito(250, 'PIX CONTA A', '123', '001/1234/5678')])
+    );
+    await importar(1);
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(1\)/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('1 divergência registrada como alerta.')
+    );
+    const gravados = chamadas
+      .filter((c) => c.tabela === 'alertas' && c.metodo === 'insert')
+      .map((c) => (c.args[0] as { mensagem: string }).mensagem);
+    // 2 alertas do primeiro lote (falharam) + 1 do segundo (gravado) + 1 repetição.
+    expect(gravados).toHaveLength(4);
+    expect(gravados.filter((m) => m.includes('PIX CONTA A'))).toHaveLength(2);
+    expect(gravados.filter((m) => m.includes('PIX CONTA B'))).toHaveLength(2);
+    expect(gravados.at(-1)).toContain('PIX CONTA B');
+  });
+
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
     erroAoGravarAlerta = true;
     const { rerender } = abrirDialogo('emp-1');

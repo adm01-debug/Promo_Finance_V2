@@ -1,4 +1,5 @@
 import type { TransacaoBancaria } from '@/components/contas-receber/BaixaAutomaticaDialog.types';
+import { identidadeConta } from '@/lib/ofx-parser/ofx-sgml';
 import type { ExtratoOFX } from '@/lib/ofx-parser';
 
 /**
@@ -19,12 +20,17 @@ export type DivergenciaPendente = {
  * ocorrências ficam sem identidade.
  */
 export function origemDoExtrato(extrato: ExtratoOFX): string | null {
-  const { banco, agencia, conta } = extrato.conta;
-  if (!conta?.trim()) return null;
-  return [banco, agencia, conta]
-    .map((valor) => valor?.trim())
-    .filter(Boolean)
-    .join('/');
+  return identidadeConta(extrato.conta);
+}
+
+/**
+ * Conta que emitiu a transação, segundo o próprio extrato. Vale mais que a conta
+ * do arquivo inteiro: um OFX pode trazer vários blocos e cada crédito pertence à
+ * conta do seu bloco.
+ */
+export function origemDaTransacao(transacao: TransacaoBancaria): string | null {
+  const origem = transacao.origemConta?.trim();
+  return origem ? origem : null;
 }
 
 /**

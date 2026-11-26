@@ -91,6 +91,83 @@ describe('OFX/CSV Parser', () => {
       const r = parseOFX(ofx, 'test.ofx');
       expect(r.extrato?.conta.saldoFinal).toBe(12500.75);
     });
+
+    it('guarda a conta de origem de cada bloco de extrato', () => {
+      const ofx = `
+        <OFX>
+          <BANKMSGSRSV1>
+            <STMTTRNRS>
+              <STMTRS>
+                <BANKACCTFROM>
+                  <BANKID>001
+                  <BRANCHID>1234
+                  <ACCTID>11111-1
+                </BANKACCTFROM>
+                <BANKTRANLIST>
+                  <STMTTRN>
+                    <TRNTYPE>CREDIT
+                    <DTPOSTED>20240115
+                    <TRNAMT>500.00
+                    <FITID>123
+                    <NAME>PIX recebido
+                  </STMTTRN>
+                </BANKTRANLIST>
+              </STMTRS>
+            </STMTTRNRS>
+            <STMTTRNRS>
+              <STMTRS>
+                <BANKACCTFROM>
+                  <BANKID>341
+                  <BRANCHID>9999
+                  <ACCTID>22222-2
+                </BANKACCTFROM>
+                <BANKTRANLIST>
+                  <STMTTRN>
+                    <TRNTYPE>CREDIT
+                    <DTPOSTED>20240116
+                    <TRNAMT>700.00
+                    <FITID>123
+                    <NAME>PIX recebido
+                  </STMTTRN>
+                </BANKTRANLIST>
+              </STMTRS>
+            </STMTTRNRS>
+          </BANKMSGSRSV1>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'duas-contas.ofx');
+
+      expect(r.sucesso).toBe(true);
+      expect(r.extrato?.transacoes).toHaveLength(2);
+      // O mesmo FITID nas duas contas: a origem é o que distingue os créditos.
+      expect(r.extrato?.transacoes.map((t) => t.origemConta)).toEqual([
+        '341/9999/22222-2',
+        '001/1234/11111-1',
+      ]);
+      expect(new Set(r.extrato?.transacoes.map((t) => t.id)).size).toBe(2);
+      expect(r.avisos).toContain(
+        'O arquivo contém mais de uma conta: cada crédito fica vinculado à conta de origem que o emitiu'
+      );
+    });
+
+    it('não inventa conta de origem para extrato sem número de conta', () => {
+      const ofx = `
+        <OFX>
+          <STMTTRN>
+            <TRNTYPE>CREDIT
+            <DTPOSTED>20240115
+            <TRNAMT>500.00
+            <FITID>TX001
+            <NAME>PIX recebido
+          </STMTTRN>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'sem-conta.ofx');
+      expect(r.extrato?.transacoes[0].origemConta).toBeUndefined();
+      expect(r.avisos).toContain(
+        'Transações sem número de conta de origem: a origem não pôde ser identificada'
+      );
+    });
   });
 
   // ========================
