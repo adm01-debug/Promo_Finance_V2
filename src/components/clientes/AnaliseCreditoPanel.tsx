@@ -69,10 +69,8 @@ export function AnaliseCreditoPanel() {
   const [dialogo, setDialogo] = useState<DialogoState | null>(null);
   const {
     analises,
-    total,
     isLoading,
     isError,
-    erroCarga,
     decidir,
     isDecidindo,
     atualizarDados,
@@ -80,7 +78,6 @@ export function AnaliseCreditoPanel() {
     reenviarCallback,
     isReenviando,
   } = useAnalisesCredito(filtro);
-  const truncada = total > analises.length;
 
   return (
     <div className="space-y-4">
@@ -93,13 +90,6 @@ export function AnaliseCreditoPanel() {
         </TabsList>
       </Tabs>
 
-      {truncada && (
-        <p className="text-xs text-muted-foreground">
-          Mostrando as {analises.length} análises mais recentes de {total}. Filtre por status para
-          ver as demais.
-        </p>
-      )}
-
       {isLoading && (
         <div className="space-y-3">
           <Skeleton className="h-36 rounded-xl" />
@@ -110,7 +100,7 @@ export function AnaliseCreditoPanel() {
       {isError && (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {erroCarga ?? 'Não foi possível carregar a fila de análise de crédito.'}
+            Não foi possível carregar a fila. Verifique se a função credito-analise está publicada.
           </CardContent>
         </Card>
       )}
@@ -187,14 +177,14 @@ function AnaliseCard({
             {STATUS_LABEL[analise.status]}
           </Badge>
           {decidida && analise.callback_status !== 'enviado' && (
-            <>
-              <Badge variant="destructive" title={analise.callback_erro ?? undefined}>
-                Champions não avisado
-              </Badge>
-              <Button size="sm" variant="outline" onClick={onReenviar} disabled={reenviando}>
-                <Send className="h-4 w-4 mr-1" /> Reenviar ao Champions
-              </Button>
-            </>
+            <Badge variant="destructive" title={analise.callback_erro ?? undefined}>
+              Champions não avisado
+            </Badge>
+          )}
+          {decidida && analise.callback_status === 'falhou' && (
+            <Button size="sm" variant="outline" onClick={onReenviar} disabled={reenviando}>
+              <Send className="h-4 w-4 mr-1" /> Reenviar ao Champions
+            </Button>
           )}
         </div>
       </CardHeader>
@@ -319,11 +309,15 @@ function DialogoAnalise({
 
   const confirmar = () => {
     if (modo === 'dados') {
+      // Só o que o analista mexeu vai na requisição; campo intocado não
+      // sobrescreve o que outro analista salvou enquanto o diálogo estava aberto.
+      const mudou = (atual: string, inicial: string) =>
+        atual.trim() !== inicial.trim() ? atual.trim() || null : undefined;
       onAtualizar({
         analiseId: analise.id,
-        cnpj: cnpj.trim() || null,
-        escavador: escavador.trim() || null,
-        consultaFinanceira: consulta.trim() || null,
+        cnpj: mudou(cnpj, analise.cnpj ?? ''),
+        escavador: mudou(escavador, analise.dados_escavador?.resumo ?? ''),
+        consultaFinanceira: mudou(consulta, analise.dados_consulta_financeira?.resumo ?? ''),
       });
       return;
     }
