@@ -283,6 +283,9 @@ jobs:
               # pendente a afirmacao "ledger: ok" contradiria o proprio estado.
               if [ "$LEDGER_OK" = 1 ] && [ "$LEDGER_ESTADO" = ok ]; then
                 echo "::warning::Diff de DDL nao verificavel: o shadow replay abortou por limitacao conhecida do harness (ownership ou colisao de replay). Paridade conferida apenas pelo ledger de PROD (ledger: ok)."
+              elif [ "$LEDGER_ESTADO" = pendente ]; then
+                echo "::error::Diff de DDL nao verificavel E o ledger de PROD tem migration pendente (ledger: pendente) - paridade com migrations/ NAO verificada."
+                FALHA=1
               else
                 echo "::error::Diff de DDL nao verificavel E ledger de PROD nao conferido (ledger: $LEDGER_ESTADO) - paridade com migrations/ NAO verificada."
                 FALHA=1
