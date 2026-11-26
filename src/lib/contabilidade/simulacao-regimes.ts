@@ -4,7 +4,7 @@ import type { DadosSimulacao, ResultadoSimulacao } from '@/lib/reforma-tributari
 import { ANEXOS } from '@/lib/tributario/motor/base';
 import { simularSimples } from '@/lib/tributario/motor/simples';
 import type { AnexoSimples } from '@/lib/tributario/calculadora/types';
-import type { RegimeEspecial } from '@/types/reforma-tributaria';
+import { REGIMES_ESPECIAIS, type RegimeEspecial } from '@/types/reforma-tributaria';
 
 const arredondar = (v: number) => Math.round((Number.isFinite(v) ? v : 0) * 100) / 100;
 
@@ -199,7 +199,11 @@ export function calcularCargaSimples(
       `Anexo ${premissas.anexoSimples} substituído pelo Anexo ${anexoServicos}: Fator R de ${(fatorR * 100).toFixed(2)}% contra o corte de 28% (LC 123/2006 art. 18 §5º-J).`
     );
   }
-  if (!premissas.sujeitoFatorR && anexoServicos !== premissas.anexoSimples) {
+  if (
+    !premissas.sujeitoFatorR &&
+    percentualServicos > 0 &&
+    anexoServicos !== premissas.anexoSimples
+  ) {
     avisosFatorR.push(
       `Atividade fora do rol do art. 18 §5º-I: serviços tributados pelo Anexo ${anexoServicos}, sem o teste de 28% do Fator R (LC 123/2006 art. 18 §5º-J).`
     );
@@ -390,10 +394,16 @@ export function calcularCenario(
   // O valor fica registrado em `cargaSimuladaBase` apenas como referência.
   const cargaSimulada = arredondar((linha.anoTeste ? 0 : cargaSimuladaBase) + residuais.total);
   if (linha.anoTeste) {
-    // Reduções de CBS/IBS por regime especial mudam a alíquota efetiva do cenário,
-    // então só o cronograma sem regime especial usa exatamente 0,9% + 0,1%.
-    const cenarioPadrao =
-      premissas.cenarioCbs === 'cronograma' && premissas.regimeEspecial === 'nenhum';
+    // Reduções de CBS/IBS por regime especial mudam a alíquota efetiva do cenário.
+    // Combustíveis e serviços financeiros não reduzem nada (o regime muda a base),
+    // então seguem com 0,9% + 0,1% como no cronograma puro.
+    const regimeComReducao =
+      premissas.regimeEspecial !== 'nenhum' &&
+      (() => {
+        const config = REGIMES_ESPECIAIS.find((r) => r.regime === premissas.regimeEspecial);
+        return !!config && (config.reducaoAliquotaCBS > 0 || config.reducaoAliquotaIBS > 0);
+      })();
+    const cenarioPadrao = premissas.cenarioCbs === 'cronograma' && !regimeComReducao;
     avisos.push(
       cenarioPadrao
         ? `Ano-teste (${premissas.anoReferencia}): o valor de ${formatarMoeda(cargaSimuladaBase)} usa as alíquotas legais do ano-teste — CBS 0,9% + IBS 0,1% (LC 214/2025 art. 348) — e é apenas referência, porque a CBS/IBS experimental é compensável/dispensável com PIS/COFINS e tributos federais e não entra na carga simulada.`

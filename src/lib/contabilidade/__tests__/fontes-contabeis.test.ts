@@ -335,6 +335,27 @@ describe('buscarFontesContabeis', () => {
     expect(fontes.comprasServicos12m).toBe(0);
   });
 
+  it('nao conta consultoria para rescisao de contrato de funcionario como folha', async () => {
+    pagar = [
+      {
+        valor: 6_000,
+        status: 'pago',
+        fornecedor_id: 'forn-1',
+        fornecedor_nome: 'Consultoria Y',
+        categoria: 'Servicos',
+        categoria_nome: 'Servicos terceirizados',
+        descricao: 'Consultoria para rescisao de contrato de funcionario',
+      },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    // O objeto da rescisao aqui e o contrato (servico tomado de terceiro), nao o
+    // trabalhador: classificar como folha inflaria o Fator R e tiraria o credito.
+    expect(fontes.folha12m).toBe(0);
+    expect(fontes.comprasServicos12m).toBe(6000);
+  });
+
   it('corta notas e contas a pagar na janela de competencias fechadas', async () => {
     vi.useFakeTimers({ now: new Date('2026-11-26T12:00:00Z') });
     const nota = (valor: number, data: string): LinhaNota => ({

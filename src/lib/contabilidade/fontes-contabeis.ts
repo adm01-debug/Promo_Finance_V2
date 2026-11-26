@@ -111,13 +111,15 @@ const TERMOS_FOLHA_DESCRICAO = [
 ];
 
 /**
- * Rescisão só é folha com contexto trabalhista: `rescisao` sozinho pegaria
- * "rescisão de contrato de fornecimento", que é compra com fornecedor e gera
- * crédito de CBS/IBS. "Rescisão do funcionário" chega sem categoria de folha,
- * então o termo não pode depender da preposição usada na descrição.
+ * Rescisão só é folha quando o próprio objeto da rescisão é o trabalhador:
+ * `rescisao` sozinho pegaria "rescisão de contrato de fornecimento" (compra com
+ * fornecedor, que gera crédito de CBS/IBS) e "consultoria para rescisão de
+ * contrato de funcionário" (serviço tomado). O termo vem junto do trabalhador,
+ * com ou sem preposição, então "Rescisão do funcionário" sem categoria de folha
+ * continua contando.
  */
 const CONTEXTO_RESCISAO_TRABALHISTA =
-  /(rescis.*(funcionari|empregad|colaborador|trabalhista)|verbas rescis)/;
+  /\brescis(?:ao|oes)\s+(?:(?:d[oa]s?)\s+)?(?:funcionari|empregad|colaborador|trabalhista|contrato de trabalho)|\bverbas rescis/;
 
 interface LinhaPagar {
   valor: number | null;

@@ -245,7 +245,8 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
               </Select>
               <p className="text-[11px] text-muted-foreground">
                 Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V,
-                salvo atividade fora do rol do art. 18 §5º-I, que fica no Anexo III.
+                salvo atividade fora do rol do art. 18 §5º-I (Anexo III) — o Anexo IV é preservado
+                quando selecionado.
               </p>
             </div>
           )}
@@ -257,7 +258,8 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
                 <p className="text-[11px] text-muted-foreground">
                   Ligado vale o art. 18 §5º-J da LC 123/2006: serviços do rol do §5º-I vão ao Anexo
                   V com folha abaixo de 28% e ao Anexo III a partir de 28%. Desligue para atividades
-                  fora desse rol, que ficam no Anexo III sem o teste.
+                  fora desse rol: elas ficam no Anexo III sem o teste, ou no Anexo IV (construção
+                  civil, advocacia e demais serviços do IV) se você escolher o IV no seletor acima.
                 </p>
               </div>
               <Switch

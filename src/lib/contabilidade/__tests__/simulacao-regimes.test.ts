@@ -165,21 +165,31 @@ describe('calcularCenario', () => {
     expect(naoSujeito.avisos.join(' ')).toContain('Atividade fora do rol do art. 18 §5º-I');
     expect(naoSujeito.avisos.join(' ')).toContain('serviços tributados pelo Anexo III');
     expect(naoSujeito.avisos.join(' ')).not.toContain('substituído pelo Anexo V');
+
+    // Sem receita de servico nao existe atividade "fora do rol" para avisar.
+    const soMercadorias = calcularCenario(
+      fontesMistas,
+      premissas({ anexoSimples: 'I', percentualVendas: 100, sujeitoFatorR: false })
+    );
+    expect(soMercadorias.avisos.join(' ')).not.toContain('Atividade fora do rol');
   });
 
-  it('mantem o aviso do ano-teste ressalvado quando ha reducao de regime especial', () => {
-    const comReducao = calcularCenario(
-      fontes,
-      premissas({
-        anoReferencia: 2026,
-        cenarioCbs: 'cronograma',
-        regimeEspecial: 'alimentos',
-      })
-    );
-    const avisos = comReducao.avisos.join(' ');
+  it('mantem o aviso do ano-teste ressalvado so quando o regime reduz CBS/IBS', () => {
+    const cenario = (regimeEspecial: PremissasCenario['regimeEspecial']) =>
+      calcularCenario(
+        fontes,
+        premissas({ anoReferencia: 2026, cenarioCbs: 'cronograma', regimeEspecial })
+      ).avisos.join(' ');
 
-    expect(avisos).toContain('não as alíquotas legais do ano-teste');
-    expect(avisos).not.toContain('alíquotas legais do ano-teste —');
+    // Alimentos reduz 60%: a aliquota efetiva nao e a legal do ano-teste.
+    const comReducao = cenario('alimentos');
+    expect(comReducao).toContain('não as alíquotas legais do ano-teste');
+    expect(comReducao).not.toContain('alíquotas legais do ano-teste —');
+
+    // Combustivel muda a base, nao a aliquota: segue 0,9% + 0,1%, como no cronograma.
+    const semReducao = cenario('combustiveis');
+    expect(semReducao).toContain('alíquotas legais do ano-teste —');
+    expect(semReducao).not.toContain('não as alíquotas legais do ano-teste');
   });
 
   it('cai no modelo nao-cumulativo quando a receita passa do limite do Simples', () => {
