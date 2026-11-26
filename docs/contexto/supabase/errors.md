@@ -1,3 +1,5 @@
 # Erros da última coleta
 
-_nenhum_
+| seção | erro |
+|---|---|
+| api.branches | The read operation timed out |

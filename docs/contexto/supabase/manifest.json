@@ -1,8 +1,15 @@
 {
-  "carried": [],
+  "carried": [
+    "api.branches"
+  ],
   "entrada": "README.md",
-  "erros": [],
-  "gerado_em": "2026-11-26T10:17:13Z",
+  "erros": [
+    {
+      "error": "The read operation timed out",
+      "section": "api.branches"
+    }
+  ],
+  "gerado_em": "2026-11-26T12:24:00Z",
   "gerador": "scripts/supabase_snapshot/snapshot.py",
   "produtor": "supabase-snapshot"
 }
