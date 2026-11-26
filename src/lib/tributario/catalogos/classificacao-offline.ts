@@ -5,6 +5,7 @@
 // hook, onde nao dava para testar falha parcial do banco. Aqui ela e funcao de
 // dependencias injetadas: sem rede com cache, com rede sem fundamentacao e com
 // tudo ok.
+import { addMilliseconds } from 'date-fns';
 import { TTL_PADRAO_MS, type EntradaCache } from '@/lib/offline/fiscal-cache';
 import { horizonteVigencia, menorVigencia, type CclasstribCatalogo } from './cclasstrib';
 import { fundamentosVazios, type FundamentosLegais } from './fundamentacao-legal';
@@ -15,6 +16,9 @@ export interface PacoteClassificacaoTributaria {
   opcoes: CclasstribCatalogo[];
   fundamentos: FundamentosLegais;
 }
+
+/** Um dia em milissegundos, para virar `YYYY-MM-DD` no instante seguinte. */
+const MS_POR_DIA = 24 * 60 * 60 * 1000;
 
 export interface DadosClassificacaoTributaria extends PacoteClassificacaoTributaria {
   /** O pacote veio do cache offline (IndexedDB). */
@@ -111,7 +115,9 @@ export function proximoVencimentoMs(
   }
   const fim = (entrada.vigenciaAte ?? '').trim().slice(0, 10);
   if (/^\d{4}-\d{2}-\d{2}$/.test(fim)) {
-    const limite = Date.parse(fim + 'T00:00:00.000Z') + 24 * 60 * 60 * 1000;
+    // Dia seguinte em UTC: somar milissegundos sobre o instante ancorado em Z
+    // nao olha o fuso do navegador (o `parseISO` de data pura, sim).
+    const limite = addMilliseconds(Date.parse(`${fim}T00:00:00.000Z`), MS_POR_DIA).getTime();
     if (Number.isFinite(limite)) alvo = alvo === null ? limite : Math.min(alvo, limite);
   }
   return alvo;

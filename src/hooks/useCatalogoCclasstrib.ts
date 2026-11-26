@@ -11,6 +11,7 @@ import {
 import {
   carregarClassificacaoTributaria,
   proximoVencimentoMs,
+  type DadosClassificacaoTributaria,
   type PacoteClassificacaoTributaria,
 } from '@/lib/tributario/catalogos/classificacao-offline';
 import type { FundamentosLegais } from '@/lib/tributario/catalogos/fundamentacao-legal';
@@ -22,6 +23,9 @@ import { hojeIso } from '@/lib/tributario/catalogos/repositorio';
 import { lerConsulta, salvarConsulta } from '@/lib/offline/fiscal-cache';
 
 export const CHAVE_CATALOGO_CCLASSTRIB = 'catalogo-cclasstrib-vigente';
+
+/** Quanto tempo uma leitura boa do catalogo vale antes de nova consulta. */
+const TTL_CATALOGO_MS = 30 * 60 * 1000;
 
 export interface CatalogoCclasstrib {
   opcoes: CclasstribCatalogo[];
@@ -35,7 +39,10 @@ export function useCatalogoCclasstrib(): CatalogoCclasstrib {
   const { data = [], isLoading } = useQuery({
     queryKey: [CHAVE_CATALOGO_CCLASSTRIB],
     queryFn: () => listarCclasstribVigentes(),
-    staleTime: 30 * 60 * 1000,
+    // Lista vazia significa "nao consegui carregar". Marcar isso como fresco
+    // por 30 min deixaria a tela sem catalogo depois da reconexao, porque o
+    // `refetchOnReconnect` so reconsulta consulta vencida.
+    staleTime: (query) => ((query.state.data?.length ?? 0) > 0 ? TTL_CATALOGO_MS : 0),
     // Sem rede o queryFn nem roda no modo padrao: a tela ficaria carregando
     // para sempre em vez de assumir "catalogo indisponivel".
     networkMode: 'offlineFirst',
@@ -56,6 +63,11 @@ const MAX_AGENDAMENTO_MS = 2 ** 31 - 1;
 
 /** Identidade estavel para o render enquanto a consulta nao devolve nada. */
 const FUNDAMENTOS_VAZIOS = fundamentosVazios(hojeIso());
+
+/** O pacote veio da rede e tem codigo: leitura que vale o TTL do catalogo. */
+function pacoteAtualizado(pacote?: DadosClassificacaoTributaria): boolean {
+  return !!pacote && !pacote.offline && pacote.opcoes.length > 0;
+}
 
 export interface ClassificacaoTributaria {
   opcoes: CclasstribCatalogo[];
@@ -94,7 +106,9 @@ export function useClassificacaoTributaria(): ClassificacaoTributaria {
         salvarCache: (pacote, opcoes) =>
           salvarConsulta(CHAVE_CLASSIFICACAO_TRIBUTARIA, pacote, opcoes),
       }),
-    staleTime: 30 * 60 * 1000,
+    // Cache offline ou lista vazia nao e leitura boa: fica vencido na hora para
+    // a reconexao (`refetchOnReconnect`) buscar o catalogo de verdade.
+    staleTime: (query) => (pacoteAtualizado(query.state.data) ? TTL_CATALOGO_MS : 0),
     // Sem rede o queryFn nao roda no modo padrao e o fallback do IndexedDB
     // nunca aconteceria (aba eternamente "carregando" no offline).
     networkMode: 'offlineFirst',
@@ -118,7 +132,20 @@ export function useClassificacaoTributaria(): ClassificacaoTributaria {
       if (ultimoVencimentoInvalidado.current !== assinatura) invalidar();
       return;
     }
-    const timer = setTimeout(invalidar, Math.min(vencimento - Date.now(), MAX_AGENDAMENTO_MS));
+    // `setTimeout` nao aceita mais que MAX_AGENDAMENTO_MS: acima disso o
+    // temporizador acorda cedo e se reagenda, em vez de invalidar um pacote que
+    // ainda vale (o efeito nao roda de novo porque o pacote nao mudou).
+    let timer = setTimeout(
+      function agendar() {
+        const restante = vencimento - Date.now();
+        if (restante <= 0) {
+          invalidar();
+          return;
+        }
+        timer = setTimeout(agendar, Math.min(restante, MAX_AGENDAMENTO_MS));
+      },
+      Math.min(vencimento - Date.now(), MAX_AGENDAMENTO_MS)
+    );
     return () => clearTimeout(timer);
   }, [gravadoEm, vigenciaAte, queryClient]);
 

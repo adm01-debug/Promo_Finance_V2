@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import type { CclasstribCatalogo } from '@/lib/tributario/catalogos/cclasstrib';
 import {
@@ -9,6 +10,17 @@ import {
 import { SecaoClassificacaoTributaria } from '../SecaoClassificacaoTributaria';
 
 const estado = vi.hoisted(() => ({ atual: {} as Record<string, unknown> }));
+
+// jsdom nao implementa captura de ponteiro nem rolagem, exigidas pelos selects
+// do Radix.
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+  Element.prototype.setPointerCapture = () => {};
+  Element.prototype.releasePointerCapture = () => {};
+}
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
 
 vi.mock('@/hooks/useCatalogoCclasstrib', () => ({
   useClassificacaoTributaria: () => estado.atual,
@@ -30,16 +42,22 @@ const opcao = (
 });
 
 const OPCOES: CclasstribCatalogo[] = [
-  opcao({ cclasstrib: '200035' }),
-  opcao({ cclasstrib: '200038', descricao: 'Reducao de 60%', pRedCbs: 0.6, pRedIbsUf: 0.6 }),
+  opcao({ cclasstrib: '200035', cst: '200' }),
+  opcao({
+    cclasstrib: '200038',
+    cst: '410',
+    descricao: 'Reducao de 60%',
+    pRedCbs: 0.6,
+    pRedIbsUf: 0.6,
+  }),
 ];
 
 const comFundamento = () => {
   const base = fundamentosVazios('2026-11-27');
   base.carregado = true;
-  base.porCst.set(chaveFundamentoLegal('200038', '000'), {
+  base.porCst.set(chaveFundamentoLegal('200038', '410'), {
     cclasstrib: '200038',
-    cst: '000',
+    cst: '410',
     conjuntoTributo: 'CBS e IBS',
     descricaoCClassTrib: null,
     descricaoCST: null,
@@ -116,12 +134,23 @@ describe('classificacao tributaria na consulta por NCM (etapa 84)', () => {
     expect(screen.getByText(/Nenhuma classifica/)).toBeInTheDocument();
   });
 
-  it('filtro por CST mantem so o codigo escolhido', () => {
+  it('busca por codigo mantem so o codigo digitado', () => {
     renderizar();
 
-    fireEvent.change(screen.getByLabelText(/Filtrar por c/), { target: { value: '200035' } });
+    fireEvent.change(screen.getByLabelText(/Filtrar por c/), { target: { value: '200038' } });
 
-    expect(screen.getByText('200035')).toBeInTheDocument();
-    expect(screen.queryByText('200038')).not.toBeInTheDocument();
+    expect(screen.getByText('200038')).toBeInTheDocument();
+    expect(screen.queryByText('200035')).not.toBeInTheDocument();
+  });
+
+  it('filtro por CST mantem so as classificacoes daquele CST', async () => {
+    const usuario = userEvent.setup();
+    renderizar();
+
+    await usuario.click(screen.getByLabelText(/CST/));
+    await usuario.click(await screen.findByRole('option', { name: '410' }));
+
+    expect(screen.getByText('200038')).toBeInTheDocument();
+    expect(screen.queryByText('200035')).not.toBeInTheDocument();
   });
 });
