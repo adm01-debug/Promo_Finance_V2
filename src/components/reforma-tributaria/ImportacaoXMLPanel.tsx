@@ -19,7 +19,7 @@ import {
   useImportacaoXMLNFe,
   anoEmissao,
   ANO_INICIO_APROPRIACAO,
-  dataEmissaoISO,
+  dataNotaBr,
 } from '@/hooks/useImportacaoXMLNFe';
 import type { NFeParsed } from '@/hooks/useImportacaoXMLNFe';
 import { formatCurrency } from '@/lib/formatters';
@@ -29,12 +29,6 @@ import { baixarAlertasFiscaisPdf } from '@/lib/tributario/relatorio-pdf/alertas-
 interface Props {
   empresaId: string;
 }
-
-/**
- * Data de emissao no fuso da nota (Brasilia), nao no do navegador: quem abre o
- * sistema fora do horario de Brasilia imprimia o dia seguinte no PDF.
- */
-const dataEmissaoBr = (data: Date): string => dataEmissaoISO(data).split('-').reverse().join('/');
 
 /**
  * Etapa 47: sinaliza na tabela se o grupo IBS/CBS da nota gera crédito
@@ -179,7 +173,7 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
         .map((n) => ({
           numero: n.numero || '',
           emitente: n.nomeEmitente || '',
-          data: dataEmissaoBr(n.dataEmissao),
+          data: dataNotaBr(n),
           alertas: n.alertasFiscais ?? [],
         }))
     );

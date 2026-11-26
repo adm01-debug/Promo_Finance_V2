@@ -29,7 +29,7 @@ vi.mock('@/lib/logger', () => ({
   logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));
 
-import { useImportacaoXMLNFe } from '../useImportacaoXMLNFe';
+import { useImportacaoXMLNFe, dataNotaBr } from '../useImportacaoXMLNFe';
 
 // NCM 02013000 + cClassTrib 200035 declarando CST 200. O cat?logo diz que o
 // cClassTrib 200035 tem CST 000 ? ? exatamente a diverg?ncia da evid?ncia.
@@ -369,5 +369,22 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
     expect(resumo.sucesso).toBe(1);
     expect(resumo.notasComAlertaFiscal).toBe(0);
     expect(resumo.nfesProcessadas[0].alertasFiscais).toBeUndefined();
+  });
+});
+
+describe('dataNotaBr', () => {
+  it('usa o dia declarado no XML, mesmo quando o dia em Brasilia e outro', () => {
+    // dhEmi 26/11 as 03:00 em Brasilia, mas o emitente declarou 25/11 — e esse
+    // o dia que a conferencia fiscal usa para escolher a vigencia.
+    expect(
+      dataNotaBr({
+        dataEmissao: new Date('2026-11-26T06:00:00Z'),
+        dataEmissaoDeclarada: '2026-11-25',
+      })
+    ).toBe('25/11/2026');
+  });
+
+  it('sem data declarada cai no dia em Brasilia, nao no do navegador', () => {
+    expect(dataNotaBr({ dataEmissao: new Date('2026-11-26T06:00:00Z') })).toBe('26/11/2026');
   });
 });

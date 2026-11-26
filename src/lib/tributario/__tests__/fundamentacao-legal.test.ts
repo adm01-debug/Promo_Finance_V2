@@ -41,6 +41,32 @@ const { linhas } = vi.hoisted(() => ({
       fim_vigencia: null,
     },
     {
+      // mesmo cClassTrib e mesmo conjunto, CSTs diferentes: sem desempate a
+      // primeira linha da lista dependeria da ordem que o banco devolveu
+      cclasstrib: '210001',
+      cst: '510',
+      conjunto_tributo: 'CBS e IBS',
+      descricao_cclasstrib: 'Tributacao integral',
+      descricao_cst: 'Diferimento',
+      texto: 'artigo 13. Texto do CST 510.',
+      texto_curto: 'LC 214/2025',
+      referencia_normativa: 'LC 214/2025',
+      inicio_vigencia: '2026-01-01',
+      fim_vigencia: null,
+    },
+    {
+      cclasstrib: '210001',
+      cst: '200',
+      conjunto_tributo: 'CBS e IBS',
+      descricao_cclasstrib: 'Tributacao integral',
+      descricao_cst: 'Aliquota reduzida',
+      texto: 'artigo 14. Texto do CST 200.',
+      texto_curto: 'LC 214/2025',
+      referencia_normativa: 'LC 214/2025',
+      inicio_vigencia: '2026-01-01',
+      fim_vigencia: null,
+    },
+    {
       // vigencia futura: nao vale para a data de referencia
       cclasstrib: '999999',
       cst: '000',
@@ -124,6 +150,14 @@ describe('escolherFundamento', () => {
     const f = await buscarFundamentosLegais(['200035'], '2026-06-01');
     expect(f.porCst.get(chaveFundamentoLegal('200035', '000'))?.conjuntoTributo).toBe('CBS e IBS');
     expect(f.porCclasstrib.get('200035')?.[0].conjuntoTributo).toBe('CBS e IBS');
+  });
+
+  it('cai na primeira linha do cClassTrib desempatando pelo CST', async () => {
+    // o banco devolveu 510 antes de 200 no mesmo conjunto; a lista tem de sair
+    // em ordem estavel de CST, nao na ordem da resposta
+    const f = await buscarFundamentosLegais(['210001'], '2026-06-01');
+    expect(f.porCclasstrib.get('210001')?.map((l) => l.cst)).toEqual(['200', '510']);
+    expect(escolherFundamento(f, '210001', '999')?.texto).toContain('artigo 14');
   });
 
   it('sem linha devolve undefined', async () => {

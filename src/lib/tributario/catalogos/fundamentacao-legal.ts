@@ -181,12 +181,16 @@ export async function buscarFundamentosLegais(
     else resultado.porCclasstrib.set(linha.cclasstrib, [linha]);
   }
 
-  // Ordem estavel das listas: conjunto amplo primeiro, o resto em ordem
-  // alfabetica. `escolherFundamento` le a posicao zero.
+  // Ordem estavel das listas: conjunto amplo primeiro, depois conjunto e CST em
+  // ordem alfabetica. `escolherFundamento` le a posicao zero quando o par
+  // cClassTrib/CST nao existe, e sem o desempate por CST duas linhas do mesmo
+  // conjunto dependeriam da ordem que o PostgREST devolveu.
   for (const lista of resultado.porCclasstrib.values()) {
     lista.sort((a, b) => {
       const amplo = Number(ehConjuntoAmplo(b)) - Number(ehConjuntoAmplo(a));
-      return amplo !== 0 ? amplo : a.conjuntoTributo.localeCompare(b.conjuntoTributo);
+      if (amplo !== 0) return amplo;
+      const conjunto = a.conjuntoTributo.localeCompare(b.conjuntoTributo);
+      return conjunto !== 0 ? conjunto : a.cst.localeCompare(b.cst);
     });
   }
 
