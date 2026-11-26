@@ -440,7 +440,7 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     parseExtratoBancarioMock.mockReturnValue(
       extratoCom([
         credito(999, 'PIX SEM PAR', 'ofx-999-0', '999'),
-        credito(777, 'PIX CSV', 'csv-1-171'),
+        credito(777, 'TED SEM PAR', 'ofx-777-0', '777'),
       ])
     );
     abrirDialogo();
@@ -451,8 +451,8 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
 
     // Segundo extrato do mesmo período: os mesmos créditos, com posições e ids
-    // diferentes (o FITID e a descrição se repetem). A fila não pode crescer,
-    // senão a nova tentativa grava dois alertas para o mesmo PIX.
+    // diferentes, identificados pelo FITID. A fila não pode crescer, senão a nova
+    // tentativa grava dois alertas para o mesmo crédito.
     fireEvent.click(screen.getByText('FECHAR'));
     await waitFor(() =>
       expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
@@ -460,7 +460,7 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     parseExtratoBancarioMock.mockReturnValue(
       extratoCom([
         credito(999, 'PIX SEM PAR', 'ofx-999-6', '999'),
-        credito(777, 'PIX CSV', 'csv-9-998'),
+        credito(777, 'TED SEM PAR', 'ofx-777-4', '777'),
       ])
     );
     await importar();
@@ -478,7 +478,7 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(alertas).toHaveLength(6);
     const gravados = alertas.slice(4).map((c) => (c.args[0] as { mensagem: string }).mensagem);
     expect(gravados.filter((m) => m.includes('PIX SEM PAR'))).toHaveLength(1);
-    expect(gravados.filter((m) => m.includes('PIX CSV'))).toHaveLength(1);
+    expect(gravados.filter((m) => m.includes('TED SEM PAR'))).toHaveLength(1);
   });
 
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
