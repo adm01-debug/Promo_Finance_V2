@@ -21,6 +21,7 @@ import {
   MetasFinanceirasPage,
   PortalTokensPage,
   ScoringClientesPage,
+  AnaliseCreditoPage,
   Compras,
 } from './financeiroPages';
 
@@ -170,6 +171,14 @@ export function financeiroRoutes() {
         element={
           <ProtectedRoute>
             <ScoringClientesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientes/analise-credito"
+        element={
+          <ProtectedRoute>
+            <AnaliseCreditoPage />
           </ProtectedRoute>
         }
       />
