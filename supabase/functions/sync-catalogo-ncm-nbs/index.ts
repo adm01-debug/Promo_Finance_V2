@@ -59,6 +59,7 @@ type Cliente = SupabaseClient<any, any, any>;
 interface ResultadoCatalogo {
   tabela: string;
   publicados: number;
+  /** Linhas enviadas ao `upsert`: nao inclui `preservadas`, que nao e gravada. */
   gravados: number;
   encerrados: number;
   /** Codigos que voltaram a aparecer e abriram periodo novo na data da carga. */
@@ -137,7 +138,7 @@ const LOTE_ENCERRAMENTO = 200;
  * O `upsert` nunca toca `fim_vigencia` (`semFimVigencia`): encerrar vigencia e
  * trabalho do passo de encerramento, que so roda depois das guardas.
  */
-async function gravar<T extends { inicio_vigencia: string }>(
+export async function gravar<T extends { inicio_vigencia: string }>(
   sb: Cliente,
   tabela: string,
   coluna: string,
@@ -189,8 +190,10 @@ async function gravar<T extends { inicio_vigencia: string }>(
   await gravarLote(base);
   await gravarLote(reativadas);
   await gravarLote(reabertas);
-  // `preservadas` nao e gravada: a chave dela e de um periodo futuro.
-  resultado.gravados = mapeamento.linhas.length;
+  // `preservadas` nao e gravada: a chave dela e de um periodo futuro. Por isso
+  // `gravados` e a soma dos lotes enviados, e nao `linhas.length`: o resumo
+  // diria que gravou o que ficou so no relatorio.
+  resultado.gravados = base.length + reativadas.length + reabertas.length;
   resultado.reativados = reativadas.length;
   resultado.reabertas = reabertas.length;
   resultado.preservadas = preservadas.length;
