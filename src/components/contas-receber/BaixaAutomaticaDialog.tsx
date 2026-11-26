@@ -38,6 +38,7 @@ import { BaixaAutomaticaDialogCorrespondenciasAutomaticas } from './BaixaAutomat
 import type { ContaCandidata } from './VincularManualmenteDialog';
 import {
   mesclarPendentes,
+  origemCompativelComCadastro,
   origemDaTransacao,
   origemDoExtrato,
   type DivergenciaPendente,
@@ -85,6 +86,16 @@ export function BaixaAutomaticaDialog({
 
   const queryClient = useQueryClient();
   const { data: contasBancarias = [] } = useContasBancarias(empresaId || undefined);
+
+  // Origens distintas dos créditos já vinculados. Mais de uma: nenhum destino único
+  // serve para todas. Exatamente uma: o destino escolhido tem de ser aquela conta.
+  const origensVinculadas = new Set(
+    matches
+      .map((m) => m.transacao.origemConta)
+      .filter((origem): origem is string => Boolean(origem))
+  );
+  const origemUnica = origensVinculadas.size === 1 ? [...origensVinculadas][0] : null;
+  const contaSelecionada = contasBancarias.find((cb) => cb.id === contaBancariaId);
 
   const resetState = () => {
     setStep('upload');
@@ -218,7 +229,15 @@ export function BaixaAutomaticaDialog({
   ): Promise<DivergenciaPendente[]> => {
     const falhas: DivergenciaPendente[] = [];
     for (const pendente of pendentes) {
-      const { empresaId: empresaAlvo, transacao: t } = pendente;
+      const { empresaId: empresaAlvo, origemConta, transacao: t } = pendente;
+      // A origem e a referência do banco entram no alerta: sem elas, um extrato com
+      // várias contas ou vários créditos iguais não permite reencontrar o lançamento.
+      const rastro = [
+        origemConta ? `Conta de origem: ${origemConta}.` : null,
+        t.numeroReferencia ? `Referência bancária: ${t.numeroReferencia}.` : null,
+      ]
+        .filter(Boolean)
+        .join(' ');
       const { error: alertaError } = await supabase.from('alertas').insert({
         user_id: userId,
         // A empresa do lote vai explícita: sem ela o gatilho de alertas usa
@@ -227,7 +246,7 @@ export function BaixaAutomaticaDialog({
         tipo: 'divergencia_baixa',
         prioridade: 'alta',
         titulo: 'Divergência na Baixa Automática',
-        mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
+        mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.${rastro ? ` ${rastro}` : ''}`,
       });
       // A pendência volta inteira: sem a conta de origem a fila não reconhece
       // que o crédito já devia um alerta e duplicaria o registro.
@@ -249,14 +268,21 @@ export function BaixaAutomaticaDialog({
     // Um lote com créditos de contas diferentes não pode lançar todos no mesmo
     // destino escolhido: os títulos seriam conciliados no banco errado. Divergências
     // de outra conta não entram na conta — elas viram alerta com a origem própria.
-    const origens = new Set(
-      matches
-        .map((m) => m.transacao.origemConta)
-        .filter((origem): origem is string => Boolean(origem))
-    );
-    if (contaBancariaId && origens.size > 1) {
+    if (contaBancariaId && origensVinculadas.size > 1) {
       toast.error(
         'Os créditos vinculados vieram de contas diferentes. Escolha "Sem conta bancária" para liquidar sem lançamento ou importe um arquivo por conta.'
+      );
+      return;
+    }
+    // Uma origem só também não libera o destino: o crédito entrou na conta do
+    // extrato, e lançá-lo em outra conta conciliaria o recebimento no banco errado.
+    if (
+      contaBancariaId &&
+      origemUnica &&
+      origemCompativelComCadastro(origemUnica, contaSelecionada) === false
+    ) {
+      toast.error(
+        `Os créditos vinculados entraram na conta ${origemUnica}, que não é a conta de destino escolhida. Selecione a conta de origem, importe um arquivo por conta ou escolha "Sem conta bancária" para liquidar sem lançamento.`
       );
       return;
     }
@@ -632,6 +658,11 @@ export function BaixaAutomaticaDialog({
                 <p className="text-[10px] text-muted-foreground">
                   Escolha "Sem conta bancária" para liquidar sem lançamento bancário de conciliação.
                 </p>
+                {origemUnica && (
+                  <p className="text-[10px] text-muted-foreground">
+                    Conta de origem no extrato: {origemUnica}
+                  </p>
+                )}
               </div>
 
               <BaixaAutomaticaDialogCorrespondenciasAutomaticas

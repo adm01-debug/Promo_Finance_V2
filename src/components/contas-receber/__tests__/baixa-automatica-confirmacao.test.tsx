@@ -708,6 +708,64 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     );
   });
 
+  it('bloqueia o destino de outra conta do arquivo e libera a conta de origem', async () => {
+    const credito = (
+      valor: number,
+      descricao: string,
+      referencia: string,
+      origemConta: string
+    ) => ({
+      ...transacaoCredito(valor, descricao, '2026-04-20'),
+      numeroReferencia: referencia,
+      origemConta,
+    });
+
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        credito(1500, 'TED RECEBIDA', '111', '001/1234/5678'),
+        credito(999, 'PIX SEM PAR', '222', '341/9999/1111'),
+      ])
+    );
+    abrirDialogo();
+    await importar(2);
+    await vincularTitulo();
+
+    // O operador precisa ver de qual conta o crédito veio para escolher o destino.
+    expect(screen.getByText('Conta de origem no extrato: 001/1234/5678')).toBeInTheDocument();
+
+    // O crédito vinculado entrou no BB: lançar no Itaú conciliaria no banco errado.
+    await selecionarConta(/Itaú/);
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(
+        'Os créditos vinculados entraram na conta 001/1234/5678, que não é a conta de destino escolhida. Selecione a conta de origem, importe um arquivo por conta ou escolha "Sem conta bancária" para liquidar sem lançamento.'
+      )
+    );
+    expect(
+      chamadas.filter((c) => c.tabela === 'contas_receber' && c.metodo === 'update')
+    ).toHaveLength(0);
+    expect(screen.queryByText('Volume Recuperado')).not.toBeInTheDocument();
+
+    // O mesmo lote com o destino da conta de origem é aceito e concilia no BB.
+    await selecionarConta(/BB/);
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    const update = chamadas.find((c) => c.tabela === 'contas_receber' && c.metodo === 'update');
+    expect(update?.args[0]).toEqual(expect.objectContaining({ conta_bancaria_id: 'cb-1' }));
+    const insert = chamadas.find(
+      (c) => c.tabela === 'transacoes_bancarias' && c.metodo === 'insert'
+    );
+    expect(insert?.args[0]).toEqual(expect.objectContaining({ conta_bancaria_id: 'cb-1' }));
+
+    // O alerta da divergência leva a origem e a referência do banco para o reprocesso.
+    const alerta = chamadas.find((c) => c.tabela === 'alertas' && c.metodo === 'insert');
+    const mensagem = (alerta?.args[0] as { mensagem: string }).mensagem;
+    expect(mensagem).toContain('Conta de origem: 341/9999/1111');
+    expect(mensagem).toContain('Referência bancária: 222');
+  });
+
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
     erroAoGravarAlerta = true;
     const { rerender } = abrirDialogo('emp-1');

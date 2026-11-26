@@ -3,6 +3,7 @@ import type { ExtratoOFX } from '@/lib/ofx-parser';
 import {
   chaveBancaria,
   mesclarPendentes,
+  origemCompativelComCadastro,
   origemDaTransacao,
   origemDoExtrato,
   type DivergenciaPendente,
@@ -190,5 +191,31 @@ describe('mesclarPendentes', () => {
 
     // O crédito voltou ao lote, desta vez o insert passou: nada fica pendente.
     expect(mesclarPendentes([antiga], [], [tentada])).toHaveLength(0);
+  });
+});
+
+describe('origemCompativelComCadastro', () => {
+  it('reconhece a mesma conta quando o cadastro traz o dígito verificador', () => {
+    expect(origemCompativelComCadastro(BB, { conta: '00005678-9' })).toBe(true);
+    expect(origemCompativelComCadastro(ITAU, { conta: '1111' })).toBe(true);
+  });
+
+  it('recusa a conta cadastrada de outro número', () => {
+    // Crédito entrou no BB, destino escolhido foi o Itaú.
+    expect(origemCompativelComCadastro(BB, { conta: '1111', numero_conta: '1111' })).toBe(false);
+    expect(origemCompativelComCadastro(ITAU, { conta: '5678' })).toBe(false);
+  });
+
+  it('usa o código do banco quando o cadastro não tem o número da conta', () => {
+    expect(origemCompativelComCadastro(BB, { codigo_banco: '001' })).toBe(true);
+    expect(origemCompativelComCadastro(BB, { codigo_banco: '341' })).toBe(false);
+  });
+
+  it('não decide quando falta número de conta e código de banco', () => {
+    expect(origemCompativelComCadastro(BB, {})).toBeNull();
+    expect(origemCompativelComCadastro(BB, undefined)).toBeNull();
+    expect(origemCompativelComCadastro(null, { conta: '5678' })).toBeNull();
+    // Número curto demais para provar identidade (evita bloquear por coincidência).
+    expect(origemCompativelComCadastro('001/1234/12', { conta: '345' })).toBeNull();
   });
 });

@@ -48,6 +48,48 @@ export function chaveBancaria(pendente: DivergenciaPendente): string | null {
   return `${pendente.empresaId}:${pendente.origemConta}:${referencia}`;
 }
 
+/** Dados cadastrais da conta bancária que bastam para reconhecer a origem. */
+export type ContaCadastrada = {
+  conta?: string | null;
+  numero_conta?: string | null;
+  codigo_banco?: string | null;
+};
+
+/** Só os dígitos relevantes: "001" e "1" são o mesmo código. */
+function digitos(valor: string | null | undefined): string {
+  return (valor ?? '').replace(/\D/g, '').replace(/^0+/, '');
+}
+
+/**
+ * Diz se a conta de origem do extrato é a conta cadastrada escolhida como destino.
+ * O cadastro é digitado à mão ("1234-5", "00005678-9") e o arquivo traz só o número,
+ * então a identidade é confirmada pelo número da conta — aceitando que um seja o
+ * começo do outro, porque o dígito verificador costuma existir apenas de um lado.
+ * Devolve `null` quando não há número nem código de banco para comparar: aí o
+ * chamador não pode afirmar que o destino está errado.
+ */
+export function origemCompativelComCadastro(
+  origem: string | null,
+  cadastro: ContaCadastrada | undefined
+): boolean | null {
+  if (!origem || !cadastro) return null;
+  const segmentos = origem.split('/').map(digitos).filter(Boolean);
+  const numero = segmentos[segmentos.length - 1] ?? '';
+  const banco = segmentos.length > 1 ? segmentos[0] : '';
+  const numerosCadastrados = [digitos(cadastro.conta), digitos(cadastro.numero_conta)].filter(
+    Boolean
+  );
+
+  if (numero.length >= 4 && numerosCadastrados.length > 0) {
+    return numerosCadastrados.some(
+      (cadastrado) => numero.startsWith(cadastrado) || cadastrado.startsWith(numero)
+    );
+  }
+  const codigoBanco = digitos(cadastro.codigo_banco);
+  if (banco && codigoBanco) return banco === codigoBanco;
+  return null;
+}
+
 /**
  * Une a fila de alertas pendentes com as divergências do lote atual, mantendo uma
  * entrada por crédito. Uma pendência anterior só é substituída quando o lote atual
