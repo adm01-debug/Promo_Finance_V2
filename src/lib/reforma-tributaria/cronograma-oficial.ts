@@ -24,6 +24,12 @@ export interface LinhaCronograma {
   /** Origem/fundamento da alíquota de IBS do ano (`ibsUf`+`ibsMun`) — diverge de `origem`/`fundamento` em 2027-2028, quando o IBS já é fixado por lei (art. 344) mas a CBS ainda depende de estimativa. */
   origemIbs: OrigemValor;
   fundamentoIbs: string;
+  /**
+   * Ano-teste (LC 214/2025 arts. 343 e 348): CBS/IBS são devidos só
+   * experimentalmente e o valor é compensado/dispensado com PIS/COFINS e
+   * tributos federais. Não somam carga efetiva — servem apenas de referência.
+   */
+  anoTeste?: boolean;
 }
 
 const FUNDAMENTO_2026 =
@@ -69,6 +75,7 @@ export const CRONOGRAMA_OFICIAL: LinhaCronograma[] = [
     fundamento: FUNDAMENTO_2026,
     origemIbs: 'lei',
     fundamentoIbs: FUNDAMENTO_2026,
+    anoTeste: true,
   },
   {
     ano: 2027,
