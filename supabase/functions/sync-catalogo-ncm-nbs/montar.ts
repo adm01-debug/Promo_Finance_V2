@@ -106,8 +106,8 @@ function mapear<T>(
 
 /** Conjuntos de vigencia lidos do banco antes da carga. */
 export interface ConjuntosVigencia {
-  /** Codigos com periodo aberto (`fim_vigencia IS NULL`). */
-  abertos: Iterable<string>;
+  /** Codigo com periodo aberto (`fim_vigencia IS NULL`) -> inicio do periodo. */
+  abertos: Iterable<readonly [string, string]>;
   /** Codigos com qualquer linha na tabela (aberta ou encerrada). */
   conhecidos: Iterable<string>;
 }
@@ -117,6 +117,8 @@ export interface LinhasPorVigencia<T> {
   base: T[];
   /** Linhas de codigo reativado: abrem periodo novo na data da observacao. */
   reativadas: T[];
+  /** Periodos abertos fora da data-base: reativados numa carga anterior. */
+  reabertas: T[];
 }
 
 /**
@@ -131,6 +133,12 @@ export interface LinhasPorVigencia<T> {
  * Codigo reativado recebe `inicio_vigencia = dataObservacao`, entao ocupa uma
  * chave propria e o periodo encerrado continua no historico. Codigo nunca visto
  * segue na data-base: nao ha periodo anterior para preservar.
+ *
+ * Reativado numa carga anterior continua fora da data-base nas cargas seguintes:
+ * o periodo aberto dele comeca na data daquela reativacao. Voltar a gravar a
+ * data-base nao so colidiria com a linha encerrada como tambem deixaria o codigo
+ * com dois periodos abertos (o antigo reaberto e o novo). O periodo novo e
+ * atualizado no inicio que ele ja tem.
  */
 export function separarReativados<T extends { inicio_vigencia: string }>(
   linhas: readonly T[],
@@ -141,19 +149,42 @@ export function separarReativados<T extends { inicio_vigencia: string }>(
 ): LinhasPorVigencia<T> {
   // Sem data posterior a base nao existe periodo novo: inicio = data colidiria
   // com a linha encerrada e a reabriria, que e exatamente o que se quer evitar.
-  if (!(dataObservacao > base)) return { base: [...linhas], reativadas: [] };
+  if (!(dataObservacao > base)) return { base: [...linhas], reativadas: [], reabertas: [] };
 
-  const abertos = new Set(conjuntos.abertos);
+  const abertos = new Map(conjuntos.abertos);
   const reativados = new Set([...conjuntos.conhecidos].filter((codigo) => !abertos.has(codigo)));
 
   const baseLinhas: T[] = [];
   const reativadas: T[] = [];
+  const reabertas: T[] = [];
   for (const linha of linhas) {
     const codigo = String(codigoDe(linha) ?? '').trim();
-    if (reativados.has(codigo)) reativadas.push({ ...linha, inicio_vigencia: dataObservacao });
-    else baseLinhas.push(linha);
+    if (reativados.has(codigo)) {
+      reativadas.push({ ...linha, inicio_vigencia: dataObservacao });
+      continue;
+    }
+    const inicioAberto = abertos.get(codigo);
+    if (inicioAberto !== undefined && inicioAberto !== base) {
+      reabertas.push({ ...linha, inicio_vigencia: inicioAberto });
+      continue;
+    }
+    baseLinhas.push(linha);
   }
-  return { base: baseLinhas, reativadas };
+  return { base: baseLinhas, reativadas, reabertas };
+}
+
+/**
+ * Linha pronta para o `upsert`, sem `fim_vigencia`.
+ *
+ * Encerrar vigencia e trabalho do passo de encerramento, que so roda depois das
+ * guardas; mandar `fim_vigencia: null` no payload faria o `ON CONFLICT DO UPDATE`
+ * zerar o encerramento de uma linha ja fechada na mesma chave (codigo,
+ * inicio_vigencia) - o codigo encerrado voltaria a valer.
+ */
+export function semFimVigencia<T extends object>(linha: T): Omit<T, 'fim_vigencia'> {
+  const copia = { ...linha } as Record<string, unknown>;
+  delete copia.fim_vigencia;
+  return copia as Omit<T, 'fim_vigencia'>;
 }
 
 export function montarNcms(

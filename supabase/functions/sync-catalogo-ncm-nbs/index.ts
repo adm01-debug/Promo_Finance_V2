@@ -30,6 +30,7 @@ import {
   MIN_NCM_API,
   montarNbs,
   montarNcms,
+  semFimVigencia,
   separarReativados,
   type ItemListaApi,
   type Mapeamento,
@@ -62,6 +63,8 @@ interface ResultadoCatalogo {
   encerrados: number;
   /** Codigos que voltaram a aparecer e abriram periodo novo na data da carga. */
   reativados: number;
+  /** Periodos abertos fora da data-base: reativados numa carga anterior. */
+  reabertas: number;
   ausentes: number;
   encerramento_bloqueado: string | null;
   ignoradas: string[];
@@ -70,21 +73,15 @@ interface ResultadoCatalogo {
 /**
  * Codigos da tabela, paginados.
  *
- * `apenasAbertos` restringe a `fim_vigencia IS NULL` (universo que a guarda de
- * ausentes protege); sem ele, traz todo codigo com qualquer linha, aberta ou
- * encerrada (usado para distinguir codigo novo de codigo reativado).
+ * Traz todo codigo com qualquer linha, aberta ou encerrada: e o universo que
+ * separa codigo novo de codigo reativado. Quem protege o encerramento e
+ * `listarAbertos`.
  */
-async function listarCodigos(
-  sb: Cliente,
-  tabela: string,
-  coluna: string,
-  apenasAbertos: boolean
-): Promise<string[]> {
+async function listarCodigos(sb: Cliente, tabela: string, coluna: string): Promise<string[]> {
   const codigos: string[] = [];
   for (let pagina = 0; pagina < MAX_PAGINAS; pagina += 1) {
     const inicio = pagina * PAGINA;
-    let consulta = sb.from(tabela).select(coluna);
-    if (apenasAbertos) consulta = consulta.is('fim_vigencia', null);
+    const consulta = sb.from(tabela).select(coluna);
     // `range` sem `order` nao tem ordem estavel: o Postgres pode devolver as
     // linhas em ordem diferente entre duas paginas e a leitura repetiria ou
     // pularia codigos — justamente os que decidem o encerramento.
@@ -97,15 +94,46 @@ async function listarCodigos(
   return codigos.filter(Boolean);
 }
 
+/**
+ * Periodos abertos (`fim_vigencia IS NULL`) como codigo -> `inicio_vigencia`.
+ *
+ * E o universo que a guarda de ausentes protege e, ao mesmo tempo, a unica
+ * forma de distinguir o periodo base (`inicio_vigencia` = data-base) de um
+ * periodo aberto por reativacao: o segundo nao pode voltar para a data-base.
+ */
+async function listarAbertos(
+  sb: Cliente,
+  tabela: string,
+  coluna: string
+): Promise<Map<string, string>> {
+  const abertos = new Map<string, string>();
+  for (let pagina = 0; pagina < MAX_PAGINAS; pagina += 1) {
+    const inicio = pagina * PAGINA;
+    const { data, error } = await sb
+      .from(tabela)
+      .select(`${coluna},inicio_vigencia`)
+      .is('fim_vigencia', null)
+      .order(coluna)
+      .range(inicio, inicio + PAGINA - 1);
+    if (error) throw error;
+    const linhas = (data ?? []) as unknown as Array<Record<string, unknown>>;
+    for (const linha of linhas) {
+      const codigo = String(linha[coluna] ?? '').trim();
+      if (codigo) abertos.set(codigo, String(linha.inicio_vigencia ?? '').trim());
+    }
+    if (linhas.length < PAGINA) break;
+  }
+  return abertos;
+}
+
 /** Teto de codigos por `IN (...)` no encerramento. */
 const LOTE_ENCERRAMENTO = 200;
 
 /**
  * Grava um catalogo e fecha a vigencia do que desapareceu da API.
  *
- * O `upsert` nunca toca `fim_vigencia` nem `fonte`/`carregado_em`: o payload
- * traz so codigo, descricao e vigencia, e reabrir uma vigencia encerrada e
- * trabalho da proxima carga, nao de um upsert de rotina.
+ * O `upsert` nunca toca `fim_vigencia` (`semFimVigencia`): encerrar vigencia e
+ * trabalho do passo de encerramento, que so roda depois das guardas.
  */
 async function gravar<T extends { inicio_vigencia: string }>(
   sb: Cliente,
@@ -121,6 +149,7 @@ async function gravar<T extends { inicio_vigencia: string }>(
     gravados: 0,
     encerrados: 0,
     reativados: 0,
+    reabertas: 0,
     ausentes: 0,
     encerramento_bloqueado: null,
     ignoradas: mapeamento.ignoradas,
@@ -138,31 +167,30 @@ async function gravar<T extends { inicio_vigencia: string }>(
   //    inserir, diluindo a porcentagem e permitindo encerrar acima do teto;
   //  - `conhecidos` separa codigo novo de codigo reativado (ver
   //    `separarReativados`: reabrir o periodo antigo apagaria o encerramento).
-  const abertos = await listarCodigos(sb, tabela, coluna, true);
-  const conhecidos = await listarCodigos(sb, tabela, coluna, false);
-  const { base, reativadas } = separarReativados(
+  const abertos = await listarAbertos(sb, tabela, coluna);
+  const conhecidos = await listarCodigos(sb, tabela, coluna);
+  const { base, reativadas, reabertas } = separarReativados(
     mapeamento.linhas,
     (linha) => String((linha as unknown as Record<string, unknown>)[coluna] ?? ''),
     { abertos, conhecidos },
     data
   );
 
-  if (base.length > 0) {
-    const { error: erroUpsert } = await sb
+  const gravarLote = async (linhasDoLote: T[]) => {
+    if (linhasDoLote.length === 0) return;
+    const { error } = await sb
       .from(tabela)
-      .upsert(base, { onConflict: `${coluna},inicio_vigencia` });
-    if (erroUpsert) throw erroUpsert;
-  }
-  if (reativadas.length > 0) {
-    const { error: erroReativar } = await sb
-      .from(tabela)
-      .upsert(reativadas, { onConflict: `${coluna},inicio_vigencia` });
-    if (erroReativar) throw erroReativar;
-  }
+      .upsert(linhasDoLote.map(semFimVigencia), { onConflict: `${coluna},inicio_vigencia` });
+    if (error) throw error;
+  };
+  await gravarLote(base);
+  await gravarLote(reativadas);
+  await gravarLote(reabertas);
   resultado.gravados = mapeamento.linhas.length;
   resultado.reativados = reativadas.length;
+  resultado.reabertas = reabertas.length;
 
-  const decisao = decidirEncerramentos(abertos, mapeamento.presentes, minimo);
+  const decisao = decidirEncerramentos([...abertos.keys()], mapeamento.presentes, minimo);
   resultado.ausentes = decisao.ausentes.length;
   if (decisao.bloqueado) {
     resultado.encerramento_bloqueado = decisao.motivo ?? 'bloqueado';
