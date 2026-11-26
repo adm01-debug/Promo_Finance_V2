@@ -10,52 +10,64 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { FileText, Plus, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import {
+  FileText,
+  Plus,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  RotateCw,
+  TrendingDown,
+} from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { NotaFiscal } from '@/components/nfe/nfe-types';
 import { NovaNFeForm } from '@/components/nfe/NovaNFeForm';
 import { CancelamentoNFe } from '@/components/nfe/CancelamentoNFe';
 import { containerVariants, itemVariants } from './NotasFiscais.helpers';
 import { NotasFiscaisAbas } from './NotasFiscaisAbas';
+import { resumirNotas, useNotasFiscaisLocais } from '@/hooks/useNotasFiscaisLocais';
 
 export default function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [showNovaNFe, setShowNovaNFe] = useState(false);
-  const [notas, setNotas] = useState<NotaFiscal[]>([]);
+  const { notas, loading, erro, recarregar } = useNotasFiscaisLocais();
   const [notaCancelar, setNotaCancelar] = useState<NotaFiscal | null>(null);
 
-  const handleNovaNota = useCallback((novaNota: NotaFiscal) => {
-    setNotas((prev) => [novaNota, ...prev]);
+  // A emissão segue desligada (sem SEFAZ homologada): quando o formulário
+  // deixar de recusar, a nota gravada aparece recarregando a consulta real.
+  const handleNovaNota = useCallback(() => {
     setShowNovaNFe(false);
-  }, []);
+    void recarregar();
+  }, [recarregar]);
 
-  const handleCancelarNota = useCallback((notaId: string, justificativa: string) => {
-    setNotas((prev) =>
-      prev.map((nota) =>
-        nota.id === notaId
-          ? { ...nota, status: 'cancelada' as const, motivoCancelamento: justificativa }
-          : nota
-      )
-    );
+  // O cancelamento não é mais simulado em memória: a lista volta a refletir o
+  // que o banco diz depois da recarga.
+  const handleCancelarNota = useCallback(() => {
     setNotaCancelar(null);
-  }, []);
+    void recarregar();
+  }, [recarregar]);
 
-  const totalEmitido = notas
-    .filter((n) => n.status === 'autorizada')
-    .reduce((acc, n) => acc + n.valorTotal, 0);
-  const totalCancelado = notas
-    .filter((n) => n.status === 'cancelada')
-    .reduce((acc, n) => acc + n.valorTotal, 0);
-  const totalPendente = notas
-    .filter((n) => n.status === 'pendente')
-    .reduce((acc, n) => acc + n.valorTotal, 0);
-  const notasAutorizadas = notas.filter((n) => n.status === 'autorizada').length;
+  // Os indicadores de emissão contam só saída: a importação de XML grava a
+  // contraparte em `cliente_*` e uma nota de compra não pode inflar o
+  // faturamento nem aparecer com o fornecedor no lugar do cliente.
+  const resumo = resumirNotas(notas);
+  const agora = new Date();
+  const notasDoMes = notas.filter((nota) => {
+    const emissao = new Date(nota.dataEmissao);
+    return (
+      !Number.isNaN(emissao.getTime()) &&
+      emissao.getMonth() === agora.getMonth() &&
+      emissao.getFullYear() === agora.getFullYear()
+    );
+  }).length;
 
   const filteredNotas = notas.filter((nota) => {
     const matchesSearch =
       nota.numero.includes(searchTerm) ||
       nota.destinatarioNome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      nota.emitenteNome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       nota.chaveAcesso.includes(searchTerm);
     const matchesStatus = statusFilter === 'todos' || nota.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -64,28 +76,34 @@ export default function NotasFiscais() {
   const kpis = [
     {
       label: 'Total Emitido',
-      value: totalEmitido,
-      count: notasAutorizadas,
+      value: resumo.totalEmitido,
+      count: resumo.notasAutorizadas,
       icon: CheckCircle2,
       color: 'text-success',
     },
     {
+      label: 'Entradas (compras)',
+      value: resumo.totalEntradas,
+      icon: TrendingDown,
+      color: 'text-secondary',
+    },
+    {
       label: 'Pendente Autorização',
-      value: totalPendente,
+      value: resumo.totalPendente,
       count: notas.filter((n) => n.status === 'pendente').length,
       icon: Clock,
       color: 'text-warning',
     },
     {
       label: 'Canceladas',
-      value: totalCancelado,
+      value: resumo.totalCancelado,
       count: notas.filter((n) => n.status === 'cancelada').length,
       icon: XCircle,
       color: 'text-destructive',
     },
     {
       label: 'Notas Este Mês',
-      value: notas.length,
+      value: notasDoMes,
       isCount: true,
       icon: FileText,
       color: 'text-primary',
@@ -104,7 +122,8 @@ export default function NotasFiscais() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Notas Fiscais Eletrônicas</h1>
             <p className="text-muted-foreground mt-1">
-              Emissão e consulta dependem de integração SEFAZ homologada.
+              Consulta das notas importadas (Bling/XML). Emissão direta depende de integração SEFAZ
+              homologada.
             </p>
           </div>
           <Dialog open={showNovaNFe} onOpenChange={setShowNovaNFe}>
@@ -124,9 +143,29 @@ export default function NotasFiscais() {
           </Dialog>
         </motion.div>
 
+        {loading && <p className="text-sm text-muted-foreground">Carregando notas do banco…</p>}
+
+        {erro && !loading && (
+          <Card className="border-destructive/40">
+            <CardContent className="p-4 flex items-center justify-between gap-4">
+              <p className="text-sm text-destructive flex items-center gap-2">
+                <AlertCircle className="h-4 w-4" /> Não foi possível consultar as notas: {erro}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => void recarregar()}
+              >
+                <RotateCw className="h-4 w-4" /> Tentar de novo
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
         >
           {kpis.map((kpi) => {
             const Icon = kpi.icon;
@@ -153,6 +192,13 @@ export default function NotasFiscais() {
           })}
         </motion.div>
 
+        {resumo.semClassificacao > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {resumo.semClassificacao} nota(s) sem CFOP nem natureza que identifique entrada ou saída
+            — contadas em "Total Emitido" até a próxima importação.
+          </p>
+        )}
+
         <motion.div variants={itemVariants}>
           <NotasFiscaisAbas
             searchTerm={searchTerm}
@@ -162,8 +208,8 @@ export default function NotasFiscais() {
             filteredNotas={filteredNotas}
             setNotaCancelar={setNotaCancelar}
             notas={notas}
-            totalEmitido={totalEmitido}
-            notasAutorizadas={notasAutorizadas}
+            totalEmitido={resumo.totalEmitido}
+            notasAutorizadas={resumo.notasAutorizadas}
           />
         </motion.div>
 

@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
+import { CHAVE_QUERY_NOTAS } from '@/hooks/useNotasFiscaisLocais';
+import { queryClient } from '@/lib/queryClient';
 import { toast } from 'sonner';
 
 export interface BlingNFe {
@@ -243,6 +245,13 @@ export async function guardarXmlAutorizado(blingNfeId: number) {
     body: { bling_nfe_id: blingNfeId, empresa_id: empresaId },
   });
   if (error || data?.error) return null;
+  // `refetchType: 'all'` porque o envio sai da aba do Bling e a lista de notas
+  // pode estar desmontada; a chave é escopada por empresa para não recarregar
+  // o cache de empresas que o usuário abriu antes.
+  await queryClient.invalidateQueries({
+    queryKey: [...CHAVE_QUERY_NOTAS, empresaId],
+    refetchType: 'all',
+  });
   return data;
 }
 

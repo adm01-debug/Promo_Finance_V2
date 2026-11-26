@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { CHAVE_QUERY_NOTAS } from '@/hooks/useNotasFiscaisLocais';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
@@ -627,8 +628,23 @@ export function useImportacaoXMLNFe(empresaId: string) {
       };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['notas-fiscais'] });
-      queryClient.invalidateQueries({ queryKey: ['creditos-tributarios'] });
+      // A lista consultada pela tela é `[...CHAVE_QUERY_NOTAS, empresaId, limite]`
+      // e a tela costuma estar desmontada aqui — `refetchType: 'all'` recarrega
+      // mesmo assim. `['notas-fiscais']` (com hífen) não corresponde a consulta
+      // nenhuma e saiu daqui. Tudo escopado por empresa: outra empresa aberta
+      // antes pelo mesmo usuário não deve ser recarregada.
+      queryClient.invalidateQueries({
+        queryKey: [...CHAVE_QUERY_NOTAS, empresaId],
+        refetchType: 'all',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['creditos_tributarios', empresaId],
+        refetchType: 'all',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['creditos_tributarios_resumo', empresaId],
+        refetchType: 'all',
+      });
       // Etapa 43: o resumo precisa dizer quanto veio do XML. Antes mostrava um
       // total único, e o usuário não tinha como saber que parte era estimativa
       // — justamente o que a etapa manda avisar.

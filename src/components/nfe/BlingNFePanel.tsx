@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useQueryClient } from '@tanstack/react-query';
+import { CHAVE_QUERY_NOTAS } from '@/hooks/useNotasFiscaisLocais';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +39,7 @@ import { toast } from 'sonner';
 import { situacaoConfig, defaultSituacao } from './BlingNFePanel.helpers';
 
 export function BlingNFePanel() {
+  const queryClient = useQueryClient();
   const {
     notas,
     loading,
@@ -103,6 +106,11 @@ export function BlingNFePanel() {
     try {
       await cancelarNFe([nota.id]);
       await listarNFe();
+      // A lista de notas vive na página, acima das abas: está montada (consulta
+      // ativa) enquanto este painel está aberto, então a invalidação padrão
+      // recarrega só a empresa atual. O caso de a nota ser gravada com a tela
+      // fechada é coberto por `refetchOnMount: 'always'` na própria consulta.
+      await queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS });
     } catch {
       /* handled in hook */
     }

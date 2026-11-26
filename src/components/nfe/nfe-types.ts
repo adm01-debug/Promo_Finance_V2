@@ -46,6 +46,15 @@ export interface NotaFiscal {
   protocolo?: string;
   motivoCancelamento?: string;
   itens: ItemNFe[];
+  /** Empresa dona da nota — necessária para assinar a URL do XML no bucket. */
+  empresaId?: string;
+  /** Sentido fiscal: compra (entrada) não entra nos indicadores de emissão. */
+  direcao?: 'saida' | 'entrada' | 'indefinida';
+  /** URLs dos arquivos realmente importados (XML autorizado e DANFE em PDF). */
+  xmlUrl?: string;
+  pdfUrl?: string;
+  /** true quando o XML existe no bucket privado `nfe-xml` (URL assinada sob demanda). */
+  xmlNoStorage?: boolean;
 }
 
 export const statusConfig = {

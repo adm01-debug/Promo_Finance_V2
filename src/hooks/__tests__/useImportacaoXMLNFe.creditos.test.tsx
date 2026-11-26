@@ -40,6 +40,7 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 import { useImportacaoXMLNFe } from '../useImportacaoXMLNFe';
+import { CHAVE_QUERY_NOTAS } from '../useNotasFiscaisLocais';
 
 /** NF-e mínima: o parser só precisa de infNFe/ide/emit/total. */
 const XML_NFE = `<?xml version="1.0" encoding="UTF-8"?>
@@ -129,6 +130,28 @@ describe('importarNFes — créditos CBS/IBS', () => {
     expect(escritas).toEqual([]);
     expect(resumo.sucesso).toBe(1);
     expect(resumo.creditosGerados.total).toBeGreaterThan(0);
+  });
+
+  it('invalida a lista de notas fiscais para a nota importada aparecer', async () => {
+    const { result } = await montaHook({});
+    const invalidar = vi.spyOn(queryClient, 'invalidateQueries');
+
+    await act(async () => {
+      await result.current.importarNFes.mutateAsync();
+    });
+
+    // A aba Notas Fiscais consulta `['notas-fiscais-locais', empresaId, limite]`
+    // e normalmente está desmontada durante a importação: com `refetchType:
+    // 'all'` o cache da empresa é recarregado agora, em vez de deixar a lista
+    // antiga voltar à tela.
+    expect(invalidar).toHaveBeenCalledWith({
+      queryKey: [...CHAVE_QUERY_NOTAS, 'emp-1'],
+      refetchType: 'all',
+    });
+    expect(invalidar).toHaveBeenCalledWith({
+      queryKey: ['creditos_tributarios', 'emp-1'],
+      refetchType: 'all',
+    });
   });
 
   it('manda natureza_operacao e created_by para a função decidir, não os descarta', async () => {
