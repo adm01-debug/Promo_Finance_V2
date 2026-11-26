@@ -21,6 +21,7 @@ import { CreditoAnaliseSchema } from '../_shared/credito/schemas.ts';
 import { consultarCnpjInterno } from '../_shared/credito/cnpja.ts';
 import {
   avaliarAlertas,
+  escolherCadastroDoCnpj,
   filtroCnpjCliente,
   normalizarCnpj,
   vinculoDesatualizado,
@@ -215,8 +216,10 @@ Deno.serve(
         gravou = (r.data?.length ?? 0) > 0;
       }
       if (!gravou && alvo.cliente_id) {
-        // Vínculo por e-mail: recebe o limite quando o cadastro não guarda outro
-        // CNPJ — CPF no campo é o mesmo cliente, CNPJ diferente é outro cadastro.
+        // Vínculo por e-mail: recebe o limite quando o cadastro não guarda
+        // documento que contradiga a análise. CNPJ apagado pelo analista conta
+        // como contradição com cadastro que tem CNPJ: sem documento não há como
+        // confirmar que é o mesmo cliente, e `decidir` barra antes com 409.
         const { data: vinc, error: erroVinc } = await admin
           .from('clientes')
           .select('cnpj_cpf, empresa_id')
@@ -225,7 +228,7 @@ Deno.serve(
         if (erroVinc) return erroVinc;
         const docVinculo = normalizarCnpj(vinc?.cnpj_cpf ?? '') ?? '';
         const empresaVinculo = (vinc as { empresa_id: string | null } | null)?.empresa_id ?? null;
-        if (alvo.cnpj && docVinculo.length === 14 && docVinculo !== alvo.cnpj) return null;
+        if (docVinculo.length === 14 && docVinculo !== alvo.cnpj) return null;
         if (alvo.empresa_id && empresaVinculo && empresaVinculo !== alvo.empresa_id) return null;
         const { error: erroLimite } = await admin
           .from('clientes')
@@ -352,20 +355,12 @@ Deno.serve(
           patch.cnpj = null;
           patch.dados_cnpja = null;
           patch.alertas = avaliarAlertas(null, analise.valor_pedido);
-          // O vínculo que existe por causa desse documento cai junto: mantê-lo
-          // faria a aprovação gravar o limite no cadastro de outro cliente.
-          let cnpjVinculado: string | null = null;
-          if (analise.cliente_id) {
-            const { data: atual } = await admin
-              .from('clientes')
-              .select('cnpj_cpf')
-              .eq('id', analise.cliente_id)
-              .maybeSingle();
-            cnpjVinculado = atual?.cnpj_cpf ?? null;
-          }
-          if (analise.cnpj && normalizarCnpj(cnpjVinculado) === normalizarCnpj(analise.cnpj)) {
-            patch.cliente_id = null;
-          }
+          // O vínculo é preservado, inclusive quando o cadastro vinculado tem
+          // este mesmo documento: ele pode ter vindo do e-mail e recebido o
+          // CNPJ depois — desfazer perderia o cliente certo da análise. Sem
+          // CNPJ a aprovação não escreve em cadastro vinculado que tenha CNPJ
+          // (ver `aplicarLimite` e a barreira em `decidir`), então o limite não
+          // cai no cliente errado.
         }
         const cnpjMudou = Boolean(novoCnpj) && novoCnpj !== analise.cnpj;
         // Reconsulta quando o CNPJ mudou ou quando a consulta inicial falhou —
@@ -391,23 +386,19 @@ Deno.serve(
         // Só desfaz o vínculo antigo quando ele era mesmo do CNPJ anterior —
         // vínculo por e-mail (cliente sem CNPJ) precisa ser preservado.
         if (novoCnpj && cnpjMudou) {
-          const buscarCadastroPorCnpj = (empresa: string | null) => {
-            let busca = admin
-              .from('clientes')
-              .select('id, empresa_id')
-              .or(filtroCnpjCliente(novoCnpj))
-              .limit(1);
-            if (empresa) busca = busca.eq('empresa_id', empresa);
-            return busca.maybeSingle();
-          };
           // O mesmo CNPJ pode estar cadastrado em mais de uma empresa: o
           // cadastro da empresa da análise vem primeiro.
-          const mesmoEscopo = analise.empresa_id
-            ? (await buscarCadastroPorCnpj(analise.empresa_id)).data
-            : null;
-          const cli = mesmoEscopo ?? (await buscarCadastroPorCnpj(null)).data;
+          const { data: candidatos } = await admin
+            .from('clientes')
+            .select('id, empresa_id')
+            .or(filtroCnpjCliente(novoCnpj))
+            .limit(10);
+          const cli = escolherCadastroDoCnpj(
+            (candidatos ?? []) as Array<{ id: string; empresa_id: string | null }>,
+            analise.empresa_id
+          );
           if (cli?.id) {
-            const empresaNova = (cli as { empresa_id: string | null }).empresa_id;
+            const empresaNova = cli.empresa_id;
             // Levar a análise para a empresa do cadastro novo só é legítimo com
             // acesso a ela: sem isso o analista tiraria a análise do escopo de
             // quem o autorizou.
@@ -453,6 +444,20 @@ Deno.serve(
       const parcelas = input.decisao === 'aprovado' ? (input.parcelas_max ?? null) : null;
       const parecer = input.parecer ?? null;
       const decididoEm = new Date().toISOString();
+
+      // Sem CNPJ na análise o limite só poderia ir para o cadastro vinculado
+      // por e-mail — e se esse cadastro já tem CNPJ não há como confirmar que é
+      // o mesmo cliente. Melhor recusar com mensagem do que aprovar sem gravar.
+      if (input.decisao === 'aprovado' && limite !== null && !analise.cnpj && analise.cliente_id) {
+        const { data: vinc } = await admin
+          .from('clientes')
+          .select('cnpj_cpf')
+          .eq('id', analise.cliente_id)
+          .maybeSingle();
+        if ((normalizarCnpj(vinc?.cnpj_cpf ?? '') ?? '').length === 14) {
+          return responder(req, 409, { error: 'cnpj_necessario_limite' });
+        }
+      }
 
       // Transição condicionada ao estado aberto: duas decisões simultâneas
       // nunca se sobrescrevem — a segunda recebe 409.

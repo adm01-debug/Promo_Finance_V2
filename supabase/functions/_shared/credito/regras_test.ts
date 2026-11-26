@@ -1,6 +1,7 @@
 import { assertEquals } from 'jsr:@std/assert@1';
 import {
   avaliarAlertas,
+  escolherCadastroDoCnpj,
   filtroCnpjCliente,
   formatarCnpj,
   mesesDesde,
@@ -88,4 +89,24 @@ Deno.test('vinculoDesatualizado só descarta vínculo casado pelo CNPJ anterior'
   assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', '12345678000195'), false);
   assertEquals(vinculoDesatualizado('12345678000195', null, '98765432000110'), false);
   assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', null), false);
+});
+
+Deno.test('cadastro do CNPJ prefere a empresa da análise', () => {
+  const empresaA = '11111111-1111-4111-8111-111111111111';
+  const empresaB = '22222222-2222-4222-8222-222222222222';
+  const daA = { id: 'cli-a', empresa_id: empresaA };
+  const daB = { id: 'cli-b', empresa_id: empresaB };
+
+  // Mesmo CNPJ em duas empresas: fica o cadastro da empresa da análise — em
+  // qualquer ordem de retorno e mesmo quando há um terceiro cadastro sem empresa.
+  const semEmpresa = { id: 'cli-x', empresa_id: null };
+  assertEquals(escolherCadastroDoCnpj([daB, daA], empresaA)?.id, 'cli-a');
+  assertEquals(escolherCadastroDoCnpj([daA, daB], empresaB)?.id, 'cli-b');
+  assertEquals(escolherCadastroDoCnpj([semEmpresa, daA, daB], empresaA)?.id, 'cli-a');
+  // Sem candidato na empresa da análise → primeiro cadastro encontrado.
+  assertEquals(escolherCadastroDoCnpj([daB], empresaA)?.id, 'cli-b');
+  // Análise sem empresa → primeiro cadastro encontrado.
+  assertEquals(escolherCadastroDoCnpj([semEmpresa, daB], null)?.id, 'cli-x');
+  // Nenhum cadastro → sem vínculo.
+  assertEquals(escolherCadastroDoCnpj([], empresaA), null);
 });

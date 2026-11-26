@@ -125,3 +125,21 @@ export function vinculoDesatualizado(
   if (!anterior || !novo || anterior === novo) return false;
   return normalizarCnpj(cnpjDoClienteVinculado ?? null) === anterior;
 }
+
+/**
+ * O mesmo CNPJ pode estar cadastrado em mais de uma empresa (o formulário de
+ * clientes permite). O cadastro da empresa da análise vem primeiro: é o que o
+ * analista enxerga e o único que ele pode mover para a fila; sem candidato
+ * nessa empresa, o primeiro cadastro encontrado.
+ */
+export function escolherCadastroDoCnpj<T extends { empresa_id: string | null }>(
+  candidatos: readonly T[],
+  empresaDaAnalise: string | null | undefined
+): T | null {
+  if (candidatos.length === 0) return null;
+  if (empresaDaAnalise) {
+    const mesmoEscopo = candidatos.find((c) => c.empresa_id === empresaDaAnalise);
+    if (mesmoEscopo) return mesmoEscopo;
+  }
+  return candidatos[0];
+}

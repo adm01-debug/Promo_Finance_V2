@@ -14,6 +14,8 @@ const MENSAGENS: Record<string, string> = {
   callback_falhou: 'A decisão foi salva, mas o Champions não recebeu. Tente reenviar.',
   mfa_requerido:
     'Falta concluir a verificação em duas etapas (MFA) na sua conta para analisar crédito.',
+  cnpj_necessario_limite:
+    'Para aprovar com limite, informe o CNPJ da análise: o cadastro vinculado tem outro documento e sem o CNPJ o sistema não sabe onde gravar.',
 };
 
 function mensagemCredito(err: unknown): string {
