@@ -104,6 +104,10 @@ on:
           - sso-logout
           - sso-test-login
           - sso-validate-config
+          - sync-aliquota-referencia
+          - sync-catalogo-cclasstrib
+          - sync-catalogo-ncm-nbs
+          - sync-fundamentacao-legal
           - sync-profile-to-bitrix
           - validar-token-contador
           - validate-ip-geo
