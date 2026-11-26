@@ -167,7 +167,11 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.enviar-relatorios-tributarios-agendados]
-verify_jwt = true
+# false: chamada por pg_cron (job `enviar-relatorios-tributarios`, migration
+# 20261126120000), que nao envia JWT. A prova de origem e o header
+# `x-cron-secret` conferido por `exigirChamadaInterna(req, 'relatorios_tributarios_cron')`
+# no handler — sem nenhuma chamada de usuario final.
+verify_jwt = false
 
 [functions.executar-fechamento-tributario]
 verify_jwt = true
