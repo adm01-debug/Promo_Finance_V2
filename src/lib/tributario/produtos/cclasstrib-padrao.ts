@@ -112,10 +112,91 @@ export function resolverPadraoPorCodigo(
   if (candidatos.length === 0) return null;
 
   const primeiro = candidatos[0];
+  // O NCM entra na comparacao porque ele tambem e herdado pelo item da nota:
+  // dois produtos com o mesmo par CST/cClassTrib e NCMs diferentes nao tem
+  // resposta unica para o NCM.
   const divergente = candidatos.some(
-    (c) => c.cst !== primeiro.cst || c.cclasstrib !== primeiro.cclasstrib
+    (c) =>
+      c.cst !== primeiro.cst ||
+      c.cclasstrib !== primeiro.cclasstrib ||
+      (normalizarNcm(c.ncm) ?? '') !== (normalizarNcm(primeiro.ncm) ?? '')
   );
   return divergente ? null : primeiro;
+}
+
+/** Resolvedor de SKU -> padrao (o `porCodigo` do hook). */
+export type ResolverPadraoPorCodigo = (codigo?: string | null) => PadraoProduto | null;
+
+/**
+ * Outro produto ja usa este SKU com enquadramento diferente?
+ *
+ * O SKU e a unica chave que o item da NF-e conhece, entao dois produtos com o
+ * mesmo SKU e enquadramentos diferentes deixam o item sem resposta (o
+ * `resolverPadraoPorCodigo` devolve `null`). Gravar o segundo padrao so
+ * produziria essa ambiguidade: o cadastro barra antes, com quem ja ocupa o SKU.
+ */
+export function conflitoDeSku(
+  padroes: readonly PadraoProduto[],
+  entrada: {
+    produto_id?: string | null;
+    codigo?: string | null;
+    cst?: string | null;
+    cclasstrib?: string | null;
+    ncm?: string | null;
+  }
+): PadraoProduto | null {
+  const alvo = normalizarCodigoComercial(entrada.codigo);
+  if (!alvo) return null;
+
+  const cst = normalizarCodigo(entrada.cst, 3);
+  const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6);
+  const ncm = normalizarNcm(entrada.ncm) ?? '';
+
+  for (const padrao of padroes) {
+    if (String(padrao.produto_id) === String(entrada.produto_id ?? '')) continue;
+    if (normalizarCodigoComercial(padrao.codigo) !== alvo) continue;
+    if (
+      padrao.cst === cst &&
+      padrao.cclasstrib === cclasstrib &&
+      (normalizarNcm(padrao.ncm) ?? '') === ncm
+    ) {
+      continue;
+    }
+    return padrao;
+  }
+  return null;
+}
+
+/**
+ * NCM do item depois da troca de SKU.
+ *
+ * O NCM herdado do padrao do produto anterior nao pode sobreviver a troca: ao
+ * digitar `KIT-12` o formulario passa por `KIT-1` e herda o NCM dele. O NCM
+ * digitado a mao fica de pe.
+ */
+export function ncmAposTrocaDeCodigo(
+  resolver: ResolverPadraoPorCodigo,
+  entrada: { codigoAnterior?: string | null; ncmAtual?: string | null; codigoNovo?: string | null }
+): string {
+  const herdado = normalizarNcm(resolver(entrada.codigoAnterior)?.ncm) ?? '';
+  const atual = (entrada.ncmAtual ?? '').trim();
+  if (atual && (normalizarNcm(atual) ?? atual) !== herdado) return atual;
+  return resolver(entrada.codigoNovo)?.ncm ?? '';
+}
+
+/**
+ * cClassTrib que sobrevive a troca de SKU quando o novo SKU nao tem padrao.
+ *
+ * Sai de cena o padrao herdado do produto anterior; a escolha manual do
+ * operador fica de pe e volta para a regra por NCM como classificacao atual.
+ */
+export function cclasstribManualAposTroca(
+  resolver: ResolverPadraoPorCodigo,
+  entrada: { codigoAnterior?: string | null; cclasstribAtual?: string | null }
+): string | undefined {
+  const herdado = resolver(entrada.codigoAnterior);
+  if (herdado && entrada.cclasstribAtual === herdado.cclasstrib) return undefined;
+  return entrada.cclasstribAtual ?? undefined;
 }
 
 /**

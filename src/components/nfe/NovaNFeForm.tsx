@@ -18,6 +18,10 @@ import { useCatalogoCclasstrib } from '@/hooks/useCatalogoCclasstrib';
 import { useProdutoCclasstribPadrao } from '@/hooks/useProdutoCclasstribPadrao';
 import { calcularGrupoIbscbs, resolverCclassTribPadrao } from '@/lib/nfe/grupo-ibscbs-item';
 import { calcularBaseCalculo } from '@/lib/reforma-tributaria/base-calculo';
+import {
+  cclasstribManualAposTroca,
+  ncmAposTrocaDeCodigo,
+} from '@/lib/tributario/produtos/cclasstrib-padrao';
 import { toast } from 'sonner';
 import { NotaFiscal, ItemNFe } from './nfe-types';
 
@@ -130,24 +134,35 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
 
   /**
    * Enquadramento do item depois de uma edicao. Trocar de produto descarta o
-   * padrao do produto anterior; informar o NCM so decide quando o item ainda nao
-   * tem codigo escolhido.
+   * padrao herdado do produto anterior e preserva a escolha manual; informar o
+   * NCM so decide quando o item ainda nao tem codigo escolhido.
    */
   const enquadramentoApos = (
-    item: ItemNFe,
+    anterior: ItemNFe,
     campo: keyof ItemNFe,
     valor: string | number
   ): EnquadramentoItem | null => {
     if (campo === 'codigo') {
       const padrao = padraoPorCodigo(String(valor));
       if (padrao) return { cst: padrao.cst, cclasstrib: padrao.cclasstrib };
-      return enquadramentoDoCodigo(resolverCclassTribPadrao(item.ncm, undefined, codigos));
+      // Sem padrao no SKU novo: a escolha manual do operador continua valendo.
+      // So o padrao herdado do SKU anterior sai de cena, e a regra por NCM
+      // assume o lugar dele.
+      if (
+        cclasstribManualAposTroca(padraoPorCodigo, {
+          codigoAnterior: anterior.codigo,
+          cclasstribAtual: anterior.cClassTrib,
+        })
+      ) {
+        return enquadramentoDoItem(anterior);
+      }
+      return enquadramentoDoCodigo(resolverCclassTribPadrao(anterior.ncm, undefined, codigos));
     }
     if (campo === 'ncm') {
-      const integral = resolverCclassTribPadrao(String(valor), item.cClassTrib, codigos);
-      return integral ? enquadramentoDoCodigo(integral) : enquadramentoDoItem(item);
+      const integral = resolverCclassTribPadrao(String(valor), anterior.cClassTrib, codigos);
+      return integral ? enquadramentoDoCodigo(integral) : enquadramentoDoItem(anterior);
     }
-    return enquadramentoDoItem(item);
+    return enquadramentoDoItem(anterior);
   };
 
   const selecionarCclassTrib = (index: number, codigo: string) => {
@@ -158,20 +173,31 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
 
   const updateItem = (index: number, field: keyof ItemNFe, value: string | number) => {
     const newItens = [...itens];
-    newItens[index] = { ...newItens[index], [field]: value };
+    const anterior = newItens[index];
+    newItens[index] = { ...anterior, [field]: value };
     if (field === 'quantidade' || field === 'valorUnitario') {
       newItens[index].valorTotal = newItens[index].quantidade * newItens[index].valorUnitario;
     }
     // Etapa 86: o padrao do produto traz o NCM junto, para nao exigir redigitar.
-    if (field === 'codigo' && !newItens[index].ncm.trim()) {
-      newItens[index].ncm = padraoPorCodigo(String(value))?.ncm ?? '';
+    // O NCM herdado do produto anterior nao sobrevive a troca de SKU.
+    if (field === 'codigo') {
+      newItens[index].ncm = ncmAposTrocaDeCodigo(padraoPorCodigo, {
+        codigoAnterior: anterior.codigo,
+        ncmAtual: anterior.ncm,
+        codigoNovo: String(value),
+      });
     }
-    newItens[index] = comGrupo(newItens[index], enquadramentoApos(newItens[index], field, value));
+    newItens[index] = comGrupo(newItens[index], enquadramentoApos(anterior, field, value));
     setItens(newItens);
   };
 
   const totalProdutos = itens.reduce((acc, item) => acc + item.valorTotal, 0);
   const totalIbscbs = itens.reduce((acc, item) => acc + (item.vCBS ?? 0) + (item.vIBS ?? 0), 0);
+  // Item com enquadramento sem linha no catalogo da RFB entra no total como zero:
+  // enquanto existir, o total de IBS/CBS e parcial.
+  const itensSemReferencia = itens.filter(
+    (item) => item.cClassTrib && !opcoes.some((opcao) => opcao.cclasstrib === item.cClassTrib)
+  ).length;
   const avisosBase = Array.from(new Set(itens.flatMap((item) => calcularBaseItem(item).avisos)));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -390,6 +416,12 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
               CBS + IBS dos itens ({ANO_REFERENCIA}):
             </span>
             <p className="text-xl font-bold">{formatCurrency(totalIbscbs)}</p>
+            {itensSemReferencia > 0 && (
+              <p className="text-xs text-warning">
+                Parcial: {itensSemReferencia} {itensSemReferencia === 1 ? 'item sem' : 'itens sem'}{' '}
+                referencia no catalogo da RFB.
+              </p>
+            )}
           </div>
         </div>
 

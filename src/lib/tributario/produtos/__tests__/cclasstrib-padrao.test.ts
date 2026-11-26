@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  cclasstribManualAposTroca,
+  conflitoDeSku,
+  ncmAposTrocaDeCodigo,
   normalizarCodigo,
   normalizarCodigoComercial,
   normalizarNcm,
@@ -141,6 +144,130 @@ describe('resolverPadraoPorCodigo', () => {
       comCodigo('457', 'kit-01', '200', '200032'),
     ];
     expect(resolverPadraoPorCodigo(padroes, 'KIT-01')?.produto_id).toBe('456');
+  });
+
+  it('mesmo par CST/cClassTrib com NCM diferente nao decide sozinho', () => {
+    const padroes = [
+      padrao('456', '12345678', '200', '200032', undefined, 'KIT-01'),
+      padrao('789', '39269090', '200', '200032', undefined, 'KIT-01'),
+    ];
+    expect(resolverPadraoPorCodigo(padroes, 'KIT-01')).toBeNull();
+  });
+});
+
+describe('conflitoDeSku', () => {
+  const kitzinho = (produto_id: string, cst: string, cclasstrib: string, ncm = '12345678') =>
+    padrao(produto_id, ncm, cst, cclasstrib, undefined, 'KIT-01');
+
+  it('aponta o produto que ja ocupa o SKU com outro enquadramento', () => {
+    const padroes = [kitzinho('456', '200', '200032')];
+    const conflito = conflitoDeSku(padroes, {
+      produto_id: '789',
+      codigo: ' kit-01 ',
+      cst: '102',
+      cclasstrib: '000001',
+    });
+    expect(conflito?.produto_id).toBe('456');
+  });
+
+  it('libera o mesmo enquadramento, o proprio produto e SKU vazio', () => {
+    const padroes = [kitzinho('456', '200', '200032')];
+    expect(
+      conflitoDeSku(padroes, {
+        produto_id: '789',
+        codigo: 'KIT-01',
+        cst: '200',
+        cclasstrib: '200032',
+        ncm: '1234.56.78',
+      })
+    ).toBeNull();
+    expect(
+      conflitoDeSku(padroes, {
+        produto_id: '456',
+        codigo: 'KIT-01',
+        cst: '102',
+        cclasstrib: '000001',
+      })
+    ).toBeNull();
+    expect(
+      conflitoDeSku(padroes, { produto_id: '789', codigo: '', cst: '102', cclasstrib: '000001' })
+    ).toBeNull();
+  });
+
+  it('mesmo SKU com NCM diferente tambem conflita', () => {
+    const padroes = [kitzinho('456', '200', '200032')];
+    const conflito = conflitoDeSku(padroes, {
+      produto_id: '789',
+      codigo: 'KIT-01',
+      cst: '200',
+      cclasstrib: '200032',
+      ncm: '39269090',
+    });
+    expect(conflito?.produto_id).toBe('456');
+  });
+});
+
+describe('ncmAposTrocaDeCodigo', () => {
+  const padroes = [
+    padrao('456', '12345678', '200', '200032', undefined, 'KIT-1'),
+    padrao('789', '39269090', '200', '200032', undefined, 'KIT-12'),
+  ];
+  const resolver = (codigo?: string | null) => resolverPadraoPorCodigo(padroes, codigo);
+
+  it('troca o NCM herdado do produto anterior pelo do SKU novo', () => {
+    expect(
+      ncmAposTrocaDeCodigo(resolver, {
+        codigoAnterior: 'KIT-1',
+        ncmAtual: '12345678',
+        codigoNovo: 'KIT-12',
+      })
+    ).toBe('39269090');
+  });
+
+  it('limpa o NCM herdado quando o SKU novo nao tem padrao', () => {
+    expect(
+      ncmAposTrocaDeCodigo(resolver, {
+        codigoAnterior: 'KIT-1',
+        ncmAtual: '12345678',
+        codigoNovo: 'AVULSO',
+      })
+    ).toBe('');
+  });
+
+  it('preserva o NCM digitado a mao', () => {
+    expect(
+      ncmAposTrocaDeCodigo(resolver, {
+        codigoAnterior: 'KIT-1',
+        ncmAtual: '84713012',
+        codigoNovo: 'KIT-12',
+      })
+    ).toBe('84713012');
+  });
+});
+
+describe('cclasstribManualAposTroca', () => {
+  const padroes = [padrao('456', '12345678', '200', '200032', undefined, 'KIT-1')];
+  const resolver = (codigo?: string | null) => resolverPadraoPorCodigo(padroes, codigo);
+
+  it('descarta o enquadramento herdado do SKU anterior', () => {
+    expect(
+      cclasstribManualAposTroca(resolver, { codigoAnterior: 'KIT-1', cclasstribAtual: '200032' })
+    ).toBeUndefined();
+  });
+
+  it('devolve a escolha manual do operador', () => {
+    expect(
+      cclasstribManualAposTroca(resolver, { codigoAnterior: 'KIT-1', cclasstribAtual: '000001' })
+    ).toBe('000001');
+  });
+
+  it('sem padrao no SKU anterior nada e herdado', () => {
+    expect(
+      cclasstribManualAposTroca(resolver, { codigoAnterior: 'AVULSO', cclasstribAtual: '000001' })
+    ).toBe('000001');
+    expect(
+      cclasstribManualAposTroca(resolver, { codigoAnterior: 'AVULSO', cclasstribAtual: undefined })
+    ).toBeUndefined();
   });
 });
 

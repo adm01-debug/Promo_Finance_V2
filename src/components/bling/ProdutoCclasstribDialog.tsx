@@ -31,7 +31,9 @@ import {
   useProdutoCclasstribPadraoMutations,
 } from '@/hooks/useProdutoCclasstribPadrao';
 import {
+  conflitoDeSku,
   normalizarCodigo,
+  normalizarCodigoComercial,
   sugerirPadraoPorNcm,
   validarCoerenciaCst,
   validarPadrao,
@@ -93,8 +95,28 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
       .slice(0, LIMITE_OPCOES);
   }, [opcoes, cst]);
 
+  // O SKU e a unica chave que o item da NF-e conhece: dois produtos com o mesmo
+  // SKU e enquadramentos diferentes deixariam o item sem resposta.
+  const conflito = useMemo(
+    () =>
+      conflitoDeSku(padroes, {
+        produto_id: produtoId,
+        codigo: produto?.codigo,
+        cst,
+        cclasstrib,
+        ncm,
+      }),
+    [padroes, produtoId, produto, cst, cclasstrib, ncm]
+  );
+
   const erro =
-    validarPadrao({ cst, cclasstrib, ncm }) ?? validarCoerenciaCst({ cst, cclasstrib }, opcoes);
+    validarPadrao({ cst, cclasstrib, ncm }) ??
+    validarCoerenciaCst({ cst, cclasstrib }, opcoes) ??
+    (conflito
+      ? `O SKU ${normalizarCodigoComercial(produto?.codigo)} ja e o padrao de outro produto com ` +
+        `${conflito.cst}/${conflito.cclasstrib}. O item da nota so conhece o SKU: use o mesmo ` +
+        'enquadramento ou separe os SKUs no Bling.'
+      : null);
   const ocupado = salvar.isPending || remover.isPending;
   const sugestaoDiferente =
     sugestao &&
