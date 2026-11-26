@@ -224,11 +224,16 @@ describe('NovaSimulacaoElisaoDialog', () => {
     expect(payload.detalhes.fontes.faturamento12m).toBe(100000);
     expect(payload.detalhes.fontes.comprasServicos12m).toBe(15000);
     expect(payload.detalhes.fontes.fonteFaturamento).toBe('notas_fiscais');
-    // a carga simulada é CBS/IBS/IS do ano + os resíduos do sistema antigo
-    expect(payload.carga_simulada).toBeCloseTo(
-      payload.detalhes.carga_simulada_base + payload.detalhes.residuais_transicao.total,
-      2
-    );
+    // em 2026 (ano-teste) a CBS/IBS experimental não entra na carga simulada
+    if (payload.detalhes.ano_teste) {
+      expect(payload.carga_simulada).toBeCloseTo(payload.detalhes.residuais_transicao.total, 2);
+    } else {
+      expect(payload.carga_simulada).toBeCloseTo(
+        payload.detalhes.carga_simulada_base + payload.detalhes.residuais_transicao.total,
+        2
+      );
+    }
+    expect(payload.detalhes.avisos.length).toBeGreaterThan(0);
   });
 
   it('cai para titulos a receber quando nao ha nota fiscal no periodo', async () => {

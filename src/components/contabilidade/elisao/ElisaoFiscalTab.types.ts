@@ -6,6 +6,8 @@ export type DetalhesSimulacaoElisao = {
     notasConsideradas?: number;
     titulosConsiderados?: number;
     fonteFaturamento?: string;
+    /** Origem da folha usada no Fator R. */
+    fonteFolha?: string;
     janelaInicio?: string;
     truncado?: boolean;
   };
@@ -36,6 +38,8 @@ export type DetalhesSimulacaoElisao = {
     total?: number;
   };
   carga_simulada_base?: number;
+  /** `true` quando o ano é de teste (2026): a CBS/IBS experimental não foi somada. */
+  ano_teste?: boolean;
   avisos?: string[];
 };
 

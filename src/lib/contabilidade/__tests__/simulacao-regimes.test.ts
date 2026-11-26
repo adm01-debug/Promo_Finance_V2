@@ -19,6 +19,7 @@ const fontes: FontesContabeis = {
   notasConsideradas: 120,
   titulosConsiderados: 0,
   fonteFaturamento: 'notas_fiscais',
+  fonteFolha: 'sem_dados',
   janelaInicio: '2025-11-26',
   truncado: false,
 };
@@ -89,18 +90,28 @@ describe('calcularCenario', () => {
     const das = calcularCargaSimples(fontes, premissas({ regimeAtual: 'Simples Nacional' }));
 
     expect(das.elegivel).toBe(true);
-    expect(simples.cargaAtual).toBeCloseTo(das.totalAPagar, 2);
+    expect(simples.cargaAtual).toBeCloseTo(das.total, 2);
     expect(presumido.cargaAtual).toBeCloseTo(presumido.resultado.totalAntigo, 2);
     expect(simples.cargaAtual).not.toBeCloseTo(presumido.cargaAtual, 2);
   });
 
-  it('usa o anexo escolhido no Simples Nacional', () => {
-    const anexoI = calcularCenario(fontes, premissas({ anexoSimples: 'I' }));
-    const anexoIII = calcularCenario(
+  it('usa o anexo escolhido nos servicos e deriva do Fator R quando o anexo nao e de servico', () => {
+    const servicosIII = calcularCenario(
       { ...fontes, folha12m: 400_000 },
-      premissas({ anexoSimples: 'III' })
+      premissas({ anexoSimples: 'III', percentualVendas: 0 })
     );
-    expect(anexoIII.cargaAtual).toBeGreaterThan(anexoI.cargaAtual);
+    const servicosV = calcularCenario(
+      { ...fontes, folha12m: 400_000 },
+      premissas({ anexoSimples: 'V', percentualVendas: 0 })
+    );
+    const derivadoDoFatorR = calcularCenario(
+      { ...fontes, folha12m: 400_000 },
+      premissas({ anexoSimples: 'I', percentualVendas: 0 })
+    );
+
+    expect(servicosIII.cargaAtual).toBeLessThan(servicosV.cargaAtual);
+    // Fator R = 400k / 1,2M = 33% (>= 28%) => Anexo III
+    expect(derivadoDoFatorR.cargaAtual).toBeCloseTo(servicosIII.cargaAtual, 2);
   });
 
   it('cai no modelo nao-cumulativo quando a receita passa do limite do Simples', () => {
@@ -126,6 +137,61 @@ describe('calcularCenario', () => {
   it('propaga a observacao do cenario CBS do TCU', () => {
     const cenario = calcularCenario(fontes, premissas({ cenarioCbs: 'tcu' }));
     expect(cenario.resultado.observacoes.join(' ')).toContain('TCU');
+  });
+
+  it('nao soma a CBS/IBS experimental na carga de 2026 (ano-teste)', () => {
+    const c2026 = calcularCenario(fontes, premissas({ anoReferencia: 2026 }));
+
+    expect(c2026.cargaSimuladaBase).toBeGreaterThan(0);
+    expect(c2026.cargaSimulada).toBeCloseTo(c2026.residuais.total, 2);
+    expect(c2026.cargaSimulada).toBeLessThan(c2026.cargaSimuladaBase + c2026.residuais.total);
+    expect(c2026.avisos.join(' ')).toContain('Ano-teste');
+  });
+
+  it('recolhe a CPP patronal fora do DAS no Anexo IV', () => {
+    const comFolha: FontesContabeis = {
+      ...fontes,
+      folha12m: 300_000,
+      fonteFolha: 'folha_pagamento',
+    };
+    const carga = calcularCargaSimples(
+      comFolha,
+      premissas({ anexoSimples: 'IV', percentualVendas: 0 })
+    );
+
+    expect(carga.elegivel).toBe(true);
+    expect(carga.cppForaDAS).toBeCloseTo(300_000 * 0.22, 2);
+    expect(carga.total).toBeCloseTo(carga.das + carga.cppForaDAS, 2);
+  });
+
+  it('segrega receita mista por anexo (servicos x mercadorias)', () => {
+    const soServicos = calcularCargaSimples(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ percentualVendas: 0, anexoSimples: 'V' })
+    );
+    const soMercadorias = calcularCargaSimples(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ percentualVendas: 100, anexoSimples: 'I' })
+    );
+    const misto = calcularCargaSimples(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ percentualVendas: 50, anexoSimples: 'V' })
+    );
+
+    expect(misto.total).toBeGreaterThan(soMercadorias.total);
+    expect(misto.total).toBeLessThan(soServicos.total);
+    expect(misto.avisos.join(' ')).toContain('segregada');
+  });
+
+  it('recolhe ICMS fora do DAS acima do sublimite estadual', () => {
+    const carga = calcularCargaSimples(
+      { ...fontes, faturamento12m: 4_000_000 },
+      premissas({ percentualVendas: 100 })
+    );
+
+    expect(carga.elegivel).toBe(true);
+    expect(carga.icmsForaDAS).toBeGreaterThan(0);
+    expect(carga.total).toBeCloseTo(carga.das + carga.icmsForaDAS, 2);
   });
 
   it('avisa quando a leitura contabil foi truncada', () => {

@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { anoDoCenario, nomeDoCenario, formatarMoeda } from '@/lib/contabilidade/simulacao-regimes';
+import { ROTULO_FONTE_FOLHA } from '@/lib/contabilidade/fontes-contabeis';
 import { cn } from '@/lib/utils';
 import type { SimulacaoElisao } from './ElisaoFiscalTab.types';
 
@@ -141,6 +142,17 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
                   <span>Folha apurada 12m</span>
                   <span className="font-mono">{formatarMoeda(fontes?.folha12m)}</span>
                 </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Fonte da folha</span>
+                  <span>
+                    {ROTULO_FONTE_FOLHA[fontes?.fonteFolha as keyof typeof ROTULO_FONTE_FOLHA] ??
+                      'Registrada'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Carga do regime atual</span>
+                  <span className="font-mono">{formatarMoeda(detalhe.carga_atual)}</span>
+                </div>
                 <div className="flex justify-between">
                   <span>Tributos no regime atual</span>
                   <span className="font-mono">{formatarMoeda(resultado?.totalAntigo)}</span>
@@ -149,6 +161,14 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
                   <span>Tributos no cenário CBS/IBS</span>
                   <span className="font-mono">{formatarMoeda(resultado?.totalNovo)}</span>
                 </div>
+                {detalhe.detalhes?.ano_teste && (
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>CBS/IBS do ano-teste (não somados)</span>
+                    <span className="font-mono">
+                      {formatarMoeda(detalhe.detalhes?.carga_simulada_base)}
+                    </span>
+                  </div>
+                )}
                 {(detalhe.detalhes?.residuais_transicao?.total ?? 0) > 0 && (
                   <div className="flex justify-between text-muted-foreground">
                     <span>ICMS/ISS/PIS/COFINS residuais do ano</span>
@@ -157,6 +177,10 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
                     </span>
                   </div>
                 )}
+                <div className="flex justify-between">
+                  <span>Carga simulada devida no ano</span>
+                  <span className="font-mono">{formatarMoeda(detalhe.carga_simulada)}</span>
+                </div>
                 <div className="flex justify-between font-semibold">
                   <span>Economia estimada</span>
                   <span className={corEconomia(detalhe.economia_estimada)}>

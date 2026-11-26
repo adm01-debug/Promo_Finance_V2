@@ -17,9 +17,19 @@ type LinhaPagar = {
   descricao?: string | null;
 };
 
+type LinhaFolha = {
+  valor_total?: number | null;
+  total_folha?: number | null;
+  salarios?: number | null;
+  encargos?: number | null;
+  beneficios?: number | null;
+  pro_labore?: number | null;
+};
+
 let notas: LinhaNota[] = [];
 let titulos: Array<{ valor: number | null }> = [];
 let pagar: LinhaPagar[] = [];
+let folha: LinhaFolha[] = [];
 let erro: unknown = null;
 /** Quando true, toda pagina vem cheia — simula mais de 100 mil linhas no servidor. */
 let paginaSempreCheia = false;
@@ -38,6 +48,7 @@ interface ConsultaFake {
 function linhasDa(tabela: string): unknown[] {
   if (tabela === 'notas_fiscais') return notas;
   if (tabela === 'contas_receber') return titulos;
+  if (tabela === 'folha_pagamento') return folha;
   // `contas_pagar` nao recebe o filtro de status no mock: a consulta real ja
   // exclui cancelados no servidor (`.neq('status','cancelado')`).
   return pagar.filter((l) => (l.status ?? '').toLowerCase() !== 'cancelado');
@@ -75,6 +86,7 @@ beforeEach(() => {
   notas = [];
   titulos = [];
   pagar = [];
+  folha = [];
 });
 
 describe('janela12m', () => {
@@ -174,6 +186,38 @@ describe('buscarFontesContabeis', () => {
 
     expect(fontes.comprasServicos12m).toBe(24000);
     expect(fontes.folha12m).toBe(23000);
+    expect(fontes.fonteFolha).toBe('contas_pagar');
+  });
+
+  it('usa a folha mensal do Historico Financeiro com precedencia sobre contas a pagar', async () => {
+    pagar = [
+      { valor: 20_000, status: 'pago', categoria: 'Folha de pagamento', descricao: 'Salários' },
+    ];
+    folha = [
+      { valor_total: 12_000, total_folha: 12_000 },
+      { valor_total: 13_500, total_folha: 13_500 },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.folha12m).toBe(25500);
+    expect(fontes.fonteFolha).toBe('folha_pagamento');
+  });
+
+  it('soma salarios + encargos quando a folha mensal nao tem total', async () => {
+    folha = [{ salarios: 10_000, encargos: 3_200, beneficios: 800, pro_labore: 3_500 }];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.folha12m).toBe(17500);
+    expect(fontes.fonteFolha).toBe('folha_pagamento');
+  });
+
+  it('marca sem_dados quando nao ha folha de nenhuma fonte', async () => {
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.folha12m).toBe(0);
+    expect(fontes.fonteFolha).toBe('sem_dados');
   });
 
   it('propaga o erro do banco', async () => {

@@ -8,6 +8,13 @@ export const ROTULO_FONTE: Record<FontesContabeis['fonteFaturamento'], string> =
   sem_dados: 'Nenhuma receita encontrada no período',
 };
 
+/** Rótulos usados na UI para dizer de onde veio a folha usada no Fator R. */
+export const ROTULO_FONTE_FOLHA: Record<FontesContabeis['fonteFolha'], string> = {
+  folha_pagamento: 'Folha de Pagamento Mensal (Histórico Financeiro)',
+  contas_pagar: 'Títulos de folha/encargos em contas a pagar',
+  sem_dados: 'Nenhuma folha apurada no período',
+};
+
 /** Tamanho da página lida por requisição (teto do `max-rows` do PostgREST). */
 const TAMANHO_PAGINA = 1000;
 /** Trava de segurança: 100 páginas = 100 mil linhas por consulta. */
@@ -89,6 +96,27 @@ interface LinhaNota {
   cliente_cnpj: string | null;
 }
 
+/** Linha de `folha_pagamento` — o Histórico Financeiro grava o total em `valor_total`. */
+interface LinhaFolha {
+  valor_total: number | null;
+  total_folha: number | null;
+  salarios: number | null;
+  encargos: number | null;
+  beneficios: number | null;
+  pro_labore: number | null;
+}
+
+function valorDaLinhaFolha(l: LinhaFolha): number {
+  const total = Number(l.valor_total ?? l.total_folha ?? 0);
+  if (total > 0) return total;
+  return (
+    Number(l.salarios ?? 0) +
+    Number(l.encargos ?? 0) +
+    Number(l.beneficios ?? 0) +
+    Number(l.pro_labore ?? 0)
+  );
+}
+
 /**
  * Apura faturamento, compras e folha dos últimos 12 meses no próprio sistema.
  *
@@ -100,8 +128,9 @@ interface LinhaNota {
  *   a receber.
  * - Compras: só lançamentos de `contas_pagar` com fornecedor identificado.
  *   Folha, impostos e demais despesas internas não geram crédito de CBS/IBS.
- * - Folha: lançamentos de `contas_pagar` classificados como folha/encargos,
- *   usados no Fator R do Simples Nacional.
+ * - Folha: `folha_pagamento` (Histórico Financeiro) tem precedência; na
+ *   ausência dela, lançamentos de `contas_pagar` classificados como
+ *   folha/encargos. Alimenta o Fator R do Simples Nacional.
  */
 export async function buscarFontesContabeis(empresaId: string): Promise<FontesContabeis> {
   const inicio = janela12m();
@@ -147,6 +176,20 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
     fonteFaturamento = faturamento > 0 ? 'contas_receber' : 'sem_dados';
   }
 
+  const folhaMensal = await lerTudo<LinhaFolha>((de, ate) =>
+    supabase
+      .from('folha_pagamento')
+      .select('valor_total, total_folha, salarios, encargos, beneficios, pro_labore')
+      .eq('empresa_id', empresaId)
+      .gte('mes_referencia', inicio)
+      .order('id', { ascending: true })
+      .range(de, ate)
+  );
+  truncado = truncado || folhaMensal.truncado;
+  const totalFolhaMensal = arredondar(
+    folhaMensal.linhas.reduce((acc, l) => acc + valorDaLinhaFolha(l), 0)
+  );
+
   const pagar = await lerTudo<LinhaPagar>((de, ate) =>
     supabase
       .from('contas_pagar')
@@ -163,15 +206,23 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
   const comFornecedor = pagar.linhas.filter(
     (l) => (l.fornecedor_id ?? '').trim() !== '' || (l.fornecedor_nome ?? '').trim() !== ''
   );
-  const folha = pagar.linhas.filter(ehFolha);
+  const folhaTitulos = arredondar(somar(pagar.linhas.filter(ehFolha)));
+
+  // A folha mensal do Histórico Financeiro é a fonte primária do Fator R; os
+  // títulos de `contas_pagar` só entram quando não há folha lançada no período,
+  // para não somar a mesma despesa duas vezes.
+  const folha12m = totalFolhaMensal > 0 ? totalFolhaMensal : folhaTitulos;
+  const fonteFolha: FontesContabeis['fonteFolha'] =
+    totalFolhaMensal > 0 ? 'folha_pagamento' : folhaTitulos > 0 ? 'contas_pagar' : 'sem_dados';
 
   return {
     faturamento12m: arredondar(faturamento),
     comprasServicos12m: arredondar(somar(comFornecedor)),
-    folha12m: arredondar(somar(folha)),
+    folha12m,
     notasConsideradas: notasReceita.length,
     titulosConsiderados,
     fonteFaturamento,
+    fonteFolha,
     janelaInicio: inicio,
     truncado,
   };

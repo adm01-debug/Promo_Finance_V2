@@ -111,6 +111,7 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
           resultado: cenario.resultado,
           residuais_transicao: cenario.residuais,
           carga_simulada_base: cenario.cargaSimuladaBase,
+          ano_teste: cenario.anoTeste,
           avisos: cenario.avisos,
           aliquotas: {
             atual_percentual: cenario.aliquotaAtualPercentual,
