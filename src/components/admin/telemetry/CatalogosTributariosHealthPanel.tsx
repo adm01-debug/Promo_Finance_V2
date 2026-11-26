@@ -106,10 +106,12 @@ interface LinhaCarimbo {
  * `created_at`/`carregado_em` das chaves que já existem, então o catálogo
  * congela a data mesmo com o job rodando todo dia.
  *
- * Escopos que dividem o job com outro escopo exigem prova do próprio escopo: o
- * 2xx de `request_end` só diz que a função respondeu — a rotina diária de
- * alíquotas responde 200 sem consultar município nenhum. A prova vem do
- * `sync concluido` da mesma requisição, que registra o que o job consultou.
+ * Escopos que dividem o job com outro escopo exigem prova do proprio escopo: o
+ * 2xx de `request_end` so diz que a funcao respondeu. As aliquotas alternam
+ * rodadas (a diaria consulta UF e CBS, a municipal consulta municipio e nao
+ * passa pela UF) e o job de NCM/NBS responde 200 gravando so o NCM. A prova
+ * vem do `sync concluido` da mesma requisicao, que registra o que o job
+ * consultou.
  */
 async function ultimoRunOkCatalogo(id: CatalogoRfbId): Promise<EvidenciaRun> {
   const funcao = FUNCAO_SYNC_CATALOGO_RFB[id];

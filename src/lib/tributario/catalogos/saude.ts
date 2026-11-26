@@ -409,13 +409,15 @@ export interface LinhaLedgerRun {
 /**
  * Escopos que dividem o job de borda com outro escopo.
  *
- * Nesses casos o 2xx do job não prova nada sobre o escopo: o job de NCM/NBS
- * responde 200 gravando só o NCM, e a rotina diária de alíquotas responde 200
- * sem consultar município nenhum.
+ * Nesses casos o 2xx do job nao prova nada sobre o escopo: o job de NCM/NBS
+ * responde 200 gravando so o NCM, e a rotina de aliquotas alterna rodadas — a
+ * diaria consulta UF e CBS, a municipal consulta municipio e nao passa pela
+ * consulta de UF.
  */
 const ESCOPOS_COM_JOB_COMPARTILHADO: ReadonlySet<CatalogoRfbId> = new Set<CatalogoRfbId>([
   'ncm',
   'nbs',
+  'aliquota_ibs_uf',
   'aliquota_ibs_mun',
 ]);
 
@@ -435,6 +437,17 @@ function contagem(metadata: Record<string, unknown> | null | undefined, campo: s
 }
 
 /**
+ * A rodada terminou incompleta?
+ *
+ * O job responde 200 mesmo quando o WAF bloqueia no meio (`interrompido`) ou
+ * quando o teto de requisicoes corta a lista (`truncada`); metade do escopo
+ * consultado nao pode datar o catalogo como fresco.
+ */
+function rodadaIncompleta(metadata: Record<string, unknown> | null | undefined): boolean {
+  return metadata?.interrompido === true || metadata?.truncada === true;
+}
+
+/**
  * O `sync concluido` de um run prova que este escopo foi consultado?
  *
  * É o que separa "escopo ainda não publicado pela RFB" (consulta concluída, nada
@@ -449,8 +462,12 @@ export function runComprovaEscopo(
       return contagem(metadata, 'recebidos_ncm') > 0;
     case 'nbs':
       return contagem(metadata, 'recebidos_nbs') > 0;
+    case 'aliquota_ibs_uf':
+      // A rodada municipal usa a mesma funcao e nao consulta UF nenhuma: so o
+      // contador de UFs prova que a carga estadual rodou.
+      return contagem(metadata, 'uf_consultados') > 0 && !rodadaIncompleta(metadata);
     case 'aliquota_ibs_mun':
-      return contagem(metadata, 'municipio_consultados') > 0;
+      return contagem(metadata, 'municipio_consultados') > 0 && !rodadaIncompleta(metadata);
     default:
       // Job de escopo único: o 2xx do próprio run já é a prova.
       return true;

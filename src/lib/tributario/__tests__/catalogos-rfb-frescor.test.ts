@@ -239,8 +239,23 @@ describe('escolherRunComEscopo', () => {
     expect(exigeProvaDeEscopo('ncm')).toBe(true);
     expect(exigeProvaDeEscopo('nbs')).toBe(true);
     expect(exigeProvaDeEscopo('aliquota_ibs_mun')).toBe(true);
+    expect(exigeProvaDeEscopo('aliquota_ibs_uf')).toBe(true);
     expect(exigeProvaDeEscopo('cclasstrib')).toBe(false);
-    expect(exigeProvaDeEscopo('aliquota_ibs_uf')).toBe(false);
+  });
+
+  it('sync concluido sem request_id nao prova escopo nenhum', () => {
+    // E o que acontece quando o job loga pelo logger de modulo: o painel nao
+    // tem como casar a linha com o `request_end` e descarta o run.
+    const semId: LinhaLedgerRun[] = [
+      {
+        created_at: '2026-11-25T03:00:00Z',
+        event: 'sync concluido',
+        status_code: null,
+        metadata: { recebidos_nbs: 12 },
+      },
+      linha('request_end', 'r9', 200, {}, '2026-11-25T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('nbs', semId)).toBeNull();
   });
 
   it('ignora o run do job quando o escopo nao foi consultado', () => {
@@ -310,5 +325,64 @@ describe('escolherRunComEscopo', () => {
       ...diaria,
     ];
     expect(escolherRunComEscopo('aliquota_ibs_mun', semanal)).toBe('2026-11-23T03:00:00Z');
+  });
+
+  it('nao deixa a rotina municipal datar o IBS estadual', () => {
+    const municipal = [
+      linha(
+        'sync concluido',
+        'municipal',
+        null,
+        { escopo: 'municipio', uf_consultados: 0, municipio_consultados: 40 },
+        '2026-11-27T03:00:00Z'
+      ),
+      linha('request_end', 'municipal', 200, {}, '2026-11-27T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('aliquota_ibs_uf', municipal)).toBeNull();
+
+    const diaria = [
+      linha(
+        'sync concluido',
+        'diaria',
+        null,
+        { escopo: 'uf', uf_consultados: 27, municipio_consultados: 0 },
+        '2026-11-25T03:00:00Z'
+      ),
+      linha('request_end', 'diaria', 200, {}, '2026-11-25T03:00:00Z'),
+      ...municipal,
+    ];
+    expect(escolherRunComEscopo('aliquota_ibs_uf', diaria)).toBe('2026-11-25T03:00:00Z');
+  });
+
+  it('rodada interrompida ou truncada nao data o escopo', () => {
+    // O job responde 200 com ok:false quando o WAF bloqueia, e o teto de
+    // requisicoes corta a lista calado: nenhum dos dois cobre o escopo.
+    const linhas = [
+      linha(
+        'sync concluido',
+        'm1',
+        null,
+        { escopo: 'municipio', municipio_consultados: 40, interrompido: true },
+        '2026-11-27T03:00:00Z'
+      ),
+      linha('request_end', 'm1', 200, {}, '2026-11-27T03:00:00Z'),
+      linha(
+        'sync concluido',
+        'm2',
+        null,
+        { escopo: 'municipio', municipio_consultados: 12, truncada: true },
+        '2026-11-26T03:00:00Z'
+      ),
+      linha('request_end', 'm2', 200, {}, '2026-11-26T03:00:00Z'),
+      linha(
+        'sync concluido',
+        'm3',
+        null,
+        { escopo: 'municipio', municipio_consultados: 40, truncada: false },
+        '2026-11-23T03:00:00Z'
+      ),
+      linha('request_end', 'm3', 200, {}, '2026-11-23T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('aliquota_ibs_mun', linhas)).toBe('2026-11-23T03:00:00Z');
   });
 });

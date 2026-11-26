@@ -249,6 +249,9 @@ export const handler = async (req: Request) => {
     };
     log.info('sync concluido', {
       context: {
+        // O painel de saude (etapa 83) casa esta linha com o `request_end` pelo
+        // `request_id`: sem o id aqui o run bem sucedido nao prova o escopo.
+        request_id: req.headers.get('x-request-id') ?? null,
         data,
         versao_oficial: versaoDb,
         recebidos_ncm: ncmsApi.length,
