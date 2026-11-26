@@ -430,6 +430,57 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(mensagens.filter((m) => m.includes('PIX SEM PAR'))).toHaveLength(3);
   });
 
+  it('não duplica o alerta quando o crédito volta em extratos sobrepostos', async () => {
+    erroAoGravarAlerta = true;
+    const credito = (valor: number, descricao: string, id: string, referencia?: string) => ({
+      ...transacaoCredito(valor, descricao, '2026-04-20'),
+      id,
+      numeroReferencia: referencia,
+    });
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        credito(999, 'PIX SEM PAR', 'ofx-999-0', '999'),
+        credito(777, 'PIX CSV', 'csv-1-171'),
+      ])
+    );
+    abrirDialogo();
+    await importar();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    // Segundo extrato do mesmo período: os mesmos créditos, com posições e ids
+    // diferentes (o FITID e a descrição se repetem). A fila não pode crescer,
+    // senão a nova tentativa grava dois alertas para o mesmo PIX.
+    fireEvent.click(screen.getByText('FECHAR'));
+    await waitFor(() =>
+      expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
+    );
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        credito(999, 'PIX SEM PAR', 'ofx-999-6', '999'),
+        credito(777, 'PIX CSV', 'csv-9-998'),
+      ])
+    );
+    await importar();
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    erroAoGravarAlerta = false;
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('2 divergências registradas como alerta.')
+    );
+    const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
+    // 2 falhas em cada lote (as mesmas 2 divergências) + 2 gravados na repetição.
+    expect(alertas).toHaveLength(6);
+    const gravados = alertas.slice(4).map((c) => (c.args[0] as { mensagem: string }).mensagem);
+    expect(gravados.filter((m) => m.includes('PIX SEM PAR'))).toHaveLength(1);
+    expect(gravados.filter((m) => m.includes('PIX CSV'))).toHaveLength(1);
+  });
+
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
     erroAoGravarAlerta = true;
     const { rerender } = abrirDialogo('emp-1');

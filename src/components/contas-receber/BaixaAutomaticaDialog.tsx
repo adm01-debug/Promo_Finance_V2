@@ -350,7 +350,7 @@ export function BaixaAutomaticaDialog({
         alertasFalhos = falhasDeAlerta.length;
         // Mescla com as pendências de lotes anteriores (mesmo de outra empresa):
         // sobrescrever descartava alertas que continuavam devidos.
-        setDivergenciasSemAlerta((prev) => mesclarPendentes(prev, falhasDeAlerta));
+        setDivergenciasSemAlerta((prev) => mesclarPendentes(prev, falhasDeAlerta, novasPendentes));
         if (alertasFalhos > 0) {
           // A divergência não pode ficar registrada em lugar nenhum: a tela de
           // conclusão repete só a gravação destes alertas, sem reimportar o
@@ -667,6 +667,12 @@ export function BaixaAutomaticaDialog({
                   )}
                   REGISTRAR DIVERGÊNCIAS PENDENTES ({divergenciasSemAlerta.length})
                 </Button>
+              )}
+              {divergenciasSemAlerta.length > 0 && (
+                <p className="text-[10px] mt-2 opacity-60">
+                  A lista inclui pendências de outros lotes — cada alerta é gravado na empresa de
+                  origem do lote, mesmo que não seja a selecionada agora.
+                </p>
               )}
               <Button onClick={handleClose} className="w-full h-12 rounded-xl mt-4 font-black">
                 FECHAR
