@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { buscarFontesContabeis, janela12m, janelaFolha12m } from '../fontes-contabeis';
+import { buscarFontesContabeis, janela12Competencias } from '../fontes-contabeis';
 
 type LinhaNota = {
   valor_total: number | null;
@@ -116,23 +116,17 @@ beforeEach(() => {
   folha = [];
 });
 
-describe('janela12m', () => {
-  it('devolve a data de corte em ISO (AAAA-MM-DD)', () => {
-    expect(janela12m(new Date('2026-11-26T12:00:00Z'))).toBe('2025-11-26');
-  });
-});
-
-describe('janelaFolha12m', () => {
+describe('janela12Competencias', () => {
   it('pega as 12 competencias fechadas anteriores ao mes de apuracao', () => {
     // 26/11/2026 => competencias de 01/11/2025 a 01/11/2026 (nov/2026 fica de fora)
-    expect(janelaFolha12m(new Date('2026-11-26T12:00:00Z'))).toEqual({
+    expect(janela12Competencias(new Date('2026-11-26T12:00:00Z'))).toEqual({
       inicio: '2025-11-01',
       fim: '2026-11-01',
     });
   });
 
   it('fecha a janela no primeiro dia do mes mesmo em 31 de marco', () => {
-    expect(janelaFolha12m(new Date('2026-03-31T23:00:00Z'))).toEqual({
+    expect(janela12Competencias(new Date('2026-03-31T23:00:00Z'))).toEqual({
       inicio: '2025-03-01',
       fim: '2026-03-01',
     });
@@ -285,7 +279,37 @@ describe('buscarFontesContabeis', () => {
     const fontes = await buscarFontesContabeis('empresa-1');
 
     expect(fontes.folha12m).toBe(26000);
-    expect(fontes.remuneracao12m).toBe(14000);
+    // A competencia sem detalhamento contribui pelo total da linha (8.000), nao por
+    // zero: antes o mes sem salarios/pro-labore sumia da base da CPP.
+    expect(fontes.remuneracao12m).toBe(22000);
+  });
+
+  it('nao conta rescisao de contrato com fornecedor como folha', async () => {
+    pagar = [
+      {
+        valor: 5_000,
+        status: 'pago',
+        fornecedor_id: 'forn-1',
+        fornecedor_nome: 'Construtora X',
+        categoria: 'Servicos',
+        categoria_nome: 'Servicos terceirizados',
+        descricao: 'Rescisao de contrato de fornecimento',
+      },
+      {
+        valor: 9_000,
+        status: 'pago',
+        fornecedor_id: null,
+        fornecedor_nome: null,
+        categoria: 'Folha',
+        categoria_nome: 'Folha de pagamento',
+        descricao: 'Rescisao trabalhista do funcionario',
+      },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.folha12m).toBe(9000);
+    expect(fontes.comprasServicos12m).toBe(5000);
   });
 
   it('cai na folha total quando a folha nao detalha salarios e pro-labore', async () => {

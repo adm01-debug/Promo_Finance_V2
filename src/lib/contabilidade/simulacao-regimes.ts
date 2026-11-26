@@ -35,6 +35,12 @@ export interface PremissasCenario {
   regimeAtual: string;
   /** Anexo do Simples Nacional usado para a carga atual quando o regime é o Simples. */
   anexoSimples: AnexoSimples;
+  /**
+   * A atividade está sujeita ao Fator R (LC 123/2006 art. 18 §5º-A)? Quando
+   * `false` (atividades do §5º-I, como contabilidade), o anexo informado é
+   * respeitado mesmo com folha abaixo de 28%, sem migrar para o Anexo V.
+   */
+  sujeitoFatorR: boolean;
   percentualVendas: number;
   cenarioCbs: CenarioCbs;
   aliquotaCbsOverride: number | null;
@@ -75,6 +81,7 @@ export const PREMISSAS_PADRAO: PremissasCenario = {
   anoReferencia: new Date().getFullYear(),
   regimeAtual: 'Simples Nacional',
   anexoSimples: 'I',
+  sujeitoFatorR: true,
   percentualVendas: 100,
   cenarioCbs: 'cronograma',
   aliquotaCbsOverride: null,
@@ -152,9 +159,10 @@ function aliquotaEfetiva(anexo: AnexoSimples, rbt12: number): number {
  *
  * Receita mista (vendas + serviços) é segregada por anexo (LC 123/2006 art. 21,
  * §4º-A): cada parcela é tributada pelo anexo da sua atividade, com a alíquota
- * efetiva calculada sobre a RBT12 total. Acima do sublimite estadual o DAS segue a
- * 6ª faixa (federal, sem parcela de ICMS/ISS) e **ambos** os tributos são recolhidos
- * por fora — ICMS sobre as mercadorias e ISS sobre os serviços.
+ * efetiva calculada sobre a RBT12 total. Acima do sublimite estadual a segregação
+ * deixa de valer para o DAS — ele passa a ser um único anexo (o do regime da
+ * receita mista) aplicado sobre a receita total, na 6ª faixa federal, e apenas
+ * ICMS e ISS são apurados por fora, cada um sobre a sua parcela de receita.
  */
 export function calcularCargaSimples(
   fontes: FontesContabeis,
@@ -172,16 +180,27 @@ export function calcularCargaSimples(
 
   // LC 123/2006 art. 18 §5º-I: o Fator R desloca a tributação de serviços entre os
   // Anexos III e V — a escolha manual não sobrepõe o corte de 28% (mesma regra da
-  // Calculadora do Simples). O Anexo IV não é alcançado por esse corte.
+  // Calculadora do Simples). O Anexo IV não é alcançado por esse corte e as
+  // atividades não sujeitas ao Fator R (§5º-I) mantêm o anexo informado.
   const anexoServicos: AnexoSimples =
-    premissas.anexoSimples === 'IV' ? 'IV' : fatorR >= FATOR_R_CORTE ? 'III' : 'V';
+    premissas.anexoSimples === 'IV' || !premissas.sujeitoFatorR
+      ? premissas.anexoSimples
+      : fatorR >= FATOR_R_CORTE
+        ? 'III'
+        : 'V';
   const anexoMercadorias: AnexoSimples = premissas.anexoSimples === 'II' ? 'II' : 'I';
   if (
+    premissas.sujeitoFatorR &&
     (premissas.anexoSimples === 'III' || premissas.anexoSimples === 'V') &&
     premissas.anexoSimples !== anexoServicos
   ) {
     avisosFatorR.push(
       `Anexo ${premissas.anexoSimples} substituído pelo Anexo ${anexoServicos}: Fator R de ${(fatorR * 100).toFixed(2)}% contra o corte de 28% (LC 123/2006 art. 18 §5º-I).`
+    );
+  }
+  if (!premissas.sujeitoFatorR && fatorR < FATOR_R_CORTE && percentualServicos > 0) {
+    avisosFatorR.push(
+      `Fator R de ${(fatorR * 100).toFixed(2)}% mantido no Anexo ${premissas.anexoSimples}: a atividade foi marcada como não sujeita ao Fator R (LC 123/2006 art. 18 §5º-I).`
     );
   }
   const anexoEfetivo: AnexoSimples =
@@ -369,8 +388,11 @@ export function calcularCenario(
   // O valor fica registrado em `cargaSimuladaBase` apenas como referência.
   const cargaSimulada = arredondar((linha.anoTeste ? 0 : cargaSimuladaBase) + residuais.total);
   if (linha.anoTeste) {
+    const cenarioPadrao = premissas.cenarioCbs === 'cronograma';
     avisos.push(
-      `Ano-teste (${premissas.anoReferencia}): as alíquotas legais são CBS 0,9% + IBS 0,1% (LC 214/2025 art. 348). O valor de ${formatarMoeda(cargaSimuladaBase)} usa a alíquota do cenário CBS aplicado e é apenas referência — não corresponde às alíquotas legais do ano-teste, e a CBS/IBS experimental é compensável/dispensável com PIS/COFINS e tributos federais, então não entra na carga simulada.`
+      cenarioPadrao
+        ? `Ano-teste (${premissas.anoReferencia}): o valor de ${formatarMoeda(cargaSimuladaBase)} usa as alíquotas legais do ano-teste — CBS 0,9% + IBS 0,1% (LC 214/2025 art. 348) — e é apenas referência, porque a CBS/IBS experimental é compensável/dispensável com PIS/COFINS e tributos federais e não entra na carga simulada.`
+        : `Ano-teste (${premissas.anoReferencia}): o valor de ${formatarMoeda(cargaSimuladaBase)} usa a alíquota do cenário CBS aplicado, não as alíquotas legais do ano-teste (CBS 0,9% + IBS 0,1%, LC 214/2025 art. 348). Ele é apenas referência — a CBS/IBS experimental é compensável/dispensável com PIS/COFINS e tributos federais e não entra na carga simulada.`
     );
   }
   if (residuais.total > 0) {

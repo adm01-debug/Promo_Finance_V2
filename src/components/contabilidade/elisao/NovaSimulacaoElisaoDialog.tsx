@@ -5,6 +5,7 @@ import { supabaseDyn as supabase } from '@/lib/supabase-dynamic';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -100,6 +101,7 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
           ano_referencia: premissas.anoReferencia,
           regime_atual: premissas.regimeAtual,
           anexo_simples: premissas.anexoSimples,
+          sujeito_fator_r: premissas.sujeitoFatorR,
           percentual_vendas: premissas.percentualVendas,
           cenario_cbs: premissas.cenarioCbs,
           aliquota_cbs_override: premissas.aliquotaCbsOverride,
@@ -244,6 +246,23 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
               <p className="text-[11px] text-muted-foreground">
                 Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V.
               </p>
+            </div>
+          )}
+
+          {premissas.regimeAtual === 'Simples Nacional' && (
+            <div className="flex items-start justify-between gap-3 rounded-md border p-3">
+              <div className="space-y-1">
+                <Label htmlFor="cenario-fator-r">Atividade sujeita ao Fator R</Label>
+                <p className="text-[11px] text-muted-foreground">
+                  Desligue para atividades do art. 18 §5º-I da LC 123/2006 (ex.: contabilidade), que
+                  não migram de anexo com folha abaixo de 28%.
+                </p>
+              </div>
+              <Switch
+                id="cenario-fator-r"
+                checked={premissas.sujeitoFatorR}
+                onCheckedChange={(v) => setPremissas({ ...premissas, sujeitoFatorR: v })}
+              />
             </div>
           )}
 

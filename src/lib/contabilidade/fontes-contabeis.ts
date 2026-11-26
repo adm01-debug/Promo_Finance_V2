@@ -22,19 +22,17 @@ const MAX_PAGINAS = 100;
 
 const arredondar = (v: number) => Math.round(v * 100) / 100;
 
-export function janela12m(agora: Date = new Date()): string {
-  const d = new Date(agora.getTime());
-  d.setFullYear(d.getFullYear() - 1);
-  return d.toISOString().slice(0, 10);
-}
-
 /**
- * Competências de folha do Fator R: os 12 meses **fechados** anteriores ao mês de
+ * Competências do Fator R: os 12 meses **fechados** anteriores ao mês de
  * apuração. `folha_pagamento.mes_referencia` é o primeiro dia da competência, e um
  * corte por dia (mesmo dia do mês anterior) descartaria a competência de fronteira
  * e aceitaria competências futuras já cadastradas.
+ *
+ * A mesma janela vale para receita e compras: o Fator R é folha ÷ receita dos
+ * **mesmos** meses — cortar a receita um dia antes (ou aceitar o mês corrente
+ * ainda incompleto) infla ou derruba o ratio na fronteira dos 28%.
  */
-export function janelaFolha12m(agora: Date = new Date()): { inicio: string; fim: string } {
+export function janela12Competencias(agora: Date = new Date()): { inicio: string; fim: string } {
   const inicio = new Date(Date.UTC(agora.getFullYear(), agora.getMonth() - 12, 1));
   const fim = new Date(Date.UTC(agora.getFullYear(), agora.getMonth(), 1));
   return { inicio: inicio.toISOString().slice(0, 10), fim: fim.toISOString().slice(0, 10) };
@@ -110,7 +108,12 @@ const TERMOS_FOLHA_DESCRICAO = [
   'ferias',
   'inss',
   'fgts',
-  'rescisao',
+  // `rescisao` sozinho pegaria "rescisão de contrato de fornecimento", que é
+  // compra com fornecedor e gera crédito de CBS/IBS — só conta com contexto trabalhista.
+  'rescisao trabalhista',
+  'rescisao de funcionario',
+  'rescisao de empregado',
+  'verbas rescisorias',
 ];
 
 interface LinhaPagar {
@@ -139,12 +142,28 @@ interface LinhaNota {
 
 /** Linha de `folha_pagamento` — o Histórico Financeiro grava o total em `valor_total`. */
 interface LinhaFolha {
+  mes_referencia?: string | null;
   valor_total: number | null;
   total_folha: number | null;
   salarios: number | null;
   encargos: number | null;
   beneficios: number | null;
   pro_labore: number | null;
+}
+
+/**
+ * Remuneração da linha (salários + pró-labore), que é a base da CPP patronal.
+ * Sem detalhamento, presume o total da competência menos encargos e benefícios —
+ * antes a linha valia zero e só o somatório geral caía no fallback, então uma
+ * competência sem detalhe zerava a própria fatia do Fator R.
+ */
+function remuneracaoDaLinhaFolha(l: LinhaFolha): number {
+  const salarios = Number(l.salarios ?? 0);
+  const proLabore = Number(l.pro_labore ?? 0);
+  if (salarios > 0 || proLabore > 0) return salarios + proLabore;
+  const total = valorDaLinhaFolha(l);
+  if (total <= 0) return 0;
+  return Math.max(0, total - Number(l.encargos ?? 0) - Number(l.beneficios ?? 0));
 }
 
 function valorDaLinhaFolha(l: LinhaFolha): number {
@@ -175,15 +194,15 @@ function valorDaLinhaFolha(l: LinhaFolha): number {
  *   folha/encargos. Alimenta o Fator R do Simples Nacional.
  */
 export async function buscarFontesContabeis(empresaId: string): Promise<FontesContabeis> {
-  const inicio = janela12m();
-  const { inicio: inicioFolha, fim: fimFolha } = janelaFolha12m();
+  const { inicio: inicioJanela, fim: fimJanela } = janela12Competencias();
 
   const notasConsulta = await lerTudo<LinhaNota>((de, ate) =>
     supabase
       .from('notas_fiscais')
       .select('valor_total, status, cliente_nome, cliente_cnpj')
       .eq('empresa_id', empresaId)
-      .gte('data_emissao', inicio)
+      .gte('data_emissao', inicioJanela)
+      .lt('data_emissao', fimJanela)
       .order('id', { ascending: true })
       .range(de, ate)
   );
@@ -209,7 +228,8 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
         .eq('empresa_id', empresaId)
         .is('deleted_at', null)
         .neq('status', 'cancelado')
-        .gte('data_emissao', inicio)
+        .gte('data_emissao', inicioJanela)
+        .lt('data_emissao', fimJanela)
         .order('id', { ascending: true })
         .range(de, ate)
     );
@@ -222,10 +242,12 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
   const folhaMensal = await lerTudo<LinhaFolha>((de, ate) =>
     supabase
       .from('folha_pagamento')
-      .select('valor_total, total_folha, salarios, encargos, beneficios, pro_labore')
+      .select(
+        'mes_referencia, valor_total, total_folha, salarios, encargos, beneficios, pro_labore'
+      )
       .eq('empresa_id', empresaId)
-      .gte('mes_referencia', inicioFolha)
-      .lt('mes_referencia', fimFolha)
+      .gte('mes_referencia', inicioJanela)
+      .lt('mes_referencia', fimJanela)
       .order('id', { ascending: true })
       .range(de, ate)
   );
@@ -234,12 +256,18 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
     folhaMensal.linhas.reduce((acc, l) => acc + valorDaLinhaFolha(l), 0)
   );
   // CPP patronal (20% + RAT) incide sobre a remuneração paga — salários e pró-labore —,
-  // não sobre os encargos lançados na mesma competência.
+  // não sobre os encargos lançados na mesma competência. A soma é por competência:
+  // um mês gravado só com `valor_total` ainda entra pelo fallback da linha.
+  const remuneracaoPorCompetencia = new Map<string, number>();
+  for (const linha of folhaMensal.linhas) {
+    const competencia = linha.mes_referencia ?? '';
+    remuneracaoPorCompetencia.set(
+      competencia,
+      (remuneracaoPorCompetencia.get(competencia) ?? 0) + remuneracaoDaLinhaFolha(linha)
+    );
+  }
   const remuneracaoMensal = arredondar(
-    folhaMensal.linhas.reduce(
-      (acc, l) => acc + Number(l.salarios ?? 0) + Number(l.pro_labore ?? 0),
-      0
-    )
+    [...remuneracaoPorCompetencia.values()].reduce((acc, v) => acc + v, 0)
   );
 
   const pagar = await lerTudo<LinhaPagar>((de, ate) =>
@@ -249,7 +277,8 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
       .eq('empresa_id', empresaId)
       .is('deleted_at', null)
       .neq('status', 'cancelado')
-      .gte('data_emissao', inicio)
+      .gte('data_emissao', inicioJanela)
+      .lt('data_emissao', fimJanela)
       .order('id', { ascending: true })
       .range(de, ate)
   );
@@ -283,7 +312,7 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
     titulosConsiderados,
     fonteFaturamento,
     fonteFolha,
-    janelaInicio: inicio,
+    janelaInicio: inicioJanela,
     truncado,
   };
 }

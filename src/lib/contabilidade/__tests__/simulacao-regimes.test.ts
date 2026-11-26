@@ -131,6 +131,22 @@ describe('calcularCenario', () => {
     expect(iii.avisos.join(' ')).toContain('Anexo III substituído pelo Anexo V');
   });
 
+  it('respeita o Anexo III quando a atividade nao esta sujeita ao Fator R', () => {
+    const sujeito = calcularCenario(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ anexoSimples: 'III', percentualVendas: 0 })
+    );
+    const naoSujeito = calcularCenario(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ anexoSimples: 'III', percentualVendas: 0, sujeitoFatorR: false })
+    );
+
+    // Fator R = 8,3%: sujeito ao corte vira Anexo V; nao sujeito (art. 18 §5o-I) fica no III.
+    expect(naoSujeito.cargaAtual).toBeLessThan(sujeito.cargaAtual);
+    expect(naoSujeito.avisos.join(' ')).toContain('não sujeita ao Fator R');
+    expect(naoSujeito.avisos.join(' ')).not.toContain('substituído pelo Anexo V');
+  });
+
   it('cai no modelo nao-cumulativo quando a receita passa do limite do Simples', () => {
     const cenario = calcularCenario(
       { ...fontes, faturamento12m: 5_000_000 },
@@ -180,12 +196,25 @@ describe('calcularCenario', () => {
     expect(presumido.avisos.join(' ')).toContain('IRPJ/CSLL não entram');
   });
 
-  it('avisa que o valor do ano-teste nao corresponde as aliquotas legais de 0,9%/0,1%', () => {
-    const c2026 = calcularCenario(fontes, premissas({ anoReferencia: 2026 }));
+  it('no cenário oficial o aviso do ano-teste cita as alíquotas legais sem negá-las', () => {
+    const c2026 = calcularCenario(
+      fontes,
+      premissas({ anoReferencia: 2026, cenarioCbs: 'cronograma' })
+    );
     const avisos = c2026.avisos.join(' ');
 
     expect(avisos).toContain('0,9%');
-    expect(avisos).toContain('não corresponde às alíquotas legais');
+    expect(avisos).toContain('alíquotas legais do ano-teste');
+    expect(avisos).not.toContain('não corresponde às alíquotas legais');
+  });
+
+  it('avisa que o valor do ano-teste nao corresponde as aliquotas legais quando o cenario nao e o oficial', () => {
+    const c2026 = calcularCenario(fontes, premissas({ anoReferencia: 2026, cenarioCbs: 'livre' }));
+    const avisos = c2026.avisos.join(' ');
+
+    expect(avisos).toContain('0,9%');
+    expect(avisos).toContain('não as alíquotas legais do ano-teste');
+    expect(avisos).not.toContain('alíquotas legais do ano-teste —');
   });
 
   it('recolhe a CPP patronal fora do DAS no Anexo IV', () => {
