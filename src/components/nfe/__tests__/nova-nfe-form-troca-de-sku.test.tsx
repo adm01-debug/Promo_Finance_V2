@@ -111,6 +111,8 @@ describe('NovaNFeForm ao trocar de SKU', () => {
     render(<NovaNFeForm onClose={() => {}} />);
 
     digitarSku('KIT-1');
+    // Nao basta o aviso sumir: o item tem que ficar com o codigo do padrao.
+    expect(screen.getAllByText(/200032/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/^Parcial:/)).toBeNull();
   });
 

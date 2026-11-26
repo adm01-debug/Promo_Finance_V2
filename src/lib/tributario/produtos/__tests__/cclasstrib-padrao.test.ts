@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   cclasstribManualAposTroca,
-  conflitoDeSku,
+  conflitosDeSku,
   ncmAposTrocaDeCodigo,
   normalizarCodigo,
   normalizarCodigoComercial,
@@ -155,55 +155,62 @@ describe('resolverPadraoPorCodigo', () => {
   });
 });
 
-describe('conflitoDeSku', () => {
+describe('conflitosDeSku', () => {
   const kitzinho = (produto_id: string, cst: string, cclasstrib: string, ncm = '12345678') =>
     padrao(produto_id, ncm, cst, cclasstrib, undefined, 'KIT-01');
 
-  it('aponta o produto que ja ocupa o SKU com outro enquadramento', () => {
-    const padroes = [kitzinho('456', '200', '200032')];
-    const conflito = conflitoDeSku(padroes, {
+  it('aponta todos os produtos que ja ocupam o SKU com outro enquadramento', () => {
+    const padroes = [
+      kitzinho('456', '200', '200032'),
+      kitzinho('457', '200', '200032'),
+      kitzinho('788', '102', '000001'),
+    ];
+    const conflitos = conflitosDeSku(padroes, {
       produto_id: '789',
       codigo: ' kit-01 ',
       cst: '102',
       cclasstrib: '000001',
+      ncm: '12345678',
     });
-    expect(conflito?.produto_id).toBe('456');
+    // O terceiro ja usa o enquadramento escolhido; unificar so os dois primeiros
+    // deixaria o SKU divergente e a nota sem resposta, por isso vem a lista toda.
+    expect(conflitos.map((c) => c.produto_id)).toEqual(['456', '457']);
   });
 
   it('libera o mesmo enquadramento, o proprio produto e SKU vazio', () => {
     const padroes = [kitzinho('456', '200', '200032')];
     expect(
-      conflitoDeSku(padroes, {
+      conflitosDeSku(padroes, {
         produto_id: '789',
         codigo: 'KIT-01',
         cst: '200',
         cclasstrib: '200032',
         ncm: '1234.56.78',
       })
-    ).toBeNull();
+    ).toEqual([]);
     expect(
-      conflitoDeSku(padroes, {
+      conflitosDeSku(padroes, {
         produto_id: '456',
         codigo: 'KIT-01',
         cst: '102',
         cclasstrib: '000001',
       })
-    ).toBeNull();
+    ).toEqual([]);
     expect(
-      conflitoDeSku(padroes, { produto_id: '789', codigo: '', cst: '102', cclasstrib: '000001' })
-    ).toBeNull();
+      conflitosDeSku(padroes, { produto_id: '789', codigo: '', cst: '102', cclasstrib: '000001' })
+    ).toEqual([]);
   });
 
   it('mesmo SKU com NCM diferente tambem conflita', () => {
     const padroes = [kitzinho('456', '200', '200032')];
-    const conflito = conflitoDeSku(padroes, {
+    const conflitos = conflitosDeSku(padroes, {
       produto_id: '789',
       codigo: 'KIT-01',
       cst: '200',
       cclasstrib: '200032',
       ncm: '39269090',
     });
-    expect(conflito?.produto_id).toBe('456');
+    expect(conflitos.map((c) => c.produto_id)).toEqual(['456']);
   });
 });
 

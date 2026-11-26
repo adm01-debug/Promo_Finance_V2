@@ -31,7 +31,7 @@ import {
   useProdutoCclasstribPadraoMutations,
 } from '@/hooks/useProdutoCclasstribPadrao';
 import {
-  conflitoDeSku,
+  conflitosDeSku,
   normalizarCodigo,
   normalizarCodigoComercial,
   normalizarNcm,
@@ -61,7 +61,7 @@ const LIMITE_OPCOES = 200;
 export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
   const produtoId = produto ? String(produto.id) : '';
   const { padroes, porProduto, isLoading } = useProdutoCclasstribPadrao(aberto);
-  const { salvar, remover } = useProdutoCclasstribPadraoMutations();
+  const { salvar, salvarVarios, remover } = useProdutoCclasstribPadraoMutations();
   const { opcoes, carregando: carregandoCatalogo, indisponivel } = useClassificacaoTributaria();
 
   const [ncm, setNcm] = useState('');
@@ -96,11 +96,11 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
       .slice(0, LIMITE_OPCOES);
   }, [opcoes, cst]);
 
-  // O SKU e a unica chave que o item da NF-e conhece: dois produtos com o mesmo
-  // SKU e enquadramentos diferentes deixariam o item sem resposta.
-  const conflito = useMemo(
+  // O SKU e a unica chave que o item da NF-e conhece: produtos com o mesmo SKU
+  // e enquadramentos diferentes deixariam o item sem resposta.
+  const conflitos = useMemo(
     () =>
-      conflitoDeSku(padroes, {
+      conflitosDeSku(padroes, {
         produto_id: produtoId,
         codigo: produto?.codigo,
         cst,
@@ -110,23 +110,25 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
     [padroes, produtoId, produto, cst, cclasstrib, ncm]
   );
 
+  const conflito = conflitos[0];
   const erroValidacao =
     validarPadrao({ cst, cclasstrib, ncm }) ?? validarCoerenciaCst({ cst, cclasstrib }, opcoes);
-  // Dois produtos com o mesmo SKU e o mesmo NCM podem ser unificados num clique:
-  // o item da nota nao distingue os dois. Com NCMs diferentes nao existe
+  // Produtos com o mesmo SKU e o mesmo NCM podem ser unificados num clique: o
+  // item da nota nao os distingue. Se algum tiver NCM diferente nao existe
   // enquadramento unico que resolva o item, e o cadastro avisa em vez de gravar.
   const podeUnificar =
-    Boolean(conflito) &&
+    conflitos.length > 0 &&
     !erroValidacao &&
-    (normalizarNcm(conflito?.ncm) ?? '') === (normalizarNcm(ncm) ?? '');
+    conflitos.every((c) => (normalizarNcm(c.ncm) ?? '') === (normalizarNcm(ncm) ?? ''));
   const erro =
     erroValidacao ??
     (conflito
-      ? `O SKU ${normalizarCodigoComercial(produto?.codigo)} ja e o padrao de outro produto com ` +
+      ? `O SKU ${normalizarCodigoComercial(produto?.codigo)} ja e o padrao de ` +
+        `${conflitos.length === 1 ? 'outro produto' : `${conflitos.length} outros produtos`} com ` +
         `${conflito.cst}/${conflito.cclasstrib}. O item da nota so conhece o SKU: unifique o ` +
-        'enquadramento dos dois produtos ou separe os SKUs no Bling.'
+        'enquadramento de todos ou separe os SKUs no Bling.'
       : null);
-  const ocupado = salvar.isPending || remover.isPending;
+  const ocupado = salvar.isPending || salvarVarios.isPending || remover.isPending;
   const sugestaoDiferente =
     sugestao &&
     (sugestao.cst !== normalizarCodigo(cst, 3) ||
@@ -139,22 +141,19 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
   };
 
   const unificar = () => {
-    if (!produto || !conflito) return;
-    salvar.mutate(
-      { produto_id: produtoId, codigo: produto.codigo ?? null, ncm, cst, cclasstrib },
-      {
-        onSuccess: () =>
-          salvar.mutate(
-            {
-              produto_id: conflito.produto_id,
-              codigo: conflito.codigo ?? null,
-              ncm: conflito.ncm ?? null,
-              cst,
-              cclasstrib,
-            },
-            { onSuccess: () => onFechar() }
-          ),
-      }
+    if (!produto || conflitos.length === 0) return;
+    salvarVarios.mutate(
+      [
+        { produto_id: produtoId, codigo: produto.codigo ?? null, ncm, cst, cclasstrib },
+        ...conflitos.map((c) => ({
+          produto_id: c.produto_id,
+          codigo: c.codigo ?? null,
+          ncm: c.ncm ?? null,
+          cst,
+          cclasstrib,
+        })),
+      ],
+      { onSuccess: () => onFechar() }
     );
   };
 
@@ -298,7 +297,7 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
               onClick={unificar}
               disabled={ocupado}
             >
-              <Wand2 className="h-3.5 w-3.5" /> Aplicar aos dois produtos
+              <Wand2 className="h-3.5 w-3.5" /> Aplicar aos {conflitos.length + 1} produtos
             </Button>
           )}
         </div>

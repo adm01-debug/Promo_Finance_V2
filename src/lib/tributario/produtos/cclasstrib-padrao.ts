@@ -128,14 +128,16 @@ export function resolverPadraoPorCodigo(
 export type ResolverPadraoPorCodigo = (codigo?: string | null) => PadraoProduto | null;
 
 /**
- * Outro produto ja usa este SKU com enquadramento diferente?
+ * Todos os produtos que ja usam este SKU com enquadramento diferente.
  *
- * O SKU e a unica chave que o item da NF-e conhece, entao dois produtos com o
- * mesmo SKU e enquadramentos diferentes deixam o item sem resposta (o
- * `resolverPadraoPorCodigo` devolve `null`). Gravar o segundo padrao so
- * produziria essa ambiguidade: o cadastro barra antes, com quem ja ocupa o SKU.
+ * O SKU e a unica chave que o item da NF-e conhece, entao produtos com o mesmo
+ * SKU e enquadramentos diferentes deixam o item sem resposta (o
+ * `resolverPadraoPorCodigo` devolve `null`). Gravar um padrao divergente so
+ * produziria essa ambiguidade: o cadastro barra antes, com todos os que ja
+ * ocupam o SKU. A lista vem completa porque unificar so dois de tres deixaria
+ * o terceiro divergente e o SKU sem resposta de novo.
  */
-export function conflitoDeSku(
+export function conflitosDeSku(
   padroes: readonly PadraoProduto[],
   entrada: {
     produto_id?: string | null;
@@ -144,14 +146,15 @@ export function conflitoDeSku(
     cclasstrib?: string | null;
     ncm?: string | null;
   }
-): PadraoProduto | null {
+): PadraoProduto[] {
   const alvo = normalizarCodigoComercial(entrada.codigo);
-  if (!alvo) return null;
+  if (!alvo) return [];
 
   const cst = normalizarCodigo(entrada.cst, 3);
   const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6);
   const ncm = normalizarNcm(entrada.ncm) ?? '';
 
+  const conflitos: PadraoProduto[] = [];
   for (const padrao of padroes) {
     if (String(padrao.produto_id) === String(entrada.produto_id ?? '')) continue;
     if (normalizarCodigoComercial(padrao.codigo) !== alvo) continue;
@@ -162,9 +165,9 @@ export function conflitoDeSku(
     ) {
       continue;
     }
-    return padrao;
+    conflitos.push(padrao);
   }
-  return null;
+  return conflitos;
 }
 
 /**

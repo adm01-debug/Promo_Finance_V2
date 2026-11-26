@@ -58,25 +58,46 @@ export function useProdutoCclasstribPadraoMutations() {
   const queryClient = useQueryClient();
   const invalidar = () => queryClient.invalidateQueries({ queryKey: CHAVE_PADRAO_CCLASSTRIB });
 
+  const linhaDe = (entrada: PadraoProdutoEntrada) => {
+    const erro = validarPadrao(entrada);
+    if (erro) throw new Error(erro);
+    return {
+      produto_id: String(entrada.produto_id),
+      codigo: entrada.codigo?.trim() ? entrada.codigo.trim() : null,
+      ncm: normalizarNcm(entrada.ncm),
+      cst: normalizarCodigo(entrada.cst, 3),
+      cclasstrib: normalizarCodigo(entrada.cclasstrib, 6),
+      atualizado_em: new Date().toISOString(),
+    };
+  };
+
   const salvar = useMutation({
     mutationFn: async (entrada: PadraoProdutoEntrada) => {
-      const erro = validarPadrao(entrada);
-      if (erro) throw new Error(erro);
-      const { error } = await supabase.from('produto_cclasstrib_padrao').upsert(
-        {
-          produto_id: String(entrada.produto_id),
-          codigo: entrada.codigo?.trim() ? entrada.codigo.trim() : null,
-          ncm: normalizarNcm(entrada.ncm),
-          cst: normalizarCodigo(entrada.cst, 3),
-          cclasstrib: normalizarCodigo(entrada.cclasstrib, 6),
-          atualizado_em: new Date().toISOString(),
-        },
-        { onConflict: 'produto_id' }
-      );
+      const { error } = await supabase
+        .from('produto_cclasstrib_padrao')
+        .upsert(linhaDe(entrada), { onConflict: 'produto_id' });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success('Enquadramento padrao do produto salvo');
+      invalidar();
+    },
+    onError: (err: Error) => toast.error(`Nao foi possivel salvar: ${err.message}`),
+  });
+
+  // Unificar o enquadramento de um SKU compartilhado grava todos os produtos de
+  // uma vez: dois upserts separados deixariam o SKU divergente se o segundo
+  // falhasse, e a nota pararia de aplicar o padrao do produto.
+  const salvarVarios = useMutation({
+    mutationFn: async (entradas: PadraoProdutoEntrada[]) => {
+      if (entradas.length === 0) return;
+      const { error } = await supabase
+        .from('produto_cclasstrib_padrao')
+        .upsert(entradas.map(linhaDe), { onConflict: 'produto_id' });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Enquadramento padrao dos produtos salvos');
       invalidar();
     },
     onError: (err: Error) => toast.error(`Nao foi possivel salvar: ${err.message}`),
@@ -97,5 +118,5 @@ export function useProdutoCclasstribPadraoMutations() {
     onError: (err: Error) => toast.error(`Nao foi possivel remover: ${err.message}`),
   });
 
-  return { salvar, remover };
+  return { salvar, salvarVarios, remover };
 }
