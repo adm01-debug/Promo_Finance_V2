@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "aeb9a5f724cf99678047f0f92100878acfc80bc9",
+  "commit": "5991337ab6a2745313b2e065a125d1be3bcf536a",
   "branch": "main",
-  "data_commit": "2026-11-26T00:49:17-03:00",
+  "data_commit": "2026-11-26T01:14:02-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5991337",
+    "data": "2026-11-26",
+    "assunto": "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)"
+   },
    {
     "sha": "aeb9a5f",
     "data": "2026-11-26",
@@ -126,119 +131,102 @@
     "sha": "4d880db",
     "data": "2026-11-24",
     "assunto": "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)"
-   },
-   {
-    "sha": "5e77362",
-    "data": "2026-11-24",
-    "assunto": "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)"
    }
   ],
   "arquivos_mudados_7d": 314,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 634
-   },
-   {
-    "pasta": "src/components/ui",
-    "mudancas": 326
+    "mudancas": 442
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 312
+    "mudancas": 221
+   },
+   {
+    "pasta": "src/components/ui",
+    "mudancas": 219
    },
    {
     "pasta": "src/components/admin",
-    "mudancas": 311
+    "mudancas": 215
    },
    {
     "pasta": "src/pages/tributario",
-    "mudancas": 247
+    "mudancas": 180
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 237
+    "mudancas": 170
    },
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 214
+    "mudancas": 161
    },
    {
     "pasta": "src/lib/__tests__",
-    "mudancas": 174
+    "mudancas": 124
    },
    {
     "pasta": "src/components/tributario",
-    "mudancas": 165
+    "mudancas": 116
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 149
+    "mudancas": 111
    },
    {
     "pasta": "src/components/contas-receber",
-    "mudancas": 125
+    "mudancas": 93
    },
    {
     "pasta": "src/components/nfe",
-    "mudancas": 104
+    "mudancas": 80
    },
    {
     "pasta": "docs/archive/sql",
-    "mudancas": 102
+    "mudancas": 68
    },
    {
     "pasta": "src/components/conciliacao",
-    "mudancas": 92
+    "mudancas": 67
    },
    {
     "pasta": "src/components/layout",
-    "mudancas": 90
+    "mudancas": 61
    }
   ],
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 33
+    "mudancas": 32
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 31
+    "mudancas": 30
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 12
+    "mudancas": 11
    },
    {
     "arquivo": "scripts/integrity/baseline/schema-counts.json",
-    "mudancas": 11
+    "mudancas": 10
    },
    {
     "arquivo": "src/integrations/supabase/types.ts",
-    "mudancas": 11
+    "mudancas": 10
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 10
+    "mudancas": 9
    },
    {
     "arquivo": "scripts/automation.config.json",
     "mudancas": 9
    },
    {
-    "arquivo": "scripts/integrity/baseline/expected-policies.json",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/config.toml",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 9
    },
    {
@@ -246,19 +234,19 @@
     "mudancas": 8
    },
    {
+    "arquivo": "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    "mudancas": 8
+   },
+   {
     "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     "mudancas": 8
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "arquivo": "scripts/integrity/baseline/expected-policies.json",
     "mudancas": 8
    },
    {
-    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "arquivo": "supabase/config.toml",
     "mudancas": 8
    },
    {
@@ -270,46 +258,54 @@
     "mudancas": 7
    },
    {
-    "arquivo": "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 7
+   },
+   {
+    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "docs/prod-readiness.md",
+    "mudancas": 6
    },
    {
     "arquivo": "scripts/ci/deno-check-functions.sh",
-    "mudancas": 7
+    "mudancas": 6
    },
    {
     "arquivo": "scripts/security/test-migration-replay-safety.sh",
-    "mudancas": 7
+    "mudancas": 6
    },
    {
     "arquivo": "src/components/dashboard/DashboardExecutivo.tsx",
-    "mudancas": 7
+    "mudancas": 6
    },
    {
     "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "mudancas": 7
+    "mudancas": 6
    },
    {
     "arquivo": "src/lib/arquitetura/grafo-observado.json",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "src/lib/reforma-tributaria/regras.ts",
-    "mudancas": 7
+    "mudancas": 6
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 282
+    "commits": 281
    },
    {
     "autor": "dependabot[bot]",
     "commits": 21
-   },
-   {
-    "autor": "Joaquim Ataides",
-    "commits": 1
    }
   ]
  },

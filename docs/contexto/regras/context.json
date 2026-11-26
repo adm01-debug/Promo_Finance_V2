@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "aeb9a5f724cf99678047f0f92100878acfc80bc9",
+  "sha": "5991337ab6a2745313b2e065a125d1be3bcf536a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 03:50 UTC",
+  "generated_at": "2026-11-26 04:18 UTC",
   "files_total": 4133,
   "code_files": 3712,
   "code_lines": 531968
@@ -252021,10 +252021,19 @@
   }
  },
  "git": {
-  "sha": "aeb9a5f724cf99678047f0f92100878acfc80bc9",
+  "sha": "5991337ab6a2745313b2e065a125d1be3bcf536a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5991337",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)",
+    "files": [
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
+    ]
+   },
    {
     "sha": "aeb9a5f",
     "date": "2026-11-26",
@@ -252514,15 +252523,6 @@
     "files": [
      "docs/PLANO_UX_NAVEGACAO_200_ETAPAS_2026-11-22.md"
     ]
-   },
-   {
-    "sha": "f423b99",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "chore: adiciona plano front-end de 190 etapas (auditoria 2026-11-22) (#527)",
-    "files": [
-     "docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md"
-    ]
    }
   ],
   "hot_files": [
@@ -252537,6 +252537,10 @@
    [
     "src/lib/tributario/catalogos/cclasstrib.ts",
     6
+   ],
+   [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    4
    ],
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
@@ -252557,10 +252561,6 @@
    [
     "supabase/config.toml",
     4
-   ],
-   [
-    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
-    3
    ],
    [
     "scripts/integrity/baseline/expected-policies.json",

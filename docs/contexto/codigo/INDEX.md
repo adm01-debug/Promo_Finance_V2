@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `aeb9a5f724cf99678047f0f92100878acfc80bc9` (2026-11-26T00:49:17-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5991337ab6a2745313b2e065a125d1be3bcf536a` (2026-11-26T01:14:02-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -472,21 +472,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (33)
-- bun.lock (31)
-- .github/workflows/ci.yml (12)
-- scripts/integrity/baseline/schema-counts.json (11)
-- src/integrations/supabase/types.ts (11)
-- env.manifest.json (10)
-- supabase/functions/asaas-proxy/index.ts (10)
+- package.json (32)
+- bun.lock (30)
+- .github/workflows/ci.yml (11)
+- scripts/integrity/baseline/schema-counts.json (10)
+- src/integrations/supabase/types.ts (10)
+- env.manifest.json (9)
 - scripts/automation.config.json (9)
-- scripts/integrity/baseline/expected-policies.json (9)
-- supabase/config.toml (9)
-- supabase/functions/n8n-callback/index.ts (9)
+- supabase/functions/asaas-proxy/index.ts (9)
 - analise-prs/progresso.json (8)
+- docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md (8)
 - docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (8)
-- scripts/security/test-canonical-db-gates.mjs (8)
-- src/hooks/useImportacaoXMLNFe.ts (8)
+- scripts/integrity/baseline/expected-policies.json (8)
+- supabase/config.toml (8)
+- analise-prs/RELATORIO_PRS.md (7)
+- docs/ci/README.md (7)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `5991337` docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)
 - 2026-11-26 `aeb9a5f` feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)
 - 2026-11-26 `377e5cf` feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)
 - 2026-11-25 `455790a` fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `f5e0e48` fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)
 - 2026-11-25 `de045cd` feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)
 - 2026-11-25 `7a3a58d` feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)
-- 2026-11-25 `ba27656` feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
