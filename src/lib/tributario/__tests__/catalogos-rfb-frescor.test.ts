@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   avaliarFrescorCatalogosRfb,
   DIAS_ALERTA_CATALOGO_RFB,
+  escolherUltimaCarga,
   TITULOS_CATALOGO_RFB,
 } from '../catalogos/saude';
 
@@ -32,16 +33,28 @@ describe('avaliarFrescorCatalogosRfb', () => {
     expect(r.catalogos[0].detalhe).toBe('Sincronizado hoje');
   });
 
-  it('trata o dia do limite como em dia e o seguinte como alerta', () => {
+  it('trata o dia do limite como em dia e o excedente (mesmo parcial) como alerta', () => {
     const limite = avaliarFrescorCatalogosRfb(
-      [{ id: 'aliquota', ultimaCarga: emDias(DIAS_ALERTA_CATALOGO_RFB) }],
+      [{ id: 'aliquota_cbs', ultimaCarga: emDias(DIAS_ALERTA_CATALOGO_RFB) }],
       HOJE
     );
     expect(limite.catalogos[0].status).toBe('ok');
     expect(limite.status).toBe('ok');
 
+    // 7 dias e 12 horas já é atraso: `diasSemSync` trunca em 7, mas o alerta
+    // não pode esperar o dia 8 para aparecer.
+    const meioDiaDepois = avaliarFrescorCatalogosRfb(
+      [{ id: 'aliquota_cbs', ultimaCarga: emDias(DIAS_ALERTA_CATALOGO_RFB + 0.5) }],
+      HOJE
+    );
+    expect(meioDiaDepois.catalogos[0].diasSemSync).toBe(DIAS_ALERTA_CATALOGO_RFB);
+    expect(meioDiaDepois.catalogos[0].status).toBe('atencao');
+    expect(meioDiaDepois.catalogos[0].detalhe).toContain('mais de 7 dias');
+    expect(meioDiaDepois.desatualizados).toBe(1);
+    expect(meioDiaDepois.status).toBe('atencao');
+
     const passou = avaliarFrescorCatalogosRfb(
-      [{ id: 'aliquota', ultimaCarga: emDias(DIAS_ALERTA_CATALOGO_RFB + 1) }],
+      [{ id: 'aliquota_cbs', ultimaCarga: emDias(DIAS_ALERTA_CATALOGO_RFB + 1) }],
       HOJE
     );
     expect(passou.catalogos[0].status).toBe('atencao');
@@ -54,7 +67,7 @@ describe('avaliarFrescorCatalogosRfb', () => {
       [
         { id: 'cclasstrib', ultimaCarga: emDias(1), versaoIt: '1.71' },
         { id: 'ncm', ultimaCarga: emDias(9) },
-        { id: 'aliquota', ultimaCarga: emDias(30) },
+        { id: 'aliquota_ibs_mun', ultimaCarga: emDias(30) },
         { id: 'fundamentacao', ultimaCarga: null },
       ],
       HOJE
@@ -83,5 +96,50 @@ describe('avaliarFrescorCatalogosRfb', () => {
     expect(r.status).toBe('ok');
     expect(r.catalogos).toEqual([]);
     expect(r.resumo).toContain('últimos 7 dias');
+  });
+
+  it('cada escopo de aliquota e o NBS avaliam o proprio frescor', () => {
+    const r = avaliarFrescorCatalogosRfb(
+      [
+        { id: 'aliquota_cbs', ultimaCarga: emDias(0) },
+        { id: 'aliquota_ibs_uf', ultimaCarga: emDias(0) },
+        { id: 'aliquota_ibs_mun', ultimaCarga: null },
+        { id: 'nbs', ultimaCarga: null },
+      ],
+      HOJE
+    );
+    expect(r.catalogos.map((c) => c.id)).toEqual([
+      'aliquota_cbs',
+      'aliquota_ibs_uf',
+      'aliquota_ibs_mun',
+      'nbs',
+    ]);
+    expect(r.catalogos.map((c) => c.status)).toEqual(['ok', 'ok', 'critico', 'critico']);
+    expect(r.nuncaSincronizados).toBe(2);
+    expect(r.resumo).toContain('2 catálogos nunca sincronizados');
+  });
+});
+
+describe('escolherUltimaCarga', () => {
+  const run = new Date('2026-11-20T03:00:00Z');
+  const tabela = new Date('2026-09-01T03:00:00Z');
+
+  it('usa o run quando o carimbo do catalogo congelou', () => {
+    expect(escolherUltimaCarga(tabela, run)).toBe(run.toISOString());
+  });
+
+  it('usa o carimbo do catalogo quando ele e mais novo que o run', () => {
+    expect(escolherUltimaCarga(run, tabela)).toBe(run.toISOString());
+    const maisNovo = new Date('2026-11-25T03:00:00Z');
+    expect(escolherUltimaCarga(maisNovo, run)).toBe(maisNovo.toISOString());
+  });
+
+  it('aceita ISO, Date e devolve null quando nao ha evidencia', () => {
+    expect(escolherUltimaCarga(tabela.toISOString(), run)).toBe(run.toISOString());
+    expect(escolherUltimaCarga(null, run)).toBe(run.toISOString());
+    expect(escolherUltimaCarga(tabela, null)).toBe(tabela.toISOString());
+    expect(escolherUltimaCarga(null, null)).toBeNull();
+    expect(escolherUltimaCarga('x', null)).toBeNull();
+    expect(escolherUltimaCarga(null, 'x')).toBeNull();
   });
 });

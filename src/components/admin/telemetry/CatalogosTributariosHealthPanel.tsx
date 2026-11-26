@@ -3,6 +3,8 @@ import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { supabase } from '@/integrations/supabase/client';
 import {
   avaliarFrescorCatalogosRfb,
+  escolherUltimaCarga,
+  type CatalogoRfbId,
   type EntradaFrescorCatalogoRfb,
   type SaudeCatalogosRfb,
   type StatusFrescorRfb,
@@ -63,17 +65,63 @@ const ROTULO_FRESCOR: Record<StatusFrescorRfb, string> = {
   critico: 'Nunca sincronizado',
 };
 
+/** Job de borda que alimenta cada catálogo espelhado. */
+const FUNCAO_SYNC_CATALOGO_RFB: Record<CatalogoRfbId, string> = {
+  cclasstrib: 'sync-catalogo-cclasstrib',
+  ncm: 'sync-catalogo-ncm-nbs',
+  nbs: 'sync-catalogo-ncm-nbs',
+  aliquota_cbs: 'sync-aliquota-referencia',
+  aliquota_ibs_uf: 'sync-aliquota-referencia',
+  aliquota_ibs_mun: 'sync-aliquota-referencia',
+  fundamentacao: 'sync-fundamentacao-legal',
+};
+
 /**
- * Etapa 83: carga mais recente de cada catálogo RFB.
+ * Último run bem-sucedido de um job de sincronização, pelo ledger de
+ * observabilidade (`edge_function_logs`: um `request_end` por request, com o
+ * status HTTP real).
  *
- * Uma leitura por tabela (limit 1, ordenada pela carga) em paralelo: os quatro
- * catálogos guardam o carimbo em colunas diferentes, então cada consulta é
- * explícita em vez de uma varredura genérica. Erro em uma tabela não derruba as
- * outras — a entrada volta com `ultimaCarga: null`, que o avaliador trata como
- * "nunca sincronizado".
+ * O carimbo da própria tabela não prova carga: o `upsert` preserva
+ * `created_at`/`carregado_em` das chaves que já existem, então o catálogo
+ * congela a data mesmo com o job rodando todo dia.
+ */
+async function ultimoRunOkCatalogo(funcao: string): Promise<string | null> {
+  const { data } = await supabase
+    .from('edge_function_logs')
+    .select('created_at')
+    .eq('function_name', funcao)
+    .eq('event', 'request_end')
+    .gte('status_code', 200)
+    .lt('status_code', 300)
+    .order('created_at', { ascending: false })
+    .limit(1);
+  return data?.[0]?.created_at ?? null;
+}
+
+/**
+ * Etapa 83: carga mais recente de cada catálogo RFB, por escopo.
+ *
+ * Uma leitura por catálogo (limit 1, ordenada pela carga) mais o último run
+ * bem-sucedido do job correspondente, tudo em paralelo: os catálogos guardam o
+ * carimbo em colunas diferentes e as alíquotas têm um registro por escopo
+ * (CBS diário, IBS/UF diário, IBS municipal semanal). Erro em uma leitura não
+ * derruba as outras — a entrada volta com `ultimaCarga: null`, que o avaliador
+ * trata como "nunca sincronizado".
  */
 async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[]> {
-  const [cclasstrib, ncm, aliquota, fundamentacao] = await Promise.all([
+  const [
+    cclasstrib,
+    ncm,
+    nbs,
+    aliquotaCbs,
+    aliquotaUf,
+    aliquotaMun,
+    fundamentacao,
+    runCclasstrib,
+    runNcmNbs,
+    runAliquota,
+    runFundamentacao,
+  ] = await Promise.all([
     supabase
       .from('catalogo_cclasstrib')
       .select('created_at, versao_it')
@@ -85,8 +133,26 @@ async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[
       .order('carregado_em', { ascending: false })
       .limit(1),
     supabase
+      .from('catalogo_nbs')
+      .select('carregado_em')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
       .from('catalogo_aliquota_referencia')
       .select('carregado_em')
+      .eq('tributo', 'cbs')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_aliquota_referencia')
+      .select('carregado_em')
+      .eq('tributo', 'ibs_uf')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_aliquota_referencia')
+      .select('carregado_em')
+      .eq('tributo', 'ibs_mun')
       .order('carregado_em', { ascending: false })
       .limit(1),
     supabase
@@ -94,19 +160,41 @@ async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[
       .select('created_at, versao_it')
       .order('created_at', { ascending: false })
       .limit(1),
+    ultimoRunOkCatalogo(FUNCAO_SYNC_CATALOGO_RFB.cclasstrib),
+    ultimoRunOkCatalogo(FUNCAO_SYNC_CATALOGO_RFB.ncm),
+    ultimoRunOkCatalogo(FUNCAO_SYNC_CATALOGO_RFB.aliquota_cbs),
+    ultimoRunOkCatalogo(FUNCAO_SYNC_CATALOGO_RFB.fundamentacao),
   ]);
+
+  // Catálogo sem nenhuma linha não tem carga para consultar: o job pode ter
+  // concluído sem gravar (escopo ainda não publicado pela RFB, por exemplo),
+  // então o veredito continua "nunca sincronizado" em vez de "carregado hoje".
+  const cargaDoEscopo = (carimbo: string | null, ultimoRun: string | null) =>
+    carimbo ? escolherUltimaCarga(carimbo, ultimoRun) : null;
 
   return [
     {
       id: 'cclasstrib',
-      ultimaCarga: cclasstrib.data?.[0]?.created_at ?? null,
+      ultimaCarga: cargaDoEscopo(cclasstrib.data?.[0]?.created_at ?? null, runCclasstrib),
       versaoIt: cclasstrib.data?.[0]?.versao_it ?? null,
     },
-    { id: 'ncm', ultimaCarga: ncm.data?.[0]?.carregado_em ?? null },
-    { id: 'aliquota', ultimaCarga: aliquota.data?.[0]?.carregado_em ?? null },
+    { id: 'ncm', ultimaCarga: cargaDoEscopo(ncm.data?.[0]?.carregado_em ?? null, runNcmNbs) },
+    { id: 'nbs', ultimaCarga: cargaDoEscopo(nbs.data?.[0]?.carregado_em ?? null, runNcmNbs) },
+    {
+      id: 'aliquota_cbs',
+      ultimaCarga: cargaDoEscopo(aliquotaCbs.data?.[0]?.carregado_em ?? null, runAliquota),
+    },
+    {
+      id: 'aliquota_ibs_uf',
+      ultimaCarga: cargaDoEscopo(aliquotaUf.data?.[0]?.carregado_em ?? null, runAliquota),
+    },
+    {
+      id: 'aliquota_ibs_mun',
+      ultimaCarga: cargaDoEscopo(aliquotaMun.data?.[0]?.carregado_em ?? null, runAliquota),
+    },
     {
       id: 'fundamentacao',
-      ultimaCarga: fundamentacao.data?.[0]?.created_at ?? null,
+      ultimaCarga: cargaDoEscopo(fundamentacao.data?.[0]?.created_at ?? null, runFundamentacao),
       versaoIt: fundamentacao.data?.[0]?.versao_it ?? null,
     },
   ];

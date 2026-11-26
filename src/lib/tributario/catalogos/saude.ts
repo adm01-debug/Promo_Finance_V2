@@ -165,12 +165,22 @@ function montarResumo(
 // invariantes de integridade continuam passando — o dado só envelhece.
 
 /** Catálogos espelhados da API de dados abertos da RFB. */
-export type CatalogoRfbId = 'cclasstrib' | 'ncm' | 'aliquota' | 'fundamentacao';
+export type CatalogoRfbId =
+  | 'cclasstrib'
+  | 'ncm'
+  | 'nbs'
+  | 'aliquota_cbs'
+  | 'aliquota_ibs_uf'
+  | 'aliquota_ibs_mun'
+  | 'fundamentacao';
 
 export const TITULOS_CATALOGO_RFB: Record<CatalogoRfbId, string> = {
   cclasstrib: 'cClassTrib (CBS/IBS)',
-  ncm: 'NCM/NBS',
-  aliquota: 'Alíquotas de referência',
+  ncm: 'NCM',
+  nbs: 'NBS (serviços)',
+  aliquota_cbs: 'Alíquota CBS',
+  aliquota_ibs_uf: 'Alíquota IBS (UF)',
+  aliquota_ibs_mun: 'Alíquota IBS (municipal)',
   fundamentacao: 'Fundamentações legais',
 };
 
@@ -212,19 +222,42 @@ export interface SaudeCatalogosRfb {
 
 const MS_POR_DIA = 86_400_000;
 
-function diasDesde(ultimaCarga: string | Date | null, hoje: Date): number | null {
+/** Idade em ms da última carga; null quando não há data válida. */
+function idadeMs(ultimaCarga: string | Date | null, hoje: Date): number | null {
   if (!ultimaCarga) return null;
   const data = ultimaCarga instanceof Date ? ultimaCarga : new Date(ultimaCarga);
   const ms = data.getTime();
   if (!Number.isFinite(ms)) return null;
-  // Relógio adiantado não vira "-1 dia".
-  return Math.max(0, Math.floor((hoje.getTime() - ms) / MS_POR_DIA));
+  // Relógio adiantado não vira idade negativa.
+  return Math.max(0, hoje.getTime() - ms);
 }
 
 function isoOuNulo(valor: string | Date | null): string | null {
   if (!valor) return null;
   const data = valor instanceof Date ? valor : new Date(valor);
   return Number.isFinite(data.getTime()) ? data.toISOString() : null;
+}
+
+/**
+ * Data de referência do frescor de um catálogo: a mais recente entre o carimbo
+ * da linha mais nova do próprio catálogo e o último run bem-sucedido do job que
+ * o alimenta.
+ *
+ * Nenhuma das duas basta sozinha: o carimbo do catálogo congela quando a carga
+ * só reescreve chaves existentes (o `upsert` preserva `created_at` e
+ * `carregado_em`), e um run pode ter terminado sem gravar linha nenhuma. Sem
+ * evidência alguma devolve `null` (= nunca sincronizado).
+ */
+export function escolherUltimaCarga(
+  carimboCatalogo: string | Date | null,
+  ultimoRunOk: string | Date | null
+): string | null {
+  const doCatalogo = isoOuNulo(carimboCatalogo);
+  const doRun = isoOuNulo(ultimoRunOk);
+  if (!doCatalogo) return doRun;
+  if (!doRun) return doCatalogo;
+  // ISO em UTC tem largura fixa: a comparação lexicográfica é cronológica.
+  return doCatalogo >= doRun ? doCatalogo : doRun;
 }
 
 /**
@@ -243,15 +276,24 @@ export function avaliarFrescorCatalogosRfb(
   const base = Number.isFinite(referencia.getTime()) ? referencia : new Date();
 
   const catalogos: FrescorCatalogoRfb[] = (entradas ?? []).map((entrada) => {
-    const dias = diasDesde(entrada.ultimaCarga, base);
+    const ms = idadeMs(entrada.ultimaCarga, base);
+    const dias = ms === null ? null : Math.floor(ms / MS_POR_DIA);
+    // O limite é medido no relógio, não em dias cheios: 7 dias e 12 horas já é
+    // atraso, mesmo que `diasSemSync` (truncado) ainda mostre 7.
     const status: StatusFrescorRfb =
-      dias === null ? 'critico' : dias > DIAS_ALERTA_CATALOGO_RFB ? 'atencao' : 'ok';
+      ms === null
+        ? 'critico'
+        : ms > DIAS_ALERTA_CATALOGO_RFB * MS_POR_DIA
+          ? 'atencao'
+          : 'ok';
     const detalhe =
-      dias === null
+      ms === null
         ? 'Nunca sincronizado'
-        : dias === 0
-          ? 'Sincronizado hoje'
-          : `Sem sincronizar há ${plural(dias, 'dia', 'dias')}`;
+        : status === 'atencao'
+          ? `Sem sincronizar há mais de ${DIAS_ALERTA_CATALOGO_RFB} dias`
+          : dias === 0
+            ? 'Sincronizado hoje'
+            : `Sem sincronizar há ${plural(dias ?? 0, 'dia', 'dias')}`;
     return {
       id: entrada.id,
       titulo: TITULOS_CATALOGO_RFB[entrada.id] ?? entrada.id,

@@ -222,6 +222,13 @@ leva a lista de divergências com a fundamentação integral.
 O frescor dos quatro catálogos (cClassTrib, NCM/NBS, alíquotas e fundamentações)
 é medido pelo `CatalogosTributariosHealthPanel`: idade da última carga, versão IT e
 alerta acima de 7 dias sem sincronização (`avaliarFrescorCatalogosRfb`).
+O frescor tem duas evidências: o carimbo da linha mais nova do catálogo (que
+congela quando a carga só reescreve chaves existentes, porque o `upsert` preserva
+`created_at`/`carregado_em`) e o último run bem-sucedido do job em `edge_function_logs`
+(um `request_end` por request, com o status HTTP real) — vale a mais recente das duas.
+As alíquotas aparecem por escopo (CBS, IBS/UF — diários — e IBS municipal, semanal) e
+o NBS tem linha própria, para que um escopo sem carga não fique escondido atrás do outro.
+
 
 ## Vigência e o consumidor (etapa 46)
 
