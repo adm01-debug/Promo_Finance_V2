@@ -206,6 +206,7 @@ jobs:
           FALHA=0
           # 0 = ledger de PROD ilegivel: a paridade NAO foi confirmada.
           LEDGER_OK=0
+          LEDGER_ESTADO=ilegivel
 
           # 1) Convergência do ledger — não depende de shadow DB.
           #    Depois do apply, nenhuma migration local pode seguir pendente.
@@ -213,6 +214,7 @@ jobs:
                "SELECT version FROM supabase_migrations.schema_migrations" \
                | sort -n > /tmp/ledger-pos.txt && [ -s /tmp/ledger-pos.txt ]; then
             LEDGER_OK=1
+            LEDGER_ESTADO=ok
             PENDENTES=0
             for f in supabase/migrations/*.sql; do
               bn=$(basename "$f")
@@ -233,6 +235,7 @@ jobs:
               fi
             done
             if [ "$PENDENTES" -gt 0 ]; then
+              LEDGER_ESTADO=pendente
               echo "::error::db push não convergiu: $PENDENTES migration(s) local(is) seguem fora do ledger de PROD."
               FALHA=1
             else
@@ -242,6 +245,8 @@ jobs:
             echo "::error::ledger de PROD ilegível ou vazio — convergência não verificada."
             FALHA=1
           fi
+
+          echo "ledger de PROD: $LEDGER_ESTADO"
 
           # 2) Diff de DDL — advisory, por limitação comprovada do harness.
           #    `supabase db diff` replica TODA a história de supabase/migrations/
@@ -265,15 +270,22 @@ jobs:
             fi
           else
             grep -m1 -E '^ERROR' /tmp/prod-diff-pos.sql || true
-            if grep -qE '42501|must be owner' /tmp/prod-diff-pos.sql; then
+            # Exige os dois: a classe de erro E a prova de que o aborto foi
+            # dentro do replay ('Applying migration' no log). Sem isso, um erro de
+            # conexao anterior ao replay seria arquivado como limitacao conhecida.
+            # Colisao de replay nao e divergencia de PROD: 39 migrations fazem
+            # INSERT em supabase_migrations.schema_migrations e batem no insert do
+            # proprio CLI.
+            if grep -q 'Applying migration' /tmp/prod-diff-pos.sql &&
+              grep -qE 'ERROR.*(42501|must be owner|23505|42P07|42710|42701|42P06|duplicate key value|already exists)' /tmp/prod-diff-pos.sql; then
               if [ "$LEDGER_OK" = 1 ]; then
-                echo "::warning::Diff de DDL nao verificavel: shadow replay abortou por ownership (limitacao conhecida). Paridade conferida apenas pelo ledger."
+                echo "::warning::Diff de DDL nao verificavel: shadow replay abortou no replay por limitacao conhecida do harness (ownership ou colisao de replay). Paridade conferida apenas pelo ledger de PROD (ledger: ok)."
               else
-                echo "::error::Diff de DDL nao verificavel E ledger de PROD ilegivel - paridade com migrations/ NAO verificada."
+                echo "::error::Diff de DDL nao verificavel E ledger de PROD nao conferido - paridade com migrations/ NAO verificada."
                 FALHA=1
               fi
             else
-              echo "::error::db diff falhou por erro do CLI, nao pela limitacao conhecida do shadow replay - DDL de PROD NAO verificado."
+              echo "::error::db diff falhou fora do replay ou por classe inesperada (sem aborto do replay com erro de classe conhecida) - DDL de PROD NAO verificado."
               FALHA=1
             fi
           fi
