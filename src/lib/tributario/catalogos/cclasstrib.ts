@@ -280,9 +280,18 @@ export async function listarCclasstribVigentes(
  * só o TTL.
  */
 export function horizonteVigencia(opcoes: readonly CclasstribCatalogo[]): string | null {
+  return menorVigencia(...opcoes.map((opcao) => opcao.fimVigencia));
+}
+
+/**
+ * Menor data `YYYY-MM-DD` valida entre as informadas (`null` se nenhuma declara
+ * fim). O pacote de catalogo guardado offline vence no primeiro dos seus tetos:
+ * o do cClassTrib e o da fundamentacao legal, que tem vigencia propria.
+ */
+export function menorVigencia(...datas: (string | null | undefined)[]): string | null {
   let menor: string | null = null;
-  for (const opcao of opcoes) {
-    const fim = (opcao.fimVigencia ?? '').trim().slice(0, 10);
+  for (const bruta of datas) {
+    const fim = (bruta ?? '').trim().slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fim)) continue;
     if (menor === null || fim < menor) menor = fim;
   }

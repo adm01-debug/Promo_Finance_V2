@@ -1,17 +1,22 @@
 // Catalogo oficial de cClassTrib vigente, para escolha em tela (etapa 53).
 //
 // Best effort, como o resto da leitura de catalogo: sem resposta do banco a
-// lista volta vazia e a tela avisa "catalogo indisponivel" — nao inventa codigo.
-import { useQuery } from '@tanstack/react-query';
+// lista volta vazia e a tela avisa "catalogo indisponivel" ? nao inventa codigo.
+import { useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  horizonteVigencia,
   listarCclasstribVigentes,
   type CclasstribCatalogo,
 } from '@/lib/tributario/catalogos/cclasstrib';
 import {
+  carregarClassificacaoTributaria,
+  proximoVencimentoMs,
+  type PacoteClassificacaoTributaria,
+} from '@/lib/tributario/catalogos/classificacao-offline';
+import type { FundamentosLegais } from '@/lib/tributario/catalogos/fundamentacao-legal';
+import {
   buscarFundamentosLegais,
   fundamentosVazios,
-  type FundamentosLegais,
 } from '@/lib/tributario/catalogos/fundamentacao-legal';
 import { hojeIso } from '@/lib/tributario/catalogos/repositorio';
 import { lerConsulta, salvarConsulta } from '@/lib/offline/fiscal-cache';
@@ -31,6 +36,9 @@ export function useCatalogoCclasstrib(): CatalogoCclasstrib {
     queryKey: [CHAVE_CATALOGO_CCLASSTRIB],
     queryFn: () => listarCclasstribVigentes(),
     staleTime: 30 * 60 * 1000,
+    // Sem rede o queryFn nem roda no modo padrao: a tela ficaria carregando
+    // para sempre em vez de assumir "catalogo indisponivel".
+    networkMode: 'offlineFirst',
   });
 
   return {
@@ -43,64 +51,85 @@ export function useCatalogoCclasstrib(): CatalogoCclasstrib {
 
 export const CHAVE_CLASSIFICACAO_TRIBUTARIA = 'cclasstrib-com-fundamentos';
 
-interface ClassificacaoTributariaCache {
+/** Maior atraso aceito por `setTimeout` (2^31-1 ms, ~24 dias). */
+const MAX_AGENDAMENTO_MS = 2 ** 31 - 1;
+
+/** Identidade estavel para o render enquanto a consulta nao devolve nada. */
+const FUNDAMENTOS_VAZIOS = fundamentosVazios(hojeIso());
+
+export interface ClassificacaoTributaria {
   opcoes: CclasstribCatalogo[];
   fundamentos: FundamentosLegais;
-}
-
-export interface ClassificacaoTributaria extends ClassificacaoTributariaCache {
   carregando: boolean;
   indisponivel: boolean;
   /** O dado veio do cache offline (IndexedDB) e pode estar defasado. */
   offline: boolean;
   /** Quando o dado offline foi gravado (epoch ms), para o selo "Offline". */
   offlineGravadoEm: number | null;
+  /** Ultimo dia em que o pacote exibido vale (ISO `YYYY-MM-DD`). */
+  vigenciaAte: string | null;
 }
 
 /**
  * cClassTrib vigentes + fundamento legal, com fallback offline (etapa 84).
  *
- * As leituras de catalogo sao *best effort* e devolvem lista vazia quando a
- * consulta falha, sem lancar. Por isso lista vazia aqui e tratada como "nao
- * consegui carregar": o cache entra antes de declarar o catalogo indisponivel.
- * A gravacao usa o menor `fim_vigencia` como teto, entao a entrada deixa de ser
- * servida assim que a vigencia encerra (etapa 85), mesmo dentro do TTL.
+ * A leitura de catalogo e *best effort*: lista vazia significa "nao consegui
+ * carregar", nunca "nao existe". Quem decide cache x indisponivel, e se pode
+ * regravar o cache, e `carregarClassificacaoTributaria`.
+ *
+ * O pacote vence no primeiro dos dois tetos (TTL do cache e fim de vigencia do
+ * catalogo ou da norma). Quando o vencimento chega com a aba aberta, a consulta
+ * e invalidada na hora: sem isso a classificacao vencida continuaria na tela
+ * ate o proximo reload.
  */
 export function useClassificacaoTributaria(): ClassificacaoTributaria {
-  const vazio = () => fundamentosVazios(hojeIso());
-
+  const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: [CHAVE_CLASSIFICACAO_TRIBUTARIA],
-    queryFn: async (): Promise<
-      ClassificacaoTributariaCache & { offline: boolean; gravadoEm: number | null }
-    > => {
-      const opcoes = await listarCclasstribVigentes();
-
-      if (opcoes.length === 0) {
-        const cache = await lerConsulta<ClassificacaoTributariaCache>(
-          CHAVE_CLASSIFICACAO_TRIBUTARIA
-        );
-        if (cache) return { ...cache.payload, offline: true, gravadoEm: cache.gravadoEm };
-        return { opcoes, fundamentos: vazio(), offline: false, gravadoEm: null };
-      }
-
-      const fundamentos = await buscarFundamentosLegais(opcoes.map((o) => o.cclasstrib));
-      void salvarConsulta(
-        CHAVE_CLASSIFICACAO_TRIBUTARIA,
-        { opcoes, fundamentos },
-        { fimVigencia: horizonteVigencia(opcoes) }
-      );
-      return { opcoes, fundamentos, offline: false, gravadoEm: null };
-    },
+    queryFn: () =>
+      carregarClassificacaoTributaria({
+        listarOpcoes: () => listarCclasstribVigentes(),
+        buscarFundamentos: (codigos) => buscarFundamentosLegais(codigos),
+        lerCache: () =>
+          lerConsulta<PacoteClassificacaoTributaria>(CHAVE_CLASSIFICACAO_TRIBUTARIA),
+        salvarCache: (pacote, opcoes) =>
+          salvarConsulta(CHAVE_CLASSIFICACAO_TRIBUTARIA, pacote, opcoes),
+      }),
     staleTime: 30 * 60 * 1000,
+    // Sem rede o queryFn nao roda no modo padrao e o fallback do IndexedDB
+    // nunca aconteceria (aba eternamente "carregando" no offline).
+    networkMode: 'offlineFirst',
   });
+
+  const gravadoEm = data?.gravadoEm ?? null;
+  const vigenciaAte = data?.vigenciaAte ?? null;
+  const ultimoVencimentoInvalidado = useRef<string | null>(null);
+
+  useEffect(() => {
+    const vencimento = proximoVencimentoMs({ gravadoEm, vigenciaAte });
+    if (vencimento === null) return;
+    const assinatura = `${gravadoEm ?? ''}|${vigenciaAte ?? ''}`;
+    const invalidar = () => {
+      ultimoVencimentoInvalidado.current = assinatura;
+      void queryClient.invalidateQueries({ queryKey: [CHAVE_CLASSIFICACAO_TRIBUTARIA] });
+    };
+    if (vencimento <= Date.now()) {
+      // Ja vencido: uma unica invalidacao por pacote, senao o efeito refaz a
+      // consulta a cada render enquanto a resposta nao chega.
+      if (ultimoVencimentoInvalidado.current !== assinatura) invalidar();
+      return;
+    }
+    const timer = setTimeout(invalidar, Math.min(vencimento - Date.now(), MAX_AGENDAMENTO_MS));
+    return () => clearTimeout(timer);
+  }, [gravadoEm, vigenciaAte, queryClient]);
 
   return {
     opcoes: data?.opcoes ?? [],
-    fundamentos: data?.fundamentos ?? vazio(),
+    fundamentos: data?.fundamentos ?? FUNDAMENTOS_VAZIOS,
     carregando: isLoading,
     indisponivel: !isLoading && (data?.opcoes.length ?? 0) === 0,
     offline: data?.offline ?? false,
-    offlineGravadoEm: data?.gravadoEm ?? null,
+    offlineGravadoEm: gravadoEm,
+    vigenciaAte,
   };
 }

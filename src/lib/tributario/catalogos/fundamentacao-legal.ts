@@ -38,6 +38,18 @@ export interface FundamentosLegais {
   referencia: string;
   /** A tabela tem linha vigente? Mesma semantica de `cclasstribCarregado`. */
   carregado: boolean;
+  /**
+   * Menor `fim_vigencia` entre as linhas vigentes carregadas, ou `null` quando
+   * nenhuma declara fim. A norma tambem vence: o pacote guardado offline nao
+   * pode sobreviver ao fim da vigencia da fundamentacao.
+   */
+  fimVigencia: string | null;
+  /**
+   * A consulta falhou (rede, RLS, PostgREST), ao contrario de "a tabela nao
+   * tem linha vigente". Quem grava cache precisa distinguir os dois: falha nao
+   * pode apagar o que ja estava guardado.
+   */
+  falhou: boolean;
 }
 
 /**
@@ -80,6 +92,8 @@ export const fundamentosVazios = (referencia: string): FundamentosLegais => ({
   porCclasstrib: new Map(),
   referencia,
   carregado: false,
+  fimVigencia: null,
+  falhou: false,
 });
 
 // Mesma regra de vigencia de `catalogos/cclasstrib.ts`: linha vale quando
@@ -150,7 +164,10 @@ export async function buscarFundamentosLegais(
   const linhas: LinhaFundamento[] = [];
   for (let i = 0; i < codigos.length; i += LOTE_CODIGOS) {
     const { data, error } = await consultarFundamentos(codigos.slice(i, i + LOTE_CODIGOS));
-    if (error) return resultado;
+    if (error) {
+      resultado.falhou = true;
+      return resultado;
+    }
     linhas.push(...(data ?? []));
   }
 
@@ -168,6 +185,13 @@ export async function buscarFundamentosLegais(
     if (!linha.cclasstrib) continue;
     if (!vigenteEm(bruto.inicio_vigencia, bruto.fim_vigencia, referencia)) continue;
     resultado.carregado = true;
+    const fimVigencia = (bruto.fim_vigencia ?? '').trim().slice(0, 10);
+    if (
+      /^\d{4}-\d{2}-\d{2}$/.test(fimVigencia) &&
+      (resultado.fimVigencia === null || fimVigencia < resultado.fimVigencia)
+    ) {
+      resultado.fimVigencia = fimVigencia;
+    }
     // Mesmo cClassTrib/CST em dois conjuntos: o amplo vence. Guardar o ultimo
     // da resposta faria o item sem fundamento nenhum quando o tributo isolado
     // chegasse depois do conjunto CBS e IBS.

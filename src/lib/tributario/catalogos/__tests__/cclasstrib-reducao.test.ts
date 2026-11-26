@@ -40,7 +40,14 @@ const catalogo = (linhas: FundamentoLegal[]): FundamentosLegais => {
     porCst.set(chaveFundamentoLegal(l.cclasstrib, l.cst), l);
     porCclasstrib.set(l.cclasstrib, [...(porCclasstrib.get(l.cclasstrib) ?? []), l]);
   }
-  return { porCst, porCclasstrib, referencia: '2026-11-26', carregado: linhas.length > 0 };
+  return {
+    porCst,
+    porCclasstrib,
+    referencia: '2026-11-26',
+    carregado: linhas.length > 0,
+    fimVigencia: null,
+    falhou: false,
+  };
 };
 
 const VAZIO: FundamentosLegais = {
@@ -48,6 +55,8 @@ const VAZIO: FundamentosLegais = {
   porCclasstrib: new Map(),
   referencia: '2026-11-26',
   carregado: false,
+  fimVigencia: null,
+  falhou: false,
 };
 
 const OPCOES: CclasstribCatalogo[] = [

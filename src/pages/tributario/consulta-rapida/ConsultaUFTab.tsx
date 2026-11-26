@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/select';
 import { useConsultaUF } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
-import { OfflineBadge } from './OfflineBadge';
-import { ResultBlock } from './shared';
+import { OfflineBadge } from '@/components/tributario/consulta-rapida/OfflineBadge';
+import { ResultBlock } from '@/components/tributario/consulta-rapida/shared';
 import { UFS } from './ufs';
-import { pct } from './format';
+import { pct } from '@/components/tributario/consulta-rapida/format';
 
 /**
  * Consulta por UF: alíquota interna + FCP, alíquota interestadual para a UF de
