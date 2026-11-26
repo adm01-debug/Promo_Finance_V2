@@ -52,11 +52,19 @@ export function useCatalogoCclasstrib(): CatalogoCclasstrib {
     networkMode: 'offlineFirst',
   });
 
+  // Leitura vazia significa "nao consegui carregar" e nao pode apagar um
+  // catalogo que ja estava em memoria: reabrir a tela sem rede zeraria o
+  // seletor de cClassTrib. A consulta continua vencida (staleTime 0 quando veio
+  // vazia), entao a proxima montagem ou reconexao tenta de novo.
+  const ultimaListaBoa = useRef<CclasstribCatalogo[]>([]);
+  if (data.length > 0) ultimaListaBoa.current = data;
+  const opcoes = data.length > 0 ? data : ultimaListaBoa.current;
+
   return {
-    opcoes: data,
-    codigos: new Set(data.map((linha) => linha.cclasstrib)),
+    opcoes,
+    codigos: new Set(opcoes.map((linha) => linha.cclasstrib)),
     carregando: isLoading,
-    indisponivel: !isLoading && data.length === 0,
+    indisponivel: !isLoading && opcoes.length === 0,
   };
 }
 
