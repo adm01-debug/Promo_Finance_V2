@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ae407b8d61d7030c52a0c62b161a31a7f4ea8517",
+  "commit": "22c61eade8e212b31498309575dce2fbcc9779fa",
   "branch": "main",
-  "data_commit": "2026-11-26T09:05:11-03:00",
+  "data_commit": "2026-11-26T10:41:53-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "22c61ea",
+    "data": "2026-11-26",
+    "assunto": "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)"
+   },
    {
     "sha": "ae407b8",
     "data": "2026-11-26",
@@ -126,107 +131,94 @@
     "sha": "3f209ea",
     "data": "2026-11-24",
     "assunto": "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)"
-   },
-   {
-    "sha": "62b115c",
-    "data": "2026-11-24",
-    "assunto": "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)"
    }
   ],
-  "arquivos_mudados_7d": 328,
+  "arquivos_mudados_7d": 337,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 442
+    "mudancas": 250
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 221
-   },
-   {
-    "pasta": "src/components/ui",
-    "mudancas": 219
+    "mudancas": 130
    },
    {
     "pasta": "src/components/admin",
-    "mudancas": 215
+    "mudancas": 119
    },
    {
     "pasta": "src/pages/tributario",
-    "mudancas": 180
+    "mudancas": 113
    },
    {
-    "pasta": "supabase/functions/_shared",
-    "mudancas": 170
-   },
-   {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 161
-   },
-   {
-    "pasta": "src/lib/__tests__",
-    "mudancas": 126
-   },
-   {
-    "pasta": "src/components/tributario",
-    "mudancas": 116
-   },
-   {
-    "pasta": "src/hooks/__tests__",
+    "pasta": "src/components/ui",
     "mudancas": 112
    },
    {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 93
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 108
    },
    {
-    "pasta": "src/components/nfe",
-    "mudancas": 80
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 103
    },
    {
-    "pasta": "docs/archive/sql",
-    "mudancas": 68
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 76
    },
    {
-    "pasta": "src/components/conciliacao",
+    "pasta": "src/lib/__tests__",
+    "mudancas": 76
+   },
+   {
+    "pasta": "src/components/tributario",
     "mudancas": 67
    },
    {
-    "pasta": "src/components/layout",
+    "pasta": "src/components/contas-receber",
     "mudancas": 61
+   },
+   {
+    "pasta": "src/components/nfe",
+    "mudancas": 60
+   },
+   {
+    "pasta": "src/components/conciliacao",
+    "mudancas": 42
+   },
+   {
+    "pasta": "src/components/dashboard",
+    "mudancas": 35
+   },
+   {
+    "pasta": "docs/archive/sql",
+    "mudancas": 34
    }
   ],
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 32
+    "mudancas": 31
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 11
-   },
-   {
-    "arquivo": "scripts/integrity/baseline/schema-counts.json",
     "mudancas": 10
-   },
-   {
-    "arquivo": "src/integrations/supabase/types.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "env.manifest.json",
-    "mudancas": 9
    },
    {
     "arquivo": "scripts/automation.config.json",
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 9
    },
    {
@@ -242,11 +234,11 @@
     "mudancas": 8
    },
    {
-    "arquivo": "scripts/integrity/baseline/expected-policies.json",
+    "arquivo": "env.manifest.json",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 8
    },
    {
@@ -258,7 +250,7 @@
     "mudancas": 7
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "arquivo": "scripts/integrity/baseline/expected-policies.json",
     "mudancas": 7
    },
    {
@@ -266,11 +258,7 @@
     "mudancas": 7
    },
    {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "arquivo": "supabase/config.toml",
     "mudancas": 7
    },
    {
@@ -278,30 +266,42 @@
     "mudancas": 6
    },
    {
-    "arquivo": "scripts/ci/deno-check-functions.sh",
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 6
+   },
+   {
+    "arquivo": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "scripts/ci/deno-check-functions.sh",
+    "mudancas": 5
    },
    {
     "arquivo": "scripts/security/test-migration-replay-safety.sh",
-    "mudancas": 6
+    "mudancas": 5
    },
    {
     "arquivo": "src/components/dashboard/DashboardExecutivo.tsx",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/arquitetura/grafo-observado.json",
-    "mudancas": 6
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 280
+    "commits": 279
    },
    {
     "autor": "dependabot[bot]",
@@ -310,21 +310,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4097,
-  "arquivos_codigo": 2557,
-  "linhas_codigo": 459126,
+  "arquivos_total": 4100,
+  "arquivos_codigo": 2560,
+  "linhas_codigo": 460141,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 129,
   "componentes": 992,
-  "hooks": 276,
+  "hooks": 277,
   "edge_functions": 112,
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 527,
+  "testes": 529,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -640,7 +640,7 @@
   },
   "src/components": {
    "arquivos": 1012,
-   "linhas": 166442
+   "linhas": 166475
   },
   "src/config": {
    "arquivos": 2,
@@ -651,8 +651,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 331,
-   "linhas": 49507
+   "arquivos": 333,
+   "linhas": 50193
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -671,8 +671,8 @@
    "linhas": 76
   },
   "src/pages": {
-   "arquivos": 267,
-   "linhas": 46580
+   "arquivos": 268,
+   "linhas": 46876
   },
   "src/routes": {
    "arquivos": 16,
@@ -790,7 +790,7 @@
   },
   {
    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-   "linhas": 674
+   "linhas": 690
   },
   {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",

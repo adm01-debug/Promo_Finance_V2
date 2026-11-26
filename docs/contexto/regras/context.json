@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ae407b8d61d7030c52a0c62b161a31a7f4ea8517",
+  "sha": "22c61eade8e212b31498309575dce2fbcc9779fa",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 12:07 UTC",
-  "files_total": 4136,
-  "code_files": 3715,
-  "code_lines": 532461
+  "generated_at": "2026-11-26 13:48 UTC",
+  "files_total": 4139,
+  "code_files": 3718,
+  "code_lines": 533479
  },
  "version": "1.3.2",
- "facts_hash": "cf3712902ec5e56d",
+ "facts_hash": "8daed65e12b98602",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1307,
+   ".ts": 1309,
    ".sql": 1157,
-   ".tsx": 1129,
+   ".tsx": 1130,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -61661,7 +61661,9 @@
      "fornecedores",
      "frontend_error_logs",
      "frontend_performance_logs",
+     "nfe_recebidas",
      "notas_fiscais",
+     "notas_fiscais_itens",
      "user_empresas",
      "vw_contas_pagar_painel",
      "vw_contas_receber_painel"
@@ -61674,7 +61676,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 81
+    "deps_count": 85
    },
    {
     "path": "",
@@ -62904,7 +62906,9 @@
      "historico_cobranca_whatsapp",
      "itens_lista_iss",
      "ncms",
+     "nfe_recebidas",
      "notas_fiscais",
+     "notas_fiscais_itens",
      "protocolos_st_ncms",
      "protocolos_st_ufs",
      "solicitacoes_aprovacao",
@@ -62921,7 +62925,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 164
+    "deps_count": 167
    },
    {
     "path": "/orcamento-evento",
@@ -63038,6 +63042,7 @@
      "historico_cobranca_whatsapp",
      "incentivos_fiscais",
      "notas_fiscais",
+     "notas_fiscais_itens",
      "operacoes_tributaveis",
      "per_dcomp",
      "prejuizos_fiscais",
@@ -63057,7 +63062,7 @@
      "registrar_auditoria_config",
      "registrar_nfe_com_creditos"
     ],
-    "deps_count": 202
+    "deps_count": 203
    },
    {
     "path": "/reset-password",
@@ -69397,6 +69402,10 @@
     "file": "src/hooks/useNfeVinculo.ts"
    },
    {
+    "name": "useNotasFiscaisLocais",
+    "file": "src/hooks/useNotasFiscaisLocais.ts"
+   },
+   {
     "name": "useOnboardingProgress",
     "file": "src/hooks/useOnboardingProgress.ts"
    },
@@ -71128,7 +71137,7 @@
   {
    "module": "src/components",
    "files": 1012,
-   "lines": 167454,
+   "lines": 167487,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71406,8 +71415,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 331,
-   "lines": 49838,
+   "files": 333,
+   "lines": 50526,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71491,6 +71500,7 @@
     "new_device_alerts",
     "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "open_finance_consents",
     "operacoes_tributaveis",
     "oportunidades_elisao",
@@ -71947,8 +71957,8 @@
   },
   {
    "module": "src/pages",
-   "files": 267,
-   "lines": 46847,
+   "files": 268,
+   "lines": 47144,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -72026,6 +72036,7 @@
    "deps": [
     "@tanstack/react-query",
     "@testing-library/react",
+    "@testing-library/user-event",
     "canvas-confetti",
     "date-fns",
     "file-saver",
@@ -74135,9 +74146,15 @@
      "src/hooks/useBlingNFe.ts",
      "src/hooks/useConciliacaoTributaria.ts",
      "src/hooks/useCreditosTributarios.ts",
+     "src/hooks/useNotasFiscaisLocais.ts",
      "src/hooks/useOperacoesTributaveis.ts",
      "supabase/functions/gerar-alertas-tributarios/index.ts",
      "supabase/functions/verificar-conformidade-fiscal/index.ts"
+    ]
+   },
+   "notas_fiscais_itens": {
+    "select": [
+     "src/hooks/useNotasFiscaisLocais.ts"
     ]
    },
    "notas_fiscais_ocr": {
@@ -77832,7 +77849,6 @@
    "job",
    "job_run_details",
    "mfa_sessions",
-   "notas_fiscais_itens",
    "operacoes_icms",
    "password_reset_tokens",
    "performance_alerts",
@@ -79712,6 +79728,21 @@
     "file": "src/hooks/useNfeRecebidas.ts",
     "name": "ManifestacaoStatus",
     "values": "pendente | ciencia | confirmada | desconhecida | nao_realizada"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "name": "ResultadoAbertura",
+    "values": "aberto | sem_arquivo | bloqueado"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "name": "DirecaoNota",
+    "values": "saida | entrada | indefinida"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "name": "CHAVE_QUERY_NOTAS",
+    "values": "'notas-fiscais-locais'"
    },
    {
     "file": "src/hooks/usePagamentosRecorrentes.ts",
@@ -82229,11 +82260,15 @@
    },
    {
     "file": "src/components/nfe/DANFEGenerator.tsx",
-    "msg": "Erro ao gerar DANFE"
+    "msg": "Erro ao gerar o espelho da nota"
    },
    {
     "file": "src/components/nfe/InutilizacaoNFe.tsx",
     "msg": "Inutilização indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real."
+   },
+   {
+    "file": "src/components/nfe/NFePreview.tsx",
+    "msg": "O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo."
    },
    {
     "file": "src/components/nfe/NovaNFeForm.tsx",
@@ -84086,6 +84121,10 @@
    {
     "file": "src/pages/Movimentacoes.tsx",
     "msg": ";\nimport {\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectTrigger,\n  SelectValue,\n} from "
+   },
+   {
+    "file": "src/pages/NotasFiscaisAbas.tsx",
+    "msg": "O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo."
    },
    {
     "file": "src/pages/Relatorios.tsx",
@@ -85996,6 +86035,14 @@
     "text": "é apenas informativo (`efeito_tributario=false`). Só a partir de"
    },
    {
+    "file": "src/hooks/useImportacaoXMLNFe.ts",
+    "text": "A lista consultada pela tela é `[...CHAVE_QUERY_NOTAS, empresaId, limite]`"
+   },
+   {
+    "file": "src/hooks/useImportacaoXMLNFe.ts",
+    "text": "antes pelo mesmo usuário não deve ser recarregada."
+   },
+   {
     "file": "src/hooks/useIndicesContabeis.ts",
     "text": "Postgres; o cliente apenas divide os agregados (`calcularIndices`)."
    },
@@ -86022,6 +86069,14 @@
    {
     "file": "src/hooks/useLastSsoProfileSync.ts",
     "text": "- limit 1, mais recente"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "text": "permissão de escrita em `notas_fiscais` pode gravar qualquer URL na nota;"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "text": "O XML autorizado pelo Bling é gravado apenas no bucket — `xml_url` fica nulo —,"
    },
    {
     "file": "src/hooks/useOportunidadesElisao.ts",
@@ -87346,6 +87401,10 @@
    {
     "file": "src/pages/Empresas.helpers.ts",
     "text": "'pendente' -> 'vencido' no vencimento e a divida continua devida."
+   },
+   {
+    "file": "src/pages/NotasFiscais.tsx",
+    "text": "contraparte em `cliente_*` e uma nota de compra não pode inflar o"
    },
    {
     "file": "src/pages/ThemeDiagnostics.tsx",
@@ -107646,6 +107705,18 @@
    },
    {
     "file": "src/components/nfe/NFePreview.tsx",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/components/nfe/NFePreview.tsx",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/nfe/NFePreview.tsx",
     "field": "status",
     "value": "cancelada",
     "kind": "compara"
@@ -111017,6 +111088,60 @@
     "kind": "compara"
    },
    {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "compara"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "compara"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "tipo",
+    "value": "xml",
+    "kind": "compara"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "status",
+    "value": "autorizada",
+    "kind": "compara"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "status",
+    "value": "cancelada",
+    "kind": "compara"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "field": "status",
+    "value": "pendente",
+    "kind": "compara"
+   },
+   {
     "file": "src/hooks/useOnboardingProgress.ts",
     "field": "last_step",
     "value": "welcome",
@@ -114187,43 +114312,25 @@
    {
     "file": "src/pages/NotasFiscais.tsx",
     "field": "status",
+    "value": "pendente",
+    "kind": "compara"
+   },
+   {
+    "file": "src/pages/NotasFiscais.tsx",
+    "field": "status",
     "value": "cancelada",
+    "kind": "compara"
+   },
+   {
+    "file": "src/pages/NotasFiscaisAbas.tsx",
+    "field": "tipo",
+    "value": "xml",
     "kind": "escreve"
    },
    {
-    "file": "src/pages/NotasFiscais.tsx",
-    "field": "status",
-    "value": "autorizada",
-    "kind": "compara"
-   },
-   {
-    "file": "src/pages/NotasFiscais.tsx",
-    "field": "status",
-    "value": "cancelada",
-    "kind": "compara"
-   },
-   {
-    "file": "src/pages/NotasFiscais.tsx",
-    "field": "status",
-    "value": "pendente",
-    "kind": "compara"
-   },
-   {
-    "file": "src/pages/NotasFiscais.tsx",
-    "field": "status",
-    "value": "autorizada",
-    "kind": "compara"
-   },
-   {
-    "file": "src/pages/NotasFiscais.tsx",
-    "field": "status",
-    "value": "pendente",
-    "kind": "compara"
-   },
-   {
-    "file": "src/pages/NotasFiscais.tsx",
-    "field": "status",
-    "value": "cancelada",
+    "file": "src/pages/NotasFiscaisAbas.tsx",
+    "field": "tipo",
+    "value": "xml",
     "kind": "compara"
    },
    {
@@ -118048,7 +118155,7 @@
     "file": "src/components/nfe/DANFEGenerator.tsx",
     "name": "generatePDF",
     "params": "",
-    "body": "setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text(`0 - ENTRADA / 1 - SAÍDA`, pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie …"
+    "body": "setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('Espelho da NF-e - resumo interno (nao substitui o DANFE)', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text('Documento de uso interno', pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota. …"
    },
    {
     "file": "src/components/nfe/NovaNFeForm.tsx",
@@ -127158,6 +127265,10 @@
    },
    {
     "file": "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx",
+    "name": "invalida a lista de notas fiscais para a nota importada aparecer"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx",
     "name": "manda natureza_operacao e created_by para a função decidir, não os descarta"
    },
    {
@@ -127439,6 +127550,74 @@
    {
     "file": "src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx",
     "name": "não chama o proxy sem NF-e selecionada"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "notas fiscais locais — leitura real do banco"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "traduz o status TEXT da tabela para o enum da tela"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "usa a URL de arquivo que existe e devolve undefined quando não há arquivo"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "recusa URL de origem desconhecida gravada na nota"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "assina a URL do XML que vive no bucket privado"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "não inventa arquivo quando o DANFE não existe ou o bucket falha"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "mapeia a linha para a nota da tela sem inventar dado fiscal"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "trata coluna nula como zero/vazio em vez de quebrar a tela"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "mapeia o item real (a tabela guarda código, não descrição)"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "sentido da nota — compra não é faturamento"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "o CFOP do item manda sobre a natureza da operação"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "sem CFOP cai na natureza e, no escuro, fica indefinida"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "a contraparte da compra aparece como fornecedor, não como cliente"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "indica se o XML pode ser buscado no bucket da empresa"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "indicadores da tela"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "separa faturamento de compra e de nota cancelada"
+   },
+   {
+    "file": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+    "name": "conta os itens faturados só das notas de saída"
    },
    {
     "file": "src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx",
@@ -137721,6 +137900,34 @@
     "name": "%s esta renderizado no JSX"
    },
    {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "/notas-fiscais — lista e arquivos reais"
+   },
+   {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "sem notas mostra estado vazio e não divide por zero na taxa de autorização"
+   },
+   {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "abre só o XML/DANFE que a nota realmente tem"
+   },
+   {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "não abre XML de host desconhecido mesmo gravado na nota"
+   },
+   {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "avisa quando o navegador bloqueia a nova aba"
+   },
+   {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "marca a nota de compra como entrada e mostra o fornecedor"
+   },
+   {
+    "file": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+    "name": "soma os itens faturados das notas autorizadas"
+   },
+   {
     "file": "src/pages/auth/__tests__/CorporateOnboarding.test.tsx",
     "name": "/auth/corporate — CorporateOnboarding"
    },
@@ -139463,6 +139670,10 @@
    {
     "file": "src/hooks/useHighlightFromUrl.ts",
     "call": ".add('row-highlight-flash'"
+   },
+   {
+    "file": "src/hooks/useNotasFiscaisLocais.ts",
+    "call": "asaas"
    },
    {
     "file": "src/hooks/useOpenFinance.ts",
@@ -158692,6 +158903,7 @@
       "compara:src/hooks/useDemonstrativosContabeis.ts",
       "compara:src/hooks/useExpertContext.ts",
       "compara:src/hooks/useImportacaoXMLNFe.ts",
+      "compara:src/hooks/useNotasFiscaisLocais.ts",
       "compara:src/hooks/useRetencoesFonte.ts",
       "compara:src/hooks/useSplitPayment.ts",
       "compara:src/lib/sefaz-contingency/rules.ts",
@@ -159133,7 +159345,7 @@
       "compara:src/components/nfe/CancelamentoNFe.tsx",
       "compara:src/components/nfe/DANFEGenerator.tsx",
       "compara:src/components/nfe/contingencia/ContingenciaPendingList.tsx",
-      "compara:src/pages/NotasFiscais.tsx",
+      "compara:src/hooks/useNotasFiscaisLocais.ts",
       "compara:src/pages/NotasFiscaisAbas.tsx",
       "escreve:src/components/nfe/CancelamentoNFe.tsx",
       "escreve:src/components/nfe/nfe-types.ts",
@@ -159141,8 +159353,8 @@
      ],
      "cancelada": [
       "compara:src/components/nfe/NFePreview.tsx",
+      "compara:src/hooks/useNotasFiscaisLocais.ts",
       "compara:src/pages/NotasFiscais.tsx",
-      "escreve:src/pages/NotasFiscais.tsx",
       "filtra:src/hooks/useApuracoesTributarias.ts"
      ],
      "rejeitada": [
@@ -159985,6 +160197,14 @@
      ],
      "INUTILIZACAO": [
       "compara:src/components/nfe/EventosHistorico.helpers.ts"
+     ],
+     "xml": [
+      "compara:src/components/nfe/NFePreview.tsx",
+      "compara:src/hooks/useNotasFiscaisLocais.ts",
+      "compara:src/pages/NotasFiscaisAbas.tsx",
+      "escreve:src/components/nfe/NFePreview.tsx",
+      "escreve:src/hooks/useNotasFiscaisLocais.ts",
+      "escreve:src/pages/NotasFiscaisAbas.tsx"
      ],
      "trimestral": [
       "compara:src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
@@ -196445,7 +196665,7 @@
   },
   "src/components/nfe/BlingNFePanel.tsx": {
    "path": "src/components/nfe/BlingNFePanel.tsx",
-   "lines": 409,
+   "lines": 417,
    "exports": [
     "function BlingNFePanel"
    ],
@@ -196537,12 +196757,12 @@
   },
   "src/components/nfe/DANFEGenerator.tsx": {
    "path": "src/components/nfe/DANFEGenerator.tsx",
-   "lines": 284,
+   "lines": 279,
    "exports": [
     "function DANFEGenerator"
    ],
    "errors": [
-    "Erro ao gerar DANFE"
+    "Erro ao gerar o espelho da nota"
    ],
    "status_values": [
     {
@@ -196555,7 +196775,7 @@
     {
      "name": "generatePDF",
      "params": "",
-     "body": "setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text(`0 - ENTRADA / 1 - SAÍDA`, pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie …"
+     "body": "setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('Espelho da NF-e - resumo interno (nao substitui o DANFE)', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text('Documento de uso interno', pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota. …"
     }
    ]
   },
@@ -196667,11 +196887,24 @@
   },
   "src/components/nfe/NFePreview.tsx": {
    "path": "src/components/nfe/NFePreview.tsx",
-   "lines": 245,
+   "lines": 266,
    "exports": [
     "function NFePreview"
    ],
+   "errors": [
+    "O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo."
+   ],
    "status_values": [
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "compara"
+    },
     {
      "field": "status",
      "value": "cancelada",
@@ -196822,7 +197055,7 @@
   },
   "src/components/nfe/nfe-types.ts": {
    "path": "src/components/nfe/nfe-types.ts",
-   "lines": 78,
+   "lines": 87,
    "exports": [
     "interface ItemNFe",
     "interface NotaFiscal",
@@ -204264,7 +204497,7 @@
   },
   "src/hooks/useBlingNFe.ts": {
    "path": "src/hooks/useBlingNFe.ts",
-   "lines": 419,
+   "lines": 428,
    "exports": [
     "interface BlingNFe",
     "interface BlingNFeFilters",
@@ -208335,7 +208568,7 @@
   },
   "src/hooks/useImportacaoXMLNFe.ts": {
    "path": "src/hooks/useImportacaoXMLNFe.ts",
-   "lines": 675,
+   "lines": 691,
    "exports": [
     "const FUSO_PADRAO_BR",
     "const ANO_INICIO_APROPRIACAO",
@@ -208430,7 +208663,9 @@
    ],
    "rule_comments": [
     "ADCT): 2026 é ano de teste, com destaque apenas informativo.",
-    "é apenas informativo (`efeito_tributario=false`). Só a partir de"
+    "é apenas informativo (`efeito_tributario=false`). Só a partir de",
+    "A lista consultada pela tela é `[...CHAVE_QUERY_NOTAS, empresaId, limite]`",
+    "antes pelo mesmo usuário não deve ser recarregada."
    ],
    "doc": "HOOK: IMPORTAÇÃO XML NF-e Upload em lote de XMLs para lançar créditos",
    "hooks": [
@@ -209353,6 +209588,115 @@
     "useCriarContaDaNfe"
    ],
    "uses_service_role": true
+  },
+  "src/hooks/useNotasFiscaisLocais.ts": {
+   "path": "src/hooks/useNotasFiscaisLocais.ts",
+   "lines": 389,
+   "exports": [
+    "interface NotaFiscalLocal",
+    "interface ItemNotaFiscalLocal",
+    "function statusNotaFiscalLocal",
+    "function urlFiscalConfiavel",
+    "function pathXmlNoStorage",
+    "function urlDoArquivo",
+    "function resolverUrlArquivo",
+    "type ResultadoAbertura",
+    "function abrirArquivoFiscal",
+    "type DirecaoNota",
+    "function direcaoDaNota",
+    "function mapearItemLocal",
+    "function mapearNotaLocal",
+    "interface ResumoNotas",
+    "function resumirNotas",
+    "const CHAVE_QUERY_NOTAS",
+    "function useNotasFiscaisLocais"
+   ],
+   "tables": [
+    {
+     "table": "notas_fiscais",
+     "op": "select"
+    },
+    {
+     "table": "notas_fiscais_itens",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "notas_fiscais": [
+     "empresa_id"
+    ]
+   },
+   "enums": [
+    {
+     "name": "ResultadoAbertura",
+     "values": "aberto | sem_arquivo | bloqueado"
+    },
+    {
+     "name": "DirecaoNota",
+     "values": "saida | entrada | indefinida"
+    },
+    {
+     "name": "CHAVE_QUERY_NOTAS",
+     "values": "'notas-fiscais-locais'"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "autorizada",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "cancelada",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "pendente",
+     "kind": "compara"
+    }
+   ],
+   "rule_comments": [
+    "permissão de escrita em `notas_fiscais` pode gravar qualquer URL na nota;",
+    "O XML autorizado pelo Bling é gravado apenas no bucket — `xml_url` fica nulo —,"
+   ],
+   "hooks": [
+    "useNotasFiscaisLocais"
+   ],
+   "side_effects": [
+    "asaas"
+   ]
   },
   "src/hooks/useOnboardingProgress.ts": {
    "path": "src/hooks/useOnboardingProgress.ts",
@@ -214027,11 +214371,15 @@
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx": {
    "path": "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx",
-   "lines": 228,
+   "lines": 251,
    "is_test": true,
+   "rule_comments": [
+    "A aba Notas Fiscais consulta `['notas-fiscais-locais', empresaId, limite]`"
+   ],
    "tests": [
     "importarNFes — créditos CBS/IBS",
     "grava nota e créditos numa chamada só, e contabiliza depois de confirmado",
+    "invalida a lista de notas fiscais para a nota importada aparecer",
     "manda natureza_operacao e created_by para a função decidir, não os descarta",
     "usa a data local da emissão, não a conversão para UTC",
     "não contabiliza crédito quando a função recusa a gravação",
@@ -214182,6 +214530,43 @@
     "devolve lista vazia — não um objeto — quando o proxy responde fora do formato",
     "trata null como ausência de candidatas, sem alarde",
     "não chama o proxy sem NF-e selecionada"
+   ]
+  },
+  "src/hooks/__tests__/useNotasFiscaisLocais.test.ts": {
+   "path": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+   "lines": 251,
+   "is_test": true,
+   "params": [
+    {
+     "name": "CHAVE",
+     "value": "'35240112345678000190550010000012341234567890'"
+    },
+    {
+     "name": "EMPRESA",
+     "value": "'11111111-2222-3333-4444-555555555555'"
+    }
+   ],
+   "tests": [
+    "notas fiscais locais — leitura real do banco",
+    "traduz o status TEXT da tabela para o enum da tela",
+    "usa a URL de arquivo que existe e devolve undefined quando não há arquivo",
+    "recusa URL de origem desconhecida gravada na nota",
+    "assina a URL do XML que vive no bucket privado",
+    "não inventa arquivo quando o DANFE não existe ou o bucket falha",
+    "mapeia a linha para a nota da tela sem inventar dado fiscal",
+    "trata coluna nula como zero/vazio em vez de quebrar a tela",
+    "mapeia o item real (a tabela guarda código, não descrição)",
+    "sentido da nota — compra não é faturamento",
+    "o CFOP do item manda sobre a natureza da operação",
+    "sem CFOP cai na natureza e, no escuro, fica indefinida",
+    "a contraparte da compra aparece como fornecedor, não como cliente",
+    "indica se o XML pode ser buscado no bucket da empresa",
+    "indicadores da tela",
+    "separa faturamento de compra e de nota cancelada",
+    "conta os itens faturados só das notas de saída"
+   ],
+   "side_effects": [
+    "asaas"
    ]
   },
   "src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx": {
@@ -229559,36 +229944,11 @@
   },
   "src/pages/NotasFiscais.tsx": {
    "path": "src/pages/NotasFiscais.tsx",
-   "lines": 181,
+   "lines": 227,
    "exports": [
     "function NotasFiscais"
    ],
    "status_values": [
-    {
-     "field": "status",
-     "value": "cancelada",
-     "kind": "escreve"
-    },
-    {
-     "field": "status",
-     "value": "autorizada",
-     "kind": "compara"
-    },
-    {
-     "field": "status",
-     "value": "cancelada",
-     "kind": "compara"
-    },
-    {
-     "field": "status",
-     "value": "pendente",
-     "kind": "compara"
-    },
-    {
-     "field": "status",
-     "value": "autorizada",
-     "kind": "compara"
-    },
     {
      "field": "status",
      "value": "pendente",
@@ -229599,15 +229959,31 @@
      "value": "cancelada",
      "kind": "compara"
     }
+   ],
+   "rule_comments": [
+    "contraparte em `cliente_*` e uma nota de compra não pode inflar o"
    ]
   },
   "src/pages/NotasFiscaisAbas.tsx": {
    "path": "src/pages/NotasFiscaisAbas.tsx",
-   "lines": 348,
+   "lines": 396,
    "exports": [
     "function NotasFiscaisAbas"
    ],
+   "errors": [
+    "O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo."
+   ],
    "status_values": [
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "xml",
+     "kind": "compara"
+    },
     {
      "field": "status",
      "value": "autorizada",
@@ -230226,6 +230602,21 @@
     "return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();",
     "return new Date(now.getTime() - 60 * 60 * 1000).toISOString();",
     "return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();"
+   ]
+  },
+  "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx": {
+   "path": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+   "lines": 203,
+   "is_test": true,
+   "doc": "A aba Notas listava um estado fixo vazio e os botões de XML/DANFE só disparavam \"XML baixado!\"/\"DANFE gerado!\" sem baixar nada. Estes testes fixam o contrato novo: a lista vem do banco e os arquivos só são oferecidos quando a nota realmente tem URL importada.",
+   "tests": [
+    "/notas-fiscais — lista e arquivos reais",
+    "sem notas mostra estado vazio e não divide por zero na taxa de autorização",
+    "abre só o XML/DANFE que a nota realmente tem",
+    "não abre XML de host desconhecido mesmo gravado na nota",
+    "avisa quando o navegador bloqueia a nova aba",
+    "marca a nota de compra como entrada e mostra o fornecedor",
+    "soma os itens faturados das notas autorizadas"
    ]
   },
   "src/pages/admin/AdminBloatMonitor.tsx": {
@@ -252279,10 +252670,30 @@
   }
  },
  "git": {
-  "sha": "ae407b8d61d7030c52a0c62b161a31a7f4ea8517",
+  "sha": "22c61eade8e212b31498309575dce2fbcc9779fa",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "22c61ea",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)",
+    "files": [
+     "src/components/nfe/BlingNFePanel.tsx",
+     "src/components/nfe/DANFEGenerator.tsx",
+     "src/components/nfe/NFePreview.tsx",
+     "src/components/nfe/nfe-types.ts",
+     "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx",
+     "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+     "src/hooks/useBlingNFe.ts",
+     "src/hooks/useImportacaoXMLNFe.ts",
+     "src/hooks/useNotasFiscaisLocais.ts",
+     "src/pages/NotasFiscais.tsx",
+     "src/pages/NotasFiscaisAbas.tsx",
+     "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx"
+    ]
+   },
    {
     "sha": "ae407b8",
     "date": "2026-11-26",
@@ -252699,102 +253110,6 @@
      "src/lib/nfe/grupo-ibscbs-item.ts",
      "src/lib/tributario/catalogos/cclasstrib.ts"
     ]
-   },
-   {
-    "sha": "6a46049",
-    "date": "2026-11-23",
-    "author": "adm01-debug",
-    "subject": "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)",
-    "files": [
-     "CHANGELOG.md",
-     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-     "docs/receitafederal/README.md",
-     "e2e/rt-ponta-a-ponta.e2e.ts",
-     "playwright.financeiro.config.ts",
-     "scripts/integrity/baseline/expected-crons.json",
-     "scripts/integrity/baseline/expected-policies.json",
-     "scripts/integrity/baseline/schema-counts.json",
-     "src/components/admin/FiscalHealthBadge.tsx",
-     "src/components/admin/__tests__/fiscal-health-ibscbs.test.tsx",
-     "src/components/compliance/ConformidadeFiscalTab.tsx",
-     "src/components/nfe/CancelamentoNFe.tsx",
-     "src/components/nfe/nfe-types.ts",
-     "src/components/reforma-tributaria/ConciliacaoExtratoAssistido.tsx",
-     "src/components/reforma-tributaria/ConciliacaoTributariaPanel.tsx",
-     "src/components/reforma-tributaria/ExportacaoSPED.tsx",
-     "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
-     "src/components/reforma-tributaria/HeroKPIs.tsx",
-     "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
-     "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
-     "src/components/reforma-tributaria/SplitPaymentPanel.tsx",
-     "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx",
-     "src/components/reforma-tributaria/__tests__/ImportacaoXMLPanel.test.tsx",
-     "src/components/reforma-tributaria/apuracao/ApuracaoDetalheCard.tsx",
-     "src/hooks/__tests__/useCreditosTributarios.test.tsx",
-     "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
-     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-     "src/hooks/bling/useNFe.ts",
-     "src/hooks/useApuracoesTributarias.ts",
-     "src/hooks/useBlingNFe.ts",
-     "src/hooks/useCancelamentoNFe.test.ts",
-     "src/hooks/useCancelamentoNFe.ts",
-     "src/hooks/useCreditosTributarios.ts",
-     "src/hooks/useExportarSped.ts",
-     "src/hooks/useImportacaoXMLNFe.ts",
-     "src/hooks/useOportunidadesElisao.ts",
-     "src/hooks/useSplitPayment.ts",
-     "src/integrations/supabase/types.ts",
-     "src/lib/__tests__/edge-functions.security.test.ts",
-     "src/lib/__tests__/rfb-paridade.test.ts",
-     "src/lib/__tests__/sped-generator.regression.test.ts",
-     "src/lib/__tests__/sped-generator.test.ts",
-     "src/lib/arquitetura/__tests__/drift-imports.test.ts",
-     "src/lib/arquitetura/grafo-observado.json",
-     "src/lib/arquitetura/modulos.ts",
-     "src/lib/nfe/__tests__/parse-ibscbs.test.ts",
-     "src/lib/nfe/__tests__/pre-validar-ibscbs.test.ts",
-     "src/lib/nfe/parse-ibscbs.ts",
-     "src/lib/nfe/pre-validar-ibscbs.ts",
-     "src/lib/reforma-tributaria/simulador.ts",
-     "src/lib/reforma-tributaria/types.ts",
-     "src/lib/sefaz-event-logger.ts",
-     "src/lib/sped-generator/efd-contribuicoes.ts",
-     "src/lib/sped-generator/efd-ibs-cbs.ts",
-     "src/lib/sped-generator/index.ts",
-     "src/lib/tributario/__tests__/conciliacao-extrato.test.ts",
-     "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
-     "src/lib/tributario/catalogos/cclasstrib.ts",
-     "src/lib/tributario/conciliacao-extrato.ts",
-     "src/lib/tributario/obrigacoes/calendario.ts",
-     "src/lib/tributario/obrigacoes/catalogo.ts",
-     "src/lib/tributario/obrigacoes/types.ts",
-     "src/lib/tributario/validador-ncm-cst.ts",
-     "supabase/config.toml",
-     "supabase/functions/_shared/nfe/__tests__/ibscbs_test.ts",
-     "supabase/functions/_shared/nfe/__tests__/itens_test.ts",
-     "supabase/functions/_shared/nfe/ibscbs.ts",
-     "supabase/functions/_shared/nfe/itens.ts",
-     "supabase/functions/_shared/obrigacoes/calendario.ts",
-     "supabase/functions/_shared/obrigacoes/catalogo.ts",
-     "supabase/functions/_shared/obrigacoes/types.ts",
-     "supabase/functions/exportar-sped-contribuicoes/index.ts",
-     "supabase/functions/gerar-alertas-tributarios/__tests__/alertas_rt_test.ts",
-     "supabase/functions/gerar-alertas-tributarios/index.ts",
-     "supabase/functions/gerar-pdf-tributario/index.ts",
-     "supabase/functions/guardar-xml-nfe-autorizada/__tests__/guardar_test.ts",
-     "supabase/functions/guardar-xml-nfe-autorizada/index.ts",
-     "supabase/functions/reprocessar-creditos-ibscbs/__tests__/reprocessar_test.ts",
-     "supabase/functions/reprocessar-creditos-ibscbs/index.ts",
-     "supabase/functions/sefaz-dfe-puxar/__tests__/integration_test.ts",
-     "supabase/functions/sefaz-dfe-puxar/index.ts",
-     "supabase/functions/verificar-conformidade-fiscal/index.ts",
-     "supabase/migrations/20261122123557_rpc_registrar_nfe_propaga_origem_credito.sql",
-     "supabase/migrations/20261122130000_sefaz_batch_grava_grupo_ibscbs.sql",
-     "supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql",
-     "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
-     "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
-     "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -252808,7 +253123,11 @@
    ],
    [
     "src/lib/tributario/catalogos/cclasstrib.ts",
-    6
+    5
+   ],
+   [
+    "src/hooks/useImportacaoXMLNFe.ts",
+    4
    ],
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
@@ -252820,34 +253139,14 @@
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    4
+    3
    ],
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-    4
-   ],
-   [
-    "src/hooks/useImportacaoXMLNFe.ts",
-    4
+    3
    ],
    [
     "supabase/config.toml",
-    4
-   ],
-   [
-    "scripts/integrity/baseline/expected-policies.json",
-    3
-   ],
-   [
-    "scripts/integrity/baseline/schema-counts.json",
-    3
-   ],
-   [
-    "src/integrations/supabase/types.ts",
-    3
-   ],
-   [
-    "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
     3
    ],
    [
@@ -252876,6 +253175,22 @@
    ],
    [
     "supabase/functions/sync-fundamentacao-legal/index.ts",
+    2
+   ],
+   [
+    "scripts/integrity/baseline/expected-policies.json",
+    2
+   ],
+   [
+    "scripts/integrity/baseline/schema-counts.json",
+    2
+   ],
+   [
+    "SECURITY_RULES.md",
+    2
+   ],
+   [
+    "scripts/ci/deno-check-functions.sh",
     2
    ]
   ]

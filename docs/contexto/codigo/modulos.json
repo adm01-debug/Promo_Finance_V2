@@ -976,6 +976,9 @@
     "useBlingVariacoesMutations",
     "useBlingWebhookEvents",
     "useDefinirEmpresaPadrao",
+    "useEmpresaScope",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useUserEmpresas"
    ],
    "hooks_definidos": [],
@@ -989,14 +992,18 @@
     "empresas",
     "frontend_error_logs",
     "frontend_performance_logs",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "user_empresas"
    ],
    "rpcs": [
     "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-xml"
+   ],
    "canais_realtime": [],
    "env": [
     "DEV",
@@ -2799,6 +2806,8 @@
     "useInadimplenciaPorVendedor",
     "useKPIsOperacionais",
     "useMetasFinanceiras",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "usePlanosAcao",
     "usePrevisoesInadimplencia",
     "useRamosAtividade",
@@ -2859,7 +2868,9 @@
     "kpis_operacionais",
     "metas_financeiras",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "planos_acao",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
@@ -2879,7 +2890,9 @@
     "totais_contas_pagar",
     "totais_contas_receber"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-xml"
+   ],
    "canais_realtime": [
     "aprovacoes-pendentes-realtime"
    ],
@@ -4218,7 +4231,7 @@
    "modulo": "components/nfe",
    "arquivos": 31,
    "testes": 3,
-   "linhas": 6091,
+   "linhas": 6124,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -4240,9 +4253,12 @@
     "useDashboardKPIs",
     "useDefinirEmpresaPadrao",
     "useDeleteContaPagar",
+    "useEmpresaScope",
     "useEmpresas",
     "useFornecedores",
     "useFornecedoresPaginated",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useSoundFeedback",
     "useUpdateContaPagar",
     "useUserEmpresas"
@@ -4273,7 +4289,9 @@
     "frontend_performance_logs",
     "itens_lista_iss",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "regras_roteamento_financeiro",
@@ -4286,7 +4304,9 @@
     "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-xml"
+   ],
    "canais_realtime": [],
    "env": [
     "DEV",
@@ -4311,6 +4331,7 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "hooks",
     "pages"
    ],
    "depende_de_modulos": [
@@ -4321,6 +4342,7 @@
     "lib/reforma-tributaria"
    ],
    "pacotes_externos": [
+    "@tanstack/react-query",
     "framer-motion",
     "jspdf",
     "jspdf-autotable",
@@ -4874,6 +4896,8 @@
     "useMarcarTodosAlertasComoLidos",
     "useMetasFinanceiras",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useNumericInput",
     "useOnboardingProgress",
     "useOpenFinance",
@@ -5042,7 +5066,9 @@
     "logs_conciliacao_retroativa",
     "metas_financeiras",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "open_finance_consents",
     "partidas_contabeis",
     "password_reset_requests",
@@ -5094,7 +5120,9 @@
     "totais_contas_pagar",
     "totais_contas_receber"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-xml"
+   ],
    "canais_realtime": [
     "${config.channel}-${Math.random().toString(36).slice(2, 8)}",
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -5247,17 +5275,22 @@
     "useApuracoesTributarias",
     "useAtualizarEmpresa",
     "useAuditoriaCompliance",
+    "useAuth",
     "useCashbackSimulador",
     "useComparativoRegimes",
     "useConciliacaoTributaria",
     "useCreditosPorChaves",
     "useCreditosTributarios",
     "useCriarEmpresa",
+    "useDefinirEmpresaPadrao",
+    "useEmpresaScope",
     "useExcluirEmpresa",
     "useFechamentoTributario",
     "useIRPJCSLL",
     "useImportacaoXMLNFe",
     "useIncentivosFiscais",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOperacoesTributaveis",
     "usePerDcomp",
     "useReativarEmpresa",
@@ -5266,7 +5299,8 @@
     "useRetencoesFonte",
     "useSplitPayment",
     "useToast",
-    "useUpdateRegimeEspecial"
+    "useUpdateRegimeEspecial",
+    "useUserEmpresas"
    ],
    "hooks_definidos": [],
    "edges": [
@@ -5292,7 +5326,9 @@
     "incentivos_fiscais",
     "itens_lista_iss",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "operacoes_tributaveis",
     "per_dcomp",
     "prejuizos_fiscais",
@@ -5301,15 +5337,19 @@
     "regimes_especiais_empresa",
     "retencoes_fonte",
     "split_payment_transacoes",
-    "ufs"
+    "ufs",
+    "user_empresas"
    ],
    "rpcs": [
     "gerar_darf_retencoes",
     "get_retencoes_pendentes_count",
     "pagar_darf_retencoes",
+    "registrar_auditoria_config",
     "registrar_nfe_com_creditos"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-xml"
+   ],
    "canais_realtime": [
     "alertas-tributarios-realtime-${Math.random().toString(36).slice(2, 8)}",
     "reforma-tributaria-realtime-${empresaId ?? "
@@ -6557,9 +6597,9 @@
   },
   {
    "modulo": "hooks",
-   "arquivos": 230,
+   "arquivos": 231,
    "testes": 9,
-   "linhas": 36340,
+   "linhas": 36753,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -6838,6 +6878,7 @@
     "useNegativacoes",
     "useNetworkStatus",
     "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useNumericInput",
     "useOnboardingProgress",
     "useOpenFinance",
@@ -7278,6 +7319,7 @@
     "useDesvincularNfe",
     "useSugestoesContaPagar",
     "useVincularNfe",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useOpenFinance",
     "useOperacoesTributaveis",
@@ -7605,6 +7647,7 @@
     "new_device_alerts",
     "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "open_finance_consents",
     "operacoes_tributaveis",
     "oportunidades_elisao",
@@ -7909,6 +7952,7 @@
      "new_device_alerts",
      "nfe_recebidas",
      "notas_fiscais",
+     "notas_fiscais_itens",
      "open_finance_consents",
      "operacoes_tributaveis",
      "oportunidades_elisao",
@@ -8083,6 +8127,7 @@
     "components/admin",
     "components/conciliacao",
     "components/contas-receber",
+    "components/nfe",
     "components/tributario",
     "components/ui",
     "config",
@@ -8118,7 +8163,7 @@
   {
    "modulo": "hooks/__tests__",
    "arquivos": 0,
-   "testes": 57,
+   "testes": 58,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -8188,6 +8233,9 @@
     "useBlingVariacoesMutations",
     "useBlingWebhookEvents",
     "useDefinirEmpresaPadrao",
+    "useEmpresaScope",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useUserEmpresas"
    ],
    "hooks_definidos": [
@@ -8235,14 +8283,18 @@
     "empresas",
     "frontend_error_logs",
     "frontend_performance_logs",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "user_empresas"
    ],
    "rpcs": [
     "cancelar_nfe_estornar_xml_destacado",
     "registrar_auditoria_config"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-xml"
+   ],
    "canais_realtime": [],
    "env": [
     "DEV",
@@ -9651,7 +9703,7 @@
    "modulo": "pages",
    "arquivos": 109,
    "testes": 1,
-   "linhas": 20609,
+   "linhas": 20703,
    "itens_menu": [
     "Action Matrix Audit",
     "Alertas",
@@ -10013,6 +10065,8 @@
     "useMovimentacoes",
     "useNegativacoes",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useNumericInput",
     "useOnboardingProgress",
     "useOpenFinance",
@@ -10291,7 +10345,9 @@
     "ncms",
     "negativacoes",
     "new_device_alerts",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "open_finance_consents",
     "operacoes_tributaveis",
     "pagamentos_recorrentes",
@@ -10411,6 +10467,7 @@
     "totais_contas_receber"
    ],
    "buckets": [
+    "nfe-xml",
     "relatorios-tributarios"
    ],
    "canais_realtime": [
@@ -10594,7 +10651,7 @@
   {
    "modulo": "pages/__tests__",
    "arquivos": 0,
-   "testes": 4,
+   "testes": 5,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -11972,6 +12029,7 @@
     "useMarcarTodosAlertasComoLidos",
     "useNetworkStatus",
     "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useOperacoesTributaveis",
     "useOportunidadesElisao",
@@ -12078,6 +12136,7 @@
     "ncms",
     "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "operacoes_tributaveis",
     "oportunidades_elisao",
     "overlay_rejeicoes_auditoria",
@@ -12474,6 +12533,7 @@
     "useNegativacoes",
     "useNetworkStatus",
     "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useNumericInput",
     "useOnboardingProgress",
     "useOpenFinance",
@@ -12832,6 +12892,7 @@
     "new_device_alerts",
     "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "notification_history",
     "open_finance_consents",
     "operacoes_tributaveis",

@@ -4522,6 +4522,7 @@
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx",
    "src/hooks/useBlingNFe.ts",
+   "src/hooks/useNotasFiscaisLocais.ts",
    "src/lib/formatters.ts"
   ],
   "src/components/nfe/CancelamentoNFe.tsx": [
@@ -4601,6 +4602,7 @@
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/separator.tsx",
+   "src/hooks/useNotasFiscaisLocais.ts",
    "src/lib/formatters.ts"
   ],
   "src/components/nfe/NovaNFeForm.tsx": [
@@ -6766,8 +6768,10 @@
    "src/hooks/bling/index.ts"
   ],
   "src/hooks/useBlingNFe.ts": [
+   "src/hooks/useNotasFiscaisLocais.ts",
    "src/hooks/useUserEmpresas.ts",
-   "src/integrations/supabase/client.ts"
+   "src/integrations/supabase/client.ts",
+   "src/lib/queryClient.ts"
   ],
   "src/hooks/useBoletos.helpers.ts": [
    "src/hooks/useBoletos.types.ts",
@@ -7144,6 +7148,7 @@
    "src/lib/plano-contas-csv-importer.ts"
   ],
   "src/hooks/useImportacaoXMLNFe.ts": [
+   "src/hooks/useNotasFiscaisLocais.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/logger.ts",
    "src/lib/nfe/parse-ibscbs.ts",
@@ -7223,6 +7228,14 @@
   "src/hooks/useNfeVinculo.ts": [
    "src/lib/edge-function-error.ts",
    "src/lib/logger.ts"
+  ],
+  "src/hooks/useNotasFiscaisLocais.ts": [
+   "src/components/nfe/nfe-types.ts",
+   "src/config/env.ts",
+   "src/contexts/useEmpresaScope.ts",
+   "src/hooks/useNfeRecebidas.ts",
+   "src/hooks/useUserEmpresas.ts",
+   "src/integrations/supabase/client.ts"
   ],
   "src/hooks/useOnboardingProgress.ts": [
    "src/hooks/useAuth.tsx",
@@ -9326,6 +9339,7 @@
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/dialog.tsx",
+   "src/hooks/useNotasFiscaisLocais.ts",
    "src/lib/formatters.ts",
    "src/pages/NotasFiscais.helpers.ts",
    "src/pages/NotasFiscaisAbas.tsx"
@@ -9347,6 +9361,7 @@
    "src/components/ui/input.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/tabs.tsx",
+   "src/hooks/useNotasFiscaisLocais.ts",
    "src/lib/formatters.ts"
   ],
   "src/pages/OrcamentoEvento.tsx": [

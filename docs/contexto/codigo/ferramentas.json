@@ -3,7 +3,7 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2436)",
+   "TypeScript (2439)",
    "SQL (1157)",
    "Markdown (231)",
    "JavaScript (77)",
@@ -1642,6 +1642,10 @@
     "arquivos": 2
    },
    {
+    "host": "phishing.example",
+    "arquivos": 2
+   },
+   {
     "host": "piloto-cbs.tributos.gov.br",
     "arquivos": 2
    },
@@ -1875,6 +1879,10 @@
    },
    {
     "host": "outro.exemplo",
+    "arquivos": 1
+   },
+   {
+    "host": "outroprojetoqualquer.supabase.co",
     "arquivos": 1
    },
    {

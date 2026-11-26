@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ae407b8d61` · branch `main` · 2026-11-26 12:07 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `22c61eade8` · branch `main` · 2026-11-26 13:48 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1372,7 +1372,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `awaiting_authorization` | compara | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx` |
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
-| `status` | `cancelada` | compara, escreve, filtra | `src/components/nfe/NFePreview.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/pages/NotasFiscais.tsx` |
+| `status` | `cancelada` | compara, filtra | `src/components/nfe/NFePreview.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useNotasFiscaisLocais.ts`<br>`src/pages/NotasFiscais.tsx` |
 | `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>… +24 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
@@ -1443,7 +1443,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +46 |
 | `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
 | `status` | `partial` | compara, escreve | `src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
-| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +59 |
+| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +60 |
 | `status` | `pendente_aprovacao` | compara, escreve | `src/components/compras/PedidoCompraForm.tsx`<br>`src/lib/compras/pedidos.ts`<br>`src/pages/Compras.tsx` |
 | `status` | `pending` | compara, escreve | `src/components/admin/WebhookSimulator.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>`src/components/ui/ux-validator/helpers.tsx`<br>… +2 |
 | `status` | `pior` | compara | `src/components/analytics/BenchmarkingSetorial.tsx` |
@@ -1517,7 +1517,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `9999` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| … +219 linhas — lista completa em `context.json` | | | |
+| … +220 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
@@ -1625,6 +1625,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | SsoSyncFieldKey | full_name \| avatar_url \| telefone | `src/hooks/useLastSsoProfileSync.ts` |
 | ManifestacaoTipo | 210200 \| 210210 \| 210220 \| 210240 | `src/hooks/useManifestarNfe.ts` |
 | ManifestacaoStatus | pendente \| ciencia \| confirmada \| desconhecida \| nao_realizada | `src/hooks/useNfeRecebidas.ts` |
+| ResultadoAbertura | aberto \| sem_arquivo \| bloqueado | `src/hooks/useNotasFiscaisLocais.ts` |
+| DirecaoNota | saida \| entrada \| indefinida | `src/hooks/useNotasFiscaisLocais.ts` |
+| CHAVE_QUERY_NOTAS | 'notas-fiscais-locais' | `src/hooks/useNotasFiscaisLocais.ts` |
 | FrequenciaPagamento | semanal \| quinzenal \| mensal \| bimestral \| trimestral \| semestral \| anual | `src/hooks/usePagamentosRecorrentes.ts` |
 | TipoPedido | per \| dcomp | `src/hooks/usePerDcomp.ts` |
 | StatusPedido | rascunho \| aguardando_transmissao \| transmitido \| em_analise \| deferido \| indeferido \| cancelado | `src/hooks/usePerDcomp.ts` |
@@ -2650,7 +2653,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **generatePDF()** — `src/components/nfe/DANFEGenerator.tsx`
   ```
-  setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text(`0 - ENTRADA / 1 - SAÍDA`, pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie …
+  setGenerating(true); try { const doc = new jsPDF(); const pageWidth = doc.internal.pageSize.getWidth(); // Header doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.rect(10, 10, pageWidth - 20, 25); doc.text('Espelho da NF-e - resumo interno (nao substitui o DANFE)', pageWidth / 2, 18, { align: 'center', }); doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text('Documento de uso interno', pageWidth / 2, 24, { align: 'center' }); doc.text(`NF-e Nº ${nota.numero} | Série ${nota. …
   ```
 - **calcularBaseItem(item: ItemNFe)** — `src/components/nfe/NovaNFeForm.tsx`
   ```
@@ -5162,7 +5165,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +810 linhas — lista completa em `context.json` | |
+| … +812 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5221,7 +5224,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4052 testes em 359 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4077 testes em 361 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5282,6 +5285,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx` | 17 | NavigationTributaria · Renderização de grupos · renderiza grupos na versão mobile · Badge de alertas dinâmico … |
 | `src/hooks/__tests__/savedFiltersValidation.test.ts` | 17 | savedFiltersValidation > isAppRole · aceita os 4 papéis canônicos · rejeita valor inválido %p · savedFiltersValidation > normalizeRoles … |
 | `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 17 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
+| `src/hooks/__tests__/useNotasFiscaisLocais.test.ts` | 17 | notas fiscais locais — leitura real do banco · traduz o status TEXT da tabela para o enum da tela · usa a URL de arquivo que existe e devolve undefined quando não há arquivo · recusa URL de origem desconhecida gravada na nota … |
 | `src/lib/__tests__/cfc-validator.test.ts` | 17 | validarFormatoCFC · aceita 4 níveis · aceita 5 níveis com subconta 1-3 dígitos · rejeita formatos inválidos … |
 | `src/lib/__tests__/csv-importer.test.ts` | 17 | csv-importer — faturamento · parse UTF-8 com separador  · parse com separador  · parse com separador TAB … |
 | `src/lib/__tests__/ofx-parser-xlsx-valor.test.ts` | 17 | parseExcel — valor monetario BRL · nao perde a grandeza de 1.234,56 (antes virava 1.234) · preserva a grandeza do negativo e o classifica como debito · rejeita celula nao numerica em vez de criar transacao NaN … |
@@ -5404,6 +5408,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx` | 8 | painel da SEFAZ não exibe métrica fabricada (F11) · status desconhecido: banner diz  · status desconhecido:  · sem medição, os cards não mostram latência nem uptime numéricos … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
+| `src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx` | 8 | importarNFes — créditos CBS/IBS · grava nota e créditos numa chamada só, e contabiliza depois de confirmado · invalida a lista de notas fiscais para a nota importada aparecer · manda natureza_operacao e created_by para a função decidir, não os descarta … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
 | `src/hooks/__tests__/useKeyboardShortcuts.test.ts` | 8 | useKeyboardShortcuts · registra o listener de keydown UMA única vez mesmo com re-renders · remove o listener de keydown no unmount · Alt+D navega para o dashboard … |
 | `src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts` | 8 | aprovarPagamento · aprova as duas tabelas numa transação só, sem escrita do cliente · usa o fornecedor lido dentro da transação, não o retrato anterior · não confirma ao usuário quando a função recusa a gravação … |
@@ -5426,7 +5431,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx` | 7 | classificacao tributaria na consulta por NCM (etapa 84) · mostra cClassTrib, CST, reducao e a norma que fundamenta · com o pacote do cache mostra os dados e o selo Offline · sem catalogo sincronizado explica o vazio em vez de mostrar tabela … |
 | `src/components/tributario/consulta-rapida/__tests__/shared.test.ts` | 7 | pct · trata nulos e NaN como travessão · converte frações em percentual · mantém valores já expressos em pontos percentuais … |
 | `src/hooks/__tests__/tenant-mutations.test.tsx` | 7 | isolamento multiempresa em categorias · não consulta categorias sem empresa ativa · lista categorias somente da empresa ativa · vincula criação, atualização e exclusão à empresa ativa e ignora empresa forjada … |
-| `src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx` | 7 | importarNFes — créditos CBS/IBS · grava nota e créditos numa chamada só, e contabiliza depois de confirmado · manda natureza_operacao e created_by para a função decidir, não os descarta · usa a data local da emissão, não a conversão para UTC … |
 | `src/hooks/__tests__/useReguaCobranca.rls.test.tsx` | 7 | useReguaCobranca — escrita barrada por RLS · useUpdateTemplate falha quando nenhuma linha é devolvida · useUpdateTemplate conclui quando a linha volta · useUpdateReguaCobranca falha quando nenhuma linha é devolvida … |
 | `src/hooks/financial/__tests__/views.schemas.test.ts` | 7 | views.schemas — parseRows · aceita linhas válidas mínimas de contas a receber · aceita linhas válidas mínimas de contas a pagar · preserva colunas adicionais via passthrough … |
 | `src/lib/__tests__/adaptive-chunk.test.ts` | 7 | adaptive-chunk (AIMD) · respeita clamp inicial entre min e max · cresce aditivamente quando latência ≤ alvo · reduz multiplicativamente quando latência acima da tolerância … |
@@ -5443,6 +5447,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/recomendar-empresa.test.ts` | 7 | recomendarEmpresa · prioriza Simples para venda de serviço pequeno · prioriza Lucro Real para compra de produto com crédito ICMS · alerta quando operação estoura limite do Simples … |
 | `src/lib/tributario/__tests__/simular-simples.test.ts` | 7 | simularSimples · rejeita acima de R$ 4,8 mi · calcula DAS para comércio na faixa 1 (Anexo I) · aplica Fator R para serviços com folha alta (Anexo III) … |
 | `src/lib/tributario/__tests__/versao.test.ts` | 7 | versionamento do motor tributário · expõe uma versão semântica válida · compara versões corretamente · é tolerante a entradas malformadas … |
+| `src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx` | 7 | /notas-fiscais — lista e arquivos reais · sem notas mostra estado vazio e não divide por zero na taxa de autorização · abre só o XML/DANFE que a nota realmente tem · não abre XML de host desconhecido mesmo gravado na nota … |
 | `src/pages/auth/__tests__/CorporateOnboarding.test.tsx` | 7 | /auth/corporate — CorporateOnboarding · renderiza o formulário inicial sem providers nem chamadas SSO · domínio SEM match em allowed_domains: mostra fallback e navega para /auth com o e-mail · domínio COM match sem force_sso: lista providers e dispara invoke ao escolher manualmente … |
 | `src/pages/auth/__tests__/CorporateOnboardingUi.test.tsx` | 7 | /auth/corporate · CTAs aparecem nos momentos corretos · estado inicial: não exibe nenhum dos CTAs contextuais · domínio sem providers: exibe  · domínio com provider sem force: NÃO mostra cancelar/tentar novamente, só lista o provider … |
 | `supabase/functions/reprocessar-creditos-ibscbs/__tests__/reprocessar_test.ts` | 7 | montarCreditos — nota 2026 destacada gera credito informativo (saldo 0) · montarCreditos — nota 2027+ destacada gera credito apropriavel (saldo cheio) · montarCreditos — sem grupo nao inventa credito · montarCreditos — grupo presente com valores zerados nao gera credito … |
@@ -5523,9 +5528,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/fator-r.test.ts` | 4 | Fator R · deve calcular corretamente a proporção folha/receita · deve retornar 0 se a receita for zero ou negativa para evitar divisão por zero · deve determinar o anexo correto com base no fator r |
 | `src/lib/tributario/__tests__/icms-overlay-mva-fuzz.test.ts` | 4 | fuzzing do overlay de MVA/ST — 750 cenários · nenhuma entrada malformada quebra o overlay ou viola invariantes · monotonicidade: MVA maior nunca reduz o ICMS-ST, mantidos os demais parâmetros · operação interna converge a MVA ajustada para a MVA original em todas as UFs |
 | `src/test/a11y/critical-pages.test.tsx` | 4 | A11y — componentes críticos WCAG 2.1 AA · SkipLinks não possui violações · Formulário básico (Label + Input + Button) não possui violações · Botão com aria-label não possui violações |
-| `supabase/functions/guardar-xml-nfe-autorizada/__tests__/guardar_test.ts` | 4 | statusDoProc — cStat 100 vira autorizada · statusDoProc — 101 cancelada, 110 denegada, ausente pendente · montarNota — XML manda nos campos, Bling so completa o que falta · montarNota — sem XML parseavel cai no Bling sem quebrar NOT NULL |
-| `supabase/functions/processar-solicitacao-lgpd/escrita.test.ts` | 4 | anonimização grava só colunas que existem em profiles · erro na anonimização propaga e impede o fechamento · fechamento guarda atendida_por dentro de payload_resposta · erro no fechamento propaga em vez de responder sucesso |
-| … +59 linhas — lista completa em `context.json` | | |
+| … +61 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5622,6 +5625,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `invoke(` | `src/hooks/useHealthScoreOperacional.ts` |
 | `invoke(` | `src/hooks/useHeatmapTributario.ts` |
 | `.add('row-highlight-flash'` | `src/hooks/useHighlightFromUrl.ts` |
+| `asaas` | `src/hooks/useNotasFiscaisLocais.ts` |
 | `invoke(` | `src/hooks/useOpenFinance.ts` |
 | `invoke(` | `src/hooks/useOportunidadesElisao.ts` |
 | `invoke(` | `src/hooks/useOrganizacoes.ts` |
@@ -6011,6 +6015,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Compensação de prejuízos (máximo 30%) | `src/hooks/useIRPJCSLL.ts` |
 | ADCT): 2026 é ano de teste, com destaque apenas informativo. | `src/hooks/useImportacaoXMLNFe.ts` |
 | é apenas informativo (`efeito_tributario=false`). Só a partir de | `src/hooks/useImportacaoXMLNFe.ts` |
+| A lista consultada pela tela é `[...CHAVE_QUERY_NOTAS, empresaId, limite]` | `src/hooks/useImportacaoXMLNFe.ts` |
+| antes pelo mesmo usuário não deve ser recarregada. | `src/hooks/useImportacaoXMLNFe.ts` |
 | Postgres; o cliente apenas divide os agregados (`calcularIndices`). | `src/hooks/useIndicesContabeis.ts` |
 | * Limite máximo de requests realmente executando em paralelo. | `src/hooks/useLancamentosContabeis.ts` |
 | evitando saturar o connection pool / rate-limit do PostgREST. | `src/hooks/useLancamentosContabeis.ts` |
@@ -6018,6 +6024,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Limite padrão de conexões simultâneas contra o backend. */ | `src/hooks/useLancamentosContabeis.ts` |
 | `limiter.limit()` deles executam simultaneamente. Cada lançamento | `src/hooks/useLancamentosContabeis.ts` |
 | - limit 1, mais recente | `src/hooks/useLastSsoProfileSync.ts` |
+| permissão de escrita em `notas_fiscais` pode gravar qualquer URL na nota; | `src/hooks/useNotasFiscaisLocais.ts` |
+| O XML autorizado pelo Bling é gravado apenas no bucket — `xml_url` fica nulo —, | `src/hooks/useNotasFiscaisLocais.ts` |
 | (seletor do HistoricoTab -> atualizarStatus), e apagar por id apenas | `src/hooks/useOportunidadesElisao.ts` |
 | , nota:notas_fiscais_ocr(*), regra:elisao_regras_creditos(*)') | `src/hooks/useOportunidadesElisao.ts` |
 | Auto-validação de consistência | `src/hooks/useOportunidadesElisao.ts` |
@@ -6115,8 +6123,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | mas também não deve sumir. Nunca lança. | `src/lib/supabase-write.ts` |
 | O flush de unload não pode await getUser() — user.id fica em cache aqui. | `src/lib/telemetry.ts` |
 | casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts). | `src/lib/telemetry.ts` |
-| desconto também em bytes UTF-8, como a seleção do lote | `src/lib/telemetry.ts` |
-| Cores temáticas para confetti (hex required by canvas-confetti library) | `src/lib/toast-confetti.tsx` |
-| porque roda apenas em ambiente de teste/CI — nunca é importado pelo bundle | `src/lib/arquitetura/analisador-imports.ts` |
-| * Regra arquitetural: se o `queryFn` de uma query filtra por `empresa_id`, | `src/lib/arquitetura/escopo-empresa.ts` |
-| … +487 linhas — lista completa em `context.json` | |
+| … +492 linhas — lista completa em `context.json` | |

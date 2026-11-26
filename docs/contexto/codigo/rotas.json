@@ -118,6 +118,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "usePrevisoesInadimplencia",
     "useQuery",
@@ -240,6 +242,8 @@
     "useMarcarTodosAlertasComoLidos",
     "useMetasFinanceiras",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "usePrevisoesInadimplencia",
     "useRamosAtividade",
@@ -298,7 +302,9 @@
     "itens_lista_iss",
     "metas_financeiras",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "recomendacoes_metas_ia",
@@ -351,7 +357,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 212
+   "arquivos_puxados": 215
   },
   {
    "protegida": false,
@@ -4158,6 +4164,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useQuery",
     "useQueryClient",
@@ -4232,6 +4240,8 @@
     "useMarcarAlertaComoLido",
     "useMarcarTodosAlertasComoLidos",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useRealtimeAlertas",
     "useRealtimeAnomalias",
@@ -4258,7 +4268,9 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -4290,7 +4302,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 120
+   "arquivos_puxados": 124
   },
   {
    "protegida": true,
@@ -8144,6 +8156,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "usePrevisoesInadimplencia",
     "useQuery",
@@ -8266,6 +8280,8 @@
     "useMarcarTodosAlertasComoLidos",
     "useMetasFinanceiras",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "usePrevisoesInadimplencia",
     "useRamosAtividade",
@@ -8324,7 +8340,9 @@
     "itens_lista_iss",
     "metas_financeiras",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "recomendacoes_metas_ia",
@@ -8377,7 +8395,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 212
+   "arquivos_puxados": 215
   },
   {
    "protegida": true,
@@ -10572,6 +10590,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useQuery",
     "useQueryClient",
@@ -10630,6 +10650,8 @@
     "useMarcarAlertaComoLido",
     "useMarcarTodosAlertasComoLidos",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useRealtimeAlertas",
     "useRealtimeAnomalias",
@@ -10668,7 +10690,9 @@
     "historico_cobranca_whatsapp",
     "itens_lista_iss",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "regras_roteamento_financeiro",
@@ -10709,7 +10733,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 192
+   "arquivos_puxados": 194
   },
   {
    "protegida": true,
@@ -11503,6 +11527,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useOperacoesTributaveis",
     "useParams",
@@ -11569,6 +11595,8 @@
     "useMarcarAlertaComoLido",
     "useMarcarTodosAlertasComoLidos",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useOperacoesTributaveis",
     "usePerDcomp",
@@ -11618,7 +11646,9 @@
     "incentivos_fiscais",
     "itens_lista_iss",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "operacoes_tributaveis",
     "per_dcomp",
     "prejuizos_fiscais",
@@ -11666,7 +11696,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 233
+   "arquivos_puxados": 236
   },
   {
    "protegida": true,
@@ -11723,6 +11753,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useOperacoesTributaveis",
     "useParams",
@@ -11789,6 +11821,8 @@
     "useMarcarAlertaComoLido",
     "useMarcarTodosAlertasComoLidos",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useOperacoesTributaveis",
     "usePerDcomp",
@@ -11838,7 +11872,9 @@
     "incentivos_fiscais",
     "itens_lista_iss",
     "ncms",
+    "nfe_recebidas",
     "notas_fiscais",
+    "notas_fiscais_itens",
     "operacoes_tributaveis",
     "per_dcomp",
     "prejuizos_fiscais",
@@ -11886,7 +11922,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 233
+   "arquivos_puxados": 236
   },
   {
    "protegida": true,
@@ -15279,6 +15315,8 @@
     "useMutation",
     "useNavigate",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useQuery",
     "useQueryClient",
@@ -15320,6 +15358,8 @@
     "useMarcarAlertaComoLido",
     "useMarcarTodosAlertasComoLidos",
     "useNetworkStatus",
+    "useNfeRecebidas",
+    "useNotasFiscaisLocais",
     "useOnboardingProgress",
     "useRealtimeAlertas",
     "useRealtimeAnomalias",
@@ -15353,6 +15393,9 @@
     "historico_cobranca_whatsapp",
     "itens_lista_iss",
     "ncms",
+    "nfe_recebidas",
+    "notas_fiscais",
+    "notas_fiscais_itens",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "solicitacoes_aprovacao",
@@ -15386,7 +15429,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 134
+   "arquivos_puxados": 137
   },
   {
    "protegida": true,

@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 276,
+ "total": 277,
  "hooks": [
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
@@ -607,7 +607,7 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 12,
+   "usado_por": 13,
    "usado_por_arquivos": [
     "src/components/cobranca/ReguaCobrancaConfig.tsx",
     "src/components/dashboard/PrevisaoIA.tsx",
@@ -619,6 +619,7 @@
     "src/hooks/useConformidadeSnapshots.ts",
     "src/hooks/useEntregasObrigacoes.ts",
     "src/hooks/useNfeRecebidas.ts",
+    "src/hooks/useNotasFiscaisLocais.ts",
     "src/pages/Orcamentos.tsx",
     "src/pages/tributario/ObrigacoesAcessorias.tsx"
    ],
@@ -2075,7 +2076,7 @@
    "hooks_exportados": [
     "useBlingNFe"
    ],
-   "linhas": 418,
+   "linhas": 427,
    "dominio": "hooks",
    "tabelas": [
     "notas_fiscais"
@@ -4209,7 +4210,7 @@
    "hooks_exportados": [
     "useImportacaoXMLNFe"
    ],
-   "linhas": 674,
+   "linhas": 690,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -4813,12 +4814,13 @@
     "useQuery"
    ],
    "canais_realtime": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "usado_por_arquivos": [
+    "src/hooks/useNotasFiscaisLocais.ts",
     "src/pages/tributario/NfeRecebidas.helpers.ts",
     "src/pages/tributario/NfeRecebidas.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useNfeVinculo.ts",
@@ -4847,6 +4849,35 @@
     "src/pages/tributario/NfeRecebidas.tsx"
    ],
    "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useNotasFiscaisLocais.ts",
+   "hooks_exportados": [
+    "useNotasFiscaisLocais"
+   ],
+   "linhas": 388,
+   "dominio": "hooks",
+   "tabelas": [
+    "notas_fiscais",
+    "notas_fiscais_itens"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContext",
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/nfe/BlingNFePanel.tsx",
+    "src/components/nfe/NFePreview.tsx",
+    "src/hooks/useBlingNFe.ts",
+    "src/hooks/useImportacaoXMLNFe.ts",
+    "src/pages/NotasFiscais.tsx",
+    "src/pages/NotasFiscaisAbas.tsx"
+   ],
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useOnboardingProgress.ts",
@@ -6858,7 +6889,7 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 12,
+   "usado_por": 13,
    "usado_por_arquivos": [
     "src/components/auth/EmpresaGuard.tsx",
     "src/components/auth/EmpresaSelectionGate.tsx",
@@ -6871,6 +6902,7 @@
     "src/hooks/AuthProvider.tsx",
     "src/hooks/useBlingNFe.ts",
     "src/hooks/useGlobalFinancialFilter.ts",
+    "src/hooks/useNotasFiscaisLocais.ts",
     "src/pages/tributario/ComparativoConformidade.tsx"
    ],
    "coberto_por_testes": 1

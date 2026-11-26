@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 527,
+ "total": 529,
  "por_tipo": {
   "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 448
+  "unit": 450
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 322
+   "arquivos": 324
   },
   {
    "padrao": "outro",
@@ -1761,11 +1761,12 @@
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx",
    "tipo": "unit",
-   "linhas": 227,
+   "linhas": 250,
    "testa": [
-    "src/hooks/useImportacaoXMLNFe.ts"
+    "src/hooks/useImportacaoXMLNFe.ts",
+    "src/hooks/useNotasFiscaisLocais.ts"
    ],
-   "casos": 6
+   "casos": 7
   },
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx",
@@ -1840,6 +1841,17 @@
     "src/hooks/useNfeVinculo.ts"
    ],
    "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useNotasFiscaisLocais.test.ts",
+   "tipo": "unit",
+   "linhas": 250,
+   "testa": [
+    "src/config/env.ts",
+    "src/hooks/useNfeRecebidas.ts",
+    "src/hooks/useNotasFiscaisLocais.ts"
+   ],
+   "casos": 14
   },
   {
    "arquivo": "src/hooks/__tests__/useOportunidadesElisao.persistencia.test.tsx",
@@ -3729,6 +3741,17 @@
    "casos": 62
   },
   {
+   "arquivo": "src/pages/__tests__/notas-fiscais-arquivos-reais.test.tsx",
+   "tipo": "unit",
+   "linhas": 202,
+   "testa": [
+    "src/components/nfe/nfe-types.ts",
+    "src/config/env.ts",
+    "src/pages/NotasFiscaisAbas.tsx"
+   ],
+   "casos": 6
+  },
+  {
    "arquivo": "src/pages/AsaasQueueHistoryDialog.test.ts",
    "tipo": "unit",
    "linhas": 13,
@@ -4782,7 +4805,7 @@
   "src/components/nfe/InutilizacaoNFe.tsx": 1,
   "src/components/nfe/SefazMonitor.tsx": 1,
   "src/components/nfe/contingencia/ContingenciaPendingList.tsx": 1,
-  "src/components/nfe/nfe-types.ts": 1,
+  "src/components/nfe/nfe-types.ts": 2,
   "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx": 1,
   "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx": 1,
   "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx": 1,
@@ -4814,6 +4837,7 @@
   "src/components/ui/tabs.tsx": 1,
   "src/components/ui/tooltip.tsx": 2,
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
+  "src/config/env.ts": 2,
   "src/config/reforma-tributaria.ts": 6,
   "src/contexts/EmpresaScopeContext.tsx": 1,
   "src/contexts/useEmpresaScope.ts": 2,
@@ -4866,7 +4890,9 @@
   "src/hooks/useKeyboardNavigation.ts": 1,
   "src/hooks/useKeyboardShortcuts.ts": 1,
   "src/hooks/useLancamentosContabeis.ts": 1,
+  "src/hooks/useNfeRecebidas.ts": 1,
   "src/hooks/useNfeVinculo.ts": 1,
+  "src/hooks/useNotasFiscaisLocais.ts": 2,
   "src/hooks/useOportunidadesElisao.ts": 1,
   "src/hooks/useOrganizacoes.ts": 1,
   "src/hooks/usePerDcomp.ts": 1,
@@ -5041,6 +5067,7 @@
   "src/lib/tributario/versao.ts": 1,
   "src/lib/utils.ts": 1,
   "src/lib/validators.ts": 1,
+  "src/pages/NotasFiscaisAbas.tsx": 1,
   "src/pages/asaasQueueHistory.helpers.ts": 1,
   "src/pages/auth/CorporateOnboarding.tsx": 4,
   "src/pages/tributario/consulta-rapida/ufs.ts": 1,
@@ -5400,7 +5427,6 @@
    "src/hooks/useMFA.ts",
    "src/hooks/useNegativacoes.ts",
    "src/hooks/useNetworkStatus.ts",
-   "src/hooks/useNfeRecebidas.ts",
    "src/hooks/useOnboardingProgress.ts",
    "src/hooks/useOpenFinance.ts",
    "src/hooks/useOperacoesTributaveis.ts",

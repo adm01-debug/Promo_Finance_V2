@@ -661,7 +661,7 @@
    "zod_schemas": 1,
    "flags": [],
    "papeis": [],
-   "usado_por": 16,
+   "usado_por": 17,
    "usado_por_modulos": [
     "components/admin",
     "components/copilot",
@@ -675,7 +675,7 @@
     "lib",
     "pages"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -726,7 +726,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 12,
+   "usado_por": 13,
    "usado_por_modulos": [
     "components/cobranca",
     "components/dashboard",
@@ -784,7 +784,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 315,
+   "usado_por": 316,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -3449,7 +3449,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 11,
+   "usado_por": 12,
    "usado_por_modulos": [
     "components/contabilidade",
     "hooks",

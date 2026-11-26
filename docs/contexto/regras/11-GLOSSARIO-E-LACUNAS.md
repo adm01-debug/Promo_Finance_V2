@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ae407b8d61` · branch `main` · 2026-11-26 12:07 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `22c61eade8` · branch `main` · 2026-11-26 13:48 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -307,7 +307,7 @@
 | `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
 | `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
 | `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
-| … +249 linhas — lista completa em `context.json` | | | |
+| … +252 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 

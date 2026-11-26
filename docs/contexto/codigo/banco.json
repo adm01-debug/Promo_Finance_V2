@@ -31055,7 +31055,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 6,
+   "usada_no_front": 7,
    "usada_em_edges": [
     "gerar-alertas-tributarios",
     "verificar-conformidade-fiscal"
@@ -31328,13 +31328,13 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 0,
+   "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [
     "notas_fiscais_itens_verifica_totais_ibscbs"
    ],
    "sem_rls": false,
-   "nao_usada": true
+   "nao_usada": false
   },
   "notas_fiscais_ocr": {
    "colunas": {

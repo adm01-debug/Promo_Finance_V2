@@ -8041,7 +8041,7 @@
     "BlingNFePanel"
    ],
    "export_default": null,
-   "linhas": 408,
+   "linhas": 416,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useBlingNFe"
@@ -8128,7 +8128,7 @@
     "DANFEGenerator"
    ],
    "export_default": null,
-   "linhas": 283,
+   "linhas": 278,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8186,7 +8186,7 @@
     "NFePreview"
    ],
    "export_default": null,
-   "linhas": 244,
+   "linhas": 265,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -14379,9 +14379,11 @@
     "NotasFiscais"
    ],
    "export_default": "NotasFiscais",
-   "linhas": 180,
+   "linhas": 226,
    "dominio": "pages",
-   "hooks_locais": [],
+   "hooks_locais": [
+    "useNotasFiscaisLocais"
+   ],
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
@@ -14393,7 +14395,7 @@
     "NotasFiscaisAbas"
    ],
    "export_default": null,
-   "linhas": 347,
+   "linhas": 395,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
