@@ -107,6 +107,8 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
     },
     enabled: !!user,
     staleTime: 60 * 1000,
+    // A fila recebe pedidos do Champions sem ação do analista: repuxa sozinha.
+    refetchInterval: 60 * 1000,
   });
 
   const invalidar = () => queryClient.invalidateQueries({ queryKey: ['analises-credito'] });
@@ -151,6 +153,17 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
     onError: (err: Error) => toast.error(`Erro ao atualizar dados: ${err.message}`),
   });
 
+  const reenviarCallback = useMutation({
+    mutationFn: (analiseId: string) =>
+      chamar<RespostaMutacao>({ action: 'reenviar_callback', analise_id: analiseId }),
+    onSuccess: (resposta) => {
+      invalidar();
+      if (resposta.callback?.ok) toast.success('Champions avisado da decisão');
+      else toast.warning(`Champions ainda não recebeu: ${resposta.callback?.erro ?? 'erro'}`);
+    },
+    onError: (err: Error) => toast.error(`Erro ao reenviar: ${err.message}`),
+  });
+
   return {
     analises: query.data ?? [],
     isLoading: query.isLoading,
@@ -160,5 +173,7 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
     isDecidindo: decidir.isPending,
     atualizarDados: atualizarDados.mutate,
     isAtualizando: atualizarDados.isPending,
+    reenviarCallback: reenviarCallback.mutate,
+    isReenviando: reenviarCallback.isPending,
   };
 }

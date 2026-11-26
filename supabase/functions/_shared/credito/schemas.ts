@@ -63,4 +63,10 @@ export const CreditoAnaliseSchema = z.discriminatedUnion('action', [
       consulta_financeira: z.string().max(4000).optional().nullable(),
     })
     .strict(),
+  z
+    .object({
+      action: z.literal('reenviar_callback'),
+      analise_id: uuid,
+    })
+    .strict(),
 ]);

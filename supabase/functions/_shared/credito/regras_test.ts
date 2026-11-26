@@ -1,5 +1,11 @@
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
-import { avaliarAlertas, mesesDesde, normalizarCnpj } from './regras.ts';
+import { assertEquals } from 'jsr:@std/assert@1';
+import {
+  avaliarAlertas,
+  filtroCnpjCliente,
+  formatarCnpj,
+  mesesDesde,
+  normalizarCnpj,
+} from './regras.ts';
 
 const HOJE = new Date('2026-11-26T12:00:00Z');
 
@@ -56,4 +62,12 @@ Deno.test('normalizarCnpj aceita só 14 dígitos não repetidos', () => {
   assertEquals(normalizarCnpj('123'), null);
   assertEquals(normalizarCnpj('11111111111111'), null);
   assertEquals(normalizarCnpj(null), null);
+});
+
+Deno.test('filtro do cadastro casa o CNPJ com e sem máscara', () => {
+  assertEquals(formatarCnpj('12345678000195'), '12.345.678/0001-95');
+  assertEquals(
+    filtroCnpjCliente('12345678000195'),
+    'cnpj_cpf.eq."12345678000195",cnpj_cpf.eq."12.345.678/0001-95"'
+  );
 });

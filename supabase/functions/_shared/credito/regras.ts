@@ -98,3 +98,13 @@ export function normalizarCnpj(valor: string | null | undefined): string | null 
   if (/^(\d)\1+$/.test(digitos)) return null;
   return digitos;
 }
+
+/** CNPJ com máscara (XX.XXX.XXX/XXXX-XX) — o cadastro de clientes grava assim. */
+export function formatarCnpj(cnpj: string): string {
+  return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+}
+
+/** Filtro PostgREST `.or()` que casa `clientes.cnpj_cpf` gravado com ou sem máscara. */
+export function filtroCnpjCliente(cnpj: string): string {
+  return `cnpj_cpf.eq."${cnpj}",cnpj_cpf.eq."${formatarCnpj(cnpj)}"`;
+}

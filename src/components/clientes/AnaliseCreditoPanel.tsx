@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { AlertTriangle, CheckCircle2, FileSearch, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FileSearch, Send, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +28,15 @@ const formatBRL = (v: number | null | undefined) =>
 
 const formatData = (iso: string | null | undefined) =>
   iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
+
+/** Valor em pt-BR ("1.500,00") ou plano ("1500.5"); null quando vazio/inválido. */
+function parseValorBRL(texto: string): number | null {
+  const t = texto.trim();
+  if (!t) return null;
+  const normalizado = t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t;
+  const n = Number(normalizado);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
 
 const formatCnpj = (cnpj: string | null) =>
   cnpj && cnpj.length === 14
@@ -58,8 +67,17 @@ interface DialogoState {
 export function AnaliseCreditoPanel() {
   const [filtro, setFiltro] = useState<FiltroAnaliseCredito>('pendente');
   const [dialogo, setDialogo] = useState<DialogoState | null>(null);
-  const { analises, isLoading, isError, decidir, isDecidindo, atualizarDados, isAtualizando } =
-    useAnalisesCredito(filtro);
+  const {
+    analises,
+    isLoading,
+    isError,
+    decidir,
+    isDecidindo,
+    atualizarDados,
+    isAtualizando,
+    reenviarCallback,
+    isReenviando,
+  } = useAnalisesCredito(filtro);
 
   return (
     <div className="space-y-4">
@@ -97,7 +115,13 @@ export function AnaliseCreditoPanel() {
       )}
 
       {analises.map((a) => (
-        <AnaliseCard key={a.id} analise={a} onAbrir={(modo) => setDialogo({ modo, analise: a })} />
+        <AnaliseCard
+          key={a.id}
+          analise={a}
+          onAbrir={(modo) => setDialogo({ modo, analise: a })}
+          onReenviar={() => reenviarCallback(a.id)}
+          reenviando={isReenviando}
+        />
       ))}
 
       {dialogo && (
@@ -120,9 +144,13 @@ export function AnaliseCreditoPanel() {
 function AnaliseCard({
   analise,
   onAbrir,
+  onReenviar,
+  reenviando,
 }: {
   analise: AnaliseCredito;
   onAbrir: (modo: ModoDialogo) => void;
+  onReenviar: () => void;
+  reenviando: boolean;
 }) {
   const decidida = analise.status === 'aprovado' || analise.status === 'reprovado';
   const cnpja = analise.dados_cnpja;
@@ -148,10 +176,15 @@ function AnaliseCard({
           <Badge variant="outline" className={cn('font-semibold', STATUS_CLASS[analise.status])}>
             {STATUS_LABEL[analise.status]}
           </Badge>
-          {decidida && analise.callback_status === 'falhou' && (
-            <Badge variant="destructive" title={analise.callback_erro ?? undefined}>
-              Champions não avisado
-            </Badge>
+          {decidida && analise.callback_status !== 'enviado' && (
+            <>
+              <Badge variant="destructive" title={analise.callback_erro ?? undefined}>
+                Champions não avisado
+              </Badge>
+              <Button size="sm" variant="outline" onClick={onReenviar} disabled={reenviando}>
+                <Send className="h-4 w-4 mr-1" /> Reenviar ao Champions
+              </Button>
+            </>
           )}
         </div>
       </CardHeader>
@@ -263,6 +296,10 @@ function DialogoAnalise({
   const [escavador, setEscavador] = useState<string>(analise.dados_escavador?.resumo ?? '');
   const [consulta, setConsulta] = useState<string>(analise.dados_consulta_financeira?.resumo ?? '');
 
+  // Texto digitado que não vira valor bloqueia a aprovação (ex.: "1.500,00" mal colado).
+  const limiteInvalido =
+    modo === 'aprovar' && limite.trim() !== '' && parseValorBRL(limite) === null;
+
   const titulo =
     modo === 'aprovar'
       ? 'Aprovar crédito'
@@ -280,13 +317,11 @@ function DialogoAnalise({
       });
       return;
     }
-    const limiteNum = Number(limite.replace(',', '.'));
     const parcelasNum = Number(parcelas);
     onDecidir({
       analiseId: analise.id,
       decisao: modo === 'aprovar' ? 'aprovado' : 'reprovado',
-      limiteAprovado:
-        modo === 'aprovar' && Number.isFinite(limiteNum) && limiteNum > 0 ? limiteNum : null,
+      limiteAprovado: modo === 'aprovar' ? parseValorBRL(limite) : null,
       parcelasMax:
         modo === 'aprovar' && Number.isInteger(parcelasNum) && parcelasNum > 0 ? parcelasNum : null,
       parecer: parecer.trim() || null,
@@ -346,7 +381,11 @@ function DialogoAnalise({
                 inputMode="decimal"
                 value={limite}
                 onChange={(e) => setLimite(e.target.value)}
+                aria-invalid={limiteInvalido}
               />
+              {limiteInvalido && (
+                <p className="text-xs text-destructive">Informe um valor válido, ex.: 1.500,00</p>
+              )}
             </div>
             <div className="space-y-1">
               <Label htmlFor="credito-parcelas">Parcelas (máx.)</Label>
@@ -380,7 +419,7 @@ function DialogoAnalise({
           </Button>
           <Button
             onClick={confirmar}
-            disabled={ocupado || (modo === 'reprovar' && !parecer.trim())}
+            disabled={ocupado || limiteInvalido || (modo === 'reprovar' && !parecer.trim())}
             variant={modo === 'reprovar' ? 'destructive' : 'default'}
           >
             {ocupado ? 'Enviando…' : titulo}

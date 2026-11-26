@@ -18,7 +18,7 @@ import { clientDeServico, segredosIguais } from '../_shared/auth-guard.ts';
 import { validatePayload } from '../_shared/validation.ts';
 import { CreditoSolicitacaoSchema } from '../_shared/credito/schemas.ts';
 import { consultarCnpjInterno } from '../_shared/credito/cnpja.ts';
-import { avaliarAlertas, normalizarCnpj } from '../_shared/credito/regras.ts';
+import { avaliarAlertas, filtroCnpjCliente, normalizarCnpj } from '../_shared/credito/regras.ts';
 
 const MAX_BODY_BYTES = 64 * 1024;
 
@@ -109,7 +109,7 @@ Deno.serve(
       const { data } = await admin
         .from('clientes')
         .select('id')
-        .eq('cnpj_cpf', cnpj)
+        .or(filtroCnpjCliente(cnpj))
         .limit(1)
         .maybeSingle();
       clienteId = data?.id ?? null;
