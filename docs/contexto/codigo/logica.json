@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 290,
+ "total": 292,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 269,
+  "lib": 271,
   "python": 15
  },
  "arquivos": [
@@ -783,7 +783,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 313,
+   "usado_por": 314,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -853,7 +853,7 @@
     "TablesUpdate"
    ],
    "export_default": null,
-   "linhas": 20041,
+   "linhas": 20086,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -1013,7 +1013,7 @@
     "violacoesDeCamada"
    ],
    "export_default": null,
-   "linhas": 308,
+   "linhas": 311,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -5402,7 +5402,7 @@
     "listarCclasstribVigentes"
    ],
    "export_default": null,
-   "linhas": 245,
+   "linhas": 261,
    "tabelas": [
     "catalogo_cclasstrib",
     "catalogo_ncm"
@@ -5557,6 +5557,38 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+   "camada": "lib",
+   "exports": [
+    "FundamentoLegal",
+    "FundamentoLegalResumo",
+    "FundamentosLegais",
+    "buscarFundamentosLegais",
+    "chaveFundamentoLegal",
+    "escolherFundamento",
+    "fundamentosVazios",
+    "resumoFundamento"
+   ],
+   "export_default": null,
+   "linhas": 198,
+   "tabelas": [
+    "catalogo_fundamentacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/tributario/catalogos/painel.ts",
    "camada": "lib",
    "exports": [
@@ -5661,7 +5693,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_modulos": [
     "hooks",
     "lib/tributario"
@@ -8174,6 +8206,37 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+   "camada": "lib",
+   "exports": [
+    "NotaComAlertas",
+    "baixarAlertasFiscaisPdf",
+    "fundamentoEmLinha",
+    "fundamentosDistintos",
+    "gerarAlertasFiscaisPdf",
+    "linhasAlertas"
+   ],
+   "export_default": null,
+   "linhas": 172,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/reforma-tributaria"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/tributario/relatorio-pdf/auditoria-creditos.ts",
    "camada": "lib",
    "exports": [
@@ -8468,7 +8531,7 @@
     "validarItensFiscais"
    ],
    "export_default": null,
-   "linhas": 147,
+   "linhas": 172,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -8477,9 +8540,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "usado_por_modulos": [
-    "hooks"
+    "hooks",
+    "lib/tributario"
    ],
    "coberto_por_testes": 1,
    "orfao": false

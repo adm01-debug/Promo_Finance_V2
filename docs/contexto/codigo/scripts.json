@@ -197,7 +197,7 @@
   {
    "arquivo": "scripts/ci/deno-check-functions.sh",
    "descricao": "Type-check do escopo endurecido. Todo o `_shared/` é coberto por glob — um arquivo compartilhado novo entra",
-   "linhas": 73,
+   "linhas": 74,
    "env": [],
    "npm_scripts": [],
    "workflows": [

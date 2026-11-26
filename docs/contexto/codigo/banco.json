@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1082,
+ "migrations": 1084,
  "seeds": [],
  "avisos": [
   "203 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -2792,6 +2792,12 @@
    "agenda": "0 8 * * *",
    "migration": "20261126060000_cron_sync_catalogo_ncm_nbs.sql",
    "chama_edge": "sync-catalogo-ncm-nbs"
+  },
+  {
+   "nome": "sync-fundamentacao-legal",
+   "agenda": "30 8 * * *",
+   "migration": "20261126111000_cron_sync_fundamentacao_legal.sql",
+   "chama_edge": "sync-fundamentacao-legal"
   }
  ],
  "buckets": [
@@ -12859,6 +12865,141 @@
     "p_red_cbs": "number",
     "p_red_ibs_mun": "number",
     "p_red_ibs_uf": "number",
+    "versao_it": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
+   "usada_no_front": 1,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": false
+  },
+  "catalogo_fundamentacao": {
+   "colunas": {
+    "cclasstrib": {
+     "tipo": "character(6)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "conjunto_tributo": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "cst": {
+     "tipo": "character(3)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "descricao_cclasstrib": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "descricao_cst": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "fim_vigencia": {
+     "tipo": "date",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "inicio_vigencia": {
+     "tipo": "date",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "referencia_normativa": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "texto": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "texto_curto": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "versao_it": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "catalogo_fundamentacao_select_authenticated",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    },
+    {
+     "nome": "catalogo_fundamentacao_service_role_all",
+     "comando": "all",
+     "para": "service_role",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [
+    {
+     "nome": "catalogo_fundamentacao_vigencia_idx",
+     "colunas": "inicio_vigencia, fim_vigencia",
+     "unico": false
+    }
+   ],
+   "fks": [],
+   "criada_em": "20261126110000_catalogo_fundamentacao.sql",
+   "colunas_types": {
+    "cclasstrib": "string",
+    "conjunto_tributo": "string",
+    "created_at": "string",
+    "cst": "string",
+    "descricao_cclasstrib": "string | null",
+    "descricao_cst": "string | null",
+    "fim_vigencia": "string | null",
+    "inicio_vigencia": "string",
+    "referencia_normativa": "string | null",
+    "texto": "string | null",
+    "texto_curto": "string | null",
     "versao_it": "string"
    },
    "drift": {

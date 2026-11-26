@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "26cb299cea973a1281443d882f8afaddbd13d6ae",
+  "commit": "6d2275fcd8e4c813d95f723ac494c631389747c1",
   "branch": "main",
-  "data_commit": "2026-11-25T23:35:27Z",
+  "data_commit": "2026-11-25T21:44:55-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6d2275f",
+    "data": "2026-11-25",
+    "assunto": "feat: fundamentacao legal por item da nota (etapa 82) (#563)"
+   },
    {
     "sha": "26cb299",
     "data": "2026-11-25",
@@ -126,18 +131,13 @@
     "sha": "6a46049",
     "data": "2026-11-23",
     "assunto": "feat: credito importado passa a vir do XML e nao de estimativa (etapa 43) (#528)"
-   },
-   {
-    "sha": "2c2486f",
-    "data": "2026-11-22",
-    "assunto": "chore: adiciona plano de UX de navegacao em 200 etapas (#529)"
    }
   ],
-  "arquivos_mudados_7d": 283,
+  "arquivos_mudados_7d": 292,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 426
+    "mudancas": 434
    },
    {
     "pasta": "src/components/contabilidade",
@@ -161,7 +161,7 @@
    },
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 160
+    "mudancas": 161
    },
    {
     "pasta": "src/lib/__tests__",
@@ -169,7 +169,7 @@
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 109
+    "mudancas": 110
    },
    {
     "pasta": "src/components/tributario",
@@ -211,7 +211,7 @@
    },
    {
     "arquivo": "src/integrations/supabase/types.ts",
-    "mudancas": 10
+    "mudancas": 11
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
@@ -230,15 +230,11 @@
     "mudancas": 9
    },
    {
-    "arquivo": "analise-prs/progresso.json",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 8
-   },
-   {
     "arquivo": "supabase/config.toml",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
    },
    {
@@ -254,7 +250,19 @@
     "mudancas": 7
    },
    {
+    "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    "mudancas": 7
+   },
+   {
     "arquivo": "scripts/integrity/baseline/expected-policies.json",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
     "mudancas": 7
    },
    {
@@ -270,7 +278,11 @@
     "mudancas": 6
    },
    {
-    "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    "arquivo": "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "scripts/ci/deno-check-functions.sh",
     "mudancas": 6
    },
    {
@@ -283,18 +295,6 @@
    },
    {
     "arquivo": "src/components/fornecedores/FornecedorForm.tsx",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
     "mudancas": 6
    }
   ],
@@ -310,17 +310,13 @@
    {
     "autor": "Joaquim Ataides",
     "commits": 1
-   },
-   {
-    "autor": "devin-ai-integration[bot]",
-    "commits": 1
    }
   ]
  },
  "contagens": {
-  "arquivos_total": 4076,
-  "arquivos_codigo": 2538,
-  "linhas_codigo": 454759,
+  "arquivos_total": 4085,
+  "arquivos_codigo": 2545,
+  "linhas_codigo": 456284,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -328,11 +324,11 @@
   "modulos": 129,
   "componentes": 993,
   "hooks": 276,
-  "edge_functions": 111,
-  "tabelas": 317,
-  "migrations": 1082,
-  "cron_jobs": 27,
-  "testes": 514,
+  "edge_functions": 112,
+  "tabelas": 318,
+  "migrations": 1084,
+  "cron_jobs": 28,
+  "testes": 517,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -648,7 +644,7 @@
   },
   "src/components": {
    "arquivos": 1006,
-   "linhas": 165501
+   "linhas": 165546
   },
   "src/config": {
    "arquivos": 2,
@@ -660,7 +656,7 @@
   },
   "src/hooks": {
    "arquivos": 328,
-   "linhas": 49013
+   "linhas": 49038
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -668,11 +664,11 @@
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 20177
+   "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 431,
-   "linhas": 57587
+   "arquivos": 435,
+   "linhas": 58411
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -695,8 +691,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 256,
-   "linhas": 56651
+   "arquivos": 259,
+   "linhas": 57237
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -718,7 +714,7 @@
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 20041
+   "linhas": 20086
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
@@ -798,7 +794,7 @@
   },
   {
    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-   "linhas": 666
+   "linhas": 674
   },
   {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",

@@ -3,8 +3,8 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2417)",
-   "SQL (1155)",
+   "TypeScript (2424)",
+   "SQL (1157)",
    "Markdown (231)",
    "JavaScript (77)",
    "Python (46)",
@@ -955,7 +955,7 @@
   {
    "arquivo": "SECURITY_RULES.md",
    "titulo": "SECURITY_RULES",
-   "linhas": 102
+   "linhas": 103
   },
   {
    "arquivo": "docs/ACCESSIBILITY.md",
@@ -2056,6 +2056,7 @@
    "sync-aliquota-referencia",
    "sync-catalogo-cclasstrib",
    "sync-catalogo-ncm-nbs",
+   "sync-fundamentacao-legal",
    "validar-token-contador",
    "validate-ip-geo",
    "webhook-replay",

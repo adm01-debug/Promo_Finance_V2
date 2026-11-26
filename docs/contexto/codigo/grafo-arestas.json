@@ -5085,6 +5085,7 @@
    "src/lib/utils.ts"
   ],
   "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx": [
+   "src/components/reforma-tributaria/GlossarioTooltip.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -5092,7 +5093,8 @@
    "src/components/ui/scroll-area.tsx",
    "src/components/ui/table.tsx",
    "src/hooks/useImportacaoXMLNFe.ts",
-   "src/lib/formatters.ts"
+   "src/lib/formatters.ts",
+   "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts"
   ],
   "src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx": [
    "src/components/reforma-tributaria/IncentivosFiscaisPanel.helpers.ts",
@@ -7922,6 +7924,7 @@
   ],
   "src/lib/tributario/catalogos/cclasstrib.ts": [
    "src/integrations/supabase/client.ts",
+   "src/lib/tributario/catalogos/fundamentacao-legal.ts",
    "src/lib/tributario/catalogos/repositorio.ts"
   ],
   "src/lib/tributario/catalogos/coerencia-iss.ts": [
@@ -7946,6 +7949,10 @@
    "src/lib/tributario/aliquotas-simples.ts",
    "src/lib/tributario/catalogos/types.ts",
    "src/lib/tributario/types.ts"
+  ],
+  "src/lib/tributario/catalogos/fundamentacao-legal.ts": [
+   "src/integrations/supabase/client.ts",
+   "src/lib/tributario/catalogos/repositorio.ts"
   ],
   "src/lib/tributario/catalogos/painel.ts": [
    "src/lib/tributario/catalogos/coerencia-iss.ts",
@@ -8290,6 +8297,10 @@
   "src/lib/tributario/relatorio-pdf.ts": [
    "src/lib/tributario/relatorio-pdf/index.ts"
   ],
+  "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts": [
+   "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+   "src/lib/tributario/validador-ncm-cst.ts"
+  ],
   "src/lib/tributario/relatorio-pdf/auditoria-creditos.ts": [
    "src/lib/tributario/relatorio-pdf/shared.ts"
   ],
@@ -8336,7 +8347,8 @@
    "src/lib/tributario/types.ts"
   ],
   "src/lib/tributario/validador-ncm-cst.ts": [
-   "src/lib/tributario/catalogos/cclasstrib.ts"
+   "src/lib/tributario/catalogos/cclasstrib.ts",
+   "src/lib/tributario/catalogos/fundamentacao-legal.ts"
   ],
   "src/lib/validators.ts": [
    "src/lib/brazilian-validators.ts"
@@ -11843,6 +11855,17 @@
   ],
   "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": [
    "supabase/functions/_shared/rfb-dados-abertos.ts"
+  ],
+  "supabase/functions/sync-fundamentacao-legal/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/contract-response.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/erros.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/rfb-dados-abertos.ts",
+   "supabase/functions/_shared/validation.ts",
+   "supabase/functions/_shared/zod.ts",
+   "supabase/functions/sync-fundamentacao-legal/montar.ts"
   ],
   "supabase/functions/sync-profile-to-bitrix/index.ts": [
    "supabase/functions/_shared/contract-response.ts",

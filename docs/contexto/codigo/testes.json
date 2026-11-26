@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 514,
+ "total": 517,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 436
+  "unit": 439
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 310
+   "arquivos": 313
   },
   {
    "padrao": "outro",
@@ -1738,11 +1738,11 @@
   {
    "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
    "tipo": "unit",
-   "linhas": 373,
+   "linhas": 390,
    "testa": [
     "src/hooks/useImportacaoXMLNFe.ts"
    ],
-   "casos": 7
+   "casos": 9
   },
   {
    "arquivo": "src/hooks/__tests__/useIndicesContabeis.test.ts",
@@ -2759,6 +2759,15 @@
    "casos": 12
   },
   {
+   "arquivo": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+   "tipo": "unit",
+   "linhas": 108,
+   "testa": [
+    "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts"
+   ],
+   "casos": 8
+  },
+  {
    "arquivo": "src/lib/tributario/__tests__/aliquotas-simples.test.ts",
    "tipo": "unit",
    "linhas": 55,
@@ -2844,11 +2853,11 @@
   {
    "arquivo": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
    "tipo": "unit",
-   "linhas": 115,
+   "linhas": 131,
    "testa": [
     "src/lib/tributario/catalogos/cclasstrib.ts"
    ],
-   "casos": 3
+   "casos": 4
   },
   {
    "arquivo": "src/lib/tributario/__tests__/catalogos-painel.test.ts",
@@ -3036,6 +3045,15 @@
     "src/lib/tributario/shared-logic.ts"
    ],
    "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+   "tipo": "unit",
+   "linhas": 214,
+   "testa": [
+    "src/lib/tributario/catalogos/fundamentacao-legal.ts"
+   ],
+   "casos": 10
   },
   {
    "arquivo": "src/lib/tributario/__tests__/historico-simulacao.test.ts",
@@ -3461,12 +3479,13 @@
   {
    "arquivo": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
    "tipo": "unit",
-   "linhas": 171,
+   "linhas": 243,
    "testa": [
     "src/lib/tributario/catalogos/cclasstrib.ts",
+    "src/lib/tributario/catalogos/fundamentacao-legal.ts",
     "src/lib/tributario/validador-ncm-cst.ts"
    ],
-   "casos": 15
+   "casos": 19
   },
   {
    "arquivo": "src/lib/tributario/__tests__/versao.test.ts",
@@ -4528,6 +4547,15 @@
    "casos": 17
   },
   {
+   "arquivo": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+   "tipo": "unit",
+   "linhas": 171,
+   "testa": [
+    "supabase/functions/sync-fundamentacao-legal/montar.ts"
+   ],
+   "casos": 14
+  },
+  {
    "arquivo": "supabase/functions/webhook-simulator/contract_test.ts",
    "tipo": "contrato",
    "linhas": 112,
@@ -4842,6 +4870,7 @@
   "src/lib/tributario/catalogos/coerencia-ncm.ts": 2,
   "src/lib/tributario/catalogos/coerencia-ufs.ts": 1,
   "src/lib/tributario/catalogos/coerencia.ts": 1,
+  "src/lib/tributario/catalogos/fundamentacao-legal.ts": 2,
   "src/lib/tributario/catalogos/painel.ts": 2,
   "src/lib/tributario/catalogos/rejeicoes-auditoria.ts": 2,
   "src/lib/tributario/catalogos/repositorio.ts": 1,
@@ -4897,6 +4926,7 @@
   "src/lib/tributario/rbt12.ts": 3,
   "src/lib/tributario/recomendar-empresa.ts": 1,
   "src/lib/tributario/relatorio-pdf.ts": 1,
+  "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts": 1,
   "src/lib/tributario/shared-logic.ts": 13,
   "src/lib/tributario/simular-presumido.ts": 3,
   "src/lib/tributario/simular-real.ts": 3,
@@ -4993,6 +5023,7 @@
   "supabase/functions/sync-aliquota-referencia/montar.ts": 1,
   "supabase/functions/sync-catalogo-cclasstrib/montar.ts": 1,
   "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": 1,
+  "supabase/functions/sync-fundamentacao-legal/montar.ts": 1,
   "supabase/functions/whatsapp-ia-proativo/index.ts": 1,
   "supabase/functions/whatsapp-webhook/index.ts": 1
  },

@@ -4204,7 +4204,7 @@
    "hooks_exportados": [
     "useImportacaoXMLNFe"
    ],
-   "linhas": 666,
+   "linhas": 674,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [

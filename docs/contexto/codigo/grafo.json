@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2031,
- "arestas": 8562,
+ "nos": 2035,
+ "arestas": 8579,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -18,7 +18,7 @@
   },
   {
    "arquivo": "src/integrations/supabase/client.ts",
-   "importado_por": 315
+   "importado_por": 316
   },
   {
    "arquivo": "src/lib/utils.ts",
@@ -54,7 +54,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/edge-observability.ts",
-   "importado_por": 113
+   "importado_por": 114
   },
   {
    "arquivo": "src/hooks/useAuth.tsx",
@@ -86,7 +86,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/observability.ts",
-   "importado_por": 79
+   "importado_por": 80
   },
   {
    "arquivo": "src/components/ui/scroll-area.tsx",
@@ -102,11 +102,11 @@
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
-   "importado_por": 57
+   "importado_por": 58
   },
   {
    "arquivo": "supabase/functions/_shared/erros.ts",
-   "importado_por": 55
+   "importado_por": 56
   },
   {
    "arquivo": "src/hooks/useFinancialData.ts",
@@ -114,7 +114,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/validation.ts",
-   "importado_por": 53
+   "importado_por": 54
   },
   {
    "arquivo": "src/components/ui/separator.tsx",
@@ -137,11 +137,11 @@
    "importado_por": 39
   },
   {
-   "arquivo": "src/lib/supabase-dynamic.ts",
-   "importado_por": 33
+   "arquivo": "supabase/functions/_shared/zod.ts",
+   "importado_por": 34
   },
   {
-   "arquivo": "supabase/functions/_shared/zod.ts",
+   "arquivo": "src/lib/supabase-dynamic.ts",
    "importado_por": 33
   },
   {
@@ -154,7 +154,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/contract-response.ts",
-   "importado_por": 28
+   "importado_por": 29
   },
   {
    "arquivo": "src/hooks/useEmpresas.ts",

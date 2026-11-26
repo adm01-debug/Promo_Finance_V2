@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `26cb299cea` · branch `main` · 2026-11-25 23:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6d2275fcd8` · branch `main` · 2026-11-26 00:55 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -63,6 +63,7 @@
 | `budgets` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `catalogo_aliquota_referencia` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `catalogo_cclasstrib` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
+| `catalogo_fundamentacao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `catalogo_nbs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `catalogo_ncm` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `catalogos_fiscais_cargas` | _(sem COMMENT ON TABLE — significado não documentado)_ | 13 colunas | migration |
@@ -306,8 +307,7 @@
 | `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
 | `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
 | `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
-| `regime_tributario_enum` (enum) | MEI, SIMPLES, PRESUMIDO, REAL, ARBITRADO |  | banco |
-| … +246 linhas — lista completa em `context.json` | | | |
+| … +247 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -428,6 +428,7 @@
 | dinâmico | 4 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `supabase/functions/sync-aliquota-referencia/index.ts` |
 | dinâmico | 4 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
 | dinâmico | 4 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
+| dinâmico | 3 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `supabase/functions/sync-fundamentacao-legal/index.ts` |
 | dinâmico | 1 chamada(s) `.from(variável)` — tabela só conhecida em runtime | `supabase/functions/upload-anexo/index.ts` |
 | segurança | função `trigger_log_receber_status_change` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql` |
 | segurança | função `handle_conciliacao_retroativa_error` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260508130002_cfb2c801-331a-4fbe-b9e8-cdf17f93277a.sql` |
@@ -541,7 +542,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 268/274 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- 269/275 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

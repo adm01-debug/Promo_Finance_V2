@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "26cb299cea973a1281443d882f8afaddbd13d6ae",
+  "sha": "6d2275fcd8e4c813d95f723ac494c631389747c1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-25 23:45 UTC",
-  "files_total": 4115,
-  "code_files": 3694,
-  "code_lines": 528002
+  "generated_at": "2026-11-26 00:55 UTC",
+  "files_total": 4124,
+  "code_files": 3703,
+  "code_lines": 529607
  },
  "version": "1.3.2",
- "facts_hash": "fc410b845450b315",
+ "facts_hash": "30cecb79afc04039",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,8 +340,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1291,
-   ".sql": 1155,
+   ".ts": 1298,
+   ".sql": 1157,
    ".tsx": 1126,
    ".mjs": 68,
    ".py": 46,
@@ -411,7 +411,8 @@
     "reprocessar-creditos-ibscbs",
     "sync-catalogo-cclasstrib",
     "sync-catalogo-ncm-nbs",
-    "sync-aliquota-referencia"
+    "sync-aliquota-referencia",
+    "sync-fundamentacao-legal"
    ],
    "auth": {}
   },
@@ -28810,6 +28811,100 @@
     "comment": "",
     "origin": "migration"
    },
+   "catalogo_fundamentacao": {
+    "columns": [
+     {
+      "name": "cclasstrib",
+      "type": "character(6) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "cst",
+      "type": "character(3) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "conjunto_tributo",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "descricao_cclasstrib",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "descricao_cst",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "texto",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "texto_curto",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "referencia_normativa",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "inicio_vigencia",
+      "type": "date not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "fim_vigencia",
+      "type": "date",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "versao_it",
+      "type": "text not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+     }
+    ],
+    "constraints": [
+     "constraint catalogo_fundamentacao_pkey primary key (cclasstrib, cst, conjunto_tributo, inicio_vigencia)"
+    ],
+    "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "frontend_error_logs_2026_01": {
     "columns": [
      {
@@ -37357,6 +37452,26 @@
     "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
     "check": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
     "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
+   },
+   {
+    "name": "catalogo_fundamentacao_select_authenticated",
+    "table": "catalogo_fundamentacao",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+   },
+   {
+    "name": "catalogo_fundamentacao_service_role_all",
+    "table": "catalogo_fundamentacao",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
    }
   ],
   "triggers": [
@@ -50080,6 +50195,14 @@
     "unique": true,
     "where": "where tributo = 'ibs_mun'",
     "src": "supabase/migrations/20261122023600_corrige_unicidade_catalogo_aliquota_referencia.sql"
+   },
+   {
+    "name": "catalogo_fundamentacao_vigencia_idx",
+    "table": "catalogo_fundamentacao",
+    "columns": "inicio_vigencia, fim_vigencia",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
    }
   ],
   "cron_jobs": [
@@ -50238,6 +50361,12 @@
     "schedule": "40 7 * * *",
     "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-cclasstrib', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\":\"pg …",
     "src": "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql"
+   },
+   {
+    "job": "sync-fundamentacao-legal",
+    "schedule": "30 8 * * *",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-fundamentacao-legal', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\":\"pg …",
+    "src": "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql"
    }
   ],
   "views": {
@@ -51421,6 +51550,8 @@
    "supabase/migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql",
    "supabase/migrations/20261126080000_cron_sync_aliquota_referencia.sql",
    "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql",
+   "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
+   "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -51688,7 +51819,8 @@
    "catalogo_cclasstrib": "enabled",
    "catalogo_ncm": "enabled",
    "catalogo_nbs": "enabled",
-   "catalogo_aliquota_referencia": "enabled"
+   "catalogo_aliquota_referencia": "enabled",
+   "catalogo_fundamentacao": "enabled"
   },
   "grants": [
    {
@@ -62740,6 +62872,7 @@
      "anomalias_detectadas",
      "boletos",
      "catalogo_cclasstrib",
+     "catalogo_fundamentacao",
      "catalogo_ncm",
      "centros_custo",
      "clientes",
@@ -62772,7 +62905,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 157
+    "deps_count": 158
    },
    {
     "path": "/orcamento-evento",
@@ -62876,6 +63009,7 @@
      "apuracoes_irpj_csll",
      "apuracoes_tributarias",
      "catalogo_cclasstrib",
+     "catalogo_fundamentacao",
      "catalogo_ncm",
      "centros_custo",
      "contas_pagar",
@@ -62907,7 +63041,7 @@
      "registrar_auditoria_config",
      "registrar_nfe_com_creditos"
     ],
-    "deps_count": 200
+    "deps_count": 202
    },
    {
     "path": "/reset-password",
@@ -66006,6 +66140,31 @@
     "external": [],
     "invokes": [],
     "doc": "Edge: sync-catalogo-ncm-nbs (etapa 80 do plano RT/RFB) Mantem os espelhos locais de NCM (`catalogo_ncm`) e NBS (`catalogo_nbs`) alinhados com a API publica de dados abertos da RFB. Sem eles, o validador da etapa 46 (`src/lib/tributario/validador-ncm-cst.ts`) nao tem contra o que comparar o NCM do it …",
+    "errors": [],
+    "side_effects": [],
+    "webhook_events": [],
+    "idempotency": false
+   },
+   {
+    "name": "sync-fundamentacao-legal",
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "methods": [
+     "OPTIONS"
+    ],
+    "auth": "PÚBLICA (verify_jwt=false em config.toml)",
+    "tables": [
+     "edge_function_logs",
+     "integration_secrets",
+     "user_empresas",
+     "user_roles"
+    ],
+    "env": [
+     "SUPABASE_SERVICE_ROLE_KEY",
+     "SUPABASE_URL"
+    ],
+    "external": [],
+    "invokes": [],
+    "doc": "Edge: sync-fundamentacao-legal (etapa 82 do plano RT/RFB) Mantem `catalogo_fundamentacao` alinhado com `/fundamentacoes-legais` da API publica de dados abertos da RFB. E a norma que sustenta cada cClassTrib: sem ela o alerta fiscal do item identifica a divergencia e nao a base legal. Fonte: https:// …",
     "errors": [],
     "side_effects": [],
     "webhook_events": [],
@@ -70940,7 +71099,7 @@
   {
    "module": "src/components",
    "files": 1006,
-   "lines": 166507,
+   "lines": 166552,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71212,7 +71371,7 @@
   {
    "module": "src/hooks",
    "files": 328,
-   "lines": 49341,
+   "lines": 49366,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71551,13 +71710,14 @@
   },
   {
    "module": "src/lib",
-   "files": 431,
-   "lines": 58018,
+   "files": 435,
+   "lines": 58846,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
     "bancos",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "cnaes",
     "contas_bancarias",
@@ -72112,8 +72272,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 256,
-   "lines": 56907,
+   "files": 259,
+   "lines": 57496,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72374,8 +72534,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1082,
-   "lines": 83748,
+   "files": 1084,
+   "lines": 83866,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -72987,6 +73147,11 @@
    "catalogo_cclasstrib": {
     "select": [
      "src/lib/tributario/catalogos/cclasstrib.ts"
+    ]
+   },
+   "catalogo_fundamentacao": {
+    "select": [
+     "src/lib/tributario/catalogos/fundamentacao-legal.ts"
     ]
    },
    "catalogo_ncm": {
@@ -75266,6 +75431,18 @@
     "p_red_ibs_uf",
     "versao_it"
    ],
+   "catalogo_fundamentacao": [
+    "cclasstrib",
+    "conjunto_tributo",
+    "cst",
+    "descricao_cclasstrib",
+    "descricao_cst",
+    "fim_vigencia",
+    "inicio_vigencia",
+    "referencia_normativa",
+    "texto",
+    "texto_curto"
+   ],
    "catalogo_ncm": [
     "descricao",
     "fim_vigencia",
@@ -76601,6 +76778,7 @@
     "supabase/functions/sync-aliquota-referencia/index.ts",
     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "supabase/functions/sync-fundamentacao-legal/index.ts",
     "supabase/functions/sync-profile-to-bitrix/index.ts",
     "supabase/functions/upload-anexo/index.ts",
     "supabase/functions/validar-token-contador/index.ts",
@@ -76703,6 +76881,7 @@
     "supabase/functions/sync-aliquota-referencia/index.ts",
     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "supabase/functions/sync-fundamentacao-legal/index.ts",
     "supabase/functions/sync-profile-to-bitrix/index.ts",
     "supabase/functions/upload-anexo/index.ts",
     "supabase/functions/validar-token-contador/index.ts",
@@ -77371,6 +77550,10 @@
    {
     "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
     "count": 4
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "count": 3
    },
    {
     "file": "supabase/functions/upload-anexo/index.ts",
@@ -86421,6 +86604,14 @@
    },
    {
     "file": "src/lib/tributario/validador-ncm-cst.ts",
+    "text": "valido, apenas sem o texto legal."
+   },
+   {
+    "file": "src/lib/tributario/validador-ncm-cst.ts",
+    "text": "* Etapa 82: numero do item na nota (1 = primeiro). Ausente quando a validacao"
+   },
+   {
+    "file": "src/lib/tributario/validador-ncm-cst.ts",
     "text": "refer?ncias oficiais sobra apenas o formato do NCM, que ? o ?nico crit?rio"
    },
    {
@@ -86452,6 +86643,10 @@
     "text": "logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar"
    },
    {
+    "file": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "text": "demais - sem catalogo, o alerta continua saindo, apenas sem a norma."
+   },
+   {
     "file": "src/lib/tributario/catalogos/coerencia-mva.ts",
     "text": "* Valor esperado pela regra legal / pelo catálogo de NCMs. */"
    },
@@ -86462,6 +86657,18 @@
    {
     "file": "src/lib/tributario/catalogos/coerencia-ufs.ts",
     "text": "* Consistência interna do catálogo: o marcador `possui_fcp` deve refletir"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+    "text": "continua valido, apenas sem o texto legal ao lado."
+   },
+   {
+    "file": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+    "text": "Mesma regra de vigencia de `catalogos/cclasstrib.ts`: linha vale quando"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+    "text": "* Carrega os fundamentos vigentes apenas dos cClassTrib que a importacao tocou."
    },
    {
     "file": "src/lib/tributario/catalogos/painel.ts",
@@ -86954,6 +87161,10 @@
    {
     "file": "src/lib/tributario/pis-cofins/types.ts",
     "text": "* Observação de risco/limite aplicável à natureza. */"
+   },
+   {
+    "file": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+    "text": "* Uma linha por alerta: nota, item, codigo da regra, divergencia e norma. */"
    },
    {
     "file": "src/pages/Aprovacoes.tsx",
@@ -101053,6 +101264,41 @@
     "rule": "default now()"
    },
    {
+    "table": "catalogo_fundamentacao",
+    "column": "cclasstrib",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_fundamentacao",
+    "column": "cst",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_fundamentacao",
+    "column": "conjunto_tributo",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_fundamentacao",
+    "column": "inicio_vigencia",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_fundamentacao",
+    "column": "versao_it",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "catalogo_fundamentacao",
+    "column": "created_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "catalogo_fundamentacao",
+    "column": "(tabela)",
+    "rule": "constraint catalogo_fundamentacao_pkey primary key (cclasstrib, cst, conjunto_tributo, inicio_vigencia)"
+   },
+   {
     "table": "frontend_error_logs_2026_01",
     "column": "created_at",
     "rule": "obrigatório"
@@ -101745,6 +101991,16 @@
     "value": "1"
    },
    {
+    "file": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+    "name": "LOTE_CODIGOS",
+    "value": "300"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+    "name": "CONJUNTO_AMPLO",
+    "value": "'CBS e IBS'"
+   },
+   {
     "file": "src/lib/tributario/catalogos/painel.ts",
     "name": "UFS_ESPERADAS",
     "value": "27"
@@ -102098,6 +102354,11 @@
     "file": "src/lib/tributario/pis-cofins/types.ts",
     "name": "ALIQUOTA_COFINS_NAO_CUMULATIVO",
     "value": "0.076"
+   },
+   {
+    "file": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+    "name": "MAX_FUNDAMENTO_TABELA",
+    "value": "220"
    },
    {
     "file": "src/pages/AuditLogs.tsx",
@@ -102558,6 +102819,36 @@
     "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
     "name": "MIN_NBS_API",
     "value": "200"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "name": "TABELA",
+    "value": "'catalogo_fundamentacao'"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "name": "COLUNAS_CHAVE",
+    "value": "'cclasstrib, cst, conjunto_tributo'"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "name": "PAGINA",
+    "value": "1000"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "name": "MAX_PAGINAS",
+    "value": "10"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/index.ts",
+    "name": "CHAVES_POR_UPDATE",
+    "value": "40"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/montar.ts",
+    "name": "MIN_FUNDAMENTACOES_API",
+    "value": "100"
    },
    {
     "file": "supabase/functions/upload-anexo/index.ts",
@@ -118610,7 +118901,7 @@
     "file": "src/lib/tributario/validador-ncm-cst.ts",
     "name": "validarItensFiscais",
     "params": "itens: ItemFiscalValidavel[], referencias: ReferenciasFiscais",
-    "body": "const divergencias = itens.flatMap((item) => validarItemFiscal(item, referencias)); const penalidade = divergencias.reduce( (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15), 0 ); return { score: Math.max(0, 100 - penalidade), divergencias };"
+    "body": "const divergencias = itens.flatMap((item, indice) => validarItemFiscal(item, referencias).map((d) => ({ ...d, item: indice + 1 })) ); const penalidade = divergencias.reduce( (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15), 0 ); return { score: Math.max(0, 100 - penalidade), divergencias };"
    },
    {
     "file": "src/lib/tributario/validador-ncm-cst.ts",
@@ -118959,6 +119250,18 @@
     "name": "round2",
     "params": "v: number",
     "body": "Math.round((v + Number.EPSILON) * 100) / 100;"
+   },
+   {
+    "file": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+    "name": "totalAlertas",
+    "params": "nfes: NotaComAlertas[]",
+    "body": ""
+   },
+   {
+    "file": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+    "name": "gerarAlertasFiscaisPdf",
+    "params": "nfes: NotaComAlertas[]",
+    "body": "const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' }); const largura = doc.internal.pageSize.getWidth(); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Alertas fiscais da importacao de XML', 14, 16); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90); const resumo = `${totalAlertas(nfes)} alerta(s) em ${nfes.length} nota(s)`; doc.text(resumo, 14, 22); doc.text( 'Fundamentacao: LC 214/2025 - dados abertos da Receita Federal (cata …"
    },
    {
     "file": "src/lib/tributario/relatorio-pdf/charts.ts",
@@ -126623,6 +126926,18 @@
     "name": "nota anterior à vigência do catálogo não gera alerta (sem referência na data)"
    },
    {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "dataNotaBr"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "usa o dia declarado no XML, mesmo quando o dia em Brasilia e outro"
+   },
+   {
+    "file": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    "name": "sem data declarada cai no dia em Brasilia, nao no do navegador"
+   },
+   {
     "file": "src/hooks/__tests__/useIndicesContabeis.test.ts",
     "name": "normalizarAgregados"
    },
@@ -131975,6 +132290,54 @@
     "name": "é idempotente: reavaliar a mesma série produz chaves idênticas"
    },
    {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "linhasAlertas"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "gera uma linha por alerta com nota, regra e fundamento"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "distingue dois itens da mesma nota com o mesmo cClassTrib"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "sem alerta nao gera linha"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "fundamentoEmLinha"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "corta textos longos e mantem o inicio"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "usa travessao quando nao ha fundamento"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "fundamentosDistintos"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "deduplica a mesma norma repetida em itens diferentes"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "gerarAlertasFiscaisPdf"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "gera um PDF com a tabela e a fundamentacao integral"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+    "name": "gera PDF vazio sem alerta e sem fundamento"
+   },
+   {
     "file": "src/lib/tributario/__tests__/aliquotas-simples.test.ts",
     "name": "aliquotas-simples"
    },
@@ -132281,6 +132644,10 @@
    {
     "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
     "name": "divide cClassTribs no mesmo tamanho de lote"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+    "name": "le os fundamentos dos mesmos codigos sem contá-los como lote de catalogo"
    },
    {
     "file": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
@@ -133249,6 +133616,58 @@
    {
     "file": "src/lib/tributario/__tests__/fpas-terceiros.test.ts",
     "name": "500 cenários: CPP sempre dentro dos limites legais"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "buscarFundamentosLegais"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "indexa apenas as linhas vigentes na data de referencia"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "sem codigo nao consulta e devolve o vazio"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "escolherFundamento"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "prefere o par cClassTrib/CST declarado"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "cai na primeira linha do cClassTrib quando o CST diverge"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "prefere o conjunto CBS e IBS quando o par existe em dois conjuntos"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "cai na primeira linha do cClassTrib desempatando pelo CST"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "sem linha devolve undefined"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "resumoFundamento"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "usa a referencia curta e o texto integral"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "sem referencia curta usa a primeira linha do texto"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+    "name": "sem texto devolve undefined"
    },
    {
     "file": "src/lib/tributario/__tests__/historico-simulacao.test.ts",
@@ -135612,6 +136031,10 @@
    },
    {
     "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+    "name": "numera o item que gerou cada divergencia"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
     "name": "validarConsistenciaNcmCst (compatibilidade)"
    },
    {
@@ -135629,6 +136052,22 @@
    {
     "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
     "name": "normaliza pontua??o no NCM"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+    "name": "fundamento legal do apontamento (etapa 82)"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+    "name": "REG-011 sai com o fundamento do cClassTrib declarado"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+    "name": "REG-013 sai com a norma quando o cClassTrib tem linha de outro CST"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+    "name": "sem linha no catalogo de fundamentacoes o alerta continua sem norma"
    },
    {
     "file": "src/lib/tributario/__tests__/versao.test.ts",
@@ -137973,6 +138412,62 @@
    {
     "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
     "name": "diaAnterior atravessa virada de mes, ano e ano bissexto"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "payload fora do contrato vira lista vazia"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "linha valida vai para a tabela com vigencia e versao da base"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "codigo fora do formato e descartado, nao gravado"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "pontuacao no codigo e normalizada antes da checagem de tamanho"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "texto vazio vira null em vez de string vazia"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "quebra de linha do texto legal e preservada"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "linha nao-objeto e ignorada"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "chave repetida funde os textos sem duplicar o mesmo trecho"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "chave inclui o conjunto de tributos"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "quebra de linha literal da API vira quebra real"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "quebra de linha real do payload e preservada"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "literal do PostgREST preserva espaco e neutraliza a sintaxe do filtro"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "filtro de encerramento separa as chaves por and"
+   },
+   {
+    "file": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+    "name": "chave com conjunto contendo pipe nao perde o valor"
    }
   ],
   "webhook_events": [
@@ -147377,6 +147872,26 @@
     "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
     "check": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND empresa_acessivel(empresa_id)",
     "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
+   },
+   {
+    "name": "catalogo_fundamentacao_select_authenticated",
+    "table": "catalogo_fundamentacao",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "true",
+    "check": "",
+    "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+   },
+   {
+    "name": "catalogo_fundamentacao_service_role_all",
+    "table": "catalogo_fundamentacao",
+    "cmd": "ALL",
+    "roles": "service_role",
+    "mode": "permissive",
+    "using": "true",
+    "check": "true",
+    "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
    }
   ],
   "db_triggers": [
@@ -160433,6 +160948,22 @@
      "service_role: true"
     ]
    },
+   "catalogo_fundamentacao": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: true",
+     "service_role: true"
+    ],
+    "INSERT": [
+     "service_role: true"
+    ],
+    "UPDATE": [
+     "service_role: true"
+    ],
+    "DELETE": [
+     "service_role: true"
+    ]
+   },
    "catalogo_nbs": {
     "rls": "enabled",
     "SELECT": [
@@ -164046,6 +164577,7 @@
    "supabase/functions/sync-aliquota-referencia/index.ts",
    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
    "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+   "supabase/functions/sync-fundamentacao-legal/index.ts",
    "supabase/functions/sync-profile-to-bitrix/index.ts",
    "supabase/functions/upload-anexo/index.ts",
    "supabase/functions/validar-token-contador/index.ts",
@@ -164260,6 +164792,7 @@
    "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
    "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
+   "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -164518,7 +165051,8 @@
    "reprocessar-creditos-ibscbs",
    "sync-catalogo-cclasstrib",
    "sync-catalogo-ncm-nbs",
-   "sync-aliquota-referencia"
+   "sync-aliquota-referencia",
+   "sync-fundamentacao-legal"
   ],
   "auth_config": {},
   "grants": [
@@ -175353,6 +175887,9 @@
    "catalogo_ncm": [],
    "catalogo_nbs": [],
    "catalogo_aliquota_referencia": [],
+   "catalogo_fundamentacao": [
+    "created_at"
+   ],
    "frontend_error_logs_2026_01": [
     "created_at"
    ],
@@ -177155,6 +177692,13 @@
    },
    {
     "kind": "dinâmico",
+    "msg": "3 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
+    "where": [
+     "supabase/functions/sync-fundamentacao-legal/index.ts"
+    ]
+   },
+   {
+    "kind": "dinâmico",
     "msg": "1 chamada(s) `.from(variável)` — tabela só conhecida em runtime",
     "where": [
      "supabase/functions/upload-anexo/index.ts"
@@ -177343,7 +177887,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "268/274 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "269/275 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -196593,7 +197137,7 @@
   },
   "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx": {
    "path": "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
-   "lines": 287,
+   "lines": 332,
    "exports": [
     "function ImportacaoXMLPanel"
    ],
@@ -206952,7 +207496,7 @@
   },
   "src/hooks/useImportacaoXMLNFe.ts": {
    "path": "src/hooks/useImportacaoXMLNFe.ts",
-   "lines": 667,
+   "lines": 675,
    "exports": [
     "const FUSO_PADRAO_BR",
     "const ANO_INICIO_APROPRIACAO",
@@ -206960,6 +207504,8 @@
     "interface NFeItem",
     "interface ResultadoImportacao",
     "const anoEmissao",
+    "const dataEmissaoISO",
+    "const dataNotaBr",
     "function useImportacaoXMLNFe"
    ],
    "rpc": [
@@ -212659,7 +213205,7 @@
   },
   "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx": {
    "path": "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-   "lines": 374,
+   "lines": 391,
    "is_test": true,
    "rule_comments": [
     "referencia de catalogo e nao pode gerar divergencia por isso.",
@@ -212675,7 +213221,10 @@
     "catálogo cheio + cClassTrib desconhecido gera REG-013 (sonda de catálogo)",
     "NCM encerrado no meio do ano só alerta a nota emitida depois do encerramento",
     "nota de fuso fora de Brasília usa o dia declarado no dhEmi para a vigência",
-    "nota anterior à vigência do catálogo não gera alerta (sem referência na data)"
+    "nota anterior à vigência do catálogo não gera alerta (sem referência na data)",
+    "dataNotaBr",
+    "usa o dia declarado no XML, mesmo quando o dia em Brasilia e outro",
+    "sem data declarada cai no dia em Brasilia, nao no do navegador"
    ],
    "pagination": [
     "1"
@@ -217518,7 +218067,7 @@
   },
   "src/lib/arquitetura/modulos.ts": {
    "path": "src/lib/arquitetura/modulos.ts",
-   "lines": 309,
+   "lines": 312,
    "exports": [
     "type CamadaId",
     "type ModuloId",
@@ -220712,7 +221261,7 @@
   },
   "src/lib/tributario/validador-ncm-cst.ts": {
    "path": "src/lib/tributario/validador-ncm-cst.ts",
-   "lines": 148,
+   "lines": 173,
    "exports": [
     "interface DivergenciaFiscal",
     "interface ValidacaoNCM",
@@ -220724,6 +221273,8 @@
    "rule_comments": [
     "`catalogo_ncm`. Regra embutida envelhece em sil?ncio: uma lista de prefixos",
     "* C?digo est?vel da regra, usado em log, badge e teste. */",
+    "valido, apenas sem o texto legal.",
+    "* Etapa 82: numero do item na nota (1 = primeiro). Ausente quando a validacao",
     "refer?ncias oficiais sobra apenas o formato do NCM, que ? o ?nico crit?rio"
    ],
    "calc_fns": [
@@ -220735,7 +221286,7 @@
     {
      "name": "validarItensFiscais",
      "params": "itens: ItemFiscalValidavel[], referencias: ReferenciasFiscais",
-     "body": "const divergencias = itens.flatMap((item) => validarItemFiscal(item, referencias)); const penalidade = divergencias.reduce( (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15), 0 ); return { score: Math.max(0, 100 - penalidade), divergencias };"
+     "body": "const divergencias = itens.flatMap((item, indice) => validarItemFiscal(item, referencias).map((d) => ({ ...d, item: indice + 1 })) ); const penalidade = divergencias.reduce( (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15), 0 ); return { score: Math.max(0, 100 - penalidade), divergencias };"
     },
     {
      "name": "validarConsistenciaNcmCst",
@@ -220786,6 +221337,25 @@
     "simulação combinatória (centenas de séries)",
     "mantém invariantes estruturais e paridade web × edge",
     "é idempotente: reavaliar a mesma série produz chaves idênticas"
+   ]
+  },
+  "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts": {
+   "path": "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+   "lines": 109,
+   "is_test": true,
+   "tests": [
+    "linhasAlertas",
+    "gera uma linha por alerta com nota, regra e fundamento",
+    "distingue dois itens da mesma nota com o mesmo cClassTrib",
+    "sem alerta nao gera linha",
+    "fundamentoEmLinha",
+    "corta textos longos e mantem o inicio",
+    "usa travessao quando nao ha fundamento",
+    "fundamentosDistintos",
+    "deduplica a mesma norma repetida em itens diferentes",
+    "gerarAlertasFiscaisPdf",
+    "gera um PDF com a tabela e a fundamentacao integral",
+    "gera PDF vazio sem alerta e sem fundamento"
    ]
   },
   "src/lib/tributario/__tests__/aliquotas-simples.test.ts": {
@@ -220922,7 +221492,7 @@
   },
   "src/lib/tributario/__tests__/catalogos-lotes.test.ts": {
    "path": "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
-   "lines": 116,
+   "lines": 132,
    "is_test": true,
    "rule_comments": [
     "os lotes que cada `.in()` recebeu. Também registra `limit` (a sonda de"
@@ -220932,6 +221502,7 @@
     "buscarReferenciasFiscais — leitura em lotes",
     "divide 301 NCMs em dois lotes e soma as linhas dos dois",
     "divide cClassTribs no mesmo tamanho de lote",
+    "le os fundamentos dos mesmos codigos sem contá-los como lote de catalogo",
     "uma consulta só quando o lote cabe no limite"
    ]
   },
@@ -221368,6 +221939,26 @@
     "banco (FPAS 558) paga menos terceiros que comércio",
     "alíquota explícita sobrepõe a derivação por CNAE",
     "500 cenários: CPP sempre dentro dos limites legais"
+   ]
+  },
+  "src/lib/tributario/__tests__/fundamentacao-legal.test.ts": {
+   "path": "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+   "lines": 215,
+   "is_test": true,
+   "tests": [
+    "buscarFundamentosLegais",
+    "indexa apenas as linhas vigentes na data de referencia",
+    "sem codigo nao consulta e devolve o vazio",
+    "escolherFundamento",
+    "prefere o par cClassTrib/CST declarado",
+    "cai na primeira linha do cClassTrib quando o CST diverge",
+    "prefere o conjunto CBS e IBS quando o par existe em dois conjuntos",
+    "cai na primeira linha do cClassTrib desempatando pelo CST",
+    "sem linha devolve undefined",
+    "resumoFundamento",
+    "usa a referencia curta e o texto integral",
+    "sem referencia curta usa a primeira linha do texto",
+    "sem texto devolve undefined"
    ]
   },
   "src/lib/tributario/__tests__/historico-simulacao.test.ts": {
@@ -222314,7 +222905,7 @@
   },
   "src/lib/tributario/__tests__/validador-ncm-cst.test.ts": {
    "path": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
-   "lines": 172,
+   "lines": 244,
    "is_test": true,
    "tests": [
     "validarItemFiscal",
@@ -222330,11 +222921,16 @@
     "validarItensFiscais",
     "agrega diverg?ncias de todos os itens e reduz o score",
     "nota sem diverg?ncia pontua 100",
+    "numera o item que gerou cada divergencia",
     "validarConsistenciaNcmCst (compatibilidade)",
     "retorna 100 para NCM de 8 d?gitos",
     "penaliza NCM com tamanho inv?lido",
     "n?o aplica mais as regras de exemplo de PIS/COFINS",
-    "normaliza pontua??o no NCM"
+    "normaliza pontua??o no NCM",
+    "fundamento legal do apontamento (etapa 82)",
+    "REG-011 sai com o fundamento do cClassTrib declarado",
+    "REG-013 sai com a norma quando o cClassTrib tem linha de outro CST",
+    "sem linha no catalogo de fundamentacoes o alerta continua sem norma"
    ]
   },
   "src/lib/tributario/__tests__/versao.test.ts": {
@@ -222685,7 +223281,7 @@
   },
   "src/lib/tributario/catalogos/cclasstrib.ts": {
    "path": "src/lib/tributario/catalogos/cclasstrib.ts",
-   "lines": 246,
+   "lines": 262,
    "exports": [
     "interface CclasstribCatalogo",
     "interface NcmCatalogo",
@@ -222736,7 +223332,8 @@
    ],
    "rule_comments": [
     "* Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o",
-    "logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar"
+    "logo uma nota de 2025 nao tem referencia de NCM e nao pode acusar",
+    "demais - sem catalogo, o alerta continua saindo, apenas sem a norma."
    ],
    "doc": "Leitura do cat?logo oficial de cClassTrib (LC 214/2025) e do cat?logo de NCM. As duas tabelas nascem vazias: o conte?do vem das cargas da RFB (etapas 79-81). Por isso toda leitura aqui ? *best effort*: cat?logo vazio significa \"sem refer?ncia para comparar\", nunca \"registro inv?lido\". Quem valida (e …",
    "pagination": [
@@ -222888,6 +223485,56 @@
     }
    ],
    "doc": "CATÁLOGOS FISCAIS — Comparação pura entre banco e constantes do motor. Objetivo: detectar drift entre a fonte de verdade versionada (banco) e as tabelas hard-coded usadas pelo cálculo em tempo real."
+  },
+  "src/lib/tributario/catalogos/fundamentacao-legal.ts": {
+   "path": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+   "lines": 199,
+   "exports": [
+    "interface FundamentoLegal",
+    "interface FundamentoLegalResumo",
+    "interface FundamentosLegais",
+    "const chaveFundamentoLegal",
+    "const fundamentosVazios",
+    "function resumoFundamento",
+    "function escolherFundamento",
+    "function buscarFundamentosLegais"
+   ],
+   "tables": [
+    {
+     "table": "catalogo_fundamentacao",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "catalogo_fundamentacao": [
+     "cclasstrib",
+     "conjunto_tributo",
+     "cst",
+     "descricao_cclasstrib",
+     "descricao_cst",
+     "fim_vigencia",
+     "inicio_vigencia",
+     "referencia_normativa",
+     "texto",
+     "texto_curto"
+    ]
+   },
+   "params": [
+    {
+     "name": "LOTE_CODIGOS",
+     "value": "300"
+    },
+    {
+     "name": "CONJUNTO_AMPLO",
+     "value": "'CBS e IBS'"
+    }
+   ],
+   "rule_comments": [
+    "continua valido, apenas sem o texto legal ao lado.",
+    "Mesma regra de vigencia de `catalogos/cclasstrib.ts`: linha vale quando",
+    "* Carrega os fundamentos vigentes apenas dos cClassTrib que a importacao tocou."
+   ],
+   "doc": "Etapa 82: fundamentacao legal por cClassTrib/CST (LC 214/2025). `catalogo_cclasstrib` diz **quanto** cada classificacao reduz; esta tabela diz **por que**. A leitura e *best effort*, igual as etapas 79-81: catalogo vazio significa \"sem norma para mostrar\", nunca \"item irregular\" - o alerta fiscal co …"
   },
   "src/lib/tributario/catalogos/painel.ts": {
    "path": "src/lib/tributario/catalogos/painel.ts",
@@ -225880,6 +226527,40 @@
     "* Observação de risco/limite aplicável à natureza. */"
    ],
    "doc": "Tipos do módulo PIS/COFINS não cumulativo (apuração de débitos e créditos). Base normativa: - Lei 10.637/2002, art. 1º (base) e art. 3º (créditos de PIS); - Lei 10.833/2003, art. 1º (base) e art. 3º (créditos de COFINS); - IN RFB 2.121/2022 (consolidação da legislação de PIS/COFINS); - STF, RE 574.7 …"
+  },
+  "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts": {
+   "path": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+   "lines": 173,
+   "exports": [
+    "interface NotaComAlertas",
+    "const fundamentoEmLinha",
+    "function linhasAlertas",
+    "function fundamentosDistintos",
+    "function gerarAlertasFiscaisPdf",
+    "function baixarAlertasFiscaisPdf"
+   ],
+   "params": [
+    {
+     "name": "MAX_FUNDAMENTO_TABELA",
+     "value": "220"
+    }
+   ],
+   "rule_comments": [
+    "* Uma linha por alerta: nota, item, codigo da regra, divergencia e norma. */"
+   ],
+   "doc": "Etapa 82: relatorio PDF dos alertas fiscais da importacao de XML, com a fundamentacao legal de cada apontamento. O badge da tela mostra \"N alertas\" e o tooltip cabe uma nota por vez: quem precisa discutir a classificacao com o contador nao tinha como levar a lista e a norma junto.",
+   "calc_fns": [
+    {
+     "name": "totalAlertas",
+     "params": "nfes: NotaComAlertas[]",
+     "body": ""
+    },
+    {
+     "name": "gerarAlertasFiscaisPdf",
+     "params": "nfes: NotaComAlertas[]",
+     "body": "const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' }); const largura = doc.internal.pageSize.getWidth(); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Alertas fiscais da importacao de XML', 14, 16); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90); const resumo = `${totalAlertas(nfes)} alerta(s) em ${nfes.length} nota(s)`; doc.text(resumo, 14, 22); doc.text( 'Fundamentacao: LC 214/2025 - dados abertos da Receita Federal (cata …"
+    }
+   ]
   },
   "src/lib/tributario/relatorio-pdf/auditoria-creditos.ts": {
    "path": "src/lib/tributario/relatorio-pdf/auditoria-creditos.ts",
@@ -244306,6 +244987,90 @@
     "diaAnterior atravessa virada de mes, ano e ano bissexto"
    ]
   },
+  "supabase/functions/sync-fundamentacao-legal/index.ts": {
+   "path": "supabase/functions/sync-fundamentacao-legal/index.ts",
+   "lines": 238,
+   "exports": [
+    "const handler"
+   ],
+   "dyn_from": 3,
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "params": [
+    {
+     "name": "TABELA",
+     "value": "'catalogo_fundamentacao'"
+    },
+    {
+     "name": "COLUNAS_CHAVE",
+     "value": "'cclasstrib, cst, conjunto_tributo'"
+    },
+    {
+     "name": "PAGINA",
+     "value": "1000"
+    },
+    {
+     "name": "MAX_PAGINAS",
+     "value": "10"
+    },
+    {
+     "name": "CHAVES_POR_UPDATE",
+     "value": "40"
+    }
+   ],
+   "doc": "Edge: sync-fundamentacao-legal (etapa 82 do plano RT/RFB) Mantem `catalogo_fundamentacao` alinhado com `/fundamentacoes-legais` da API publica de dados abertos da RFB. E a norma que sustenta cada cClassTrib: sem ela o alerta fiscal do item identifica a divergencia e nao a base legal. Fonte: https:// …",
+   "uses_service_role": true
+  },
+  "supabase/functions/sync-fundamentacao-legal/montar.ts": {
+   "path": "supabase/functions/sync-fundamentacao-legal/montar.ts",
+   "lines": 179,
+   "exports": [
+    "interface FundamentoLinha",
+    "interface MapeamentoFundamentos",
+    "const MIN_FUNDAMENTACOES_API",
+    "function chaveFundamento",
+    "function literalPostgrest",
+    "function filtroAusentes",
+    "function montarFundamentos"
+   ],
+   "params": [
+    {
+     "name": "MIN_FUNDAMENTACOES_API",
+     "value": "100"
+    }
+   ],
+   "doc": "Etapa 82 — montagem das linhas de `catalogo_fundamentacao` a partir de `/fundamentacoes-legais` (API publica de dados abertos da RFB). Puro de proposito: aqui mora a decisao do que aceitar. Payload fora do contrato vira lista vazia, nunca excecao — quem decide parar e o piso de contagem do `index.ts …"
+  },
+  "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts": {
+   "path": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+   "lines": 172,
+   "is_test": true,
+   "params": [
+    {
+     "name": "VIGENCIA",
+     "value": "'2026-01-01'"
+    }
+   ],
+   "doc": "Etapa 82 — mapeamento de `/fundamentacoes-legais` para `catalogo_fundamentacao` e filtro de encerramento por chave composta. O caro de errar aqui nao e o transporte: e gravar fundamento de codigo que nao existe, perder o texto de uma linha repetida ou montar um filtro PostgREST que encerra a vigenci …",
+   "tests": [
+    "payload fora do contrato vira lista vazia",
+    "linha valida vai para a tabela com vigencia e versao da base",
+    "codigo fora do formato e descartado, nao gravado",
+    "pontuacao no codigo e normalizada antes da checagem de tamanho",
+    "texto vazio vira null em vez de string vazia",
+    "quebra de linha do texto legal e preservada",
+    "linha nao-objeto e ignorada",
+    "chave repetida funde os textos sem duplicar o mesmo trecho",
+    "chave inclui o conjunto de tributos",
+    "quebra de linha literal da API vira quebra real",
+    "quebra de linha real do payload e preservada",
+    "literal do PostgREST preserva espaco e neutraliza a sintaxe do filtro",
+    "filtro de encerramento separa as chaves por and",
+    "chave com conjunto contendo pipe nao perde o valor"
+   ]
+  },
   "supabase/functions/sync-profile-to-bitrix/index.ts": {
    "path": "supabase/functions/sync-profile-to-bitrix/index.ts",
    "lines": 315,
@@ -250323,6 +251088,15 @@
    "path": "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql",
    "lines": 45
   },
+  "supabase/migrations/20261126110000_catalogo_fundamentacao.sql": {
+   "path": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
+   "lines": 58,
+   "uses_service_role": true
+  },
+  "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql": {
+   "path": "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql",
+   "lines": 60
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -250442,10 +251216,43 @@
   }
  },
  "git": {
-  "sha": "26cb299cea973a1281443d882f8afaddbd13d6ae",
+  "sha": "6d2275fcd8e4c813d95f723ac494c631389747c1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "6d2275f",
+    "date": "2026-11-25",
+    "author": "adm01-debug",
+    "subject": "feat: fundamentacao legal por item da nota (etapa 82) (#563)",
+    "files": [
+     "SECURITY_RULES.md",
+     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+     "scripts/ci/deno-check-functions.sh",
+     "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
+     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+     "src/hooks/useImportacaoXMLNFe.ts",
+     "src/integrations/supabase/types.ts",
+     "src/lib/arquitetura/grafo-observado.json",
+     "src/lib/arquitetura/modulos.ts",
+     "src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts",
+     "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
+     "src/lib/tributario/__tests__/fundamentacao-legal.test.ts",
+     "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+     "src/lib/tributario/catalogos/cclasstrib.ts",
+     "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+     "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
+     "src/lib/tributario/validador-ncm-cst.ts",
+     "supabase/config.toml",
+     "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
+     "supabase/functions/sync-fundamentacao-legal/index.ts",
+     "supabase/functions/sync-fundamentacao-legal/montar.ts",
+     "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
+     "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql"
+    ]
+   },
    {
     "sha": "26cb299",
     "date": "2026-11-25",
@@ -250880,15 +251687,6 @@
      "src/hooks/usePreferenciasSistema.ts",
      "src/integrations/supabase/types.ts"
     ]
-   },
-   {
-    "sha": "f2e0d56",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "chore: snapshot baseline pré-correção RT — 3 motores (Fase 0 etapa 4)",
-    "files": [
-     "src/lib/__tests__/rt-snapshot-pre-correcao.test.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -250902,10 +251700,34 @@
    ],
    [
     "src/lib/tributario/catalogos/cclasstrib.ts",
-    4
+    5
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    4
+   ],
+   [
+    "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
+    4
+   ],
+   [
+    "src/hooks/useImportacaoXMLNFe.ts",
+    4
+   ],
+   [
+    "src/integrations/supabase/types.ts",
+    4
+   ],
+   [
+    "supabase/config.toml",
+    4
+   ],
+   [
+    "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+    3
+   ],
+   [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
    ],
    [
@@ -250917,59 +251739,35 @@
     3
    ],
    [
-    "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-    3
-   ],
-   [
-    "src/hooks/useImportacaoXMLNFe.ts",
-    3
-   ],
-   [
-    "supabase/config.toml",
-    3
-   ],
-   [
-    "src/integrations/supabase/types.ts",
-    3
-   ],
-   [
-    "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+    "SECURITY_RULES.md",
     2
    ],
    [
-    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    "scripts/ci/deno-check-functions.sh",
     2
    ],
    [
-    "scripts/integrity/baseline/expected-policies.json",
+    "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
     2
    ],
    [
-    "scripts/integrity/baseline/schema-counts.json",
+    "src/lib/arquitetura/grafo-observado.json",
     2
    ],
    [
-    "supabase/migrations/20261122140000_rpc_reprocessar_creditos_nfe.sql",
+    "src/lib/arquitetura/modulos.ts",
     2
    ],
    [
-    "supabase/migrations/20261122150000_cron_reprocessar_creditos_ibscbs.sql",
+    "src/lib/tributario/__tests__/catalogos-lotes.test.ts",
     2
    ],
    [
-    "supabase/migrations/20261122160000_rpc_salvar_nfe_autorizada_itens.sql",
+    "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
     2
    ],
    [
-    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
-    2
-   ],
-   [
-    "src/lib/__tests__/edge-functions.security.test.ts",
-    2
-   ],
-   [
-    "docs/ci/README.md",
+    "src/lib/tributario/validador-ncm-cst.ts",
     2
    ]
   ]

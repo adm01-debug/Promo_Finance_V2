@@ -10591,6 +10591,7 @@
     "anomalias_detectadas",
     "boletos",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "centros_custo",
     "clientes",
@@ -10647,7 +10648,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 189
+   "arquivos_puxados": 190
   },
   {
    "protegida": true,
@@ -11539,6 +11540,7 @@
     "apuracoes_irpj_csll",
     "apuracoes_tributarias",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "centros_custo",
     "cnaes",
@@ -11603,7 +11605,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 231
+   "arquivos_puxados": 233
   },
   {
    "protegida": true,
@@ -11758,6 +11760,7 @@
     "apuracoes_irpj_csll",
     "apuracoes_tributarias",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "centros_custo",
     "cnaes",
@@ -11822,7 +11825,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 231
+   "arquivos_puxados": 233
   },
   {
    "protegida": true,
@@ -12725,6 +12728,7 @@
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "centros_custo",
     "cnaes",
@@ -12803,7 +12807,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 220
+   "arquivos_puxados": 221
   },
   {
    "protegida": true,
@@ -14461,6 +14465,7 @@
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "centros_custo",
     "cnaes",
@@ -14539,7 +14544,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 220
+   "arquivos_puxados": 221
   },
   {
    "protegida": true,
@@ -15258,6 +15263,7 @@
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "centros_custo",
     "cnaes",
@@ -15303,7 +15309,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 131
+   "arquivos_puxados": 134
   },
   {
    "protegida": true,
@@ -16318,6 +16324,7 @@
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "cnaes",
     "elisao_alertas",
@@ -16347,7 +16354,7 @@
     "alert",
     "progressbar"
    ],
-   "arquivos_puxados": 86
+   "arquivos_puxados": 87
   },
   {
    "protegida": true,
@@ -17316,6 +17323,7 @@
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
     "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
     "catalogo_ncm",
     "cnaes",
     "elisao_alertas",
@@ -17348,7 +17356,7 @@
     "img",
     "status"
    ],
-   "arquivos_puxados": 97
+   "arquivos_puxados": 98
   },
   {
    "protegida": true,

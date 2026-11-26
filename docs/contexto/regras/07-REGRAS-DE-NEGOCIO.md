@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `26cb299cea` · branch `main` · 2026-11-25 23:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `6d2275fcd8` · branch `main` · 2026-11-26 00:55 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
 | `solicitacoes_lgpd` | lgpd_scoped_update | UPDATE | authenticated | permissive | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` |
-| … +529 linhas — lista completa em `context.json` | | | | | | |
+| … +531 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2315 linhas — lista completa em `context.json` | | |
+| … +2322 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -3312,7 +3312,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
 - **validarItensFiscais(itens: ItemFiscalValidavel[], referencias: ReferenciasFiscais)** — `src/lib/tributario/validador-ncm-cst.ts`
   ```
-  const divergencias = itens.flatMap((item) => validarItemFiscal(item, referencias)); const penalidade = divergencias.reduce( (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15), 0 ); return { score: Math.max(0, 100 - penalidade), divergencias };
+  const divergencias = itens.flatMap((item, indice) => validarItemFiscal(item, referencias).map((d) => ({ ...d, item: indice + 1 })) ); const penalidade = divergencias.reduce( (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15), 0 ); return { score: Math.max(0, 100 - penalidade), divergencias };
   ```
 - **validarConsistenciaNcmCst(ncm: string, cst: string)** — `src/lib/tributario/validador-ncm-cst.ts`
   ```
@@ -3545,6 +3545,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **round2(v: number)** — `src/lib/tributario/pis-cofins/creditos.ts`
   ```
   Math.round((v + Number.EPSILON) * 100) / 100;
+  ```
+- **totalAlertas(nfes: NotaComAlertas[])** — `src/lib/tributario/relatorio-pdf/alertas-fiscais.ts`
+  ```
+  
+  ```
+- **gerarAlertasFiscaisPdf(nfes: NotaComAlertas[])** — `src/lib/tributario/relatorio-pdf/alertas-fiscais.ts`
+  ```
+  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' }); const largura = doc.internal.pageSize.getWidth(); doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Alertas fiscais da importacao de XML', 14, 16); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(90); const resumo = `${totalAlertas(nfes)} alerta(s) em ${nfes.length} nota(s)`; doc.text(resumo, 14, 22); doc.text( 'Fundamentacao: LC 214/2025 - dados abertos da Receita Federal (cata …
   ```
 - **gerarGraficoComparativoBase64(decisao: ResultadoDecisao)** — `src/lib/tributario/relatorio-pdf/charts.ts`
   ```
@@ -4269,6 +4277,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `EPSILON` | `1` | `src/lib/tributario/catalogos/coerencia-ncm.ts` |
 | `EPSILON` | `1` | `src/lib/tributario/catalogos/coerencia-ufs.ts` |
 | `EPSILON` | `1` | `src/lib/tributario/catalogos/coerencia.ts` |
+| `LOTE_CODIGOS` | `300` | `src/lib/tributario/catalogos/fundamentacao-legal.ts` |
+| `CONJUNTO_AMPLO` | `'CBS e IBS'` | `src/lib/tributario/catalogos/fundamentacao-legal.ts` |
 | `UFS_ESPERADAS` | `27` | `src/lib/tributario/catalogos/painel.ts` |
 | `EPSILON` | `1` | `src/lib/tributario/catalogos/painel.ts` |
 | `PESO_CRITICO` | `12` | `src/lib/tributario/catalogos/saude.ts` |
@@ -4340,6 +4350,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `FATOR_BANDA` | `1.96` | `src/lib/tributario/obrigacoes/projecao.ts` |
 | `ALIQUOTA_PIS_NAO_CUMULATIVO` | `0.0165` | `src/lib/tributario/pis-cofins/types.ts` |
 | `ALIQUOTA_COFINS_NAO_CUMULATIVO` | `0.076` | `src/lib/tributario/pis-cofins/types.ts` |
+| `MAX_FUNDAMENTO_TABELA` | `220` | `src/lib/tributario/relatorio-pdf/alertas-fiscais.ts` |
 | `HARD_CAP` | `50000` | `src/pages/AuditLogs.tsx` |
 | `PAGE` | `1000` | `src/pages/AuditLogs.tsx` |
 | `VIRTUALIZE_THRESHOLD` | `60` | `src/pages/Movimentacoes.tsx` |
@@ -4432,14 +4443,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `LOTE_ENCERRAMENTO` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
 | `MIN_NCM_API` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
 | `MIN_NBS_API` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
-| `BUCKET` | `'financeiro'` | `supabase/functions/upload-anexo/index.ts` |
-| `TAMANHO_MAX` | `10` | `supabase/functions/upload-anexo/index.ts` |
-| `EMPRESA_AUTORIZADA` | `'11111111-1111-4111-8111-111111111111'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
-| `EMPRESA_ALHEIA` | `'22222222-2222-4222-8222-222222222222'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
-| `CLIENTE_AUTORIZADO` | `'33333333-3333-4333-8333-333333333333'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
-| `CLIENTE_ALHEIO` | `'44444444-4444-4444-8444-444444444444'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
-| `CONTA_AUTORIZADA` | `'55555555-5555-4555-8555-555555555555'` | `supabase/functions/whatsapp-ia-proativo/index_test.ts` |
-| … +1 linhas — lista completa em `context.json` | | |
+| `TABELA` | `'catalogo_fundamentacao'` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
+| `COLUNAS_CHAVE` | `'cclasstrib, cst, conjunto_tributo'` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
+| `PAGINA` | `1000` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
+| `MAX_PAGINAS` | `10` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
+| … +10 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -5199,7 +5207,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3882 testes em 346 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3930 testes em 349 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5241,6 +5249,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/icms-st-difal.test.ts` | 23 | icms — tabelas e alíquotas interestaduais · cobre as 27 unidades federativas com parâmetros consistentes · valida UFs e identifica mercadoria importada pela origem · aplica 7% de S/SE para N/NE/CO e ES … |
 | `src/lib/tributario/__tests__/periodicidade-apuracao.test.ts` | 23 | IRPJ por período de apuração · não aplica adicional até R$ 60 mil no trimestre · aplica 10% sobre o excedente trimestral · usa limite de R$ 240 mil no período anual … |
 | `src/lib/tributario/__tests__/pis-cofins-creditos.test.ts` | 23 | base de cálculo da receita (Tema 69) · exclui ICMS, IPI e descontos incondicionais · nunca retorna base negativa · ignora valores inválidos ou negativos … |
+| `src/lib/tributario/__tests__/validador-ncm-cst.test.ts` | 23 | validarItemFiscal · REG-011: NCM 02013000 com cClassTrib 200035 e CST divergente · n?o acusa quando o CST declarado bate com o do cat?logo · REG-013: cClassTrib fora do cat?logo vigente … |
 | `src/lib/__tests__/navigation.test.ts` | 22 | getRouteMeta · resolve rotas exatas · resolve rotas com parâmetro · retorna undefined para rota desconhecida … |
 | `src/lib/contabil/__tests__/balancete-utils.test.ts` | 22 | round2 · elimina ruído de ponto flutuante · splitSaldo · classifica saldo positivo como devedor … |
 | `src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts` | 22 | detectarDeliberacaoLucros · é aplicável dentro da janela com saldo e sem ata registrada · não é aplicável após 31/12/2025 · não é aplicável quando a ata já foi registrada … |
@@ -5254,7 +5263,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/financial/__tests__/useContasReceberPagar.test.tsx` | 18 | useContasReceber · consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e primeira pagina · agrega todas as paginas: totais deixam de parar nos primeiros 1.000 titulos · propaga erro de uma pagina seguinte em vez de devolver agregado parcial … |
 | `src/lib/__tests__/audit-priority.test.ts` | 18 | audit-priority · classifyAuditPriority · mapeia actions base corretamente · tabela sensível eleva para high … |
 | `src/lib/__tests__/currency.test.ts` | 18 | Currency Utilities - Robustness & Regression · Floating Point Precision · deve somar valores decimais corretamente evitando erros de precisão IEEE 754 · deve lidar com somas complexas com muitos decimais … |
-| `src/lib/tributario/__tests__/validador-ncm-cst.test.ts` | 18 | validarItemFiscal · REG-011: NCM 02013000 com cClassTrib 200035 e CST divergente · n?o acusa quando o CST declarado bate com o do cat?logo · REG-013: cClassTrib fora do cat?logo vigente … |
 | `src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx` | 17 | NavigationTributaria · Renderização de grupos · renderiza grupos na versão mobile · Badge de alertas dinâmico … |
 | `src/hooks/__tests__/savedFiltersValidation.test.ts` | 17 | savedFiltersValidation > isAppRole · aceita os 4 papéis canônicos · rejeita valor inválido %p · savedFiltersValidation > normalizeRoles … |
 | `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 17 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
@@ -5294,6 +5302,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 14 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `supabase/functions/sso-test-login/pipeline.test.ts` | 14 | pipeline: JIT + role por grupo (usuário não existe) · pipeline: usuário JÁ existe → não provisiona · pipeline: auto_provision_users=false bloqueia JIT com motivo · pipeline: múltiplos grupos — primeiro match vence, demais  … |
 | `supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts` | 14 | normalizarData — aceita ISO valida e cai para hoje em Brasilia no resto · fracaoReducao — pontos percentuais viram fracao 0-1 · mapearCst — junta CST pelas situacoes e descarta codigo em duas situacoes · mapearCst — terceira ocorrencia nao ressuscita codigo ambiguo … |
+| `supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts` | 14 | payload fora do contrato vira lista vazia · linha valida vai para a tabela com vigencia e versao da base · codigo fora do formato e descartado, nao gravado · pontuacao no codigo e normalizada antes da checagem de tamanho … |
 | `src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx` | 13 | AnimatedCounter · Renderização inicial · renderiza com classe tabular-nums · renderiza prefix … |
 | `src/components/ui/__tests__/badge.test.tsx` | 13 | Badge · renders with children · renders default variant with bg-acc (Vela) · renders secondary variant … |
 | `src/hooks/__tests__/useIndicesContabeis.test.ts` | 13 | normalizarAgregados · aceita retorno em array (RPC set-returning) · preenche zeros quando o campo está ausente · nunca produz NaN a partir de lixo … |
@@ -5304,6 +5313,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/catalogos-coerencia-mva.test.ts` | 13 | coerência do catálogo de MVA/ST · não acusa divergência quando o catálogo está íntegro · acusa NCM sujeito à ST sem protocolo vigente · acusa MVA fora dos limites defensivos … |
 | `src/lib/tributario/__tests__/conciliacao-extrato.test.ts` | 13 | conciliacao-extrato (etapa 89) · parseCsv · parseia CSV com virgula · parseia CSV com ponto-e-virgula … |
 | `src/lib/tributario/__tests__/digest-conformidade.test.ts` | 13 | digest de conformidade — utilitários · escapa os cinco caracteres perigosos · normaliza severidades desconhecidas para baixa · formata competência e tolera formatos inesperados … |
+| `src/lib/tributario/__tests__/fundamentacao-legal.test.ts` | 13 | buscarFundamentosLegais · indexa apenas as linhas vigentes na data de referencia · sem codigo nao consulta e devolve o vazio · escolherFundamento … |
 | `src/lib/tributario/__tests__/snapshot-normalizacao.test.ts` | 13 | normalizarParametrosSnapshot — contrato · rejeita payloads que não são objeto · rejeita snapshot sem faturamento anual finito · coage faturamento anual persistido como string numérica … |
 | `supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts` | 13 | paraFracao converte pontos percentuais em fracao de 4 casas · paraFracao recusa ausencia, valor invalido e o que nao cabe em numeric(5,4) · montarUniao grava CBS nacional sem ente · montarUniao devolve null quando a aliquota nao foi publicada … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
@@ -5315,11 +5325,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sefaz-sem-status-fabricado.test.ts` | 12 | SEFAZ não fabrica status (F11) · sem nada gravado, o status é desconhecido — não  · status gravado sem lastCheck não vira 01/01/1970 · registro gravado pela versão que sorteava status é descartado na leitura … |
 | `src/lib/reforma-tributaria/__tests__/cronograma-oficial.test.ts` | 12 | cronograma-oficial · 2029-2032: residual de ICMS/ISS + fração de IBS (sobre REF_IBS) fecham em 100% · 2029-2032: CBS sem o desconto de transição (REF_CBS_2027 pleno, art. 347 só vale 2027/2028) · 2026 e 2027-2028: IBS total (UF+Mun) é 0,1% … |
 | `src/lib/sso/__tests__/sandbox-csv.test.ts` | 12 | parseBulkCsv · parse cabeçalho + groups com pipe · detecta delimitador ; · reporta erro quando faltam colunas … |
+| `src/lib/tributario/__tests__/alertas-fiscais-pdf.test.ts` | 12 | linhasAlertas · gera uma linha por alerta com nota, regra e fundamento · distingue dois itens da mesma nota com o mesmo cClassTrib · sem alerta nao gera linha … |
 | `src/lib/tributario/__tests__/catalogos-coerencia-ncm.test.ts` | 12 | coerência NCM — catálogo espelho · não acusa divergência quando o banco espelha a TIPI · catálogo vazio acusa todos os NCMs da TIPI como ausentes · coerência NCM — detecção de drift … |
 | `src/lib/tributario/__tests__/serie-comparativa.test.ts` | 12 | comparativo temporal — utilitários · formata rótulos do eixo e tolera lixo · gera dataKeys válidas e únicas · comparativo temporal — casos de borda … |
 | `src/lib/tributario/__tests__/simular-real.test.ts` | 12 | simularReal · sempre é elegível · IRPJ 15% sobre lucro + adicional 10% sobre excedente de R$ 240k · CSLL 9% sobre lucro … |
 | `supabase/functions/consulta-tributaria/index.test.ts` | 12 | somenteDigitos normaliza NCM e CNAE formatados · vigenteEm trata vigência aberta como válida · vigentes filtra registros fora da janela · prefixosHierarquicos gera do mais específico ao mais genérico … |
 | `src/hooks/__tests__/useImportacaoXMLNFe.ibscbs.test.tsx` | 11 | useImportacaoXMLNFe — grupo IBS/CBS/IS (etapa 41) · lê o grupo IBSCBS e IS destacado no item da nota 2026 · lê os totais IBSCBSTot e ISTot da nota 2026 · não quebra nota antiga sem grupo IBSCBS/IS … |
+| `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 11 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) … |
 | `src/lib/__tests__/correlation-id.test.ts` | 11 | correlation-id · CORRELATION_HEADER usa o nome padrão x-request-id · newCorrelationId aplica prefixo quando fornecido · newCorrelationId sem prefixo não contém dois-pontos como separador … |
 | `src/lib/arquitetura/__tests__/drift-imports.test.ts` | 11 | analisador de imports — primitivas · extrai imports estáticos, re-exports e imports dinâmicos · marca corretamente imports somente de tipo · resolve alias @/ e caminhos relativos, ignorando pacotes externos … |
 | `src/lib/tributario/__tests__/catalogos-painel.test.ts` | 11 | painel de catálogos fiscais · reconhece o cenário 100% coerente · aplica a regra constitucional de 7% e 12% · detecta alíquota interestadual adulterada … |
@@ -5373,7 +5385,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/nfe/__tests__/sefaz-sem-metrica-fabricada.test.tsx` | 8 | painel da SEFAZ não exibe métrica fabricada (F11) · status desconhecido: banner diz  · status desconhecido:  · sem medição, os cards não mostram latência nem uptime numéricos … |
 | `src/hooks/__tests__/colunasReligadas.test.tsx` | 8 | movimentações e transferências · insert de movimentação leva conta, vínculos, origem e observações · cancelar transferência grava cancelado_em · créditos tributários … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
-| `src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx` | 8 | importarNFes ? valida??o contra cat?logo (etapa 46) · consulta cclasstrib e catalogo_ncm uma vez por lote · anexa REG-011 ? nota e ainda assim a importa · catálogo vazio não gera alerta (carga da RFB ainda não rodou) … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
 | `src/hooks/__tests__/useKeyboardShortcuts.test.ts` | 8 | useKeyboardShortcuts · registra o listener de keydown UMA única vez mesmo com re-renders · remove o listener de keydown no unmount · Alt+D navega para o dashboard … |
 | `src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts` | 8 | aprovarPagamento · aprova as duas tabelas numa transação só, sem escrita do cliente · usa o fornecedor lido dentro da transação, não o retrato anterior · não confirma ao usuário quando a função recusa a gravação … |
@@ -5459,6 +5470,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |
 | `src/lib/__tests__/conciliacao-e2e.test.ts` | 5 | E2E: Conciliação Bancária - Matching e Divergências · deve encontrar match de alta confiança com valor exato e data próxima · deve permitir match com pequena divergência de centavos · deve separar corretamente transações de crédito e débito para diferentes tipos de lançamento … |
 | `src/lib/__tests__/secure-random.test.ts` | 5 | secureRandomInt · returns integers inside [min, max) · handles a single-element range and rejects inverted bounds · rejects ranges wider than the 32-bit source instead of looping … |
+| `src/lib/tributario/__tests__/catalogos-lotes.test.ts` | 5 | buscarReferenciasFiscais — leitura em lotes · divide 301 NCMs em dois lotes e soma as linhas dos dois · divide cClassTribs no mesmo tamanho de lote · le os fundamentos dos mesmos codigos sem contá-los como lote de catalogo … |
 | `src/lib/tributario/__tests__/catalogos-saude.test.ts` | 5 | calcularSaudeCatalogos · retorna saudável e score 100 sem divergências nem rejeições · classifica como crítico quando há divergência crítica · conta rejeições de overlay como atenção mesmo sem divergências … |
 | `src/lib/tributario/__tests__/restauracao-snapshot.test.ts` | 5 | restauração reprodutível de snapshots · remove campos opcionais ausentes no snapshot · preserva os campos presentes no snapshot · não muta o objeto de parâmetros correntes … |
 | `src/types/__tests__/tipo-cobranca-vocabulario.test.ts` | 5 | vocabulário de tipo_cobranca · as opções de Contas a Receber são todas valores do enum do banco · nenhuma opção oferece o valor inexistente  · cartão aparece dividido em crédito e débito, como no banco … |
@@ -5482,7 +5494,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sso-error-messages.test.ts` | 4 | SSO_ERROR_MESSAGES · possui título, descrição e hint para todos os códigos · inferSsoErrorCode · inferindo  |
 | `src/lib/arquitetura/__tests__/snapshot-grafo.test.ts` | 4 | snapshot do grafo de arquitetura · lista de arestas está sincronizada com o código · contagem de imports analisados está sincronizada · resumo de drift está sincronizado e zerado |
 | `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
-| `src/lib/tributario/__tests__/catalogos-lotes.test.ts` | 4 | buscarReferenciasFiscais — leitura em lotes · divide 301 NCMs em dois lotes e soma as linhas dos dois · divide cClassTribs no mesmo tamanho de lote · uma consulta só quando o lote cabe no limite |
 | `src/lib/tributario/__tests__/catalogos-vigencia.test.ts` | 4 | normalizarReferencia · mantém datas ISO válidas · aceita Date e converte para ISO · degrada para hoje em entradas ausentes ou inválidas |
 | `src/lib/tributario/__tests__/drift-guard-motor.test.ts` | 4 | Drift guard: motor tributário front x Edge Function · a função %s é logicamente idêntica nas duas cópias · mantém as constantes fiscais e a tabela de anexos idênticas · mantém as assinaturas de tipo públicas alinhadas |
 | `src/lib/tributario/__tests__/drift-guard-obrigacoes.test.ts` | 4 | Drift guard: obrigações acessórias (web × Edge Function) · o módulo  · expõe exatamente a mesma superfície pública por módulo · mantém as funções de dias úteis do espelho idênticas às do módulo DARF |
@@ -5500,10 +5511,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
 | `src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx` | 3 | importar extrato não oferece Open Finance fabricado (#425) · o botão Conectar via Open Finance fica desabilitado com o motivo à mostra · o texto não promete sincronização em tempo real nem gateway inexistente |
 | `src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx` | 3 | RegistrarPagamentoDialog — empresa da alcada · consulta a alcada da empresa do titulo, nao a do filtro global · registro legado sem empresa_id cai no filtro global |
-| `src/components/financeiro/cobranca/__tests__/WhatsAppHistoryIA.somente-leitura.test.tsx` | 3 | WhatsAppHistoryIA — envio sem provedor · por padrao nao oferece campo de envio, e explica por que · com permitirEnvio o campo volta (para quando houver provedor) |
-| `src/components/fornecedores/__tests__/FornecedorForm.user-id.test.tsx` | 3 | FornecedorForm — cadastro · envia empresa_id no insert, sem o qual o fornecedor nasce sem empresa · envia user_id no insert, sem o qual a policy fornecedores_owner_insert rejeita |
-| `src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx` | 3 | monitor da SEFAZ não verifica em laço (regressão #423) · com status CONHECIDO verifica uma vez e respeita o intervalo · com status desconhecido não verifica nada e o rodapé não promete monitoramento |
-| … +46 linhas — lista completa em `context.json` | | |
+| … +49 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6096,4 +6104,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Regra de camadas: um módulo nunca pode depender de uma camada mais alta | `src/lib/arquitetura/modulos.ts` |
 | (número menor). Ex.: domínio (3) não pode depender de apresentação (1). | `src/lib/arquitetura/modulos.ts` |
 | * Calcula apenas métricas sustentadas pelos pedidos persistidos. Lead time e | `src/lib/compras/pedidos.ts` |
-| … +465 linhas — lista completa em `context.json` | |
+| … +472 linhas — lista completa em `context.json` | |
