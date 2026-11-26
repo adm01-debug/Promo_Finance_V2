@@ -27,6 +27,7 @@ import { REGIMES_ESPECIAIS, type RegimeEspecial } from '@/types/reforma-tributar
 import { CRONOGRAMA_OFICIAL } from '@/lib/reforma-tributaria/cronograma-oficial';
 import {
   PREMISSAS_PADRAO,
+  REGIMES_ATUAIS,
   calcularCenario,
   formatarMoeda,
   podeCalcular,
@@ -35,6 +36,8 @@ import {
   type PremissasCenario,
 } from '@/lib/contabilidade/simulacao-regimes';
 import { ROTULO_FONTE, buscarFontesContabeis } from '@/lib/contabilidade/fontes-contabeis';
+import type { AnexoSimples } from '@/lib/tributario/calculadora/types';
+import { cn } from '@/lib/utils';
 
 interface Props {
   open: boolean;
@@ -52,7 +55,7 @@ function mensagemErro(erro: unknown): string {
   return String(erro);
 }
 
-const REGIMES_ATUAIS = ['Simples Nacional', 'Lucro Presumido', 'Lucro Real'] as const;
+const ANEXOS_SIMPLES: AnexoSimples[] = ['I', 'II', 'III', 'IV', 'V'];
 
 export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Props) {
   const queryClient = useQueryClient();
@@ -96,6 +99,7 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
           nome: premissas.nome.trim(),
           ano_referencia: premissas.anoReferencia,
           regime_atual: premissas.regimeAtual,
+          anexo_simples: premissas.anexoSimples,
           percentual_vendas: premissas.percentualVendas,
           cenario_cbs: premissas.cenarioCbs,
           aliquota_cbs_override: premissas.aliquotaCbsOverride,
@@ -105,6 +109,9 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
         detalhes: {
           fontes,
           resultado: cenario.resultado,
+          residuais_transicao: cenario.residuais,
+          carga_simulada_base: cenario.cargaSimuladaBase,
+          avisos: cenario.avisos,
           aliquotas: {
             atual_percentual: cenario.aliquotaAtualPercentual,
             simulada_percentual: cenario.aliquotaSimuladaPercentual,
@@ -132,8 +139,14 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
 
   const sincronizar = async () => {
     setAjustes({});
-    await fontesQuery.refetch();
-    const dados = fontesQuery.data;
+    const atualizado = await fontesQuery.refetch();
+    // `fontesQuery.data` só muda depois do próximo render — o toast tem que usar
+    // o retorno do refetch, senão mostra o total antigo.
+    const dados = atualizado.data ?? fontesQuery.data;
+    if (atualizado.error) {
+      toast.error(`Falha ao sincronizar: ${mensagemErro(atualizado.error)}`);
+      return;
+    }
     if (dados && dados.faturamento12m > 0) {
       toast.success(
         `Sincronizado: ${ROTULO_FONTE[dados.fonteFaturamento]} — ${formatarMoeda(dados.faturamento12m)} de receita e ${formatarMoeda(dados.comprasServicos12m)} de compras/serviços desde ${dados.janelaInicio}.`
@@ -206,6 +219,32 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
               </Select>
             </div>
           </div>
+
+          {premissas.regimeAtual === 'Simples Nacional' && (
+            <div className="grid gap-2">
+              <Label htmlFor="cenario-anexo">Anexo do Simples Nacional</Label>
+              <Select
+                value={premissas.anexoSimples}
+                onValueChange={(v) =>
+                  setPremissas({ ...premissas, anexoSimples: v as AnexoSimples })
+                }
+              >
+                <SelectTrigger id="cenario-anexo">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ANEXOS_SIMPLES.map((anexo) => (
+                    <SelectItem key={anexo} value={anexo}>
+                      Anexo {anexo}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V.
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -335,31 +374,40 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
 
           {fontes && (
             <p className="text-[11px] text-muted-foreground">
-              Fonte: {ROTULO_FONTE[fontes.fonteFaturamento]} · {fontes.notasConsideradas} nota(s) e{' '}
-              {fontes.titulosConsiderados} título(s) desde {fontes.janelaInicio}
+              Fonte: {ROTULO_FONTE[fontes.fonteFaturamento]} · {fontes.notasConsideradas} nota(s) de
+              venda,{' '}
+              {fontes.comprasServicos12m > 0
+                ? 'compras com fornecedor'
+                : 'sem compras com fornecedor'}{' '}
+              e {formatarMoeda(fontes.folha12m)} de folha desde {fontes.janelaInicio}
+              {fontes.titulosConsiderados > 0 ? ` · ${fontes.titulosConsiderados} título(s)` : ''}
             </p>
           )}
 
           {cenario ? (
             <div className="rounded-lg border bg-muted/40 p-3 space-y-2">
               <div className="flex justify-between text-xs">
-                <span>Carga no regime atual</span>
+                <span>Carga no regime atual ({premissas.regimeAtual})</span>
                 <span className="font-mono">{formatarMoeda(cenario.cargaAtual)}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span>Carga simulada (CBS/IBS {premissas.anoReferencia})</span>
                 <span className="font-mono">{formatarMoeda(cenario.cargaSimulada)}</span>
               </div>
+              {cenario.residuais.total > 0 && (
+                <div className="flex justify-between text-[11px] text-muted-foreground">
+                  <span>dos quais ICMS/ISS/PIS/COFINS residuais</span>
+                  <span className="font-mono">{formatarMoeda(cenario.residuais.total)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm font-semibold">
                 <span>Economia estimada</span>
                 <span
-                  className={
-                    cenario.economiaEstimada > 0
-                      ? 'text-emerald-600'
-                      : cenario.economiaEstimada < 0
-                        ? 'text-destructive'
-                        : ''
-                  }
+                  className={cn(
+                    cenario.economiaEstimada > 0 && 'text-emerald-600',
+                    cenario.economiaEstimada < 0 && 'text-destructive',
+                    cenario.economiaEstimada === 0 && 'text-muted-foreground'
+                  )}
                 >
                   {formatarMoeda(cenario.economiaEstimada)}
                 </span>
@@ -370,14 +418,14 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
                   {cenario.aliquotaSimuladaPercentual.toFixed(2)}%
                 </Badge>
                 <span className="text-[11px] text-muted-foreground">
-                  {cenario.resultado.impacto === 'economia'
+                  {cenario.economiaEstimada > 0
                     ? 'Cenário novo mais barato'
-                    : cenario.resultado.impacto === 'aumento'
+                    : cenario.economiaEstimada < 0
                       ? 'Cenário novo mais caro'
                       : 'Cargas equivalentes'}
                 </span>
               </div>
-              {cenario.resultado.observacoes.slice(0, 2).map((obs) => (
+              {[...cenario.avisos, ...cenario.resultado.observacoes].slice(0, 3).map((obs) => (
                 <p key={obs} className="text-[11px] text-muted-foreground">
                   {obs}
                 </p>

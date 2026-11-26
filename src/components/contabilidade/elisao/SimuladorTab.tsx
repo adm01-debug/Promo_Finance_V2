@@ -11,7 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { nomeDoCenario, formatarMoeda } from '@/lib/contabilidade/simulacao-regimes';
+import { anoDoCenario, nomeDoCenario, formatarMoeda } from '@/lib/contabilidade/simulacao-regimes';
+import { cn } from '@/lib/utils';
 import type { SimulacaoElisao } from './ElisaoFiscalTab.types';
 
 interface Props {
@@ -26,9 +27,11 @@ const ROTULO_FONTE: Record<string, string> = {
 };
 
 function corEconomia(valor: number) {
-  if (valor > 0) return 'text-emerald-600';
-  if (valor < 0) return 'text-destructive';
-  return 'text-muted-foreground';
+  return cn(
+    valor > 0 && 'text-emerald-600',
+    valor < 0 && 'text-destructive',
+    valor === 0 && 'text-muted-foreground'
+  );
 }
 
 export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
@@ -68,7 +71,9 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
             <Card key={sim.id} className="hover:border-primary/50 transition-colors">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
-                  <Badge variant="outline">Ano {sim.ano_referencia}</Badge>
+                  <Badge variant="outline">
+                    Ano {anoDoCenario(sim.premissas) ?? sim.ano_referencia}
+                  </Badge>
                   <span className="text-[10px] text-muted-foreground">
                     Atualizado em {new Date(sim.updated_at).toLocaleDateString('pt-BR')}
                   </span>
@@ -132,6 +137,10 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
                   <span>Fonte</span>
                   <span>{ROTULO_FONTE[fontes?.fonteFaturamento ?? ''] ?? 'Registrada'}</span>
                 </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Folha apurada 12m</span>
+                  <span className="font-mono">{formatarMoeda(fontes?.folha12m)}</span>
+                </div>
                 <div className="flex justify-between">
                   <span>Tributos no regime atual</span>
                   <span className="font-mono">{formatarMoeda(resultado?.totalAntigo)}</span>
@@ -140,6 +149,14 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
                   <span>Tributos no cenário CBS/IBS</span>
                   <span className="font-mono">{formatarMoeda(resultado?.totalNovo)}</span>
                 </div>
+                {(detalhe.detalhes?.residuais_transicao?.total ?? 0) > 0 && (
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>ICMS/ISS/PIS/COFINS residuais do ano</span>
+                    <span className="font-mono">
+                      {formatarMoeda(detalhe.detalhes?.residuais_transicao?.total)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between font-semibold">
                   <span>Economia estimada</span>
                   <span className={corEconomia(detalhe.economia_estimada)}>
@@ -147,6 +164,16 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
                   </span>
                 </div>
               </div>
+              {detalhe.detalhes?.avisos && detalhe.detalhes.avisos.length > 0 && (
+                <div className="space-y-1">
+                  <p className="font-semibold text-sm">Premissas do cálculo</p>
+                  {detalhe.detalhes.avisos.map((aviso) => (
+                    <p key={aviso} className="text-muted-foreground">
+                      {aviso}
+                    </p>
+                  ))}
+                </div>
+              )}
               {resultado?.observacoes && resultado.observacoes.length > 0 && (
                 <div className="space-y-1">
                   <p className="font-semibold text-sm">Observações do motor</p>

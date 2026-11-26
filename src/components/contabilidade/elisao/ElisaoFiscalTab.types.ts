@@ -2,10 +2,12 @@ export type DetalhesSimulacaoElisao = {
   fontes?: {
     faturamento12m?: number;
     comprasServicos12m?: number;
+    folha12m?: number;
     notasConsideradas?: number;
     titulosConsiderados?: number;
     fonteFaturamento?: string;
     janelaInicio?: string;
+    truncado?: boolean;
   };
   resultado?: {
     totalAntigo?: number;
@@ -25,6 +27,16 @@ export type DetalhesSimulacaoElisao = {
     diferencaAbsoluta?: number;
   };
   aliquotas?: { atual_percentual?: number; simulada_percentual?: number };
+  /** ICMS/ISS/PIS/COFINS ainda devidos no ano de transição (somados à carga simulada). */
+  residuais_transicao?: {
+    icms?: number;
+    iss?: number;
+    pis?: number;
+    cofins?: number;
+    total?: number;
+  };
+  carga_simulada_base?: number;
+  avisos?: string[];
 };
 
 export type SimulacaoElisao = {
