@@ -16,5 +16,5 @@ export interface MatchResult {
   cliente: string;
   vencimento: string;
   valor: number;
-  confianca: 'alta' | 'media' | 'baixa';
+  confianca: 'alta' | 'media' | 'baixa' | 'manual';
 }

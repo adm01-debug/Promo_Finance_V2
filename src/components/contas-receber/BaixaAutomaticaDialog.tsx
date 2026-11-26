@@ -34,6 +34,7 @@ import type {
   TransacaoBancaria,
 } from './BaixaAutomaticaDialog.types';
 import { BaixaAutomaticaDialogCorrespondenciasAutomaticas } from './BaixaAutomaticaDialogCorrespondenciasAutomaticas';
+import type { ContaCandidata } from './VincularManualmenteDialog';
 
 export function BaixaAutomaticaDialog({
   open,
@@ -143,6 +144,24 @@ export function BaixaAutomaticaDialog({
       });
       setStep('error');
     }
+  };
+
+  const handleVincularManual = (transacao: TransacaoBancaria, conta: ContaCandidata) => {
+    setMatches((prev) => {
+      if (prev.some((m) => m.contaId === conta.id)) return prev;
+      return [
+        ...prev,
+        {
+          transacao,
+          contaId: conta.id,
+          cliente: conta.cliente_nome ?? '',
+          vencimento: conta.data_vencimento,
+          valor: conta.valor,
+          confianca: 'manual',
+        },
+      ];
+    });
+    setUnmatched((prev) => prev.filter((t) => t !== transacao));
   };
 
   const handleConfirmBaixa = async () => {
@@ -406,6 +425,8 @@ export function BaixaAutomaticaDialog({
               <BaixaAutomaticaDialogCorrespondenciasAutomaticas
                 matches={matches}
                 unmatched={unmatched}
+                empresaId={empresaId}
+                onVincular={handleVincularManual}
               />
             </motion.div>
           )}
