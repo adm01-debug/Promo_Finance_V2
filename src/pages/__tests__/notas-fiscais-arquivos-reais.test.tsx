@@ -7,7 +7,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { env } from '@/config/env';
 import type { NotaFiscal } from '@/components/nfe/nfe-types';
+
+const URL_SUPABASE = `https://${env.SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/sign/nfe-xml/a.xml?token=abc`;
 
 const { mockToast } = vi.hoisted(() => ({
   mockToast: { success: vi.fn(), error: vi.fn(), warning: vi.fn() },
@@ -87,9 +90,12 @@ function renderAbas(notas: NotaFiscal[], filtradas = notas) {
 }
 
 describe('/notas-fiscais — lista e arquivos reais', () => {
+  let aba: { opener: unknown; close: ReturnType<typeof vi.fn>; location: { href: string } };
+
   beforeEach(() => {
     vi.clearAllMocks();
-    window.open = vi.fn();
+    aba = { opener: {}, close: vi.fn(), location: { href: '' } };
+    window.open = vi.fn(() => aba as unknown as Window) as unknown as typeof window.open;
   });
 
   it('sem notas mostra estado vazio e não divide por zero na taxa de autorização', () => {
@@ -100,19 +106,19 @@ describe('/notas-fiscais — lista e arquivos reais', () => {
   });
 
   it('abre só o XML/DANFE que a nota realmente tem', async () => {
-    const url = 'https://projeto.supabase.co/storage/v1/object/sign/nfe-xml/a.xml?token=abc';
     renderAbas([
-      criarNota({ id: 'com', xmlUrl: url, pdfUrl: url }),
+      criarNota({ id: 'com', xmlUrl: URL_SUPABASE, pdfUrl: URL_SUPABASE }),
       criarNota({ id: 'sem', chaveAcesso: '35240112345678000190550010000012341234567891' }),
     ]);
 
-    const xml = screen.getAllByTitle('Abrir o XML autorizado')[0];
+    const xml = screen.getAllByTitle('Buscar o XML autorizado no armazenamento da empresa')[0];
     await userEvent.click(xml);
-    expect(window.open).toHaveBeenCalledWith(url, '_blank', 'noopener,noreferrer');
+    expect(aba.location.href).toBe(URL_SUPABASE);
 
+    aba.location.href = '';
     const danfe = screen.getAllByTitle('Abrir o DANFE (PDF)')[0];
     await userEvent.click(danfe);
-    expect(window.open).toHaveBeenCalledWith(url, '_blank', 'noopener,noreferrer');
+    expect(aba.location.href).toBe(URL_SUPABASE);
 
     const semArquivo = screen.getAllByTitle('XML não importado para esta nota');
     expect(semArquivo).toHaveLength(1);
@@ -125,12 +131,26 @@ describe('/notas-fiscais — lista e arquivos reais', () => {
   it('não abre XML de host desconhecido mesmo gravado na nota', async () => {
     renderAbas([criarNota({ id: 'phish', xmlUrl: 'https://phishing.example/nfe.xml' })]);
 
-    await userEvent.click(screen.getByTitle('Abrir o XML autorizado'));
+    await userEvent.click(screen.getByTitle('Buscar o XML autorizado no armazenamento da empresa'));
 
-    expect(window.open).not.toHaveBeenCalled();
     await vi.waitFor(() =>
       expect(mockToast.error).toHaveBeenCalledWith(
         'XML não encontrado no armazenamento desta empresa.'
+      )
+    );
+    expect(aba.location.href).toBe('');
+    expect(aba.close).toHaveBeenCalled();
+  });
+
+  it('avisa quando o navegador bloqueia a nova aba', async () => {
+    window.open = vi.fn(() => null) as unknown as typeof window.open;
+    renderAbas([criarNota({ id: 'com', xmlUrl: URL_SUPABASE })]);
+
+    await userEvent.click(screen.getByTitle('Buscar o XML autorizado no armazenamento da empresa'));
+
+    await vi.waitFor(() =>
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo.'
       )
     );
   });

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { env } from '@/config/env';
 import { getNfeXmlSignedUrl } from '@/hooks/useNfeRecebidas';
 import {
   direcaoDaNota,
@@ -20,7 +21,9 @@ vi.mock('@/hooks/useNfeRecebidas', () => ({
 
 const CHAVE = '35240112345678000190550010000012341234567890';
 const EMPRESA = '11111111-2222-3333-4444-555555555555';
-const URL_SUPABASE = 'https://projeto.supabase.co/storage/v1/object/sign/nfe-xml/a.xml?token=abc';
+const URL_SUPABASE = `https://${env.SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/sign/nfe-xml/a.xml?token=abc`;
+const URL_OUTRO_PROJETO =
+  'https://outroprojetoqualquer.supabase.co/storage/v1/object/sign/nfe-xml/a.xml?token=abc';
 
 const notaBase: NotaFiscalLocal = {
   id: 'n1',
@@ -58,7 +61,10 @@ describe('notas fiscais locais — leitura real do banco', () => {
 
   it('recusa URL de origem desconhecida gravada na nota', () => {
     expect(urlFiscalConfiavel('https://phishing.example/nfe.xml')).toBeUndefined();
-    expect(urlFiscalConfiavel('http://projeto.supabase.co/x.xml')).toBeUndefined();
+    expect(urlFiscalConfiavel(URL_OUTRO_PROJETO)).toBeUndefined();
+    expect(
+      urlFiscalConfiavel(`http://${env.SUPABASE_PROJECT_ID}.supabase.co/x.xml`)
+    ).toBeUndefined();
     expect(urlFiscalConfiavel('javascript:alert(1)')).toBeUndefined();
     expect(urlFiscalConfiavel('')).toBeUndefined();
     expect(urlFiscalConfiavel(URL_SUPABASE)).toBe(URL_SUPABASE);

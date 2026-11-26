@@ -19,23 +19,26 @@ import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { DANFEGenerator } from '@/components/nfe/DANFEGenerator';
 import { NotaFiscal, statusConfig } from './nfe-types';
-import { resolverUrlArquivo } from '@/hooks/useNotasFiscaisLocais';
+import { abrirArquivoFiscal } from '@/hooks/useNotasFiscaisLocais';
 
 export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
   const [copied, setCopied] = useState(false);
   const [danfeOpen, setDanfeOpen] = useState(false);
 
   const abrirArquivo = async (tipo: 'xml' | 'pdf') => {
-    const url = await resolverUrlArquivo(nfe, tipo);
-    if (!url) {
+    const resultado = await abrirArquivoFiscal(nfe, tipo);
+    if (resultado === 'sem_arquivo') {
       toast.error(
         tipo === 'xml'
           ? 'XML não encontrado no armazenamento desta empresa.'
           : 'DANFE não armazenado para esta nota — abra pelo Bling ERP.'
       );
-      return;
     }
-    window.open(url, '_blank', 'noopener,noreferrer');
+    if (resultado === 'bloqueado') {
+      toast.error(
+        'O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo.'
+      );
+    }
   };
 
   const handleCopyChave = () => {
@@ -202,7 +205,7 @@ export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
           disabled={!nfe.xmlUrl && !nfe.xmlNoStorage}
           title={
             nfe.xmlUrl || nfe.xmlNoStorage
-              ? 'Abrir o XML autorizado'
+              ? 'Buscar o XML autorizado no armazenamento da empresa'
               : 'XML não importado para esta nota'
           }
           variant="outline"

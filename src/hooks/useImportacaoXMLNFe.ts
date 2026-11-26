@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { CHAVE_QUERY_NOTAS } from '@/hooks/useNotasFiscaisLocais';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
@@ -628,6 +629,9 @@ export function useImportacaoXMLNFe(empresaId: string) {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['notas-fiscais'] });
+      // A aba Notas Fiscais lê `notas_fiscais` pela chave própria: sem esta
+      // invalidação a nota recém-importada só apareceria ao expirar o cache.
+      queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS });
       queryClient.invalidateQueries({ queryKey: ['creditos-tributarios'] });
       // Etapa 43: o resumo precisa dizer quanto veio do XML. Antes mostrava um
       // total único, e o usuário não tinha como saber que parte era estimativa

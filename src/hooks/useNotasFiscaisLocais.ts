@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getCurrentEmpresaId } from '@/hooks/useUserEmpresas';
 import { EmpresaScopeContext } from '@/contexts/useEmpresaScope';
 import { getNfeXmlSignedUrl } from '@/hooks/useNfeRecebidas';
+import { env } from '@/config/env';
 import type { ItemNFe, NotaFiscal } from '@/components/nfe/nfe-types';
 
 /**
@@ -74,7 +75,17 @@ export function statusNotaFiscalLocal(valor: string | null | undefined): NotaFis
  * abrir um destino arbitrário levaria outro usuário da mesma empresa para uma
  * página de terceiro (phishing). Só http(s) de host conhecido é aberto.
  */
-const HOSTS_CONFIAVEIS = ['supabase.co', 'supabase.in', 'bling.com.br', 'asaas.com'];
+const HOSTS_CONFIAVEIS = ['bling.com.br', 'asaas.com'];
+
+/**
+ * `*.supabase.co` é compartilhado por todos os projetos Supabase: aceitar o
+ * domínio inteiro permitiria trocar o link fiscal por conteúdo de outro
+ * projeto. Só o projeto deste sistema serve os arquivos (bucket `nfe-xml`).
+ */
+function hostSupabaseDoProjeto(host: string): boolean {
+  const ref = env.SUPABASE_PROJECT_ID.toLowerCase();
+  return host === `${ref}.supabase.co` || host === `${ref}.supabase.in`;
+}
 
 export function urlFiscalConfiavel(url: string | null | undefined): string | undefined {
   const bruto = (url ?? '').trim();
@@ -83,9 +94,9 @@ export function urlFiscalConfiavel(url: string | null | undefined): string | und
     const alvo = new URL(bruto);
     if (alvo.protocol !== 'https:') return undefined;
     const host = alvo.hostname.toLowerCase();
-    const confiavel = HOSTS_CONFIAVEIS.some(
-      (dominio) => host === dominio || host.endsWith(`.${dominio}`)
-    );
+    const confiavel =
+      hostSupabaseDoProjeto(host) ||
+      HOSTS_CONFIAVEIS.some((dominio) => host === dominio || host.endsWith(`.${dominio}`));
     return confiavel ? alvo.toString() : undefined;
   } catch {
     return undefined;
@@ -136,6 +147,35 @@ export async function resolverUrlArquivo(
 
   const assinada = await getNfeXmlSignedUrl(path);
   return urlFiscalConfiavel(assinada ?? undefined);
+}
+
+export type ResultadoAbertura = 'aberto' | 'sem_arquivo' | 'bloqueado';
+
+/**
+ * Abre o arquivo em outra aba. A aba nasce no clique, antes do `await`: a
+ * assinatura da URL leva tempo e, aberta depois dela, o navegador já encerrou
+ * a ativação do clique e bloqueia a janela em silêncio.
+ */
+export async function abrirArquivoFiscal(
+  nota: Pick<NotaFiscal, 'xmlUrl' | 'pdfUrl' | 'chaveAcesso' | 'empresaId'>,
+  tipo: 'xml' | 'pdf'
+): Promise<ResultadoAbertura> {
+  const aba = typeof window === 'undefined' ? null : window.open('', '_blank');
+  if (aba) aba.opener = null;
+
+  let url: string | undefined;
+  try {
+    url = await resolverUrlArquivo(nota, tipo);
+  } catch {
+    url = undefined;
+  }
+  if (!url) {
+    aba?.close();
+    return 'sem_arquivo';
+  }
+  if (!aba) return 'bloqueado';
+  aba.location.href = url;
+  return 'aberto';
 }
 
 export type DirecaoNota = 'saida' | 'entrada' | 'indefinida';

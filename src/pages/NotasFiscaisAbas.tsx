@@ -42,7 +42,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { statusConfig } from '@/components/nfe/nfe-types';
 import type { NotaFiscal } from '@/components/nfe/nfe-types';
-import { resolverUrlArquivo } from '@/hooks/useNotasFiscaisLocais';
+import { abrirArquivoFiscal as abrirArquivoFiscalSeguro } from '@/hooks/useNotasFiscaisLocais';
 import { NFePreview } from '@/components/nfe/NFePreview';
 import { EventosHistorico } from '@/components/nfe/EventosHistorico';
 import { AlertasRejeicao } from '@/components/nfe/AlertasRejeicao';
@@ -64,16 +64,17 @@ import type { Dispatch, SetStateAction } from 'react';
  * a chave da nota, e nunca é persistida.
  */
 async function abrirArquivoFiscal(nota: NotaFiscal, tipo: 'xml' | 'pdf') {
-  const url = await resolverUrlArquivo(nota, tipo);
-  if (!url) {
+  const resultado = await abrirArquivoFiscalSeguro(nota, tipo);
+  if (resultado === 'sem_arquivo') {
     toast.error(
       tipo === 'xml'
         ? 'XML não encontrado no armazenamento desta empresa.'
         : 'DANFE não armazenado para esta nota — abra pelo Bling ERP.'
     );
-    return;
   }
-  window.open(url, '_blank', 'noopener,noreferrer');
+  if (resultado === 'bloqueado') {
+    toast.error('O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo.');
+  }
 }
 interface NotasFiscaisAbasProps {
   searchTerm: string;
@@ -259,7 +260,7 @@ export function NotasFiscaisAbas({
                             disabled={!nota.xmlUrl && !nota.xmlNoStorage}
                             title={
                               nota.xmlUrl || nota.xmlNoStorage
-                                ? 'Abrir o XML autorizado'
+                                ? 'Buscar o XML autorizado no armazenamento da empresa'
                                 : 'XML não importado para esta nota'
                             }
                             onClick={() => void abrirArquivoFiscal(nota, 'xml')}
@@ -354,7 +355,7 @@ export function NotasFiscaisAbas({
                   <p className="text-sm text-muted-foreground">Itens Faturados</p>
                   <p className="text-2xl font-bold">
                     {notas
-                      .filter((n) => n.status === 'autorizada')
+                      .filter((n) => n.status === 'autorizada' && n.direcao !== 'entrada')
                       .reduce((acc, n) => acc + n.itens.reduce((a, i) => a + i.quantidade, 0), 0)}
                   </p>
                 </div>
