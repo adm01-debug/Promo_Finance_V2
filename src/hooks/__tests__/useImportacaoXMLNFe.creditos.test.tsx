@@ -140,11 +140,16 @@ describe('importarNFes — créditos CBS/IBS', () => {
       await result.current.importarNFes.mutateAsync();
     });
 
-    // A aba Notas Fiscais consulta `['notas-fiscais-locais', ...]` e normalmente
-    // está desmontada durante a importação: com `refetchType: 'all'` o cache é
-    // recarregado agora, em vez de deixar a lista antiga voltar à tela.
+    // A aba Notas Fiscais consulta `['notas-fiscais-locais', empresaId, limite]`
+    // e normalmente está desmontada durante a importação: com `refetchType:
+    // 'all'` o cache da empresa é recarregado agora, em vez de deixar a lista
+    // antiga voltar à tela.
     expect(invalidar).toHaveBeenCalledWith({
-      queryKey: CHAVE_QUERY_NOTAS,
+      queryKey: [...CHAVE_QUERY_NOTAS, 'emp-1'],
+      refetchType: 'all',
+    });
+    expect(invalidar).toHaveBeenCalledWith({
+      queryKey: ['creditos_tributarios', 'emp-1'],
       refetchType: 'all',
     });
   });

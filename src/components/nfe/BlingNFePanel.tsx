@@ -106,10 +106,11 @@ export function BlingNFePanel() {
     try {
       await cancelarNFe([nota.id]);
       await listarNFe();
-      // A aba "Notas Fiscais" lê a tabela local e pode estar desmontada aqui:
-      // `refetchType: 'all'` recarrega agora, já que a tela não refaz consulta
-      // ao ser remontada.
-      await queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS, refetchType: 'all' });
+      // A lista de notas vive na página, acima das abas: está montada (consulta
+      // ativa) enquanto este painel está aberto, então a invalidação padrão
+      // recarrega só a empresa atual. O caso de a nota ser gravada com a tela
+      // fechada é coberto por `refetchOnMount: 'always'` na própria consulta.
+      await queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS });
     } catch {
       /* handled in hook */
     }

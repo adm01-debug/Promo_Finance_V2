@@ -245,13 +245,13 @@ export async function guardarXmlAutorizado(blingNfeId: number) {
     body: { bling_nfe_id: blingNfeId, empresa_id: empresaId },
   });
   if (error || data?.error) return null;
-  // `refetchType: 'all'` porque a lista costuma estar desmontada aqui (o envio
-  // sai da aba do Bling) e o cliente não refaz consulta ao remontar
-  // (`refetchOnMount: false`): sem isso o cache antigo voltaria para a tela.
-  await Promise.all([
-    queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS, refetchType: 'all' }),
-    queryClient.invalidateQueries({ queryKey: ['notas-fiscais'], refetchType: 'all' }),
-  ]);
+  // `refetchType: 'all'` porque o envio sai da aba do Bling e a lista de notas
+  // pode estar desmontada; a chave é escopada por empresa para não recarregar
+  // o cache de empresas que o usuário abriu antes.
+  await queryClient.invalidateQueries({
+    queryKey: [...CHAVE_QUERY_NOTAS, empresaId],
+    refetchType: 'all',
+  });
   return data;
 }
 
