@@ -60,11 +60,22 @@ describe('useProdutoCclasstribPadraoMutations.salvarVarios', () => {
     expect(upsert).toHaveBeenCalledTimes(1);
     const [linhas, opcoes] = upsert.mock.calls[0];
     expect(opcoes).toEqual({ onConflict: 'produto_id' });
-    expect((linhas as Array<{ produto_id: string }>).map((l) => l.produto_id)).toEqual([
-      '900',
-      '456',
-      '457',
-    ]);
+    // Payload inteiro, nao so os IDs: com o banco simulado, conferir apenas
+    // `produto_id` passaria mesmo com NCM, CST ou cClassTrib omitidos, e o
+    // enquadramento gravado sairia incompleto.
+    expect(linhas).toEqual(
+      skuCompartilhado.map((produto) => ({
+        produto_id: produto.produto_id,
+        codigo: produto.codigo,
+        ncm: produto.ncm,
+        cst: produto.cst,
+        cclasstrib: produto.cclasstrib,
+        atualizado_em: expect.any(String),
+      }))
+    );
+    for (const linha of linhas as Array<{ atualizado_em: string }>) {
+      expect(Number.isNaN(Date.parse(linha.atualizado_em))).toBe(false);
+    }
     expect(toastError).not.toHaveBeenCalled();
   });
 
