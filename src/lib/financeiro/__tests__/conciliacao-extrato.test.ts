@@ -171,6 +171,29 @@ describe('conciliarCreditos', () => {
     expect(resultado.map((t) => t?.id)).toEqual(['mesmo-dia']);
   });
 
+  it('mantém a janela de cinco dias no limite ao contar dias cheios', () => {
+    // Crédito em 20/04: 25/04 fica a 5 dias (elegível) e 26/04 a 6 (fora). A
+    // contagem por dia de calendário não pode alargar a janela original.
+    // 14h do dia 20: pela hora do extrato o vencimento de 25/04 ficaria a 5,42
+    // dias e seria recusado; por dia de calendário são exatamente 5.
+    const creditoDoDia = {
+      valor: 1500,
+      descricao: 'PIX BETA',
+      data: new Date('2026-04-20T14:00:00'),
+    };
+    const elegivel = conciliarCreditos(
+      [creditoDoDia],
+      [titulo('limite', 'Beta ME', 1500, '2026-04-25')]
+    );
+    const fora = conciliarCreditos(
+      [creditoDoDia],
+      [titulo('seis-dias', 'Beta ME', 1500, '2026-04-26')]
+    );
+
+    expect(elegivel.map((t) => t?.id)).toEqual(['limite']);
+    expect(fora).toEqual([null]);
+  });
+
   it('cada título quita um único crédito', () => {
     const resultado = conciliarCreditos(
       [credito(900, 'PIX BETA'), credito(900, 'PIX BETA')],

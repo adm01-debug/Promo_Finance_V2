@@ -387,6 +387,84 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     );
   });
 
+  it('acrescenta as novas divergências sem perder as pendentes do lote anterior', async () => {
+    erroAoGravarAlerta = true;
+    abrirDialogo();
+    await importar();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    // Segundo lote, com créditos diferentes: as pendências novas se somam às
+    // antigas em vez de substituí-las (a baixa anterior segue sem alerta).
+    fireEvent.click(screen.getByText('FECHAR'));
+    await waitFor(() =>
+      expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
+    );
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        transacaoCredito(888, 'PIX SEM PAR 1', '2026-04-20'),
+        transacaoCredito(777, 'PIX SEM PAR 2', '2026-04-20'),
+      ])
+    );
+    await importar();
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() =>
+      expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(4\)/)).toBeInTheDocument()
+    );
+
+    erroAoGravarAlerta = false;
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('4 divergências registradas como alerta.')
+    );
+    const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
+    // 4 tentativas que falharam (2 de cada lote) + 4 que passaram na repetição.
+    expect(alertas).toHaveLength(8);
+    const mensagens = alertas.slice(4).map((c) => (c.args[0] as { mensagem: string }).mensagem);
+    expect(mensagens).toHaveLength(4);
+    // Cada crédito dos dois lotes continua pendente: 1 TED do primeiro lote e 3
+    // PIX (999 do primeiro, 888 e 777 do segundo).
+    expect(mensagens.filter((m) => m.includes('TED RECEBIDA'))).toHaveLength(1);
+    expect(mensagens.filter((m) => m.includes('PIX SEM PAR'))).toHaveLength(3);
+  });
+
+  it('grava as divergências pendentes na empresa do lote de origem', async () => {
+    erroAoGravarAlerta = true;
+    const { rerender } = abrirDialogo('emp-1');
+    await importar();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('FECHAR'));
+    await waitFor(() =>
+      expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
+    );
+
+    // A empresa ativa muda antes da gravação: o alerta continua sendo da empresa
+    // que teve o lote importado, senão ele nasce no perfil financeiro errado.
+    const cliente = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    rerender(
+      <QueryClientProvider client={cliente}>
+        <BaixaAutomaticaDialog open={true} onOpenChange={vi.fn()} empresaId="emp-2" />
+      </QueryClientProvider>
+    );
+    expect(screen.getByText(/serão gravadas na empresa de origem/)).toBeInTheDocument();
+
+    erroAoGravarAlerta = false;
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('2 divergências registradas como alerta.')
+    );
+
+    const empresas = chamadas
+      .filter((c) => c.tabela === 'alertas' && c.metodo === 'insert')
+      .slice(2)
+      .map((c) => (c.args[0] as { empresa_id: string }).empresa_id);
+    expect(empresas).toEqual(['emp-1', 'emp-1']);
+  });
+
   it('descarta o lote quando a empresa muda antes da confirmação', async () => {
     const { rerender } = abrirDialogo('emp-1');
     await importar();

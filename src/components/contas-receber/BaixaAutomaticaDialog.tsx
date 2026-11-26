@@ -36,6 +36,10 @@ import type {
 } from './BaixaAutomaticaDialog.types';
 import { BaixaAutomaticaDialogCorrespondenciasAutomaticas } from './BaixaAutomaticaDialogCorrespondenciasAutomaticas';
 import type { ContaCandidata } from './VincularManualmenteDialog';
+import {
+  mesclarPendentes,
+  type DivergenciaPendente,
+} from '@/lib/financeiro/divergencias-pendentes';
 
 export function BaixaAutomaticaDialog({
   open,
@@ -61,7 +65,15 @@ export function BaixaAutomaticaDialog({
   // Divergências cujo alerta não pôde ser gravado: ficam na tela para nova
   // tentativa. Reimportar o arquivo inteiro não é a saída — os créditos já
   // liquidados continuam no extrato e poderiam quitar outros títulos.
-  const [divergenciasSemAlerta, setDivergenciasSemAlerta] = useState<TransacaoBancaria[]>([]);
+  // Cada pendência guarda a empresa do lote de origem: sem isso, trocar de empresa
+  // antes de repetir a gravação criava o alerta na empresa errada.
+  const [divergenciasSemAlerta, setDivergenciasSemAlerta] = useState<DivergenciaPendente[]>([]);
+
+  // Pendências de outro lote/empresa continuam válidas e serão gravadas na empresa
+  // de origem — a tela avisa para o usuário não estranhar o número.
+  const pendentesDeOutraEmpresa = divergenciasSemAlerta.filter(
+    (d) => d.empresaId !== empresaId
+  ).length;
 
   const queryClient = useQueryClient();
   const { data: contasBancarias = [] } = useContasBancarias(empresaId || undefined);
@@ -82,7 +94,7 @@ export function BaixaAutomaticaDialog({
   useEffect(() => {
     if (!empresaDoLote || !empresaId || empresaId === empresaDoLote) return;
     resetState();
-    setDivergenciasSemAlerta([]);
+    // As pendências continuam: carregam a empresa de origem e são gravadas nela.
     toast.error('Empresa alterada — importe novamente o arquivo de retorno desta empresa.');
   }, [empresaId, empresaDoLote]);
 
@@ -192,11 +204,10 @@ export function BaixaAutomaticaDialog({
   // para a tela de conclusão oferecer nova tentativa só desses itens.
   const registrarDivergencias = async (
     userId: string,
-    transacoes: TransacaoBancaria[],
-    empresaAlvo: string
-  ): Promise<TransacaoBancaria[]> => {
-    const falhas: TransacaoBancaria[] = [];
-    for (const t of transacoes) {
+    pendentes: DivergenciaPendente[]
+  ): Promise<DivergenciaPendente[]> => {
+    const falhas: DivergenciaPendente[] = [];
+    for (const { empresaId: empresaAlvo, transacao: t } of pendentes) {
       const { error: alertaError } = await supabase.from('alertas').insert({
         user_id: userId,
         // A empresa do lote vai explícita: sem ela o gatilho de alertas usa
@@ -207,7 +218,7 @@ export function BaixaAutomaticaDialog({
         titulo: 'Divergência na Baixa Automática',
         mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
       });
-      if (alertaError) falhas.push(t);
+      if (alertaError) falhas.push({ empresaId: empresaAlvo, transacao: t });
     }
     return falhas;
   };
@@ -331,13 +342,15 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        const falhasDeAlerta = await registrarDivergencias(
-          user.id,
-          [...unmatched, ...naoConfirmadas],
-          empresaAlvo
-        );
+        const novasPendentes = [...unmatched, ...naoConfirmadas].map((transacao) => ({
+          empresaId: empresaAlvo,
+          transacao,
+        }));
+        const falhasDeAlerta = await registrarDivergencias(user.id, novasPendentes);
         alertasFalhos = falhasDeAlerta.length;
-        setDivergenciasSemAlerta(falhasDeAlerta);
+        // Mescla com as pendências de lotes anteriores (mesmo de outra empresa):
+        // sobrescrever descartava alertas que continuavam devidos.
+        setDivergenciasSemAlerta((prev) => mesclarPendentes(prev, falhasDeAlerta));
         if (alertasFalhos > 0) {
           // A divergência não pode ficar registrada em lugar nenhum: a tela de
           // conclusão repete só a gravação destes alertas, sem reimportar o
@@ -396,11 +409,6 @@ export function BaixaAutomaticaDialog({
   const handleRepetirAlertas = async () => {
     const pendentes = divergenciasSemAlerta;
     if (pendentes.length === 0) return;
-    const empresaAlvo = empresaDoLote || empresaId;
-    if (!empresaAlvo) {
-      toast.error('Selecione a empresa do lote antes de registrar as divergências.');
-      return;
-    }
     setProcessing(true);
     try {
       const {
@@ -410,7 +418,7 @@ export function BaixaAutomaticaDialog({
         toast.error('Sessão expirada — entre novamente para registrar as divergências.');
         return;
       }
-      const falhas = await registrarDivergencias(user.id, pendentes, empresaAlvo);
+      const falhas = await registrarDivergencias(user.id, pendentes);
       setDivergenciasSemAlerta(falhas);
       setSuccessSummary((prev) => ({ ...prev, alertasFalhos: falhas.length }));
       if (falhas.length === 0) {
@@ -481,6 +489,10 @@ export function BaixaAutomaticaDialog({
                   ? '1 divergência da última baixa continua sem alerta registrado.'
                   : `${divergenciasSemAlerta.length} divergências da última baixa continuam sem alerta registrado.`}{' '}
                 Registre-as aqui — reimportar o extrato pode reaplicar créditos já usados.
+                {pendentesDeOutraEmpresa > 0 &&
+                  ` ${pendentesDeOutraEmpresa} ${
+                    pendentesDeOutraEmpresa === 1 ? 'é de outro lote' : 'são de outros lotes'
+                  } e ${pendentesDeOutraEmpresa === 1 ? 'será gravada' : 'serão gravadas'} na empresa de origem.`}
               </span>
             </p>
             <Button
