@@ -140,9 +140,13 @@ describe('importarNFes — créditos CBS/IBS', () => {
       await result.current.importarNFes.mutateAsync();
     });
 
-    // A aba Notas Fiscais consulta `['notas-fiscais-locais', ...]`; invalidar
-    // só `['notas-fiscais']` deixava o cache antigo válido por até o gcTime.
-    expect(invalidar).toHaveBeenCalledWith({ queryKey: CHAVE_QUERY_NOTAS });
+    // A aba Notas Fiscais consulta `['notas-fiscais-locais', ...]` e normalmente
+    // está desmontada durante a importação: com `refetchType: 'all'` o cache é
+    // recarregado agora, em vez de deixar a lista antiga voltar à tela.
+    expect(invalidar).toHaveBeenCalledWith({
+      queryKey: CHAVE_QUERY_NOTAS,
+      refetchType: 'all',
+    });
   });
 
   it('manda natureza_operacao e created_by para a função decidir, não os descarta', async () => {

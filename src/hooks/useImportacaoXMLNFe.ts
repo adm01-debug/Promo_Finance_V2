@@ -628,11 +628,12 @@ export function useImportacaoXMLNFe(empresaId: string) {
       };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['notas-fiscais'] });
-      // A aba Notas Fiscais lê `notas_fiscais` pela chave própria: sem esta
-      // invalidação a nota recém-importada só apareceria ao expirar o cache.
-      queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS });
-      queryClient.invalidateQueries({ queryKey: ['creditos-tributarios'] });
+      queryClient.invalidateQueries({ queryKey: ['notas-fiscais'], refetchType: 'all' });
+      // A aba Notas Fiscais lê `notas_fiscais` pela chave própria e costuma
+      // estar desmontada aqui — `refetchType: 'all'` recarrega mesmo assim,
+      // porque o cliente não refaz a consulta ao remontar a tela.
+      queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS, refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['creditos-tributarios'], refetchType: 'all' });
       // Etapa 43: o resumo precisa dizer quanto veio do XML. Antes mostrava um
       // total único, e o usuário não tinha como saber que parte era estimativa
       // — justamente o que a etapa manda avisar.

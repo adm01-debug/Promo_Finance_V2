@@ -106,9 +106,10 @@ export function BlingNFePanel() {
     try {
       await cancelarNFe([nota.id]);
       await listarNFe();
-      // A aba "Notas Fiscais" lê a tabela local: sem invalidação o cancelamento
-      // não aparece lá até o cache expirar.
-      await queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS });
+      // A aba "Notas Fiscais" lê a tabela local e pode estar desmontada aqui:
+      // `refetchType: 'all'` recarrega agora, já que a tela não refaz consulta
+      // ao ser remontada.
+      await queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS, refetchType: 'all' });
     } catch {
       /* handled in hook */
     }

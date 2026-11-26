@@ -370,6 +370,11 @@ export function useNotasFiscaisLocais(limite = 200) {
     queryFn: () => carregarNotas(empresaId as string, limite),
     enabled: Boolean(empresaId),
     staleTime: 60_000,
+    // O cliente global não refaz consulta ao remontar (`refetchOnMount: false`);
+    // a lista de notas recebe escrita de várias telas (importação, envio e
+    // cancelamento pelo Bling, cron de sincronização), então aqui abrir a aba
+    // tem de mostrar o banco de agora, não o cache de dez minutos atrás.
+    refetchOnMount: 'always',
   });
 
   return {

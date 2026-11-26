@@ -245,11 +245,12 @@ export async function guardarXmlAutorizado(blingNfeId: number) {
     body: { bling_nfe_id: blingNfeId, empresa_id: empresaId },
   });
   if (error || data?.error) return null;
-  // A edge materializa nota e itens no banco: sem invalidar, a aba de notas
-  // fiscais continuaria servindo a lista antiga por até o gcTime do cache.
+  // `refetchType: 'all'` porque a lista costuma estar desmontada aqui (o envio
+  // sai da aba do Bling) e o cliente não refaz consulta ao remontar
+  // (`refetchOnMount: false`): sem isso o cache antigo voltaria para a tela.
   await Promise.all([
-    queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS }),
-    queryClient.invalidateQueries({ queryKey: ['notas-fiscais'] }),
+    queryClient.invalidateQueries({ queryKey: CHAVE_QUERY_NOTAS, refetchType: 'all' }),
+    queryClient.invalidateQueries({ queryKey: ['notas-fiscais'], refetchType: 'all' }),
   ]);
   return data;
 }
