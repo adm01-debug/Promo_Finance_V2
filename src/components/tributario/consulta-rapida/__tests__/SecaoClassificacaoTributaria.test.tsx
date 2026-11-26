@@ -96,7 +96,11 @@ describe('classificacao tributaria na consulta por NCM (etapa 84)', () => {
   });
 
   it('sem catalogo sincronizado explica o vazio em vez de mostrar tabela', () => {
-    estado.atual = estadoPadrao({ opcoes: [], fundamentos: fundamentosVazios('2026-11-27'), indisponivel: true });
+    estado.atual = estadoPadrao({
+      opcoes: [],
+      fundamentos: fundamentosVazios('2026-11-27'),
+      indisponivel: true,
+    });
 
     renderizar();
 

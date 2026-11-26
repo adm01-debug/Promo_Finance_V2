@@ -35,19 +35,16 @@ const fundamentos = (fimVigencia: string | null = null) => {
   const base = fundamentosVazios('2026-11-27');
   base.carregado = true;
   base.fimVigencia = fimVigencia;
-  base.porCst.set(
-    chaveFundamentoLegal('200035', '000'),
-    {
-      cclasstrib: '200035',
-      cst: '000',
-      conjuntoTributo: 'CBS e IBS',
-      descricaoCClasstrib: null as never,
-      descricaoCST: null,
-      texto: 'Art. 12 da LC 214/2025',
-      textoCurto: 'LC 214/2025',
-      referenciaNormativa: null,
-    } as never
-  );
+  base.porCst.set(chaveFundamentoLegal('200035', '000'), {
+    cclasstrib: '200035',
+    cst: '000',
+    conjuntoTributo: 'CBS e IBS',
+    descricaoCClasstrib: null as never,
+    descricaoCST: null,
+    texto: 'Art. 12 da LC 214/2025',
+    textoCurto: 'LC 214/2025',
+    referenciaNormativa: null,
+  } as never);
   return base;
 };
 
@@ -58,13 +55,14 @@ const pacote = (over: Partial<{ opcoes: CclasstribCatalogo[] }> = {}) => ({
 
 const deps = (
   over: Partial<DepsClassificacaoTributaria> = {}
-): DepsClassificacaoTributaria & { salvarCache: ReturnType<typeof vi.fn> } => ({
-  listarOpcoes: vi.fn(async () => OPCOES),
-  buscarFundamentos: vi.fn(async () => fundamentos()),
-  lerCache: vi.fn(async () => null),
-  salvarCache: vi.fn(async () => undefined),
-  ...over,
-}) as never;
+): DepsClassificacaoTributaria & { salvarCache: ReturnType<typeof vi.fn> } =>
+  ({
+    listarOpcoes: vi.fn(async () => OPCOES),
+    buscarFundamentos: vi.fn(async () => fundamentos()),
+    lerCache: vi.fn(async () => null),
+    salvarCache: vi.fn(async () => undefined),
+    ...over,
+  }) as never;
 
 describe('pacote offline de classificacao tributaria (etapa 84)', () => {
   it('sem rede mas com cache: serve o pacote guardado e marca offline', async () => {
@@ -99,10 +97,10 @@ describe('pacote offline de classificacao tributaria (etapa 84)', () => {
 
   it('falha na fundamentacao nao regrava o cache e mantem o texto guardado', async () => {
     const guardado = fundamentos('2026-12-31');
-    guardado.porCst.set(
-      chaveFundamentoLegal('200038', '000'),
-      { ...guardado.porCst.get(chaveFundamentoLegal('200035', '000'))!, cclasstrib: '200038' } as never
-    );
+    guardado.porCst.set(chaveFundamentoLegal('200038', '000'), {
+      ...guardado.porCst.get(chaveFundamentoLegal('200035', '000'))!,
+      cclasstrib: '200038',
+    } as never);
     const cache: EntradaCache<ReturnType<typeof pacote>> = {
       chave: 'k',
       payload: { opcoes: OPCOES, fundamentos: guardado },
@@ -190,9 +188,7 @@ describe('vencimento do pacote exibido', () => {
 
   it('vence no TTL quando a vigencia do dado e maior', () => {
     const gravadoEm = Date.parse('2026-11-27T12:00:00.000Z');
-    expect(proximoVencimentoMs({ gravadoEm, vigenciaAte: '2030-01-01' })).toBe(
-      gravadoEm + 7 * DIA
-    );
+    expect(proximoVencimentoMs({ gravadoEm, vigenciaAte: '2030-01-01' })).toBe(gravadoEm + 7 * DIA);
   });
 
   it('sem TTL (dado veio da rede) so a vigencia conta', () => {

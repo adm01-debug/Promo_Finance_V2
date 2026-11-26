@@ -90,8 +90,7 @@ export function useClassificacaoTributaria(): ClassificacaoTributaria {
       carregarClassificacaoTributaria({
         listarOpcoes: () => listarCclasstribVigentes(),
         buscarFundamentos: (codigos) => buscarFundamentosLegais(codigos),
-        lerCache: () =>
-          lerConsulta<PacoteClassificacaoTributaria>(CHAVE_CLASSIFICACAO_TRIBUTARIA),
+        lerCache: () => lerConsulta<PacoteClassificacaoTributaria>(CHAVE_CLASSIFICACAO_TRIBUTARIA),
         salvarCache: (pacote, opcoes) =>
           salvarConsulta(CHAVE_CLASSIFICACAO_TRIBUTARIA, pacote, opcoes),
       }),
