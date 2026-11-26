@@ -91,6 +91,281 @@ describe('OFX/CSV Parser', () => {
       const r = parseOFX(ofx, 'test.ofx');
       expect(r.extrato?.conta.saldoFinal).toBe(12500.75);
     });
+
+    it('guarda a conta de origem de cada bloco de extrato', () => {
+      const ofx = `
+        <OFX>
+          <BANKMSGSRSV1>
+            <STMTTRNRS>
+              <STMTRS>
+                <BANKACCTFROM>
+                  <BANKID>001
+                  <BRANCHID>1234
+                  <ACCTID>11111-1
+                </BANKACCTFROM>
+                <BANKTRANLIST>
+                  <STMTTRN>
+                    <TRNTYPE>CREDIT
+                    <DTPOSTED>20240115
+                    <TRNAMT>500.00
+                    <FITID>123
+                    <NAME>PIX recebido
+                  </STMTTRN>
+                </BANKTRANLIST>
+              </STMTRS>
+            </STMTTRNRS>
+            <STMTTRNRS>
+              <STMTRS>
+                <BANKACCTFROM>
+                  <BANKID>341
+                  <BRANCHID>9999
+                  <ACCTID>22222-2
+                </BANKACCTFROM>
+                <BANKTRANLIST>
+                  <STMTTRN>
+                    <TRNTYPE>CREDIT
+                    <DTPOSTED>20240116
+                    <TRNAMT>700.00
+                    <FITID>123
+                    <NAME>PIX recebido
+                  </STMTTRN>
+                </BANKTRANLIST>
+              </STMTRS>
+            </STMTTRNRS>
+          </BANKMSGSRSV1>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'duas-contas.ofx');
+
+      expect(r.sucesso).toBe(true);
+      expect(r.extrato?.transacoes).toHaveLength(2);
+      // O mesmo FITID nas duas contas: a origem é o que distingue os créditos.
+      expect(r.extrato?.transacoes.map((t) => t.origemConta)).toEqual([
+        '341/9999/22222-2',
+        '001/1234/11111-1',
+      ]);
+      expect(new Set(r.extrato?.transacoes.map((t) => t.id)).size).toBe(2);
+      expect(r.avisos).toContain(
+        'O arquivo contém mais de uma conta: cada crédito fica vinculado à conta de origem que o emitiu'
+      );
+    });
+
+    it('não inventa conta de origem para extrato sem número de conta', () => {
+      const ofx = `
+        <OFX>
+          <STMTTRN>
+            <TRNTYPE>CREDIT
+            <DTPOSTED>20240115
+            <TRNAMT>500.00
+            <FITID>TX001
+            <NAME>PIX recebido
+          </STMTTRN>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'sem-conta.ofx');
+      expect(r.extrato?.transacoes[0].origemConta).toBeUndefined();
+      expect(r.avisos).toContain(
+        'Transações sem número de conta de origem: a origem não pôde ser identificada'
+      );
+    });
+
+    it('não duplica créditos quando o fechamento da lista vem com espaço na tag', () => {
+      const ofx = `
+        <OFX>
+          <BANKACCTFROM>
+            <BANKID>001
+            <BRANCHID>1234
+            <ACCTID>11111-1
+          </BANKACCTFROM>
+          <BANKTRANLIST >
+            <STMTTRN>
+              <TRNTYPE>CREDIT
+              <DTPOSTED>20240115
+              <TRNAMT>500.00
+              <FITID>123
+              <NAME>PIX recebido
+            </STMTTRN>
+          </BANKTRANLIST >
+          <STMTTRNRS>
+            <STMTRS>
+              <BANKACCTFROM>
+                <BANKID>341
+                <BRANCHID>9999
+                <ACCTID>22222-2
+              </BANKACCTFROM>
+              <BANKTRANLIST>
+              <STMTTRN>
+                <TRNTYPE>CREDIT
+                <DTPOSTED>20240116
+                <TRNAMT>700.00
+                <FITID>999
+                <NAME>PIX recebido
+              </STMTTRN>
+              </BANKTRANLIST>
+            </STMTRS>
+          </STMTTRNRS>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'fechamento-com-espaco.ofx');
+
+      expect(r.sucesso).toBe(true);
+      // Sem o recorte correto o crédito da 2ª lista entraria também na 1ª (baixa dupla).
+      expect(r.extrato?.transacoes).toHaveLength(2);
+      expect(r.extrato?.transacoes.map((t) => t.numeroReferencia)).toEqual(['999', '123']);
+      expect(r.extrato?.transacoes.map((t) => t.origemConta)).toEqual([
+        '341/9999/22222-2',
+        '001/1234/11111-1',
+      ]);
+    });
+
+    it('ignora a conta de destino de transferência do bloco anterior', () => {
+      const ofx = `
+        <OFX>
+          <STMTRS>
+            <BANKACCTFROM>
+              <BANKID>001
+              <BRANCHID>1234
+              <ACCTID>11111-1
+            </BANKACCTFROM>
+            <BANKTRANLIST>
+              <STMTTRN>
+                <TRNTYPE>DEBIT
+                <DTPOSTED>20240115
+                <TRNAMT>-500.00
+                <FITID>888
+                <NAME>Transferência enviada
+                <BANKACCTTO>
+                  <BANKID>999
+                  <BRANCHID>1
+                  <ACCTID>55555-5
+                </BANKACCTTO>
+              </STMTTRN>
+            </BANKTRANLIST>
+          </STMTRS>
+          <STMTTRNRS>
+            <STMTRS>
+              <BANKACCTFROM>
+                <BANKID>341
+                <BRANCHID>9999
+                <ACCTID>22222-2
+              </BANKACCTFROM>
+              <BANKTRANLIST>
+                <STMTTRN>
+                  <TRNTYPE>CREDIT
+                  <DTPOSTED>20240116
+                  <TRNAMT>700.00
+                  <FITID>777
+                  <NAME>PIX recebido
+                </STMTTRN>
+              </BANKTRANLIST>
+            </STMTRS>
+          </STMTTRNRS>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'transferencia-entre-contas.ofx');
+
+      const credito = r.extrato?.transacoes.find((t) => t.numeroReferencia === '777');
+      expect(credito?.origemConta).toBe('341/9999/22222-2');
+    });
+
+    it('acha a conta do bloco seguinte quando a lista anterior não fecha', () => {
+      const ofx = `
+        <OFX>
+          <STMTTRNRS>
+            <STMTRS>
+              <BANKACCTFROM>
+                <BANKID>001
+                <BRANCHID>1234
+                <ACCTID>11111-1
+              </BANKACCTFROM>
+              <BANKTRANLIST>
+                <STMTTRN>
+                  <TRNTYPE>CREDIT
+                  <DTPOSTED>20240115
+                  <TRNAMT>100.00
+                  <FITID>123
+                  <NAME>PIX recebido
+                </STMTTRN>
+              <STMTTRNRS>
+                <STMTRS>
+                  <BANKACCTFROM>
+                    <BANKID>341
+                    <BRANCHID>9999
+                    <ACCTID>22222-2
+                  </BANKACCTFROM>
+                  <BANKTRANLIST>
+                    <STMTTRN>
+                      <TRNTYPE>CREDIT
+                      <DTPOSTED>20240116
+                      <TRNAMT>200.00
+                      <FITID>123
+                      <NAME>PIX recebido
+                    </STMTTRN>
+                  </BANKTRANLIST>
+                </STMTRS>
+              </STMTTRNRS>
+            </STMTRS>
+          </STMTTRNRS>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'lista-sem-fechamento.ofx');
+
+      // Sem a conta do segundo bloco os dois créditos cairiam como um só lote
+      // (mesmo FITID) e poderiam ser lançados na conta de destino errada.
+      expect(r.extrato?.transacoes).toHaveLength(2);
+      expect(r.extrato?.transacoes.map((t) => t.origemConta)).toEqual([
+        '341/9999/22222-2',
+        '001/1234/11111-1',
+      ]);
+    });
+
+    it('identifica o cartão de crédito para não confundir com a conta corrente', () => {
+      const ofx = `
+        <OFX>
+          <BANKMSGSRSV1>
+            <STMTTRNRS>
+              <STMTRS>
+                <BANKACCTFROM>
+                  <BANKID>001
+                  <BRANCHID>1234
+                  <ACCTID>11111-1
+                </BANKACCTFROM>
+                <BANKTRANLIST>
+                  <STMTTRN>
+                    <TRNTYPE>CREDIT
+                    <DTPOSTED>20240115
+                    <TRNAMT>100.00
+                    <FITID>500
+                    <NAME>PIX recebido
+                  </STMTTRN>
+                </BANKTRANLIST>
+              </STMTRS>
+            </STMTTRNRS>
+          </BANKMSGSRSV1>
+          <CREDITCARDMSGSRSV1>
+            <CCSTMTTRNRS>
+              <CCSTMTRS>
+                <CCACCTFROM>
+                  <ACCTID>222
+                </CCACCTFROM>
+                <BANKTRANLIST>
+                  <STMTTRN>
+                    <TRNTYPE>CREDIT
+                    <DTPOSTED>20240116
+                    <TRNAMT>200.00
+                    <FITID>600
+                    <NAME>Estorno
+                  </STMTTRN>
+                </BANKTRANLIST>
+              </CCSTMTRS>
+            </CCSTMTTRNRS>
+          </CREDITCARDMSGSRSV1>
+        </OFX>
+      `;
+      const r = parseOFX(ofx, 'conta-e-cartao.ofx');
+
+      expect(r.extrato?.transacoes.map((t) => t.origemConta)).toEqual(['222', '001/1234/11111-1']);
+    });
   });
 
   // ========================
