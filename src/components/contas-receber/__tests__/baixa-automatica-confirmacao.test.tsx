@@ -102,11 +102,19 @@ vi.mock('sonner', () => ({
   },
 }));
 
-const extratoCom = (transacoes: unknown[]) => ({
+const extratoCom = (transacoes: unknown[], conta?: Record<string, string>) => ({
   sucesso: true,
   avisos: [],
   extrato: {
     transacoes,
+    conta: {
+      banco: '001',
+      agencia: '1234',
+      conta: '5678',
+      tipoConta: 'checking',
+      moeda: 'BRL',
+      ...conta,
+    },
     nomeArquivo: 'retorno.ofx',
     dataImportacao: new Date('2026-04-21T00:00:00'),
     formato: 'OFX',
@@ -476,7 +484,9 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
       ])
     );
     await importar();
-    await selecionarConta(/BB/);
+    // Destino diferente do primeiro lote: a identidade do crédito vem da conta
+    // de origem do arquivo, então trocar o destino não cria um alerta a mais.
+    await selecionarConta(/Itaú/);
     fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
     await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
     expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
@@ -503,7 +513,6 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     parseExtratoBancarioMock.mockReturnValue(extratoCom([credito(250, 'PIX CONTA A', '123')]));
     abrirDialogo();
     await importar(1);
-    await selecionarConta(/BB/);
     fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
     await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
     expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(1\)/)).toBeInTheDocument();
@@ -514,9 +523,14 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     await waitFor(() =>
       expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
     );
-    parseExtratoBancarioMock.mockReturnValue(extratoCom([credito(400, 'TED CONTA B', '123')]));
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([credito(400, 'TED CONTA B', '123')], {
+        banco: '341',
+        agencia: '9999',
+        conta: '1111',
+      })
+    );
     await importar(1);
-    await selecionarConta(/Itaú/);
     fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
     await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
     expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();

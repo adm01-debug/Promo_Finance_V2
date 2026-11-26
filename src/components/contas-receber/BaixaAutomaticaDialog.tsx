@@ -38,6 +38,7 @@ import { BaixaAutomaticaDialogCorrespondenciasAutomaticas } from './BaixaAutomat
 import type { ContaCandidata } from './VincularManualmenteDialog';
 import {
   mesclarPendentes,
+  origemDoExtrato,
   type DivergenciaPendente,
 } from '@/lib/financeiro/divergencias-pendentes';
 
@@ -61,6 +62,9 @@ export function BaixaAutomaticaDialog({
     alertasFalhos: 0,
   });
   const [contaBancariaId, setContaBancariaId] = useState('');
+  // Conta de origem do extrato em análise (ACCTID do arquivo). Identifica o
+  // crédito nas pendências; sem ela a fila não deduplica nada.
+  const [origemDoLote, setOrigemDoLote] = useState<string | null>(null);
   const [empresaDoLote, setEmpresaDoLote] = useState('');
   // Divergências cujo alerta não pôde ser gravado: ficam na tela para nova
   // tentativa. Reimportar o arquivo inteiro não é a saída — os créditos já
@@ -86,6 +90,7 @@ export function BaixaAutomaticaDialog({
     setUnmatched([]);
     setProcessing(false);
     setContaBancariaId('');
+    setOrigemDoLote(null);
     setEmpresaDoLote('');
     // `divergenciasSemAlerta` sobrevive ao fechamento: são alertas que não
     // entraram no banco e continuam devidos. Só saem daqui quando gravados.
@@ -157,6 +162,7 @@ export function BaixaAutomaticaDialog({
 
       if (result.sucesso && result.extrato) {
         setEmpresaDoLote(empresaId);
+        setOrigemDoLote(origemDoExtrato(result.extrato));
         const { matched: foundMatches, unmatched: foundUnmatched } = await findMatches(
           result.extrato
         );
@@ -207,7 +213,8 @@ export function BaixaAutomaticaDialog({
     pendentes: DivergenciaPendente[]
   ): Promise<DivergenciaPendente[]> => {
     const falhas: DivergenciaPendente[] = [];
-    for (const { empresaId: empresaAlvo, transacao: t } of pendentes) {
+    for (const pendente of pendentes) {
+      const { empresaId: empresaAlvo, transacao: t } = pendente;
       const { error: alertaError } = await supabase.from('alertas').insert({
         user_id: userId,
         // A empresa do lote vai explícita: sem ela o gatilho de alertas usa
@@ -218,7 +225,9 @@ export function BaixaAutomaticaDialog({
         titulo: 'Divergência na Baixa Automática',
         mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
       });
-      if (alertaError) falhas.push({ empresaId: empresaAlvo, transacao: t });
+      // A pendência volta inteira: sem a conta de origem a fila não reconhece
+      // que o crédito já devia um alerta e duplicaria o registro.
+      if (alertaError) falhas.push(pendente);
     }
     return falhas;
   };
@@ -342,15 +351,13 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        // A conta bancária do lote entra na transação: o FITID só identifica o
-        // crédito dentro da conta de origem, então sem ela duas contas com a
-        // mesma referência pareceriam o mesmo lançamento e uma pendência se
-        // perderia.
+        // A conta de origem vem do arquivo, não do destino escolhido agora: o
+        // FITID só identifica o crédito dentro da conta que o emitiu, e trocar o
+        // destino entre importações não muda o crédito.
         const novasPendentes = [...unmatched, ...naoConfirmadas].map((transacao) => ({
           empresaId: empresaAlvo,
-          transacao: contaBancariaId
-            ? { ...transacao, conta_bancaria_id: contaBancariaId }
-            : transacao,
+          origemConta: origemDoLote,
+          transacao,
         }));
         const falhasDeAlerta = await registrarDivergencias(user.id, novasPendentes);
         alertasFalhos = falhasDeAlerta.length;

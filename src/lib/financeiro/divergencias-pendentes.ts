@@ -1,22 +1,45 @@
 import type { TransacaoBancaria } from '@/components/contas-receber/BaixaAutomaticaDialog.types';
-
-/** Divergência que ainda não virou alerta: guarda a empresa do lote de origem. */
-export type DivergenciaPendente = { empresaId: string; transacao: TransacaoBancaria };
+import type { ExtratoOFX } from '@/lib/ofx-parser';
 
 /**
- * Identidade bancária do crédito, quando o extrato e o lote a fornecem. O FITID é
- * único dentro da conta de origem e não muda entre arquivos sobrepostos, então
- * dois extratos do mesmo período apontam o mesmo crédito. A conta de origem é
- * parte da identidade: contas diferentes podem repetir a mesma referência, e sem
- * ela dois créditos distintos pareceriam um só. Sem referência (CSV, ou OFX sem
- * FITID) ou sem a conta do lote não há como provar que duas pendências são o
- * mesmo lançamento, e a função devolve `null` — aí as ocorrências são preservadas.
+ * Divergência que ainda não virou alerta: guarda a empresa e a conta de origem
+ * do lote em que o crédito entrou.
+ */
+export type DivergenciaPendente = {
+  empresaId: string;
+  origemConta: string | null;
+  transacao: TransacaoBancaria;
+};
+
+/**
+ * Conta de origem declarada pelo arquivo (BANKID/BRANCHID/ACCTID). É a identidade
+ * do crédito, e não a conta de destino escolhida no lote: o operador pode trocar
+ * o destino entre importações sem que o crédito mude. CSV e Excel não trazem o
+ * número da conta (o "banco" deles é fixo, de rótulo), então devolvem `null` e as
+ * ocorrências ficam sem identidade.
+ */
+export function origemDoExtrato(extrato: ExtratoOFX): string | null {
+  const { banco, agencia, conta } = extrato.conta;
+  if (!conta?.trim()) return null;
+  return [banco, agencia, conta]
+    .map((valor) => valor?.trim())
+    .filter(Boolean)
+    .join('/');
+}
+
+/**
+ * Identidade bancária do crédito, quando o extrato a fornece. O FITID é único
+ * dentro da conta de origem e não muda entre arquivos sobrepostos, então dois
+ * extratos do mesmo período apontam o mesmo crédito; a conta de origem entra na
+ * chave porque bancos diferentes podem repetir a mesma referência. Sem referência
+ * (CSV, ou OFX sem FITID) ou sem a conta de origem não há como provar que duas
+ * pendências são o mesmo lançamento, e a função devolve `null` — aí as
+ * ocorrências são preservadas.
  */
 export function chaveBancaria(pendente: DivergenciaPendente): string | null {
   const referencia = pendente.transacao.numeroReferencia?.trim();
-  const conta = pendente.transacao.conta_bancaria_id?.trim();
-  if (!referencia || !conta) return null;
-  return `${pendente.empresaId}:${conta}:${referencia}`;
+  if (!referencia || !pendente.origemConta) return null;
+  return `${pendente.empresaId}:${pendente.origemConta}:${referencia}`;
 }
 
 /**
