@@ -68,6 +68,7 @@ interface Analise {
   dados_escavador: unknown;
   dados_consulta_financeira: unknown;
   limite_aprovado: number | null;
+  limite_aplicado_em: string | null;
   parcelas_max: number | null;
   parecer: string | null;
   decidido_em: string | null;
@@ -75,7 +76,7 @@ interface Analise {
 }
 
 const CAMPOS_ANALISE =
-  'id, referencia_externa, status, cnpj, cliente_id, empresa_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira, limite_aprovado, parcelas_max, parecer, decidido_em, callback_status';
+  'id, referencia_externa, status, cnpj, cliente_id, empresa_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira, limite_aprovado, limite_aplicado_em, parcelas_max, parecer, decidido_em, callback_status';
 
 /** IDs das empresas ativas do usuário (mesma regra da policy da tabela). */
 async function empresasAcessiveis(
@@ -189,36 +190,56 @@ Deno.serve(
     };
 
     /**
-     * Grava o limite aprovado no cadastro do cliente. Idempotente: o reenvio de
-     * uma decisão que parou no meio chama de novo.
+     * Grava o limite aprovado no cadastro do cliente e marca a gravação na
+     * análise (`limite_aplicado_em`). A marca é o que permite ao reenvio
+     * completar uma execução interrompida sem reescrever um limite que o
+     * Finance já ajustou no cadastro.
      */
     const aplicarLimite = async (alvo: Analise, limite: number) => {
-      let atingidos = 0;
+      let gravou = false;
       if (alvo.cnpj) {
-        const r = await admin
+        let query = admin
           .from('clientes')
           .update({ limite_credito: limite })
-          .or(filtroCnpjCliente(alvo.cnpj))
-          .select('id');
+          .or(filtroCnpjCliente(alvo.cnpj));
+        // Quem autoriza o analista é a empresa da análise: crédito de cadastro
+        // de outra empresa não muda por aqui.
+        if (alvo.empresa_id) {
+          query = query.eq('empresa_id', alvo.empresa_id);
+        } else {
+          const empresas = await empresasAcessiveis(admin, guard.dados.userId).catch(() => []);
+          query = query.in('empresa_id', empresas);
+        }
+        const r = await query.select('id');
         if (r.error) return r.error;
-        atingidos = r.data?.length ?? 0;
+        gravou = (r.data?.length ?? 0) > 0;
       }
-      if (atingidos > 0 || !alvo.cliente_id) return null;
-      // Vínculo por e-mail: recebe o limite quando o cadastro não guarda outro
-      // CNPJ — CPF no campo é o mesmo cliente, CNPJ diferente é outro cadastro.
-      const { data: vinc, error: erroVinc } = await admin
-        .from('clientes')
-        .select('cnpj_cpf')
-        .eq('id', alvo.cliente_id)
-        .maybeSingle();
-      if (erroVinc) return erroVinc;
-      const docVinculo = normalizarCnpj(vinc?.cnpj_cpf ?? '') ?? '';
-      if (alvo.cnpj && docVinculo.length === 14 && docVinculo !== alvo.cnpj) return null;
-      const r = await admin
-        .from('clientes')
-        .update({ limite_credito: limite })
-        .eq('id', alvo.cliente_id);
-      return r.error;
+      if (!gravou && alvo.cliente_id) {
+        // Vínculo por e-mail: recebe o limite quando o cadastro não guarda outro
+        // CNPJ — CPF no campo é o mesmo cliente, CNPJ diferente é outro cadastro.
+        const { data: vinc, error: erroVinc } = await admin
+          .from('clientes')
+          .select('cnpj_cpf, empresa_id')
+          .eq('id', alvo.cliente_id)
+          .maybeSingle();
+        if (erroVinc) return erroVinc;
+        const docVinculo = normalizarCnpj(vinc?.cnpj_cpf ?? '') ?? '';
+        const empresaVinculo = (vinc as { empresa_id: string | null } | null)?.empresa_id ?? null;
+        if (alvo.cnpj && docVinculo.length === 14 && docVinculo !== alvo.cnpj) return null;
+        if (alvo.empresa_id && empresaVinculo && empresaVinculo !== alvo.empresa_id) return null;
+        const { error: erroLimite } = await admin
+          .from('clientes')
+          .update({ limite_credito: limite })
+          .eq('id', alvo.cliente_id);
+        if (erroLimite) return erroLimite;
+        gravou = true;
+      }
+      if (!gravou) return null;
+      const { error: erroMarca } = await admin
+        .from('analises_credito')
+        .update({ limite_aplicado_em: new Date().toISOString() })
+        .eq('id', alvo.id);
+      return erroMarca ?? null;
     };
 
     try {
@@ -275,7 +296,13 @@ Deno.serve(
         }
         // A decisão é gravada antes do limite do cliente: se a execução parou no
         // meio, o reenvio completa a aprovação em vez de só avisar o Champions.
-        if (analise.status === 'aprovado' && analise.limite_aprovado !== null) {
+        // A marca `limite_aplicado_em` garante que um limite já gravado — e que
+        // pode ter sido ajustado depois pelo Finance — não seja reescrito.
+        if (
+          analise.status === 'aprovado' &&
+          analise.limite_aprovado !== null &&
+          !analise.limite_aplicado_em
+        ) {
           const limError = await aplicarLimite(analise, analise.limite_aprovado);
           if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
         }
@@ -311,16 +338,25 @@ Deno.serve(
             ? { resumo: input.consulta_financeira, registrado_em: new Date().toISOString() }
             : null;
         }
-        const novoCnpj =
-          input.cnpj !== undefined && input.cnpj !== null ? normalizarCnpj(input.cnpj) : null;
+        const cnpjInformado = input.cnpj !== undefined;
+        const novoCnpj = cnpjInformado && input.cnpj ? normalizarCnpj(input.cnpj) : null;
         if (input.cnpj && !novoCnpj)
           return responder(req, 400, { error: 'CNPJ inválido (14 dígitos)' });
+        // Campo esvaziado: o analista apagou o documento — a ficha da Receita
+        // vai junto, em vez de voltar preenchida pelo CNPJ antigo.
+        if (cnpjInformado && !input.cnpj) {
+          patch.cnpj = null;
+          patch.dados_cnpja = null;
+          patch.alertas = avaliarAlertas(null, analise.valor_pedido);
+        }
         const cnpjMudou = Boolean(novoCnpj) && novoCnpj !== analise.cnpj;
         // Reconsulta quando o CNPJ mudou ou quando a consulta inicial falhou —
         // nesse caso pelo documento já gravado, sem tocar no vínculo (o
-        // formulário pode estar com o CNPJ antigo de outro analista).
+        // formulário pode estar com o CNPJ antigo de outro analista). Campo
+        // intocado não reconsulta; campo apagado manda apagar.
         const cnpjConsultado =
-          novoCnpj ?? (analise.cnpj && !analise.dados_cnpja ? analise.cnpj : null);
+          novoCnpj ??
+          (!cnpjInformado && analise.cnpj && !analise.dados_cnpja ? analise.cnpj : null);
         if (cnpjConsultado && (cnpjMudou || !analise.dados_cnpja)) {
           patch.cnpj = cnpjConsultado;
           const consulta = await consultarCnpjInterno(admin, cnpjConsultado);
@@ -344,8 +380,19 @@ Deno.serve(
             .limit(1)
             .maybeSingle();
           if (cli?.id) {
+            const empresaNova = (cli as { empresa_id: string | null }).empresa_id;
+            // Levar a análise para a empresa do cadastro novo só é legítimo com
+            // acesso a ela: sem isso o analista tiraria a análise do escopo de
+            // quem o autorizou.
+            if (
+              empresaNova &&
+              empresaNova !== analise.empresa_id &&
+              !(await empresasAcessiveis(admin, guard.dados.userId)).includes(empresaNova)
+            ) {
+              return responder(req, 403, { error: 'empresa_sem_acesso' });
+            }
             patch.cliente_id = cli.id;
-            patch.empresa_id = (cli as { empresa_id: string | null }).empresa_id;
+            patch.empresa_id = empresaNova;
           } else if (analise.cliente_id) {
             const { data: atual } = await admin
               .from('clientes')
@@ -353,8 +400,9 @@ Deno.serve(
               .eq('id', analise.cliente_id)
               .maybeSingle();
             if (vinculoDesatualizado(atual?.cnpj_cpf, analise.cnpj, novoCnpj)) {
+              // Só o vínculo cai: a empresa da análise é mantida para a linha
+              // não sair do escopo de quem pode vê-la.
               patch.cliente_id = null;
-              patch.empresa_id = null;
             }
           }
         }

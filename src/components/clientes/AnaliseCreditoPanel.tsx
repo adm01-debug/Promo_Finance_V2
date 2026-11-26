@@ -104,8 +104,8 @@ export function AnaliseCreditoPanel() {
 
       {truncada && (
         <p className="text-xs text-muted-foreground">
-          Mostrando as {analises.length} análises mais recentes de {total}. Filtre por status para
-          ver as demais.
+          Mostrando as {analises.length} mais recentes de {total}. As anteriores entram na lista
+          conforme o topo da fila é resolvido.
         </p>
       )}
 
@@ -306,8 +306,15 @@ function DialogoAnalise({
   }) => void;
 }) {
   const { modo, analise } = estado;
+  // Pré-preenchido no formato do campo ("1.500,75"): o parser é estrito e
+  // recusaria o ponto decimal do JavaScript, travando a aprovação.
   const [limite, setLimite] = useState<string>(
-    analise.valor_pedido != null ? String(analise.valor_pedido) : ''
+    analise.valor_pedido != null
+      ? analise.valor_pedido.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : ''
   );
   const [parcelas, setParcelas] = useState<string>('1');
   const [parecer, setParecer] = useState<string>('');

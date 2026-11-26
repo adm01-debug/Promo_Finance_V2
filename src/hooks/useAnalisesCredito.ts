@@ -12,6 +12,8 @@ const MENSAGENS: Record<string, string> = {
   'Análise foi decidida por outro analista':
     'Esta análise já foi decidida por outro usuário. Recarregue a fila.',
   callback_falhou: 'A decisão foi salva, mas o Champions não recebeu. Tente reenviar.',
+  mfa_requerido:
+    'Falta concluir a verificação em duas etapas (MFA) na sua conta para analisar crédito.',
 };
 
 function mensagemCredito(err: unknown): string {
