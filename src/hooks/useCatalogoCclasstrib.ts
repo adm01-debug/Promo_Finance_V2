@@ -43,6 +43,10 @@ export function useCatalogoCclasstrib(): CatalogoCclasstrib {
     // por 30 min deixaria a tela sem catalogo depois da reconexao, porque o
     // `refetchOnReconnect` so reconsulta consulta vencida.
     staleTime: (query) => ((query.state.data?.length ?? 0) > 0 ? TTL_CATALOGO_MS : 0),
+    // O `refetchOnMount: false` global (queryClient.ts) faria a lista vazia
+    // sobreviver a sair e voltar para a tela depois de reconectar: vencida, ela
+    // precisa ser reconsultada na remontagem.
+    refetchOnMount: true,
     // Sem rede o queryFn nem roda no modo padrao: a tela ficaria carregando
     // para sempre em vez de assumir "catalogo indisponivel".
     networkMode: 'offlineFirst',
@@ -109,6 +113,9 @@ export function useClassificacaoTributaria(): ClassificacaoTributaria {
     // Cache offline ou lista vazia nao e leitura boa: fica vencido na hora para
     // a reconexao (`refetchOnReconnect`) buscar o catalogo de verdade.
     staleTime: (query) => (pacoteAtualizado(query.state.data) ? TTL_CATALOGO_MS : 0),
+    // Idem: cache offline e lista vazia ficam vencidos, mas o
+    // `refetchOnMount: false` global impediria a reconsulta ao reabrir a tela.
+    refetchOnMount: true,
     // Sem rede o queryFn nao roda no modo padrao e o fallback do IndexedDB
     // nunca aconteceria (aba eternamente "carregando" no offline).
     networkMode: 'offlineFirst',
