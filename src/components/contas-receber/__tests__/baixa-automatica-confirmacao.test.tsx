@@ -508,9 +508,17 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     // bancária do seu próprio crédito (999 e 777, um por alerta).
     const mensagens = alertas.map((c) => (c.args[0] as { mensagem: string }).mensagem);
     expect(mensagens.some((m) => m.includes('Conta de origem'))).toBe(false);
-    const referencias = gravados.map((m) => /Referência bancária: (\d+)/.exec(m)?.[1]);
-    expect(referencias).toEqual(expect.arrayContaining(['777', '999']));
-    expect(referencias).toHaveLength(2);
+    // Cada alerta casa a sua própria descrição com a sua referência: listas separadas
+    // passariam mesmo se as referências trocassem de alerta.
+    const porDescricao = new Map(
+      gravados.map((m) => [
+        /PIX SEM PAR|TED SEM PAR/.exec(m)?.[0],
+        /Referência bancária: (\d+)/.exec(m)?.[1],
+      ])
+    );
+    expect(porDescricao.size).toBe(2);
+    expect(porDescricao.get('PIX SEM PAR')).toBe('999');
+    expect(porDescricao.get('TED SEM PAR')).toBe('777');
   });
 
   it('não deixa o crédito de outra conta da mesma empresa ocupar a pendência', async () => {

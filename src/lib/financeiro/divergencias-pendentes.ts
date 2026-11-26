@@ -87,19 +87,34 @@ function numeroDaConta(valor: string | null | undefined): NumeroConta {
   };
 }
 
+/**
+ * Diz se um número é o outro com a agência digitada na frente. O campo do cadastro é
+ * livre e pode guardar agência e conta juntas ("1234 5678"), enquanto o arquivo manda a
+ * agência fora do número: comparar as sequências inteiras bloquearia a conta certa.
+ * A agência ocupa no máximo 5 dígitos e o número da conta tem no mínimo 4.
+ */
+function mesmoNumeroDeConta(um: string, outro: string): boolean {
+  if (um === outro) return true;
+  const [maior, menor] = um.length >= outro.length ? [um, outro] : [outro, um];
+  return menor.length >= 4 && maior.length - menor.length <= 5 && maior.endsWith(menor);
+}
+
 /** Compara o número do crédito com o número cadastrado, sem aceitar prefixo. */
 function contasCompativeis(origem: NumeroConta, cadastro: NumeroConta): boolean {
   // Mesma sequência de dígitos: "56789-1" e "567891" são a mesma conta.
   if (origem.sequencia === cadastro.sequencia) return true;
   if (origem.digitoVerificador && cadastro.digitoVerificador) {
     // Os dois lados dizem qual é o dígito verificador: ele tem de bater.
-    return origem.base === cadastro.base && origem.digitoVerificador === cadastro.digitoVerificador;
+    return (
+      mesmoNumeroDeConta(origem.base, cadastro.base) &&
+      origem.digitoVerificador === cadastro.digitoVerificador
+    );
   }
   if (origem.digitoVerificador || cadastro.digitoVerificador) {
     // Um lado só acrescenta o verificador ("00005678-9" contra "5678"): aí vale o número.
     const comDigito = origem.digitoVerificador ? origem : cadastro;
     const semDigito = origem.digitoVerificador ? cadastro : origem;
-    return comDigito.base === semDigito.sequencia;
+    return mesmoNumeroDeConta(comDigito.base, semDigito.sequencia);
   }
   // Nenhum lado separa o verificador: o número tem de ser o mesmo — inclusive quando
   // o cadastro guarda agência e conta num campo só ("1234 5678").

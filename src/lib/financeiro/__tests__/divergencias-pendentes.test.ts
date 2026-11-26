@@ -205,6 +205,22 @@ describe('origemCompativelComCadastro', () => {
     expect(origemCompativelComCadastro(BB, { conta: '1234 5678' })).toBe(true);
   });
 
+  it('aceita quando só o cadastro repete a agência e o extrato separa o verificador', () => {
+    // Extrato "001/1234/5678-9" contra cadastro "1234 5678": o número 5678 é o
+    // mesmo, e o 1234 na frente é a agência, não dígito extra da conta.
+    expect(origemCompativelComCadastro('001/1234/5678-9', { conta: '1234 5678' })).toBe(true);
+  });
+
+  it('aceita quando a agência e o verificador estão só no cadastro', () => {
+    expect(origemCompativelComCadastro('001/1234/5678', { conta: '1234 5678-9' })).toBe(true);
+    // Os dois lados trazem o verificador e a agência fica só no cadastro.
+    expect(origemCompativelComCadastro(BB, { conta: '1234 5678-9' })).toBe(true);
+  });
+
+  it('recusa quando os dígitos verificadores divergem mesmo com a agência no cadastro', () => {
+    expect(origemCompativelComCadastro('001/1234/5678-1', { conta: '1234 5678-2' })).toBe(false);
+  });
+
   it('aceita quando só o extrato separa o dígito verificador', () => {
     // Extrato "56789-1" contra cadastro "567891": mesmos dígitos, mesma conta.
     expect(origemCompativelComCadastro('001/1234/56789-1', { conta: '567891' })).toBe(true);
