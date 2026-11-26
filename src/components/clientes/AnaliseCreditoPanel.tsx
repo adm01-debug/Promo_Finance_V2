@@ -181,7 +181,7 @@ function AnaliseCard({
               Champions não avisado
             </Badge>
           )}
-          {decidida && analise.callback_status === 'falhou' && (
+          {decidida && analise.callback_status !== 'enviado' && (
             <Button size="sm" variant="outline" onClick={onReenviar} disabled={reenviando}>
               <Send className="h-4 w-4 mr-1" /> Reenviar ao Champions
             </Button>
@@ -315,7 +315,8 @@ function DialogoAnalise({
         atual.trim() !== inicial.trim() ? atual.trim() || null : undefined;
       onAtualizar({
         analiseId: analise.id,
-        cnpj: mudou(cnpj, analise.cnpj ?? ''),
+        // Sem dados da Receita, o CNPJ vai mesmo inalterado: o servidor reconsulta.
+        cnpj: !analise.dados_cnpja && cnpj.trim() ? cnpj.trim() : mudou(cnpj, analise.cnpj ?? ''),
         escavador: mudou(escavador, analise.dados_escavador?.resumo ?? ''),
         consultaFinanceira: mudou(consulta, analise.dados_consulta_financeira?.resumo ?? ''),
       });

@@ -25,6 +25,8 @@ const DEFAULT_CALLBACK_URL =
   'https://usyxfpqlsspldubptrdl.supabase.co/functions/v1/receive-credit-decision';
 const PAPEIS = ['admin', 'financeiro'] as const;
 const STATUS_ABERTOS = ['pendente', 'em_analise'];
+// Aviso 'pendente' mais velho que isso = execução interrompida antes do envio.
+const CALLBACK_EM_CURSO_MS = 2 * 60_000;
 
 async function assinar(secret: string, body: string): Promise<string> {
   const enc = new TextEncoder();
@@ -185,9 +187,14 @@ Deno.serve(
 
       if (input.action === 'reenviar_callback') {
         if (!decidida) return responder(req, 409, { error: 'Análise ainda sem decisão' });
-        // Só o que falhou de fato; 'pendente' pode ser a notificação original em curso.
-        if (analise.callback_status !== 'falhou') {
-          return responder(req, 409, { error: 'Nada a reenviar: aviso ao Champions não falhou' });
+        if (analise.callback_status === 'enviado') {
+          return responder(req, 409, { error: 'Champions já recebeu esta decisão' });
+        }
+        // 'pendente' recente = notificação original ainda em curso; velho = execução
+        // interrompida entre gravar a decisão e avisar — aí o reenvio recupera.
+        const decididoHa = Date.now() - Date.parse(analise.decidido_em ?? '');
+        if (analise.callback_status === 'pendente' && decididoHa < CALLBACK_EM_CURSO_MS) {
+          return responder(req, 409, { error: 'Aviso ao Champions ainda em andamento' });
         }
         const callback = await notificarChampions(
           analise,
@@ -308,10 +315,13 @@ Deno.serve(
           atingidos = r.data?.length ?? 0;
         }
         if (!limError && atingidos === 0 && analise.cliente_id) {
-          const r = await admin
+          // Vínculo por e-mail só recebe o limite se não tiver outro CNPJ gravado.
+          let q = admin
             .from('clientes')
             .update({ limite_credito: limite })
             .eq('id', analise.cliente_id);
+          if (analise.cnpj) q = q.or(`cnpj_cpf.is.null,${filtroCnpjCliente(analise.cnpj)}`);
+          const r = await q;
           limError = r.error;
         }
         if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
