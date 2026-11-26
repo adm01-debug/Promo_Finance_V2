@@ -90,8 +90,13 @@ vi.mock('@/lib/financeiro/registrarEvento', () => ({
 }));
 
 const toastError = vi.fn();
+const toastSuccess = vi.fn();
 vi.mock('sonner', () => ({
-  toast: { success: vi.fn(), info: vi.fn(), error: (...args: unknown[]) => toastError(...args) },
+  toast: {
+    success: (...args: unknown[]) => toastSuccess(...args),
+    info: vi.fn(),
+    error: (...args: unknown[]) => toastError(...args),
+  },
 }));
 
 const extratoCom = (transacoes: unknown[]) => ({
@@ -300,8 +305,12 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
 
     // Sem o alerta gravado a divergência não fica registrada em lugar nenhum:
-    // o usuário precisa saber que tem de reimportar, não que ela ficou no preview.
+    // o usuário precisa saber que a tela de conclusão repete só os alertas —
+    // reimportar o arquivo inteiro quitaria outros títulos com o mesmo crédito.
     expect(toastError).toHaveBeenCalledWith(
+      expect.stringContaining('REGISTRAR DIVERGÊNCIAS PENDENTES')
+    );
+    expect(toastError).not.toHaveBeenCalledWith(
       expect.stringContaining('reimporte o arquivo de retorno')
     );
     expect(screen.getByText(/não foram registradas como alerta/)).toBeInTheDocument();
@@ -311,6 +320,43 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
         detalhes: expect.objectContaining({ alertas_falhos: 2 }),
       }),
     ]);
+  });
+
+  it('repete só a gravação dos alertas pendentes, sem reimportar o extrato', async () => {
+    erroAoGravarAlerta = true;
+    abrirDialogo();
+    await importar();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    // O banco volta a aceitar o alerta: a tela registra as duas divergências
+    // pendentes sem passar de novo pelo arquivo.
+    erroAoGravarAlerta = false;
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('2 divergências registradas como alerta.')
+    );
+    await waitFor(() =>
+      expect(screen.queryByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/)).not.toBeInTheDocument()
+    );
+    const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
+    // 2 tentativas que falharam + 2 que passaram, sempre sobre as mesmas entradas.
+    expect(alertas).toHaveLength(4);
+    expect(alertas[2].args[0]).toEqual(
+      expect.objectContaining({ tipo: 'divergencia_baixa', empresa_id: 'emp-1' })
+    );
+    expect(alertas[3].args[0]).toEqual(
+      expect.objectContaining({ tipo: 'divergencia_baixa', empresa_id: 'emp-1' })
+    );
+    // Nenhuma releitura de títulos nem liquidação nova: o extrato não foi
+    // reprocessado — só os alertas pendentes foram regravados.
+    const consultas = chamadas.filter(
+      (c) => c.tabela === 'contas_receber' && c.metodo === 'select'
+    );
+    expect(consultas).toHaveLength(1);
   });
 
   it('descarta o lote quando a empresa muda antes da confirmação', async () => {

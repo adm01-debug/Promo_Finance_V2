@@ -132,6 +132,21 @@ describe('conciliarCreditos', () => {
     expect(resultado.map((t) => t?.id)).toEqual(['exato']);
   });
 
+  it('desempata em centavos antes do vencimento, sem deixar o float decidir', () => {
+    // R$ 100,00 e R$ 100,02 estão os dois a 1 centavo do crédito de R$ 100,01:
+    // a diferença em double é 0,010000000000005 contra 0,009999999999991, o
+    // que elegia o título que vence no dia seguinte.
+    const resultado = conciliarCreditos(
+      [credito(100.01, 'PIX BETA')],
+      [
+        titulo('seguinte', 'Beta', 100.02, '2026-04-11'),
+        titulo('mesmo-dia', 'Beta', 100, '2026-04-10'),
+      ]
+    );
+
+    expect(resultado.map((t) => t?.id)).toEqual(['mesmo-dia']);
+  });
+
   it('cada título quita um único crédito', () => {
     const resultado = conciliarCreditos(
       [credito(900, 'PIX BETA'), credito(900, 'PIX BETA')],

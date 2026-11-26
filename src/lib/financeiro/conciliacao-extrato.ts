@@ -58,13 +58,26 @@ export function ehMesmoPagador(credito: CreditoExtrato, titulo: TituloCandidato)
 }
 
 /**
+ * Compara em centavos inteiros: valores monetários guardados como double
+ * produzem diferenças do mesmo número de centavos ligeiramente distintas
+ * (R$ 100,00 e R$ 100,02 estão ambos a 1 centavo de R$ 100,01, mas viram
+ * 0,010000000000005 e 0,009999999999991), e essa diferença artificial fazia o
+ * título mais distante da data do crédito vencer.
+ */
+function emCentavos(valor: number | null | undefined): number {
+  return Math.round(Number(valor ?? 0) * 100);
+}
+
+/**
  * Entre candidatos com a mesma evidência de pagador, o valor exato vence o
  * valor apenas tolerado: quitar o título de R$ 100,04 recebendo R$ 100 e
  * deixar o de R$ 100 em aberto é o pagamento errado. O vencimento desempata.
  */
 function ordemDeEscolha<T extends TituloCandidato>(credito: CreditoExtrato, a: T, b: T): number {
+  const centavosDoCredito = emCentavos(credito.valor);
   const porValor =
-    Math.abs(Number(a.valor ?? 0) - credito.valor) - Math.abs(Number(b.valor ?? 0) - credito.valor);
+    Math.abs(emCentavos(a.valor) - centavosDoCredito) -
+    Math.abs(emCentavos(b.valor) - centavosDoCredito);
   if (porValor !== 0) return porValor;
 
   const porVencimento =

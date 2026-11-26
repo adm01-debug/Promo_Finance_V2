@@ -58,6 +58,10 @@ export function BaixaAutomaticaDialog({
   });
   const [contaBancariaId, setContaBancariaId] = useState('');
   const [empresaDoLote, setEmpresaDoLote] = useState('');
+  // Divergências cujo alerta não pôde ser gravado: ficam na tela para nova
+  // tentativa. Reimportar o arquivo inteiro não é a saída — os créditos já
+  // liquidados continuam no extrato e poderiam quitar outros títulos.
+  const [divergenciasSemAlerta, setDivergenciasSemAlerta] = useState<TransacaoBancaria[]>([]);
 
   const queryClient = useQueryClient();
   const { data: contasBancarias = [] } = useContasBancarias(empresaId || undefined);
@@ -71,6 +75,7 @@ export function BaixaAutomaticaDialog({
     setProcessing(false);
     setContaBancariaId('');
     setEmpresaDoLote('');
+    setDivergenciasSemAlerta([]);
   };
 
   useEffect(() => {
@@ -179,6 +184,30 @@ export function BaixaAutomaticaDialog({
       },
     ]);
     setUnmatched((prev) => prev.filter((t) => t !== transacao));
+  };
+
+  // Grava os alertas de divergência e devolve o que não pôde ser registrado,
+  // para a tela de conclusão oferecer nova tentativa só desses itens.
+  const registrarDivergencias = async (
+    userId: string,
+    transacoes: TransacaoBancaria[],
+    empresaAlvo: string
+  ): Promise<TransacaoBancaria[]> => {
+    const falhas: TransacaoBancaria[] = [];
+    for (const t of transacoes) {
+      const { error: alertaError } = await supabase.from('alertas').insert({
+        user_id: userId,
+        // A empresa do lote vai explícita: sem ela o gatilho de alertas usa
+        // a empresa do perfil, que pode ser outra que não a selecionada.
+        empresa_id: empresaAlvo,
+        tipo: 'divergencia_baixa',
+        prioridade: 'alta',
+        titulo: 'Divergência na Baixa Automática',
+        mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
+      });
+      if (alertaError) falhas.push(t);
+    }
+    return falhas;
   };
 
   const handleConfirmBaixa = async () => {
@@ -300,27 +329,22 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        for (const t of [...unmatched, ...naoConfirmadas]) {
-          const { error: alertaError } = await supabase.from('alertas').insert({
-            user_id: user.id,
-            // A empresa do lote vai explícita: sem ela o gatilho de alertas usa
-            // a empresa do perfil, que pode ser outra que não a selecionada.
-            empresa_id: empresaAlvo,
-            tipo: 'divergencia_baixa',
-            prioridade: 'alta',
-            titulo: 'Divergência na Baixa Automática',
-            mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
-          });
-          if (alertaError) alertasFalhos++;
-        }
+        const falhasDeAlerta = await registrarDivergencias(
+          user.id,
+          [...unmatched, ...naoConfirmadas],
+          empresaAlvo
+        );
+        alertasFalhos = falhasDeAlerta.length;
+        setDivergenciasSemAlerta(falhasDeAlerta);
         if (alertasFalhos > 0) {
-          // O aviso tem que ser acionável: sem o alerta gravado a divergência
-          // não fica registrada em lugar nenhum, então o extrato precisa ser
-          // reimportado — não há preview esperando o usuário.
+          // A divergência não pode ficar registrada em lugar nenhum: a tela de
+          // conclusão repete só a gravação destes alertas, sem reimportar o
+          // arquivo (os créditos já liquidados continuam no extrato e
+          // quitariam outros títulos).
           toast.error(
             `${alertasFalhos} ${alertasFalhos === 1 ? 'alerta' : 'alertas'} de divergência não ${
               alertasFalhos === 1 ? 'pôde' : 'puderam'
-            } ser registrado(s) — reimporte o arquivo de retorno para reprocessar as entradas sem par.`
+            } ser registrado(s) — use "REGISTRAR DIVERGÊNCIAS PENDENTES" na tela de conclusão.`
           );
         }
 
@@ -362,6 +386,40 @@ export function BaixaAutomaticaDialog({
       setStep('success');
     } catch (err: unknown) {
       toast.error('Erro ao processar baixa: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleRepetirAlertas = async () => {
+    const pendentes = divergenciasSemAlerta;
+    if (pendentes.length === 0) return;
+    const empresaAlvo = empresaDoLote || empresaId;
+    if (!empresaAlvo) {
+      toast.error('Selecione a empresa do lote antes de registrar as divergências.');
+      return;
+    }
+    setProcessing(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Sessão expirada — entre novamente para registrar as divergências.');
+        return;
+      }
+      const falhas = await registrarDivergencias(user.id, pendentes, empresaAlvo);
+      setDivergenciasSemAlerta(falhas);
+      setSuccessSummary((prev) => ({ ...prev, alertasFalhos: falhas.length }));
+      if (falhas.length === 0) {
+        toast.success(
+          `${pendentes.length} ${pendentes.length === 1 ? 'divergência registrada' : 'divergências registradas'} como alerta.`
+        );
+      } else {
+        toast.error(
+          `${falhas.length} ${falhas.length === 1 ? 'divergência continua' : 'divergências continuam'} sem alerta — tente novamente em instantes.`
+        );
+      }
     } finally {
       setProcessing(false);
     }
@@ -542,7 +600,7 @@ export function BaixaAutomaticaDialog({
                     {summary.alertasFalhos === 1
                       ? 'divergência não foi registrada como alerta'
                       : 'divergências não foram registradas como alerta'}{' '}
-                    — reimporte o arquivo de retorno para reprocessá-las.
+                    — registre-as com o botão abaixo, sem reimportar o arquivo.
                   </p>
                 )}
                 <div className="mt-4 p-4 rounded-2xl bg-card/5 border border-white/5 inline-block">
@@ -554,6 +612,21 @@ export function BaixaAutomaticaDialog({
                   </p>
                 </div>
               </div>
+              {divergenciasSemAlerta.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={handleRepetirAlertas}
+                  disabled={processing}
+                  className="w-full h-12 rounded-xl mt-4 font-black gap-2"
+                >
+                  {processing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4" />
+                  )}
+                  REGISTRAR DIVERGÊNCIAS PENDENTES ({divergenciasSemAlerta.length})
+                </Button>
+              )}
               <Button onClick={handleClose} className="w-full h-12 rounded-xl mt-4 font-black">
                 FECHAR
               </Button>
