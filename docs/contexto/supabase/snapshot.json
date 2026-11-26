@@ -302,7 +302,7 @@
         "is_default": true,
         "name": "main",
         "persistent": false,
-        "status": "FUNCTIONS_DEPLOYED"
+        "status": "FUNCTIONS_FAILED"
       }
     ],
     "custom_hostname": null,
@@ -68072,11 +68072,38 @@
         },
         {
           "active": true,
-          "command": "\n    SELECT net.http_post(\n      url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-cclasstrib',\n      headers := jsonb_build_object(\n        'Content-Type',  'application/json',\n        'x-cron-secret', (\n          SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1\n        )\n      ),\n      body    := '{\"source\":\"pg_cron\"}'::jsonb\n    );\n  ",
+          "command": "\n    SELECT net.http_post(\n      url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-ncm-nbs',\n      headers := jsonb_build_object(\n        'Content-Type',  'application/json',\n        'x-cron-secret', (\n          SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1\n        )\n      ),\n      body    := '{\"source\":\"pg_cron\"}'::jsonb,\n      timeout_milliseconds := 60000\n    );\n  ",
           "database": "postgres",
-          "jobid": 51,
+          "jobid": 52,
+          "jobname": "sync-catalogo-ncm-nbs",
+          "schedule": "0 8 * * *",
+          "username": "postgres"
+        },
+        {
+          "active": true,
+          "command": "\n    SELECT net.http_post(\n      url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-aliquota-referencia?escopo=uf',\n      headers := jsonb_build_object(\n        'Content-Type',  'application/json',\n        'x-cron-secret', (\n          SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1\n        )\n      ),\n      body    := '{\"source\":\"pg_cron\"}'::jsonb,\n      timeout_milliseconds := 90000\n    );\n  ",
+          "database": "postgres",
+          "jobid": 53,
+          "jobname": "sync-aliquota-referencia-uf",
+          "schedule": "20 8 * * *",
+          "username": "postgres"
+        },
+        {
+          "active": true,
+          "command": "\n    SELECT net.http_post(\n      url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-aliquota-referencia?escopo=municipio',\n      headers := jsonb_build_object(\n        'Content-Type',  'application/json',\n        'x-cron-secret', (\n          SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1\n        )\n      ),\n      body    := '{\"source\":\"pg_cron\"}'::jsonb,\n      timeout_milliseconds := 150000\n    );\n  ",
+          "database": "postgres",
+          "jobid": 54,
+          "jobname": "sync-aliquota-referencia-municipio",
+          "schedule": "50 8 * * 0",
+          "username": "postgres"
+        },
+        {
+          "active": true,
+          "command": "\n    SELECT net.http_post(\n      url     := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-catalogo-cclasstrib',\n      headers := jsonb_build_object(\n        'Content-Type',  'application/json',\n        'x-cron-secret', (\n          SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1\n        )\n      ),\n      body    := '{\"source\":\"pg_cron\"}'::jsonb,\n      timeout_milliseconds := 60000\n    );\n  ",
+          "database": "postgres",
+          "jobid": 55,
           "jobname": "sync-catalogo-cclasstrib",
-          "schedule": "40 4 * * *",
+          "schedule": "40 7 * * *",
           "username": "postgres"
         }
       ]
@@ -100176,6 +100203,24 @@
         "statements": 1,
         "statements_sha": "ace3e7c07fa54abb",
         "version": "20261124220000"
+      },
+      {
+        "name": "cron_sync_catalogo_ncm_nbs",
+        "statements": 3,
+        "statements_sha": "c972aacdef2be09f",
+        "version": "20261126060000"
+      },
+      {
+        "name": "cron_sync_aliquota_referencia",
+        "statements": 5,
+        "statements_sha": "82a9cb87ee93e852",
+        "version": "20261126080000"
+      },
+      {
+        "name": "cron_sync_catalogo_cclasstrib_utc",
+        "statements": 2,
+        "statements_sha": "205553eb323cdcca",
+        "version": "20261126100000"
       }
     ],
     "policies": [
@@ -107609,6 +107654,11 @@
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
           "table": "messages_2026_11_28"
+        },
+        {
+          "publication": "supabase_realtime_messages_publication",
+          "schema": "realtime",
+          "table": "messages_2026_11_29"
         }
       ]
     },

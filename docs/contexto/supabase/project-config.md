@@ -41,7 +41,7 @@
       "is_default": true,
       "name": "main",
       "persistent": false,
-      "status": "FUNCTIONS_DEPLOYED"
+      "status": "FUNCTIONS_FAILED"
     }
   ],
   "custom_hostname": null,

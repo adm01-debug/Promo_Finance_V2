@@ -2,6 +2,13 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-26 00:39 UTC
+
+- **cron jobs** adicionado (4): `52:sync-catalogo-ncm-nbs`, `53:sync-aliquota-referencia-uf`, `54:sync-aliquota-referencia-municipio`, `55:sync-catalogo-cclasstrib`
+- **cron jobs** removido (1): `51:sync-catalogo-cclasstrib`
+- **migrations** adicionado (3): `20261126060000_cron_sync_catalogo_ncm_nbs`, `20261126080000_cron_sync_aliquota_referencia`, `20261126100000_cron_sync_catalogo_cclasstrib_utc`
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_29`
+
 ## 2026-11-25 20:17 UTC
 
 - **edge functions** alterado (109): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+69)

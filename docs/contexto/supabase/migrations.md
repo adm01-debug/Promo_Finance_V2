@@ -1083,3 +1083,6 @@ SQL em `migrations/<versao>_<nome>.sql`. Mudanças feitas pelo Dashboard/SQL Edi
 | 20261124121000 | [cron_sync_catalogo_cclasstrib](migrations/20261124121000_cron_sync_catalogo_cclasstrib.sql) | 3 |
 | 20261124150000 | [amplia_escala_aliquotas_itens](migrations/20261124150000_amplia_escala_aliquotas_itens.sql) | 4 |
 | 20261124220000 | [indice_fk_kpis_operacionais](migrations/20261124220000_indice_fk_kpis_operacionais.sql) | 1 |
+| 20261126060000 | [cron_sync_catalogo_ncm_nbs](migrations/20261126060000_cron_sync_catalogo_ncm_nbs.sql) | 3 |
+| 20261126080000 | [cron_sync_aliquota_referencia](migrations/20261126080000_cron_sync_aliquota_referencia.sql) | 5 |
+| 20261126100000 | [cron_sync_catalogo_cclasstrib_utc](migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql) | 2 |
