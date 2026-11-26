@@ -34,6 +34,7 @@ import {
   conflitoDeSku,
   normalizarCodigo,
   normalizarCodigoComercial,
+  normalizarNcm,
   sugerirPadraoPorNcm,
   validarCoerenciaCst,
   validarPadrao,
@@ -109,13 +110,21 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
     [padroes, produtoId, produto, cst, cclasstrib, ncm]
   );
 
+  const erroValidacao =
+    validarPadrao({ cst, cclasstrib, ncm }) ?? validarCoerenciaCst({ cst, cclasstrib }, opcoes);
+  // Dois produtos com o mesmo SKU e o mesmo NCM podem ser unificados num clique:
+  // o item da nota nao distingue os dois. Com NCMs diferentes nao existe
+  // enquadramento unico que resolva o item, e o cadastro avisa em vez de gravar.
+  const podeUnificar =
+    Boolean(conflito) &&
+    !erroValidacao &&
+    (normalizarNcm(conflito?.ncm) ?? '') === (normalizarNcm(ncm) ?? '');
   const erro =
-    validarPadrao({ cst, cclasstrib, ncm }) ??
-    validarCoerenciaCst({ cst, cclasstrib }, opcoes) ??
+    erroValidacao ??
     (conflito
       ? `O SKU ${normalizarCodigoComercial(produto?.codigo)} ja e o padrao de outro produto com ` +
-        `${conflito.cst}/${conflito.cclasstrib}. O item da nota so conhece o SKU: use o mesmo ` +
-        'enquadramento ou separe os SKUs no Bling.'
+        `${conflito.cst}/${conflito.cclasstrib}. O item da nota so conhece o SKU: unifique o ` +
+        'enquadramento dos dois produtos ou separe os SKUs no Bling.'
       : null);
   const ocupado = salvar.isPending || remover.isPending;
   const sugestaoDiferente =
@@ -127,6 +136,26 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
     if (!sugestao) return;
     setCst(sugestao.cst);
     setCclasstrib(sugestao.cclasstrib);
+  };
+
+  const unificar = () => {
+    if (!produto || !conflito) return;
+    salvar.mutate(
+      { produto_id: produtoId, codigo: produto.codigo ?? null, ncm, cst, cclasstrib },
+      {
+        onSuccess: () =>
+          salvar.mutate(
+            {
+              produto_id: conflito.produto_id,
+              codigo: conflito.codigo ?? null,
+              ncm: conflito.ncm ?? null,
+              cst,
+              cclasstrib,
+            },
+            { onSuccess: () => onFechar() }
+          ),
+      }
+    );
   };
 
   const enviar = () => {
@@ -260,6 +289,18 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
           )}
 
           {erro && <p className="text-xs text-destructive">{erro}</p>}
+
+          {podeUnificar && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={unificar}
+              disabled={ocupado}
+            >
+              <Wand2 className="h-3.5 w-3.5" /> Aplicar aos dois produtos
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center justify-between gap-2 pt-2">

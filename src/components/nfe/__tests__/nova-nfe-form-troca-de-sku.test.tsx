@@ -6,7 +6,7 @@
  * A classificacao manual (escolha no seletor) e coberta em
  * `cclasstribManualAposTroca`, no teste de `lib/tributario/produtos`.
  */
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { resolverPadraoPorCodigo } from '@/lib/tributario/produtos/cclasstrib-padrao';
 import { NovaNFeForm } from '../NovaNFeForm';
@@ -41,14 +41,29 @@ vi.mock('@/hooks/useProdutoCclasstribPadrao', () => ({
   }),
 }));
 
+interface OpcaoCatalogo {
+  cst: string;
+  cclasstrib: string;
+  descricao: string;
+  vigencia_inicio: string;
+}
+
+// Mesma regra do hook real: `codigos` e derivado das `opcoes`, nunca um set a
+// parte. Catalogo vazio = nenhum cClassTrib disponivel para a regra por NCM.
+const catalogo = vi.hoisted(() => ({ opcoes: [] as OpcaoCatalogo[] }));
+
 vi.mock('@/hooks/useCatalogoCclasstrib', () => ({
   useCatalogoCclasstrib: () => ({
-    opcoes: [],
-    codigos: new Set(['000001']),
+    opcoes: catalogo.opcoes,
+    codigos: new Set(catalogo.opcoes.map((opcao) => opcao.cclasstrib)),
     carregando: false,
     indisponivel: false,
   }),
 }));
+
+beforeEach(() => {
+  catalogo.opcoes = [];
+});
 
 const campo = (placeholder: string) => screen.getByPlaceholderText(placeholder) as HTMLInputElement;
 const sku = () => campo('SKU');
@@ -77,13 +92,26 @@ describe('NovaNFeForm ao trocar de SKU', () => {
     expect(ncm().value).toBe('');
   });
 
-  it('marca o total de IBS/CBS como parcial quando um item fica sem referencia', () => {
+  it('marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo', () => {
     render(<NovaNFeForm onClose={() => {}} />);
 
     expect(screen.queryByText(/^Parcial:/)).toBeNull();
 
-    fireEvent.change(ncm(), { target: { value: '12345678' } });
+    // Catalogo vazio (carga da RFB pendente): o padrao salvo do SKU (200/200032)
+    // nao tem linha no catalogo, entao o item nao consegue ser enquadrado.
+    digitarSku('KIT-1');
+    expect(ncm().value).toBe('12345678');
     expect(screen.getByText(/Parcial: 1 item sem referencia no catalogo da RFB/)).toBeTruthy();
+  });
+
+  it('nao marca o total como parcial quando o catalogo tem o cClassTrib do padrao', () => {
+    catalogo.opcoes = [
+      { cst: '200', cclasstrib: '200032', descricao: 'tributado', vigencia_inicio: '2026-01-01' },
+    ];
+    render(<NovaNFeForm onClose={() => {}} />);
+
+    digitarSku('KIT-1');
+    expect(screen.queryByText(/^Parcial:/)).toBeNull();
   });
 
   it('preserva o NCM digitado a mao', () => {
