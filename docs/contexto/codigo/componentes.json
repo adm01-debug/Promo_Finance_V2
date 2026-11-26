@@ -4324,7 +4324,7 @@
     "ElisaoFiscalTab"
    ],
    "export_default": null,
-   "linhas": 372,
+   "linhas": 376,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [
@@ -4356,10 +4356,14 @@
     "NovaSimulacaoElisaoDialog"
    ],
    "export_default": null,
-   "linhas": 113,
+   "linhas": 478,
    "dominio": "components/contabilidade",
-   "hooks_locais": [],
-   "tabelas": [],
+   "hooks_locais": [
+    "useAuth"
+   ],
+   "tabelas": [
+    "elisao_simulacoes_regime"
+   ],
    "edges": [],
    "usado_por": 1,
    "orfao": false
@@ -4370,7 +4374,7 @@
     "SimuladorTab"
    ],
    "export_default": null,
-   "linhas": 81,
+   "linhas": 217,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -11040,7 +11044,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 449,
+   "usado_por": 450,
    "orfao": false
   },
   {
@@ -11376,7 +11380,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 138,
+   "usado_por": 139,
    "orfao": false
   },
   {
@@ -11979,7 +11983,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 170,
+   "usado_por": 171,
    "orfao": false
   },
   {
@@ -12152,7 +12156,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 69,
+   "usado_por": 70,
    "orfao": false
   },
   {

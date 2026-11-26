@@ -16365,7 +16365,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 19,
+   "usada_no_front": 20,
    "usada_em_edges": [
     "analise-preditiva",
     "copilot-global",
@@ -17114,7 +17114,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 28,
+   "usada_no_front": 29,
    "usada_em_edges": [
     "analise-preditiva",
     "asaas-proxy",
@@ -20009,7 +20009,7 @@
      "detalhes"
     ]
    },
-   "usada_no_front": 1,
+   "usada_no_front": 2,
    "usada_em_edges": [],
    "triggers": [
     "trg_elisao_sim_updated_at",
@@ -23798,7 +23798,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 4,
+   "usada_no_front": 5,
    "usada_em_edges": [
     "decidir-regime",
     "gerar-alertas-tributarios"
@@ -31055,7 +31055,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 7,
+   "usada_no_front": 8,
    "usada_em_edges": [
     "gerar-alertas-tributarios",
     "verificar-conformidade-fiscal"

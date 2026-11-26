@@ -2054,8 +2054,8 @@
   {
    "modulo": "components/contabilidade",
    "arquivos": 106,
-   "testes": 2,
-   "linhas": 17171,
+   "testes": 4,
+   "linhas": 17733,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -2136,10 +2136,12 @@
     "elisao_tarefas_acionaveis",
     "empresas",
     "eventos_contabilizacao_log",
+    "folha_pagamento",
     "fornecedores",
     "frontend_error_logs",
     "frontend_performance_logs",
     "lancamentos_contabeis",
+    "notas_fiscais",
     "partidas_contabeis",
     "plano_contas",
     "regras_contabilizacao_automatica",
@@ -2166,6 +2168,8 @@
     "DEV",
     "MODE",
     "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
     "VITE_SENTRY_DSN",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
@@ -2213,7 +2217,11 @@
     "integrations/supabase",
     "lib",
     "lib/contabil",
-    "lib/export-contabil"
+    "lib/contabilidade",
+    "lib/export-contabil",
+    "lib/reforma-tributaria",
+    "lib/tributario",
+    "types"
    ],
    "pacotes_externos": [
     "@tanstack/react-query",
@@ -8882,6 +8890,7 @@
     "hooks/financial",
     "hooks/saved-filter-alerts",
     "integrations/supabase",
+    "lib/contabilidade",
     "lib/export-contabil",
     "lib/pdf-generator",
     "lib/sefaz-contingency",
@@ -9083,9 +9092,9 @@
   },
   {
    "modulo": "lib/contabilidade",
-   "arquivos": 1,
-   "testes": 0,
-   "linhas": 411,
+   "arquivos": 3,
+   "testes": 2,
+   "linhas": 1207,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9093,22 +9102,50 @@
    "hooks_locais": [],
    "hooks_definidos": [],
    "edges": [],
-   "tabelas": [],
+   "tabelas": [
+    "contas_pagar",
+    "contas_receber",
+    "folha_pagamento",
+    "frontend_error_logs",
+    "frontend_performance_logs",
+    "notas_fiscais"
+   ],
    "rpcs": [],
    "buckets": [],
    "canais_realtime": [],
-   "env": [],
+   "env": [
+    "DEV",
+    "VITE_BLING_CLIENT_ID",
+    "VITE_RT_REF_CBS",
+    "VITE_RT_REF_IBS",
+    "VITE_SENTRY_DSN",
+    "VITE_SUPABASE_PROJECT_ID",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_URL",
+    "VITE_VAPID_PUBLIC_KEY"
+   ],
    "flags": [],
    "papeis": [],
    "diretos": {
     "edges": [],
-    "tabelas": [],
+    "tabelas": [
+     "contas_pagar",
+     "contas_receber",
+     "folha_pagamento",
+     "notas_fiscais"
+    ],
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "components/contabilidade",
     "hooks"
    ],
-   "depende_de_modulos": [],
+   "depende_de_modulos": [
+    "lib",
+    "lib/reforma-tributaria",
+    "lib/tributario",
+    "types"
+   ],
    "pacotes_externos": []
   },
   {
@@ -9367,7 +9404,7 @@
    "modulo": "lib/reforma-tributaria",
    "arquivos": 9,
    "testes": 2,
-   "linhas": 969,
+   "linhas": 976,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9391,9 +9428,11 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "components/contabilidade",
     "components/nfe",
     "components/reforma-tributaria",
     "lib",
+    "lib/contabilidade",
     "lib/nfe",
     "lib/tributario",
     "types/reforma-tributaria"
@@ -9680,12 +9719,14 @@
    },
    "importado_por_outros_modulos": [
     "components/admin",
+    "components/contabilidade",
     "components/dashboard",
     "components/empresa",
     "components/empresas",
     "components/reforma-tributaria",
     "components/tributario",
     "hooks",
+    "lib/contabilidade",
     "pages/tributario"
    ],
    "depende_de_modulos": [
@@ -10320,6 +10361,7 @@
     "feedback_conciliacao_ia",
     "fila_cobrancas",
     "fluxos_aprovacao_niveis",
+    "folha_pagamento",
     "formas_pagamento",
     "fornecedores",
     "frontend_error_logs",
@@ -13170,10 +13212,12 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
+    "components/contabilidade",
     "components/contas-pagar",
     "components/contas-receber",
     "components/reforma-tributaria",
     "hooks",
+    "lib/contabilidade",
     "lib/reforma-tributaria"
    ],
    "depende_de_modulos": [

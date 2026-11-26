@@ -1882,7 +1882,7 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 108,
+   "usado_por": 109,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",
@@ -1904,6 +1904,7 @@
     "src/components/contabilidade/FilterPresetsManager.tsx",
     "src/components/contabilidade/LancamentosTab.tsx",
     "src/components/contabilidade/RazaoDiarioTab.tsx",
+    "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
     "src/components/contas-receber/ContaReceberForm.tsx",
     "src/components/contas-receber/WebhookDlqPanel.tsx",
     "src/components/dashboard-receber/ReceberKpis.tsx",
@@ -1912,8 +1913,7 @@
     "src/components/dashboard/DashboardFiltersHeader.tsx",
     "src/components/fornecedores/FornecedorForm.tsx",
     "src/components/layout/Header.tsx",
-    "src/components/layout/sidebar/SidebarNavGroups.tsx",
-    "src/components/providers/NavigationTracker.tsx"
+    "src/components/layout/sidebar/SidebarNavGroups.tsx"
    ],
    "coberto_por_testes": 1
   },

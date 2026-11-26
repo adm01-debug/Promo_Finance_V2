@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `22c61eade8` · branch `main` · 2026-11-26 13:48 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f2dbe02136` · branch `main` · 2026-11-26 17:23 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1373,7 +1373,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
 | `status` | `cancelada` | compara, filtra | `src/components/nfe/NFePreview.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useNotasFiscaisLocais.ts`<br>`src/pages/NotasFiscais.tsx` |
-| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>… +24 |
+| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>… +25 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
 | `status` | `complete` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
@@ -1677,6 +1677,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | FaixaIndice | bom \| atencao \| critico \| neutro \| indefinido | `src/lib/contabil/indices.types.ts` |
 | TipoLivro | DIARIO \| RAZAO | `src/lib/contabil/termos-livro.ts` |
 | FonteDemonstrativo | competencia \| caixa | `src/lib/contabilidade/demonstrativos-competencia.ts` |
+| CenarioCbs | cronograma \| tcu \| livre | `src/lib/contabilidade/simulacao-regimes.ts` |
+| REGIMES_ATUAIS | 'Simples Nacional', 'Lucro Presumido', 'Lucro Real' | `src/lib/contabilidade/simulacao-regimes.ts` |
 | EventoContaTipo | receber \| pagar | `src/lib/financeiro/registrarEvento.ts` |
 | Severidade | erro \| aviso | `src/lib/nfe/pre-validar-ibscbs.ts` |
 | OrgPapel | RESPONSAVEL \| ADMIN \| MEMBRO \| LEITOR | `src/lib/organizacoes/convites.ts` |
@@ -2378,6 +2380,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `ofx-file-upload` | accept=.ofx,.ofc,.csv,.txt,.xlsx,.xls | `src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx` |
 | `bal-inicio` | type=date | `src/components/contabilidade/balancete/BalanceteToolbar.tsx` |
 | `bal-fim` | type=date | `src/components/contabilidade/balancete/BalanceteToolbar.tsx` |
+| `cenario-faturamento` | type=number | `src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx` |
+| `cenario-compras` | type=number | `src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx` |
+| `cenario-vendas` | type=number, min=0, max=100 | `src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx` |
+| `cenario-cbs-livre` | type=number, step=0.01 | `src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx` |
 | `idx-inicio` | type=date | `src/components/contabilidade/indices/IndicesToolbar.tsx` |
 | `idx-fim` | type=date | `src/components/contabilidade/indices/IndicesToolbar.tsx` |
 | `ocr-upload` | accept=application/pdf,image/*, disabled=isOcrProcessing | `src/components/contas-pagar/ContaPagarForm.tsx` |
@@ -3110,6 +3116,30 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **calcularPorCompetencia(partidasPeriodo: PartidaRow[], partidasAteFim: PartidaRow[])** — `src/lib/contabilidade/demonstrativos-competencia.ts`
   ```
   // ---------- DRE (apenas período) ---------- const buckets = { receita_bruta: 0, deducoes: 0, cmv: 0, desp_admin: 0, desp_comercial: 0, desp_financeira: 0, rec_financeira: 0, ir_csll: 0, outras_op: 0, }; // Mapa de contas não classificadas (sem centro_resultado) const naoClassMap = new Map<string, ContaNaoClassificada>(); let totalNaoClassificado = 0; for (const p of partidasPeriodo) { if (!p.conta) continue; const tipo = p.conta.tipo.toLowerCase(); const isReceita = tipo === 'receita'; const i …
+  ```
+- **arredondar(v: number)** — `src/lib/contabilidade/fontes-contabeis.ts`
+  ```
+  Math.round(v * 100) / 100;
+  ```
+- **valorDaLinhaFolha(l: LinhaFolha)** — `src/lib/contabilidade/fontes-contabeis.ts`
+  ```
+  const total = Number(l.valor_total ?? l.total_folha ?? 0); if (total > 0) return total; return ( Number(l.salarios ?? 0) + Number(l.encargos ?? 0) + Number(l.beneficios ?? 0) + Number(l.pro_labore ?? 0) );
+  ```
+- **arredondar(v: number)** — `src/lib/contabilidade/simulacao-regimes.ts`
+  ```
+  Math.round((Number.isFinite(v) ? v : 0) * 100) / 100;
+  ```
+- **calcularCargaSimples(fontes: FontesContabeis, premissas: PremissasCenario)** — `src/lib/contabilidade/simulacao-regimes.ts`
+  ```
+  const percentualVendas = Math.min(100, Math.max(0, premissas.percentualVendas)); const percentualServicos = 100 - percentualVendas; const rbt12 = fontes.faturamento12m; const fatorR = rbt12 > 0 ? fontes.folha12m / rbt12 : 0; const misto = percentualServicos > 0 && percentualVendas > 0; // CPP patronal incide sobre a remuneração paga (salários + pró-labore), não sobre // os encargos lançados na folha; sem detalhamento cai na folha total. const remuneracao = fontes.remuneracao12m > 0 ? fontes.remu …
+  ```
+- **calcularCenario(fontes: FontesContabeis, premissas: PremissasCenario)** — `src/lib/contabilidade/simulacao-regimes.ts`
+  ```
+  const dados = montarDadosSimulacao(fontes, premissas); const resultado = simularComparativo(dados, premissas.anoReferencia); const avisos: string[] = []; const simples = premissas.regimeAtual === 'Simples Nacional' ? calcularCargaSimples(fontes, premissas) : null; let cargaAtual: number; if (simples && simples.elegivel) { cargaAtual = arredondar(simples.total); avisos.push(...simples.avisos); if ( premissas.sujeitoFatorR && fontes.folha12m <= 0 && (premissas.anexoSimples === 'III' || premissas.a …
+  ```
+- **podeCalcular(fontes: FontesContabeis | undefined | null)** — `src/lib/contabilidade/simulacao-regimes.ts`
+  ```
+  return !!fontes && fontes.faturamento12m > 0;
   ```
 - **valorRecebidoEfetivo(c: { valor_recebido?: number | null; valor?: number | null; metadata?: unknown; })** — `src/lib/financeiro/valor-recebido-efetivo.ts`
   ```
@@ -3889,6 +3919,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `transition={{ delay: idx * 0.05 }}` | `src/components/contabilidade/VerificacaoIntegracoesPanelConteudo.tsx` |
 | `transition={{ delay: index * 0.02 }}` | `src/components/contabilidade/dre-balanco/BalancoView.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/contabilidade/dre-balanco/DreView.tsx` |
+| `Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V,` | `src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx` |
+| `V com folha abaixo de 28% e ao Anexo III a partir de 28%. Desligue para atividades` | `src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx` |
 | `transition={{ delay: (i % 20) * 0.005 }}` | `src/components/contabilidade/razao-diario/DiarioTable.tsx` |
 | `transition={{ delay: (idx % 10) * 0.05 }}` | `src/components/contabilidade/razao-diario/RazaoList.tsx` |
 | `transition={{ delay: i * 0.03, duration: 0.2 }}` | `src/components/contabilidade/sped-ecf-wizard/Step3DownloadParts.tsx` |
@@ -4056,6 +4088,15 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `gainNode.gain.linearRampToValueAtTime(config.volume * 0.3, startTime + 0.01);` | `src/lib/sound-feedback.ts` |
 | `// existe mais na tabela. Falha 100% das vezes, em toda linha.` | `src/lib/supabase-write.ts` |
 | `particleCount: Math.floor(config.particleCount! * 0.5),` | `src/lib/toast-confetti.tsx` |
+| `* ainda incompleto) infla ou derruba o ratio na fronteira dos 28%.` | `src/lib/contabilidade/fontes-contabeis.ts` |
+| `// CPP patronal (20% + RAT) incide sobre a remuneração paga — salários e pró-labore —,` | `src/lib/contabilidade/fontes-contabeis.ts` |
+| `* Anexo IV a CPP patronal é recolhida **fora** do DAS (20% + RAT sobre a folha)` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `* I, II, III e V e 42,10% de ISS no Anexo IV (LC 123/2006, Anexos I a V). Nas faixas` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `* Parcela de ICMS/ISS que a 6ª faixa do Simples ainda reserva ao DAS: 0% nos Anexos` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `* respeitado mesmo com folha abaixo de 28%, sem migrar para o Anexo V.` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `// 2026 é ano-teste (LC 214/2025 art. 348): CBS 0,9% e IBS 0,1% são compensados/` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `// Anexo III com Fator R de 28% ou mais e para o Anexo V abaixo disso — a escolha` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `// então seguem com 0,9% + 0,1% como no cronograma puro.` | `src/lib/contabilidade/simulacao-regimes.ts` |
 | `// de fato" (cota zero do rateio de acordo com 100% de desconto ou` | `src/lib/financeiro/valor-recebido-efetivo.ts` |
 | `* Reducao do catalogo nunca extrapola 0-100%: valor ausente ou corrompido vira` | `src/lib/nfe/grupo-ibscbs-item.ts` |
 | `ibsMun: (REF_IBS * 0.1) / 2,` | `src/lib/reforma-tributaria/cronograma-oficial.ts` |
@@ -4141,18 +4182,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `csrfSofrido?: number; // PIS+COFINS+CSLL 4,65% na fonte` | `src/lib/tributario/calculadora/types.ts` |
 | `regimeEspecialReducao?: number; // 0..1 (ex 0.6 para 60% redução — saúde/educ)` | `src/lib/tributario/calculadora/types.ts` |
 | `* 5. piso/teto fora da faixa legal de 2% a 5%.` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
-| `// Nenhum I/O, nenhuma dependência de React ou Supabase — 100% testável.` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
-| `// Nenhum I/O, nenhuma dependência de React ou Supabase — 100% testável.` | `src/lib/tributario/catalogos/coerencia-mva.ts` |
-| `/** Teto defensivo para MVA: nenhum protocolo de ST brasileiro chega a 300%. */` | `src/lib/tributario/catalogos/coerencia-ncm.ts` |
-| `// Nenhum I/O, nenhuma dependência de React ou Supabase — 100% testável.` | `src/lib/tributario/catalogos/coerencia-ncm.ts` |
-| `* 12% nos demais casos entre contribuintes.` | `src/lib/tributario/catalogos/painel.ts` |
-| `* 7% de Sul/Sudeste (exceto ES) para Norte/Nordeste/Centro-Oeste e ES;` | `src/lib/tributario/catalogos/painel.ts` |
-| `* alíquota de importado (4%, Resolução SF 13/2012).` | `src/lib/tributario/catalogos/painel.ts` |
-| `/** Regiões cujo destino recebe 7% quando a origem é Sul/Sudeste (exceto ES). */` | `src/lib/tributario/catalogos/painel.ts` |
-| `// 1ª quota sem juros; demais com SELIC acumulada + 1% no mês do pagamento.` | `src/lib/tributario/darf/consolidar.ts` |
-| `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
-| `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
-| … +204 linhas — lista completa em `context.json` | |
+| … +215 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
 
@@ -4243,6 +4273,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `OPEN_DIALOG_SELECTOR` | `'[role="` | `src/lib/unsaved-guard.ts` |
 | `TOLERANCIA` | `0.005` | `src/lib/contabil/balancete-utils.ts` |
 | `EPS` | `1` | `src/lib/contabil/indices.helpers.ts` |
+| `TAMANHO_PAGINA` | `1000` | `src/lib/contabilidade/fontes-contabeis.ts` |
+| `MAX_PAGINAS` | `100` | `src/lib/contabilidade/fontes-contabeis.ts` |
+| `SUBLIMITE_ESTADUAL` | `3` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `FATOR_R_CORTE` | `0.28` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `RAT_PADRAO` | `0.02` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `ALIQ_ICMS_FORA_DAS` | `0.18` | `src/lib/contabilidade/simulacao-regimes.ts` |
+| `ALIQ_ISS_FORA_DAS` | `0.05` | `src/lib/contabilidade/simulacao-regimes.ts` |
 | `MARGIN` | `40` | `src/lib/export-contabil/livro-oficial.ts` |
 | `BOM` | `'\uFEFF'` | `src/lib/export-contabil/utils.ts` |
 | `INICIO_OBRIGATORIEDADE_IBSCBS` | `'2026-08-03'` | `src/lib/nfe/pre-validar-ibscbs.ts` |
@@ -4453,14 +4490,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MAX_FRACAO` | `10` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
 | `TABELA` | `'catalogo_cclasstrib'` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
 | `TIMEOUT_MS` | `30` | `supabase/functions/sync-catalogo-cclasstrib/index.ts` |
-| `VIGENCIA_BASE_CATALOGO` | `'2026-01-01'` | `supabase/functions/sync-catalogo-cclasstrib/montar.ts` |
-| `MAX_PCT_AUSENTES` | `10` | `supabase/functions/sync-catalogo-cclasstrib/montar.ts` |
-| `TABELA_NCM` | `'catalogo_ncm'` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
-| `TABELA_NBS` | `'catalogo_nbs'` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
-| `PAGINA` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
-| `MAX_PAGINAS` | `100` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
-| `LOTE_ENCERRAMENTO` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
-| … +16 linhas — lista completa em `context.json` | | |
+| … +23 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -5165,7 +5195,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +812 linhas — lista completa em `context.json` | |
+| … +816 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5224,7 +5254,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4077 testes em 361 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4149 testes em 365 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5237,6 +5267,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
+| `src/lib/contabilidade/__tests__/simulacao-regimes.test.ts` | 36 | montarDadosSimulacao · distribui vendas e serviços conforme o percentual informado · trava o percentual de vendas no intervalo 0..100 · só envia alíquota CBS livre quando o cenário é livre … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
 | `src/lib/__tests__/cashflow-scenarios.test.ts` | 31 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
 | `src/lib/tributario/__tests__/monofasico.test.ts` | 31 | normalizarNcm · remove pontuação e limita a 8 dígitos · classificarNcmMonofasico · classifica cerveja em BEBIDAS_FRIAS … |
@@ -5264,6 +5295,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/overlay-ncm.test.ts` | 24 | normalizarAliquotaIpi · aceita fração, percentual e string com vírgula · trata 1 como 100% em fração e 100 como 100% em percentual · rejeita valores não numéricos, negativos e nulos … |
 | `src/components/reforma-tributaria/__tests__/HeroKPIs.test.tsx` | 23 | HeroKPIs · Renderização dos cards · exibe carga tributária efetiva · exibe alíquotas CBS e IBS como badges … |
 | `src/lib/__tests__/ofx-parser.test.ts` | 23 | OFX/CSV Parser · parseOFX · arquivo vazio retorna erro · arquivo sem transações retorna erro … |
+| `src/lib/contabilidade/__tests__/fontes-contabeis.test.ts` | 23 | janela12Competencias · pega as 12 competencias fechadas anteriores ao mes de apuracao · fecha a janela no primeiro dia do mes mesmo em 31 de marco · buscarFontesContabeis … |
 | `src/lib/tributario/__tests__/darf-consolidacao.test.ts` | 23 | darf/tabelas — calendário · reconhece fins de semana e feriados nacionais · antecipa sempre para um dia útil · não possui códigos de receita duplicados … |
 | `src/lib/tributario/__tests__/icms-st-difal.test.ts` | 23 | icms — tabelas e alíquotas interestaduais · cobre as 27 unidades federativas com parâmetros consistentes · valida UFs e identifica mercadoria importada pela origem · aplica 7% de S/SE para N/NE/CO e ES … |
 | `src/lib/tributario/__tests__/periodicidade-apuracao.test.ts` | 23 | IRPJ por período de apuração · não aplica adicional até R$ 60 mil no trimestre · aplica 10% sobre o excedente trimestral · usa limite de R$ 240 mil no período anual … |
@@ -5382,6 +5414,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/convidar-usuario/index.test.ts` | 10 | convite de usuário: preflight não exige autenticação · convite de usuário: anônimo não alcança Auth nem banco · convite de usuário: payload inválido não cria convite · convite de usuário: rate limit bloqueia antes de consultar ou convidar … |
 | `supabase/functions/sso-callback/build-profile-sync-delta.test.ts` | 10 | idempotência: incoming idêntico ao current → changes/updates vazios · idempotência: espaços extras nas pontas (incoming) são ignorados · idempotência: espaços extras no current também são ignorados · idempotência: incoming vazio/whitespace-only nunca sobrescreve … |
 | `src/components/admin/telemetry/__tests__/TelemetryCharts.test.tsx` | 9 | TelemetryCharts · renders nothing when rows is empty · renders three chart cards when rows have data · renders without error for timeFilter=%s … |
+| `src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx` | 9 | NovaSimulacaoElisaoDialog · preenche faturamento e compras com os dados reais do periodo · nao conta folha nem impostos como compras (nao geram credito de CBS/IBS) · nao soma notas de compra (sem cliente) ao faturamento … |
 | `src/components/layout/sidebar/sidebarNavState.test.ts` | 9 | isSidebarNavItemActive · exige hash correspondente quando o link aponta para uma âncora · mantém rotas sem hash ativas no mesmo pathname · mantém o item-pai ativo em rotas filhas (detalhe/edição) … |
 | `src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx` | 9 | heatmap tributario — ano sem faturamento · renderiza o estado vazio em vez de quebrar no insights.mes_pico · resposta sem a chave insights ainda renderiza (nao le antes da guarda) · heatmap tributario — ano parcial … |
 | `src/hooks/__tests__/use-toast.test.ts` | 9 | use-toast (adapter sonner) · variant default delega para sonner com title e description · variant destructive delega para sonner.error · propaga duration … |
@@ -5507,6 +5540,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/notify-performance-alert/index.test.ts` | 5 | notify-performance-alert: OPTIONS responde 200 sem guard nem I/O · notify-performance-alert: 405 em método inválido · notify-performance-alert: preserva falha de misconfig do guard e não toca body/fetch/DB · notify-performance-alert: 401 do guard bloqueia efeitos antes do body … |
 | `supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts` | 5 | telemetria: logs estruturados contêm cStat, cb_open e duration_ms por CNPJ · circuit breaker aberto pula execução sem chamar SEFAZ · backoff pendente (next_run_at futuro) pula execução · concorrência: dois CNPJs em paralelo mantêm cursores independentes … |
 | `src/components/admin/telemetry/__tests__/AcessosSuspeitosPanel.test.tsx` | 4 | AcessosSuspeitosPanel · consulta get_acessos_suspeitos com os parametros canonicos · falha na consulta NAO vira auditoria limpa · achado critico aparece na tabela |
+| `src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx` | 4 | SimuladorTab · mostra estado vazio quando não há cenários · renderiza os números reais gravados no cenário · abre a memória de cálculo no  |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx` | 4 | painel do Open Finance não promete integração que não existe · o botão Conectar Banco fica desabilitado com o motivo à mostra · o texto não anuncia sincronização automática de saldos · avisa que nada é importado para a conciliação |
 | `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
@@ -5524,11 +5558,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
 | `src/lib/tributario/__tests__/catalogos-vigencia.test.ts` | 4 | normalizarReferencia · mantém datas ISO válidas · aceita Date e converte para ISO · degrada para hoje em entradas ausentes ou inválidas |
 | `src/lib/tributario/__tests__/drift-guard-motor.test.ts` | 4 | Drift guard: motor tributário front x Edge Function · a função %s é logicamente idêntica nas duas cópias · mantém as constantes fiscais e a tabela de anexos idênticas · mantém as assinaturas de tipo públicas alinhadas |
-| `src/lib/tributario/__tests__/drift-guard-obrigacoes.test.ts` | 4 | Drift guard: obrigações acessórias (web × Edge Function) · o módulo  · expõe exatamente a mesma superfície pública por módulo · mantém as funções de dias úteis do espelho idênticas às do módulo DARF |
-| `src/lib/tributario/__tests__/fator-r.test.ts` | 4 | Fator R · deve calcular corretamente a proporção folha/receita · deve retornar 0 se a receita for zero ou negativa para evitar divisão por zero · deve determinar o anexo correto com base no fator r |
-| `src/lib/tributario/__tests__/icms-overlay-mva-fuzz.test.ts` | 4 | fuzzing do overlay de MVA/ST — 750 cenários · nenhuma entrada malformada quebra o overlay ou viola invariantes · monotonicidade: MVA maior nunca reduz o ICMS-ST, mantidos os demais parâmetros · operação interna converge a MVA ajustada para a MVA original em todas as UFs |
-| `src/test/a11y/critical-pages.test.tsx` | 4 | A11y — componentes críticos WCAG 2.1 AA · SkipLinks não possui violações · Formulário básico (Label + Input + Button) não possui violações · Botão com aria-label não possui violações |
-| … +61 linhas — lista completa em `context.json` | | |
+| … +65 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6123,4 +6153,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | mas também não deve sumir. Nunca lança. | `src/lib/supabase-write.ts` |
 | O flush de unload não pode await getUser() — user.id fica em cache aqui. | `src/lib/telemetry.ts` |
 | casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts). | `src/lib/telemetry.ts` |
-| … +492 linhas — lista completa em `context.json` | |
+| … +498 linhas — lista completa em `context.json` | |

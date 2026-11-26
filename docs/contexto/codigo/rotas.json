@@ -6872,11 +6872,13 @@
     "elisao_tarefas_acionaveis",
     "empresas",
     "eventos_contabilizacao_log",
+    "folha_pagamento",
     "fornecedores",
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
     "lancamentos_contabeis",
+    "notas_fiscais",
     "partidas_contabeis",
     "plano_contas",
     "regras_contabilizacao_automatica",
@@ -6930,7 +6932,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 291
+   "arquivos_puxados": 324
   },
   {
    "protegida": false,

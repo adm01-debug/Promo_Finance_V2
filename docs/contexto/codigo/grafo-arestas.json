@@ -2778,16 +2778,32 @@
    "src/components/ui/progress.tsx"
   ],
   "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx": [
+   "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/dialog.tsx",
    "src/components/ui/input.tsx",
-   "src/components/ui/label.tsx"
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/switch.tsx",
+   "src/hooks/useAuth.tsx",
+   "src/lib/contabilidade/fontes-contabeis.ts",
+   "src/lib/contabilidade/simulacao-regimes.ts",
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
+   "src/lib/supabase-dynamic.ts",
+   "src/lib/tributario/calculadora/types.ts",
+   "src/lib/utils.ts",
+   "src/types/reforma-tributaria.ts"
   ],
   "src/components/contabilidade/elisao/SimuladorTab.tsx": [
+   "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/tabs.tsx"
+   "src/components/ui/dialog.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/lib/contabilidade/fontes-contabeis.ts",
+   "src/lib/contabilidade/simulacao-regimes.ts",
+   "src/lib/utils.ts"
   ],
   "src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx": [
    "src/components/ui/accordion.tsx",
@@ -7627,6 +7643,19 @@
   "src/lib/contabil/indices.ts": [
    "src/lib/contabil/indices.helpers.ts",
    "src/lib/contabil/indices.types.ts"
+  ],
+  "src/lib/contabilidade/fontes-contabeis.ts": [
+   "src/lib/contabilidade/simulacao-regimes.ts",
+   "src/lib/supabase-dynamic.ts"
+  ],
+  "src/lib/contabilidade/simulacao-regimes.ts": [
+   "src/lib/reforma-tributaria/cronograma-oficial.ts",
+   "src/lib/reforma-tributaria/simulador.ts",
+   "src/lib/reforma-tributaria/types.ts",
+   "src/lib/tributario/calculadora/types.ts",
+   "src/lib/tributario/motor/base.ts",
+   "src/lib/tributario/motor/simples.ts",
+   "src/types/reforma-tributaria.ts"
   ],
   "src/lib/edge-function-error.ts": [
    "src/integrations/supabase/client.ts",

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "22c61eade8e212b31498309575dce2fbcc9779fa",
+  "sha": "f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 13:48 UTC",
-  "files_total": 4139,
-  "code_files": 3718,
-  "code_lines": 533479
+  "generated_at": "2026-11-26 17:23 UTC",
+  "files_total": 4145,
+  "code_files": 3724,
+  "code_lines": 536063
  },
  "version": "1.3.2",
- "facts_hash": "8daed65e12b98602",
+ "facts_hash": "763201b845cf7bde",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1309,
+   ".ts": 1313,
    ".sql": 1157,
-   ".tsx": 1130,
+   ".tsx": 1132,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -62356,11 +62356,13 @@
      "elisao_simulacoes_regime",
      "elisao_tarefas_acionaveis",
      "empresas",
+     "folha_pagamento",
      "fornecedores",
      "frontend_error_logs",
      "frontend_performance_logs",
      "historico_cobranca_whatsapp",
      "lancamentos_contabeis",
+     "notas_fiscais",
      "partidas_contabeis",
      "plano_contas",
      "regras_contabilizacao_automatica",
@@ -62385,7 +62387,7 @@
      "log_audit",
      "registrar_auditoria_config"
     ],
-    "deps_count": 286
+    "deps_count": 300
    },
    {
     "path": "/contador/:token",
@@ -68071,7 +68073,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1014,
+  "components_count": 1016,
   "hooks": [
    {
     "name": "useContacts",
@@ -71136,8 +71138,8 @@
   },
   {
    "module": "src/components",
-   "files": 1012,
-   "lines": 167487,
+   "files": 1014,
+   "lines": 168389,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71756,8 +71758,8 @@
   },
   {
    "module": "src/lib",
-   "files": 442,
-   "lines": 60466,
+   "files": 446,
+   "lines": 62148,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -71768,12 +71770,15 @@
     "cnaes",
     "contas_bancarias",
     "contas_pagar",
+    "contas_receber",
     "creditos_tributarios",
     "faixas_simples_nacional",
+    "folha_pagamento",
     "frontend_error_logs",
     "frontend_performance_logs",
     "itens_lista_iss",
     "ncms",
+    "notas_fiscais",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "push_subscriptions",
@@ -73393,6 +73398,7 @@
      "src/hooks/useExpertContext.ts",
      "src/hooks/useFluxoCaixa.ts",
      "src/hooks/useRelatoriosData.ts",
+     "src/lib/contabilidade/fontes-contabeis.ts",
      "src/lib/supabase-write.ts",
      "src/pages/OrcamentoEvento.tsx",
      "supabase/functions/analise-preditiva/index.ts",
@@ -73446,6 +73452,7 @@
      "src/hooks/useInadimplenciaSegmentada.ts",
      "src/hooks/useRelatoriosData.ts",
      "src/hooks/useScoringClientes.ts",
+     "src/lib/contabilidade/fontes-contabeis.ts",
      "src/pages/OrcamentoEvento.tsx",
      "supabase/functions/analise-preditiva/index.ts",
      "supabase/functions/asaas-proxy/index.ts",
@@ -73623,6 +73630,9 @@
    "elisao_simulacoes_regime": {
     "select": [
      "src/components/contabilidade/elisao/ElisaoFiscalTab.tsx"
+    ],
+    "insert": [
+     "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx"
     ]
    },
    "elisao_tarefas_acionaveis": {
@@ -73856,6 +73866,7 @@
      "src/hooks/useHistoricoFinanceiro.ts",
      "src/hooks/useOportunidadesElisao.ts",
      "src/hooks/useSimulacaoRegimes.ts",
+     "src/lib/contabilidade/fontes-contabeis.ts",
      "supabase/functions/decidir-regime/index.ts",
      "supabase/functions/gerar-alertas-tributarios/index.ts"
     ],
@@ -74148,6 +74159,7 @@
      "src/hooks/useCreditosTributarios.ts",
      "src/hooks/useNotasFiscaisLocais.ts",
      "src/hooks/useOperacoesTributaveis.ts",
+     "src/lib/contabilidade/fontes-contabeis.ts",
      "supabase/functions/gerar-alertas-tributarios/index.ts",
      "supabase/functions/verificar-conformidade-fiscal/index.ts"
     ]
@@ -75618,9 +75630,13 @@
     "tipo_conta"
    ],
    "contas_pagar": [
+    "categoria",
+    "categoria_nome",
     "centro_custo_id",
+    "data_emissao",
     "data_pagamento",
     "data_vencimento",
+    "deleted_at",
     "descricao",
     "empresa_id",
     "fornecedor_id",
@@ -75639,6 +75655,7 @@
     "data_emissao",
     "data_recebimento",
     "data_vencimento",
+    "deleted_at",
     "descricao",
     "empresa_id",
     "etapa_cobranca",
@@ -75846,11 +75863,13 @@
    ],
    "folha_pagamento": [
     "ano",
+    "beneficios",
     "empresa_id",
     "encargos",
     "id",
     "mes",
     "mes_referencia",
+    "pro_labore",
     "salarios",
     "total_folha",
     "valor_total"
@@ -75999,6 +76018,8 @@
    ],
    "notas_fiscais": [
     "chave_acesso",
+    "cliente_cnpj",
+    "cliente_nome",
     "data_emissao",
     "empresa_id",
     "id",
@@ -76007,7 +76028,8 @@
     "v_ibs",
     "v_ibs_mun",
     "v_ibs_uf",
-    "v_is"
+    "v_is",
+    "valor_total"
    ],
    "notas_fiscais_ocr": [
     "id"
@@ -79073,6 +79095,26 @@
     "rules": "type=date"
    },
    {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "field": "cenario-faturamento",
+    "rules": "type=number"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "field": "cenario-compras",
+    "rules": "type=number"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "field": "cenario-vendas",
+    "rules": "type=number, min=0, max=100"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "field": "cenario-cbs-livre",
+    "rules": "type=number, step=0.01"
+   },
+   {
     "file": "src/components/contabilidade/indices/IndicesToolbar.tsx",
     "field": "idx-inicio",
     "rules": "type=date"
@@ -79988,6 +80030,16 @@
     "file": "src/lib/contabilidade/demonstrativos-competencia.ts",
     "name": "FonteDemonstrativo",
     "values": "competencia | caixa"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "CenarioCbs",
+    "values": "cronograma | tcu | livre"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "REGIMES_ATUAIS",
+    "values": "'Simples Nacional', 'Lucro Presumido', 'Lucro Real'"
    },
    {
     "file": "src/lib/financeiro/registrarEvento.ts",
@@ -81817,6 +81869,22 @@
    {
     "file": "src/components/contabilidade/dre-balanco/exporters.ts",
     "msg": "Sem dados para exportar."
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "msg": "Falha ao sincronizar: ${mensagemErro(atualizado.error)}"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "msg": "Nenhuma receita lançada nos últimos 12 meses. Lance notas fiscais ou títulos a receber para simular."
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "msg": "Não foi possível salvar o cenário: ${mensagemErro(erro)}"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "msg": "Sem faturamento apurado no período"
    },
    {
     "file": "src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx",
@@ -86543,6 +86611,26 @@
     "text": "Linhas extras na DRE para \"Não classificadas\" (apenas se houver)"
    },
    {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "text": "* Ressalvas do cálculo mostradas na UI (Fator R, resíduos, limite do Simples). */"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "text": "* Limite anual e sublimite estadual do Simples Nacional (LC 123/2006, arts. 19 e 20). */"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "text": "receita mista) aplicado sobre a receita total, na 6ª faixa federal, e apenas"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "text": "manual não sobrepõe o corte (mesma regra da Calculadora do Simples). Atividade"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "text": "O valor fica registrado em `cargaSimuladaBase` apenas como referência."
+   },
+   {
     "file": "src/lib/financeiro/registrarEvento.ts",
     "text": "fatal (abortar a mutação) ou apenas degradação (avisar via toast)."
    },
@@ -86613,6 +86701,10 @@
    {
     "file": "src/lib/reforma-tributaria/base-calculo.ts",
     "text": "* COFINS destacado (deduzido apenas em 2026) */"
+   },
+   {
+    "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
+    "text": "tributos federais. Não somam carga efetiva — servem apenas de referência."
    },
    {
     "file": "src/lib/reforma-tributaria/cronograma-oficial.ts",
@@ -101964,6 +102056,41 @@
     "value": "1"
    },
    {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "name": "TAMANHO_PAGINA",
+    "value": "1000"
+   },
+   {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "name": "MAX_PAGINAS",
+    "value": "100"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "SUBLIMITE_ESTADUAL",
+    "value": "3"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "FATOR_R_CORTE",
+    "value": "0.28"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "RAT_PADRAO",
+    "value": "0.02"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "ALIQ_ICMS_FORA_DAS",
+    "value": "0.18"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "ALIQ_ISS_FORA_DAS",
+    "value": "0.05"
+   },
+   {
     "file": "src/lib/export-contabil/livro-oficial.ts",
     "name": "MARGIN",
     "value": "40"
@@ -112372,6 +112499,18 @@
     "kind": "compara"
    },
    {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "field": "status",
+    "value": "cancelado",
+    "kind": "filtra"
+   },
+   {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "field": "status",
+    "value": "cancelado",
+    "kind": "filtra"
+   },
+   {
     "file": "src/lib/ofx-parser/csv.ts",
     "field": "tipo",
     "value": "credito",
@@ -118842,6 +118981,42 @@
     "body": "// ---------- DRE (apenas período) ---------- const buckets = { receita_bruta: 0, deducoes: 0, cmv: 0, desp_admin: 0, desp_comercial: 0, desp_financeira: 0, rec_financeira: 0, ir_csll: 0, outras_op: 0, }; // Mapa de contas não classificadas (sem centro_resultado) const naoClassMap = new Map<string, ContaNaoClassificada>(); let totalNaoClassificado = 0; for (const p of partidasPeriodo) { if (!p.conta) continue; const tipo = p.conta.tipo.toLowerCase(); const isReceita = tipo === 'receita'; const i …"
    },
    {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "name": "arredondar",
+    "params": "v: number",
+    "body": "Math.round(v * 100) / 100;"
+   },
+   {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "name": "valorDaLinhaFolha",
+    "params": "l: LinhaFolha",
+    "body": "const total = Number(l.valor_total ?? l.total_folha ?? 0); if (total > 0) return total; return ( Number(l.salarios ?? 0) + Number(l.encargos ?? 0) + Number(l.beneficios ?? 0) + Number(l.pro_labore ?? 0) );"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "arredondar",
+    "params": "v: number",
+    "body": "Math.round((Number.isFinite(v) ? v : 0) * 100) / 100;"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "calcularCargaSimples",
+    "params": "fontes: FontesContabeis, premissas: PremissasCenario",
+    "body": "const percentualVendas = Math.min(100, Math.max(0, premissas.percentualVendas)); const percentualServicos = 100 - percentualVendas; const rbt12 = fontes.faturamento12m; const fatorR = rbt12 > 0 ? fontes.folha12m / rbt12 : 0; const misto = percentualServicos > 0 && percentualVendas > 0; // CPP patronal incide sobre a remuneração paga (salários + pró-labore), não sobre // os encargos lançados na folha; sem detalhamento cai na folha total. const remuneracao = fontes.remuneracao12m > 0 ? fontes.remu …"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "calcularCenario",
+    "params": "fontes: FontesContabeis, premissas: PremissasCenario",
+    "body": "const dados = montarDadosSimulacao(fontes, premissas); const resultado = simularComparativo(dados, premissas.anoReferencia); const avisos: string[] = []; const simples = premissas.regimeAtual === 'Simples Nacional' ? calcularCargaSimples(fontes, premissas) : null; let cargaAtual: number; if (simples && simples.elegivel) { cargaAtual = arredondar(simples.total); avisos.push(...simples.avisos); if ( premissas.sujeitoFatorR && fontes.folha12m <= 0 && (premissas.anexoSimples === 'III' || premissas.a …"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "name": "podeCalcular",
+    "params": "fontes: FontesContabeis | undefined | null",
+    "body": "return !!fontes && fontes.faturamento12m > 0;"
+   },
+   {
     "file": "src/lib/financeiro/valor-recebido-efetivo.ts",
     "name": "valorRecebidoEfetivo",
     "params": "c: { valor_recebido?: number | null; valor?: number | null; metadata?: unknown; }",
@@ -121146,6 +121321,14 @@
     "line": "transition={{ delay: index * 0.05 }}"
    },
    {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "line": "Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V,"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+    "line": "V com folha abaixo de 28% e ao Anexo III a partir de 28%. Desligue para atividades"
+   },
+   {
     "file": "src/components/contabilidade/razao-diario/DiarioTable.tsx",
     "line": "transition={{ delay: (i % 20) * 0.005 }}"
    },
@@ -121812,6 +121995,42 @@
    {
     "file": "src/lib/toast-confetti.tsx",
     "line": "particleCount: Math.floor(config.particleCount! * 0.5),"
+   },
+   {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "line": "* ainda incompleto) infla ou derruba o ratio na fronteira dos 28%."
+   },
+   {
+    "file": "src/lib/contabilidade/fontes-contabeis.ts",
+    "line": "// CPP patronal (20% + RAT) incide sobre a remuneração paga — salários e pró-labore —,"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "* Anexo IV a CPP patronal é recolhida **fora** do DAS (20% + RAT sobre a folha)"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "* I, II, III e V e 42,10% de ISS no Anexo IV (LC 123/2006, Anexos I a V). Nas faixas"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "* Parcela de ICMS/ISS que a 6ª faixa do Simples ainda reserva ao DAS: 0% nos Anexos"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "* respeitado mesmo com folha abaixo de 28%, sem migrar para o Anexo V."
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "// 2026 é ano-teste (LC 214/2025 art. 348): CBS 0,9% e IBS 0,1% são compensados/"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "// Anexo III com Fator R de 28% ou mais e para o Anexo V abaixo disso — a escolha"
+   },
+   {
+    "file": "src/lib/contabilidade/simulacao-regimes.ts",
+    "line": "// então seguem com 0,9% + 0,1% como no cronograma puro."
    },
    {
     "file": "src/lib/financeiro/valor-recebido-efetivo.ts",
@@ -123802,6 +124021,58 @@
    {
     "file": "src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts",
     "name": "réplica tem as mesmas chaves do ContabilizarEventoSchema da Edge"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "NovaSimulacaoElisaoDialog"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "preenche faturamento e compras com os dados reais do periodo"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "nao conta folha nem impostos como compras (nao geram credito de CBS/IBS)"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "nao soma notas de compra (sem cliente) ao faturamento"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "pagina a leitura quando passa de mil lancamentos"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "so habilita a criacao quando ha nome e base apurada, e grava a memoria de calculo"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "cai para titulos a receber quando nao ha nota fiscal no periodo"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "bloqueia a criacao quando nao ha receita apurada"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+    "name": "mostra o erro do banco quando o insert falha"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+    "name": "SimuladorTab"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+    "name": "mostra estado vazio quando não há cenários"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+    "name": "renderiza os números reais gravados no cenário"
+   },
+   {
+    "file": "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+    "name": "abre a memória de cálculo no "
    },
    {
     "file": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
@@ -132202,6 +132473,242 @@
    {
     "file": "src/lib/contabil/__tests__/termos-livro.test.ts",
     "name": "lista contador com CRC"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "janela12Competencias"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "pega as 12 competencias fechadas anteriores ao mes de apuracao"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "fecha a janela no primeiro dia do mes mesmo em 31 de marco"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "buscarFontesContabeis"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "le todas as paginas do PostgREST em vez de so a primeira"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "avisa quando a trava de seguranca trunca a leitura"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "descarta notas canceladas e notas sem cliente quando ha venda identificada"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "usa todas as notas quando nenhuma tem cliente identificado"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "cai para titulos a receber e depois para sem_dados"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "separa compras com fornecedor da folha e dos impostos"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "nao conta folha lancada com fornecedor como compra"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "usa a folha mensal do Historico Financeiro com precedencia sobre contas a pagar"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "soma salarios + encargos quando a folha mensal nao tem total"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "apura a remuneracao (salarios + pro-labore) separada dos encargos"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "nao conta rescisao de contrato com fornecedor como folha"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "conta rescisao de funcionario sem categoria de folha como folha"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "nao conta consultoria para rescisao de contrato de funcionario como folha"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "corta notas e contas a pagar na janela de competencias fechadas"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "cai na folha total quando a folha nao detalha salarios e pro-labore"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "limita a folha as competencias fechadas dos ultimos 12 meses"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "nao trata "
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "marca sem_dados quando nao ha folha de nenhuma fonte"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+    "name": "propaga o erro do banco"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "montarDadosSimulacao"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "distribui vendas e serviços conforme o percentual informado"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "trava o percentual de vendas no intervalo 0..100"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "só envia alíquota CBS livre quando o cenário é livre"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "não envia regime especial quando "
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "calcularCenario"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "usa o motor oficial e devolve economia = carga atual - carga simulada"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "muda a carga atual conforme o regime: Simples usa o DAS, Presumido/Real o modelo nao-cumulativo"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "sobrepoe o anexo de servico escolhido pelo corte de 28% do Fator R"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "mantem o Anexo V escolhido quando o Fator R fica abaixo de 28%"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "respeita o Anexo III quando a atividade nao esta sujeita ao Fator R"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "tributa servicos pelo Anexo III quando o anexo informado e de mercadorias e a atividade nao esta sujeita ao Fator R"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "mantem o aviso do ano-teste ressalvado so quando o regime reduz CBS/IBS"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "cai no modelo nao-cumulativo quando a receita passa do limite do Simples"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "soma ICMS/ISS/PIS/COFINS residuais nos anos de transicao"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "propaga a observacao do cenario CBS do TCU"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "nao soma a CBS/IBS experimental na carga de 2026 (ano-teste)"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "avisa que Presumido e Real compartilham o modelo nao-cumulativo"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "nao afirma que IRPJ/CSLL entram na carga atual de Presumido/Real"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "no cenário oficial o aviso do ano-teste cita as alíquotas legais sem negá-las"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "avisa que o valor do ano-teste nao corresponde as aliquotas legais quando o cenario nao e o oficial"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "recolhe a CPP patronal fora do DAS no Anexo IV"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "calcula a CPP do Anexo IV sobre a remuneracao, sem os encargos da folha"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "segrega receita mista por anexo (servicos x mercadorias)"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "recolhe ICMS fora do DAS acima do sublimite estadual"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "nao deduz do DAS da 6a faixa uma parcela de ICMS que a tabela nao contem"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "recolhe ICMS e ISS nas duas atividades quando a receita mista passa do sublimite"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "move apenas o ISS da 6a faixa do Anexo IV para fora do DAS"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "avisa quando a leitura contabil foi truncada"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "nunca devolve NaN com base zerada"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "podeCalcular"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "exige faturamento apurado"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "nomeDoCenario"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "lê premissas.nome e cai em rótulo padrão quando ausente"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "formatarMoeda"
+   },
+   {
+    "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+    "name": "formata em BRL e trata nulo"
    },
    {
     "file": "src/lib/nfe/__tests__/grupo-ibscbs-item.test.ts",
@@ -159093,6 +159600,7 @@
       "escreve:src/hooks/useOperacoesTributaveis.ts",
       "escreve:src/hooks/usePerDcomp.ts",
       "filtra:src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+      "filtra:src/lib/contabilidade/fontes-contabeis.ts",
       "filtra:supabase/functions/gerar-sped-ecd/index.ts",
       "filtra:supabase/functions/gerar-sped-ecf/index.ts"
      ],
@@ -191441,7 +191949,7 @@
   },
   "src/components/contabilidade/elisao/ElisaoFiscalTab.tsx": {
    "path": "src/components/contabilidade/elisao/ElisaoFiscalTab.tsx",
-   "lines": 373,
+   "lines": 377,
    "exports": [
     "function ElisaoFiscalTab"
    ],
@@ -191480,8 +191988,9 @@
   },
   "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts": {
    "path": "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts",
-   "lines": 28,
+   "lines": 85,
    "exports": [
+    "type DetalhesSimulacaoElisao",
     "type SimulacaoElisao",
     "type AuditoriaLogElisao",
     "type TarefaElisao",
@@ -191497,16 +192006,81 @@
   },
   "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx": {
    "path": "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
-   "lines": 114,
+   "lines": 479,
    "exports": [
     "function NovaSimulacaoElisaoDialog"
+   ],
+   "tables": [
+    {
+     "table": "elisao_simulacoes_regime",
+     "op": "insert"
+    }
+   ],
+   "errors": [
+    "Falha ao sincronizar: ${mensagemErro(atualizado.error)}",
+    "Nenhuma receita lançada nos últimos 12 meses. Lance notas fiscais ou títulos a receber para simular.",
+    "Não foi possível salvar o cenário: ${mensagemErro(erro)}",
+    "Sem faturamento apurado no período"
+   ],
+   "html_constraints": [
+    {
+     "field": "cenario-faturamento",
+     "rules": "type=number"
+    },
+    {
+     "field": "cenario-compras",
+     "rules": "type=number"
+    },
+    {
+     "field": "cenario-vendas",
+     "rules": "type=number, min=0, max=100"
+    },
+    {
+     "field": "cenario-cbs-livre",
+     "rules": "type=number, step=0.01"
+    }
+   ],
+   "percents": [
+    "Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V,",
+    "V com folha abaixo de 28% e ao Anexo III a partir de 28%. Desligue para atividades"
    ]
   },
   "src/components/contabilidade/elisao/SimuladorTab.tsx": {
    "path": "src/components/contabilidade/elisao/SimuladorTab.tsx",
-   "lines": 82,
+   "lines": 218,
    "exports": [
     "function SimuladorTab"
+   ]
+  },
+  "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx": {
+   "path": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+   "lines": 273,
+   "is_test": true,
+   "rule_comments": [
+    "Regra do ano-teste derivada do ANO gravado (2026), não do flag que se quer provar:",
+    "o flag precisa casar com o ano e a carga simulada seguir a regra."
+   ],
+   "tests": [
+    "NovaSimulacaoElisaoDialog",
+    "preenche faturamento e compras com os dados reais do periodo",
+    "nao conta folha nem impostos como compras (nao geram credito de CBS/IBS)",
+    "nao soma notas de compra (sem cliente) ao faturamento",
+    "pagina a leitura quando passa de mil lancamentos",
+    "so habilita a criacao quando ha nome e base apurada, e grava a memoria de calculo",
+    "cai para titulos a receber quando nao ha nota fiscal no periodo",
+    "bloqueia a criacao quando nao ha receita apurada",
+    "mostra o erro do banco quando o insert falha"
+   ]
+  },
+  "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx": {
+   "path": "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+   "lines": 67,
+   "is_test": true,
+   "tests": [
+    "SimuladorTab",
+    "mostra estado vazio quando não há cenários",
+    "renderiza os números reais gravados no cenário",
+    "abre a memória de cálculo no "
    ]
   },
   "src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx": {
@@ -220138,6 +220712,279 @@
     }
    ]
   },
+  "src/lib/contabilidade/fontes-contabeis.ts": {
+   "path": "src/lib/contabilidade/fontes-contabeis.ts",
+   "lines": 325,
+   "exports": [
+    "const ROTULO_FONTE",
+    "const ROTULO_FONTE_FOLHA",
+    "function janela12Competencias",
+    "function buscarFontesContabeis"
+   ],
+   "tables": [
+    {
+     "table": "notas_fiscais",
+     "op": "select"
+    },
+    {
+     "table": "contas_receber",
+     "op": "select"
+    },
+    {
+     "table": "folha_pagamento",
+     "op": "select"
+    },
+    {
+     "table": "contas_pagar",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "notas_fiscais": [
+     "cliente_cnpj",
+     "cliente_nome",
+     "data_emissao",
+     "empresa_id",
+     "status",
+     "valor_total"
+    ],
+    "contas_receber": [
+     "data_emissao",
+     "deleted_at",
+     "empresa_id",
+     "status",
+     "valor"
+    ],
+    "folha_pagamento": [
+     "beneficios",
+     "empresa_id",
+     "encargos",
+     "mes_referencia",
+     "pro_labore",
+     "salarios",
+     "total_folha",
+     "valor_total"
+    ],
+    "contas_pagar": [
+     "categoria",
+     "categoria_nome",
+     "data_emissao",
+     "deleted_at",
+     "descricao",
+     "empresa_id",
+     "fornecedor_id",
+     "fornecedor_nome",
+     "status",
+     "valor"
+    ]
+   },
+   "params": [
+    {
+     "name": "TAMANHO_PAGINA",
+     "value": "1000"
+    },
+    {
+     "name": "MAX_PAGINAS",
+     "value": "100"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "status",
+     "value": "cancelado",
+     "kind": "filtra"
+    },
+    {
+     "field": "status",
+     "value": "cancelado",
+     "kind": "filtra"
+    }
+   ],
+   "calc_fns": [
+    {
+     "name": "arredondar",
+     "params": "v: number",
+     "body": "Math.round(v * 100) / 100;"
+    },
+    {
+     "name": "valorDaLinhaFolha",
+     "params": "l: LinhaFolha",
+     "body": "const total = Number(l.valor_total ?? l.total_folha ?? 0); if (total > 0) return total; return ( Number(l.salarios ?? 0) + Number(l.encargos ?? 0) + Number(l.beneficios ?? 0) + Number(l.pro_labore ?? 0) );"
+    }
+   ],
+   "percents": [
+    "* ainda incompleto) infla ou derruba o ratio na fronteira dos 28%.",
+    "// CPP patronal (20% + RAT) incide sobre a remuneração paga — salários e pró-labore —,"
+   ]
+  },
+  "src/lib/contabilidade/simulacao-regimes.ts": {
+   "path": "src/lib/contabilidade/simulacao-regimes.ts",
+   "lines": 473,
+   "exports": [
+    "interface FontesContabeis",
+    "type CenarioCbs",
+    "interface PremissasCenario",
+    "interface ResiduaisTransicao",
+    "interface CenarioCalculado",
+    "const REGIMES_ATUAIS",
+    "const PREMISSAS_PADRAO",
+    "function montarDadosSimulacao",
+    "interface CargaSimples",
+    "function calcularCargaSimples",
+    "function calcularCenario",
+    "function podeCalcular",
+    "interface ResumoCenario",
+    "function nomeDoCenario",
+    "function anoDoCenario",
+    "function formatarMoeda"
+   ],
+   "enums": [
+    {
+     "name": "CenarioCbs",
+     "values": "cronograma | tcu | livre"
+    },
+    {
+     "name": "REGIMES_ATUAIS",
+     "values": "'Simples Nacional', 'Lucro Presumido', 'Lucro Real'"
+    }
+   ],
+   "params": [
+    {
+     "name": "SUBLIMITE_ESTADUAL",
+     "value": "3"
+    },
+    {
+     "name": "FATOR_R_CORTE",
+     "value": "0.28"
+    },
+    {
+     "name": "RAT_PADRAO",
+     "value": "0.02"
+    },
+    {
+     "name": "ALIQ_ICMS_FORA_DAS",
+     "value": "0.18"
+    },
+    {
+     "name": "ALIQ_ISS_FORA_DAS",
+     "value": "0.05"
+    }
+   ],
+   "rule_comments": [
+    "* Ressalvas do cálculo mostradas na UI (Fator R, resíduos, limite do Simples). */",
+    "* Limite anual e sublimite estadual do Simples Nacional (LC 123/2006, arts. 19 e 20). */",
+    "receita mista) aplicado sobre a receita total, na 6ª faixa federal, e apenas",
+    "manual não sobrepõe o corte (mesma regra da Calculadora do Simples). Atividade",
+    "O valor fica registrado em `cargaSimuladaBase` apenas como referência."
+   ],
+   "calc_fns": [
+    {
+     "name": "arredondar",
+     "params": "v: number",
+     "body": "Math.round((Number.isFinite(v) ? v : 0) * 100) / 100;"
+    },
+    {
+     "name": "calcularCargaSimples",
+     "params": "fontes: FontesContabeis, premissas: PremissasCenario",
+     "body": "const percentualVendas = Math.min(100, Math.max(0, premissas.percentualVendas)); const percentualServicos = 100 - percentualVendas; const rbt12 = fontes.faturamento12m; const fatorR = rbt12 > 0 ? fontes.folha12m / rbt12 : 0; const misto = percentualServicos > 0 && percentualVendas > 0; // CPP patronal incide sobre a remuneração paga (salários + pró-labore), não sobre // os encargos lançados na folha; sem detalhamento cai na folha total. const remuneracao = fontes.remuneracao12m > 0 ? fontes.remu …"
+    },
+    {
+     "name": "calcularCenario",
+     "params": "fontes: FontesContabeis, premissas: PremissasCenario",
+     "body": "const dados = montarDadosSimulacao(fontes, premissas); const resultado = simularComparativo(dados, premissas.anoReferencia); const avisos: string[] = []; const simples = premissas.regimeAtual === 'Simples Nacional' ? calcularCargaSimples(fontes, premissas) : null; let cargaAtual: number; if (simples && simples.elegivel) { cargaAtual = arredondar(simples.total); avisos.push(...simples.avisos); if ( premissas.sujeitoFatorR && fontes.folha12m <= 0 && (premissas.anexoSimples === 'III' || premissas.a …"
+    },
+    {
+     "name": "podeCalcular",
+     "params": "fontes: FontesContabeis | undefined | null",
+     "body": "return !!fontes && fontes.faturamento12m > 0;"
+    }
+   ],
+   "percents": [
+    "* Anexo IV a CPP patronal é recolhida **fora** do DAS (20% + RAT sobre a folha)",
+    "* I, II, III e V e 42,10% de ISS no Anexo IV (LC 123/2006, Anexos I a V). Nas faixas",
+    "* Parcela de ICMS/ISS que a 6ª faixa do Simples ainda reserva ao DAS: 0% nos Anexos",
+    "* respeitado mesmo com folha abaixo de 28%, sem migrar para o Anexo V.",
+    "// 2026 é ano-teste (LC 214/2025 art. 348): CBS 0,9% e IBS 0,1% são compensados/",
+    "// Anexo III com Fator R de 28% ou mais e para o Anexo V abaixo disso — a escolha",
+    "// então seguem com 0,9% + 0,1% como no cronograma puro."
+   ]
+  },
+  "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts": {
+   "path": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+   "lines": 474,
+   "is_test": true,
+   "rule_comments": [
+    "entram o limite inferior (nov/2025) e a ultima competencia fechada (out/2026)"
+   ],
+   "tests": [
+    "janela12Competencias",
+    "pega as 12 competencias fechadas anteriores ao mes de apuracao",
+    "fecha a janela no primeiro dia do mes mesmo em 31 de marco",
+    "buscarFontesContabeis",
+    "le todas as paginas do PostgREST em vez de so a primeira",
+    "avisa quando a trava de seguranca trunca a leitura",
+    "descarta notas canceladas e notas sem cliente quando ha venda identificada",
+    "usa todas as notas quando nenhuma tem cliente identificado",
+    "cai para titulos a receber e depois para sem_dados",
+    "separa compras com fornecedor da folha e dos impostos",
+    "nao conta folha lancada com fornecedor como compra",
+    "usa a folha mensal do Historico Financeiro com precedencia sobre contas a pagar",
+    "soma salarios + encargos quando a folha mensal nao tem total",
+    "apura a remuneracao (salarios + pro-labore) separada dos encargos",
+    "nao conta rescisao de contrato com fornecedor como folha",
+    "conta rescisao de funcionario sem categoria de folha como folha",
+    "nao conta consultoria para rescisao de contrato de funcionario como folha",
+    "corta notas e contas a pagar na janela de competencias fechadas",
+    "cai na folha total quando a folha nao detalha salarios e pro-labore",
+    "limita a folha as competencias fechadas dos ultimos 12 meses",
+    "nao trata ",
+    "marca sem_dados quando nao ha folha de nenhuma fonte",
+    "propaga o erro do banco"
+   ]
+  },
+  "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts": {
+   "path": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+   "lines": 403,
+   "is_test": true,
+   "tests": [
+    "montarDadosSimulacao",
+    "distribui vendas e serviços conforme o percentual informado",
+    "trava o percentual de vendas no intervalo 0..100",
+    "só envia alíquota CBS livre quando o cenário é livre",
+    "não envia regime especial quando ",
+    "calcularCenario",
+    "usa o motor oficial e devolve economia = carga atual - carga simulada",
+    "muda a carga atual conforme o regime: Simples usa o DAS, Presumido/Real o modelo nao-cumulativo",
+    "sobrepoe o anexo de servico escolhido pelo corte de 28% do Fator R",
+    "mantem o Anexo V escolhido quando o Fator R fica abaixo de 28%",
+    "respeita o Anexo III quando a atividade nao esta sujeita ao Fator R",
+    "tributa servicos pelo Anexo III quando o anexo informado e de mercadorias e a atividade nao esta sujeita ao Fator R",
+    "mantem o aviso do ano-teste ressalvado so quando o regime reduz CBS/IBS",
+    "cai no modelo nao-cumulativo quando a receita passa do limite do Simples",
+    "soma ICMS/ISS/PIS/COFINS residuais nos anos de transicao",
+    "propaga a observacao do cenario CBS do TCU",
+    "nao soma a CBS/IBS experimental na carga de 2026 (ano-teste)",
+    "avisa que Presumido e Real compartilham o modelo nao-cumulativo",
+    "nao afirma que IRPJ/CSLL entram na carga atual de Presumido/Real",
+    "no cenário oficial o aviso do ano-teste cita as alíquotas legais sem negá-las",
+    "avisa que o valor do ano-teste nao corresponde as aliquotas legais quando o cenario nao e o oficial",
+    "recolhe a CPP patronal fora do DAS no Anexo IV",
+    "calcula a CPP do Anexo IV sobre a remuneracao, sem os encargos da folha",
+    "segrega receita mista por anexo (servicos x mercadorias)",
+    "recolhe ICMS fora do DAS acima do sublimite estadual",
+    "nao deduz do DAS da 6a faixa uma parcela de ICMS que a tabela nao contem",
+    "recolhe ICMS e ISS nas duas atividades quando a receita mista passa do sublimite",
+    "move apenas o ISS da 6a faixa do Anexo IV para fora do DAS",
+    "avisa quando a leitura contabil foi truncada",
+    "nunca devolve NaN com base zerada",
+    "podeCalcular",
+    "exige faturamento apurado",
+    "nomeDoCenario",
+    "lê premissas.nome e cai em rótulo padrão quando ausente",
+    "formatarMoeda",
+    "formata em BRL e trata nulo"
+   ]
+  },
   "src/lib/export-contabil/auditoria-cfc.ts": {
    "path": "src/lib/export-contabil/auditoria-cfc.ts",
    "lines": 209,
@@ -220905,7 +221752,7 @@
   },
   "src/lib/reforma-tributaria/cronograma-oficial.ts": {
    "path": "src/lib/reforma-tributaria/cronograma-oficial.ts",
-   "lines": 204,
+   "lines": 211,
    "exports": [
     "type OrigemValor",
     "interface LinhaCronograma",
@@ -220928,6 +221775,7 @@
     }
    ],
    "rule_comments": [
+    "tributos federais. Não somam carga efetiva — servem apenas de referência.",
     "conformidade RT). Nenhum outro arquivo deve declarar sua própria tabela —"
    ],
    "percents": [
@@ -252670,10 +253518,30 @@
   }
  },
  "git": {
-  "sha": "22c61eade8e212b31498309575dce2fbcc9779fa",
+  "sha": "f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f2dbe02",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: simulador de elisão calcula e grava cenário com dados reais (#575)",
+    "files": [
+     "docs/auditoria/AUDITORIA_PLANEJADO_X_IMPLEMENTADO_2026-11-20.md",
+     "src/components/contabilidade/elisao/ElisaoFiscalTab.tsx",
+     "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts",
+     "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
+     "src/components/contabilidade/elisao/SimuladorTab.tsx",
+     "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+     "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+     "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+     "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+     "src/lib/contabilidade/fontes-contabeis.ts",
+     "src/lib/contabilidade/simulacao-regimes.ts",
+     "src/lib/reforma-tributaria/cronograma-oficial.ts"
+    ]
+   },
    {
     "sha": "22c61ea",
     "date": "2026-11-26",
@@ -253097,19 +253965,6 @@
      "scripts/graphify/requirements-linux-py311.lock",
      "scripts/graphify/requirements.in"
     ]
-   },
-   {
-    "sha": "f7e08e4",
-    "date": "2026-11-24",
-    "author": "adm01-debug",
-    "subject": "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)",
-    "files": [
-     "src/components/nfe/NovaNFeForm.tsx",
-     "src/hooks/useCatalogoCclasstrib.ts",
-     "src/lib/nfe/__tests__/grupo-ibscbs-item.test.ts",
-     "src/lib/nfe/grupo-ibscbs-item.ts",
-     "src/lib/tributario/catalogos/cclasstrib.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -253122,15 +253977,15 @@
     8
    ],
    [
-    "src/lib/tributario/catalogos/cclasstrib.ts",
-    5
-   ],
-   [
     "src/hooks/useImportacaoXMLNFe.ts",
     4
    ],
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    4
+   ],
+   [
+    "src/lib/tributario/catalogos/cclasstrib.ts",
     4
    ],
    [
@@ -253152,10 +254007,6 @@
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
     3
-   ],
-   [
-    "src/hooks/useCatalogoCclasstrib.ts",
-    2
    ],
    [
     "src/lib/tributario/catalogos/fundamentacao-legal.ts",
@@ -253191,6 +254042,10 @@
    ],
    [
     "scripts/ci/deno-check-functions.sh",
+    2
+   ],
+   [
+    "src/integrations/supabase/types.ts",
     2
    ]
   ]

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "22c61eade8e212b31498309575dce2fbcc9779fa",
+  "commit": "f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5",
   "branch": "main",
-  "data_commit": "2026-11-26T10:41:53-03:00",
+  "data_commit": "2026-11-26T14:18:50-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f2dbe02",
+    "data": "2026-11-26",
+    "assunto": "feat: simulador de elisão calcula e grava cenário com dados reais (#575)"
+   },
    {
     "sha": "22c61ea",
     "data": "2026-11-26",
@@ -126,14 +131,9 @@
     "sha": "6ef837b",
     "data": "2026-11-24",
     "assunto": "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)"
-   },
-   {
-    "sha": "3f209ea",
-    "data": "2026-11-24",
-    "assunto": "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)"
    }
   ],
-  "arquivos_mudados_7d": 337,
+  "arquivos_mudados_7d": 333,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -141,7 +141,7 @@
    },
    {
     "pasta": "src/components/contabilidade",
-    "mudancas": 130
+    "mudancas": 136
    },
    {
     "pasta": "src/components/admin",
@@ -310,9 +310,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4100,
-  "arquivos_codigo": 2560,
-  "linhas_codigo": 460141,
+  "arquivos_total": 4106,
+  "arquivos_codigo": 2566,
+  "linhas_codigo": 462719,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -324,7 +324,7 @@
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 529,
+  "testes": 533,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -639,8 +639,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1012,
-   "linhas": 166475
+   "arquivos": 1014,
+   "linhas": 167375
   },
   "src/config": {
    "arquivos": 2,
@@ -663,8 +663,8 @@
    "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 442,
-   "linhas": 60024
+   "arquivos": 446,
+   "linhas": 61702
   },
   "src/main.tsx": {
    "arquivos": 1,

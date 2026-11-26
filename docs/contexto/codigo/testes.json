@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 529,
+ "total": 533,
  "por_tipo": {
   "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 450
+  "unit": 454
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 324
+   "arquivos": 328
   },
   {
    "padrao": "outro",
@@ -984,6 +984,26 @@
     "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts"
    ],
    "casos": 5
+  },
+  {
+   "arquivo": "src/components/contabilidade/elisao/__tests__/nova-simulacao-elisao.test.tsx",
+   "tipo": "unit",
+   "linhas": 272,
+   "testa": [
+    "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx",
+   "tipo": "unit",
+   "linhas": 66,
+   "testa": [
+    "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts",
+    "src/components/contabilidade/elisao/SimuladorTab.tsx",
+    "src/components/ui/tabs.tsx"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx",
@@ -2693,6 +2713,25 @@
     "src/lib/contabil/termos-livro.ts"
    ],
    "casos": 10
+  },
+  {
+   "arquivo": "src/lib/contabilidade/__tests__/fontes-contabeis.test.ts",
+   "tipo": "unit",
+   "linhas": 473,
+   "testa": [
+    "src/lib/contabilidade/fontes-contabeis.ts"
+   ],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
+   "tipo": "unit",
+   "linhas": 402,
+   "testa": [
+    "src/lib/contabilidade/simulacao-regimes.ts",
+    "src/lib/reforma-tributaria/simulador.ts"
+   ],
+   "casos": 31
   },
   {
    "arquivo": "src/lib/navigation-intent.test.ts",
@@ -4776,6 +4815,9 @@
   "src/components/contabilidade/ValidacoesPreSpedDialog.tsx": 1,
   "src/components/contabilidade/contabilizacao-automatica/types.ts": 1,
   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts": 1,
+  "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts": 1,
+  "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx": 1,
+  "src/components/contabilidade/elisao/SimuladorTab.tsx": 1,
   "src/components/contabilidade/indices/IndicesGrid.tsx": 1,
   "src/components/contabilidade/indices/IndicesToolbar.tsx": 1,
   "src/components/contas-pagar/RegistrarPagamentoDialog.tsx": 1,
@@ -4834,7 +4876,7 @@
   "src/components/ui/input.tsx": 2,
   "src/components/ui/label.tsx": 1,
   "src/components/ui/table.tsx": 1,
-  "src/components/ui/tabs.tsx": 1,
+  "src/components/ui/tabs.tsx": 2,
   "src/components/ui/tooltip.tsx": 2,
   "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
   "src/config/env.ts": 2,
@@ -4931,6 +4973,8 @@
   "src/lib/contabil/indices.ts": 3,
   "src/lib/contabil/indices.types.ts": 2,
   "src/lib/contabil/termos-livro.ts": 1,
+  "src/lib/contabilidade/fontes-contabeis.ts": 1,
+  "src/lib/contabilidade/simulacao-regimes.ts": 1,
   "src/lib/correlation-id.ts": 1,
   "src/lib/csv-importer.ts": 1,
   "src/lib/currency.ts": 1,
@@ -4962,6 +5006,7 @@
   "src/lib/reforma-tributaria/arredondamento.ts": 1,
   "src/lib/reforma-tributaria/calcular-tributos.ts": 1,
   "src/lib/reforma-tributaria/cronograma-oficial.ts": 2,
+  "src/lib/reforma-tributaria/simulador.ts": 1,
   "src/lib/reforma-tributaria/types.ts": 1,
   "src/lib/secure-random.ts": 1,
   "src/lib/sefaz-contingency/constants.ts": 1,

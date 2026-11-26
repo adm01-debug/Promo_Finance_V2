@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 294,
+ "total": 296,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 273,
+  "lib": 275,
   "python": 15
  },
  "arquivos": [
@@ -1783,6 +1783,76 @@
     "hooks"
    ],
    "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabilidade/fontes-contabeis.ts",
+   "camada": "lib",
+   "exports": [
+    "ROTULO_FONTE",
+    "ROTULO_FONTE_FOLHA",
+    "buscarFontesContabeis",
+    "janela12Competencias"
+   ],
+   "export_default": null,
+   "linhas": 324,
+   "tabelas": [
+    "contas_pagar",
+    "contas_receber",
+    "folha_pagamento",
+    "notas_fiscais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/contabilidade"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabilidade/simulacao-regimes.ts",
+   "camada": "lib",
+   "exports": [
+    "CargaSimples",
+    "CenarioCalculado",
+    "CenarioCbs",
+    "FontesContabeis",
+    "PREMISSAS_PADRAO",
+    "PremissasCenario",
+    "REGIMES_ATUAIS",
+    "ResiduaisTransicao",
+    "ResumoCenario",
+    "anoDoCenario",
+    "calcularCargaSimples",
+    "calcularCenario",
+    "formatarMoeda",
+    "montarDadosSimulacao",
+    "nomeDoCenario",
+    "podeCalcular"
+   ],
+   "export_default": null,
+   "linhas": 472,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "lib/contabilidade"
+   ],
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -3603,7 +3673,7 @@
     "obterLinhaCronograma"
    ],
    "export_default": null,
-   "linhas": 203,
+   "linhas": 210,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3612,9 +3682,11 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 8,
+   "usado_por": 10,
    "usado_por_modulos": [
+    "components/contabilidade",
     "components/reforma-tributaria",
+    "lib/contabilidade",
     "lib/reforma-tributaria",
     "lib/tributario",
     "types/reforma-tributaria"
@@ -3667,11 +3739,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
-    "lib"
+    "lib",
+    "lib/contabilidade"
    ],
-   "coberto_por_testes": 0,
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -3719,9 +3792,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 6,
    "usado_por_modulos": [
     "lib",
+    "lib/contabilidade",
     "lib/reforma-tributaria"
    ],
    "coberto_por_testes": 1,
@@ -4766,7 +4840,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 33,
+   "usado_por": 35,
    "usado_por_modulos": [
     "components/admin",
     "components/compliance",
@@ -4777,6 +4851,7 @@
     "hooks/bling",
     "hooks/financial",
     "hooks/saved-filter-alerts",
+    "lib/contabilidade",
     "pages/admin",
     "pages/configuracoes"
    ],
@@ -5357,8 +5432,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 6,
+   "usado_por": 8,
    "usado_por_modulos": [
+    "components/contabilidade",
+    "lib/contabilidade",
     "lib/tributario"
    ],
    "coberto_por_testes": 3,
@@ -7551,8 +7628,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 4,
    "usado_por_modulos": [
+    "lib/contabilidade",
     "lib/tributario"
    ],
    "coberto_por_testes": 0,
@@ -7598,8 +7676,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
+    "lib/contabilidade",
     "lib/tributario"
    ],
    "coberto_por_testes": 0,
@@ -8722,7 +8801,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 312,
+   "usado_por": 314,
    "usado_por_modulos": [
     "components/admin",
     "components/alertas",

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `22c61eade8e212b31498309575dce2fbcc9779fa` (2026-11-26T10:41:53-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f2dbe02136fa1c345e8c2fff4c3f1d6d6360b4a5` (2026-11-26T14:18:50-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2439), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2445), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4100 |
-| arquivos_codigo | 2560 |
-| linhas_codigo | 460141 |
+| arquivos_total | 4106 |
+| arquivos_codigo | 2566 |
+| linhas_codigo | 462719 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 318 |
 | migrations | 1084 |
 | cron_jobs | 28 |
-| testes | 529 |
+| testes | 533 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 231 |
@@ -57,8 +57,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - telas: src/pages (127)
 - componentes: src/components (780), src/pages (208), src/hooks (2)
 - hooks: src/hooks (241), src/components (27), src/pages (5)
-- servicos_logica: src/lib (273), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (324), outro (113), co-localizado (*.test) (50)
+- servicos_logica: src/lib (275), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (328), outro (113), co-localizado (*.test) (50)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -85,7 +85,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/compliance | 0 | 0 | 16 | 6 | 1 | 5 |
 | components/conciliacao | 0 | 0 | 30 | 36 | 3 | 32 |
 | components/configuracoes | 0 | 0 | 9 | 6 | 2 | 10 |
-| components/contabilidade | 0 | 0 | 106 | 45 | 5 | 29 |
+| components/contabilidade | 0 | 0 | 106 | 45 | 5 | 31 |
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
 | components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
 | components/contas-receber | 0 | 0 | 36 | 32 | 3 | 26 |
@@ -121,7 +121,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/tributario | 0 | 0 | 124 | 0 | 0 | 14 |
-| pages | 58 | 64 | 109 | 367 | 45 | 172 |
+| pages | 58 | 64 | 109 | 367 | 45 | 173 |
 | pages/admin | 4 | 15 | 24 | 118 | 14 | 60 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `f2dbe02` feat: simulador de elisão calcula e grava cenário com dados reais (#575)
 - 2026-11-26 `22c61ea` fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)
 - 2026-11-26 `ae407b8` fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)
 - 2026-11-26 `5991337` docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `d32f10e` fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)
 - 2026-11-25 `1c79a8f` chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)
 - 2026-11-25 `cdaca4d` fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)
-- 2026-11-25 `f5e0e48` fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

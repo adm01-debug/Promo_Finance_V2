@@ -16,12 +16,12 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (273)",
+   "src/lib (275)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (324)",
+   "co-localizado (__tests__) (328)",
    "outro (113)",
    "co-localizado (*.test) (50)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: simulador de elisão calcula e grava cenário com dados reais (#575)",
    "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)",
    "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)",
    "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)",
-   "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)",
-   "feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)"
+   "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
