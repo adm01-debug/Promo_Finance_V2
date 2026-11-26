@@ -54,6 +54,7 @@ export function BaixaAutomaticaDialog({
     valor: 0,
     falhas: 0,
     falhasAuxiliares: 0,
+    alertasFalhos: 0,
   });
   const [contaBancariaId, setContaBancariaId] = useState('');
   const [empresaDoLote, setEmpresaDoLote] = useState('');
@@ -199,6 +200,9 @@ export function BaixaAutomaticaDialog({
     // liquidação — o título foi processado e não pode contar como "não
     // processado" (dedupe por título: 1 líquidação = 1 falha máxima).
     let auxFailCount = 0;
+    // Divergências que não puderam virar alerta: sem o alerta o usuário não
+    // tem onde reencontrá-las depois que a tela de conclusão abre.
+    let alertasFalhos = 0;
     // Créditos cuja liquidação não pôde ser confirmada (título já liquidado ou
     // valor alterado entre a leitura e a escrita) precisam virar divergência,
     // senão o lote termina sem lançamento bancário e sem alerta de reprocesso.
@@ -296,7 +300,6 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        let alertasFalhos = 0;
         for (const t of [...unmatched, ...naoConfirmadas]) {
           const { error: alertaError } = await supabase.from('alertas').insert({
             user_id: user.id,
@@ -311,9 +314,13 @@ export function BaixaAutomaticaDialog({
           if (alertaError) alertasFalhos++;
         }
         if (alertasFalhos > 0) {
-          auxFailCount++;
+          // O aviso tem que ser acionável: sem o alerta gravado a divergência
+          // não fica registrada em lugar nenhum, então o extrato precisa ser
+          // reimportado — não há preview esperando o usuário.
           toast.error(
-            `${alertasFalhos} alerta(s) de divergência não puderam ser registrados — as entradas sem par seguem no preview para reprocesso.`
+            `${alertasFalhos} ${alertasFalhos === 1 ? 'alerta' : 'alertas'} de divergência não ${
+              alertasFalhos === 1 ? 'pôde' : 'puderam'
+            } ser registrado(s) — reimporte o arquivo de retorno para reprocessar as entradas sem par.`
           );
         }
 
@@ -329,6 +336,7 @@ export function BaixaAutomaticaDialog({
               sucesso_count: successCount,
               falha_count: failCount,
               falhas_auxiliares: auxFailCount,
+              alertas_falhos: alertasFalhos,
             },
           },
         ]);
@@ -343,6 +351,7 @@ export function BaixaAutomaticaDialog({
         valor: totalValue,
         falhas: failCount,
         falhasAuxiliares: auxFailCount,
+        alertasFalhos,
       });
       if (failCount > 0) {
         toast.error(
@@ -524,6 +533,16 @@ export function BaixaAutomaticaDialog({
                     {summary.falhasAuxiliares} etapa
                     {summary.falhasAuxiliares === 1 ? ' auxiliar' : 's auxiliares'} com falha
                     (lançamento bancário/auditoria) — veja os alertas.
+                  </p>
+                )}
+                {summary.alertasFalhos > 0 && (
+                  <p className="text-xs text-warning flex items-center justify-center gap-1 mt-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {summary.alertasFalhos}{' '}
+                    {summary.alertasFalhos === 1
+                      ? 'divergência não foi registrada como alerta'
+                      : 'divergências não foram registradas como alerta'}{' '}
+                    — reimporte o arquivo de retorno para reprocessá-las.
                   </p>
                 )}
                 <div className="mt-4 p-4 rounded-2xl bg-card/5 border border-white/5 inline-block">

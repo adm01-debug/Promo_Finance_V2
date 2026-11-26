@@ -93,6 +93,45 @@ describe('conciliarCreditos', () => {
     expect(resultado.map((t) => t?.id)).toEqual(['gama']);
   });
 
+  it('nome completo vence o sobrenome em comum mesmo com vencimento mais próximo', () => {
+    // "PIX ANA SILVA": Ana pontua 0,69 (nome inteiro na descrição) e Maria
+    // apenas 0,40 (só o "Silva"). Antes o vencimento decidia e quitava Maria.
+    const resultado = conciliarCreditos(
+      [credito(100, 'PIX ANA SILVA')],
+      [
+        titulo('ana', 'Ana Silva', 100, '2026-04-11'),
+        titulo('maria', 'Maria Silva', 100, '2026-04-10'),
+      ]
+    );
+
+    expect(resultado.map((t) => t?.id)).toEqual(['ana']);
+  });
+
+  it('manda para o vínculo manual quando só o sobrenome aponta clientes diferentes', () => {
+    // Evidência fraca e ambígua: compartilhar "Silva" não diz qual cliente
+    // pagou — nenhum dos dois pode ser baixado automaticamente.
+    const resultado = conciliarCreditos(
+      [credito(100, 'PIX SILVA')],
+      [
+        titulo('ana', 'Ana Silva', 100, '2026-04-11'),
+        titulo('maria', 'Maria Silva', 100, '2026-04-10'),
+      ]
+    );
+
+    expect(resultado).toEqual([null]);
+  });
+
+  it('prioriza o valor exato sobre o valor apenas tolerado', () => {
+    // R$ 100,04 está dentro da tolerância, mas quitar esse título recebendo
+    // R$ 100,00 deixaria o título de valor exato em aberto.
+    const resultado = conciliarCreditos(
+      [credito(100, 'PIX BETA')],
+      [titulo('tolerado', 'Beta', 100.04, '2026-04-10'), titulo('exato', 'Beta', 100, '2026-04-11')]
+    );
+
+    expect(resultado.map((t) => t?.id)).toEqual(['exato']);
+  });
+
   it('cada título quita um único crédito', () => {
     const resultado = conciliarCreditos(
       [credito(900, 'PIX BETA'), credito(900, 'PIX BETA')],

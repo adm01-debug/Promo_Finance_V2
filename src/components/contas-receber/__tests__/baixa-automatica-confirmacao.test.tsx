@@ -22,6 +22,7 @@ const titulosEmAberto = [
 ];
 
 let titulosLiquidados: Array<{ id: string }> | null = null;
+let erroAoGravarAlerta = false;
 const chamadas: Array<{ tabela: string; metodo: string; args: unknown[] }> = [];
 
 const resultadoContasReceber = (atualizou: boolean) => {
@@ -51,7 +52,9 @@ const criarBuilder = (tabela: string) => {
   });
   builder.insert = vi.fn((...args: unknown[]) => {
     chamadas.push({ tabela, metodo: 'insert', args });
-    return Promise.resolve({ data: null, error: null });
+    const erro =
+      tabela === 'alertas' && erroAoGravarAlerta ? { message: 'permission denied' } : null;
+    return Promise.resolve({ data: null, error: erro });
   });
   builder.then = (resolve: (v: unknown) => unknown) =>
     Promise.resolve(
@@ -142,6 +145,7 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     vi.clearAllMocks();
     chamadas.length = 0;
     titulosLiquidados = null;
+    erroAoGravarAlerta = false;
     parseExtratoBancarioMock.mockReturnValue(
       extratoCom([
         transacaoCredito(1500, 'TED RECEBIDA', '2026-04-20'),
@@ -285,6 +289,28 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     ]);
     const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
     expect(alertas).toHaveLength(1);
+  });
+
+  it('avisa que a divergência não foi registrada quando o alerta falha', async () => {
+    erroAoGravarAlerta = true;
+    abrirDialogo();
+    await importar();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+
+    // Sem o alerta gravado a divergência não fica registrada em lugar nenhum:
+    // o usuário precisa saber que tem de reimportar, não que ela ficou no preview.
+    expect(toastError).toHaveBeenCalledWith(
+      expect.stringContaining('reimporte o arquivo de retorno')
+    );
+    expect(screen.getByText(/não foram registradas como alerta/)).toBeInTheDocument();
+    const logs = chamadas.find((c) => c.tabela === 'logs_baixa_automatica');
+    expect(logs?.args[0]).toEqual([
+      expect.objectContaining({
+        detalhes: expect.objectContaining({ alertas_falhos: 2 }),
+      }),
+    ]);
   });
 
   it('descarta o lote quando a empresa muda antes da confirmação', async () => {
