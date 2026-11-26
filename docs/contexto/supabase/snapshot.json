@@ -1739,9 +1739,7 @@
     },
     "url": "https://bwwbeyolnnzppeuhgkcd.supabase.co"
   },
-  "carried": [
-    "api.branches"
-  ],
+  "carried": [],
   "db": {
     "columns": [
       {
@@ -115156,11 +115154,6 @@
     ],
     "webhooks": []
   },
-  "errors": [
-    {
-      "error": "The read operation timed out",
-      "section": "api.branches"
-    }
-  ],
+  "errors": [],
   "format_version": 2
 }
