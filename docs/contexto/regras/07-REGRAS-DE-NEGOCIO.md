@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `acf2202a69` · branch `main` · 2026-11-26 20:04 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5bf3c2dd4f` · branch `main` · 2026-11-26 20:25 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1373,7 +1373,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
 | `status` | `cancelada` | compara, filtra | `src/components/nfe/NFePreview.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useNotasFiscaisLocais.ts`<br>`src/pages/NotasFiscais.tsx` |
-| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>… +25 |
+| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/VincularManualmenteDialog.tsx`<br>… +26 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
 | `status` | `complete` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
@@ -1440,7 +1440,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `online` | escreve | `src/components/ui/badge.tsx` |
 | `status` | `operational` | compara, escreve | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
 | `status` | `outage` | compara | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
-| `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +46 |
+| `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +47 |
 | `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
 | `status` | `partial` | compara, escreve | `src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
 | `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +60 |
@@ -1455,7 +1455,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `rascunho` | compara, escreve, filtra | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/components/reforma-tributaria/PerDcompPanel.tsx`<br>`src/components/reforma-tributaria/irpj-csll/IRPJCSLLCalculadora.tsx`<br>`src/components/reforma-tributaria/per-dcomp/PerDcompTable.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>… +3 |
 | `status` | `read` | compara | `supabase/functions/whatsapp-webhook/index.ts` |
 | `status` | `realizado` | escreve | `src/components/financeiro/TransferenciaDialog.tsx`<br>`src/hooks/useFinancialOperations.ts` |
-| `status` | `recebido` | compara, escreve, filtra | `src/components/contas-receber/row/AcoesCell.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useCalculadoraDadosReais.ts`<br>`src/hooks/useContasReceberLogic.calculos.ts`<br>`src/hooks/useContasReceberLogic.ts`<br>… +4 |
+| `status` | `recebido` | compara, escreve, filtra | `src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/VincularManualmenteDialog.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useCalculadoraDadosReais.ts`<br>… +6 |
 | `status` | `recolhido` | compara | `src/components/reforma-tributaria/RetencoesFonte.tsx`<br>`src/hooks/useRetencoesFonte.ts` |
 | `status` | `regravado` | compara, escreve | `supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
 | `status` | `rejected` | compara | `src/lib/adaptive-chunk.ts`<br>`supabase/functions/sefaz-dfe-dispatcher/index.ts` |
@@ -3025,6 +3025,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   return /^\d+(\.\d+)*$/.test(codigo);
   ```
+- **valorPostgrest(valor: string)** — `src/lib/postgrest-filtros.ts`
+  ```
+  return `"${valor.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  ```
 - **gerarEventoId()** — `src/lib/sefaz-event-logger.ts`
   ```
   return `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -3140,6 +3144,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **podeCalcular(fontes: FontesContabeis | undefined | null)** — `src/lib/contabilidade/simulacao-regimes.ts`
   ```
   return !!fontes && fontes.faturamento12m > 0;
+  ```
+- **scorePagador(credito: CreditoExtrato, titulo: TituloCandidato)** — `src/lib/financeiro/conciliacao-extrato.ts`
+  ```
+  const cliente = (titulo.cliente_nome ?? '').trim(); if (!cliente) return 0; return calcularSimilaridadeTexto(textoDoCredito(credito), cliente).score;
   ```
 - **valorRecebidoEfetivo(c: { valor_recebido?: number | null; valor?: number | null; metadata?: unknown; })** — `src/lib/financeiro/valor-recebido-efetivo.ts`
   ```
@@ -4203,7 +4211,12 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `SCORE_RISCO_BAIXO` | `700` | `src/components/cobranca/previsao/risco.ts` |
 | `ALPHA` | `0.3` | `src/components/contabilidade/ImportLancamentosCSVDialog.tsx` |
 | `TITULO` | `'ÍNDICES ECONÔMICO-FINANCEIROS'` | `src/components/contabilidade/indices/exporters.ts` |
+| `SEM_CONTA` | `'sem-conta'` | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | `COOLDOWN` | `60000` | `src/components/contas-receber/ContasReceberKPIs.tsx` |
+| `LIMITE_SEM_BUSCA` | `200` | `src/components/contas-receber/VincularManualmenteDialog.tsx` |
+| `LIMITE_COM_BUSCA` | `50` | `src/components/contas-receber/VincularManualmenteDialog.tsx` |
+| `TAMANHO_MINIMO_BUSCA` | `2` | `src/components/contas-receber/VincularManualmenteDialog.tsx` |
+| `DEBOUNCE_BUSCA_MS` | `300` | `src/components/contas-receber/VincularManualmenteDialog.tsx` |
 | `PAGINA_DLQ` | `20` | `src/components/contas-receber/WebhookDlqPanel.tsx` |
 | `DEFAULT_DURATION` | `350` | `src/components/layout/transitions/presets.ts` |
 | `DEFAULT_DISTANCE` | `24` | `src/components/layout/transitions/presets.ts` |
@@ -4282,6 +4295,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `ALIQ_ISS_FORA_DAS` | `0.05` | `src/lib/contabilidade/simulacao-regimes.ts` |
 | `MARGIN` | `40` | `src/lib/export-contabil/livro-oficial.ts` |
 | `BOM` | `'\uFEFF'` | `src/lib/export-contabil/utils.ts` |
+| `TOLERANCIA_VALOR` | `0.05` | `src/lib/financeiro/conciliacao-extrato.ts` |
+| `TOLERANCIA_DIAS` | `5` | `src/lib/financeiro/conciliacao-extrato.ts` |
+| `SIMILARIDADE_PAGADOR` | `0.3` | `src/lib/financeiro/conciliacao-extrato.ts` |
+| `SIMILARIDADE_IDENTIFICACAO` | `0.6` | `src/lib/financeiro/conciliacao-extrato.ts` |
+| `MILISSEGUNDOS_POR_DIA` | `86` | `src/lib/financeiro/conciliacao-extrato.ts` |
 | `INICIO_OBRIGATORIEDADE_IBSCBS` | `'2026-08-03'` | `src/lib/nfe/pre-validar-ibscbs.ts` |
 | `CENTAVOS` | `100` | `src/lib/nfe/pre-validar-ibscbs.ts` |
 | `STORE` | `'consultas'` | `src/lib/offline/fiscal-cache.ts` |
@@ -4480,17 +4498,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TICK_MS` | `15` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
 | `MAX_BATCHES_PER_CNPJ` | `10` | `supabase/functions/sefaz-dfe-puxar/index.ts` |
 | `SSO_FINALIZE_JANELA_MS` | `10` | `supabase/functions/sso-callback/index.ts` |
-| `PROJECT_REF` | `'bwwbeyolnnzppeuhgkcd'` | `supabase/functions/sso-generate-metadata/index.ts` |
-| `TABELA` | `'catalogo_aliquota_referencia'` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `TABELA_ISS` | `'aliquotas_iss_municipal'` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `PAUSA_MS` | `1200` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `MAX_UFS` | `27` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `MAX_MUNICIPIOS` | `40` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `MAX_REQUISICOES` | `70` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `PAGINA` | `1000` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `MAX_PAGINAS` | `100` | `supabase/functions/sync-aliquota-referencia/index.ts` |
-| `MIN_UFS` | `27` | `supabase/functions/sync-aliquota-referencia/montar.ts` |
-| … +27 linhas — lista completa em `context.json` | | |
+| … +37 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -4545,7 +4553,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `setTimeout(() => setExportStatus('idle'), 5000);` | `src/components/contabilidade/sped-contabil/useSpedContabilState.ts` |
 | `window.setTimeout(() => el.classList.remove('row-highlight-flash'), 3000);` | `src/components/contabilidade/sped-ecf-wizard/crosscheck.ts` |
 | `copyTimer.current = setTimeout(() => setHashCopied(false), 2000);` | `src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts` |
-| `const diffDias = Math.abs(dataT.getTime() - dataC.getTime()) / (1000 * 60 * 60 * 24);` | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | `(1000 * 60 * 60 * 24)` | `src/components/dashboard/DashboardExecutivo.tsx` |
 | `await new Promise((r) => setTimeout(r, 1500));` | `src/components/design-system-debug/DesignSystemAudit.tsx` |
 | `toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {` | `src/components/design-system-debug/DesignSystemAudit.tsx` |
@@ -5195,7 +5202,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +816 linhas — lista completa em `context.json` | |
+| … +825 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5254,7 +5261,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4157 testes em 366 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4253 testes em 371 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5268,6 +5275,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
 | `src/lib/contabilidade/__tests__/simulacao-regimes.test.ts` | 36 | montarDadosSimulacao · distribui vendas e serviços conforme o percentual informado · trava o percentual de vendas no intervalo 0..100 · só envia alíquota CBS livre quando o cenário é livre … |
+| `src/lib/financeiro/__tests__/divergencias-pendentes.test.ts` | 35 | origemDoExtrato · usa banco, agência e conta do arquivo como identidade · devolve null quando o arquivo não traz o número da conta · origemDaTransacao … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
 | `src/lib/__tests__/cashflow-scenarios.test.ts` | 31 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
 | `src/lib/tributario/__tests__/monofasico.test.ts` | 31 | normalizarNcm · remove pontuação e limita a 8 dígitos · classificarNcmMonofasico · classifica cerveja em BEBIDAS_FRIAS … |
@@ -5276,6 +5284,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useContasReceberLogic.test.ts` | 30 | useContasReceberLogic - KPI calculation · Gap #5 - Cálculo vence hoje · identifica contas que vencem hoje · exclui contas pagas do vence hoje … |
 | `src/lib/tributario/__tests__/motor.test.ts` | 30 | Motor Tributário · RBT12 · calcula soma simples para 12+ meses · proporcionaliza para empresa com <13 meses (início de atividade) … |
 | `src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx` | 29 | ReguaCobrancaConfig · Renderização da régua · exibe título da configuração · exibe etapa Preventiva … |
+| `src/lib/__tests__/ofx-parser.test.ts` | 29 | OFX/CSV Parser · parseOFX · arquivo vazio retorna erro · arquivo sem transações retorna erro … |
 | `src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts` | 29 | avaliarFrescorCatalogosRfb · marca como critico o catalogo nunca sincronizado · mantem em dia o catalogo carregado hoje · trata o dia do limite como em dia e o excedente (mesmo parcial) como alerta … |
 | `src/lib/tributario/__tests__/conformidade-historico.test.ts` | 29 | competenciaValida · aceita apenas AAAA-MM válido · construirHistorico · retorna série vazia sem itens … |
 | `src/components/contas-receber/__tests__/ContasReceberKPIs.test.tsx` | 28 | ContasReceberKPIs · Gap #4 - Comparativo temporal · exibe variação positiva com seta para cima · exibe variação negativa corretamente … |
@@ -5294,7 +5303,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/sso/__tests__/consistency.test.ts` | 25 | validateSSOConfig — happy path · configuração consistente: nenhum issue · summarizeIssues: hasBlocker=false quando sem erros · claim_mapping … |
 | `src/lib/tributario/__tests__/overlay-ncm.test.ts` | 24 | normalizarAliquotaIpi · aceita fração, percentual e string com vírgula · trata 1 como 100% em fração e 100 como 100% em percentual · rejeita valores não numéricos, negativos e nulos … |
 | `src/components/reforma-tributaria/__tests__/HeroKPIs.test.tsx` | 23 | HeroKPIs · Renderização dos cards · exibe carga tributária efetiva · exibe alíquotas CBS e IBS como badges … |
-| `src/lib/__tests__/ofx-parser.test.ts` | 23 | OFX/CSV Parser · parseOFX · arquivo vazio retorna erro · arquivo sem transações retorna erro … |
 | `src/lib/contabilidade/__tests__/fontes-contabeis.test.ts` | 23 | janela12Competencias · pega as 12 competencias fechadas anteriores ao mes de apuracao · fecha a janela no primeiro dia do mes mesmo em 31 de marco · buscarFontesContabeis … |
 | `src/lib/tributario/__tests__/darf-consolidacao.test.ts` | 23 | darf/tabelas — calendário · reconhece fins de semana e feriados nacionais · antecipa sempre para um dia útil · não possui códigos de receita duplicados … |
 | `src/lib/tributario/__tests__/icms-st-difal.test.ts` | 23 | icms — tabelas e alíquotas interestaduais · cobre as 27 unidades federativas com parâmetros consistentes · valida UFs e identifica mercadoria importada pela origem · aplica 7% de S/SE para N/NE/CO e ES … |
@@ -5308,12 +5316,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useAprovacoes.test.tsx` | 21 | useComentariosAprovacao (contrato real user_id/comentario) · busca comentarios com select simples (sem embed profiles — FK inexistente) · propaga erro do supabase · useConfiguracaoAprovacao (alcada com varias faixas ativas) … |
 | `src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts` | 21 | detectarJCP · deve identificar oportunidade aplicável para empresa Lucro Real com PL e lucro positivos · deve limitar JCP a 50% do lucro se o limite do PL for superior · não deve ser aplicável para empresas fora do Lucro Real … |
 | `src/lib/__tests__/barcode-parser.test.ts` | 19 | Barcode Parser · parseBoleto · código inválido com poucos dígitos retorna erros · 44 dígitos é reconhecido como código de barras … |
+| `src/lib/financeiro/__tests__/conciliacao-extrato.test.ts` | 19 | titulosCompativeis · aceita diferença de até R$ 0,05 e 5 dias · ehMesmoPagador · reconhece o cliente escrito na descrição do crédito … |
 | `src/lib/tributario/__tests__/conformidade-fiscal.test.ts` | 19 | classificarConformidade · mapeia as quatro faixas nos limites exatos · calcularConformidade — casos unitários · retorna 100 para conjunto vazio (sem obrigações, sem risco) … |
 | `src/components/reforma-tributaria/__tests__/KPIComparativo.test.tsx` | 18 | KPIComparativo · Cálculo de variação · exibe variação positiva · exibe variação negativa … |
 | `src/components/ui/__tests__/card.test.tsx` | 18 | Card · renders children · has default classes · applies custom className … |
 | `src/hooks/financial/__tests__/useContasReceberPagar.test.tsx` | 18 | useContasReceber · consulta a view vw_contas_receber_painel ordenando por data_vencimento asc e primeira pagina · agrega todas as paginas: totais deixam de parar nos primeiros 1.000 titulos · propaga erro de uma pagina seguinte em vez de devolver agregado parcial … |
 | `src/lib/__tests__/audit-priority.test.ts` | 18 | audit-priority · classifyAuditPriority · mapeia actions base corretamente · tabela sensível eleva para high … |
 | `src/lib/__tests__/currency.test.ts` | 18 | Currency Utilities - Robustness & Regression · Floating Point Precision · deve somar valores decimais corretamente evitando erros de precisão IEEE 754 · deve lidar com somas complexas com muitos decimais … |
+| `src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx` | 17 | BaixaAutomaticaDialog — vínculo manual e confirmação do lote · liquida o título vinculado pelo valor real do crédito e alerta só a divergência · registra o lançamento bancário com o valor efetivamente creditado · aborta o lote quando o título deixou de estar elegível na escrita … |
 | `src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx` | 17 | NavigationTributaria · Renderização de grupos · renderiza grupos na versão mobile · Badge de alertas dinâmico … |
 | `src/hooks/__tests__/savedFiltersValidation.test.ts` | 17 | savedFiltersValidation > isAppRole · aceita os 4 papéis canônicos · rejeita valor inválido %p · savedFiltersValidation > normalizeRoles … |
 | `src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx` | 17 | useConciliacaoPage — carregamento inicial · sem conta selecionada não consulta transações e mantém a lista vazia · normaliza receita e despesa ao carregar transações bancárias · notifica erro de consulta e não mantém dados parciais … |
@@ -5372,6 +5382,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sync-aliquota-referencia/__tests__/montar_test.ts` | 13 | paraFracao converte pontos percentuais em fracao de 4 casas · paraFracao recusa ausencia, valor invalido e o que nao cabe em numeric(5,4) · montarUniao grava CBS nacional sem ente · montarUniao devolve null quando a aliquota nao foi publicada … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
 | `src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx` | 12 | WebhookDlqPanel · lista so as falhas em aberto, da tabela webhook_dlq · erro de leitura NAO vira fila vazia · usuario sem papel admin NAO ve  … |
+| `src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx` | 12 | VincularManualmenteDialog · consulta os títulos em aberto da empresa, ignorando pagos, recebidos e cancelados · ordena pelo título de valor mais próximo da entrada bancária · não oferece títulos já vinculados no mesmo lote … |
 | `src/components/navigation/__tests__/BackButton.test.tsx` | 12 | BackButton · renders on non-home pages · does NOT render on home page · does NOT render on /dashboard … |
 | `src/hooks/__tests__/useBulkActions.test.ts` | 12 | useBulkActions · toggle adiciona e remove id da seleção · selectAll seleciona todos e limpa quando já estão todos selecionados · deselectAll/clearSelection limpa a seleção … |
 | `src/lib/__tests__/filterHydrationTelemetry.test.ts` | 12 | filterHydrationTelemetry · registra evento com timestamp ISO · filtra falhas via getHydrationFailures · mantém buffer FIFO limitado a 100 eventos … |
@@ -5470,6 +5481,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/adaptive-chunk.test.ts` | 7 | adaptive-chunk (AIMD) · respeita clamp inicial entre min e max · cresce aditivamente quando latência ≤ alvo · reduz multiplicativamente quando latência acima da tolerância … |
 | `src/lib/__tests__/edge-functions.security.test.ts` | 7 | Edge Functions — superfície com service_role · encontra as edge functions do projeto · as funções privilegiadas auditadas provam a origem antes da ação · webhooks públicos autenticam a origem e falham fechados … |
 | `src/lib/__tests__/optimistic-lock.test.ts` | 7 | updateComLockOtimista · atualiza quando a versão vista ainda é a atual e devolve a nova versão · rejeita com ConflitoVersaoError quando a linha mudou desde a leitura · rejeita quando a linha não existe mais (erro genérico, não conflito) … |
+| `src/lib/__tests__/postgrest-filtros.test.ts` | 7 | valorPostgrest · envolve o valor em aspas duplas · escapa aspas duplas e barras invertidas · padraoIlikeContem … |
 | `src/lib/__tests__/transaction-matcher.test.ts` | 7 | Intelligent Transaction Matcher · deve encontrar match exato por valor e nome · deve encontrar match por valor próximo (tolerância) · deve encontrar match por data próxima e nome parcial … |
 | `src/lib/__tests__/utils.test.ts` | 7 | cn (classname merge) · mescla classes · resolve conflitos tailwind · ignora undefined … |
 | `src/lib/pdf-generator/__tests__/conciliacao.test.ts` | 7 | generateConciliacaoAuditPDF · não abre janela quando popup é bloqueado · renderiza todas as linhas com classes de valor positivo/negativo · marca evidência quando URL presente e ausente quando não … |
@@ -5553,12 +5565,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
 | `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
 | `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
-| `src/lib/__tests__/conciliacao-complex-e2e.test.ts` | 4 | E2E Complexo: Conciliação Multi-Conta e Multi-CNPJ · deve filtrar matches corretamente por contaBancariaId para evitar cross-account matching · deve lidar com múltiplos CNPJs (Empresas) no mesmo pool de lançamentos se necessário · deve gerar divergência corretamente para valores parciais |
-| `src/lib/__tests__/sso-error-messages.test.ts` | 4 | SSO_ERROR_MESSAGES · possui título, descrição e hint para todos os códigos · inferSsoErrorCode · inferindo  |
-| `src/lib/arquitetura/__tests__/snapshot-grafo.test.ts` | 4 | snapshot do grafo de arquitetura · lista de arestas está sincronizada com o código · contagem de imports analisados está sincronizada · resumo de drift está sincronizado e zerado |
-| `src/lib/transaction-matcher/converters.test.ts` | 4 | conversores de lançamentos para conciliação · usa somente o saldo residual de uma conta a pagar parcial · usa somente o saldo residual de uma conta a receber parcial · não cria saldo negativo quando a fonte está inconsistente |
-| `src/lib/tributario/__tests__/catalogos-vigencia.test.ts` | 4 | normalizarReferencia · mantém datas ISO válidas · aceita Date e converte para ISO · degrada para hoje em entradas ausentes ou inválidas |
-| … +66 linhas — lista completa em `context.json` | | |
+| … +71 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5917,7 +5924,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | As listas sao normalizadas para o shape minimo nao-nulo que ele consome. | `src/components/contas-pagar/ContaPagarForm.tsx` |
 | Delta apenas com dado real do mês anterior (sem simulação decorativa) | `src/components/contas-pagar/ContasPagarKPIs.tsx` |
 | Show "Request Approval" button if approval is required but not granted */} | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
+| Valor e vencimento sozinhos não dizem quem pagou: os títulos são | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
+| vencimento — a confiança exibida precisa dizer isso. | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
+| Um lote com créditos de contas diferentes não pode lançar todos no mesmo | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | liquidação — o título foi processado e não pode contar como "não | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
+| não pode ser marcado como pago — vira divergência para reprocesso. | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
+| identidade interna de deduplicação — o alerta mostra apenas a origem da | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
+| A divergência não pode ficar registrada em lugar nenhum: a tela de | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | mexer no form — resposta tardia da conta A não pode pisar na conta B. | `src/components/contas-receber/ContaReceberForm.tsx` |
 | bloqueado no Safari (ativação transitória expira no fetch assíncrono). | `src/components/contas-receber/DrawerAnexosTab.tsx` |
 | Juros/Multa Calculator for overdue */} | `src/components/contas-receber/DrawerDetailsTab.tsx` |
@@ -6147,10 +6160,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Motivação: o gerador de tipos do Supabase reflete apenas o snapshot do schema | `src/lib/supabase-dynamic.ts` |
 | um único ponto de cast — auditável, tipado por builder mínimo e documentado. | `src/lib/supabase-dynamic.ts` |
 | * Este módulo expõe as duas — e apenas duas — formas legítimas de consumir uma | `src/lib/supabase-write.ts` |
-| * A regra ESLint `no-floating-supabase-write` obriga uma das duas. | `src/lib/supabase-write.ts` |
-| * Erro lançado por `mustSucceed`. Carrega o contexto de negócio da operação. */ | `src/lib/supabase-write.ts` |
-| * Consome uma escrita **acessória** cuja falha não deve interromper o fluxo, | `src/lib/supabase-write.ts` |
-| mas também não deve sumir. Nunca lança. | `src/lib/supabase-write.ts` |
-| O flush de unload não pode await getUser() — user.id fica em cache aqui. | `src/lib/telemetry.ts` |
-| casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts). | `src/lib/telemetry.ts` |
-| … +501 linhas — lista completa em `context.json` | |
+| … +520 linhas — lista completa em `context.json` | |

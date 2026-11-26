@@ -2470,13 +2470,13 @@
   },
   {
    "modulo": "components/contas-receber",
-   "arquivos": 36,
-   "testes": 7,
-   "linhas": 5877,
+   "arquivos": 37,
+   "testes": 9,
+   "linhas": 6438,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
-   "componentes": 32,
+   "componentes": 33,
    "hooks_locais": [
     "useAuth",
     "useCategoria",
@@ -2591,6 +2591,7 @@
    },
    "importado_por_outros_modulos": [
     "hooks",
+    "lib/financeiro",
     "pages"
    ],
    "depende_de_modulos": [
@@ -8744,9 +8745,9 @@
   },
   {
    "modulo": "lib",
-   "arquivos": 68,
+   "arquivos": 69,
    "testes": 2,
-   "linhas": 9620,
+   "linhas": 9637,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -8892,6 +8893,7 @@
     "integrations/supabase",
     "lib/contabilidade",
     "lib/export-contabil",
+    "lib/financeiro",
     "lib/pdf-generator",
     "lib/sefaz-contingency",
     "lib/sefaz-simulator",
@@ -8939,7 +8941,7 @@
   {
    "modulo": "lib/__tests__",
    "arquivos": 0,
-   "testes": 59,
+   "testes": 60,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -9189,9 +9191,9 @@
   },
   {
    "modulo": "lib/financeiro",
-   "arquivos": 2,
-   "testes": 0,
-   "linhas": 105,
+   "arquivos": 4,
+   "testes": 2,
+   "linhas": 458,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9231,7 +9233,11 @@
     "pages"
    ],
    "depende_de_modulos": [
-    "integrations/supabase"
+    "components/contas-receber",
+    "integrations/supabase",
+    "lib",
+    "lib/ofx-parser",
+    "lib/transaction-matcher"
    ],
    "pacotes_externos": []
   },
@@ -9306,7 +9312,7 @@
    "modulo": "lib/ofx-parser",
    "arquivos": 6,
    "testes": 0,
-   "linhas": 664,
+   "linhas": 791,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9327,7 +9333,8 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
-    "lib"
+    "lib",
+    "lib/financeiro"
    ],
    "depende_de_modulos": [],
    "pacotes_externos": [
@@ -9643,7 +9650,8 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
-    "lib"
+    "lib",
+    "lib/financeiro"
    ],
    "depende_de_modulos": [
     "lib"

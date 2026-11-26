@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2041,
- "arestas": 8632,
+ "nos": 2045,
+ "arestas": 8648,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
-   "importado_por": 530
+   "importado_por": 531
   },
   {
    "arquivo": "src/components/ui/card.tsx",
@@ -14,11 +14,11 @@
   },
   {
    "arquivo": "src/components/ui/badge.tsx",
-   "importado_por": 451
+   "importado_por": 452
   },
   {
    "arquivo": "src/integrations/supabase/client.ts",
-   "importado_por": 318
+   "importado_por": 319
   },
   {
    "arquivo": "src/lib/utils.ts",
@@ -26,11 +26,11 @@
   },
   {
    "arquivo": "src/lib/formatters.ts",
-   "importado_por": 302
+   "importado_por": 303
   },
   {
    "arquivo": "src/components/ui/input.tsx",
-   "importado_por": 219
+   "importado_por": 220
   },
   {
    "arquivo": "src/components/ui/select.tsx",
@@ -42,7 +42,7 @@
   },
   {
    "arquivo": "src/components/ui/dialog.tsx",
-   "importado_por": 139
+   "importado_por": 140
   },
   {
    "arquivo": "src/components/ui/table.tsx",
@@ -161,7 +161,7 @@
    "importado_por": 26
   },
   {
-   "arquivo": "supabase/functions/_shared/contract-validator.ts",
+   "arquivo": "src/lib/ofx-parser.ts",
    "importado_por": 26
   }
  ],
@@ -290,7 +290,7 @@
   {
    "modulo": "lib",
    "depende_de": 13,
-   "importado_por": 84
+   "importado_por": 85
   },
   {
    "modulo": "hooks",
@@ -328,17 +328,17 @@
    "importado_por": 1
   },
   {
+   "modulo": "components/contas-receber",
+   "depende_de": 11,
+   "importado_por": 3
+  },
+  {
    "modulo": "pages/admin",
    "depende_de": 13,
    "importado_por": 1
   },
   {
    "modulo": "components/contas-pagar",
-   "depende_de": 11,
-   "importado_por": 2
-  },
-  {
-   "modulo": "components/contas-receber",
    "depende_de": 11,
    "importado_por": 2
   },
@@ -378,14 +378,14 @@
    "importado_por": 4
   },
   {
+   "modulo": "lib/financeiro",
+   "depende_de": 5,
+   "importado_por": 6
+  },
+  {
    "modulo": "components/auth",
    "depende_de": 7,
    "importado_por": 3
-  },
-  {
-   "modulo": "lib/reforma-tributaria",
-   "depende_de": 2,
-   "importado_por": 8
   }
  ],
  "arestas_em": "docs/contexto/codigo/grafo-arestas.json"

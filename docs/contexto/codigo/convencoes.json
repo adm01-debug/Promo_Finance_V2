@@ -6,7 +6,7 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (780)",
+   "src/components (781)",
    "src/pages (208)",
    "src/hooks (2)"
   ],
@@ -16,12 +16,12 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (276)",
+   "src/lib (279)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (329)",
+   "co-localizado (__tests__) (334)",
    "outro (113)",
    "co-localizado (*.test) (50)"
   ],
@@ -41,13 +41,13 @@
  "nomenclatura": {
   "componentes": "PascalCase (90%)",
   "hooks": "use + PascalCase",
-  "servicos": "camelCase (50%)",
+  "servicos": "camelCase (49%)",
   "edge_functions": "kebab-case (99%)",
   "tabelas": "snake_case (79%)"
  },
  "barrels_index": 34,
  "extensao_componentes": [
-  ".tsx (992)"
+  ".tsx (993)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: vínculo manual na baixa automática liquida o título escolhido (#574)",
    "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)",
    "feat: simulador de elisão calcula e grava cenário com dados reais (#575)",
    "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)",
-   "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)",
-   "docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)"
+   "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

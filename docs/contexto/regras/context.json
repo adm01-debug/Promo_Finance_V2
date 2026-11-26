@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "acf2202a69c7f1cab59f91fc97c5fe8e83003269",
+  "sha": "5bf3c2dd4fc63854744ebdb8e2d280feb299b33c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 20:04 UTC",
-  "files_total": 4147,
-  "code_files": 3726,
-  "code_lines": 536180
+  "generated_at": "2026-11-26 20:25 UTC",
+  "files_total": 4156,
+  "code_files": 3735,
+  "code_lines": 539111
  },
  "version": "1.3.2",
- "facts_hash": "56732774d49bc852",
+ "facts_hash": "d04dee2ed7f8d028",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1315,
+   ".ts": 1321,
    ".sql": 1157,
-   ".tsx": 1132,
+   ".tsx": 1135,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -61480,7 +61480,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 142
+    "deps_count": 148
    },
    {
     "path": "",
@@ -62547,7 +62547,7 @@
     "rpc_transitive": [
      "registrar_auditoria_config"
     ],
-    "deps_count": 211
+    "deps_count": 217
    },
    {
     "path": "/contratos",
@@ -68073,7 +68073,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1016,
+  "components_count": 1019,
   "hooks": [
    {
     "name": "useContacts",
@@ -71138,8 +71138,8 @@
   },
   {
    "module": "src/components",
-   "files": 1014,
-   "lines": 168389,
+   "files": 1017,
+   "lines": 170030,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71758,8 +71758,8 @@
   },
   {
    "module": "src/lib",
-   "files": 448,
-   "lines": 62265,
+   "files": 454,
+   "lines": 63555,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -71828,10 +71828,10 @@
     "pdf-layout.ts: PDF_BRAND, PdfLayoutOptions, getContentStartY, getAutoTableMargins, applyPdfLayout",
     "persisted-ui-state.ts: usePersistedState",
     "plano-contas-csv-importer.ts: NATUREZAS, NaturezaConta, TIPOS_CONTA, TipoConta, ParsedConta, ContaInvalida",
+    "postgrest-filtros.ts: valorPostgrest, padraoIlikeContem",
     "queryClient.ts: queryClient, STALE_TIMES, GC_TIMES, DOMAIN_QUERY_CONFIG, QueryDomain, queryConfig",
     "secure-random.ts: secureRandomInt",
-    "sefaz-event-logger.ts: EventoTipo, EventoSefaz, registrarEvento, getEventos, getEventosPorChave, getEventosPorNumero",
-    "sefaz-rejection-monitor.ts: AlertaRejeicao, adicionarListenerAlerta, verificarRejeicoesConsecutivas, registrarAlerta, getAlertas, getAlertasNaoLidos"
+    "sefaz-event-logger.ts: EventoTipo, EventoSefaz, registrarEvento, getEventos, getEventosPorChave, getEventosPorNumero"
    ],
    "docs": [
     "anomalia-routes.ts: Resolve a deep link to the underlying entity related to an anomaly. Used by the realtime drawer and inline drill-downs.",
@@ -71920,6 +71920,7 @@
     "src/lib/pdf-layout.ts",
     "src/lib/persisted-ui-state.ts",
     "src/lib/plano-contas-csv-importer.ts",
+    "src/lib/postgrest-filtros.ts",
     "src/lib/queryClient.retry.test.ts",
     "src/lib/queryClient.ts",
     "src/lib/reforma-tributaria-calculator.ts",
@@ -71956,8 +71957,7 @@
     "src/lib/__tests__/brazilian-validators.regression.test.ts",
     "src/lib/__tests__/brazilian-validators.test.ts",
     "src/lib/__tests__/cashflow-scenarios.test.ts",
-    "src/lib/__tests__/cfc-validator.test.ts",
-    "src/lib/__tests__/collection-engine.test.ts"
+    "src/lib/__tests__/cfc-validator.test.ts"
    ]
   },
   {
@@ -73435,6 +73435,7 @@
      "src/components/cobranca/PrevisaoInadimplencia.tsx",
      "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
      "src/components/contas-receber/ContaReceberForm.tsx",
+     "src/components/contas-receber/VincularManualmenteDialog.tsx",
      "src/components/expert/ProactiveSuggestions.tsx",
      "src/components/relatorios/RelatorioDrillDown.tsx",
      "src/components/simuladores/SimuladorAntecipacao.tsx",
@@ -82044,7 +82045,31 @@
    },
    {
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "${alertasFalhos} ${alertasFalhos === 1 ? "
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "${conta.cliente_nome ?? "
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "msg": "${failCount} ${failCount === 1 ? "
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "${falhas.length} ${falhas.length === 1 ? "
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "${m.cliente} não foi liquidado: o título já estava pago, recebido ou cancelado, ou o valor foi alterado após a vinculação."
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "A empresa mudou desde a importação. Importe o arquivo de retorno novamente."
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "Empresa alterada — importe novamente o arquivo de retorno desta empresa."
    },
    {
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
@@ -82064,7 +82089,19 @@
    },
    {
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "Falha ao registrar o log da importação: ${logError.message}"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "Os créditos vinculados vieram de contas diferentes. Escolha "
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "msg": "Selecione uma empresa antes de executar a baixa automática."
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "msg": "Sessão expirada — entre novamente para registrar as divergências."
    },
    {
     "file": "src/components/contas-receber/ContaReceberForm.tsx",
@@ -85592,7 +85629,31 @@
    },
    {
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "text": "Valor e vencimento sozinhos não dizem quem pagou: os títulos são"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "text": "vencimento — a confiança exibida precisa dizer isso."
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "text": "Um lote com créditos de contas diferentes não pode lançar todos no mesmo"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "text": "liquidação — o título foi processado e não pode contar como \"não"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "text": "não pode ser marcado como pago — vira divergência para reprocesso."
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "text": "identidade interna de deduplicação — o alerta mostra apenas a origem da"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "text": "A divergência não pode ficar registrada em lugar nenhum: a tela de"
    },
    {
     "file": "src/components/contas-receber/ContaReceberForm.tsx",
@@ -86631,6 +86692,54 @@
     "text": "O valor fica registrado em `cargaSimuladaBase` apenas como referência."
    },
    {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "não pode disputar com quem teve o nome inteiro reconhecido nem decidir a"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "* Distância em dias entre o dia do crédito e o vencimento, sem o horário: o"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "leitor OFX traz a hora do lançamento e, num crédito de 14h, o vencimento do"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "valor apenas tolerado: quitar o título de R$ 100,04 recebendo R$ 100 e"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "deixar o de R$ 100 em aberto é o pagamento errado. O vencimento desempata."
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "fica a 0,05000000000000071 de R$ 100,04 e era recusado pelo limite de 0,05."
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "* Valor e vencimento sozinhos não identificam o pagador: dois créditos do"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "valor e data parecidos. A regra é: quando a descrição do crédito aponta o"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "text": "máximo um crédito."
+   },
+   {
+    "file": "src/lib/financeiro/divergencias-pendentes.ts",
+    "text": "continua sendo um dígito e não pode virar campo vazio."
+   },
+   {
+    "file": "src/lib/financeiro/divergencias-pendentes.ts",
+    "text": "A agência ocupa no máximo 5 dígitos e o número da conta tem no mínimo 4."
+   },
+   {
+    "file": "src/lib/financeiro/divergencias-pendentes.ts",
+    "text": "número e código de banco para comparar: aí o chamador não pode afirmar que o destino"
+   },
+   {
     "file": "src/lib/financeiro/registrarEvento.ts",
     "text": "fatal (abortar a mutação) ou apenas degradação (avisar via toast)."
    },
@@ -86673,6 +86782,10 @@
    {
     "file": "src/lib/ofx-parser/csv.ts",
     "text": "Coluna a mais que o cabecalho tem origem AMBIGUA e nao ha regra que a"
+   },
+   {
+    "file": "src/lib/ofx-parser/ofx-sgml.ts",
+    "text": "conta seguinte vem antes dela — por isso o limite é a abertura anterior,"
    },
    {
     "file": "src/lib/ofx-parser/utils.ts",
@@ -101718,9 +101831,34 @@
     "value": "'ÍNDICES ECONÔMICO-FINANCEIROS'"
    },
    {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "name": "SEM_CONTA",
+    "value": "'sem-conta'"
+   },
+   {
     "file": "src/components/contas-receber/ContasReceberKPIs.tsx",
     "name": "COOLDOWN",
     "value": "60000"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "name": "LIMITE_SEM_BUSCA",
+    "value": "200"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "name": "LIMITE_COM_BUSCA",
+    "value": "50"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "name": "TAMANHO_MINIMO_BUSCA",
+    "value": "2"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "name": "DEBOUNCE_BUSCA_MS",
+    "value": "300"
    },
    {
     "file": "src/components/contas-receber/WebhookDlqPanel.tsx",
@@ -102111,6 +102249,31 @@
     "file": "src/lib/export-contabil/utils.ts",
     "name": "BOM",
     "value": "'\\uFEFF'"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "name": "TOLERANCIA_VALOR",
+    "value": "0.05"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "name": "TOLERANCIA_DIAS",
+    "value": "5"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "name": "SIMILARIDADE_PAGADOR",
+    "value": "0.3"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "name": "SIMILARIDADE_IDENTIFICACAO",
+    "value": "0.6"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "name": "MILISSEGUNDOS_POR_DIA",
+    "value": "86"
    },
    {
     "file": "src/lib/nfe/pre-validar-ibscbs.ts",
@@ -106310,6 +106473,12 @@
    },
    {
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "field": "tipo",
+    "value": "divergencia_baixa",
+    "kind": "escreve"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "field": "status",
     "value": "pago",
     "kind": "escreve"
@@ -106330,12 +106499,6 @@
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "field": "tipo",
     "value": "baixa_automatica",
-    "kind": "escreve"
-   },
-   {
-    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
-    "field": "tipo",
-    "value": "divergencia_baixa",
     "kind": "escreve"
    },
    {
@@ -106389,6 +106552,12 @@
    {
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "field": "step",
+    "value": "upload",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "field": "step",
     "value": "processing",
     "kind": "compara"
    },
@@ -106414,6 +106583,12 @@
     "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
     "field": "status",
     "value": "pago",
+    "kind": "filtra"
+   },
+   {
+    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+    "field": "status",
+    "value": "recebido",
     "kind": "filtra"
    },
    {
@@ -106547,6 +106722,24 @@
     "field": "status",
     "value": "vencido",
     "kind": "compara"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "field": "status",
+    "value": "pago",
+    "kind": "filtra"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "field": "status",
+    "value": "recebido",
+    "kind": "filtra"
+   },
+   {
+    "file": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+    "field": "status",
+    "value": "cancelado",
+    "kind": "filtra"
    },
    {
     "file": "src/components/contas-receber/WebhookConfigPanel.tsx",
@@ -118875,6 +119068,12 @@
     "body": "return /^\\d+(\\.\\d+)*$/.test(codigo);"
    },
    {
+    "file": "src/lib/postgrest-filtros.ts",
+    "name": "valorPostgrest",
+    "params": "valor: string",
+    "body": "return `\"${valor.replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"')}\"`;"
+   },
+   {
     "file": "src/lib/sefaz-event-logger.ts",
     "name": "gerarEventoId",
     "params": "",
@@ -119047,6 +119246,12 @@
     "name": "podeCalcular",
     "params": "fontes: FontesContabeis | undefined | null",
     "body": "return !!fontes && fontes.faturamento12m > 0;"
+   },
+   {
+    "file": "src/lib/financeiro/conciliacao-extrato.ts",
+    "name": "scorePagador",
+    "params": "credito: CreditoExtrato, titulo: TituloCandidato",
+    "body": "const cliente = (titulo.cliente_nome ?? '').trim(); if (!cliente) return 0; return calcularSimilaridadeTexto(textoDoCredito(credito), cliente).score;"
    },
    {
     "file": "src/lib/financeiro/valor-recebido-efetivo.ts",
@@ -120349,10 +120554,6 @@
    {
     "file": "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts",
     "line": "copyTimer.current = setTimeout(() => setHashCopied(false), 2000);"
-   },
-   {
-    "file": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
-    "line": "const diffDias = Math.abs(dataT.getTime() - dataC.getTime()) / (1000 * 60 * 60 * 24);"
    },
    {
     "file": "src/components/dashboard/DashboardExecutivo.tsx",
@@ -124753,6 +124954,122 @@
    {
     "file": "src/components/contas-receber/__tests__/WebhookDlqPanel.test.tsx",
     "name": "falha do reprocessamento aparece na tela, nao so no toast"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "BaixaAutomaticaDialog — vínculo manual e confirmação do lote"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "liquida o título vinculado pelo valor real do crédito e alerta só a divergência"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "registra o lançamento bancário com o valor efetivamente creditado"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "aborta o lote quando o título deixou de estar elegível na escrita"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "não associa dois créditos do extrato ao mesmo título"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "avisa que a divergência não foi registrada quando o alerta falha"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "repete só a gravação dos alertas pendentes, sem reimportar o extrato"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "mantem as divergencias pendentes ao fechar a conclusao"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "acrescenta as novas divergências sem perder as pendentes do lote anterior"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "não duplica o alerta quando o crédito volta em extratos sobrepostos"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "não deixa o crédito de outra conta da mesma empresa ocupar a pendência"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "preserva a divergência de outra conta quando o mesmo FITID volta na conta certa"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "bloqueia o destino único quando os créditos vinculados vieram de contas diferentes"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "liquida quando só uma das contas do arquivo tem título vinculado"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "bloqueia o destino de outra conta do arquivo e libera a conta de origem"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "grava as divergências pendentes na empresa do lote de origem"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+    "name": "descarta o lote quando a empresa muda antes da confirmação"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "VincularManualmenteDialog"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "consulta os títulos em aberto da empresa, ignorando pagos, recebidos e cancelados"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "ordena pelo título de valor mais próximo da entrada bancária"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "não oferece títulos já vinculados no mesmo lote"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "bloqueia títulos de valor diferente da entrada bancária (baixa é integral)"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "envia a busca para o servidor e filtra por cliente ou descrição"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "mantém vírgulas e curingas do texto dentro das aspas do filtro"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "devolve o título escolhido e fecha o diálogo"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "mostra vazio quando a busca não encontra nada"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "reporta erro de leitura sem esconder o problema"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "BaixaAutomaticaDialogCorrespondenciasAutomaticas — vínculo manual"
+   },
+   {
+    "file": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+    "name": "abre o seletor de título ao clicar em Vincular Manualmente"
    },
    {
     "file": "src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx",
@@ -130780,6 +131097,30 @@
    },
    {
     "file": "src/lib/__tests__/ofx-parser.test.ts",
+    "name": "guarda a conta de origem de cada bloco de extrato"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser.test.ts",
+    "name": "não inventa conta de origem para extrato sem número de conta"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser.test.ts",
+    "name": "não duplica créditos quando o fechamento da lista vem com espaço na tag"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser.test.ts",
+    "name": "ignora a conta de destino de transferência do bloco anterior"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser.test.ts",
+    "name": "acha a conta do bloco seguinte quando a lista anterior não fecha"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser.test.ts",
+    "name": "identifica o cartão de crédito para não confundir com a conta corrente"
+   },
+   {
+    "file": "src/lib/__tests__/ofx-parser.test.ts",
     "name": "parseCSV"
    },
    {
@@ -131017,6 +131358,34 @@
    {
     "file": "src/lib/__tests__/plano-contas-csv-importer.test.ts",
     "name": "mantém o balanço estrutural: ativo devedor, passivo/PL credores"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "valorPostgrest"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "envolve o valor em aspas duplas"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "escapa aspas duplas e barras invertidas"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "padraoIlikeContem"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "mantém o padrão contém entre aspas"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "trata vírgula e ponto como literais"
+   },
+   {
+    "file": "src/lib/__tests__/postgrest-filtros.test.ts",
+    "name": "escapa curingas digitados pelo usuário"
    },
    {
     "file": "src/lib/__tests__/privacy-redact.test.ts",
@@ -132741,6 +133110,222 @@
    {
     "file": "src/lib/contabilidade/__tests__/simulacao-regimes.test.ts",
     "name": "formata em BRL e trata nulo"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "titulosCompativeis"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "aceita diferença de até R$ 0,05 e 5 dias"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "ehMesmoPagador"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "reconhece o cliente escrito na descrição do crédito"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "não afirma pagador quando o título não tem cliente"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "conciliarCreditos"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "casa o crédito único com o título compatível"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "não quita o título de outro cliente quando dois créditos iguais disputam"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "distribui os créditos pelos títulos do próprio pagador"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "prefere o pagador identificado ao título de outro cliente"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "nome completo vence o sobrenome em comum mesmo com vencimento mais próximo"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "manda para o vínculo manual quando só o sobrenome aponta clientes diferentes"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "prioriza o valor exato sobre o valor apenas tolerado"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "desempata em centavos antes do vencimento, sem deixar o float decidir"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "tolera cinco centavos comparando inteiros, mesmo quando o float passa do limite"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "desempata pelo dia do crédito, sem a hora do extrato decidir"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "mantém a janela de cinco dias no limite ao contar dias cheios"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "cada título quita um único crédito"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+    "name": "devolve null quando nenhum título é compatível"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "origemDoExtrato"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "usa banco, agência e conta do arquivo como identidade"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "devolve null quando o arquivo não traz o número da conta"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "origemDaTransacao"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "prefere a conta do bloco que emitiu a transação"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "devolve null quando a transação veio de arquivo sem conta declarada"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "chaveBancaria"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "ignora a posição no arquivo quando o banco manda a referência do crédito"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não muda a identidade quando o destino do lote é outro"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "separa créditos de empresas e contas diferentes"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não inventa identidade quando o extrato não traz referência"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não inventa identidade quando a conta de origem é desconhecida"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "mesclarPendentes"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "acrescenta as novas sem perder as de lotes anteriores"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "mantém pendências de empresas diferentes lado a lado"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "preserva as ocorrências de um CSV quando as linhas são indistinguíveis"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não apaga a pendência anterior de um crédito sem identidade bancária"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não substitui a pendência quando a conta de origem é desconhecida"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "mantém pendências de contas diferentes com a mesma referência do banco"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "substitui a pendência antiga quando o crédito volta com a mesma referência"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "descarta a pendência antiga quando o alerta do crédito foi gravado agora"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "origemCompativelComCadastro"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "reconhece a mesma conta quando o cadastro traz o dígito verificador"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "aceita o número inteiro quando o cadastro junta agência e conta"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "aceita quando só o cadastro repete a agência e o extrato separa o verificador"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "aceita quando a agência e o verificador estão só no cadastro"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "recusa quando os dígitos verificadores divergem mesmo com a agência no cadastro"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "aceita quando só o extrato separa o dígito verificador"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "aceita o dígito verificador zero separado só no cadastro"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "recusa quando os dígitos verificadores são diferentes"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "recusa número com dígitos extras apesar do prefixo comum"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "recusa a conta cadastrada de outro número"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "usa o código do banco quando o cadastro não tem o número da conta"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não decide quando falta número de conta e código de banco"
+   },
+   {
+    "file": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+    "name": "não bloqueia conta curta pelo código padrão "
    },
    {
     "file": "src/lib/nfe/__tests__/grupo-ibscbs-item.test.ts",
@@ -159425,6 +160010,7 @@
       "escreve:src/hooks/useContasReceberLogic.ts",
       "escreve:supabase/functions/asaas-proxy/index.ts",
       "filtra:src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+      "filtra:src/components/contas-receber/VincularManualmenteDialog.tsx",
       "filtra:src/hooks/useBudget.ts",
       "filtra:src/hooks/useCobrancas.ts",
       "filtra:src/hooks/useInadimplenciaSegmentada.ts",
@@ -159664,6 +160250,7 @@
       "escreve:src/hooks/useOperacoesTributaveis.ts",
       "escreve:src/hooks/usePerDcomp.ts",
       "filtra:src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+      "filtra:src/components/contas-receber/VincularManualmenteDialog.tsx",
       "filtra:src/lib/contabilidade/fontes-contabeis.ts",
       "filtra:supabase/functions/gerar-sped-ecd/index.ts",
       "filtra:supabase/functions/gerar-sped-ecf/index.ts"
@@ -159880,6 +160467,8 @@
       "compara:src/pages/Compras.tsx",
       "compara:src/pages/Financeiro.tsx",
       "escreve:src/hooks/useAcordosParcelamento.ts",
+      "filtra:src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+      "filtra:src/components/contas-receber/VincularManualmenteDialog.tsx",
       "filtra:src/hooks/useWhatsAppUnreadCount.ts"
      ],
      "ativo": [
@@ -160671,10 +161260,10 @@
      "valor": [
       "compara:src/components/contas-receber/AplicarDescontoDialog.tsx"
      ],
-     "baixa_automatica": [
+     "divergencia_baixa": [
       "escreve:src/components/contas-receber/BaixaAutomaticaDialog.tsx"
      ],
-     "divergencia_baixa": [
+     "baixa_automatica": [
       "escreve:src/components/contas-receber/BaixaAutomaticaDialog.tsx"
      ],
      "servico": [
@@ -193317,7 +193906,7 @@
   },
   "src/components/contas-receber/BaixaAutomaticaDialog.tsx": {
    "path": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
-   "lines": 478,
+   "lines": 777,
    "exports": [
     "function BaixaAutomaticaDialog"
    ],
@@ -193327,15 +193916,15 @@
      "op": "select"
     },
     {
+     "table": "alertas",
+     "op": "insert"
+    },
+    {
      "table": "contas_receber",
      "op": "update"
     },
     {
      "table": "transacoes_bancarias",
-     "op": "insert"
-    },
-    {
-     "table": "alertas",
      "op": "insert"
     },
     {
@@ -193354,12 +193943,21 @@
     ]
    },
    "errors": [
+    "${alertasFalhos} ${alertasFalhos === 1 ? ",
+    "${conta.cliente_nome ?? ",
     "${failCount} ${failCount === 1 ? ",
+    "${falhas.length} ${falhas.length === 1 ? ",
+    "${m.cliente} não foi liquidado: o título já estava pago, recebido ou cancelado, ou o valor foi alterado após a vinculação.",
+    "A empresa mudou desde a importação. Importe o arquivo de retorno novamente.",
+    "Empresa alterada — importe novamente o arquivo de retorno desta empresa.",
     "Erro ao processar baixa: ",
     "Falha ao liquidar ${m.cliente}: ${error.message}",
     "Falha ao registrar auditoria do título ${m.contaId}.",
     "Falha ao registrar lançamento bancário de ${m.cliente}: ${txError.message}",
-    "Selecione uma empresa antes de executar a baixa automática."
+    "Falha ao registrar o log da importação: ${logError.message}",
+    "Os créditos vinculados vieram de contas diferentes. Escolha ",
+    "Selecione uma empresa antes de executar a baixa automática.",
+    "Sessão expirada — entre novamente para registrar as divergências."
    ],
    "html_constraints": [
     {
@@ -193367,7 +193965,18 @@
      "rules": "accept=.ofx,.csv"
     }
    ],
+   "params": [
+    {
+     "name": "SEM_CONTA",
+     "value": "'sem-conta'"
+    }
+   ],
    "status_values": [
+    {
+     "field": "tipo",
+     "value": "divergencia_baixa",
+     "kind": "escreve"
+    },
     {
      "field": "status",
      "value": "pago",
@@ -193386,11 +193995,6 @@
     {
      "field": "tipo",
      "value": "baixa_automatica",
-     "kind": "escreve"
-    },
-    {
-     "field": "tipo",
-     "value": "divergencia_baixa",
      "kind": "escreve"
     },
     {
@@ -193435,6 +194039,11 @@
     },
     {
      "field": "step",
+     "value": "upload",
+     "kind": "compara"
+    },
+    {
+     "field": "step",
      "value": "processing",
      "kind": "compara"
     },
@@ -193460,15 +194069,23 @@
     },
     {
      "field": "status",
+     "value": "recebido",
+     "kind": "filtra"
+    },
+    {
+     "field": "status",
      "value": "cancelado",
      "kind": "filtra"
     }
    ],
    "rule_comments": [
-    "liquidação — o título foi processado e não pode contar como \"não"
-   ],
-   "temporal": [
-    "const diffDias = Math.abs(dataT.getTime() - dataC.getTime()) / (1000 * 60 * 60 * 24);"
+    "Valor e vencimento sozinhos não dizem quem pagou: os títulos são",
+    "vencimento — a confiança exibida precisa dizer isso.",
+    "Um lote com créditos de contas diferentes não pode lançar todos no mesmo",
+    "liquidação — o título foi processado e não pode contar como \"não",
+    "não pode ser marcado como pago — vira divergência para reprocesso.",
+    "identidade interna de deduplicação — o alerta mostra apenas a origem da",
+    "A divergência não pode ficar registrada em lugar nenhum: a tela de"
    ]
   },
   "src/components/contas-receber/BaixaAutomaticaDialog.types.ts": {
@@ -193489,7 +194106,7 @@
   },
   "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx": {
    "path": "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx",
-   "lines": 101,
+   "lines": 126,
    "exports": [
     "function BaixaAutomaticaDialogCorrespondenciasAutomaticas"
    ]
@@ -193925,6 +194542,66 @@
     "Calculadora de Juros/Multa para títulos vencidos */}"
    ]
   },
+  "src/components/contas-receber/VincularManualmenteDialog.tsx": {
+   "path": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+   "lines": 238,
+   "exports": [
+    "interface ContaCandidata",
+    "function VincularManualmenteDialog"
+   ],
+   "tables": [
+    {
+     "table": "contas_receber",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "contas_receber": [
+     "cliente_nome",
+     "data_vencimento",
+     "descricao",
+     "empresa_id",
+     "id",
+     "status",
+     "valor"
+    ]
+   },
+   "params": [
+    {
+     "name": "LIMITE_SEM_BUSCA",
+     "value": "200"
+    },
+    {
+     "name": "LIMITE_COM_BUSCA",
+     "value": "50"
+    },
+    {
+     "name": "TAMANHO_MINIMO_BUSCA",
+     "value": "2"
+    },
+    {
+     "name": "DEBOUNCE_BUSCA_MS",
+     "value": "300"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "status",
+     "value": "pago",
+     "kind": "filtra"
+    },
+    {
+     "field": "status",
+     "value": "recebido",
+     "kind": "filtra"
+    },
+    {
+     "field": "status",
+     "value": "cancelado",
+     "kind": "filtra"
+    }
+   ]
+  },
   "src/components/contas-receber/WebhookConfigDialog.tsx": {
    "path": "src/components/contas-receber/WebhookConfigDialog.tsx",
    "lines": 42,
@@ -194276,6 +194953,56 @@
    ],
    "side_effects": [
     "asaas"
+   ]
+  },
+  "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx": {
+   "path": "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+   "lines": 840,
+   "is_test": true,
+   "rule_comments": [
+    "Fechar nao pode descartar alertas que nao entraram no banco: a lista",
+    "diferentes, identificados pelo FITID na mesma conta. A fila não pode",
+    "Estes créditos não declaram conta de bloco: o alerta não pode afirmar a",
+    "da conta B é outro lançamento e não pode tomar o lugar do PIX da conta A.",
+    "não pode impedir a liquidação dos títulos vinculados."
+   ],
+   "tests": [
+    "BaixaAutomaticaDialog — vínculo manual e confirmação do lote",
+    "liquida o título vinculado pelo valor real do crédito e alerta só a divergência",
+    "registra o lançamento bancário com o valor efetivamente creditado",
+    "aborta o lote quando o título deixou de estar elegível na escrita",
+    "não associa dois créditos do extrato ao mesmo título",
+    "avisa que a divergência não foi registrada quando o alerta falha",
+    "repete só a gravação dos alertas pendentes, sem reimportar o extrato",
+    "mantem as divergencias pendentes ao fechar a conclusao",
+    "acrescenta as novas divergências sem perder as pendentes do lote anterior",
+    "não duplica o alerta quando o crédito volta em extratos sobrepostos",
+    "não deixa o crédito de outra conta da mesma empresa ocupar a pendência",
+    "preserva a divergência de outra conta quando o mesmo FITID volta na conta certa",
+    "bloqueia o destino único quando os créditos vinculados vieram de contas diferentes",
+    "liquida quando só uma das contas do arquivo tem título vinculado",
+    "bloqueia o destino de outra conta do arquivo e libera a conta de origem",
+    "grava as divergências pendentes na empresa do lote de origem",
+    "descarta o lote quando a empresa muda antes da confirmação"
+   ]
+  },
+  "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx": {
+   "path": "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+   "lines": 239,
+   "is_test": true,
+   "tests": [
+    "VincularManualmenteDialog",
+    "consulta os títulos em aberto da empresa, ignorando pagos, recebidos e cancelados",
+    "ordena pelo título de valor mais próximo da entrada bancária",
+    "não oferece títulos já vinculados no mesmo lote",
+    "bloqueia títulos de valor diferente da entrada bancária (baixa é integral)",
+    "envia a busca para o servidor e filtra por cliente ou descrição",
+    "mantém vírgulas e curingas do texto dentro das aspas do filtro",
+    "devolve o título escolhido e fecha o diálogo",
+    "mostra vazio quando a busca não encontra nada",
+    "reporta erro de leitura sem esconder o problema",
+    "BaixaAutomaticaDialogCorrespondenciasAutomaticas — vínculo manual",
+    "abre o seletor de título ao clicar em Vincular Manualmente"
    ]
   },
   "src/components/contas-receber/row/AcoesCell.tsx": {
@@ -217770,6 +218497,22 @@
     }
    ]
   },
+  "src/lib/postgrest-filtros.ts": {
+   "path": "src/lib/postgrest-filtros.ts",
+   "lines": 18,
+   "exports": [
+    "function valorPostgrest",
+    "function padraoIlikeContem"
+   ],
+   "doc": "Escapa um valor para uso dentro de filtros lógicos (`.or()` / `.and()`) do PostgREST. Sem as aspas duplas, caracteres como `,`, `.` e `(` são lidos como separadores da gramática de filtros e a consulta falha.",
+   "calc_fns": [
+    {
+     "name": "valorPostgrest",
+     "params": "valor: string",
+     "body": "return `\"${valor.replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"')}\"`;"
+    }
+   ]
+  },
   "src/lib/queryClient.retry.test.ts": {
    "path": "src/lib/queryClient.retry.test.ts",
    "lines": 41,
@@ -219415,7 +220158,7 @@
   },
   "src/lib/__tests__/ofx-parser.test.ts": {
    "path": "src/lib/__tests__/ofx-parser.test.ts",
-   "lines": 212,
+   "lines": 487,
    "is_test": true,
    "tests": [
     "OFX/CSV Parser",
@@ -219425,6 +220168,12 @@
     "extrai dados da conta bancária",
     "extrai transações corretamente",
     "extrai saldo final",
+    "guarda a conta de origem de cada bloco de extrato",
+    "não inventa conta de origem para extrato sem número de conta",
+    "não duplica créditos quando o fechamento da lista vem com espaço na tag",
+    "ignora a conta de destino de transferência do bloco anterior",
+    "acha a conta do bloco seguinte quando a lista anterior não fecha",
+    "identifica o cartão de crédito para não confundir com a conta corrente",
     "parseCSV",
     "arquivo vazio retorna erro",
     "apenas header retorna erro",
@@ -219521,6 +220270,20 @@
     "PLANO_CONTAS_CSV_TEMPLATE",
     "é um arquivo válido e integralmente aceito pelo parser",
     "mantém o balanço estrutural: ativo devedor, passivo/PL credores"
+   ]
+  },
+  "src/lib/__tests__/postgrest-filtros.test.ts": {
+   "path": "src/lib/__tests__/postgrest-filtros.test.ts",
+   "lines": 29,
+   "is_test": true,
+   "tests": [
+    "valorPostgrest",
+    "envolve o valor em aspas duplas",
+    "escapa aspas duplas e barras invertidas",
+    "padraoIlikeContem",
+    "mantém o padrão contém entre aspas",
+    "trata vírgula e ponto como literais",
+    "escapa curingas digitados pelo usuário"
    ]
   },
   "src/lib/__tests__/privacy-redact.test.ts": {
@@ -221130,6 +221893,77 @@
     }
    ]
   },
+  "src/lib/financeiro/conciliacao-extrato.ts": {
+   "path": "src/lib/financeiro/conciliacao-extrato.ts",
+   "lines": 172,
+   "exports": [
+    "interface TituloCandidato",
+    "interface CreditoExtrato",
+    "const TOLERANCIA_VALOR",
+    "const TOLERANCIA_DIAS",
+    "function ehMesmoPagador",
+    "function titulosCompativeis",
+    "function conciliarCreditos"
+   ],
+   "params": [
+    {
+     "name": "TOLERANCIA_VALOR",
+     "value": "0.05"
+    },
+    {
+     "name": "TOLERANCIA_DIAS",
+     "value": "5"
+    },
+    {
+     "name": "SIMILARIDADE_PAGADOR",
+     "value": "0.3"
+    },
+    {
+     "name": "SIMILARIDADE_IDENTIFICACAO",
+     "value": "0.6"
+    },
+    {
+     "name": "MILISSEGUNDOS_POR_DIA",
+     "value": "86"
+    }
+   ],
+   "rule_comments": [
+    "não pode disputar com quem teve o nome inteiro reconhecido nem decidir a",
+    "* Distância em dias entre o dia do crédito e o vencimento, sem o horário: o",
+    "leitor OFX traz a hora do lançamento e, num crédito de 14h, o vencimento do",
+    "valor apenas tolerado: quitar o título de R$ 100,04 recebendo R$ 100 e",
+    "deixar o de R$ 100 em aberto é o pagamento errado. O vencimento desempata.",
+    "fica a 0,05000000000000071 de R$ 100,04 e era recusado pelo limite de 0,05.",
+    "* Valor e vencimento sozinhos não identificam o pagador: dois créditos do",
+    "valor e data parecidos. A regra é: quando a descrição do crédito aponta o",
+    "máximo um crédito."
+   ],
+   "calc_fns": [
+    {
+     "name": "scorePagador",
+     "params": "credito: CreditoExtrato, titulo: TituloCandidato",
+     "body": "const cliente = (titulo.cliente_nome ?? '').trim(); if (!cliente) return 0; return calcularSimilaridadeTexto(textoDoCredito(credito), cliente).score;"
+    }
+   ]
+  },
+  "src/lib/financeiro/divergencias-pendentes.ts": {
+   "path": "src/lib/financeiro/divergencias-pendentes.ts",
+   "lines": 183,
+   "exports": [
+    "type DivergenciaPendente",
+    "function origemDoExtrato",
+    "function origemDaTransacao",
+    "function chaveBancaria",
+    "type ContaCadastrada",
+    "function origemCompativelComCadastro",
+    "function mesclarPendentes"
+   ],
+   "rule_comments": [
+    "continua sendo um dígito e não pode virar campo vazio.",
+    "A agência ocupa no máximo 5 dígitos e o número da conta tem no mínimo 4.",
+    "número e código de banco para comparar: aí o chamador não pode afirmar que o destino"
+   ]
+  },
   "src/lib/financeiro/registrarEvento.ts": {
    "path": "src/lib/financeiro/registrarEvento.ts",
    "lines": 84,
@@ -221172,6 +222006,92 @@
    ],
    "percents": [
     "// de fato\" (cota zero do rateio de acordo com 100% de desconto ou"
+   ]
+  },
+  "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts": {
+   "path": "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+   "lines": 215,
+   "is_test": true,
+   "rule_comments": [
+    "Reproduz a divergência: o segundo crédito não pode cair no título da",
+    "Gama só porque valor e vencimento batem.",
+    "apenas 0,40 (só o \"Silva\"). Antes o vencimento decidia e quitava Maria.",
+    "estourava o limite de 0,05, recusando um título cinco centavos distante.",
+    "Crédito às 14h do dia do vencimento: sem truncar a hora, o vencimento do",
+    "contagem por dia de calendário não pode alargar a janela original.",
+    "14h do dia 20: pela hora do extrato o vencimento de 25/04 ficaria a 5,42"
+   ],
+   "tests": [
+    "titulosCompativeis",
+    "aceita diferença de até R$ 0,05 e 5 dias",
+    "ehMesmoPagador",
+    "reconhece o cliente escrito na descrição do crédito",
+    "não afirma pagador quando o título não tem cliente",
+    "conciliarCreditos",
+    "casa o crédito único com o título compatível",
+    "não quita o título de outro cliente quando dois créditos iguais disputam",
+    "distribui os créditos pelos títulos do próprio pagador",
+    "prefere o pagador identificado ao título de outro cliente",
+    "nome completo vence o sobrenome em comum mesmo com vencimento mais próximo",
+    "manda para o vínculo manual quando só o sobrenome aponta clientes diferentes",
+    "prioriza o valor exato sobre o valor apenas tolerado",
+    "desempata em centavos antes do vencimento, sem deixar o float decidir",
+    "tolera cinco centavos comparando inteiros, mesmo quando o float passa do limite",
+    "desempata pelo dia do crédito, sem a hora do extrato decidir",
+    "mantém a janela de cinco dias no limite ao contar dias cheios",
+    "cada título quita um único crédito",
+    "devolve null quando nenhum título é compatível"
+   ]
+  },
+  "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts": {
+   "path": "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+   "lines": 271,
+   "is_test": true,
+   "params": [
+    {
+     "name": "ITAU",
+     "value": "'341/9999/1111'"
+    }
+   ],
+   "rule_comments": [
+    "não é um código real e não pode reprovar o destino."
+   ],
+   "tests": [
+    "origemDoExtrato",
+    "usa banco, agência e conta do arquivo como identidade",
+    "devolve null quando o arquivo não traz o número da conta",
+    "origemDaTransacao",
+    "prefere a conta do bloco que emitiu a transação",
+    "devolve null quando a transação veio de arquivo sem conta declarada",
+    "chaveBancaria",
+    "ignora a posição no arquivo quando o banco manda a referência do crédito",
+    "não muda a identidade quando o destino do lote é outro",
+    "separa créditos de empresas e contas diferentes",
+    "não inventa identidade quando o extrato não traz referência",
+    "não inventa identidade quando a conta de origem é desconhecida",
+    "mesclarPendentes",
+    "acrescenta as novas sem perder as de lotes anteriores",
+    "mantém pendências de empresas diferentes lado a lado",
+    "preserva as ocorrências de um CSV quando as linhas são indistinguíveis",
+    "não apaga a pendência anterior de um crédito sem identidade bancária",
+    "não substitui a pendência quando a conta de origem é desconhecida",
+    "mantém pendências de contas diferentes com a mesma referência do banco",
+    "substitui a pendência antiga quando o crédito volta com a mesma referência",
+    "descarta a pendência antiga quando o alerta do crédito foi gravado agora",
+    "origemCompativelComCadastro",
+    "reconhece a mesma conta quando o cadastro traz o dígito verificador",
+    "aceita o número inteiro quando o cadastro junta agência e conta",
+    "aceita quando só o cadastro repete a agência e o extrato separa o verificador",
+    "aceita quando a agência e o verificador estão só no cadastro",
+    "recusa quando os dígitos verificadores divergem mesmo com a agência no cadastro",
+    "aceita quando só o extrato separa o dígito verificador",
+    "aceita o dígito verificador zero separado só no cadastro",
+    "recusa quando os dígitos verificadores são diferentes",
+    "recusa número com dígitos extras apesar do prefixo comum",
+    "recusa a conta cadastrada de outro número",
+    "usa o código do banco quando o cadastro não tem o número da conta",
+    "não decide quando falta número de conta e código de banco",
+    "não bloqueia conta curta pelo código padrão "
    ]
   },
   "src/lib/nfe/grupo-ibscbs-item.ts": {
@@ -221412,8 +222332,9 @@
   },
   "src/lib/ofx-parser/ofx-sgml.ts": {
    "path": "src/lib/ofx-parser/ofx-sgml.ts",
-   "lines": 167,
+   "lines": 287,
    "exports": [
+    "function identidadeConta",
     "function parseOFX",
     "function parseOFC"
    ],
@@ -221424,11 +222345,14 @@
      "kind": "escreve"
     }
    ],
+   "rule_comments": [
+    "conta seguinte vem antes dela — por isso o limite é a abertura anterior,"
+   ],
    "doc": "OFX/OFC (SGML) parser"
   },
   "src/lib/ofx-parser/types.ts": {
    "path": "src/lib/ofx-parser/types.ts",
-   "lines": 41,
+   "lines": 48,
    "exports": [
     "interface TransacaoOFX",
     "interface ContaOFX",
@@ -253634,10 +254558,34 @@
   }
  },
  "git": {
-  "sha": "acf2202a69c7f1cab59f91fc97c5fe8e83003269",
+  "sha": "5bf3c2dd4fc63854744ebdb8e2d280feb299b33c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5bf3c2d",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: vínculo manual na baixa automática liquida o título escolhido (#574)",
+    "files": [
+     "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+     "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
+     "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx",
+     "src/components/contas-receber/VincularManualmenteDialog.tsx",
+     "src/components/contas-receber/__tests__/baixa-automatica-confirmacao.test.tsx",
+     "src/components/contas-receber/__tests__/vincular-manualmente-baixa.test.tsx",
+     "src/lib/__tests__/ofx-parser.test.ts",
+     "src/lib/__tests__/postgrest-filtros.test.ts",
+     "src/lib/financeiro/__tests__/conciliacao-extrato.test.ts",
+     "src/lib/financeiro/__tests__/divergencias-pendentes.test.ts",
+     "src/lib/financeiro/conciliacao-extrato.ts",
+     "src/lib/financeiro/divergencias-pendentes.ts",
+     "src/lib/ofx-parser/index.ts",
+     "src/lib/ofx-parser/ofx-sgml.ts",
+     "src/lib/ofx-parser/types.ts",
+     "src/lib/postgrest-filtros.ts"
+    ]
+   },
    {
     "sha": "acf2202",
     "date": "2026-11-26",
@@ -254062,18 +255010,6 @@
     "files": [
      "bun.lock",
      "package.json"
-    ]
-   },
-   {
-    "sha": "5e77362",
-    "date": "2026-11-24",
-    "author": "adm01-debug",
-    "subject": "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)",
-    "files": [
-     "docs/qa/01-INVENTARIO.md",
-     "docs/qa/02-CENARIOS.md",
-     "docs/qa/03-ACHADOS.md",
-     "docs/qa/04-PLANO.md"
     ]
    }
   ],

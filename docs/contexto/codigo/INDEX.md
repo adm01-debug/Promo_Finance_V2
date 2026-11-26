@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `acf2202a69c7f1cab59f91fc97c5fe8e83003269` (2026-11-26T16:59:13-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5bf3c2dd4fc63854744ebdb8e2d280feb299b33c` (2026-11-26T17:11:48-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2447), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2456), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,36 +34,36 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4108 |
-| arquivos_codigo | 2568 |
-| linhas_codigo | 462834 |
+| arquivos_total | 4117 |
+| arquivos_codigo | 2577 |
+| linhas_codigo | 465756 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
 | modulos | 129 |
-| componentes | 992 |
+| componentes | 993 |
 | hooks | 277 |
 | edge_functions | 112 |
 | tabelas | 318 |
 | migrations | 1084 |
 | cron_jobs | 28 |
-| testes | 534 |
+| testes | 539 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 231 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (780), src/pages (208), src/hooks (2)
+- componentes: src/components (781), src/pages (208), src/hooks (2)
 - hooks: src/hooks (241), src/components (27), src/pages (5)
-- servicos_logica: src/lib (276), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (329), outro (113), co-localizado (*.test) (50)
+- servicos_logica: src/lib (279), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (334), outro (113), co-localizado (*.test) (50)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
 - docs: docs (58), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (50%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (49%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (79%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
@@ -88,7 +88,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/contabilidade | 0 | 0 | 106 | 45 | 5 | 31 |
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
 | components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
-| components/contas-receber | 0 | 0 | 36 | 32 | 3 | 26 |
+| components/contas-receber | 0 | 0 | 37 | 32 | 3 | 26 |
 | components/dashboard | 0 | 0 | 26 | 95 | 9 | 44 |
 | components/demonstrativos | 0 | 0 | 9 | 22 | 1 | 16 |
 | components/empresas | 0 | 0 | 9 | 11 | 0 | 12 |
@@ -110,7 +110,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 0 | 0 | 231 | 447 | 60 | 186 |
 | hooks/bling | 0 | 0 | 11 | 39 | 2 | 9 |
 | hooks/financial | 0 | 0 | 10 | 18 | 1 | 13 |
-| lib | 0 | 0 | 68 | 10 | 3 | 9 |
+| lib | 0 | 0 | 69 | 10 | 3 | 9 |
 | lib/brazilian-validators | 0 | 0 | 9 | 0 | 0 | 0 |
 | lib/contabil | 0 | 0 | 5 | 0 | 0 | 0 |
 | lib/export-contabil | 0 | 0 | 8 | 0 | 0 | 0 |
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `5bf3c2d` feat: vínculo manual na baixa automática liquida o título escolhido (#574)
 - 2026-11-26 `acf2202` feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)
 - 2026-11-26 `f2dbe02` feat: simulador de elisão calcula e grava cenário com dados reais (#575)
 - 2026-11-26 `22c61ea` fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `729184f` fix: migra react-day-picker para v10 (calendar + callers) (#544)
 - 2026-11-25 `448f7ea` fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)
 - 2026-11-25 `d32f10e` fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)
-- 2026-11-25 `1c79a8f` chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

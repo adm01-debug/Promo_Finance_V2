@@ -3283,6 +3283,7 @@
   "src/components/contas-receber/BaixaAutomaticaDialog.tsx": [
    "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
    "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx",
+   "src/components/contas-receber/VincularManualmenteDialog.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/dialog.tsx",
    "src/components/ui/progress.tsx",
@@ -3290,6 +3291,8 @@
    "src/hooks/useFinancialData.ts",
    "src/integrations/supabase/client.ts",
    "src/integrations/supabase/types.ts",
+   "src/lib/financeiro/conciliacao-extrato.ts",
+   "src/lib/financeiro/divergencias-pendentes.ts",
    "src/lib/financeiro/registrarEvento.ts",
    "src/lib/formatters.ts",
    "src/lib/ofx-parser.ts",
@@ -3300,6 +3303,7 @@
   ],
   "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx": [
    "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
+   "src/components/contas-receber/VincularManualmenteDialog.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/lib/formatters.ts"
@@ -3479,6 +3483,16 @@
    "src/lib/sound-feedback.ts",
    "src/lib/toast-confetti.tsx",
    "src/lib/utils.ts"
+  ],
+  "src/components/contas-receber/VincularManualmenteDialog.tsx": [
+   "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/components/ui/input.tsx",
+   "src/integrations/supabase/client.ts",
+   "src/lib/formatters.ts",
+   "src/lib/postgrest-filtros.ts"
   ],
   "src/components/contas-receber/WebhookConfigDialog.tsx": [
    "src/components/contas-receber/WebhookConfigPanel.tsx",
@@ -7705,6 +7719,14 @@
   ],
   "src/lib/export-utils.ts": [
    "src/lib/formatters.ts"
+  ],
+  "src/lib/financeiro/conciliacao-extrato.ts": [
+   "src/lib/transaction-matcher/similarity.ts"
+  ],
+  "src/lib/financeiro/divergencias-pendentes.ts": [
+   "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
+   "src/lib/ofx-parser.ts",
+   "src/lib/ofx-parser/ofx-sgml.ts"
   ],
   "src/lib/financeiro/registrarEvento.ts": [
    "src/integrations/supabase/client.ts",

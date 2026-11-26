@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "acf2202a69c7f1cab59f91fc97c5fe8e83003269",
+  "commit": "5bf3c2dd4fc63854744ebdb8e2d280feb299b33c",
   "branch": "main",
-  "data_commit": "2026-11-26T16:59:13-03:00",
+  "data_commit": "2026-11-26T17:11:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5bf3c2d",
+    "data": "2026-11-26",
+    "assunto": "feat: vínculo manual na baixa automática liquida o título escolhido (#574)"
+   },
    {
     "sha": "acf2202",
     "data": "2026-11-26",
@@ -126,14 +131,9 @@
     "sha": "274d1f7",
     "data": "2026-11-24",
     "assunto": "chore(deps-dev): bump msw from 3.0.4 to 3.0.7 (#542)"
-   },
-   {
-    "sha": "04504ef",
-    "data": "2026-11-24",
-    "assunto": "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)"
    }
   ],
-  "arquivos_mudados_7d": 335,
+  "arquivos_mudados_7d": 350,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -164,20 +164,20 @@
     "mudancas": 102
    },
    {
+    "pasta": "src/lib/__tests__",
+    "mudancas": 78
+   },
+   {
     "pasta": "src/hooks/__tests__",
     "mudancas": 76
    },
    {
-    "pasta": "src/lib/__tests__",
-    "mudancas": 76
+    "pasta": "src/components/contas-receber",
+    "mudancas": 67
    },
    {
     "pasta": "src/components/tributario",
     "mudancas": 67
-   },
-   {
-    "pasta": "src/components/contas-receber",
-    "mudancas": 61
    },
    {
     "pasta": "src/components/nfe",
@@ -310,21 +310,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4108,
-  "arquivos_codigo": 2568,
-  "linhas_codigo": 462834,
+  "arquivos_total": 4117,
+  "arquivos_codigo": 2577,
+  "linhas_codigo": 465756,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 129,
-  "componentes": 992,
+  "componentes": 993,
   "hooks": 277,
   "edge_functions": 112,
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 534,
+  "testes": 539,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -639,8 +639,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1014,
-   "linhas": 167375
+   "arquivos": 1017,
+   "linhas": 169013
   },
   "src/config": {
    "arquivos": 2,
@@ -663,8 +663,8 @@
    "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 448,
-   "linhas": 61817
+   "arquivos": 454,
+   "linhas": 63101
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -781,6 +781,10 @@
    "linhas": 802
   },
   {
+   "arquivo": "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+   "linhas": 776
+  },
+  {
    "arquivo": "src/components/ui/sidebar.tsx",
    "linhas": 733
   },
@@ -803,10 +807,6 @@
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
    "linhas": 571
-  },
-  {
-   "arquivo": "supabase/functions/mcp-query/index.ts",
-   "linhas": 552
   }
  ],
  "qualidade": {
@@ -815,7 +815,7 @@
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,
-  "arquivos_acima_500_linhas": 32
+  "arquivos_acima_500_linhas": 33
  },
  "todos": [
   {

@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 297,
+ "total": 300,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 276,
+  "lib": 279,
   "python": 15
  },
  "arquivos": [
@@ -784,7 +784,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 316,
+   "usado_por": 317,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -2367,6 +2367,64 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/financeiro/conciliacao-extrato.ts",
+   "camada": "lib",
+   "exports": [
+    "CreditoExtrato",
+    "TOLERANCIA_DIAS",
+    "TOLERANCIA_VALOR",
+    "TituloCandidato",
+    "conciliarCreditos",
+    "ehMesmoPagador",
+    "titulosCompativeis"
+   ],
+   "export_default": null,
+   "linhas": 171,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/contas-receber"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/financeiro/divergencias-pendentes.ts",
+   "camada": "lib",
+   "exports": [
+    "ContaCadastrada",
+    "DivergenciaPendente",
+    "chaveBancaria",
+    "mesclarPendentes",
+    "origemCompativelComCadastro",
+    "origemDaTransacao",
+    "origemDoExtrato"
+   ],
+   "export_default": null,
+   "linhas": 182,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/contas-receber"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/financeiro/registrarEvento.ts",
    "camada": "lib",
    "exports": [
@@ -2494,7 +2552,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 300,
+   "usado_por": 301,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -2978,16 +3036,17 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 17,
+   "usado_por": 18,
    "usado_por_modulos": [
     "components/conciliacao",
     "components/contas-receber",
     "hooks",
     "lib",
+    "lib/financeiro",
     "lib/transaction-matcher",
     "pages"
    ],
-   "coberto_por_testes": 7,
+   "coberto_por_testes": 8,
    "orfao": false
   },
   {
@@ -3017,6 +3076,7 @@
    "arquivo": "src/lib/ofx-parser/index.ts",
    "camada": "lib",
    "exports": [
+    "identidadeConta",
     "parseCSV",
     "parseExcel",
     "parseExtratoBancario",
@@ -3044,11 +3104,12 @@
    "arquivo": "src/lib/ofx-parser/ofx-sgml.ts",
    "camada": "lib",
    "exports": [
+    "identidadeConta",
     "parseOFC",
     "parseOFX"
    ],
    "export_default": null,
-   "linhas": 166,
+   "linhas": 286,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3057,8 +3118,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
+    "lib/financeiro",
     "lib/ofx-parser"
    ],
    "coberto_por_testes": 0,
@@ -3074,7 +3136,7 @@
     "TransacaoOFX"
    ],
    "export_default": null,
-   "linhas": 40,
+   "linhas": 47,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -3487,6 +3549,30 @@
    "usado_por_modulos": [
     "components/contabilidade",
     "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/postgrest-filtros.ts",
+   "camada": "lib",
+   "exports": [
+    "padraoIlikeContem",
+    "valorPostgrest"
+   ],
+   "export_default": null,
+   "linhas": 17,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/contas-receber"
    ],
    "coberto_por_testes": 1,
    "orfao": false
@@ -5108,8 +5194,9 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
+    "lib/financeiro",
     "lib/transaction-matcher"
    ],
    "coberto_por_testes": 0,

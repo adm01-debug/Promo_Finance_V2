@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 992,
+ "total": 993,
  "orfaos": 38,
  "nomes_duplicados": {
   "Accordion": [
@@ -5534,7 +5534,7 @@
     "BaixaAutomaticaDialog"
    ],
    "export_default": null,
-   "linhas": 477,
+   "linhas": 776,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useContasBancarias"
@@ -5555,7 +5555,7 @@
     "BaixaAutomaticaDialogCorrespondenciasAutomaticas"
    ],
    "export_default": null,
-   "linhas": 100,
+   "linhas": 125,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5939,6 +5939,23 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/VincularManualmenteDialog.tsx",
+   "exports": [
+    "ContaCandidata",
+    "VincularManualmenteDialog"
+   ],
+   "export_default": null,
+   "linhas": 237,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [
+    "contas_receber"
+   ],
+   "edges": [],
+   "usado_por": 2,
    "orfao": false
   },
   {
@@ -11044,7 +11061,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 450,
+   "usado_por": 451,
    "orfao": false
   },
   {
@@ -11093,7 +11110,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 528,
+   "usado_por": 529,
    "orfao": false
   },
   {
@@ -11380,7 +11397,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 139,
+   "usado_por": 140,
    "orfao": false
   },
   {
@@ -11594,7 +11611,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 217,
+   "usado_por": 218,
    "orfao": false
   },
   {
