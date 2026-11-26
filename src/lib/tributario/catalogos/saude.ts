@@ -187,6 +187,13 @@ export const TITULOS_CATALOGO_RFB: Record<CatalogoRfbId, string> = {
 /** Dias sem sincronização a partir dos quais o catálogo vira alerta. */
 export const DIAS_ALERTA_CATALOGO_RFB = 7;
 
+/**
+ * Prazo para catálogos de cadência semanal (o cron municipal de alíquotas roda
+ * aos domingos): o próprio intervalo de 7 dias não dá margem para a rodada
+ * terminar, então a carga da semana só vira atraso depois de 9 dias.
+ */
+export const DIAS_ALERTA_CATALOGO_RFB_SEMANAL = 9;
+
 export type StatusFrescorRfb = 'ok' | 'atencao' | 'critico';
 
 export interface EntradaFrescorCatalogoRfb {
@@ -200,6 +207,11 @@ export interface EntradaFrescorCatalogoRfb {
    * linha, mas com run recente do job).
    */
   nota?: string | null;
+  /**
+   * Prazo próprio do catálogo, em dias (padrão: `DIAS_ALERTA_CATALOGO_RFB`).
+   * Use `DIAS_ALERTA_CATALOGO_RFB_SEMANAL` para cargas de cadência semanal.
+   */
+  limiteDias?: number;
 }
 
 export interface FrescorCatalogoRfb {
@@ -306,20 +318,17 @@ export function avaliarFrescorCatalogosRfb(
   const catalogos: FrescorCatalogoRfb[] = (entradas ?? []).map((entrada) => {
     const ms = idadeMs(entrada.ultimaCarga, base);
     const dias = ms === null ? null : Math.floor(ms / MS_POR_DIA);
+    const limiteDias = entrada.limiteDias ?? DIAS_ALERTA_CATALOGO_RFB;
     // O limite é medido no relógio, não em dias cheios: 7 dias e 12 horas já é
     // atraso, mesmo que `diasSemSync` (truncado) ainda mostre 7.
     const status: StatusFrescorRfb =
-      ms === null
-        ? 'critico'
-        : ms > DIAS_ALERTA_CATALOGO_RFB * MS_POR_DIA
-          ? 'atencao'
-          : 'ok';
+      ms === null ? 'critico' : ms > limiteDias * MS_POR_DIA ? 'atencao' : 'ok';
     const detalhe =
       entrada.nota ??
       (ms === null
         ? 'Nunca sincronizado'
         : status === 'atencao'
-          ? `Sem sincronizar há mais de ${DIAS_ALERTA_CATALOGO_RFB} dias`
+          ? `Sem sincronizar há mais de ${limiteDias} dias`
           : dias === 0
             ? 'Sincronizado hoje'
             : `Sem sincronizar há ${plural(dias ?? 0, 'dia', 'dias')}`);
@@ -346,14 +355,12 @@ export function avaliarFrescorCatalogosRfb(
     );
   }
   if (desatualizados > 0) {
-    partes.push(
-      `${plural(desatualizados, 'catálogo', 'catálogos')} sem sincronizar há mais de ${DIAS_ALERTA_CATALOGO_RFB} dias`
-    );
+    partes.push(`${plural(desatualizados, 'catálogo', 'catálogos')} sem sincronizar além do prazo`);
   }
   const resumo =
     partes.length > 0
       ? partes.join(' · ')
-      : `Catálogos RFB sincronizados nos últimos ${DIAS_ALERTA_CATALOGO_RFB} dias`;
+      : 'Catálogos RFB sincronizados dentro do prazo';
 
   return { status, catalogos, desatualizados, nuncaSincronizados, resumo };
 }

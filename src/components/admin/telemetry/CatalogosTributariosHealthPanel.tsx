@@ -3,6 +3,7 @@ import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { supabase } from '@/integrations/supabase/client';
 import {
   avaliarFrescorCatalogosRfb,
+  DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
   entradaSemLinhas,
   escolherUltimaCarga,
   type CatalogoRfbId,
@@ -191,7 +192,12 @@ async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[
     entrada('nbs', nbs.data?.[0]?.carregado_em ?? null, runNcmNbs),
     entrada('aliquota_cbs', aliquotaCbs.data?.[0]?.carregado_em ?? null, runAliquota),
     entrada('aliquota_ibs_uf', aliquotaUf.data?.[0]?.carregado_em ?? null, runAliquota),
-    entrada('aliquota_ibs_mun', aliquotaMun.data?.[0]?.carregado_em ?? null, runAliquota),
+    {
+      // O cron municipal roda aos domingos: o prazo de 7 dias não dá margem
+      // para a rodada terminar, então este escopo usa o limite semanal.
+      ...entrada('aliquota_ibs_mun', aliquotaMun.data?.[0]?.carregado_em ?? null, runAliquota),
+      limiteDias: DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
+    },
     entrada(
       'fundamentacao',
       fundamentacao.data?.[0]?.created_at ?? null,

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   avaliarFrescorCatalogosRfb,
   DIAS_ALERTA_CATALOGO_RFB,
+  DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
   entradaSemLinhas,
   escolherUltimaCarga,
   TITULOS_CATALOGO_RFB,
@@ -60,7 +61,34 @@ describe('avaliarFrescorCatalogosRfb', () => {
     );
     expect(passou.catalogos[0].status).toBe('atencao');
     expect(passou.desatualizados).toBe(1);
-    expect(passou.resumo).toContain('mais de 7 dias');
+    expect(passou.resumo).toContain('além do prazo');
+  });
+
+  it('respeita o prazo semanal do escopo municipal', () => {
+    const oito = avaliarFrescorCatalogosRfb(
+      [
+        {
+          id: 'aliquota_ibs_mun',
+          ultimaCarga: emDias(8),
+          limiteDias: DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
+        },
+      ],
+      HOJE
+    );
+    expect(oito.status).toBe('ok');
+
+    const dez = avaliarFrescorCatalogosRfb(
+      [
+        {
+          id: 'aliquota_ibs_mun',
+          ultimaCarga: emDias(DIAS_ALERTA_CATALOGO_RFB_SEMANAL + 0.5),
+          limiteDias: DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
+        },
+      ],
+      HOJE
+    );
+    expect(dez.status).toBe('atencao');
+    expect(dez.catalogos[0].detalhe).toContain('mais de 9 dias');
   });
 
   it('agrega o pior status e conta cada grupo', () => {
@@ -77,7 +105,7 @@ describe('avaliarFrescorCatalogosRfb', () => {
     expect(r.desatualizados).toBe(2);
     expect(r.nuncaSincronizados).toBe(1);
     expect(r.resumo).toContain('1 catálogo nunca sincronizado');
-    expect(r.resumo).toContain('2 catálogos sem sincronizar há mais de 7 dias');
+    expect(r.resumo).toContain('2 catálogos sem sincronizar além do prazo');
     expect(r.catalogos[0].versaoIt).toBe('1.71');
     expect(r.catalogos[1].versaoIt).toBeNull();
   });
@@ -96,7 +124,7 @@ describe('avaliarFrescorCatalogosRfb', () => {
     const r = avaliarFrescorCatalogosRfb([], HOJE);
     expect(r.status).toBe('ok');
     expect(r.catalogos).toEqual([]);
-    expect(r.resumo).toContain('últimos 7 dias');
+    expect(r.resumo).toContain('dentro do prazo');
   });
 
   it('cada escopo de aliquota e o NBS avaliam o proprio frescor', () => {
