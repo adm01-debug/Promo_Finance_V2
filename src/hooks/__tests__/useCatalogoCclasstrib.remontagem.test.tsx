@@ -76,11 +76,23 @@ describe('useCatalogoCclasstrib', () => {
 
     // Catalogo venceu (TTL) com a tela fechada e a releitura nao achou a rede.
     await client.invalidateQueries({ queryKey: [CHAVE_CATALOGO_CCLASSTRIB] });
-    listar.mockResolvedValueOnce([]);
+    let concluirReleitura: (lista: unknown[]) => void = () => {};
+    listar.mockImplementationOnce(
+      () =>
+        new Promise<unknown[]>((resolver) => {
+          concluirReleitura = resolver;
+        })
+    );
     const segundo = renderHook(() => useCatalogoCclasstrib(), { wrapper });
 
     await waitFor(() => expect(listar).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(segundo.result.current.carregando).toBe(false));
+    // Com dado em cache `carregando` ja e falso durante a releitura: so da para
+    // afirmar o que sobrou depois que a releitura termina, e ela termina vazia.
+    concluirReleitura([]);
+    await waitFor(() =>
+      expect(client.getQueryState([CHAVE_CATALOGO_CCLASSTRIB])?.fetchStatus).toBe('idle')
+    );
+    expect(client.getQueryData([CHAVE_CATALOGO_CCLASSTRIB])).toEqual([]);
     expect(segundo.result.current.opcoes).toHaveLength(1);
     expect(segundo.result.current.indisponivel).toBe(false);
     client.clear();
