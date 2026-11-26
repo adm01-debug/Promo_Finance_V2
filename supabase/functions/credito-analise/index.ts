@@ -188,6 +188,39 @@ Deno.serve(
       return atual;
     };
 
+    /**
+     * Grava o limite aprovado no cadastro do cliente. Idempotente: o reenvio de
+     * uma decisão que parou no meio chama de novo.
+     */
+    const aplicarLimite = async (alvo: Analise, limite: number) => {
+      let atingidos = 0;
+      if (alvo.cnpj) {
+        const r = await admin
+          .from('clientes')
+          .update({ limite_credito: limite })
+          .or(filtroCnpjCliente(alvo.cnpj))
+          .select('id');
+        if (r.error) return r.error;
+        atingidos = r.data?.length ?? 0;
+      }
+      if (atingidos > 0 || !alvo.cliente_id) return null;
+      // Vínculo por e-mail: recebe o limite quando o cadastro não guarda outro
+      // CNPJ — CPF no campo é o mesmo cliente, CNPJ diferente é outro cadastro.
+      const { data: vinc, error: erroVinc } = await admin
+        .from('clientes')
+        .select('cnpj_cpf')
+        .eq('id', alvo.cliente_id)
+        .maybeSingle();
+      if (erroVinc) return erroVinc;
+      const docVinculo = normalizarCnpj(vinc?.cnpj_cpf ?? '') ?? '';
+      if (alvo.cnpj && docVinculo.length === 14 && docVinculo !== alvo.cnpj) return null;
+      const r = await admin
+        .from('clientes')
+        .update({ limite_credito: limite })
+        .eq('id', alvo.cliente_id);
+      return r.error;
+    };
+
     try {
       if (input.action === 'listar') {
         const empresas = await empresasAcessiveis(admin, guard.dados.userId);
@@ -240,6 +273,12 @@ Deno.serve(
         if (analise.callback_status === 'pendente' && decididoHa < CALLBACK_EM_CURSO_MS) {
           return responder(req, 409, { error: 'Aviso ao Champions ainda em andamento' });
         }
+        // A decisão é gravada antes do limite do cliente: se a execução parou no
+        // meio, o reenvio completa a aprovação em vez de só avisar o Champions.
+        if (analise.status === 'aprovado' && analise.limite_aprovado !== null) {
+          const limError = await aplicarLimite(analise, analise.limite_aprovado);
+          if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
+        }
         const callback = await notificarChampions(
           analise,
           analise.status as 'aprovado' | 'reprovado',
@@ -277,10 +316,14 @@ Deno.serve(
         if (input.cnpj && !novoCnpj)
           return responder(req, 400, { error: 'CNPJ inválido (14 dígitos)' });
         const cnpjMudou = Boolean(novoCnpj) && novoCnpj !== analise.cnpj;
-        // Reconsulta quando o CNPJ mudou ou quando a consulta inicial falhou.
-        if (novoCnpj && (cnpjMudou || !analise.dados_cnpja)) {
-          patch.cnpj = novoCnpj;
-          const consulta = await consultarCnpjInterno(admin, novoCnpj);
+        // Reconsulta quando o CNPJ mudou ou quando a consulta inicial falhou —
+        // nesse caso pelo documento já gravado, sem tocar no vínculo (o
+        // formulário pode estar com o CNPJ antigo de outro analista).
+        const cnpjConsultado =
+          novoCnpj ?? (analise.cnpj && !analise.dados_cnpja ? analise.cnpj : null);
+        if (cnpjConsultado && (cnpjMudou || !analise.dados_cnpja)) {
+          patch.cnpj = cnpjConsultado;
+          const consulta = await consultarCnpjInterno(admin, cnpjConsultado);
           if (consulta.ok) {
             patch.dados_cnpja = consulta.dados;
             patch.alertas = avaliarAlertas(consulta.dados, analise.valor_pedido);
@@ -358,30 +401,7 @@ Deno.serve(
       }
 
       if (input.decisao === 'aprovado' && limite !== null) {
-        // Limite segue o documento da análise (todos os cadastros com esse
-        // CNPJ, com ou sem máscara); se nenhum cadastro tem o CNPJ, cai no
-        // vínculo feito por e-mail na solicitação.
-        let atingidos = 0;
-        let limError: { message: string } | null = null;
-        if (analise.cnpj) {
-          const r = await admin
-            .from('clientes')
-            .update({ limite_credito: limite })
-            .or(filtroCnpjCliente(analise.cnpj))
-            .select('id');
-          limError = r.error;
-          atingidos = r.data?.length ?? 0;
-        }
-        if (!limError && atingidos === 0 && analise.cliente_id) {
-          // Vínculo por e-mail só recebe o limite se não tiver outro CNPJ gravado.
-          let q = admin
-            .from('clientes')
-            .update({ limite_credito: limite })
-            .eq('id', analise.cliente_id);
-          if (analise.cnpj) q = q.or(`cnpj_cpf.is.null,${filtroCnpjCliente(analise.cnpj)}`);
-          const r = await q;
-          limError = r.error;
-        }
+        const limError = await aplicarLimite(analise, limite);
         if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
       }
 
