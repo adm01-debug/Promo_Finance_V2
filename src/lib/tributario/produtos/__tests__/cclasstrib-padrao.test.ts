@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   normalizarCodigo,
+  normalizarCodigoComercial,
   normalizarNcm,
+  resolverPadraoPorCodigo,
   sugerirPadraoPorNcm,
+  validarCoerenciaCst,
   validarPadrao,
   type PadraoProduto,
 } from '../cclasstrib-padrao';
@@ -12,8 +15,9 @@ const padrao = (
   ncm: string | null,
   cst: string,
   cclasstrib: string,
-  atualizado_em = '2026-01-01T00:00:00.000Z'
-): PadraoProduto => ({ produto_id, ncm, cst, cclasstrib, atualizado_em });
+  atualizado_em = '2026-01-01T00:00:00.000Z',
+  codigo: string | null = null
+): PadraoProduto => ({ produto_id, codigo, ncm, cst, cclasstrib, atualizado_em });
 
 describe('normalizarNcm', () => {
   it('aceita NCM com mascara e devolve so digitos', () => {
@@ -91,5 +95,80 @@ describe('validarPadrao', () => {
     expect(validarPadrao({ cst: '20', cclasstrib: '000001' })).toMatch(/CST/);
     expect(validarPadrao({ cst: '200', cclasstrib: '00001' })).toMatch(/cClassTrib/);
     expect(validarPadrao({ cst: '200', cclasstrib: '000001', ncm: '1234' })).toMatch(/NCM/);
+  });
+});
+
+describe('normalizarCodigoComercial', () => {
+  it('compara SKU sem espaco nas pontas nem diferenca de caixa', () => {
+    expect(normalizarCodigoComercial('  cesta-01 ')).toBe('CESTA-01');
+    expect(normalizarCodigoComercial(null)).toBe('');
+  });
+});
+
+describe('resolverPadraoPorCodigo', () => {
+  const comCodigo = (produto_id: string, codigo: string, cst: string, cclasstrib: string) =>
+    padrao(produto_id, '12345678', cst, cclasstrib, undefined, codigo);
+
+  it('encontra o padrao do SKU informado no item', () => {
+    const padroes = [comCodigo('456', 'CESTA-01', '200', '200032')];
+    expect(resolverPadraoPorCodigo(padroes, ' cesta-01 ')?.cclasstrib).toBe('200032');
+  });
+
+  it('nao confunde o id do produto com o SKU', () => {
+    const padroes = [comCodigo('456', 'CESTA-01', '200', '200032')];
+    expect(resolverPadraoPorCodigo(padroes, '456')).toBeNull();
+  });
+
+  it('nao resolve nada sem codigo, sem padrao gravado ou sem SKU salvo', () => {
+    expect(resolverPadraoPorCodigo([], 'CESTA-01')).toBeNull();
+    expect(resolverPadraoPorCodigo([comCodigo('456', 'CESTA-01', '200', '200032')], '')).toBeNull();
+    expect(
+      resolverPadraoPorCodigo([padrao('456', '12345678', '200', '200032')], 'CESTA-01')
+    ).toBeNull();
+  });
+
+  it('SKU compartilhado com enquadramentos diferentes nao decide sozinho', () => {
+    const padroes = [
+      comCodigo('456', 'KIT-01', '200', '200032'),
+      comCodigo('789', 'KIT-01', '102', '000001'),
+    ];
+    expect(resolverPadraoPorCodigo(padroes, 'KIT-01')).toBeNull();
+  });
+
+  it('SKU repetido com o mesmo enquadramento resolve normalmente', () => {
+    const padroes = [
+      comCodigo('456', 'KIT-01', '200', '200032'),
+      comCodigo('457', 'kit-01', '200', '200032'),
+    ];
+    expect(resolverPadraoPorCodigo(padroes, 'KIT-01')?.produto_id).toBe('456');
+  });
+});
+
+describe('validarCoerenciaCst', () => {
+  const catalogo = [
+    { cst: '000 ', cclasstrib: '000001' },
+    { cst: '200', cclasstrib: '200032' },
+  ];
+
+  it('sem catalogo a digitacao manual continua livre', () => {
+    expect(validarCoerenciaCst({ cst: '200', cclasstrib: '000001' }, [])).toBeNull();
+  });
+
+  it('nao opina sobre codigo fora do catalogo', () => {
+    expect(validarCoerenciaCst({ cst: '200', cclasstrib: '999999' }, catalogo)).toBeNull();
+  });
+
+  it('aceita o CST que o catalogo associa ao cClassTrib', () => {
+    expect(validarCoerenciaCst({ cst: '200', cclasstrib: '200032' }, catalogo)).toBeNull();
+    expect(validarCoerenciaCst({ cst: '000', cclasstrib: '000001' }, catalogo)).toBeNull();
+  });
+
+  it('recusa CST que contradiz o catalogo', () => {
+    expect(validarCoerenciaCst({ cst: '200', cclasstrib: '000001' }, catalogo)).toMatch(/CST 000/);
+    expect(validarCoerenciaCst({ cst: '', cclasstrib: '000001' }, catalogo)).toMatch(/vazio/);
+  });
+
+  it('nao valida antes do codigo estar completo', () => {
+    expect(validarCoerenciaCst({ cst: '200', cclasstrib: '00001' }, catalogo)).toBeNull();
   });
 });

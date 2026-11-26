@@ -12494,6 +12494,7 @@ export type Database = {
           atualizado_em: string
           atualizado_por: string | null
           cclasstrib: string
+          codigo: string | null
           cst: string
           ncm: string | null
           produto_id: string
@@ -12502,6 +12503,7 @@ export type Database = {
           atualizado_em?: string
           atualizado_por?: string | null
           cclasstrib: string
+          codigo?: string | null
           cst: string
           ncm?: string | null
           produto_id: string
@@ -12510,6 +12512,7 @@ export type Database = {
           atualizado_em?: string
           atualizado_por?: string | null
           cclasstrib?: string
+          codigo?: string | null
           cst?: string
           ncm?: string | null
           produto_id?: string

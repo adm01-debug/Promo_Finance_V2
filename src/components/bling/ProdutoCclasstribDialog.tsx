@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Loader2, Trash2, Wand2 } from 'lucide-react';
 import { useClassificacaoTributaria } from '@/hooks/useCatalogoCclasstrib';
+import { useBlingProdutoDetail } from '@/hooks/bling/useProdutos';
 import {
   useProdutoCclasstribPadrao,
   useProdutoCclasstribPadraoMutations,
@@ -32,12 +33,15 @@ import {
 import {
   normalizarCodigo,
   sugerirPadraoPorNcm,
+  validarCoerenciaCst,
   validarPadrao,
 } from '@/lib/tributario/produtos/cclasstrib-padrao';
 
 export interface ProdutoParaPadrao {
   id: number | string;
   nome?: string;
+  /** SKU do produto no Bling: e a chave que o item da NF-e conhece. */
+  codigo?: string;
   ncm?: string | null;
   /** O Bling devolve o NCM dentro de `tributacao` no detalhe do produto. */
   tributacao?: { ncm?: string };
@@ -61,15 +65,20 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
   const [cst, setCst] = useState('');
   const [cclasstrib, setCclasstrib] = useState('');
 
+  // A listagem de produtos pode nao trazer o NCM; o detalhe do Bling traz.
+  const { data: detalhe } = useBlingProdutoDetail(aberto && produtoId ? produtoId : undefined);
+  const ncmDetalhe =
+    (detalhe?.data as { tributacao?: { ncm?: string } } | undefined)?.tributacao?.ncm ?? '';
+
   const existente = produtoId ? porProduto.get(produtoId) : undefined;
 
   useEffect(() => {
     if (!aberto) return;
     const atual = produtoId ? porProduto.get(produtoId) : undefined;
-    setNcm(atual?.ncm ?? produto?.ncm ?? produto?.tributacao?.ncm ?? '');
+    setNcm(atual?.ncm ?? produto?.ncm ?? produto?.tributacao?.ncm ?? ncmDetalhe);
     setCst(atual?.cst ?? '');
     setCclasstrib(atual?.cclasstrib ?? '');
-  }, [aberto, produtoId, produto, porProduto]);
+  }, [aberto, produtoId, produto, porProduto, ncmDetalhe]);
 
   const sugestao = useMemo(
     () => (produto ? sugerirPadraoPorNcm(padroes, ncm, produtoId) : null),
@@ -84,7 +93,8 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
       .slice(0, LIMITE_OPCOES);
   }, [opcoes, cst]);
 
-  const erro = validarPadrao({ cst, cclasstrib, ncm });
+  const erro =
+    validarPadrao({ cst, cclasstrib, ncm }) ?? validarCoerenciaCst({ cst, cclasstrib }, opcoes);
   const ocupado = salvar.isPending || remover.isPending;
   const sugestaoDiferente =
     sugestao &&
@@ -99,7 +109,10 @@ export function ProdutoCclasstribDialog({ produto, aberto, onFechar }: Props) {
 
   const enviar = () => {
     if (!produto || erro) return;
-    salvar.mutate({ produto_id: produtoId, ncm, cst, cclasstrib }, { onSuccess: () => onFechar() });
+    salvar.mutate(
+      { produto_id: produtoId, codigo: produto.codigo ?? null, ncm, cst, cclasstrib },
+      { onSuccess: () => onFechar() }
+    );
   };
 
   return (

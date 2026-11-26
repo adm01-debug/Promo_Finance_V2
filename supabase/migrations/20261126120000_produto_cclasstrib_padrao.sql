@@ -15,11 +15,16 @@
 -- `bling_tokens`, entao a tabela segue o mesmo modelo de acesso: sem tenant por
 -- empresa, com policy de admin/financeiro.
 --
+-- `codigo` e o SKU do produto no Bling: e o que o operador digita no item da
+-- NF-e (o id interno nao aparece na tela). Sem ele gravado aqui o padrao nunca
+-- era encontrado na emissao, porque a busca era feita pelo id.
+--
 -- REGRA 8: DDL de producao. Merge do arquivo nao aplica nada; a aplicacao passa
 -- pelo prod-migrate.
 
 create table public.produto_cclasstrib_padrao (
   produto_id text primary key,
+  codigo text,
   ncm character(8),
   cst character(3) not null,
   cclasstrib character(6) not null,
@@ -33,6 +38,10 @@ create table public.produto_cclasstrib_padrao (
 -- Sugestao por NCM: le os padroes do mesmo NCM de uma vez.
 create index produto_cclasstrib_padrao_ncm_idx
   on public.produto_cclasstrib_padrao (ncm);
+
+-- Enquadramento pelo SKU informado no item da NF-e.
+create index produto_cclasstrib_padrao_codigo_idx
+  on public.produto_cclasstrib_padrao (codigo);
 
 grant select, insert, update, delete on public.produto_cclasstrib_padrao to authenticated;
 grant all on public.produto_cclasstrib_padrao to service_role;

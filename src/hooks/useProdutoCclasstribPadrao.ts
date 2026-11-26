@@ -3,13 +3,14 @@
 // Le todos os padroes de uma vez (o catalogo do Bling e paginado em 100 itens, a
 // tabela e pequena) para a sugestao por NCM e a marcacao na lista saírem do mesmo
 // snapshot, sem uma consulta por linha.
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
   normalizarCodigo,
   normalizarNcm,
+  resolverPadraoPorCodigo,
   validarPadrao,
   type PadraoProduto,
 } from '@/lib/tributario/produtos/cclasstrib-padrao';
@@ -18,6 +19,7 @@ export const CHAVE_PADRAO_CCLASSTRIB = ['produto-cclasstrib-padrao'] as const;
 
 export interface PadraoProdutoEntrada {
   produto_id: string;
+  codigo?: string | null;
   ncm?: string | null;
   cst: string;
   cclasstrib: string;
@@ -31,7 +33,7 @@ export function useProdutoCclasstribPadrao(habilitado = true) {
     queryFn: async (): Promise<PadraoProduto[]> => {
       const { data, error } = await supabase
         .from('produto_cclasstrib_padrao')
-        .select('produto_id, ncm, cst, cclasstrib, atualizado_em')
+        .select('produto_id, codigo, ncm, cst, cclasstrib, atualizado_em')
         .order('atualizado_em', { ascending: false });
       if (error) throw error;
       return (data ?? []) as PadraoProduto[];
@@ -43,8 +45,13 @@ export function useProdutoCclasstribPadrao(habilitado = true) {
     () => new Map(padroes.map((padrao) => [String(padrao.produto_id), padrao])),
     [padroes]
   );
+  /** Enquadramento pelo SKU do item da NF-e (ambiguo devolve `null`). */
+  const porCodigo = useCallback(
+    (codigo?: string | null) => resolverPadraoPorCodigo(padroes, codigo),
+    [padroes]
+  );
 
-  return { ...query, padroes, porProduto };
+  return { ...query, padroes, porProduto, porCodigo };
 }
 
 export function useProdutoCclasstribPadraoMutations() {
@@ -58,6 +65,7 @@ export function useProdutoCclasstribPadraoMutations() {
       const { error } = await supabase.from('produto_cclasstrib_padrao').upsert(
         {
           produto_id: String(entrada.produto_id),
+          codigo: entrada.codigo?.trim() ? entrada.codigo.trim() : null,
           ncm: normalizarNcm(entrada.ncm),
           cst: normalizarCodigo(entrada.cst, 3),
           cclasstrib: normalizarCodigo(entrada.cclasstrib, 6),
