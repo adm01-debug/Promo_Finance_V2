@@ -256,6 +256,26 @@ Deno.test('separarReativados preserva o periodo aberto em carga retroativa', () 
   assertEquals(preservadas[0].ncm, '27101100');
 });
 
+Deno.test('separarReativados preserva quando a data e igual ou anterior a base', () => {
+  // A base nao e sempre a chave mais antiga do codigo: um periodo aberto depois
+  // dela significa que o codigo apareceu mais tarde. Gravar na chave da base
+  // criaria um segundo periodo aberto (a linha nao existe para colidir).
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'A' }]).linhas;
+  const conjuntos = {
+    abertos: new Map([['27101100', '2026-07-01']]),
+    conhecidos: ['27101100'],
+  };
+
+  const naBase = separarReativados(linhas, (linha) => linha.ncm, conjuntos, VIGENCIA_BASE_CATALOGO);
+  assertEquals(naBase.base.length, 0);
+  assertEquals(naBase.preservadas.length, 1);
+
+  const anterior = separarReativados(linhas, (linha) => linha.ncm, conjuntos, '2025-12-01');
+  assertEquals(anterior.base.length, 0);
+  assertEquals(anterior.reabertas.length, 0);
+  assertEquals(anterior.preservadas.length, 1);
+});
+
 Deno.test('separarReativados reabre no inicio do periodo aberto quando a data e igual', () => {
   const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
   const { reabertas, preservadas } = separarReativados(

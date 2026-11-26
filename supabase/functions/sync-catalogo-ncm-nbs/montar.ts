@@ -145,7 +145,10 @@ export interface LinhasPorVigencia<T> {
  * Carga retroativa (data consultada anterior ao inicio do periodo aberto) nao
  * grava nada para aquele codigo: a lista recebida descreve o periodo antigo, e
  * a chave (codigo, inicio do periodo aberto) e do periodo futuro. Sem a guarda,
- * a descricao da data antiga sobrescreveria a descricao oficial do futuro.
+ * a descricao da data antiga sobrescreveria a descricao oficial do futuro. A
+ * guarda vale tambem para data igual ou anterior a base: a chave da base pode
+ * nao existir para o codigo (primeiro periodo dele pode ter aberto depois), e o
+ * `insert` abriria um segundo periodo aberto no mesmo codigo.
  */
 export function separarReativados<T extends { inicio_vigencia: string }>(
   linhas: readonly T[],
@@ -154,11 +157,6 @@ export function separarReativados<T extends { inicio_vigencia: string }>(
   dataObservacao: string,
   base: string = VIGENCIA_BASE_CATALOGO
 ): LinhasPorVigencia<T> {
-  // Sem data posterior a base nao existe periodo novo: inicio = data colidiria
-  // com a linha encerrada e a reabriria, que e exatamente o que se quer evitar.
-  if (!(dataObservacao > base))
-    return { base: [...linhas], reativadas: [], reabertas: [], preservadas: [] };
-
   const abertos = new Map(conjuntos.abertos);
   const reativados = new Set([...conjuntos.conhecidos].filter((codigo) => !abertos.has(codigo)));
 
@@ -168,17 +166,22 @@ export function separarReativados<T extends { inicio_vigencia: string }>(
   const preservadas: T[] = [];
   for (const linha of linhas) {
     const codigo = String(codigoDe(linha) ?? '').trim();
-    if (reativados.has(codigo)) {
-      reativadas.push({ ...linha, inicio_vigencia: dataObservacao });
-      continue;
-    }
     const inicioAberto = abertos.get(codigo);
     if (inicioAberto !== undefined && inicioAberto !== base) {
+      // Periodo aberto que nao comeca na data-base so pode ser escrito na
+      // propria chave dele, e apenas quando a data consultada cai dentro dele.
       if (dataObservacao < inicioAberto) {
         preservadas.push(linha);
         continue;
       }
       reabertas.push({ ...linha, inicio_vigencia: inicioAberto });
+      continue;
+    }
+    // Codigo com periodo aberto na data-base segue para o lote base. Sem data
+    // posterior a base nao existe periodo novo: gravar `inicio = data` no lote
+    // reativado colidiria com a linha encerrada e a reabriria.
+    if (dataObservacao > base && reativados.has(codigo)) {
+      reativadas.push({ ...linha, inicio_vigencia: dataObservacao });
       continue;
     }
     baseLinhas.push(linha);
