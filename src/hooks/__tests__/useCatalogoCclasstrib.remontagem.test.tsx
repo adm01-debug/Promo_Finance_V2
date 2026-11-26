@@ -1,0 +1,100 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+
+const listar = vi.fn();
+vi.mock('@/lib/tributario/catalogos/cclasstrib', () => ({
+  listarCclasstribVigentes: () => listar(),
+}));
+
+import { CHAVE_CATALOGO_CCLASSTRIB, useCatalogoCclasstrib } from '@/hooks/useCatalogoCclasstrib';
+
+/**
+ * Cliente com o mesmo `refetchOnMount: false` global (`queryClient.ts`): e o que
+ * fazia a lista vazia sobreviver a sair e voltar para a tela.
+ */
+function montar() {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false, refetchOnMount: false } },
+  });
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  );
+  return { client, wrapper };
+}
+
+beforeEach(() => listar.mockReset());
+
+describe('useCatalogoCclasstrib', () => {
+  it('reconsulta ao remontar quando a leitura anterior voltou vazia', async () => {
+    listar.mockResolvedValueOnce([]);
+    const { client, wrapper } = montar();
+
+    const primeiro = renderHook(() => useCatalogoCclasstrib(), { wrapper });
+    await waitFor(() => expect(listar).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(primeiro.result.current.carregando).toBe(false));
+    expect(primeiro.result.current.indisponivel).toBe(true);
+    primeiro.unmount();
+
+    listar.mockResolvedValueOnce([
+      { cst: '200', cclasstrib: '200038', descricao: 'teste', vigencia_inicio: '2026-01-01' },
+    ]);
+    const segundo = renderHook(() => useCatalogoCclasstrib(), { wrapper });
+
+    await waitFor(() => expect(listar).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(segundo.result.current.opcoes).toHaveLength(1));
+    expect(segundo.result.current.indisponivel).toBe(false);
+    client.clear();
+  });
+
+  it('nao reconsulta ao remontar quando a leitura esta fresca', async () => {
+    listar.mockResolvedValue([
+      { cst: '200', cclasstrib: '200038', descricao: 'teste', vigencia_inicio: '2026-01-01' },
+    ]);
+    const { client, wrapper } = montar();
+
+    const primeiro = renderHook(() => useCatalogoCclasstrib(), { wrapper });
+    await waitFor(() => expect(listar).toHaveBeenCalledTimes(1));
+    primeiro.unmount();
+
+    const segundo = renderHook(() => useCatalogoCclasstrib(), { wrapper });
+    await waitFor(() => expect(segundo.result.current.opcoes).toHaveLength(1));
+    expect(listar).toHaveBeenCalledTimes(1);
+    client.clear();
+  });
+
+  it('releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria', async () => {
+    listar.mockResolvedValueOnce([
+      { cst: '200', cclasstrib: '200038', descricao: 'teste', vigencia_inicio: '2026-01-01' },
+    ]);
+    const { client, wrapper } = montar();
+
+    const primeiro = renderHook(() => useCatalogoCclasstrib(), { wrapper });
+    await waitFor(() => expect(primeiro.result.current.opcoes).toHaveLength(1));
+    primeiro.unmount();
+
+    // Catalogo venceu (TTL) com a tela fechada e a releitura nao achou a rede.
+    await client.invalidateQueries({ queryKey: [CHAVE_CATALOGO_CCLASSTRIB] });
+    let concluirReleitura: (lista: unknown[]) => void = () => {};
+    listar.mockImplementationOnce(
+      () =>
+        new Promise<unknown[]>((resolver) => {
+          concluirReleitura = resolver;
+        })
+    );
+    const segundo = renderHook(() => useCatalogoCclasstrib(), { wrapper });
+
+    await waitFor(() => expect(listar).toHaveBeenCalledTimes(2));
+    // Com dado em cache `carregando` ja e falso durante a releitura: so da para
+    // afirmar o que sobrou depois que a releitura termina, e ela termina vazia.
+    concluirReleitura([]);
+    await waitFor(() =>
+      expect(client.getQueryState([CHAVE_CATALOGO_CCLASSTRIB])?.fetchStatus).toBe('idle')
+    );
+    expect(client.getQueryData([CHAVE_CATALOGO_CCLASSTRIB])).toEqual([]);
+    expect(segundo.result.current.opcoes).toHaveLength(1);
+    expect(segundo.result.current.indisponivel).toBe(false);
+    client.clear();
+  });
+});

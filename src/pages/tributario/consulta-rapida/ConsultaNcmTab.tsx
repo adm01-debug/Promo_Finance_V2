@@ -20,10 +20,11 @@ import {
 } from '@/components/ui/table';
 import { useConsultaNCM } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
-import { OfflineBadge } from './OfflineBadge';
-import { ResultBlock } from './shared';
+import { SecaoClassificacaoTributaria } from '@/components/tributario/consulta-rapida/SecaoClassificacaoTributaria';
+import { OfflineBadge } from '@/components/tributario/consulta-rapida/OfflineBadge';
+import { ResultBlock } from '@/components/tributario/consulta-rapida/shared';
 import { UFS } from './ufs';
-import { pct } from './format';
+import { pct } from '@/components/tributario/consulta-rapida/format';
 
 /**
  * Consulta por NCM. Com código preenchido devolve o detalhe (IPI, CEST,
@@ -138,50 +139,53 @@ export function ConsultaNcmTab() {
           </div>
         </ResultBlock>
       ) : (
-        <ResultBlock
-          title={ncm?.descricao ?? 'Detalhe do NCM'}
-          isLoading={query.isLoading}
-          error={query.error}
-          isEmpty={!query.isLoading && !ncm}
-          actions={
-            <div className="flex items-center gap-1.5">
-              <OfflineBadge data={d} />
-              <MatchBadge match={d?.match} />
+        <>
+          <ResultBlock
+            title={ncm?.descricao ?? 'Detalhe do NCM'}
+            isLoading={query.isLoading}
+            error={query.error}
+            isEmpty={!query.isLoading && !ncm}
+            actions={
+              <div className="flex items-center gap-1.5">
+                <OfflineBadge data={d} />
+                <MatchBadge match={d?.match} />
+              </div>
+            }
+          >
+            <dl className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
+              <div>
+                <dt className="text-muted-foreground">Código</dt>
+                <dd className="font-mono font-semibold">{ncm?.codigo ?? '—'}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">IPI</dt>
+                <dd className="font-semibold">{pct(ncm?.aliquota_ipi)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">CEST</dt>
+                <dd className="font-semibold">{ncm?.cest ?? '—'}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">MVA sugerida</dt>
+                <dd className="font-semibold">
+                  {pct(d?.cenario_st?.mva_sugerida ?? ncm?.mva_padrao)}
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {d?.monofasico && <Badge variant="secondary">PIS/COFINS monofásico</Badge>}
+              {d?.cenario_st?.aplicavel && (
+                <Badge variant="outline">ST aplicável · {d.cenario_st.estrategia}</Badge>
+              )}
             </div>
-          }
-        >
-          <dl className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
-            <div>
-              <dt className="text-muted-foreground">Código</dt>
-              <dd className="font-mono font-semibold">{ncm?.codigo ?? '—'}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">IPI</dt>
-              <dd className="font-semibold">{pct(ncm?.aliquota_ipi)}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">CEST</dt>
-              <dd className="font-semibold">{ncm?.cest ?? '—'}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">MVA sugerida</dt>
-              <dd className="font-semibold">
-                {pct(d?.cenario_st?.mva_sugerida ?? ncm?.mva_padrao)}
-              </dd>
-            </div>
-          </dl>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {d?.monofasico && <Badge variant="secondary">PIS/COFINS monofásico</Badge>}
-            {d?.cenario_st?.aplicavel && (
-              <Badge variant="outline">ST aplicável · {d.cenario_st.estrategia}</Badge>
-            )}
-          </div>
-          {d?.alternativas?.length ? (
-            <p className="mt-3 text-xs text-muted-foreground">
-              {d.alternativas.length} NCM(s) no mesmo prefixo hierárquico.
-            </p>
-          ) : null}
-        </ResultBlock>
+            {d?.alternativas?.length ? (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {d.alternativas.length} NCM(s) no mesmo prefixo hierárquico.
+              </p>
+            ) : null}
+          </ResultBlock>
+          <SecaoClassificacaoTributaria />
+        </>
       )}
     </div>
   );

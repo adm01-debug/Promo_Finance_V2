@@ -1,5 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  avaliarFrescorCatalogosRfb,
+  DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
+  entradaIndisponivel,
+  entradaSemLinhas,
+  escolherRunComEscopo,
+  escolherUltimaCarga,
+  exigeProvaDeEscopo,
+  type CatalogoRfbId,
+  type EntradaFrescorCatalogoRfb,
+  type LinhaLedgerRun,
+  type SaudeCatalogosRfb,
+  type StatusFrescorRfb,
+} from '@/lib/tributario/catalogos/saude';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +59,196 @@ const ROTULO_SEVERIDADE: Record<Severidade, string> = {
   info: 'Informativo',
 };
 
+const ESTILO_FRESCOR: Record<StatusFrescorRfb, string> = {
+  ok: 'bg-success/10 text-success border-success/30',
+  atencao: 'bg-warning/10 text-warning border-warning/30',
+  critico: 'bg-destructive/10 text-destructive border-destructive/30',
+};
+
+const ROTULO_FRESCOR: Record<StatusFrescorRfb, string> = {
+  ok: 'Em dia',
+  atencao: 'Desatualizado',
+  critico: 'Nunca sincronizado',
+};
+
+/** Job de borda que alimenta cada catálogo espelhado. */
+const FUNCAO_SYNC_CATALOGO_RFB: Record<CatalogoRfbId, string> = {
+  cclasstrib: 'sync-catalogo-cclasstrib',
+  ncm: 'sync-catalogo-ncm-nbs',
+  nbs: 'sync-catalogo-ncm-nbs',
+  aliquota_cbs: 'sync-aliquota-referencia',
+  aliquota_ibs_uf: 'sync-aliquota-referencia',
+  aliquota_ibs_mun: 'sync-aliquota-referencia',
+  fundamentacao: 'sync-fundamentacao-legal',
+};
+
+/**
+ * Evidência de run de um job no ledger de observabilidade. `erro` separa
+ * "nunca rodou" de "não foi possível consultar o ledger".
+ */
+interface EvidenciaRun {
+  em: string | null;
+  erro: boolean;
+}
+
+/** Linha do carimbo de carga de um catálogo. */
+interface LinhaCarimbo {
+  created_at?: string | null;
+  carregado_em?: string | null;
+  versao_it?: string | null;
+}
+
+/**
+ * Último run bem-sucedido do job que alimenta um catálogo, pelo ledger de
+ * observabilidade (`edge_function_logs`).
+ *
+ * O carimbo da própria tabela não prova carga: o `upsert` preserva
+ * `created_at`/`carregado_em` das chaves que já existem, então o catálogo
+ * congela a data mesmo com o job rodando todo dia.
+ *
+ * Escopos que dividem o job com outro escopo exigem prova do proprio escopo: o
+ * 2xx de `request_end` so diz que a funcao respondeu. As aliquotas alternam
+ * rodadas (a diaria consulta UF e CBS, a municipal consulta municipio e nao
+ * passa pela UF) e o job de NCM/NBS responde 200 gravando so o NCM. A prova
+ * vem do `sync concluido` da mesma requisicao, que registra o que o job
+ * consultou.
+ */
+async function ultimoRunOkCatalogo(id: CatalogoRfbId): Promise<EvidenciaRun> {
+  const funcao = FUNCAO_SYNC_CATALOGO_RFB[id];
+
+  if (exigeProvaDeEscopo(id)) {
+    const { data, error } = await supabase
+      .from('edge_function_logs')
+      .select('created_at, event, status_code, metadata')
+      .eq('function_name', funcao)
+      .in('event', ['sync concluido', 'request_end'])
+      .order('created_at', { ascending: false })
+      .limit(120);
+    if (error) return { em: null, erro: true };
+    return { em: escolherRunComEscopo(id, (data ?? []) as LinhaLedgerRun[]), erro: false };
+  }
+
+  const { data, error } = await supabase
+    .from('edge_function_logs')
+    .select('created_at')
+    .eq('function_name', funcao)
+    .eq('event', 'request_end')
+    .gte('status_code', 200)
+    .lt('status_code', 300)
+    .order('created_at', { ascending: false })
+    .limit(1);
+  if (error) return { em: null, erro: true };
+  return { em: data?.[0]?.created_at ?? null, erro: false };
+}
+
+/**
+ * Etapa 83: carga mais recente de cada catálogo RFB, por escopo.
+ *
+ * Uma leitura por catálogo (limit 1, ordenada pela carga) mais o último run
+ * bem-sucedido do job correspondente, tudo em paralelo: os catálogos guardam o
+ * carimbo em colunas diferentes e as alíquotas têm um registro por escopo
+ * (CBS diário, IBS/UF diário, IBS municipal semanal). Falha em uma leitura não
+ * derruba as outras: o catálogo afetado volta como "não foi possível consultar",
+ * que é diferente de "nenhuma linha carregada".
+ */
+async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[]> {
+  const [
+    cclasstrib,
+    ncm,
+    nbs,
+    aliquotaCbs,
+    aliquotaUf,
+    aliquotaMun,
+    fundamentacao,
+    runCclasstrib,
+    runNcm,
+    runNbs,
+    runAliquotaDiario,
+    runMunicipio,
+    runFundamentacao,
+  ] = await Promise.all([
+    supabase
+      .from('catalogo_cclasstrib')
+      .select('created_at, versao_it')
+      .order('created_at', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_ncm')
+      .select('carregado_em')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_nbs')
+      .select('carregado_em')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_aliquota_referencia')
+      .select('carregado_em')
+      .eq('tributo', 'cbs')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_aliquota_referencia')
+      .select('carregado_em')
+      .eq('tributo', 'ibs_uf')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_aliquota_referencia')
+      .select('carregado_em')
+      .eq('tributo', 'ibs_mun')
+      .order('carregado_em', { ascending: false })
+      .limit(1),
+    supabase
+      .from('catalogo_fundamentacao')
+      .select('created_at, versao_it')
+      .order('created_at', { ascending: false })
+      .limit(1),
+    ultimoRunOkCatalogo('cclasstrib'),
+    ultimoRunOkCatalogo('ncm'),
+    ultimoRunOkCatalogo('nbs'),
+    ultimoRunOkCatalogo('aliquota_cbs'),
+    ultimoRunOkCatalogo('aliquota_ibs_mun'),
+    ultimoRunOkCatalogo('fundamentacao'),
+  ]);
+
+  const entrada = (
+    id: CatalogoRfbId,
+    leitura: { data: readonly LinhaCarimbo[] | null; error: unknown },
+    run: EvidenciaRun,
+    campo: 'created_at' | 'carregado_em'
+  ): EntradaFrescorCatalogoRfb => {
+    // Leitura que falhou é estado desconhecido: não dá para afirmar que o
+    // catálogo está vazio nem que está em dia.
+    if (leitura.error || run.erro) return entradaIndisponivel(id);
+    const linha = leitura.data?.[0] ?? null;
+    const carimbo = linha?.[campo] ?? null;
+    const versaoIt = linha?.versao_it ?? null;
+    // Catálogo sem nenhuma linha não tem carga para consultar: o job pode ter
+    // concluído sem gravar (escopo ainda não publicado pela RFB, por exemplo).
+    // O veredito passa a vir da idade do run, com a nota dizendo que não há linha.
+    return carimbo
+      ? { id, ultimaCarga: escolherUltimaCarga(carimbo, run.em), versaoIt }
+      : entradaSemLinhas(id, run.em, versaoIt);
+  };
+
+  return [
+    entrada('cclasstrib', cclasstrib, runCclasstrib, 'created_at'),
+    entrada('ncm', ncm, runNcm, 'carregado_em'),
+    entrada('nbs', nbs, runNbs, 'carregado_em'),
+    entrada('aliquota_cbs', aliquotaCbs, runAliquotaDiario, 'carregado_em'),
+    entrada('aliquota_ibs_uf', aliquotaUf, runAliquotaDiario, 'carregado_em'),
+    {
+      // O cron municipal roda aos domingos: o prazo de 7 dias não dá margem
+      // para a rodada terminar, então este escopo usa o limite semanal.
+      ...entrada('aliquota_ibs_mun', aliquotaMun, runMunicipio, 'carregado_em'),
+      limiteDias: DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
+    },
+    entrada('fundamentacao', fundamentacao, runFundamentacao, 'created_at'),
+  ];
+}
+
 function formatarData(iso: string | null): string {
   if (!iso) return '—';
   return new Date(iso).toLocaleString('pt-BR', {
@@ -74,6 +279,14 @@ export function CatalogosTributariosHealthPanel() {
   });
 
   const achados = data?.achados ?? [];
+
+  // Frescor dos catálogos espelhados da RFB (etapas 79-82). Consulta separada
+  // da RPC de integridade: uma mede invariante, a outra mede envelhecimento.
+  const frescor = useQuery<SaudeCatalogosRfb>({
+    queryKey: ['catalogos-rfb-frescor'],
+    queryFn: async () => avaliarFrescorCatalogosRfb(await carregarFrescorCatalogosRfb()),
+    staleTime: 300_000,
+  });
 
   return (
     <Card>
@@ -179,6 +392,50 @@ export function CatalogosTributariosHealthPanel() {
             )}
           </>
         )}
+
+        <div className="space-y-2 rounded-lg border border-border p-3">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Catálogos RFB (dados abertos)</p>
+              <p className="text-xs text-muted-foreground">
+                {frescor.isLoading
+                  ? 'Verificando frescor...'
+                  : (frescor.data?.resumo ?? 'Sem leitura')}
+              </p>
+            </div>
+            {frescor.data && (
+              <Badge
+                variant="outline"
+                className={ESTILO_FRESCOR[frescor.data.status]}
+                title={`Prazo de 7 dias (9 para escopos semanais)`}
+              >
+                {ROTULO_FRESCOR[frescor.data.status]}
+              </Badge>
+            )}
+          </div>
+          <ul className="divide-y divide-border">
+            {(frescor.data?.catalogos ?? []).map((catalogo) => (
+              <li
+                key={catalogo.id}
+                className="flex flex-col gap-1 py-2 text-sm md:flex-row md:items-center md:justify-between"
+              >
+                <span className="truncate font-medium">{catalogo.titulo}</span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{catalogo.detalhe}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {catalogo.ultimaCarga ? formatarData(catalogo.ultimaCarga) : '—'}
+                  </span>
+                  <Badge variant="secondary">
+                    {catalogo.versaoIt ? `IT ${catalogo.versaoIt}` : 'sem versão IT'}
+                  </Badge>
+                  <Badge variant="outline" className={ESTILO_FRESCOR[catalogo.status]}>
+                    {catalogo.indisponivel ? 'Sem leitura' : ROTULO_FRESCOR[catalogo.status]}
+                  </Badge>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );
