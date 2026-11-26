@@ -63,8 +63,18 @@ export function normalizarRetornoCnpja(cnpj: string, raw: unknown): DadosCnpja {
   };
 }
 
-export type ResultadoCnpja =
-  { ok: true; dados: DadosCnpja; origem: 'cache' | 'api' } | { ok: false; erro: string };
+interface ConsultaCnpjaOk {
+  ok: true;
+  dados: DadosCnpja;
+  origem: 'cache' | 'api';
+}
+
+interface ConsultaCnpjaErro {
+  ok: false;
+  erro: string;
+}
+
+export type ResultadoCnpja = ConsultaCnpjaOk | ConsultaCnpjaErro;
 
 export async function consultarCnpjInterno(
   admin: SupabaseClient,
