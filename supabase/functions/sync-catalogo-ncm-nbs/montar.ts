@@ -119,6 +119,8 @@ export interface LinhasPorVigencia<T> {
   reativadas: T[];
   /** Periodos abertos fora da data-base: reativados numa carga anterior. */
   reabertas: T[];
+  /** Carga retroativa: o periodo aberto comeca depois da data consultada. */
+  preservadas: T[];
 }
 
 /**
@@ -139,6 +141,11 @@ export interface LinhasPorVigencia<T> {
  * data-base nao so colidiria com a linha encerrada como tambem deixaria o codigo
  * com dois periodos abertos (o antigo reaberto e o novo). O periodo novo e
  * atualizado no inicio que ele ja tem.
+ *
+ * Carga retroativa (data consultada anterior ao inicio do periodo aberto) nao
+ * grava nada para aquele codigo: a lista recebida descreve o periodo antigo, e
+ * a chave (codigo, inicio do periodo aberto) e do periodo futuro. Sem a guarda,
+ * a descricao da data antiga sobrescreveria a descricao oficial do futuro.
  */
 export function separarReativados<T extends { inicio_vigencia: string }>(
   linhas: readonly T[],
@@ -149,7 +156,8 @@ export function separarReativados<T extends { inicio_vigencia: string }>(
 ): LinhasPorVigencia<T> {
   // Sem data posterior a base nao existe periodo novo: inicio = data colidiria
   // com a linha encerrada e a reabriria, que e exatamente o que se quer evitar.
-  if (!(dataObservacao > base)) return { base: [...linhas], reativadas: [], reabertas: [] };
+  if (!(dataObservacao > base))
+    return { base: [...linhas], reativadas: [], reabertas: [], preservadas: [] };
 
   const abertos = new Map(conjuntos.abertos);
   const reativados = new Set([...conjuntos.conhecidos].filter((codigo) => !abertos.has(codigo)));
@@ -157,6 +165,7 @@ export function separarReativados<T extends { inicio_vigencia: string }>(
   const baseLinhas: T[] = [];
   const reativadas: T[] = [];
   const reabertas: T[] = [];
+  const preservadas: T[] = [];
   for (const linha of linhas) {
     const codigo = String(codigoDe(linha) ?? '').trim();
     if (reativados.has(codigo)) {
@@ -165,12 +174,16 @@ export function separarReativados<T extends { inicio_vigencia: string }>(
     }
     const inicioAberto = abertos.get(codigo);
     if (inicioAberto !== undefined && inicioAberto !== base) {
+      if (dataObservacao < inicioAberto) {
+        preservadas.push(linha);
+        continue;
+      }
       reabertas.push({ ...linha, inicio_vigencia: inicioAberto });
       continue;
     }
     baseLinhas.push(linha);
   }
-  return { base: baseLinhas, reativadas, reabertas };
+  return { base: baseLinhas, reativadas, reabertas, preservadas };
 }
 
 /**

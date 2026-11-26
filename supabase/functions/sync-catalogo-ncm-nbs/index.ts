@@ -65,6 +65,8 @@ interface ResultadoCatalogo {
   reativados: number;
   /** Periodos abertos fora da data-base: reativados numa carga anterior. */
   reabertas: number;
+  /** Carga retroativa: linha preservada, o periodo aberto comeca depois. */
+  preservadas: number;
   ausentes: number;
   encerramento_bloqueado: string | null;
   ignoradas: string[];
@@ -150,6 +152,7 @@ async function gravar<T extends { inicio_vigencia: string }>(
     encerrados: 0,
     reativados: 0,
     reabertas: 0,
+    preservadas: 0,
     ausentes: 0,
     encerramento_bloqueado: null,
     ignoradas: mapeamento.ignoradas,
@@ -169,7 +172,7 @@ async function gravar<T extends { inicio_vigencia: string }>(
   //    `separarReativados`: reabrir o periodo antigo apagaria o encerramento).
   const abertos = await listarAbertos(sb, tabela, coluna);
   const conhecidos = await listarCodigos(sb, tabela, coluna);
-  const { base, reativadas, reabertas } = separarReativados(
+  const { base, reativadas, reabertas, preservadas } = separarReativados(
     mapeamento.linhas,
     (linha) => String((linha as unknown as Record<string, unknown>)[coluna] ?? ''),
     { abertos, conhecidos },
@@ -186,9 +189,11 @@ async function gravar<T extends { inicio_vigencia: string }>(
   await gravarLote(base);
   await gravarLote(reativadas);
   await gravarLote(reabertas);
+  // `preservadas` nao e gravada: a chave dela e de um periodo futuro.
   resultado.gravados = mapeamento.linhas.length;
   resultado.reativados = reativadas.length;
   resultado.reabertas = reabertas.length;
+  resultado.preservadas = preservadas.length;
 
   const decisao = decidirEncerramentos([...abertos.keys()], mapeamento.presentes, minimo);
   resultado.ausentes = decisao.ausentes.length;

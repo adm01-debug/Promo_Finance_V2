@@ -236,6 +236,54 @@ Deno.test('separarReativados mantem fora da data-base o periodo reaberto antes',
   assertEquals(reabertas[0].ncm, '27101100');
 });
 
+Deno.test('separarReativados preserva o periodo aberto em carga retroativa', () => {
+  // Data consultada anterior ao inicio do periodo aberto: a lista recebida
+  // descreve o periodo antigo, mas a chave (codigo, inicio) e a do periodo
+  // futuro. Gravar ali trocaria a descricao oficial do futuro pela antiga.
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'A' }]).linhas;
+  const { base, reativadas, reabertas, preservadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-07-01']]), conhecidos: ['27101100'] },
+    '2026-03-01'
+  );
+
+  assertEquals(base.length, 0);
+  assertEquals(reativadas.length, 0);
+  assertEquals(reabertas.length, 0);
+  assertEquals(preservadas.length, 1);
+  assertEquals(preservadas[0].descricao, 'A');
+  assertEquals(preservadas[0].ncm, '27101100');
+});
+
+Deno.test('separarReativados reabre no inicio do periodo aberto quando a data e igual', () => {
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
+  const { reabertas, preservadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-07-01']]), conhecidos: ['27101100'] },
+    '2026-07-01'
+  );
+
+  assertEquals(preservadas.length, 0);
+  assertEquals(reabertas.length, 1);
+  assertEquals(reabertas[0].inicio_vigencia, '2026-07-01');
+});
+
+Deno.test('separarReativados reabre quando a data consultada e posterior ao inicio', () => {
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
+  const { reabertas, preservadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-07-01']]), conhecidos: ['27101100'] },
+    '2026-08-01'
+  );
+
+  assertEquals(preservadas.length, 0);
+  assertEquals(reabertas.length, 1);
+  assertEquals(reabertas[0].inicio_vigencia, '2026-07-01');
+});
+
 Deno.test('semFimVigencia tira a coluna do payload sem perder os demais campos', () => {
   // O payload do upsert nao pode carregar `fim_vigencia`: com a coluna, o
   // `ON CONFLICT DO UPDATE` zera o encerramento de uma linha fechada na mesma
