@@ -12,12 +12,29 @@
  * diverg?ncia ? sem refer?ncia, n?o h? o que afirmar.
  */
 import type { ReferenciasFiscais } from './catalogos/cclasstrib';
+import {
+  escolherFundamento,
+  resumoFundamento,
+  type FundamentoLegalResumo,
+} from './catalogos/fundamentacao-legal';
 
 export interface DivergenciaFiscal {
   /** C?digo est?vel da regra, usado em log, badge e teste. */
   codigo: string;
   campo: string;
   mensagem: string;
+  /**
+   * Etapa 82: norma que sustenta o apontamento. Ausente quando o catalogo de
+   * fundamentacoes nao tem linha vigente para o codigo - o alerta continua
+   * valido, apenas sem o texto legal.
+   */
+  fundamento?: FundamentoLegalResumo;
+  /**
+   * Etapa 82: numero do item na nota (1 = primeiro). Ausente quando a validacao
+   * recebe um item so (`validarItemFiscal`). Sem ele, uma nota com dois itens do
+   * mesmo cClassTrib nao diz qual dos dois foi apontado.
+   */
+  item?: number;
 }
 
 export interface ValidacaoNCM {
@@ -75,6 +92,9 @@ export function validarItemFiscal(
           codigo: 'REG-013',
           campo: 'cClassTrib',
           mensagem: `cClassTrib ${cClassTrib} n?o consta do cat?logo vigente em ${referencias.referencia}.`,
+          fundamento: resumoFundamento(
+            escolherFundamento(referencias.fundamentos, cClassTrib, cst)
+          ),
         });
       }
     } else if (cst.length > 0 && soDigitos(referencia.cst) !== cst) {
@@ -84,6 +104,9 @@ export function validarItemFiscal(
         mensagem:
           `cClassTrib ${cClassTrib} (${referencia.descricao}) tem CST ${referencia.cst}, ` +
           `mas o item declarou CST ${cst}.`,
+        fundamento: resumoFundamento(
+          escolherFundamento(referencias.fundamentos, cClassTrib, soDigitos(referencia.cst))
+        ),
       });
     }
   }
@@ -111,7 +134,9 @@ export function validarItensFiscais(
   itens: ItemFiscalValidavel[],
   referencias: ReferenciasFiscais
 ): ValidacaoNCM {
-  const divergencias = itens.flatMap((item) => validarItemFiscal(item, referencias));
+  const divergencias = itens.flatMap((item, indice) =>
+    validarItemFiscal(item, referencias).map((d) => ({ ...d, item: indice + 1 }))
+  );
   const penalidade = divergencias.reduce(
     (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15),
     0

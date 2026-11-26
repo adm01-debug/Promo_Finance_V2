@@ -229,6 +229,9 @@ export const MODULOS: readonly Modulo[] = [
 export const ADAPTERS_AUTORIZADOS: readonly string[] = [
   'src/lib/tributario/catalogos/repositorio.ts',
   'src/lib/tributario/catalogos/cclasstrib.ts',
+  // Etapa 82: o catalogo de fundamentacoes legais e lido pelo validador fiscal,
+  // que e nucleo puro - o mesmo caso dos dois acima.
+  'src/lib/tributario/catalogos/fundamentacao-legal.ts',
 ] as const;
 
 /** Prefixos de import proibidos dentro do núcleo de domínio. */

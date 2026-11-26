@@ -141,7 +141,7 @@ const mesEmissao = (data: Date): number =>
  * originou `competencia_origem`, senão uma nota de 31/03 às 22:30 grava
  * `data_origem` em abril e `competencia_origem` em março.
  */
-const dataEmissaoISO = (data: Date): string =>
+export const dataEmissaoISO = (data: Date): string =>
   new Intl.DateTimeFormat('en-CA', {
     timeZone: FUSO_PADRAO_BR,
     year: 'numeric',
@@ -156,6 +156,14 @@ const dataEmissaoISO = (data: Date): string =>
  */
 const dataVigenciaNota = (nota: { dataEmissao: Date; dataEmissaoDeclarada?: string }): string =>
   nota.dataEmissaoDeclarada ?? dataEmissaoISO(nota.dataEmissao);
+
+/**
+ * Data civil da nota em `DD/MM/AAAA` para os relatórios: o dia declarado no XML
+ * quando existe — o mesmo que escolhe a vigência dos catálogos —, senão o dia
+ * em Brasília. Sem isso o PDF atribui o alerta a outro dia que a conferência.
+ */
+export const dataNotaBr = (nota: { dataEmissao: Date; dataEmissaoDeclarada?: string }): string =>
+  dataVigenciaNota(nota).split('-').reverse().join('/');
 
 export function useImportacaoXMLNFe(empresaId: string) {
   const queryClient = useQueryClient();

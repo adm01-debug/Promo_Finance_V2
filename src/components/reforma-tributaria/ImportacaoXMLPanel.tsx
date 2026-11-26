@@ -1,7 +1,7 @@
 // COMPONENTE: IMPORTAÇÃO XML NF-e
 
 import { useCallback } from 'react';
-import { Upload, Trash2, FileUp } from 'lucide-react';
+import { Upload, Trash2, FileUp, FileDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,9 +19,12 @@ import {
   useImportacaoXMLNFe,
   anoEmissao,
   ANO_INICIO_APROPRIACAO,
+  dataNotaBr,
 } from '@/hooks/useImportacaoXMLNFe';
 import type { NFeParsed } from '@/hooks/useImportacaoXMLNFe';
 import { formatCurrency } from '@/lib/formatters';
+import GlossarioTooltip from './GlossarioTooltip';
+import { baixarAlertasFiscaisPdf } from '@/lib/tributario/relatorio-pdf/alertas-fiscais';
 
 interface Props {
   empresaId: string;
@@ -104,13 +107,35 @@ function getBadgeFiscal(nfe: NFeParsed) {
       </Badge>
     );
   }
-  return (
+  const badge = (
     <Badge
       variant="destructive"
-      title={alertas.map((a) => `${a.codigo}: ${a.mensagem}`).join('\n')}
+      title={alertas
+        .map((a) => `${a.item ? `item ${a.item}: ` : ''}${a.codigo}: ${a.mensagem}`)
+        .join('\n')}
     >
       {alertas.length} alerta{alertas.length > 1 ? 's' : ''}
     </Badge>
+  );
+
+  // Etapa 82: a norma do que foi apontado, quando o catalogo de fundamentacoes
+  // tem a linha vigente. Sem fundamento o badge fica igual - o alerta nao
+  // depende do catalogo para valer.
+  const fundamentoTexto = [
+    ...new Set(
+      alertas
+        .map((a) => a.fundamento)
+        .filter((f): f is NonNullable<typeof f> => Boolean(f))
+        .map((f) => `${f.referencia}: ${f.texto}`)
+    ),
+  ].join(' • ');
+
+  if (!fundamentoTexto) return badge;
+
+  return (
+    <GlossarioTooltip termo="Fundamento legal (LC 214/2025)" fundamento={fundamentoTexto}>
+      {badge}
+    </GlossarioTooltip>
   );
 }
 
@@ -140,6 +165,20 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
     [processarArquivos]
   );
 
+  // Etapa 82: leva a lista de divergencias com a norma de cada uma para o PDF.
+  const handleBaixarAlertas = useCallback(() => {
+    baixarAlertasFiscaisPdf(
+      nfesParsed
+        .filter((n) => (n.alertasFiscais?.length ?? 0) > 0)
+        .map((n) => ({
+          numero: n.numero || '',
+          emitente: n.nomeEmitente || '',
+          data: dataNotaBr(n),
+          alertas: n.alertasFiscais ?? [],
+        }))
+    );
+  }, [nfesParsed]);
+
   const nfesPendentes = nfesParsed.filter((n) => n.status === 'pendente');
 
   return (
@@ -153,6 +192,12 @@ export function ImportacaoXMLPanel({ empresaId }: Props) {
         </div>
         {nfesParsed.length > 0 && (
           <div className="flex gap-2">
+            {nfesParsed.some((n) => (n.alertasFiscais?.length ?? 0) > 0) && (
+              <Button variant="outline" onClick={handleBaixarAlertas}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Alertas (PDF)
+              </Button>
+            )}
             <Button variant="outline" onClick={limparArquivos}>
               <Trash2 className="mr-2 h-4 w-4" />
               Limpar

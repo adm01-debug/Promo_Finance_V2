@@ -27,6 +27,7 @@ type LinhaNcm = { ncm: string; descricao: string; inicio_vigencia: string; fim_v
 function montaCliente() {
   const lotesNcm: string[][] = [];
   const lotesTrib: string[][] = [];
+  const lotesFundamentos: string[][] = [];
   const sondas: string[] = [];
 
   mockFrom.mockImplementation((tabela: string) => {
@@ -35,8 +36,12 @@ function montaCliente() {
     chain.select = vi.fn(() => chain);
     chain.in = vi.fn((_coluna: string, codigos: string[]) => {
       lote = codigos;
+      // Etapa 82: `catalogo_fundamentacao` e lida com os mesmos codigos de
+      // cClassTrib. Contada junto, ela faria um lote de 301 parecer 602 - o
+      // teste acusaria quebra de lote onde so ha uma consulta a mais.
       if (tabela === 'catalogo_ncm') lotesNcm.push(codigos);
-      else lotesTrib.push(codigos);
+      else if (tabela === 'catalogo_cclasstrib') lotesTrib.push(codigos);
+      else lotesFundamentos.push(codigos);
       return chain;
     });
     chain.limit = vi.fn(() => {
@@ -46,32 +51,34 @@ function montaCliente() {
     chain.lte = vi.fn(() => chain);
     chain.or = vi.fn(() => chain);
     chain.then = (resolver: (v: Resposta) => unknown) => {
-      const data =
-        tabela === 'catalogo_ncm'
-          ? lote.map<LinhaNcm>((ncm) => ({
-              ncm,
-              descricao: `NCM ${ncm}`,
-              inicio_vigencia: '2026-01-01',
-              fim_vigencia: null,
-            }))
-          : lote.map((cclasstrib) => ({
-              cclasstrib,
-              cst: '000',
-              descricao: `cClassTrib ${cclasstrib}`,
-              exige_gibscbs: true,
-              p_red_cbs: 0,
-              p_red_ibs_uf: 0,
-              p_red_ibs_mun: 0,
-              versao_it: '1.00',
-              inicio_vigencia: '2026-01-01',
-              fim_vigencia: null,
-            }));
+      let data: unknown[] = [];
+      if (tabela === 'catalogo_ncm') {
+        data = lote.map<LinhaNcm>((ncm) => ({
+          ncm,
+          descricao: `NCM ${ncm}`,
+          inicio_vigencia: '2026-01-01',
+          fim_vigencia: null,
+        }));
+      } else if (tabela === 'catalogo_cclasstrib') {
+        data = lote.map((cclasstrib) => ({
+          cclasstrib,
+          cst: '000',
+          descricao: `cClassTrib ${cclasstrib}`,
+          exige_gibscbs: true,
+          p_red_cbs: 0,
+          p_red_ibs_uf: 0,
+          p_red_ibs_mun: 0,
+          versao_it: '1.00',
+          inicio_vigencia: '2026-01-01',
+          fim_vigencia: null,
+        }));
+      }
       return Promise.resolve({ data, error: null }).then(resolver);
     };
     return chain;
   });
 
-  return { lotesNcm, lotesTrib, sondas };
+  return { lotesNcm, lotesTrib, lotesFundamentos, sondas };
 }
 
 const codigos = (quantidade: number, prefixo: string, digitos: number): string[] =>
@@ -103,6 +110,15 @@ describe('buscarReferenciasFiscais — leitura em lotes', () => {
     expect(lotesTrib.map((l) => l.length)).toEqual([300, 1]);
     expect(referencias.cclasstrib.size).toBe(301);
     expect(referencias.cclasstribCarregado).toBe(true);
+  });
+
+  it('le os fundamentos dos mesmos codigos sem contá-los como lote de catalogo', async () => {
+    const { lotesTrib, lotesFundamentos } = montaCliente();
+
+    await buscarReferenciasFiscais(codigos(301, '200', 3), [], '2026-06-01');
+
+    expect(lotesTrib.map((l) => l.length)).toEqual([300, 1]);
+    expect(lotesFundamentos.map((l) => l.length)).toEqual([300, 1]);
   });
 
   it('uma consulta só quando o lote cabe no limite', async () => {
