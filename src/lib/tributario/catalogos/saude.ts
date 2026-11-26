@@ -303,9 +303,7 @@ export function entradaSemLinhas(
     id,
     ultimaCarga: ultimoRunOk,
     versaoIt,
-    nota: ultimoRunOk
-      ? 'Nenhuma linha carregada (RFB não publicou ou a carga não gravou)'
-      : null,
+    nota: ultimoRunOk ? 'Nenhuma linha carregada (RFB não publicou ou a carga não gravou)' : null,
   };
 }
 
@@ -361,16 +359,10 @@ export function avaliarFrescorCatalogosRfb(
   });
 
   const indisponiveis = catalogos.filter((c) => c.indisponivel).length;
-  const desatualizados = catalogos.filter(
-    (c) => !c.indisponivel && c.status === 'atencao'
-  ).length;
+  const desatualizados = catalogos.filter((c) => !c.indisponivel && c.status === 'atencao').length;
   const nuncaSincronizados = catalogos.filter((c) => c.status === 'critico').length;
   const status: StatusFrescorRfb =
-    nuncaSincronizados > 0
-      ? 'critico'
-      : desatualizados > 0 || indisponiveis > 0
-        ? 'atencao'
-        : 'ok';
+    nuncaSincronizados > 0 ? 'critico' : desatualizados > 0 || indisponiveis > 0 ? 'atencao' : 'ok';
 
   const partes: string[] = [];
   if (indisponiveis > 0) {
@@ -385,9 +377,7 @@ export function avaliarFrescorCatalogosRfb(
     partes.push(`${plural(desatualizados, 'catálogo', 'catálogos')} sem sincronizar além do prazo`);
   }
   const resumo =
-    partes.length > 0
-      ? partes.join(' · ')
-      : 'Catálogos RFB sincronizados dentro do prazo';
+    partes.length > 0 ? partes.join(' · ') : 'Catálogos RFB sincronizados dentro do prazo';
 
   return { status, catalogos, desatualizados, nuncaSincronizados, indisponiveis, resumo };
 }
@@ -486,7 +476,11 @@ export function escolherRunComEscopo(
     const req = String(linha.metadata?.request_id ?? '');
     if (!req) continue;
     const atual = porRequisicao.get(req) ?? { ok: false, falhou: false };
-    if (typeof linha.status_code === 'number' && linha.status_code >= 200 && linha.status_code < 300) {
+    if (
+      typeof linha.status_code === 'number' &&
+      linha.status_code >= 200 &&
+      linha.status_code < 300
+    ) {
       atual.ok = true;
     } else {
       atual.falhou = true;

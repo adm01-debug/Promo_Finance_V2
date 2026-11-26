@@ -246,7 +246,13 @@ describe('escolherRunComEscopo', () => {
   it('ignora o run do job quando o escopo nao foi consultado', () => {
     // Job diario de NCM/NBS que respondeu 200: o NBS pode ter sido pulado.
     const linhas = [
-      linha('sync concluido', 'r1', null, { recebidos_ncm: 420, recebidos_nbs: 0 }, '2026-11-25T03:00:00Z'),
+      linha(
+        'sync concluido',
+        'r1',
+        null,
+        { recebidos_ncm: 420, recebidos_nbs: 0 },
+        '2026-11-25T03:00:00Z'
+      ),
       linha('request_end', 'r1', 200, {}, '2026-11-25T03:00:00Z'),
     ];
     expect(escolherRunComEscopo('nbs', linhas)).toBeNull();
@@ -255,7 +261,13 @@ describe('escolherRunComEscopo', () => {
 
   it('aceita o run que consultou o escopo mesmo sem gravar linha', () => {
     const linhas = [
-      linha('sync concluido', 'r1', null, { recebidos_nbs: 12, nbs_gravados: 0 }, '2026-11-25T03:00:00Z'),
+      linha(
+        'sync concluido',
+        'r1',
+        null,
+        { recebidos_nbs: 12, nbs_gravados: 0 },
+        '2026-11-25T03:00:00Z'
+      ),
       linha('request_end', 'r1', 200, {}, '2026-11-25T03:00:00Z'),
     ];
     expect(escolherRunComEscopo('nbs', linhas)).toBe('2026-11-25T03:00:00Z');
