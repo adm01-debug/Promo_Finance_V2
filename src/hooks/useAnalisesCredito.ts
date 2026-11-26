@@ -1,7 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { EdgeFunctionError, invokeEdge } from '@/lib/edge-function-error';
+
+const FUNCAO = 'credito-analise';
+
+/** Códigos da edge function traduzidos para o que o analista precisa fazer. */
+const MENSAGENS: Record<string, string> = {
+  empresa_sem_acesso: 'Esta análise é de outra empresa — você não tem acesso a ela.',
+  'Análise já decidida': 'Esta análise já foi decidida por outro usuário. Recarregue a fila.',
+  'Análise foi decidida por outro analista':
+    'Esta análise já foi decidida por outro usuário. Recarregue a fila.',
+  callback_falhou: 'A decisão foi salva, mas o Champions não recebeu. Tente reenviar.',
+};
+
+function mensagemCredito(err: unknown): string {
+  if (err instanceof EdgeFunctionError) {
+    const codigo = err.body?.error;
+    if (codigo && MENSAGENS[codigo]) return MENSAGENS[codigo];
+    if (err.isAuthError || err.isForbidden) {
+      return 'Você não tem permissão para analisar crédito (perfil admin ou financeiro da empresa).';
+    }
+    return err.message;
+  }
+  return err instanceof Error ? err.message : String(err);
+}
 
 export type StatusAnaliseCredito = 'pendente' | 'em_analise' | 'aprovado' | 'reprovado';
 export type FiltroAnaliseCredito = StatusAnaliseCredito | 'todos';
@@ -29,6 +52,7 @@ export interface AnaliseCredito {
   pedido_numero: string | null;
   valor_pedido: number | null;
   cliente_id: string | null;
+  empresa_id: string | null;
   cliente_nome: string | null;
   cliente_empresa: string | null;
   cliente_email: string | null;
@@ -52,6 +76,7 @@ export interface AnaliseCredito {
 
 interface RespostaListar {
   analises?: AnaliseCredito[];
+  total?: number;
   error?: string;
 }
 
@@ -61,18 +86,8 @@ interface RespostaMutacao {
   error?: string;
 }
 
-async function chamar<T>(body: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke<T & { error?: string }>(
-    'credito-analise',
-    {
-      body,
-    }
-  );
-  if (error) throw new Error(error.message);
-  if (data && typeof data === 'object' && 'error' in data && data.error) {
-    throw new Error(String(data.error));
-  }
-  return data as T;
+function chamar<T>(body: Record<string, unknown>): Promise<T> {
+  return invokeEdge<T>(FUNCAO, body);
 }
 
 export interface DecisaoCreditoInput {
@@ -104,12 +119,14 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
         status: filtro,
         limite: 200,
       });
-      return resposta.analises ?? [];
+      const analises = resposta.analises ?? [];
+      return { analises, total: resposta.total ?? analises.length };
     },
     enabled: !!user,
     staleTime: 60 * 1000,
     // A fila recebe pedidos do Champions sem ação do analista: repuxa sozinha.
-    refetchInterval: 60 * 1000,
+    refetchInterval: 30 * 1000,
+    refetchOnWindowFocus: true,
   });
 
   const invalidar = () => queryClient.invalidateQueries({ queryKey: ['analises-credito'] });
@@ -135,7 +152,7 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
         );
       }
     },
-    onError: (err: Error) => toast.error(`Erro ao registrar decisão: ${err.message}`),
+    onError: (err: Error) => toast.error(`Erro ao registrar decisão: ${mensagemCredito(err)}`),
   });
 
   const atualizarDados = useMutation({
@@ -151,7 +168,7 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
       invalidar();
       toast.success('Dados da análise atualizados');
     },
-    onError: (err: Error) => toast.error(`Erro ao atualizar dados: ${err.message}`),
+    onError: (err: Error) => toast.error(`Erro ao atualizar dados: ${mensagemCredito(err)}`),
   });
 
   const reenviarCallback = useMutation({
@@ -162,13 +179,15 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
       if (resposta.callback?.ok) toast.success('Champions avisado da decisão');
       else toast.warning(`Champions ainda não recebeu: ${resposta.callback?.erro ?? 'erro'}`);
     },
-    onError: (err: Error) => toast.error(`Erro ao reenviar: ${err.message}`),
+    onError: (err: Error) => toast.error(`Erro ao reenviar: ${mensagemCredito(err)}`),
   });
 
   return {
-    analises: query.data ?? [],
+    analises: query.data?.analises ?? [],
+    total: query.data?.total ?? 0,
     isLoading: query.isLoading,
     isError: query.isError,
+    erroCarga: query.error ? mensagemCredito(query.error) : null,
     refetch: query.refetch,
     decidir: decidir.mutate,
     isDecidindo: decidir.isPending,

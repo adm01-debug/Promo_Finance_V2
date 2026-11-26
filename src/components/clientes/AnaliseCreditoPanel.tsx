@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { parseCurrency } from '@/lib/currency';
 import { cn } from '@/lib/utils';
 import {
   useAnalisesCredito,
@@ -31,10 +32,10 @@ const formatData = (iso: string | null | undefined) =>
 
 /** Valor em pt-BR ("1.500,00") ou plano ("1500.5"); null quando vazio/inválido. */
 function parseValorBRL(texto: string): number | null {
-  const t = texto.trim();
-  if (!t) return null;
-  const normalizado = t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t;
-  const n = Number(normalizado);
+  if (!texto.trim()) return null;
+  // Parser único do sistema: recusa separador ambíguo ("1,500.00") em vez de
+  // gravar um limite mil vezes menor.
+  const n = parseCurrency(texto, 'BRL');
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
@@ -69,8 +70,10 @@ export function AnaliseCreditoPanel() {
   const [dialogo, setDialogo] = useState<DialogoState | null>(null);
   const {
     analises,
+    total,
     isLoading,
     isError,
+    erroCarga,
     decidir,
     isDecidindo,
     atualizarDados,
@@ -78,6 +81,7 @@ export function AnaliseCreditoPanel() {
     reenviarCallback,
     isReenviando,
   } = useAnalisesCredito(filtro);
+  const truncada = total > analises.length;
 
   return (
     <div className="space-y-4">
@@ -90,6 +94,13 @@ export function AnaliseCreditoPanel() {
         </TabsList>
       </Tabs>
 
+      {truncada && (
+        <p className="text-xs text-muted-foreground">
+          Mostrando as {analises.length} análises mais recentes de {total}. Filtre por status para
+          ver as demais.
+        </p>
+      )}
+
       {isLoading && (
         <div className="space-y-3">
           <Skeleton className="h-36 rounded-xl" />
@@ -100,7 +111,7 @@ export function AnaliseCreditoPanel() {
       {isError && (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            Não foi possível carregar a fila. Verifique se a função credito-analise está publicada.
+            {erroCarga ?? 'Não foi possível carregar a fila de análise de crédito.'}
           </CardContent>
         </Card>
       )}
