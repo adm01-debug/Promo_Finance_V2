@@ -21,6 +21,7 @@ import { CreditoAnaliseSchema } from '../_shared/credito/schemas.ts';
 import { consultarCnpjInterno } from '../_shared/credito/cnpja.ts';
 import {
   avaliarAlertas,
+  destinoDoLimiteVinculo,
   escolherCadastroDoCnpj,
   filtroCnpjCliente,
   normalizarCnpj,
@@ -72,12 +73,13 @@ interface Analise {
   limite_aplicado_em: string | null;
   parcelas_max: number | null;
   parecer: string | null;
+  decidido_por: string | null;
   decidido_em: string | null;
   callback_status: string;
 }
 
 const CAMPOS_ANALISE =
-  'id, referencia_externa, status, cnpj, cliente_id, empresa_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira, limite_aprovado, limite_aplicado_em, parcelas_max, parecer, decidido_em, callback_status';
+  'id, referencia_externa, status, cnpj, cliente_id, empresa_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira, limite_aprovado, limite_aplicado_em, parcelas_max, parecer, decidido_por, decidido_em, callback_status';
 
 /** IDs das empresas ativas do usuário (mesma regra da policy da tabela). */
 async function empresasAcessiveis(
@@ -195,8 +197,24 @@ Deno.serve(
      * análise (`limite_aplicado_em`). A marca é o que permite ao reenvio
      * completar uma execução interrompida sem reescrever um limite que o
      * Finance já ajustou no cadastro.
+     *
+     * O retorno separa os motivos de não gravar: `conflito` é o caso em que o
+     * único cadastro vinculado guarda documento que a análise não tem (o
+     * analista precisa resolver o vínculo) e quem chama decide entre seguir
+     * sem limite ou desfazer a decisão.
      */
-    const aplicarLimite = async (alvo: Analise, limite: number) => {
+    type ResultadoLimite =
+      | { tipo: 'escrito' }
+      | { tipo: 'conflito' }
+      | { tipo: 'sem_destino' }
+      | { tipo: 'erro'; erro: unknown };
+
+    const mensagemDoErro = (erro: unknown) =>
+      erro instanceof Error
+        ? erro.message
+        : String((erro as { message?: string } | null)?.message ?? erro);
+
+    const aplicarLimite = async (alvo: Analise, limite: number): Promise<ResultadoLimite> => {
       let gravou = false;
       if (alvo.cnpj) {
         let query = admin
@@ -212,37 +230,40 @@ Deno.serve(
           query = query.in('empresa_id', empresas);
         }
         const r = await query.select('id');
-        if (r.error) return r.error;
+        if (r.error) return { tipo: 'erro', erro: r.error };
         gravou = (r.data?.length ?? 0) > 0;
       }
       if (!gravou && alvo.cliente_id) {
         // Vínculo por e-mail: recebe o limite quando o cadastro não guarda
         // documento que contradiga a análise. CNPJ apagado pelo analista conta
         // como contradição com cadastro que tem CNPJ: sem documento não há como
-        // confirmar que é o mesmo cliente, e `decidir` barra antes com 409.
+        // confirmar que é o mesmo cliente — quem chama decide (409 + desfazer).
         const { data: vinc, error: erroVinc } = await admin
           .from('clientes')
           .select('cnpj_cpf, empresa_id')
           .eq('id', alvo.cliente_id)
           .maybeSingle();
-        if (erroVinc) return erroVinc;
-        const docVinculo = normalizarCnpj(vinc?.cnpj_cpf ?? '') ?? '';
-        const empresaVinculo = (vinc as { empresa_id: string | null } | null)?.empresa_id ?? null;
-        if (docVinculo.length === 14 && docVinculo !== alvo.cnpj) return null;
-        if (alvo.empresa_id && empresaVinculo && empresaVinculo !== alvo.empresa_id) return null;
+        if (erroVinc) return { tipo: 'erro', erro: erroVinc };
+        const destino = destinoDoLimiteVinculo({
+          cnpjAnalise: alvo.cnpj,
+          documentoVinculo: vinc?.cnpj_cpf ?? null,
+          empresaAnalise: alvo.empresa_id,
+          empresaVinculo: (vinc as { empresa_id: string | null } | null)?.empresa_id ?? null,
+        });
+        if (destino !== 'gravar') return { tipo: destino };
         const { error: erroLimite } = await admin
           .from('clientes')
           .update({ limite_credito: limite })
           .eq('id', alvo.cliente_id);
-        if (erroLimite) return erroLimite;
+        if (erroLimite) return { tipo: 'erro', erro: erroLimite };
         gravou = true;
       }
-      if (!gravou) return null;
+      if (!gravou) return { tipo: 'sem_destino' };
       const { error: erroMarca } = await admin
         .from('analises_credito')
         .update({ limite_aplicado_em: new Date().toISOString() })
         .eq('id', alvo.id);
-      return erroMarca ?? null;
+      return erroMarca ? { tipo: 'erro', erro: erroMarca } : { tipo: 'escrito' };
     };
 
     try {
@@ -310,8 +331,18 @@ Deno.serve(
           analise.limite_aprovado !== null &&
           !analise.limite_aplicado_em
         ) {
-          const limError = await aplicarLimite(analise, analise.limite_aprovado);
-          if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
+          const resultadoLimite = await aplicarLimite(analise, analise.limite_aprovado);
+          if (resultadoLimite.tipo === 'erro') {
+            logger.warn('limite_cliente_falhou', {
+              error_message: mensagemDoErro(resultadoLimite.erro),
+            });
+          } else if (resultadoLimite.tipo !== 'escrito') {
+            // Reenvio não desfaz decisão já avisada: registra para o Finance
+            // ajustar o cadastro e libera `limite_aplicado` na resposta.
+            logger.warn('limite_cliente_sem_destino', {
+              context: { analise_id: analise.id, motivo: resultadoLimite.tipo },
+            });
+          }
         }
         const callback = await notificarChampions(
           analise,
@@ -345,6 +376,10 @@ Deno.serve(
             ? { resumo: input.consulta_financeira, registrado_em: new Date().toISOString() }
             : null;
         }
+        // Ação explícita do analista: o vínculo pode ter vindo do e-mail e sido
+        // associado ao CNPJ depois, então só ele decide soltar — e a reconsulta
+        // por CNPJ não devolve o vínculo na mesma chamada.
+        if (input.desvincular_cliente) patch.cliente_id = null;
         const cnpjInformado = input.cnpj !== undefined;
         const novoCnpj = cnpjInformado && input.cnpj ? normalizarCnpj(input.cnpj) : null;
         if (input.cnpj && !novoCnpj)
@@ -385,18 +420,39 @@ Deno.serve(
         // CNPJ corrigido: o vínculo com o cadastro segue o novo documento.
         // Só desfaz o vínculo antigo quando ele era mesmo do CNPJ anterior —
         // vínculo por e-mail (cliente sem CNPJ) precisa ser preservado.
-        if (novoCnpj && cnpjMudou) {
-          // O mesmo CNPJ pode estar cadastrado em mais de uma empresa: o
-          // cadastro da empresa da análise vem primeiro.
-          const { data: candidatos } = await admin
-            .from('clientes')
-            .select('id, empresa_id')
-            .or(filtroCnpjCliente(novoCnpj))
-            .limit(10);
-          const cli = escolherCadastroDoCnpj(
-            (candidatos ?? []) as Array<{ id: string; empresa_id: string | null }>,
-            analise.empresa_id
-          );
+        if (novoCnpj && cnpjMudou && !input.desvincular_cliente) {
+          // O mesmo CNPJ pode estar cadastrado em mais de uma empresa: busca
+          // primeiro na empresa da análise (escopada, limit 1) para o cadastro
+          // certo não se perder num lote grande de candidatos.
+          const campos = 'id, empresa_id';
+          let candidatos: Array<{ id: string; empresa_id: string | null }> = [];
+          if (analise.empresa_id) {
+            const { data: escopado } = await admin
+              .from('clientes')
+              .select(campos)
+              .or(filtroCnpjCliente(novoCnpj))
+              .eq('empresa_id', analise.empresa_id)
+              .limit(1);
+            candidatos = (escopado ?? []) as Array<{ id: string; empresa_id: string | null }>;
+          }
+          if (candidatos.length === 0) {
+            const { data: gerais } = await admin
+              .from('clientes')
+              .select(campos)
+              .or(filtroCnpjCliente(novoCnpj))
+              .limit(10);
+            // Entre candidatos de outras empresas, os acessíveis vêm primeiro:
+            // 403 só quando não existe cadastro acessível para este CNPJ.
+            const empresas = await empresasAcessiveis(admin, guard.dados.userId).catch(
+              (): string[] => []
+            );
+            candidatos = ((gerais ?? []) as Array<{ id: string; empresa_id: string | null }>).sort(
+              (a, b) =>
+                Number(empresas.includes(b.empresa_id ?? '')) -
+                Number(empresas.includes(a.empresa_id ?? ''))
+            );
+          }
+          const cli = escolherCadastroDoCnpj(candidatos, analise.empresa_id);
           if (cli?.id) {
             const empresaNova = cli.empresa_id;
             // Levar a análise para a empresa do cadastro novo só é legítimo com
@@ -480,9 +536,48 @@ Deno.serve(
         return responder(req, 409, { error: 'Análise foi decidida por outro analista' });
       }
 
+      let limiteAplicado = false;
       if (input.decisao === 'aprovado' && limite !== null) {
-        const limError = await aplicarLimite(analise, limite);
-        if (limError) logger.warn('limite_cliente_falhou', { error_message: limError.message });
+        const resultadoLimite = await aplicarLimite(analise, limite);
+        if (resultadoLimite.tipo === 'erro') {
+          logger.warn('limite_cliente_falhou', {
+            error_message: mensagemDoErro(resultadoLimite.erro),
+          });
+        } else if (resultadoLimite.tipo === 'conflito') {
+          // Aprovar sem gravar o limite deixaria o Champions recebendo por um
+          // crédito que o cadastro não tem, e o analista sem ação: desfaz a
+          // decisão e devolve o conflito para ele resolver o vínculo antes.
+          const { data: revertida, error: erroReversao } = await admin
+            .from('analises_credito')
+            .update({
+              status: analise.status,
+              limite_aprovado: analise.limite_aprovado,
+              parcelas_max: analise.parcelas_max,
+              parecer: analise.parecer,
+              decidido_por: analise.decidido_por ?? null,
+              decidido_em: analise.decidido_em ?? null,
+            })
+            .eq('id', analise.id)
+            .eq('status', 'aprovado')
+            // Só desfaz a gravação que acabou de ser feita por esta execução.
+            .eq('decidido_em', decididoEm)
+            .select('id')
+            .maybeSingle();
+          if (erroReversao || !revertida) {
+            logger.error('reversao_decisao_falhou', {
+              context: {
+                analise_id: analise.id,
+                erro: erroReversao
+                  ? mensagemDoErro(erroReversao)
+                  : 'decisão alterada por outro analista antes da reversão',
+              },
+            });
+          }
+          logger.warn('limite_sem_destino', { context: { analise_id: analise.id } });
+          return responder(req, 409, { error: 'limite_sem_destino' });
+        } else {
+          limiteAplicado = resultadoLimite.tipo === 'escrito';
+        }
       }
 
       const callback = await notificarChampions(
@@ -501,7 +596,7 @@ Deno.serve(
         context: { analise_id: analise.id, decisao: input.decisao, callback_ok: callback.ok },
       });
       await logger.flush();
-      return responder(req, 200, { analise: final, callback });
+      return responder(req, 200, { analise: final, callback, limite_aplicado: limiteAplicado });
     } catch (err) {
       logger.error('fn_failure', {
         duration_ms: Date.now() - t0,

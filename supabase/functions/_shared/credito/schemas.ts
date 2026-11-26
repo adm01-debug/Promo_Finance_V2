@@ -61,6 +61,10 @@ export const CreditoAnaliseSchema = z.discriminatedUnion('action', [
       cnpj: z.string().max(20).optional().nullable(),
       escavador: z.string().max(4000).optional().nullable(),
       consulta_financeira: z.string().max(4000).optional().nullable(),
+      // Ação explícita do analista: o vínculo com o cadastro não pode ser
+      // inferido (o mesmo vínculo pode ter vindo do e-mail e recebido o CNPJ
+      // depois), então quem decide soltar é ele.
+      desvincular_cliente: z.boolean().optional(),
     })
     .strict(),
   z

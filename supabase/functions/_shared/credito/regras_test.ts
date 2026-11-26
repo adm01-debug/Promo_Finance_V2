@@ -1,6 +1,7 @@
 import { assertEquals } from 'jsr:@std/assert@1';
 import {
   avaliarAlertas,
+  destinoDoLimiteVinculo,
   escolherCadastroDoCnpj,
   filtroCnpjCliente,
   formatarCnpj,
@@ -89,6 +90,61 @@ Deno.test('vinculoDesatualizado só descarta vínculo casado pelo CNPJ anterior'
   assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', '12345678000195'), false);
   assertEquals(vinculoDesatualizado('12345678000195', null, '98765432000110'), false);
   assertEquals(vinculoDesatualizado('12345678000195', '12345678000195', null), false);
+});
+
+Deno.test('limite no vínculo por e-mail só grava sem documento contrário', () => {
+  const empresaA = '11111111-1111-4111-8111-111111111111';
+  const empresaB = '22222222-2222-4222-8222-222222222222';
+  const base = { empresaAnalise: empresaA, empresaVinculo: empresaA };
+
+  // Cadastro com o mesmo CNPJ da análise → grava.
+  assertEquals(
+    destinoDoLimiteVinculo({
+      ...base,
+      cnpjAnalise: '12345678000195',
+      documentoVinculo: '12.345.678/0001-95',
+    }),
+    'gravar'
+  );
+  // Cadastro sem documento → grava.
+  assertEquals(
+    destinoDoLimiteVinculo({ ...base, cnpjAnalise: null, documentoVinculo: null }),
+    'gravar'
+  );
+  // Cadastro com CNPJ e análise sem CNPJ → conflito (o analista decide).
+  assertEquals(
+    destinoDoLimiteVinculo({ ...base, cnpjAnalise: null, documentoVinculo: '12345678000195' }),
+    'conflito'
+  );
+  // Cadastro com outro CNPJ e análise com CNPJ → o limite segue pelo CNPJ.
+  assertEquals(
+    destinoDoLimiteVinculo({
+      ...base,
+      cnpjAnalise: '98765432000110',
+      documentoVinculo: '12345678000195',
+    }),
+    'sem_destino'
+  );
+  // Cadastro de outra empresa → não recebe o limite.
+  assertEquals(
+    destinoDoLimiteVinculo({
+      cnpjAnalise: null,
+      documentoVinculo: null,
+      empresaAnalise: empresaA,
+      empresaVinculo: empresaB,
+    }),
+    'sem_destino'
+  );
+  // Vínculo sem empresa (cadastro antigo) → grava.
+  assertEquals(
+    destinoDoLimiteVinculo({
+      cnpjAnalise: null,
+      documentoVinculo: null,
+      empresaAnalise: empresaA,
+      empresaVinculo: null,
+    }),
+    'gravar'
+  );
 });
 
 Deno.test('cadastro do CNPJ prefere a empresa da análise', () => {

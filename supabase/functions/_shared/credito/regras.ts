@@ -127,6 +127,35 @@ export function vinculoDesatualizado(
 }
 
 /**
+ * Onde o limite aprovado pode ser gravado quando o cadastro veio do vínculo
+ * por e-mail (a análise não achou o cliente pelo CNPJ):
+ * - `gravar`: cadastro sem CNPJ ou com o mesmo CNPJ da análise;
+ * - `conflito`: cadastro guarda outro CNPJ e a análise não tem CNPJ — sem
+ *   documento não há como confirmar que é o mesmo cliente, então quem decide
+ *   (recusar e pedir o CNPJ, ou desvincular) é o analista;
+ * - `sem_destino`: cadastro de outra empresa, ou documento diferente com a
+ *   análise já tendo CNPJ (nesse caso o limite segue pelo CNPJ da análise).
+ */
+export function destinoDoLimiteVinculo(params: {
+  cnpjAnalise: string | null | undefined;
+  documentoVinculo: string | null | undefined;
+  empresaAnalise: string | null | undefined;
+  empresaVinculo: string | null | undefined;
+}): 'gravar' | 'conflito' | 'sem_destino' {
+  const cnpj = normalizarCnpj(params.cnpjAnalise ?? null) ?? null;
+  const documento = normalizarCnpj(params.documentoVinculo ?? null) ?? '';
+  if (documento.length === 14 && documento !== cnpj) return cnpj ? 'sem_destino' : 'conflito';
+  if (
+    params.empresaAnalise &&
+    params.empresaVinculo &&
+    params.empresaVinculo !== params.empresaAnalise
+  ) {
+    return 'sem_destino';
+  }
+  return 'gravar';
+}
+
+/**
  * O mesmo CNPJ pode estar cadastrado em mais de uma empresa (o formulário de
  * clientes permite). O cadastro da empresa da análise vem primeiro: é o que o
  * analista enxerga e o único que ele pode mover para a fila; sem candidato

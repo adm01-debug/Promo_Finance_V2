@@ -16,6 +16,8 @@ const MENSAGENS: Record<string, string> = {
     'Falta concluir a verificação em duas etapas (MFA) na sua conta para analisar crédito.',
   cnpj_necessario_limite:
     'Para aprovar com limite, informe o CNPJ da análise: o cadastro vinculado tem outro documento e sem o CNPJ o sistema não sabe onde gravar.',
+  limite_sem_destino:
+    'Este CNPJ está vinculado a um cadastro com outro documento, então o limite não tem onde ser gravado. Corrija o CNPJ, desvincule o cadastro ou aprove sem limite.',
 };
 
 function mensagemCredito(err: unknown): string {
@@ -89,6 +91,8 @@ interface RespostaListar {
 interface RespostaMutacao {
   analise?: AnaliseCredito;
   callback?: { ok: boolean; erro?: string };
+  /** Só vem em `decidir`: `false` = aprovado sem conseguir gravar o limite. */
+  limite_aplicado?: boolean;
   error?: string;
 }
 
@@ -110,6 +114,8 @@ export interface DadosCreditoInput {
   cnpj?: string | null;
   escavador?: string | null;
   consultaFinanceira?: string | null;
+  /** Solta o cadastro vinculado (ação explícita do analista, sem tocar no CNPJ). */
+  desvincularCliente?: boolean;
 }
 
 export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
@@ -150,7 +156,17 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
     onSuccess: (resposta, input) => {
       invalidar();
       const rotulo = input.decisao === 'aprovado' ? 'aprovado' : 'reprovado';
-      if (resposta.callback?.ok) {
+      // Aprovado com limite que nenhum cadastro pôde receber: a decisão vale,
+      // mas o cliente não tem crédito — o analista precisa saber na hora.
+      const limiteNaoGravado =
+        input.decisao === 'aprovado' &&
+        input.limiteAprovado != null &&
+        resposta.limite_aplicado === false;
+      if (limiteNaoGravado) {
+        toast.warning(
+          `Crédito ${rotulo}${resposta.callback?.ok ? ' e Champions avisado' : ', mas o Champions não recebeu'}: o limite não foi gravado porque não há cadastro de cliente para este CNPJ. Cadastre o cliente e reenvie o aviso.`
+        );
+      } else if (resposta.callback?.ok) {
         toast.success(`Crédito ${rotulo} e Champions avisado`);
       } else {
         toast.warning(
@@ -169,6 +185,7 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
         cnpj: input.cnpj,
         escavador: input.escavador,
         consulta_financeira: input.consultaFinanceira,
+        ...(input.desvincularCliente ? { desvincular_cliente: true } : {}),
       }),
     onSuccess: () => {
       invalidar();

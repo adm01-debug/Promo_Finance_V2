@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { AlertTriangle, CheckCircle2, FileSearch, Send, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FileSearch, Send, Unlink, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -260,6 +260,13 @@ function AnaliseCard({
           </p>
         )}
 
+        {!decidida && !analise.cnpj && analise.cliente_id && (
+          <p className="text-xs text-destructive">
+            Análise sem CNPJ com cadastro vinculado: aprovar com limite é recusado até você informar
+            o CNPJ ou desvincular o cadastro em “Registrar consultas”.
+          </p>
+        )}
+
         {!decidida && (
           <div className="flex flex-wrap gap-2 pt-1">
             <Button size="sm" variant="outline" onClick={() => onAbrir('dados')}>
@@ -309,6 +316,7 @@ function DialogoAnalise({
     cnpj?: string | null;
     escavador?: string | null;
     consultaFinanceira?: string | null;
+    desvincularCliente?: boolean;
   }) => void;
 }) {
   const { modo, analise } = estado;
@@ -387,6 +395,23 @@ function DialogoAnalise({
                 placeholder="00.000.000/0000-00"
               />
             </div>
+            {analise.cliente_id && (
+              <div className="space-y-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onAtualizar({ analiseId: analise.id, desvincularCliente: true })}
+                  disabled={ocupado}
+                >
+                  <Unlink className="h-4 w-4 mr-1" /> Desvincular cadastro
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Solta o cadastro de cliente ligado a esta análise (não altera o cadastro). Use
+                  quando o vínculo veio do e-mail e o cadastro é de outro cliente.
+                </p>
+              </div>
+            )}
             <div className="space-y-1">
               <Label htmlFor="credito-escavador">Escavador (processos, protestos)</Label>
               <Textarea
