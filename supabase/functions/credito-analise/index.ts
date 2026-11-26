@@ -352,6 +352,20 @@ Deno.serve(
           patch.cnpj = null;
           patch.dados_cnpja = null;
           patch.alertas = avaliarAlertas(null, analise.valor_pedido);
+          // O vínculo que existe por causa desse documento cai junto: mantê-lo
+          // faria a aprovação gravar o limite no cadastro de outro cliente.
+          let cnpjVinculado: string | null = null;
+          if (analise.cliente_id) {
+            const { data: atual } = await admin
+              .from('clientes')
+              .select('cnpj_cpf')
+              .eq('id', analise.cliente_id)
+              .maybeSingle();
+            cnpjVinculado = atual?.cnpj_cpf ?? null;
+          }
+          if (analise.cnpj && normalizarCnpj(cnpjVinculado) === normalizarCnpj(analise.cnpj)) {
+            patch.cliente_id = null;
+          }
         }
         const cnpjMudou = Boolean(novoCnpj) && novoCnpj !== analise.cnpj;
         // Reconsulta quando o CNPJ mudou ou quando a consulta inicial falhou —
@@ -377,12 +391,21 @@ Deno.serve(
         // Só desfaz o vínculo antigo quando ele era mesmo do CNPJ anterior —
         // vínculo por e-mail (cliente sem CNPJ) precisa ser preservado.
         if (novoCnpj && cnpjMudou) {
-          const { data: cli } = await admin
-            .from('clientes')
-            .select('id, empresa_id')
-            .or(filtroCnpjCliente(novoCnpj))
-            .limit(1)
-            .maybeSingle();
+          const buscarCadastroPorCnpj = (empresa: string | null) => {
+            let busca = admin
+              .from('clientes')
+              .select('id, empresa_id')
+              .or(filtroCnpjCliente(novoCnpj))
+              .limit(1);
+            if (empresa) busca = busca.eq('empresa_id', empresa);
+            return busca.maybeSingle();
+          };
+          // O mesmo CNPJ pode estar cadastrado em mais de uma empresa: o
+          // cadastro da empresa da análise vem primeiro.
+          const mesmoEscopo = analise.empresa_id
+            ? (await buscarCadastroPorCnpj(analise.empresa_id)).data
+            : null;
+          const cli = mesmoEscopo ?? (await buscarCadastroPorCnpj(null)).data;
           if (cli?.id) {
             const empresaNova = (cli as { empresa_id: string | null }).empresa_id;
             // Levar a análise para a empresa do cadastro novo só é legítimo com
