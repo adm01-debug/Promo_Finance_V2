@@ -1,18 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import {
-  CFOP_VENDA_DENTRO_ESTADO,
-  CFOP_VENDA_FORA_ESTADO,
-  NATUREZA_VENDA_DENTRO_ESTADO,
-  NATUREZA_VENDA_FORA_ESTADO,
-  normalizarUf,
-  resolverNaturezaOperacaoVenda,
-} from '../natureza-operacao';
+import { normalizarUf, resolverNaturezaOperacaoVenda } from '../natureza-operacao';
 
+// Os valores fiscais são afirmados como literais de propósito: comparar com as
+// constantes do módulo deixaria passar a troca do CFOP ou da descrição usada pelo Bling.
 describe('natureza da operação de venda pela UF do emissor e do destinatário', () => {
   it('Brasil Marcas (SP) vendendo para SP é venda dentro do estado, CFOP 5102', () => {
     expect(resolverNaturezaOperacaoVenda({ ufEmitente: 'SP', ufDestinatario: 'SP' })).toEqual({
-      natureza: NATUREZA_VENDA_DENTRO_ESTADO,
-      cfop: CFOP_VENDA_DENTRO_ESTADO,
+      natureza: 'VENDAS DE MERCADORIAS DENTRO DO ESTADO',
+      cfop: '5102',
       dentroDoEstado: true,
       ufEmitente: 'SP',
       ufDestinatario: 'SP',
@@ -21,23 +16,23 @@ describe('natureza da operação de venda pela UF do emissor e do destinatário'
 
   it('Brasil Marcas (SP) vendendo para GO é venda fora do estado, CFOP 6102', () => {
     const r = resolverNaturezaOperacaoVenda({ ufEmitente: 'SP', ufDestinatario: 'GO' });
-    expect(r?.natureza).toBe(NATUREZA_VENDA_FORA_ESTADO);
-    expect(r?.cfop).toBe(CFOP_VENDA_FORA_ESTADO);
+    expect(r?.natureza).toBe('VENDAS DE MERCADORIAS FORA DO ESTADO');
+    expect(r?.cfop).toBe('6102');
     expect(r?.dentroDoEstado).toBe(false);
   });
 
   it('João Batista (RR) vendendo para RR é dentro do estado — regra que o Bitrix tinha fixa', () => {
     expect(resolverNaturezaOperacaoVenda({ ufEmitente: 'RR', ufDestinatario: 'RR' })?.cfop).toBe(
-      CFOP_VENDA_DENTRO_ESTADO
+      '5102'
     );
   });
 
   it('vale para qualquer empresa emissora, não só para as duas do Bitrix', () => {
     expect(resolverNaturezaOperacaoVenda({ ufEmitente: 'GO', ufDestinatario: 'GO' })?.cfop).toBe(
-      CFOP_VENDA_DENTRO_ESTADO
+      '5102'
     );
     expect(resolverNaturezaOperacaoVenda({ ufEmitente: 'GO', ufDestinatario: 'SP' })?.cfop).toBe(
-      CFOP_VENDA_FORA_ESTADO
+      '6102'
     );
   });
 
