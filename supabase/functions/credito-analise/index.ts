@@ -262,7 +262,11 @@ Deno.serve(
         else if (status !== 'todos') query = query.eq('status', status);
         const { data, error, count } = await query;
         if (error) throw error;
-        return responder(req, 200, { analises: data ?? [], total: count ?? data?.length ?? 0 });
+        return responder(req, 200, {
+          analises: data ?? [],
+          total: count ?? data?.length ?? 0,
+          agora: new Date().toISOString(),
+        });
       }
 
       const { data: analiseRaw, error: getError } = await admin

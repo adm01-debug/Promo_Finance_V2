@@ -61,10 +61,10 @@ const STATUS_CLASS: Record<AnaliseCredito['status'], string> = {
 /** Mesmo prazo da edge function: aviso 'pendente' recém-gravado pode estar em curso. */
 const CALLBACK_EM_CURSO_MS = 2 * 60_000;
 
-const podeReenviar = (analise: AnaliseCredito) =>
+const podeReenviar = (analise: AnaliseCredito, desvioRelogioMs = 0) =>
   analise.callback_status === 'falhou' ||
   (analise.callback_status === 'pendente' &&
-    Date.now() - Date.parse(analise.decidido_em ?? '') >= CALLBACK_EM_CURSO_MS);
+    Date.now() + desvioRelogioMs - Date.parse(analise.decidido_em ?? '') >= CALLBACK_EM_CURSO_MS);
 
 type ModoDialogo = 'aprovar' | 'reprovar' | 'dados';
 
@@ -79,6 +79,7 @@ export function AnaliseCreditoPanel() {
   const {
     analises,
     total,
+    desvioRelogioMs,
     isLoading,
     isError,
     erroCarga,
@@ -137,6 +138,7 @@ export function AnaliseCreditoPanel() {
         <AnaliseCard
           key={a.id}
           analise={a}
+          desvioRelogioMs={desvioRelogioMs}
           onAbrir={(modo) => setDialogo({ modo, analise: a })}
           onReenviar={() => reenviarCallback(a.id)}
           reenviando={isReenviando}
@@ -162,11 +164,13 @@ export function AnaliseCreditoPanel() {
 
 function AnaliseCard({
   analise,
+  desvioRelogioMs,
   onAbrir,
   onReenviar,
   reenviando,
 }: {
   analise: AnaliseCredito;
+  desvioRelogioMs: number;
   onAbrir: (modo: ModoDialogo) => void;
   onReenviar: () => void;
   reenviando: boolean;
@@ -200,11 +204,13 @@ function AnaliseCard({
               Champions não avisado
             </Badge>
           )}
-          {decidida && analise.callback_status !== 'enviado' && podeReenviar(analise) && (
-            <Button size="sm" variant="outline" onClick={onReenviar} disabled={reenviando}>
-              <Send className="h-4 w-4 mr-1" /> Reenviar ao Champions
-            </Button>
-          )}
+          {decidida &&
+            analise.callback_status !== 'enviado' &&
+            podeReenviar(analise, desvioRelogioMs) && (
+              <Button size="sm" variant="outline" onClick={onReenviar} disabled={reenviando}>
+                <Send className="h-4 w-4 mr-1" /> Reenviar ao Champions
+              </Button>
+            )}
         </div>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">

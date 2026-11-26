@@ -79,6 +79,8 @@ export interface AnaliseCredito {
 interface RespostaListar {
   analises?: AnaliseCredito[];
   total?: number;
+  /** Relógio do servidor no momento da listagem. */
+  agora?: string;
   error?: string;
 }
 
@@ -122,7 +124,7 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
         limite: 200,
       });
       const analises = resposta.analises ?? [];
-      return { analises, total: resposta.total ?? analises.length };
+      return { analises, total: resposta.total ?? analises.length, agora: resposta.agora };
     },
     enabled: !!user,
     staleTime: 60 * 1000,
@@ -187,6 +189,9 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
   return {
     analises: query.data?.analises ?? [],
     total: query.data?.total ?? 0,
+    // A espera do reenvio é contada no relógio do servidor: um navegador atrasado
+    // não pode esconder o botão depois que o servidor já aceita o reenvio.
+    desvioRelogioMs: query.data?.agora ? Date.parse(query.data.agora) - query.dataUpdatedAt : 0,
     isLoading: query.isLoading,
     isError: query.isError,
     erroCarga: query.error ? mensagemCredito(query.error) : null,
