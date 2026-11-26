@@ -48,30 +48,60 @@ function extrairContaOFX(content: string, avisos: string[]): ContaOFX {
   return conta;
 }
 
+const ABERTURA_LISTA = /<BANKTRANLIST\s*>/gi;
+const FECHAMENTO_LISTA = /<\/BANKTRANLIST\s*>/gi;
+const MARCADOR_CONTA = /<BANKACCTFROM\s*>|<STMTTRNRS\s*>|<STMTRS\s*>/gi;
+
+/**
+ * A conta que emitiu um bloco está declarada entre o marcador do próprio bloco
+ * (`<BANKACCTFROM>`, `<STMTTRNRS>` ou `<STMTRS>`) e a abertura da lista dele.
+ * Sem marcador dentro desse intervalo a conta é desconhecida: nunca se aproveita
+ * um campo de banco de um bloco anterior (ex.: destino de transferência).
+ */
+function contaDoBloco(content: string, inicioLista: number, limite: number): ContaOFX {
+  let ultimo = -1;
+  for (const marcador of content.matchAll(MARCADOR_CONTA)) {
+    const posicao = marcador.index ?? 0;
+    if (posicao >= limite && posicao < inicioLista) ultimo = posicao;
+  }
+  if (ultimo === -1) return contaDoConteudo('');
+
+  const janela = content
+    .slice(ultimo, inicioLista)
+    .replace(/<STMTTRN\s*>[\s\S]*?(?:<\/STMTTRN\s*>|$)/gi, '');
+  return contaDoConteudo(janela);
+}
+
 /**
  * Um extrato OFX pode trazer vários blocos de extrato (uma conta por bloco).
  * Cada bloco é um `<BANKTRANLIST>` com as suas transações, e a conta que o emitiu
- * está declarada logo antes dele — daí a fatia intermediária (`conta`).
+ * é a do próprio bloco. As tags são tolerantes a espaço (`</BANKTRANLIST >`).
  */
-function segmentosPorExtrato(content: string): Array<{ conta: string; transacoes: string }> {
-  const aberturas: number[] = [];
-  for (const marcador of content.matchAll(/<BANKTRANLIST>/gi)) {
-    aberturas.push(marcador.index ?? 0);
+function segmentosPorExtrato(content: string): Array<{ conta: ContaOFX; transacoes: string }> {
+  const aberturas: Array<{ inicio: number; fim: number }> = [];
+  for (const marcador of content.matchAll(ABERTURA_LISTA)) {
+    const inicio = marcador.index ?? 0;
+    aberturas.push({ inicio, fim: inicio + marcador[0].length });
   }
-  if (aberturas.length === 0) return [{ conta: content, transacoes: content }];
+  if (aberturas.length === 0) return [{ conta: contaDoConteudo(content), transacoes: content }];
 
-  return aberturas.map((inicio, indice) => {
-    const fechamento = content.toUpperCase().indexOf('</BANKTRANLIST>', inicio);
-    const fim =
-      fechamento === -1
-        ? indice + 1 < aberturas.length
-          ? aberturas[indice + 1]
-          : content.length
-        : fechamento;
-    return {
-      conta: content.slice(indice === 0 ? 0 : aberturas[indice - 1], inicio),
-      transacoes: content.slice(inicio, fim),
+  const fechamentos: Array<{ inicio: number; fim: number }> = [];
+  for (const marcador of content.matchAll(FECHAMENTO_LISTA)) {
+    const inicio = marcador.index ?? 0;
+    fechamentos.push({ inicio, fim: inicio + marcador[0].length });
+  }
+
+  let limite = 0;
+  return aberturas.map((abertura, indice) => {
+    const proxima = aberturas[indice + 1]?.inicio ?? content.length;
+    const fechamento = fechamentos.find((item) => item.inicio >= abertura.fim && item.inicio < proxima);
+    const fim = fechamento?.inicio ?? proxima;
+    const segmento = {
+      conta: contaDoBloco(content, abertura.inicio, limite),
+      transacoes: content.slice(abertura.inicio, fim),
     };
+    limite = fechamento?.fim ?? proxima;
+    return segmento;
   });
 }
 
@@ -143,7 +173,7 @@ function extrairTransacoesOFX(content: string, avisos: string[]): TransacaoOFX[]
   const transacoes: TransacaoOFX[] = [];
 
   for (const segmento of segmentosPorExtrato(content)) {
-    const origemConta = identidadeConta(contaDoConteudo(segmento.conta));
+    const origemConta = identidadeConta(segmento.conta);
     const aviso = 'Transações sem número de conta de origem: a origem não pôde ser identificada';
     if (!origemConta && !avisos.includes(aviso)) avisos.push(aviso);
 

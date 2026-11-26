@@ -243,6 +243,20 @@ export function BaixaAutomaticaDialog({
       resetState();
       return;
     }
+    // Um arquivo com mais de uma conta traz créditos que caíram em agências
+    // diferentes. Gravar todos no mesmo destino escolhido atribuiria o
+    // recebimento ao banco errado — a baixa exige um arquivo por conta.
+    const origens = new Set(
+      (resultado?.extrato?.transacoes ?? [])
+        .map((t) => t.origemConta)
+        .filter((origem): origem is string => Boolean(origem))
+    );
+    if (contaBancariaId && origens.size > 1) {
+      toast.error(
+        'O arquivo tem créditos de contas diferentes. Importe um arquivo por conta para escolher a conta de destino.'
+      );
+      return;
+    }
     const empresaAlvo = empresaDoLote || empresaId;
     setProcessing(true);
     let successCount = 0;

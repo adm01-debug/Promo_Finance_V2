@@ -604,6 +604,44 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(gravados.at(-1)).toContain('PIX CONTA B');
   });
 
+  it('bloqueia a baixa com destino único quando o arquivo traz contas diferentes', async () => {
+    const credito = (
+      valor: number,
+      descricao: string,
+      referencia: string,
+      origemConta: string
+    ) => ({
+      ...transacaoCredito(valor, descricao, '2026-04-20'),
+      numeroReferencia: referencia,
+      origemConta,
+    });
+
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        credito(1500, 'TED RECEBIDA', '111', '341/9999/1111'),
+        credito(999, 'PIX SEM PAR', '222', '001/1234/5678'),
+      ])
+    );
+    abrirDialogo();
+    await importar(2);
+    await selecionarConta(/BB/);
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+
+    // O crédito de 1500 veio da conta 341/9999/1111: gravá-lo no destino
+    // escolhido atribuiria o recebimento ao banco errado.
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(
+        'O arquivo tem créditos de contas diferentes. Importe um arquivo por conta para escolher a conta de destino.'
+      )
+    );
+    expect(
+      chamadas.filter((c) => c.tabela === 'contas_receber' && c.metodo === 'update')
+    ).toHaveLength(0);
+    expect(screen.queryByText('Volume Recuperado')).not.toBeInTheDocument();
+    expect(screen.getByText('Divergências Detectadas (2)')).toBeInTheDocument();
+  });
+
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
     erroAoGravarAlerta = true;
     const { rerender } = abrirDialogo('emp-1');
