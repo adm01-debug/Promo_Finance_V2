@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-26 23:30 UTC
+
+- **edge functions** alterado (109): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+69)
+
 ## 2026-11-26 01:21 UTC
 
 - **colunas** adicionado (12): `public.catalogo_fundamentacao.cclasstrib`, `public.catalogo_fundamentacao.conjunto_tributo`, `public.catalogo_fundamentacao.created_at`, `public.catalogo_fundamentacao.cst`, `public.catalogo_fundamentacao.descricao_cclasstrib`, `public.catalogo_fundamentacao.descricao_cst`, `public.catalogo_fundamentacao.fim_vigencia`, `public.catalogo_fundamentacao.inicio_vigencia`, `public.catalogo_fundamentacao.referencia_normativa`, `public.catalogo_fundamentacao.texto`, `public.catalogo_fundamentacao.texto_curto`, `public.catalogo_fundamentacao.versao_it`

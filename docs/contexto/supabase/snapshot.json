@@ -317,7 +317,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -329,7 +329,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 167
+        "version": 168
       },
       {
         "created_at": 1787655368587,
@@ -341,7 +341,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -353,7 +353,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 166
+        "version": 167
       },
       {
         "created_at": 1789232363492,
@@ -365,7 +365,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 151
+        "version": 152
       },
       {
         "created_at": 1785325583131,
@@ -377,7 +377,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -389,7 +389,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 167
+        "version": 168
       },
       {
         "created_at": 1787655368587,
@@ -401,7 +401,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -413,7 +413,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 166
+        "version": 167
       },
       {
         "created_at": 1787655368587,
@@ -425,7 +425,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 168
+        "version": 169
       },
       {
         "created_at": 1787655368587,
@@ -437,7 +437,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -449,7 +449,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -461,7 +461,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -473,7 +473,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -485,7 +485,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -497,7 +497,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 166
+        "version": 167
       },
       {
         "created_at": 1787655368587,
@@ -509,7 +509,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -521,7 +521,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1785349017739,
@@ -533,7 +533,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -545,7 +545,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -557,7 +557,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -569,7 +569,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -581,7 +581,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -593,7 +593,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -605,7 +605,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1789217313886,
@@ -617,7 +617,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 152
+        "version": 153
       },
       {
         "created_at": 1787655368587,
@@ -629,7 +629,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -641,7 +641,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787416826942,
@@ -653,7 +653,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -665,7 +665,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -677,7 +677,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -689,7 +689,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 166
+        "version": 167
       },
       {
         "created_at": 1787655368587,
@@ -701,7 +701,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 158
+        "version": 159
       },
       {
         "created_at": 1787655368587,
@@ -713,7 +713,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -725,7 +725,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -737,7 +737,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -749,7 +749,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -761,7 +761,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787410714411,
@@ -773,7 +773,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -785,7 +785,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -797,7 +797,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655421259,
@@ -809,7 +809,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1785267975129,
@@ -821,7 +821,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 167
+        "version": 168
       },
       {
         "created_at": 1787655368587,
@@ -833,7 +833,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -845,7 +845,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -857,7 +857,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -869,7 +869,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1785349068086,
@@ -881,7 +881,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 166
+        "version": 167
       },
       {
         "created_at": 1785349108621,
@@ -893,7 +893,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 168
+        "version": 169
       },
       {
         "created_at": 1787655368587,
@@ -905,7 +905,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 157
+        "version": 158
       },
       {
         "created_at": 1787655368587,
@@ -917,7 +917,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -929,7 +929,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -941,7 +941,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -953,7 +953,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -965,7 +965,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -977,7 +977,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -989,7 +989,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1001,7 +1001,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1013,7 +1013,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1795611057744,
@@ -1025,7 +1025,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 4
+        "version": 5
       },
       {
         "created_at": 1787655368587,
@@ -1037,7 +1037,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1049,7 +1049,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -1061,7 +1061,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -1073,7 +1073,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1794586833536,
@@ -1085,7 +1085,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 145
+        "version": 146
       },
       {
         "created_at": 1787655368587,
@@ -1097,7 +1097,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -1109,7 +1109,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -1121,7 +1121,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -1133,7 +1133,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -1145,7 +1145,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -1157,7 +1157,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -1169,7 +1169,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1785410693262,
@@ -1181,7 +1181,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -1193,7 +1193,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1785348804189,
@@ -1205,7 +1205,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -1217,7 +1217,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -1229,7 +1229,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655426108,
@@ -1241,7 +1241,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -1253,7 +1253,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -1265,7 +1265,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1795611059706,
@@ -1277,7 +1277,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 4
+        "version": 5
       },
       {
         "created_at": 1787655368587,
@@ -1289,7 +1289,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1301,7 +1301,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -1313,7 +1313,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -1325,7 +1325,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -1337,7 +1337,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1349,7 +1349,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -1361,7 +1361,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -1373,7 +1373,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 160
+        "version": 161
       },
       {
         "created_at": 1787655368587,
@@ -1385,7 +1385,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -1397,7 +1397,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 157
+        "version": 158
       },
       {
         "created_at": 1787655368587,
@@ -1409,7 +1409,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1421,7 +1421,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -1433,7 +1433,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -1445,7 +1445,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 157
+        "version": 158
       },
       {
         "created_at": 1787418259817,
@@ -1457,7 +1457,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -1469,7 +1469,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1795611011397,
@@ -1481,7 +1481,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 4
+        "version": 5
       },
       {
         "created_at": 1787655368587,
@@ -1493,7 +1493,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 166
+        "version": 167
       },
       {
         "created_at": 1791907976432,
@@ -1505,7 +1505,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 148
+        "version": 149
       },
       {
         "created_at": 1787655368587,
@@ -1517,7 +1517,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 163
+        "version": 164
       },
       {
         "created_at": 1787655368587,
@@ -1529,7 +1529,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -1541,7 +1541,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 159
+        "version": 160
       },
       {
         "created_at": 1787655368587,
@@ -1553,7 +1553,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -1565,7 +1565,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 161
+        "version": 162
       },
       {
         "created_at": 1787655368587,
@@ -1577,7 +1577,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 162
+        "version": 163
       },
       {
         "created_at": 1787655368587,
@@ -1589,7 +1589,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": true,
-        "version": 164
+        "version": 165
       },
       {
         "created_at": 1787655368587,
@@ -1601,7 +1601,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       },
       {
         "created_at": 1787655368587,
@@ -1613,7 +1613,7 @@
         "status": "ACTIVE",
         "updated_at": 1795634392586,
         "verify_jwt": false,
-        "version": 165
+        "version": 166
       }
     ],
     "enabled": true,
@@ -1671,6 +1671,9 @@
       "APP_BASE_URL",
       "APP_PUBLIC_URL",
       "ASAAS_WEBHOOK_TOKEN",
+      "CHAMPIONS_CREDITO_CALLBACK_SECRET",
+      "CHAMPIONS_CREDITO_CALLBACK_URL",
+      "CHAMPIONS_CREDITO_WEBHOOK_SECRET",
       "CI_GATE_LOG_SECRET",
       "CONTADOR_INVITE_SECRET",
       "CRON_DISPATCH_SECRET",

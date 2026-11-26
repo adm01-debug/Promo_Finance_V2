@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-heatmap-tributario |
 | status | ACTIVE |
-| versão | 168 |
+| versão | 169 |
 | verify_jwt | não |
 | entrypoint | file:///app/supabase/functions/gerar-heatmap-tributario/index.ts |
 | import_map |  |

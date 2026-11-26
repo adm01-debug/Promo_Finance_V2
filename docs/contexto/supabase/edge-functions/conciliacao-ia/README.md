@@ -4,7 +4,7 @@
 |---|---|
 | nome | conciliacao-ia |
 | status | ACTIVE |
-| versão | 163 |
+| versão | 164 |
 | verify_jwt | sim |
 | entrypoint | file:///app/supabase/functions/conciliacao-ia/index.ts |
 | import_map |  |
