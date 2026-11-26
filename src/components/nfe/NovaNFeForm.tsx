@@ -15,6 +15,7 @@ import { Plus, XCircle, AlertTriangle, Package, User } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { useCatalogoCclasstrib } from '@/hooks/useCatalogoCclasstrib';
+import { useProdutoCclasstribPadrao } from '@/hooks/useProdutoCclasstribPadrao';
 import { calcularGrupoIbscbs, resolverCclassTribPadrao } from '@/lib/nfe/grupo-ibscbs-item';
 import { calcularBaseCalculo } from '@/lib/reforma-tributaria/base-calculo';
 import { toast } from 'sonner';
@@ -31,6 +32,7 @@ interface NovaNFeFormProps {
 export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
   const { data: empresas = [] } = useEmpresas();
   const { opcoes, codigos, carregando, indisponivel } = useCatalogoCclasstrib();
+  const { porProduto: padroesPorProduto } = useProdutoCclasstribPadrao();
 
   const [formData, setFormData] = useState({
     destinatarioNome: '',
@@ -130,11 +132,15 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
       newItens[index].valorTotal = newItens[index].quantidade * newItens[index].valorUnitario;
     }
     // NCM completo e sem codigo escolhido assume tributacao integral (000001).
-    const padrao =
+    const porNcm =
       field === 'ncm'
         ? resolverCclassTribPadrao(String(value), newItens[index].cClassTrib, codigos)
         : null;
-    newItens[index] = comGrupo(newItens[index], padrao ?? newItens[index].cClassTrib);
+    // Etapa 86: o enquadramento gravado no cadastro do produto vence a regra por
+    // NCM — e o que separa cesta basica de produto comum no mesmo NCM.
+    const porProduto =
+      field === 'codigo' ? (padroesPorProduto.get(String(value).trim())?.cclasstrib ?? null) : null;
+    newItens[index] = comGrupo(newItens[index], porProduto ?? porNcm ?? newItens[index].cClassTrib);
     setItens(newItens);
   };
 

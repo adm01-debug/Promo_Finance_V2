@@ -12489,6 +12489,33 @@ export type Database = {
         }
         Relationships: []
       }
+      produto_cclasstrib_padrao: {
+        Row: {
+          atualizado_em: string
+          atualizado_por: string | null
+          cclasstrib: string
+          cst: string
+          ncm: string | null
+          produto_id: string
+        }
+        Insert: {
+          atualizado_em?: string
+          atualizado_por?: string | null
+          cclasstrib: string
+          cst: string
+          ncm?: string | null
+          produto_id: string
+        }
+        Update: {
+          atualizado_em?: string
+          atualizado_por?: string | null
+          cclasstrib?: string
+          cst?: string
+          ncm?: string | null
+          produto_id?: string
+        }
+        Relationships: []
+      }
       projecoes_reforma: {
         Row: {
           ano: number
