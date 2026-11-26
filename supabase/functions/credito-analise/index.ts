@@ -154,6 +154,18 @@ async function notificarChampions(
   }
 }
 
+/**
+ * O erro bruto do callback (corpo devolvido pelo Champions ou falha de rede) fica
+ * em `callback_erro` e no log: devolve-lo ao analista expoe detalhe interno do
+ * outro sistema. A resposta so informa que o aviso nao passou.
+ */
+function callbackParaResposta(callback: { ok: boolean; erro?: string }): {
+  ok: boolean;
+  erro?: string;
+} {
+  return callback.ok ? { ok: true } : { ok: false, erro: 'falha no envio' };
+}
+
 Deno.serve(
   withEdgeObservability('credito-analise', async (req: Request) => {
     const cors = corsHeadersPara(req);
@@ -378,7 +390,7 @@ Deno.serve(
           context: { analise_id: analise.id, callback_ok: callback.ok },
         });
         await logger.flush();
-        return responder(req, 200, { analise: final, callback });
+        return responder(req, 200, { analise: final, callback: callbackParaResposta(callback) });
       }
 
       if (input.action === 'atualizar_dados') {
@@ -656,7 +668,7 @@ Deno.serve(
       await logger.flush();
       return responder(req, 200, {
         analise: final,
-        callback,
+        callback: callbackParaResposta(callback),
         limite_aplicado: limiteAplicado,
       });
     } catch (err) {
