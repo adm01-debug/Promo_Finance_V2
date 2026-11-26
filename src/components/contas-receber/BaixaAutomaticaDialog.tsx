@@ -75,12 +75,14 @@ export function BaixaAutomaticaDialog({
     setProcessing(false);
     setContaBancariaId('');
     setEmpresaDoLote('');
-    setDivergenciasSemAlerta([]);
+    // `divergenciasSemAlerta` sobrevive ao fechamento: são alertas que não
+    // entraram no banco e continuam devidos. Só saem daqui quando gravados.
   };
 
   useEffect(() => {
     if (!empresaDoLote || !empresaId || empresaId === empresaDoLote) return;
     resetState();
+    setDivergenciasSemAlerta([]);
     toast.error('Empresa alterada — importe novamente o arquivo de retorno desta empresa.');
   }, [empresaId, empresaDoLote]);
 
@@ -469,6 +471,33 @@ export function BaixaAutomaticaDialog({
               `Encontramos ${matches.length} correspondências e ${unmatched.length} divergências que requerem atenção.`}
           </DialogDescription>
         </DialogHeader>
+
+        {step === 'upload' && divergenciasSemAlerta.length > 0 && (
+          <div className="rounded-xl border border-warning/40 bg-warning/10 p-3 space-y-2">
+            <p className="text-xs text-warning flex items-start gap-1">
+              <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" />
+              <span>
+                {divergenciasSemAlerta.length === 1
+                  ? '1 divergência da última baixa continua sem alerta registrado.'
+                  : `${divergenciasSemAlerta.length} divergências da última baixa continuam sem alerta registrado.`}{' '}
+                Registre-as aqui — reimportar o extrato pode reaplicar créditos já usados.
+              </span>
+            </p>
+            <Button
+              variant="outline"
+              onClick={handleRepetirAlertas}
+              disabled={processing}
+              className="w-full h-10 rounded-xl font-black gap-2"
+            >
+              {processing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <AlertTriangle className="h-4 w-4" />
+              )}
+              REGISTRAR DIVERGÊNCIAS PENDENTES ({divergenciasSemAlerta.length})
+            </Button>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {step === 'upload' && (

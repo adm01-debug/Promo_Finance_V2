@@ -31,8 +31,24 @@ const SIMILARIDADE_IDENTIFICACAO = 0.6;
 
 const MILISSEGUNDOS_POR_DIA = 86_400_000;
 
+/** Dia-calendário (AAAA-MM-DD) sem horário nem fuso. */
+function diaCalendario(valor: Date | string): string {
+  if (typeof valor === 'string') return valor.slice(0, 10);
+  const mes = String(valor.getMonth() + 1).padStart(2, '0');
+  const dia = String(valor.getDate()).padStart(2, '0');
+  return `${valor.getFullYear()}-${mes}-${dia}`;
+}
+
+/**
+ * Distância em dias entre o dia do crédito e o vencimento, sem o horário: o
+ * leitor OFX traz a hora do lançamento e, num crédito de 14h, o vencimento do
+ * próprio dia (0,58 dia) ficava mais longe que o do dia seguinte (0,42) —
+ * quitando o título errado no empate de centavos.
+ */
 function diferencaEmDias(dataCredito: Date, vencimento: string): number {
-  return Math.abs(dataCredito.getTime() - new Date(vencimento).getTime()) / MILISSEGUNDOS_POR_DIA;
+  const credito = Date.parse(`${diaCalendario(dataCredito)}T00:00:00Z`);
+  const venc = Date.parse(`${diaCalendario(vencimento)}T00:00:00Z`);
+  return Math.abs(credito - venc) / MILISSEGUNDOS_POR_DIA;
 }
 
 function textoDoCredito(credito: CreditoExtrato): string {
@@ -90,9 +106,12 @@ export function titulosCompativeis<T extends TituloCandidato>(
   credito: CreditoExtrato,
   titulos: T[]
 ): T[] {
+  // A tolerância também compara centavos inteiros: em ponto flutuante, R$ 99,99
+  // fica a 0,05000000000000071 de R$ 100,04 e era recusado pelo limite de 0,05.
+  const toleranciaCentavos = emCentavos(TOLERANCIA_VALOR);
   return titulos.filter(
     (titulo) =>
-      Math.abs(Number(titulo.valor ?? 0) - credito.valor) <= TOLERANCIA_VALOR &&
+      Math.abs(emCentavos(titulo.valor) - emCentavos(credito.valor)) <= toleranciaCentavos &&
       diferencaEmDias(credito.data, titulo.data_vencimento) <= TOLERANCIA_DIAS
   );
 }

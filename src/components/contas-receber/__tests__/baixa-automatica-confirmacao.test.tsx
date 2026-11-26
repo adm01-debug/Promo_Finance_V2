@@ -359,6 +359,34 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(consultas).toHaveLength(1);
   });
 
+  it('mantem as divergencias pendentes ao fechar a conclusao', async () => {
+    erroAoGravarAlerta = true;
+    abrirDialogo();
+    await importar();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByText('FECHAR'));
+    await waitFor(() =>
+      expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
+    );
+
+    // Fechar nao pode descartar alertas que nao entraram no banco: a lista
+    // volta junto com o dialogo, no passo de upload, para nova tentativa.
+    expect(screen.getByText(/continuam sem alerta registrado/)).toBeInTheDocument();
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    erroAoGravarAlerta = false;
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('2 divergências registradas como alerta.')
+    );
+    await waitFor(() =>
+      expect(screen.queryByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/)).not.toBeInTheDocument()
+    );
+  });
+
   it('descarta o lote quando a empresa muda antes da confirmação', async () => {
     const { rerender } = abrirDialogo('emp-1');
     await importar();

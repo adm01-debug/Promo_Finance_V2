@@ -147,6 +147,30 @@ describe('conciliarCreditos', () => {
     expect(resultado.map((t) => t?.id)).toEqual(['mesmo-dia']);
   });
 
+  it('tolera cinco centavos comparando inteiros, mesmo quando o float passa do limite', () => {
+    // R$ 99,99 contra R$ 100,04: em double a diferença é 0,05000000000000071 e
+    // estourava o limite de 0,05, recusando um título cinco centavos distante.
+    const compativeis = titulosCompativeis(credito(99.99, 'TED'), [
+      titulo('a', 'Alfa', 100.04, '2026-04-10'),
+    ]);
+
+    expect(compativeis.map((t) => t.id)).toEqual(['a']);
+  });
+
+  it('desempata pelo dia do crédito, sem a hora do extrato decidir', () => {
+    // Crédito às 14h do dia do vencimento: sem truncar a hora, o vencimento do
+    // próprio dia ficava a 0,58 dia e o do dia seguinte a 0,42 — vencia o errado.
+    const resultado = conciliarCreditos(
+      [{ valor: 1500, descricao: 'PIX BETA', data: new Date('2026-04-10T14:00:00') }],
+      [
+        titulo('seguinte', 'Beta ME', 1500, '2026-04-11'),
+        titulo('mesmo-dia', 'Beta ME', 1500, '2026-04-10'),
+      ]
+    );
+
+    expect(resultado.map((t) => t?.id)).toEqual(['mesmo-dia']);
+  });
+
   it('cada título quita um único crédito', () => {
     const resultado = conciliarCreditos(
       [credito(900, 'PIX BETA'), credito(900, 'PIX BETA')],
