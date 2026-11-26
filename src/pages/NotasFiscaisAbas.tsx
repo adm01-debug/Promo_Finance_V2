@@ -52,6 +52,16 @@ import { SefazMonitor } from '@/components/nfe/SefazMonitor';
 import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
 
 import type { Dispatch, SetStateAction } from 'react';
+
+/**
+ * XML e DANFE são links de arquivo importado. Antes desta correção os dois
+ * botões anunciavam "XML baixado!" e "DANFE gerado!" sem baixar nada — o cliente
+ * ficava com a impressão de que o arquivo fiscal existia.
+ */
+function abrirArquivoFiscal(url?: string) {
+  if (!url) return;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
 interface NotasFiscaisAbasProps {
   searchTerm: string;
   setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
@@ -223,14 +233,26 @@ export function NotasFiscaisAbas({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => toast.success('XML baixado!')}
+                            disabled={!nota.xmlUrl}
+                            title={
+                              nota.xmlUrl
+                                ? 'Abrir o XML autorizado'
+                                : 'XML não importado para esta nota'
+                            }
+                            onClick={() => abrirArquivoFiscal(nota.xmlUrl)}
                           >
                             <FileCode className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => toast.success('DANFE gerado!')}
+                            disabled={!nota.pdfUrl}
+                            title={
+                              nota.pdfUrl
+                                ? 'Abrir o DANFE (PDF)'
+                                : 'DANFE não importado para esta nota'
+                            }
+                            onClick={() => abrirArquivoFiscal(nota.pdfUrl)}
                           >
                             <Download className="h-4 w-4" />
                           </Button>
@@ -272,10 +294,12 @@ export function NotasFiscaisAbas({
                 <div>
                   <p className="text-sm text-muted-foreground">Taxa de Autorização</p>
                   <p className="text-2xl font-bold">
-                    {(
-                      (notas.filter((n) => n.status === 'autorizada').length / notas.length) *
-                      100
-                    ).toFixed(1)}
+                    {notas.length > 0
+                      ? (
+                          (notas.filter((n) => n.status === 'autorizada').length / notas.length) *
+                          100
+                        ).toFixed(1)
+                      : '0.0'}
                     %
                   </p>
                 </div>

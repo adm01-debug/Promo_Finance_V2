@@ -46,6 +46,9 @@ export interface NotaFiscal {
   protocolo?: string;
   motivoCancelamento?: string;
   itens: ItemNFe[];
+  /** URLs dos arquivos realmente importados (XML autorizado e DANFE em PDF). */
+  xmlUrl?: string;
+  pdfUrl?: string;
 }
 
 export const statusConfig = {

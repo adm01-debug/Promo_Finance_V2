@@ -10,36 +10,35 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { FileText, Plus, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { FileText, Plus, Clock, CheckCircle2, XCircle, AlertCircle, RotateCw } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { NotaFiscal } from '@/components/nfe/nfe-types';
 import { NovaNFeForm } from '@/components/nfe/NovaNFeForm';
 import { CancelamentoNFe } from '@/components/nfe/CancelamentoNFe';
 import { containerVariants, itemVariants } from './NotasFiscais.helpers';
 import { NotasFiscaisAbas } from './NotasFiscaisAbas';
+import { useNotasFiscaisLocais } from '@/hooks/useNotasFiscaisLocais';
 
 export default function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [showNovaNFe, setShowNovaNFe] = useState(false);
-  const [notas, setNotas] = useState<NotaFiscal[]>([]);
+  const { notas, loading, erro, recarregar } = useNotasFiscaisLocais();
   const [notaCancelar, setNotaCancelar] = useState<NotaFiscal | null>(null);
 
-  const handleNovaNota = useCallback((novaNota: NotaFiscal) => {
-    setNotas((prev) => [novaNota, ...prev]);
+  // A emissão segue desligada (sem SEFAZ homologada): quando o formulário
+  // deixar de recusar, a nota gravada aparece recarregando a consulta real.
+  const handleNovaNota = useCallback(() => {
     setShowNovaNFe(false);
-  }, []);
+    void recarregar();
+  }, [recarregar]);
 
-  const handleCancelarNota = useCallback((notaId: string, justificativa: string) => {
-    setNotas((prev) =>
-      prev.map((nota) =>
-        nota.id === notaId
-          ? { ...nota, status: 'cancelada' as const, motivoCancelamento: justificativa }
-          : nota
-      )
-    );
+  // O cancelamento não é mais simulado em memória: a lista volta a refletir o
+  // que o banco diz depois da recarga.
+  const handleCancelarNota = useCallback(() => {
     setNotaCancelar(null);
-  }, []);
+    void recarregar();
+  }, [recarregar]);
 
   const totalEmitido = notas
     .filter((n) => n.status === 'autorizada')
@@ -51,6 +50,15 @@ export default function NotasFiscais() {
     .filter((n) => n.status === 'pendente')
     .reduce((acc, n) => acc + n.valorTotal, 0);
   const notasAutorizadas = notas.filter((n) => n.status === 'autorizada').length;
+  const agora = new Date();
+  const notasDoMes = notas.filter((nota) => {
+    const emissao = new Date(nota.dataEmissao);
+    return (
+      !Number.isNaN(emissao.getTime()) &&
+      emissao.getMonth() === agora.getMonth() &&
+      emissao.getFullYear() === agora.getFullYear()
+    );
+  }).length;
 
   const filteredNotas = notas.filter((nota) => {
     const matchesSearch =
@@ -85,7 +93,7 @@ export default function NotasFiscais() {
     },
     {
       label: 'Notas Este Mês',
-      value: notas.length,
+      value: notasDoMes,
       isCount: true,
       icon: FileText,
       color: 'text-primary',
@@ -104,7 +112,8 @@ export default function NotasFiscais() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Notas Fiscais Eletrônicas</h1>
             <p className="text-muted-foreground mt-1">
-              Emissão e consulta dependem de integração SEFAZ homologada.
+              Consulta das notas importadas (Bling/XML). Emissão direta depende de integração SEFAZ
+              homologada.
             </p>
           </div>
           <Dialog open={showNovaNFe} onOpenChange={setShowNovaNFe}>
@@ -123,6 +132,26 @@ export default function NotasFiscais() {
             </DialogContent>
           </Dialog>
         </motion.div>
+
+        {loading && <p className="text-sm text-muted-foreground">Carregando notas do banco…</p>}
+
+        {erro && !loading && (
+          <Card className="border-destructive/40">
+            <CardContent className="p-4 flex items-center justify-between gap-4">
+              <p className="text-sm text-destructive flex items-center gap-2">
+                <AlertCircle className="h-4 w-4" /> Não foi possível consultar as notas: {erro}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => void recarregar()}
+              >
+                <RotateCw className="h-4 w-4" /> Tentar de novo
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         <motion.div
           variants={itemVariants}
