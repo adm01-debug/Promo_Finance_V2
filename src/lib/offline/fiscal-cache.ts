@@ -21,6 +21,37 @@ export interface EntradaCache<T> {
   chave: string;
   payload: T;
   gravadoEm: number;
+  /**
+   * Etapa 85: último dia de validade do próprio dado (`fim_vigencia` do
+   * catálogo, ISO `YYYY-MM-DD`). Passado esse dia a entrada é descartada mesmo
+   * dentro do TTL — catálogo com vigência encerrada não serve de fallback.
+   * `null` significa que o dado não declara vigência: vale só o TTL.
+   */
+  fimVigencia?: string | null;
+}
+
+/** Metadados opcionais gravados junto da entrada. */
+export interface OpcoesCache {
+  fimVigencia?: string | null;
+}
+
+/**
+ * A entrada já não deve ser servida? Duas razões: TTL estourado ou vigência do
+ * dado encerrada (o dia seguinte ao `fimVigencia` já não é coberto).
+ *
+ * A comparação é feita em datas ISO (`YYYY-MM-DD`), sem fuso: `fim_vigencia` é
+ * uma data pura no catálogo, e converter para timestamp local faria a entrada
+ * morrer um dia antes ou depois conforme o fuso do navegador.
+ */
+export function entradaExpirada(
+  entrada: Pick<EntradaCache<unknown>, 'gravadoEm' | 'fimVigencia'>,
+  agoraMs: number = Date.now(),
+  ttlMs: number = TTL_PADRAO_MS
+): boolean {
+  if (agoraMs - entrada.gravadoEm > ttlMs) return true;
+  const fim = (entrada.fimVigencia ?? '').trim().slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fim)) return false;
+  return new Date(agoraMs).toISOString().slice(0, 10) > fim;
 }
 
 function temIndexedDB(): boolean {
@@ -73,12 +104,21 @@ export function chaveConsulta(params: unknown): string {
   return JSON.stringify(params, Object.keys(params as object).sort());
 }
 
-export async function salvarConsulta<T>(chave: string, payload: T): Promise<void> {
-  const entrada: EntradaCache<T> = { chave, payload, gravadoEm: Date.now() };
+export async function salvarConsulta<T>(
+  chave: string,
+  payload: T,
+  opcoes: OpcoesCache = {}
+): Promise<void> {
+  const entrada: EntradaCache<T> = {
+    chave,
+    payload,
+    gravadoEm: Date.now(),
+    fimVigencia: opcoes.fimVigencia ?? null,
+  };
   await transacionar('readwrite', (s) => s.put(entrada));
 }
 
-/** Lê do cache respeitando o TTL; entradas expiradas são removidas. */
+/** Lê do cache respeitando TTL e vigência; entradas inválidas são removidas. */
 export async function lerConsulta<T>(
   chave: string,
   ttlMs: number = TTL_PADRAO_MS
@@ -87,7 +127,7 @@ export async function lerConsulta<T>(
     s.get(chave)
   )) as EntradaCache<T> | null;
   if (!entrada) return null;
-  if (Date.now() - entrada.gravadoEm > ttlMs) {
+  if (entradaExpirada(entrada, Date.now(), ttlMs)) {
     await transacionar('readwrite', (s) => s.delete(chave));
     return null;
   }
