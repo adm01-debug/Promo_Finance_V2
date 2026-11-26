@@ -16,6 +16,18 @@ export function useReguaCobranca(empresaId?: string) {
   });
 }
 
+/**
+ * `UPDATE`/`INSERT`/`DELETE` barrados por RLS volta com `error = null` e zero
+ * linhas — o PostgREST não enxerga a linha para escrever e simplesmente não
+ * devolve nada. Sem esta checagem a tela fechava o editor e mostrava
+ * "atualizado" com o banco intacto (achado do review da PR #571).
+ */
+function exigirLinhaAfetada(data: Array<{ id: string }> | null, acao: string): void {
+  if (!data?.length) {
+    throw new Error(`Sem permissão para ${acao}: nenhum registro foi alterado.`);
+  }
+}
+
 export function useUpdateReguaCobranca() {
   const qc = useQueryClient();
   return useMutation({
@@ -29,8 +41,13 @@ export function useUpdateReguaCobranca() {
       dias_gatilho?: number[];
       canais?: string[];
     }) => {
-      const { error } = await supabase.from('regua_cobranca').update(data).eq('id', id);
+      const { data: atualizado, error } = await supabase
+        .from('regua_cobranca')
+        .update(data)
+        .eq('id', id)
+        .select('id');
       if (error) throw error;
+      exigirLinhaAfetada(atualizado, 'alterar a etapa da régua');
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['regua-cobranca'] });
@@ -41,12 +58,23 @@ export function useUpdateReguaCobranca() {
 }
 
 // TEMPLATES DE COBRANÇA
-export function useTemplatesCobranca(etapa?: string) {
+export interface NovoTemplateCobranca {
+  empresa_id: string;
+  etapa: string;
+  canal: string;
+  tom: string;
+  /** `templates_cobranca.nome` é NOT NULL sem default — o insert falha sem ele. */
+  nome: string;
+  assunto?: string | null;
+  corpo: string;
+}
+
+export function useTemplatesCobranca(empresaId?: string) {
   return useQuery({
-    queryKey: ['templates-cobranca', etapa],
+    queryKey: ['templates-cobranca', empresaId],
     queryFn: async () => {
       let query = supabase.from('templates_cobranca').select('*').order('etapa').order('canal');
-      if (etapa) query = query.eq('etapa', etapa);
+      if (empresaId) query = query.eq('empresa_id', empresaId);
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
@@ -67,12 +95,56 @@ export function useUpdateTemplate() {
       tom?: string;
       ativo?: boolean;
     }) => {
-      const { error } = await supabase.from('templates_cobranca').update(data).eq('id', id);
+      const { data: atualizado, error } = await supabase
+        .from('templates_cobranca')
+        .update(data)
+        .eq('id', id)
+        .select('id');
       if (error) throw error;
+      exigirLinhaAfetada(atualizado, 'alterar o template');
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['templates-cobranca'] });
       toast.success('Template atualizado!');
+    },
+    onError: (e: Error) => toast.error(`Erro: ${e.message}`),
+  });
+}
+
+export function useCriarTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (template: NovoTemplateCobranca) => {
+      const { data: criado, error } = await supabase
+        .from('templates_cobranca')
+        .insert(template)
+        .select('id');
+      if (error) throw error;
+      exigirLinhaAfetada(criado, 'criar o template');
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['templates-cobranca'] });
+      toast.success('Template criado!');
+    },
+    onError: (e: Error) => toast.error(`Erro: ${e.message}`),
+  });
+}
+
+export function useExcluirTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const { data: excluido, error } = await supabase
+        .from('templates_cobranca')
+        .delete()
+        .eq('id', id)
+        .select('id');
+      if (error) throw error;
+      exigirLinhaAfetada(excluido, 'excluir o template');
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['templates-cobranca'] });
+      toast.success('Template excluído!');
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
