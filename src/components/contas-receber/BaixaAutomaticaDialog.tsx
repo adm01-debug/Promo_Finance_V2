@@ -342,9 +342,15 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        // A conta bancária do lote entra na transação: o FITID só identifica o
+        // crédito dentro da conta de origem, então sem ela duas contas com a
+        // mesma referência pareceriam o mesmo lançamento e uma pendência se
+        // perderia.
         const novasPendentes = [...unmatched, ...naoConfirmadas].map((transacao) => ({
           empresaId: empresaAlvo,
-          transacao,
+          transacao: contaBancariaId
+            ? { ...transacao, conta_bancaria_id: contaBancariaId }
+            : transacao,
         }));
         const falhasDeAlerta = await registrarDivergencias(user.id, novasPendentes);
         alertasFalhos = falhasDeAlerta.length;

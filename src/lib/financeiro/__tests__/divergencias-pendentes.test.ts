@@ -46,6 +46,12 @@ describe('chaveBancaria', () => {
     expect(chaveBancaria(pix('emp-1', 'csv-1-171'))).toBeNull();
     expect(chaveBancaria(pix('emp-1', 'csv-9-998'))).toBeNull();
   });
+
+  it('não inventa identidade quando a conta de origem é desconhecida', () => {
+    // O FITID só é único dentro da conta: sem ela, o mesmo número pode ser de
+    // outro crédito, de outra conta da mesma empresa.
+    expect(chaveBancaria(pix('emp-1', 'ofx-789-0', '789'))).toBeNull();
+  });
 });
 
 describe('mesclarPendentes', () => {
@@ -86,9 +92,30 @@ describe('mesclarPendentes', () => {
     expect(mescladas).toHaveLength(2);
   });
 
+  it('não substitui a pendência quando a conta de origem é desconhecida', () => {
+    const mescladas = mesclarPendentes(
+      [pix('emp-1', 'ofx-999-0', '999')],
+      [pix('emp-1', 'ofx-999-6', '999')]
+    );
+
+    // Sem conta não há como provar que é o mesmo crédito: preservar as duas é
+    // melhor do que apagar o alerta de um lançamento distinto.
+    expect(mescladas).toHaveLength(2);
+  });
+
+  it('mantém pendências de contas diferentes com a mesma referência do banco', () => {
+    const mescladas = mesclarPendentes(
+      [pix('emp-1', 'ofx-1-0', '123', 'cb-1')],
+      [pix('emp-1', 'ofx-1-6', '123', 'cb-2')]
+    );
+
+    // FITID 123 na conta A e FITID 123 na conta B são dois créditos.
+    expect(mescladas).toHaveLength(2);
+  });
+
   it('substitui a pendência antiga quando o crédito volta com a mesma referência', () => {
-    const antiga = pix('emp-1', 'ofx-999-0', '999');
-    const nova = pix('emp-1', 'ofx-999-6', '999');
+    const antiga = pix('emp-1', 'ofx-999-0', '999', 'cb-1');
+    const nova = pix('emp-1', 'ofx-999-6', '999', 'cb-1');
 
     const mescladas = mesclarPendentes([antiga], [nova]);
 
@@ -98,8 +125,8 @@ describe('mesclarPendentes', () => {
   });
 
   it('descarta a pendência antiga quando o alerta do crédito foi gravado agora', () => {
-    const antiga = pix('emp-1', 'ofx-999-0', '999');
-    const tentada = pix('emp-1', 'ofx-999-6', '999');
+    const antiga = pix('emp-1', 'ofx-999-0', '999', 'cb-1');
+    const tentada = pix('emp-1', 'ofx-999-6', '999', 'cb-1');
 
     // O crédito voltou ao lote, desta vez o insert passou: nada fica pendente.
     expect(mesclarPendentes([antiga], [], [tentada])).toHaveLength(0);

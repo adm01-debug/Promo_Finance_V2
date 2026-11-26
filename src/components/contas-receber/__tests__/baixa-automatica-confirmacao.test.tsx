@@ -80,7 +80,10 @@ vi.mock('@/lib/ofx-parser', () => ({
 
 vi.mock('@/hooks/useFinancialData', () => ({
   useContasBancarias: () => ({
-    data: [{ id: 'cb-1', banco: 'BB', agencia: '1234', conta: '5678' }],
+    data: [
+      { id: 'cb-1', banco: 'BB', agencia: '1234', conta: '5678' },
+      { id: 'cb-2', banco: 'Itaú', agencia: '9999', conta: '1111' },
+    ],
   }),
 }));
 
@@ -118,13 +121,21 @@ const transacaoCredito = (valor: number, descricao: string, data: string) => ({
   descricao,
 });
 
-const importar = async () => {
+const importar = async (divergencias = 2) => {
   const arquivo = new File(['OFX'], 'retorno.ofx');
   Object.defineProperty(arquivo, 'text', { value: () => Promise.resolve('OFX') });
   fireEvent.change(document.getElementById('retorno-upload') as HTMLInputElement, {
     target: { files: [arquivo] },
   });
-  await waitFor(() => expect(screen.getByText('Divergências Detectadas (2)')).toBeInTheDocument());
+  await waitFor(() =>
+    expect(screen.getByText(`Divergências Detectadas (${divergencias})`)).toBeInTheDocument()
+  );
+};
+
+// A conta bancária do lote é o que dá identidade ao FITID do extrato.
+const selecionarConta = async (nome: RegExp) => {
+  fireEvent.click(screen.getByRole('combobox'));
+  fireEvent.click(await screen.findByRole('option', { name: nome }));
 };
 
 const vincularTitulo = async () => {
@@ -445,14 +456,15 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     );
     abrirDialogo();
     await importar();
+    await selecionarConta(/BB/);
 
     fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
     await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
     expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
 
     // Segundo extrato do mesmo período: os mesmos créditos, com posições e ids
-    // diferentes, identificados pelo FITID. A fila não pode crescer, senão a nova
-    // tentativa grava dois alertas para o mesmo crédito.
+    // diferentes, identificados pelo FITID na mesma conta. A fila não pode
+    // crescer, senão a nova tentativa grava dois alertas para o mesmo crédito.
     fireEvent.click(screen.getByText('FECHAR'));
     await waitFor(() =>
       expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
@@ -464,6 +476,7 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
       ])
     );
     await importar();
+    await selecionarConta(/BB/);
     fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
     await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
     expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
@@ -479,6 +492,46 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     const gravados = alertas.slice(4).map((c) => (c.args[0] as { mensagem: string }).mensagem);
     expect(gravados.filter((m) => m.includes('PIX SEM PAR'))).toHaveLength(1);
     expect(gravados.filter((m) => m.includes('TED SEM PAR'))).toHaveLength(1);
+  });
+
+  it('não deixa o crédito de outra conta da mesma empresa ocupar a pendência', async () => {
+    erroAoGravarAlerta = true;
+    const credito = (valor: number, descricao: string, referencia: string) => ({
+      ...transacaoCredito(valor, descricao, '2026-04-20'),
+      numeroReferencia: referencia,
+    });
+    parseExtratoBancarioMock.mockReturnValue(extratoCom([credito(250, 'PIX CONTA A', '123')]));
+    abrirDialogo();
+    await importar(1);
+    await selecionarConta(/BB/);
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(1\)/)).toBeInTheDocument();
+
+    // O FITID 123 identifica a transação dentro da conta de origem: o crédito
+    // da conta B é outro lançamento e não pode tomar o lugar do PIX da conta A.
+    fireEvent.click(screen.getByText('FECHAR'));
+    await waitFor(() =>
+      expect(screen.getByText('Arraste o arquivo de retorno aqui')).toBeInTheDocument()
+    );
+    parseExtratoBancarioMock.mockReturnValue(extratoCom([credito(400, 'TED CONTA B', '123')]));
+    await importar(1);
+    await selecionarConta(/Itaú/);
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES \(2\)/)).toBeInTheDocument();
+
+    erroAoGravarAlerta = false;
+    fireEvent.click(screen.getByText(/REGISTRAR DIVERGÊNCIAS PENDENTES/));
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('2 divergências registradas como alerta.')
+    );
+    const gravados = chamadas
+      .filter((c) => c.tabela === 'alertas' && c.metodo === 'insert')
+      .slice(2)
+      .map((c) => (c.args[0] as { mensagem: string }).mensagem);
+    expect(gravados.filter((m) => m.includes('PIX CONTA A'))).toHaveLength(1);
+    expect(gravados.filter((m) => m.includes('TED CONTA B'))).toHaveLength(1);
   });
 
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
