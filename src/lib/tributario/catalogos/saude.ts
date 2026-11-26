@@ -195,6 +195,11 @@ export interface EntradaFrescorCatalogoRfb {
   ultimaCarga: string | Date | null;
   /** Versão IT gravada na carga mais recente (catálogos versionados). */
   versaoIt?: string | null;
+  /**
+   * Explicação curta que substitui o detalhe calculado (ex.: escopo ainda sem
+   * linha, mas com run recente do job).
+   */
+  nota?: string | null;
 }
 
 export interface FrescorCatalogoRfb {
@@ -261,6 +266,29 @@ export function escolherUltimaCarga(
 }
 
 /**
+ * Entrada de um escopo que ainda não tem nenhuma linha.
+ *
+ * O run recente prova que o job passou por ali, mas não prova carga — então o
+ * veredito vem da idade do run e a nota diz explicitamente que o catálogo está
+ * vazio. Sem isso, "a RFB ainda não publicou" e "a carga parou de gravar"
+ * ficavam idênticos no painel ("nunca sincronizado").
+ */
+export function entradaSemLinhas(
+  id: CatalogoRfbId,
+  ultimoRunOk: string | Date | null,
+  versaoIt: string | null = null
+): EntradaFrescorCatalogoRfb {
+  return {
+    id,
+    ultimaCarga: ultimoRunOk,
+    versaoIt,
+    nota: ultimoRunOk
+      ? 'Nenhuma linha carregada (RFB não publicou ou a carga não gravou)'
+      : null,
+  };
+}
+
+/**
  * Avalia o frescor de cada catálogo RFB contra a data de referência.
  *
  * Critério: nunca sincronizado é crítico (o catálogo inteiro está ausente);
@@ -287,13 +315,14 @@ export function avaliarFrescorCatalogosRfb(
           ? 'atencao'
           : 'ok';
     const detalhe =
-      ms === null
+      entrada.nota ??
+      (ms === null
         ? 'Nunca sincronizado'
         : status === 'atencao'
           ? `Sem sincronizar há mais de ${DIAS_ALERTA_CATALOGO_RFB} dias`
           : dias === 0
             ? 'Sincronizado hoje'
-            : `Sem sincronizar há ${plural(dias ?? 0, 'dia', 'dias')}`;
+            : `Sem sincronizar há ${plural(dias ?? 0, 'dia', 'dias')}`);
     return {
       id: entrada.id,
       titulo: TITULOS_CATALOGO_RFB[entrada.id] ?? entrada.id,

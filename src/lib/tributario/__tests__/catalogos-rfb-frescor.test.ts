@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   avaliarFrescorCatalogosRfb,
   DIAS_ALERTA_CATALOGO_RFB,
+  entradaSemLinhas,
   escolherUltimaCarga,
   TITULOS_CATALOGO_RFB,
 } from '../catalogos/saude';
@@ -117,6 +118,27 @@ describe('avaliarFrescorCatalogosRfb', () => {
     expect(r.catalogos.map((c) => c.status)).toEqual(['ok', 'ok', 'critico', 'critico']);
     expect(r.nuncaSincronizados).toBe(2);
     expect(r.resumo).toContain('2 catálogos nunca sincronizados');
+  });
+});
+
+describe('entradaSemLinhas', () => {
+  it('escopo vazio com run recente fica em dia e explica que nao ha linha', () => {
+    const r = avaliarFrescorCatalogosRfb([entradaSemLinhas('nbs', emDias(0))], HOJE);
+    expect(r.status).toBe('ok');
+    expect(r.catalogos[0].ultimaCarga).not.toBeNull();
+    expect(r.catalogos[0].detalhe).toContain('Nenhuma linha carregada');
+  });
+
+  it('escopo vazio com run atrasado continua alertando', () => {
+    const r = avaliarFrescorCatalogosRfb([entradaSemLinhas('nbs', emDias(20))], HOJE);
+    expect(r.status).toBe('atencao');
+    expect(r.catalogos[0].detalhe).toContain('Nenhuma linha carregada');
+  });
+
+  it('sem run nenhum volta a ser nunca sincronizado', () => {
+    const r = avaliarFrescorCatalogosRfb([entradaSemLinhas('nbs', null)], HOJE);
+    expect(r.status).toBe('critico');
+    expect(r.catalogos[0].detalhe).toBe('Nunca sincronizado');
   });
 });
 

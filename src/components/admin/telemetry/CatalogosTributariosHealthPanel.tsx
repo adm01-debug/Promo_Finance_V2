@@ -3,6 +3,7 @@ import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { supabase } from '@/integrations/supabase/client';
 import {
   avaliarFrescorCatalogosRfb,
+  entradaSemLinhas,
   escolherUltimaCarga,
   type CatalogoRfbId,
   type EntradaFrescorCatalogoRfb,
@@ -167,36 +168,36 @@ async function carregarFrescorCatalogosRfb(): Promise<EntradaFrescorCatalogoRfb[
   ]);
 
   // Catálogo sem nenhuma linha não tem carga para consultar: o job pode ter
-  // concluído sem gravar (escopo ainda não publicado pela RFB, por exemplo),
-  // então o veredito continua "nunca sincronizado" em vez de "carregado hoje".
-  const cargaDoEscopo = (carimbo: string | null, ultimoRun: string | null) =>
-    carimbo ? escolherUltimaCarga(carimbo, ultimoRun) : null;
+  // concluído sem gravar (escopo ainda não publicado pela RFB, por exemplo).
+  // O veredito passa a vir da idade do run, com a nota dizendo que não há linha.
+  const entrada = (
+    id: CatalogoRfbId,
+    carimbo: string | null,
+    ultimoRun: string | null,
+    versaoIt: string | null = null
+  ): EntradaFrescorCatalogoRfb =>
+    carimbo
+      ? { id, ultimaCarga: escolherUltimaCarga(carimbo, ultimoRun), versaoIt }
+      : entradaSemLinhas(id, ultimoRun, versaoIt);
 
   return [
-    {
-      id: 'cclasstrib',
-      ultimaCarga: cargaDoEscopo(cclasstrib.data?.[0]?.created_at ?? null, runCclasstrib),
-      versaoIt: cclasstrib.data?.[0]?.versao_it ?? null,
-    },
-    { id: 'ncm', ultimaCarga: cargaDoEscopo(ncm.data?.[0]?.carregado_em ?? null, runNcmNbs) },
-    { id: 'nbs', ultimaCarga: cargaDoEscopo(nbs.data?.[0]?.carregado_em ?? null, runNcmNbs) },
-    {
-      id: 'aliquota_cbs',
-      ultimaCarga: cargaDoEscopo(aliquotaCbs.data?.[0]?.carregado_em ?? null, runAliquota),
-    },
-    {
-      id: 'aliquota_ibs_uf',
-      ultimaCarga: cargaDoEscopo(aliquotaUf.data?.[0]?.carregado_em ?? null, runAliquota),
-    },
-    {
-      id: 'aliquota_ibs_mun',
-      ultimaCarga: cargaDoEscopo(aliquotaMun.data?.[0]?.carregado_em ?? null, runAliquota),
-    },
-    {
-      id: 'fundamentacao',
-      ultimaCarga: cargaDoEscopo(fundamentacao.data?.[0]?.created_at ?? null, runFundamentacao),
-      versaoIt: fundamentacao.data?.[0]?.versao_it ?? null,
-    },
+    entrada(
+      'cclasstrib',
+      cclasstrib.data?.[0]?.created_at ?? null,
+      runCclasstrib,
+      cclasstrib.data?.[0]?.versao_it ?? null
+    ),
+    entrada('ncm', ncm.data?.[0]?.carregado_em ?? null, runNcmNbs),
+    entrada('nbs', nbs.data?.[0]?.carregado_em ?? null, runNcmNbs),
+    entrada('aliquota_cbs', aliquotaCbs.data?.[0]?.carregado_em ?? null, runAliquota),
+    entrada('aliquota_ibs_uf', aliquotaUf.data?.[0]?.carregado_em ?? null, runAliquota),
+    entrada('aliquota_ibs_mun', aliquotaMun.data?.[0]?.carregado_em ?? null, runAliquota),
+    entrada(
+      'fundamentacao',
+      fundamentacao.data?.[0]?.created_at ?? null,
+      runFundamentacao,
+      fundamentacao.data?.[0]?.versao_it ?? null
+    ),
   ];
 }
 
