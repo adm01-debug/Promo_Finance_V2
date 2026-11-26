@@ -251,6 +251,8 @@ export const handler = async (req: Request) => {
       context: {
         data,
         versao_oficial: versaoDb,
+        recebidos_ncm: ncmsApi.length,
+        recebidos_nbs: nbsApi.length,
         ncm_gravados: ncm.gravados,
         nbs_gravados: nbs.gravados,
         ncm_encerrados: ncm.encerrados,

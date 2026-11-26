@@ -3,9 +3,13 @@ import {
   avaliarFrescorCatalogosRfb,
   DIAS_ALERTA_CATALOGO_RFB,
   DIAS_ALERTA_CATALOGO_RFB_SEMANAL,
+  entradaIndisponivel,
   entradaSemLinhas,
+  escolherRunComEscopo,
   escolherUltimaCarga,
+  exigeProvaDeEscopo,
   TITULOS_CATALOGO_RFB,
+  type LinhaLedgerRun,
 } from '../catalogos/saude';
 
 const HOJE = new Date('2026-11-26T12:00:00Z');
@@ -191,5 +195,108 @@ describe('escolherUltimaCarga', () => {
     expect(escolherUltimaCarga(null, null)).toBeNull();
     expect(escolherUltimaCarga('x', null)).toBeNull();
     expect(escolherUltimaCarga(null, 'x')).toBeNull();
+  });
+});
+
+describe('entradaIndisponivel', () => {
+  it('declara estado desconhecido em vez de catalogo vazio ou em dia', () => {
+    const r = avaliarFrescorCatalogosRfb([entradaIndisponivel('nbs')], HOJE);
+    expect(r.catalogos[0]).toMatchObject({
+      id: 'nbs',
+      status: 'atencao',
+      indisponivel: true,
+      detalhe: 'N\u00e3o foi poss\u00edvel consultar o cat\u00e1logo',
+    });
+    expect(r.indisponiveis).toBe(1);
+    // Leitura falhada nao e "sem sincronizar alem do prazo": e outro estado.
+    expect(r.desatualizados).toBe(0);
+    expect(r.nuncaSincronizados).toBe(0);
+    expect(r.status).toBe('atencao');
+    expect(r.resumo).toContain('sem leitura');
+  });
+
+  it('nao contamina o veredito dos outros catalogos', () => {
+    const r = avaliarFrescorCatalogosRfb(
+      [entradaIndisponivel('nbs'), { id: 'ncm', ultimaCarga: emDias(1) }],
+      HOJE
+    );
+    expect(r.catalogos[0].indisponivel).toBe(true);
+    expect(r.catalogos[1]).toMatchObject({ status: 'ok', indisponivel: false });
+    expect(r.resumo).toBe('1 cat\u00e1logo sem leitura');
+  });
+});
+
+describe('escolherRunComEscopo', () => {
+  const linha = (
+    event: 'sync concluido' | 'request_end',
+    request_id: string,
+    status_code: number | null,
+    metadata: Record<string, unknown>,
+    created_at: string
+  ): LinhaLedgerRun => ({ created_at, event, status_code, metadata: { request_id, ...metadata } });
+
+  it('so exige prova propria nos escopos que dividem o job', () => {
+    expect(exigeProvaDeEscopo('ncm')).toBe(true);
+    expect(exigeProvaDeEscopo('nbs')).toBe(true);
+    expect(exigeProvaDeEscopo('aliquota_ibs_mun')).toBe(true);
+    expect(exigeProvaDeEscopo('cclasstrib')).toBe(false);
+    expect(exigeProvaDeEscopo('aliquota_ibs_uf')).toBe(false);
+  });
+
+  it('ignora o run do job quando o escopo nao foi consultado', () => {
+    // Job diario de NCM/NBS que respondeu 200: o NBS pode ter sido pulado.
+    const linhas = [
+      linha('sync concluido', 'r1', null, { recebidos_ncm: 420, recebidos_nbs: 0 }, '2026-11-25T03:00:00Z'),
+      linha('request_end', 'r1', 200, {}, '2026-11-25T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('nbs', linhas)).toBeNull();
+    expect(escolherRunComEscopo('ncm', linhas)).toBe('2026-11-25T03:00:00Z');
+  });
+
+  it('aceita o run que consultou o escopo mesmo sem gravar linha', () => {
+    const linhas = [
+      linha('sync concluido', 'r1', null, { recebidos_nbs: 12, nbs_gravados: 0 }, '2026-11-25T03:00:00Z'),
+      linha('request_end', 'r1', 200, {}, '2026-11-25T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('nbs', linhas)).toBe('2026-11-25T03:00:00Z');
+  });
+
+  it('descarta requisicao que falhou ou que ainda nao terminou', () => {
+    const falhou = [
+      linha('sync concluido', 'r1', null, { recebidos_nbs: 12 }, '2026-11-25T03:00:00Z'),
+      linha('request_end', 'r1', 502, {}, '2026-11-25T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('nbs', falhou)).toBeNull();
+    const semFim = [
+      linha('sync concluido', 'r1', null, { recebidos_nbs: 12 }, '2026-11-25T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('nbs', semFim)).toBeNull();
+  });
+
+  it('nao deixa a rotina diaria datar o escopo municipal', () => {
+    const diaria = [
+      linha(
+        'sync concluido',
+        'diaria',
+        null,
+        { escopo: 'uf', uf_consultados: 27, municipio_consultados: 0 },
+        '2026-11-25T03:00:00Z'
+      ),
+      linha('request_end', 'diaria', 200, {}, '2026-11-25T03:00:00Z'),
+    ];
+    expect(escolherRunComEscopo('aliquota_ibs_mun', diaria)).toBeNull();
+
+    const semanal = [
+      linha(
+        'sync concluido',
+        'semanal',
+        null,
+        { escopo: 'municipio', municipio_consultados: 40, municipio_gravados: 0 },
+        '2026-11-23T03:00:00Z'
+      ),
+      linha('request_end', 'semanal', 200, {}, '2026-11-23T03:00:00Z'),
+      ...diaria,
+    ];
+    expect(escolherRunComEscopo('aliquota_ibs_mun', semanal)).toBe('2026-11-23T03:00:00Z');
   });
 });

@@ -229,6 +229,8 @@ congela quando a carga só reescreve chaves existentes, porque o `upsert` preser
 As alíquotas aparecem por escopo (CBS, IBS/UF — diários — e IBS municipal, semanal) e
 o NBS tem linha própria, para que um escopo sem carga não fique escondido atrás do outro.
 
+Como o job de alíquotas e o de NCM/NBS atendem mais de um escopo, o 2xx do job não serve como prova de carga para todos eles: o painel casa o `request_end` com o `sync concluido` da mesma requisição e só aceita o run quando o `metadata` mostra o escopo consultado (`recebidos_ncm`, `recebidos_nbs`, `municipio_consultados`). Assim a rodada diária, que não consulta município, não data o IBS municipal.
+
 
 ## Vigência e o consumidor (etapa 46)
 

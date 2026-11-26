@@ -212,6 +212,11 @@ export interface EntradaFrescorCatalogoRfb {
    * Use `DIAS_ALERTA_CATALOGO_RFB_SEMANAL` para cargas de cadência semanal.
    */
   limiteDias?: number;
+  /**
+   * A leitura do catálogo (ou do ledger de runs) falhou: o estado real é
+   * desconhecido. Diferente de "nenhuma linha", que é um fato observado.
+   */
+  indisponivel?: boolean;
 }
 
 export interface FrescorCatalogoRfb {
@@ -225,6 +230,8 @@ export interface FrescorCatalogoRfb {
   status: StatusFrescorRfb;
   /** Frase curta para a linha do painel. */
   detalhe: string;
+  /** A leitura falhou: o estado real é desconhecido. */
+  indisponivel: boolean;
 }
 
 export interface SaudeCatalogosRfb {
@@ -234,6 +241,8 @@ export interface SaudeCatalogosRfb {
   desatualizados: number;
   /** Catálogos sem nenhuma carga. */
   nuncaSincronizados: number;
+  /** Catálogos cuja leitura falhou (estado desconhecido). */
+  indisponiveis: number;
   resumo: string;
 }
 
@@ -321,8 +330,15 @@ export function avaliarFrescorCatalogosRfb(
     const limiteDias = entrada.limiteDias ?? DIAS_ALERTA_CATALOGO_RFB;
     // O limite é medido no relógio, não em dias cheios: 7 dias e 12 horas já é
     // atraso, mesmo que `diasSemSync` (truncado) ainda mostre 7.
-    const status: StatusFrescorRfb =
-      ms === null ? 'critico' : ms > limiteDias * MS_POR_DIA ? 'atencao' : 'ok';
+    // Leitura indisponível não é "nunca sincronizado": a consulta falhou, o
+    // dado pode estar em dia. Vira atenção, com o motivo no detalhe.
+    const status: StatusFrescorRfb = entrada.indisponivel
+      ? 'atencao'
+      : ms === null
+        ? 'critico'
+        : ms > limiteDias * MS_POR_DIA
+          ? 'atencao'
+          : 'ok';
     const detalhe =
       entrada.nota ??
       (ms === null
@@ -340,15 +356,26 @@ export function avaliarFrescorCatalogosRfb(
       versaoIt: entrada.versaoIt ?? null,
       status,
       detalhe,
+      indisponivel: entrada.indisponivel === true,
     };
   });
 
-  const desatualizados = catalogos.filter((c) => c.status === 'atencao').length;
+  const indisponiveis = catalogos.filter((c) => c.indisponivel).length;
+  const desatualizados = catalogos.filter(
+    (c) => !c.indisponivel && c.status === 'atencao'
+  ).length;
   const nuncaSincronizados = catalogos.filter((c) => c.status === 'critico').length;
   const status: StatusFrescorRfb =
-    nuncaSincronizados > 0 ? 'critico' : desatualizados > 0 ? 'atencao' : 'ok';
+    nuncaSincronizados > 0
+      ? 'critico'
+      : desatualizados > 0 || indisponiveis > 0
+        ? 'atencao'
+        : 'ok';
 
   const partes: string[] = [];
+  if (indisponiveis > 0) {
+    partes.push(plural(indisponiveis, 'catálogo sem leitura', 'catálogos sem leitura'));
+  }
   if (nuncaSincronizados > 0) {
     partes.push(
       plural(nuncaSincronizados, 'catálogo nunca sincronizado', 'catálogos nunca sincronizados')
@@ -362,5 +389,120 @@ export function avaliarFrescorCatalogosRfb(
       ? partes.join(' · ')
       : 'Catálogos RFB sincronizados dentro do prazo';
 
-  return { status, catalogos, desatualizados, nuncaSincronizados, resumo };
+  return { status, catalogos, desatualizados, nuncaSincronizados, indisponiveis, resumo };
+}
+
+/**
+ * Entrada de um catálogo que não pôde ser lido.
+ *
+ * A falta de carimbo sozinha não diz nada: a consulta pode ter falhado com o
+ * catálogo em dia. Declarar "nunca sincronizado" nesse caso é um falso positivo
+ * tão ruim quanto o silêncio, então o estado vira "sem leitura".
+ */
+export function entradaIndisponivel(id: CatalogoRfbId): EntradaFrescorCatalogoRfb {
+  return {
+    id,
+    ultimaCarga: null,
+    indisponivel: true,
+    nota: 'Não foi possível consultar o catálogo',
+  };
+}
+
+/** Linha do ledger de observabilidade (`edge_function_logs`). */
+export interface LinhaLedgerRun {
+  created_at: string;
+  event: string | null;
+  status_code: number | null;
+  metadata?: Record<string, unknown> | null;
+}
+
+/**
+ * Escopos que dividem o job de borda com outro escopo.
+ *
+ * Nesses casos o 2xx do job não prova nada sobre o escopo: o job de NCM/NBS
+ * responde 200 gravando só o NCM, e a rotina diária de alíquotas responde 200
+ * sem consultar município nenhum.
+ */
+const ESCOPOS_COM_JOB_COMPARTILHADO: ReadonlySet<CatalogoRfbId> = new Set<CatalogoRfbId>([
+  'ncm',
+  'nbs',
+  'aliquota_ibs_mun',
+]);
+
+/** O frescor deste catálogo exige prova de que o próprio escopo foi consultado. */
+export function exigeProvaDeEscopo(id: CatalogoRfbId): boolean {
+  return ESCOPOS_COM_JOB_COMPARTILHADO.has(id);
+}
+
+function contagem(metadata: Record<string, unknown> | null | undefined, campo: string): number {
+  const valor = metadata?.[campo];
+  if (typeof valor === 'number' && Number.isFinite(valor)) return valor;
+  if (typeof valor === 'string') {
+    const numero = Number(valor);
+    return Number.isFinite(numero) ? numero : 0;
+  }
+  return 0;
+}
+
+/**
+ * O `sync concluido` de um run prova que este escopo foi consultado?
+ *
+ * É o que separa "escopo ainda não publicado pela RFB" (consulta concluída, nada
+ * gravado) de "escopo não executado" (o job nem passou por ali).
+ */
+export function runComprovaEscopo(
+  id: CatalogoRfbId,
+  metadata: Record<string, unknown> | null | undefined
+): boolean {
+  switch (id) {
+    case 'ncm':
+      return contagem(metadata, 'recebidos_ncm') > 0;
+    case 'nbs':
+      return contagem(metadata, 'recebidos_nbs') > 0;
+    case 'aliquota_ibs_mun':
+      return contagem(metadata, 'municipio_consultados') > 0;
+    default:
+      // Job de escopo único: o 2xx do próprio run já é a prova.
+      return true;
+  }
+}
+
+/**
+ * Data do run mais recente que consultou o escopo pedido.
+ *
+ * `linhas` vem do ledger em ordem decrescente de `created_at`. Cada requisição
+ * grava um `request_end` (com o status HTTP real) e o job grava um
+ * `sync concluido` com o que consultou; os dois se encontram pelo `request_id`
+ * do `metadata`. Assim o run só conta quando terminou bem **e** passou pelo
+ * escopo.
+ */
+export function escolherRunComEscopo(
+  id: CatalogoRfbId,
+  linhas: readonly LinhaLedgerRun[]
+): string | null {
+  const porRequisicao = new Map<string, { ok: boolean; falhou: boolean }>();
+  for (const linha of linhas) {
+    if (linha.event !== 'request_end') continue;
+    const req = String(linha.metadata?.request_id ?? '');
+    if (!req) continue;
+    const atual = porRequisicao.get(req) ?? { ok: false, falhou: false };
+    if (typeof linha.status_code === 'number' && linha.status_code >= 200 && linha.status_code < 300) {
+      atual.ok = true;
+    } else {
+      atual.falhou = true;
+    }
+    porRequisicao.set(req, atual);
+  }
+
+  for (const linha of linhas) {
+    if (linha.event !== 'sync concluido') continue;
+    const req = String(linha.metadata?.request_id ?? '');
+    if (!req) continue;
+    const estado = porRequisicao.get(req);
+    // Sem `request_end` a requisição ainda não terminou; com erro, o job falhou.
+    if (!estado?.ok || estado.falhou) continue;
+    if (!runComprovaEscopo(id, linha.metadata)) continue;
+    return linha.created_at;
+  }
+  return null;
 }
