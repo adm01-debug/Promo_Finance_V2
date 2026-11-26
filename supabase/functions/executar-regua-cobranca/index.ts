@@ -214,7 +214,8 @@ async function enviarCobranca(
 ): Promise<string | null> {
   const cliente = Array.isArray(conta.clientes) ? conta.clientes[0] : conta.clientes;
   const template = await carregarTemplate(supabase, origem.empresaId, origem.etapa, canal);
-  const corpoBase = template?.corpo?.trim() || regra.descricao || 'Seu título está próximo do vencimento.';
+  const corpoBase =
+    template?.corpo?.trim() || regra.descricao || 'Seu título está próximo do vencimento.';
   const mensagem = aplicarVariaveis(corpoBase, {
     cliente: cliente?.nome ?? 'cliente',
     valor: conta.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
