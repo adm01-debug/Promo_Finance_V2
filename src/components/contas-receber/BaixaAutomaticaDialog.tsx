@@ -43,6 +43,9 @@ import {
   type DivergenciaPendente,
 } from '@/lib/financeiro/divergencias-pendentes';
 
+// Radix Select não aceita valor vazio: o item "sem conta" é o sentinela de ''.
+const SEM_CONTA = 'sem-conta';
+
 export function BaixaAutomaticaDialog({
   open,
   onOpenChange,
@@ -243,17 +246,17 @@ export function BaixaAutomaticaDialog({
       resetState();
       return;
     }
-    // Um arquivo com mais de uma conta traz créditos que caíram em agências
-    // diferentes. Gravar todos no mesmo destino escolhido atribuiria o
-    // recebimento ao banco errado — a baixa exige um arquivo por conta.
+    // Um lote com créditos de contas diferentes não pode lançar todos no mesmo
+    // destino escolhido: os títulos seriam conciliados no banco errado. Divergências
+    // de outra conta não entram na conta — elas viram alerta com a origem própria.
     const origens = new Set(
-      (resultado?.extrato?.transacoes ?? [])
-        .map((t) => t.origemConta)
+      matches
+        .map((m) => m.transacao.origemConta)
         .filter((origem): origem is string => Boolean(origem))
     );
     if (contaBancariaId && origens.size > 1) {
       toast.error(
-        'O arquivo tem créditos de contas diferentes. Importe um arquivo por conta para escolher a conta de destino.'
+        'Os créditos vinculados vieram de contas diferentes. Escolha "Sem conta bancária" para liquidar sem lançamento ou importe um arquivo por conta.'
       );
       return;
     }
@@ -610,11 +613,15 @@ export function BaixaAutomaticaDialog({
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Landmark className="h-3 w-3" /> Conta Bancária de Destino
                 </p>
-                <Select value={contaBancariaId} onValueChange={setContaBancariaId}>
+                <Select
+                  value={contaBancariaId || SEM_CONTA}
+                  onValueChange={(valor) => setContaBancariaId(valor === SEM_CONTA ? '' : valor)}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione a conta para registrar os lançamentos" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value={SEM_CONTA}>Sem conta bancária (só liquidar)</SelectItem>
                     {contasBancarias.map((cb) => (
                       <SelectItem key={cb.id} value={cb.id}>
                         {cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}
@@ -623,8 +630,7 @@ export function BaixaAutomaticaDialog({
                   </SelectContent>
                 </Select>
                 <p className="text-[10px] text-muted-foreground">
-                  Sem conta selecionada, os títulos são liquidados sem lançamento bancário de
-                  conciliação.
+                  Escolha "Sem conta bancária" para liquidar sem lançamento bancário de conciliação.
                 </p>
               </div>
 

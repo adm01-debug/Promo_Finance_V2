@@ -604,7 +604,78 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
     expect(gravados.at(-1)).toContain('PIX CONTA B');
   });
 
-  it('bloqueia a baixa com destino único quando o arquivo traz contas diferentes', async () => {
+  it('bloqueia o destino único quando os créditos vinculados vieram de contas diferentes', async () => {
+    const credito = (
+      valor: number,
+      descricao: string,
+      referencia: string,
+      origemConta: string
+    ) => ({
+      ...transacaoCredito(valor, descricao, '2026-04-20'),
+      numeroReferencia: referencia,
+      origemConta,
+    });
+    const vincularPorNome = async (nome: string) => {
+      fireEvent.click(screen.getAllByText('Vincular Manualmente')[0]);
+      await waitFor(() => expect(screen.getByText('Vincular manualmente')).toBeInTheDocument());
+      const candidato = await screen.findByLabelText(`Vincular ${nome}`);
+      fireEvent.click(candidato);
+    };
+
+    // Segundo título em aberto: sem ele só um crédito do lote poderia ser
+    // vinculado e o destino único nunca seria múltiplo.
+    titulosEmAberto.push({
+      id: 'conta-2',
+      cliente_nome: 'Alfa SA',
+      descricao: 'Serviço',
+      valor: 999,
+      data_vencimento: '2026-04-10',
+      status: 'pendente',
+    });
+    try {
+      parseExtratoBancarioMock.mockReturnValue(
+        extratoCom([
+          credito(1500, 'TED RECEBIDA', '111', '001/1234/5678'),
+          credito(999, 'PIX SEM PAR', '222', '341/9999/1111'),
+        ])
+      );
+      abrirDialogo();
+      await importar(2);
+      await vincularPorNome('Beta ME');
+      await vincularPorNome('Alfa SA');
+      await selecionarConta(/BB/);
+
+      fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+
+      // O crédito de 999 veio da conta 341/9999/1111: gravá-lo no destino BB
+      // conciliaria o recebimento no banco errado.
+      await waitFor(() =>
+        expect(toastError).toHaveBeenCalledWith(
+          'Os créditos vinculados vieram de contas diferentes. Escolha "Sem conta bancária" para liquidar sem lançamento ou importe um arquivo por conta.'
+        )
+      );
+      expect(
+        chamadas.filter((c) => c.tabela === 'contas_receber' && c.metodo === 'update')
+      ).toHaveLength(0);
+      expect(screen.queryByText('Volume Recuperado')).not.toBeInTheDocument();
+
+      // O destino pode ser removido sem perder os vínculos manuais da prévia.
+      await selecionarConta(/Sem conta bancária/);
+      fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+
+      await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+      expect(
+        chamadas.filter((c) => c.tabela === 'contas_receber' && c.metodo === 'update')
+      ).toHaveLength(2);
+      expect(
+        chamadas.filter((c) => c.tabela === 'transacoes_bancarias' && c.metodo === 'insert')
+      ).toHaveLength(0);
+    } finally {
+      titulosEmAberto.pop();
+    }
+  });
+
+  it('liquida quando só uma das contas do arquivo tem título vinculado', async () => {
     const credito = (
       valor: number,
       descricao: string,
@@ -618,28 +689,23 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
 
     parseExtratoBancarioMock.mockReturnValue(
       extratoCom([
-        credito(1500, 'TED RECEBIDA', '111', '341/9999/1111'),
-        credito(999, 'PIX SEM PAR', '222', '001/1234/5678'),
+        credito(1500, 'TED RECEBIDA', '111', '001/1234/5678'),
+        credito(999, 'PIX SEM PAR', '222', '341/9999/1111'),
       ])
     );
     abrirDialogo();
     await importar(2);
+    await vincularTitulo();
     await selecionarConta(/BB/);
 
     fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
 
-    // O crédito de 1500 veio da conta 341/9999/1111: gravá-lo no destino
-    // escolhido atribuiria o recebimento ao banco errado.
-    await waitFor(() =>
-      expect(toastError).toHaveBeenCalledWith(
-        'O arquivo tem créditos de contas diferentes. Importe um arquivo por conta para escolher a conta de destino.'
-      )
+    // O crédito da outra conta é divergência (vira alerta com a origem dele) e
+    // não pode impedir a liquidação dos títulos vinculados.
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+    expect(toastError).not.toHaveBeenCalledWith(
+      'Os créditos vinculados vieram de contas diferentes. Escolha "Sem conta bancária" para liquidar sem lançamento ou importe um arquivo por conta.'
     );
-    expect(
-      chamadas.filter((c) => c.tabela === 'contas_receber' && c.metodo === 'update')
-    ).toHaveLength(0);
-    expect(screen.queryByText('Volume Recuperado')).not.toBeInTheDocument();
-    expect(screen.getByText('Divergências Detectadas (2)')).toBeInTheDocument();
   });
 
   it('grava as divergências pendentes na empresa do lote de origem', async () => {
