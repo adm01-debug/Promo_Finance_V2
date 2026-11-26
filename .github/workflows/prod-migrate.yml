@@ -278,10 +278,13 @@ jobs:
             # proprio CLI.
             if grep -q 'Applying migration' /tmp/prod-diff-pos.sql &&
               grep -qE 'ERROR.*(42501|must be owner|23505|42P07|42710|42701|42P06|duplicate key value|already exists)' /tmp/prod-diff-pos.sql; then
-              if [ "$LEDGER_OK" = 1 ]; then
-                echo "::warning::Diff de DDL nao verificavel: shadow replay abortou no replay por limitacao conhecida do harness (ownership ou colisao de replay). Paridade conferida apenas pelo ledger de PROD (ledger: ok)."
+              # O aviso de paridade so vale com o ledger LIDO E EM PARIDADE:
+              # `LEDGER_OK` marca apenas que o ledger foi lido, e com migration
+              # pendente a afirmacao "ledger: ok" contradiria o proprio estado.
+              if [ "$LEDGER_OK" = 1 ] && [ "$LEDGER_ESTADO" = ok ]; then
+                echo "::warning::Diff de DDL nao verificavel: o shadow replay abortou por limitacao conhecida do harness (ownership ou colisao de replay). Paridade conferida apenas pelo ledger de PROD (ledger: ok)."
               else
-                echo "::error::Diff de DDL nao verificavel E ledger de PROD nao conferido - paridade com migrations/ NAO verificada."
+                echo "::error::Diff de DDL nao verificavel E ledger de PROD nao conferido (ledger: $LEDGER_ESTADO) - paridade com migrations/ NAO verificada."
                 FALHA=1
               fi
             else
