@@ -96,12 +96,16 @@ export function BaixaAutomaticaDialog({
 
     const matched: MatchResult[] = [];
     const notMatched: TransacaoBancaria[] = [];
+    // Cada título só pode quitar um crédito do extrato: sem reservar, dois
+    // créditos do mesmo valor apontavam para o mesmo título e o segundo era
+    // rejeitado na confirmação sem virar divergência.
+    const disponiveis = [...contas];
 
     for (const t of extrato.transacoes) {
       if (t.tipo !== 'credito') continue;
 
       // Matching simples por valor e data aproximada
-      const match = contas.find((c) => {
+      const indice = disponiveis.findIndex((c) => {
         const valorMatch = Math.abs(c.valor - t.valor) < 0.05;
         const dataT = new Date(t.data);
         const dataC = new Date(c.data_vencimento);
@@ -109,7 +113,8 @@ export function BaixaAutomaticaDialog({
         return valorMatch && diffDias <= 5;
       });
 
-      if (match) {
+      if (indice >= 0) {
+        const [match] = disponiveis.splice(indice, 1);
         matched.push({
           transacao: t,
           contaId: match.id,
@@ -158,20 +163,23 @@ export function BaixaAutomaticaDialog({
   };
 
   const handleVincularManual = (transacao: TransacaoBancaria, conta: ContaCandidata) => {
-    setMatches((prev) => {
-      if (prev.some((m) => m.contaId === conta.id)) return prev;
-      return [
-        ...prev,
-        {
-          transacao,
-          contaId: conta.id,
-          cliente: conta.cliente_nome ?? '',
-          vencimento: conta.data_vencimento,
-          valor: conta.valor,
-          confianca: 'manual',
-        },
-      ];
-    });
+    if (matches.some((m) => m.contaId === conta.id)) {
+      toast.error(
+        `${conta.cliente_nome ?? 'Título'} já está vinculado a outro crédito deste lote.`
+      );
+      return;
+    }
+    setMatches((prev) => [
+      ...prev,
+      {
+        transacao,
+        contaId: conta.id,
+        cliente: conta.cliente_nome ?? '',
+        vencimento: conta.data_vencimento,
+        valor: conta.valor,
+        confianca: 'manual',
+      },
+    ]);
     setUnmatched((prev) => prev.filter((t) => t !== transacao));
   };
 
@@ -194,6 +202,10 @@ export function BaixaAutomaticaDialog({
     // liquidação — o título foi processado e não pode contar como "não
     // processado" (dedupe por título: 1 líquidação = 1 falha máxima).
     let auxFailCount = 0;
+    // Créditos cuja liquidação não pôde ser confirmada (título já liquidado ou
+    // valor alterado entre a leitura e a escrita) precisam virar divergência,
+    // senão o lote termina sem lançamento bancário e sem alerta de reprocesso.
+    const naoConfirmadas: TransacaoBancaria[] = [];
 
     try {
       for (const m of matches) {
@@ -218,18 +230,24 @@ export function BaixaAutomaticaDialog({
           // Revalidação no ato da escrita: o título pode ter sido liquidado
           // (pago/recebido) ou cancelado depois da leitura das candidatas.
           .not('status', 'in', '(pago,recebido,cancelado)')
+          // Revalidação do valor: se o título foi editado (aumentado/reduzido)
+          // depois da leitura, o crédito selecionado não quita mais o saldo e
+          // não pode ser marcado como pago — vira divergência para reprocesso.
+          .eq('valor', m.valor)
           .select('id');
 
         if (error) {
           failCount++;
+          naoConfirmadas.push(m.transacao);
           toast.error(`Falha ao liquidar ${m.cliente}: ${error.message}`);
           continue;
         }
 
         if (!liquidadas || liquidadas.length === 0) {
           failCount++;
+          naoConfirmadas.push(m.transacao);
           toast.error(
-            `${m.cliente} não foi liquidado: o título já estava pago, recebido ou cancelado.`
+            `${m.cliente} não foi liquidado: o título já estava pago, recebido ou cancelado, ou o valor foi alterado após a vinculação.`
           );
           continue;
         }
@@ -281,7 +299,7 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        for (const t of unmatched) {
+        for (const t of [...unmatched, ...naoConfirmadas]) {
           // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
           await supabase.from('alertas').insert({
             user_id: user.id,

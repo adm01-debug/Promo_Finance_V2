@@ -44,7 +44,10 @@ const consultar = () => {
 const limitMock = vi.fn(() => Promise.resolve(consultar()));
 const orderMock = vi.fn(() => ({ limit: limitMock }));
 const orMock = vi.fn((expr: string) => {
-  termoServidor = expr.split('.ilike.%')[1]?.split('%')[0]?.toLowerCase() ?? null;
+  // O valor agora vai entre aspas duplas (padrão PostgREST): vírgula, ponto e
+  // parênteses dentro do texto do usuário são literais.
+  const capturado = /\.ilike\."(%(?:[^"\\]|\\.)*%)"/.exec(expr);
+  termoServidor = capturado ? capturado[1].replace(/^%|%$/g, '').toLowerCase() : null;
   return { order: orderMock };
 });
 const neqCanceladoMock = vi.fn(() => ({ order: orderMock, or: orMock }));
@@ -141,9 +144,25 @@ describe('VincularManualmenteDialog', () => {
     });
 
     await waitFor(() => expect(orMock).toHaveBeenCalled());
-    expect(orMock.mock.calls[0][0]).toContain('cliente_nome.ilike.%alfa%');
+    expect(orMock.mock.calls[0][0]).toBe('cliente_nome.ilike."%alfa%",descricao.ilike."%alfa%"');
     await waitFor(() => expect(screen.queryByText('Beta ME')).not.toBeInTheDocument());
     expect(screen.getByText('Alfa Ltda')).toBeInTheDocument();
+  });
+
+  it('mantém vírgulas e curingas do texto dentro das aspas do filtro', async () => {
+    renderDialog();
+    await waitFor(() => expect(screen.getByText('Beta ME')).toBeInTheDocument());
+
+    fireEvent.change(screen.getByLabelText('Buscar título em aberto'), {
+      target: { value: 'Consultoria, 50%' },
+    });
+
+    await waitFor(() => expect(orMock).toHaveBeenCalled());
+    const expressao = orMock.mock.calls[0][0];
+    // Sem aspas, a vírgula encerraria a condição e o PostgREST responderia erro.
+    expect(expressao).toContain('cliente_nome.ilike."%Consultoria, 50');
+    expect(expressao).toContain('descricao.ilike."%Consultoria, 50');
+    expect(expressao.match(/"/g)).toHaveLength(4);
   });
 
   it('devolve o título escolhido e fecha o diálogo', async () => {

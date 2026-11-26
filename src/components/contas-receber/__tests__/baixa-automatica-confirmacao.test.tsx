@@ -168,12 +168,21 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
       })
     );
 
-    const filtros = chamadas
-      .filter((c) => c.tabela === 'contas_receber' && c.metodo !== 'update')
+    // Escopo de escrita: só o encadeamento que segue o update() prova que o
+    // filtro de empresa/valor está na gravação — as leituras também filtram
+    // por empresa, então olhar a lista inteira não comprovaria nada.
+    const indiceUpdate = chamadas.findIndex(
+      (c) => c.tabela === 'contas_receber' && c.metodo === 'update'
+    );
+    expect(indiceUpdate).toBeGreaterThanOrEqual(0);
+    const filtrosEscrita = chamadas
+      .slice(indiceUpdate + 1)
+      .filter((c) => c.tabela === 'contas_receber')
       .map((c) => [c.metodo, ...c.args] as unknown[]);
-    expect(filtros).toContainEqual(['eq', 'id', 'conta-1']);
-    expect(filtros).toContainEqual(['eq', 'empresa_id', 'emp-1']);
-    expect(filtros).toContainEqual(['not', 'status', 'in', '(pago,recebido,cancelado)']);
+    expect(filtrosEscrita).toContainEqual(['eq', 'id', 'conta-1']);
+    expect(filtrosEscrita).toContainEqual(['eq', 'empresa_id', 'emp-1']);
+    expect(filtrosEscrita).toContainEqual(['not', 'status', 'in', '(pago,recebido,cancelado)']);
+    expect(filtrosEscrita).toContainEqual(['eq', 'valor', 1500]);
 
     const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
     expect(alertas).toHaveLength(1);
@@ -232,6 +241,50 @@ describe('BaixaAutomaticaDialog — vínculo manual e confirmação do lote', ()
         detalhes: expect.objectContaining({ sucesso_count: 0, falha_count: 1 }),
       }),
     ]);
+
+    // O crédito cuja baixa não se confirmou precisa virar divergência para
+    // reprocesso — antes ele só entrava na contagem de falhas.
+    const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
+    // 1 alerta do crédito sem par + 1 do crédito cuja baixa não se confirmou.
+    expect(alertas).toHaveLength(2);
+    expect(alertas[0].args[0]).toEqual(
+      expect.objectContaining({ tipo: 'divergencia_baixa', user_id: 'user-1' })
+    );
+  });
+
+  it('não associa dois créditos do extrato ao mesmo título', async () => {
+    parseExtratoBancarioMock.mockReturnValue(
+      extratoCom([
+        transacaoCredito(1500, 'TED RECEBIDA 1', '2026-04-10'),
+        transacaoCredito(1500, 'TED RECEBIDA 2', '2026-04-10'),
+      ])
+    );
+
+    abrirDialogo();
+    const arquivo = new File(['OFX'], 'retorno.ofx');
+    Object.defineProperty(arquivo, 'text', { value: () => Promise.resolve('OFX') });
+    fireEvent.change(document.getElementById('retorno-upload') as HTMLInputElement, {
+      target: { files: [arquivo] },
+    });
+    await waitFor(() =>
+      expect(screen.getByText('Correspondências Automáticas (1)')).toBeInTheDocument()
+    );
+    // Só um crédito pode casar com o único título de R$ 1.500,00; o outro
+    // precisa cair nas divergências em vez de apontar para o mesmo título.
+    expect(screen.getByText('Divergências Detectadas (1)')).toBeInTheDocument();
+    expect(screen.getByText('Correspondências Automáticas (1)')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('CONFIRMAR BAIXA EM MASSA'));
+    await waitFor(() => expect(screen.getByText('Volume Recuperado')).toBeInTheDocument());
+
+    const logs = chamadas.find((c) => c.tabela === 'logs_baixa_automatica');
+    expect(logs?.args[0]).toEqual([
+      expect.objectContaining({
+        detalhes: expect.objectContaining({ sucesso_count: 1, falha_count: 0 }),
+      }),
+    ]);
+    const alertas = chamadas.filter((c) => c.tabela === 'alertas' && c.metodo === 'insert');
+    expect(alertas).toHaveLength(1);
   });
 
   it('descarta o lote quando a empresa muda antes da confirmação', async () => {

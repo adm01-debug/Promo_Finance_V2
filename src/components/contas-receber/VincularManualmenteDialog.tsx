@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, formatDate } from '@/lib/formatters';
+import { padraoIlikeContem } from '@/lib/postgrest-filtros';
 import type { TransacaoBancaria } from './BaixaAutomaticaDialog.types';
 
 export interface ContaCandidata {
@@ -69,7 +70,7 @@ export function VincularManualmenteDialog({
     isLoading: carregando,
     error: erroConsulta,
   } = useQuery({
-    queryKey: ['contas-receber-candidatas', empresaId, termo],
+    queryKey: ['contas-receber', 'candidatas', empresaId, termo],
     enabled: open && !!empresaId,
     staleTime: 30_000,
     queryFn: async () => {
@@ -82,7 +83,9 @@ export function VincularManualmenteDialog({
         .neq('status', 'cancelado');
 
       const filtrada = buscaAtiva
-        ? base.or(`cliente_nome.ilike.%${termo}%,descricao.ilike.%${termo}%`)
+        ? base.or(
+            `cliente_nome.ilike.${padraoIlikeContem(termo)},descricao.ilike.${padraoIlikeContem(termo)}`
+          )
         : base;
 
       const { data, error } = await filtrada
