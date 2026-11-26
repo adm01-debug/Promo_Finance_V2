@@ -62,9 +62,12 @@ interface RespostaMutacao {
 }
 
 async function chamar<T>(body: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke<T & { error?: string }>('credito-analise', {
-    body,
-  });
+  const { data, error } = await supabase.functions.invoke<T & { error?: string }>(
+    'credito-analise',
+    {
+      body,
+    }
+  );
   if (error) throw new Error(error.message);
   if (data && typeof data === 'object' && 'error' in data && data.error) {
     throw new Error(String(data.error));
@@ -95,7 +98,11 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
   const query = useQuery({
     queryKey: chave,
     queryFn: async () => {
-      const resposta = await chamar<RespostaListar>({ action: 'listar', status: filtro, limite: 200 });
+      const resposta = await chamar<RespostaListar>({
+        action: 'listar',
+        status: filtro,
+        limite: 200,
+      });
       return resposta.analises ?? [];
     },
     enabled: !!user,
@@ -120,7 +127,9 @@ export function useAnalisesCredito(filtro: FiltroAnaliseCredito = 'pendente') {
       if (resposta.callback?.ok) {
         toast.success(`Crédito ${rotulo} e Champions avisado`);
       } else {
-        toast.warning(`Crédito ${rotulo}, mas o Champions não recebeu: ${resposta.callback?.erro ?? 'erro'}`);
+        toast.warning(
+          `Crédito ${rotulo}, mas o Champions não recebeu: ${resposta.callback?.erro ?? 'erro'}`
+        );
       }
     },
     onError: (err: Error) => toast.error(`Erro ao registrar decisão: ${err.message}`),

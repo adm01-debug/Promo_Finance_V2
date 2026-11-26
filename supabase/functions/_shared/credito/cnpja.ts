@@ -50,7 +50,8 @@ export function normalizarRetornoCnpja(cnpj: string, raw: unknown): DadosCnpja {
     situacaoCadastral: typeof status.text === 'string' ? status.text : null,
     dataAbertura: typeof r.founded === 'string' ? r.founded : null,
     capitalSocial: typeof company.equity === 'number' ? company.equity : null,
-    naturezaJuridica: typeof obj(company.nature).text === 'string' ? String(obj(company.nature).text) : null,
+    naturezaJuridica:
+      typeof obj(company.nature).text === 'string' ? String(obj(company.nature).text) : null,
     porte: typeof obj(company.size).text === 'string' ? String(obj(company.size).text) : null,
     regimeAtual,
     simplesOptante: !!simples.optant,
@@ -63,8 +64,7 @@ export function normalizarRetornoCnpja(cnpj: string, raw: unknown): DadosCnpja {
 }
 
 export type ResultadoCnpja =
-  | { ok: true; dados: DadosCnpja; origem: 'cache' | 'api' }
-  | { ok: false; erro: string };
+  { ok: true; dados: DadosCnpja; origem: 'cache' | 'api' } | { ok: false; erro: string };
 
 export async function consultarCnpjInterno(
   admin: SupabaseClient,

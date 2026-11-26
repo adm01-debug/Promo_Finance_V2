@@ -145,7 +145,9 @@ Deno.serve(
 
       const { data: analiseRaw, error: getError } = await admin
         .from('analises_credito')
-        .select('id, referencia_externa, status, cnpj, cliente_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira')
+        .select(
+          'id, referencia_externa, status, cnpj, cliente_id, valor_pedido, dados_cnpja, dados_escavador, dados_consulta_financeira'
+        )
         .eq('id', input.analise_id)
         .maybeSingle();
       if (getError) throw getError;
@@ -158,7 +160,10 @@ Deno.serve(
         }
         const patch: Record<string, unknown> = { status: 'em_analise' };
         if (typeof input.escavador === 'string') {
-          patch.dados_escavador = { resumo: input.escavador, registrado_em: new Date().toISOString() };
+          patch.dados_escavador = {
+            resumo: input.escavador,
+            registrado_em: new Date().toISOString(),
+          };
         }
         if (typeof input.consulta_financeira === 'string') {
           patch.dados_consulta_financeira = {
@@ -166,8 +171,10 @@ Deno.serve(
             registrado_em: new Date().toISOString(),
           };
         }
-        const novoCnpj = input.cnpj !== undefined && input.cnpj !== null ? normalizarCnpj(input.cnpj) : null;
-        if (input.cnpj && !novoCnpj) return responder(req, 400, { error: 'CNPJ inválido (14 dígitos)' });
+        const novoCnpj =
+          input.cnpj !== undefined && input.cnpj !== null ? normalizarCnpj(input.cnpj) : null;
+        if (input.cnpj && !novoCnpj)
+          return responder(req, 400, { error: 'CNPJ inválido (14 dígitos)' });
         if (novoCnpj && novoCnpj !== analise.cnpj) {
           patch.cnpj = novoCnpj;
           const consulta = await consultarCnpjInterno(admin, novoCnpj);
@@ -249,7 +256,11 @@ Deno.serve(
       return responder(req, 200, { analise: final, callback });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro inesperado';
-      logger.error('fn_failure', { duration_ms: Date.now() - t0, status_code: 500, error_message: message });
+      logger.error('fn_failure', {
+        duration_ms: Date.now() - t0,
+        status_code: 500,
+        error_message: message,
+      });
       await logger.flush();
       return responder(req, 500, { error: message });
     }

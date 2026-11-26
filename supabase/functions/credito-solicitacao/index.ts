@@ -87,7 +87,11 @@ Deno.serve(
 
     const validation = validatePayload(CreditoSolicitacaoSchema, parsed, 'credito-solicitacao');
     if (!validation.success) {
-      return responder(req, 422, { ok: false, error: 'invalid_payload', details: validation.details });
+      return responder(req, 422, {
+        ok: false,
+        error: 'invalid_payload',
+        details: validation.details,
+      });
     }
     const { correlation_key, payload } = validation.data;
     const cliente = payload.cliente ?? {};
@@ -102,7 +106,12 @@ Deno.serve(
     // Vincula ao cadastro do Finance quando o CNPJ (ou e-mail) já existe.
     let clienteId: string | null = null;
     if (cnpj) {
-      const { data } = await admin.from('clientes').select('id').eq('cnpj_cpf', cnpj).limit(1).maybeSingle();
+      const { data } = await admin
+        .from('clientes')
+        .select('id')
+        .eq('cnpj_cpf', cnpj)
+        .limit(1)
+        .maybeSingle();
       clienteId = data?.id ?? null;
     }
     if (!clienteId && cliente.email) {
@@ -140,7 +149,11 @@ Deno.serve(
       if (insertError.code === '23505') {
         logger.info('duplicate_ignored', { context: { pedido_id: payload.pedido_id } });
         await logger.flush();
-        return responder(req, 200, { ok: true, status: 'duplicate_ignored', pedido_id: payload.pedido_id });
+        return responder(req, 200, {
+          ok: true,
+          status: 'duplicate_ignored',
+          pedido_id: payload.pedido_id,
+        });
       }
       logger.error('insert_failed', { error_message: insertError.message });
       await logger.flush();
@@ -162,9 +175,14 @@ Deno.serve(
           })
           .eq('id', analiseId);
         if (updError) logger.warn('cnpja_update_failed', { error_message: updError.message });
-        logger.info('cnpja_consultado', { context: { analise_id: analiseId, origem: consulta.origem } });
+        logger.info('cnpja_consultado', {
+          context: { analise_id: analiseId, origem: consulta.origem },
+        });
       } else {
-        logger.warn('cnpja_falhou', { error_message: consulta.erro, context: { analise_id: analiseId } });
+        logger.warn('cnpja_falhou', {
+          error_message: consulta.erro,
+          context: { analise_id: analiseId },
+        });
       }
     }
 

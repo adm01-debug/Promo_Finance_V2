@@ -31,7 +31,8 @@ export function mesesDesde(dataIso: string | null | undefined, hoje = new Date()
   if (!dataIso) return null;
   const inicio = new Date(dataIso);
   if (Number.isNaN(inicio.getTime())) return null;
-  const meses = (hoje.getFullYear() - inicio.getFullYear()) * 12 + (hoje.getMonth() - inicio.getMonth());
+  const meses =
+    (hoje.getFullYear() - inicio.getFullYear()) * 12 + (hoje.getMonth() - inicio.getMonth());
   return hoje.getDate() < inicio.getDate() ? meses - 1 : meses;
 }
 

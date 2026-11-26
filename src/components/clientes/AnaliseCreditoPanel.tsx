@@ -24,9 +24,7 @@ import {
 } from '@/hooks/useAnalisesCredito';
 
 const formatBRL = (v: number | null | undefined) =>
-  typeof v === 'number'
-    ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-    : '—';
+  typeof v === 'number' ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—';
 
 const formatData = (iso: string | null | undefined) =>
   iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
@@ -140,7 +138,8 @@ function AnaliseCard({
             </span>
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">
-            Pedido {analise.pedido_numero ?? analise.referencia_externa} · {formatBRL(analise.valor_pedido)}
+            Pedido {analise.pedido_numero ?? analise.referencia_externa} ·{' '}
+            {formatBRL(analise.valor_pedido)}
             {analise.vendedor_email ? ` · vendedor ${analise.vendedor_email}` : ''} · solicitado em{' '}
             {formatData(analise.solicitado_em ?? analise.created_at)}
           </p>
@@ -163,14 +162,14 @@ function AnaliseCard({
               ? `${cnpja.razaoSocial || '—'} · ${cnpja.situacaoCadastral ?? 'situação ?'} · aberta em ${formatData(cnpja.dataAbertura)} · capital ${formatBRL(cnpja.capitalSocial)}${cnpja.porte ? ` · ${cnpja.porte}` : ''}${cnpja.endereco?.uf ? ` · ${cnpja.endereco.uf}` : ''}`
               : 'não consultado'}
           </Linha>
-          <Linha rotulo="Escavador">
-            {analise.dados_escavador?.resumo || 'não registrado'}
-          </Linha>
+          <Linha rotulo="Escavador">{analise.dados_escavador?.resumo || 'não registrado'}</Linha>
           <Linha rotulo="Consulta financeira">
             {analise.dados_consulta_financeira?.resumo || 'não registrada'}
           </Linha>
           <Linha rotulo="Contato">
-            {[analise.cliente_nome, analise.cliente_email, analise.cliente_telefone].filter(Boolean).join(' · ') || '—'}
+            {[analise.cliente_nome, analise.cliente_email, analise.cliente_telefone]
+              .filter(Boolean)
+              .join(' · ') || '—'}
           </Linha>
         </div>
 
@@ -265,7 +264,11 @@ function DialogoAnalise({
   const [consulta, setConsulta] = useState<string>(analise.dados_consulta_financeira?.resumo ?? '');
 
   const titulo =
-    modo === 'aprovar' ? 'Aprovar crédito' : modo === 'reprovar' ? 'Reprovar crédito' : 'Registrar consultas';
+    modo === 'aprovar'
+      ? 'Aprovar crédito'
+      : modo === 'reprovar'
+        ? 'Reprovar crédito'
+        : 'Registrar consultas';
 
   const confirmar = () => {
     if (modo === 'dados') {
@@ -282,8 +285,10 @@ function DialogoAnalise({
     onDecidir({
       analiseId: analise.id,
       decisao: modo === 'aprovar' ? 'aprovado' : 'reprovado',
-      limiteAprovado: modo === 'aprovar' && Number.isFinite(limiteNum) && limiteNum > 0 ? limiteNum : null,
-      parcelasMax: modo === 'aprovar' && Number.isInteger(parcelasNum) && parcelasNum > 0 ? parcelasNum : null,
+      limiteAprovado:
+        modo === 'aprovar' && Number.isFinite(limiteNum) && limiteNum > 0 ? limiteNum : null,
+      parcelasMax:
+        modo === 'aprovar' && Number.isInteger(parcelasNum) && parcelasNum > 0 ? parcelasNum : null,
       parecer: parecer.trim() || null,
     });
   };
@@ -295,7 +300,8 @@ function DialogoAnalise({
           <DialogTitle>{titulo}</DialogTitle>
           <DialogDescription>
             {analise.cliente_empresa || analise.cliente_nome} · pedido{' '}
-            {analise.pedido_numero ?? analise.referencia_externa} · {formatBRL(analise.valor_pedido)}
+            {analise.pedido_numero ?? analise.referencia_externa} ·{' '}
+            {formatBRL(analise.valor_pedido)}
           </DialogDescription>
         </DialogHeader>
 
@@ -303,15 +309,30 @@ function DialogoAnalise({
           <div className="space-y-3">
             <div className="space-y-1">
               <Label htmlFor="credito-cnpj">CNPJ (reconsulta o CNPJ.já ao salvar)</Label>
-              <Input id="credito-cnpj" value={cnpj} onChange={(e) => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" />
+              <Input
+                id="credito-cnpj"
+                value={cnpj}
+                onChange={(e) => setCnpj(e.target.value)}
+                placeholder="00.000.000/0000-00"
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="credito-escavador">Escavador (processos, protestos)</Label>
-              <Textarea id="credito-escavador" value={escavador} onChange={(e) => setEscavador(e.target.value)} rows={3} />
+              <Textarea
+                id="credito-escavador"
+                value={escavador}
+                onChange={(e) => setEscavador(e.target.value)}
+                rows={3}
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="credito-consulta">Consulta financeira (Serasa/SCR/referências)</Label>
-              <Textarea id="credito-consulta" value={consulta} onChange={(e) => setConsulta(e.target.value)} rows={3} />
+              <Textarea
+                id="credito-consulta"
+                value={consulta}
+                onChange={(e) => setConsulta(e.target.value)}
+                rows={3}
+              />
             </div>
           </div>
         )}
@@ -320,19 +341,36 @@ function DialogoAnalise({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
               <Label htmlFor="credito-limite">Limite aprovado (R$)</Label>
-              <Input id="credito-limite" inputMode="decimal" value={limite} onChange={(e) => setLimite(e.target.value)} />
+              <Input
+                id="credito-limite"
+                inputMode="decimal"
+                value={limite}
+                onChange={(e) => setLimite(e.target.value)}
+              />
             </div>
             <div className="space-y-1">
               <Label htmlFor="credito-parcelas">Parcelas (máx.)</Label>
-              <Input id="credito-parcelas" inputMode="numeric" value={parcelas} onChange={(e) => setParcelas(e.target.value)} />
+              <Input
+                id="credito-parcelas"
+                inputMode="numeric"
+                value={parcelas}
+                onChange={(e) => setParcelas(e.target.value)}
+              />
             </div>
           </div>
         )}
 
         {modo !== 'dados' && (
           <div className="space-y-1">
-            <Label htmlFor="credito-parecer">Parecer {modo === 'reprovar' ? '(motivo — vai para o vendedor)' : '(opcional)'}</Label>
-            <Textarea id="credito-parecer" value={parecer} onChange={(e) => setParecer(e.target.value)} rows={3} />
+            <Label htmlFor="credito-parecer">
+              Parecer {modo === 'reprovar' ? '(motivo — vai para o vendedor)' : '(opcional)'}
+            </Label>
+            <Textarea
+              id="credito-parecer"
+              value={parecer}
+              onChange={(e) => setParecer(e.target.value)}
+              rows={3}
+            />
           </div>
         )}
 

@@ -1,17 +1,25 @@
-import { assertEquals } from 'jsr:@std/assert@1';
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
 import { avaliarAlertas, mesesDesde, normalizarCnpj } from './regras.ts';
 
 const HOJE = new Date('2026-11-26T12:00:00Z');
 
 Deno.test('sem dados do CNPJ.já: alerta crítico de CNPJ ausente', () => {
   const alertas = avaliarAlertas(null, 1000, HOJE);
-  assertEquals(alertas.map((a) => a.codigo), ['cnpj_ausente']);
+  assertEquals(
+    alertas.map((a) => a.codigo),
+    ['cnpj_ausente']
+  );
   assertEquals(alertas[0].nivel, 'critico');
 });
 
 Deno.test('empresa ativa, antiga, capital maior que o pedido: sem alertas', () => {
   const alertas = avaliarAlertas(
-    { situacaoCadastral: 'Ativa', dataAbertura: '2015-03-10', capitalSocial: 100000, meiOptante: false },
+    {
+      situacaoCadastral: 'Ativa',
+      dataAbertura: '2015-03-10',
+      capitalSocial: 100000,
+      meiOptante: false,
+    },
     25000,
     HOJE
   );
@@ -20,7 +28,12 @@ Deno.test('empresa ativa, antiga, capital maior que o pedido: sem alertas', () =
 
 Deno.test('baixada, recente, MEI e capital menor que o pedido acumulam alertas', () => {
   const alertas = avaliarAlertas(
-    { situacaoCadastral: 'Baixada', dataAbertura: '2026-06-01', capitalSocial: 5000, meiOptante: true },
+    {
+      situacaoCadastral: 'Baixada',
+      dataAbertura: '2026-06-01',
+      capitalSocial: 5000,
+      meiOptante: true,
+    },
     12000,
     HOJE
   );
