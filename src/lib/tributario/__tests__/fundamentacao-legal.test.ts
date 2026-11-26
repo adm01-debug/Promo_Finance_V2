@@ -3,6 +3,20 @@ import { describe, expect, it, vi } from 'vitest';
 const { linhas } = vi.hoisted(() => ({
   linhas: [
     {
+      // mesmo par cClassTrib/CST em outro conjunto: a API repete a linha por
+      // conjunto de tributo, com texto proprio
+      cclasstrib: '200035',
+      cst: '000',
+      conjunto_tributo: 'CBS',
+      descricao_cclasstrib: 'Tributacao integral',
+      descricao_cst: 'Tributacao integral',
+      texto: 'Art. 11. Texto do CBS isolado.',
+      texto_curto: 'LC 214/2025',
+      referencia_normativa: 'LC 214/2025',
+      inicio_vigencia: '2026-01-01',
+      fim_vigencia: null,
+    },
+    {
       cclasstrib: '200035',
       cst: '000',
       conjunto_tributo: 'CBS e IBS',
@@ -78,8 +92,9 @@ describe('buscarFundamentosLegais', () => {
     const f = await buscarFundamentosLegais(['200035', '999999'], '2026-06-01');
     expect(f.referencia).toBe('2026-06-01');
     expect(f.carregado).toBe(true);
-    // 3 linhas vigentes do cClassTrib 200035 (000, 410) e nada do 999999
-    expect(f.porCclasstrib.get('200035')).toHaveLength(2);
+    // 4 linhas vigentes do cClassTrib 200035 (000 no conjunto CBS, 000 e 410 no
+    // CBS e IBS) e nada do 999999
+    expect(f.porCclasstrib.get('200035')).toHaveLength(3);
     expect(f.porCclasstrib.has('999999')).toBe(false);
     expect(f.porCst.get(chaveFundamentoLegal('200035', '410'))?.texto).toContain('artigo 12');
     // CST 200 so tem vigencia encerrada
@@ -103,6 +118,12 @@ describe('escolherFundamento', () => {
   it('cai na primeira linha do cClassTrib quando o CST diverge', async () => {
     const f = await buscarFundamentosLegais(['200035'], '2026-06-01');
     expect(escolherFundamento(f, '200035', '999')?.texto).toContain('artigo 11');
+  });
+
+  it('prefere o conjunto CBS e IBS quando o par existe em dois conjuntos', async () => {
+    const f = await buscarFundamentosLegais(['200035'], '2026-06-01');
+    expect(f.porCst.get(chaveFundamentoLegal('200035', '000'))?.conjuntoTributo).toBe('CBS e IBS');
+    expect(f.porCclasstrib.get('200035')?.[0].conjuntoTributo).toBe('CBS e IBS');
   });
 
   it('sem linha devolve undefined', async () => {

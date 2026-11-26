@@ -23,7 +23,7 @@
 -- Pre-requisito 3: a function precisa estar deployada
 -- (functions-deploy.yml, `deploy_all = true`).
 -- Pre-requisito 4: a tabela `catalogo_fundamentacao` precisa existir
--- (20261126090000). Sem ela o job falha no primeiro upsert.
+-- (20261126110000). Sem ela o job falha no primeiro upsert.
 
 CREATE EXTENSION IF NOT EXISTS pg_net SCHEMA extensions;
 

@@ -141,7 +141,7 @@ const mesEmissao = (data: Date): number =>
  * originou `competencia_origem`, senão uma nota de 31/03 às 22:30 grava
  * `data_origem` em abril e `competencia_origem` em março.
  */
-const dataEmissaoISO = (data: Date): string =>
+export const dataEmissaoISO = (data: Date): string =>
   new Intl.DateTimeFormat('en-CA', {
     timeZone: FUSO_PADRAO_BR,
     year: 'numeric',

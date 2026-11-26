@@ -42,11 +42,12 @@ export const fundamentoEmLinha = (fundamento?: FundamentoLegalResumo): string =>
   );
 };
 
-/** Uma linha por alerta: nota, codigo da regra, divergencia e norma. */
+/** Uma linha por alerta: nota, item, codigo da regra, divergencia e norma. */
 export function linhasAlertas(nfes: NotaComAlertas[]): string[][] {
   return nfes.flatMap((nota) =>
     nota.alertas.map((alerta) => [
       nota.numero || '—',
+      alerta.item ? String(alerta.item) : '—',
       nota.emitente || 'N/I',
       nota.data,
       alerta.codigo,
@@ -97,18 +98,21 @@ export function gerarAlertasFiscaisPdf(nfes: NotaComAlertas[]): jsPDF {
   const corpo = linhasAlertas(nfes);
   autoTable(doc, {
     startY: 32,
-    head: [['Nota', 'Emitente', 'Data', 'Regra', 'Campo', 'Divergencia', 'Fundamento legal']],
-    body: corpo.length > 0 ? corpo : [['—', '—', '—', '—', '—', 'Nenhum alerta fiscal', '—']],
+    head: [
+      ['Nota', 'Item', 'Emitente', 'Data', 'Regra', 'Campo', 'Divergencia', 'Fundamento legal'],
+    ],
+    body: corpo.length > 0 ? corpo : [['—', '—', '—', '—', '—', '—', 'Nenhum alerta fiscal', '—']],
     styles: { fontSize: 7, cellPadding: 1.5, overflow: 'linebreak' },
     headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 7 },
     columnStyles: {
       0: { cellWidth: 18 },
-      1: { cellWidth: 42 },
-      2: { cellWidth: 20 },
-      3: { cellWidth: 16 },
-      4: { cellWidth: 22 },
-      5: { cellWidth: 70 },
-      6: { cellWidth: 'auto' },
+      1: { cellWidth: 10 },
+      2: { cellWidth: 42 },
+      3: { cellWidth: 20 },
+      4: { cellWidth: 16 },
+      5: { cellWidth: 22 },
+      6: { cellWidth: 70 },
+      7: { cellWidth: 'auto' },
     },
     margin: { left: 14, right: 14 },
   });

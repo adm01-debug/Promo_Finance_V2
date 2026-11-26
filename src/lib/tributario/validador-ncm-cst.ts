@@ -29,6 +29,12 @@ export interface DivergenciaFiscal {
    * valido, apenas sem o texto legal.
    */
   fundamento?: FundamentoLegalResumo;
+  /**
+   * Etapa 82: numero do item na nota (1 = primeiro). Ausente quando a validacao
+   * recebe um item so (`validarItemFiscal`). Sem ele, uma nota com dois itens do
+   * mesmo cClassTrib nao diz qual dos dois foi apontado.
+   */
+  item?: number;
 }
 
 export interface ValidacaoNCM {
@@ -128,7 +134,9 @@ export function validarItensFiscais(
   itens: ItemFiscalValidavel[],
   referencias: ReferenciasFiscais
 ): ValidacaoNCM {
-  const divergencias = itens.flatMap((item) => validarItemFiscal(item, referencias));
+  const divergencias = itens.flatMap((item, indice) =>
+    validarItemFiscal(item, referencias).map((d) => ({ ...d, item: indice + 1 }))
+  );
   const penalidade = divergencias.reduce(
     (total, d) => total + (d.codigo === 'REG-010' ? 10 : 15),
     0

@@ -40,7 +40,40 @@ export interface FundamentosLegais {
   carregado: boolean;
 }
 
+/**
+ * Teto de codigos por consulta `.in()`, o mesmo de `catalogos/cclasstrib.ts`.
+ *
+ * O PostgREST corta a resposta em `db-max-rows` (1000 linhas no padrao) sem
+ * avisar, e aqui cada cClassTrib rende mais de uma linha - uma por conjunto de
+ * tributos. Sem o lote, a importacao de muitas notas perderia fundamentos em
+ * silencio, que e exatamente o que a etapa 82 existe para mostrar.
+ */
+const LOTE_CODIGOS = 300;
+
+const consultarFundamentos = (codigos: string[]) =>
+  supabase
+    .from('catalogo_fundamentacao')
+    .select(
+      'cclasstrib, cst, conjunto_tributo, descricao_cclasstrib, descricao_cst, texto, texto_curto, referencia_normativa, inicio_vigencia, fim_vigencia'
+    )
+    .in('cclasstrib', codigos);
+
+type LinhaFundamento = NonNullable<
+  Awaited<ReturnType<typeof consultarFundamentos>>['data']
+>[number];
+
 export const chaveFundamentoLegal = (cclasstrib: string, cst: string) => `${cclasstrib}|${cst}`;
+
+/**
+ * Conjunto que traz a fundamentacao do par CBS+IBS. A API repete o mesmo
+ * cClassTrib/CST nos conjuntos de um tributo so, com texto proprio: quando as
+ * duas linhas existem, a do conjunto amplo e a que se mostra - sem criterio, a
+ * escolha dependeria da ordem em que o PostgREST devolveu as linhas.
+ */
+const CONJUNTO_AMPLO = 'CBS e IBS';
+
+const ehConjuntoAmplo = (linha: FundamentoLegal): boolean =>
+  linha.conjuntoTributo.trim().toLowerCase() === CONJUNTO_AMPLO.toLowerCase();
 
 export const fundamentosVazios = (referencia: string): FundamentosLegais => ({
   porCst: new Map(),
@@ -83,7 +116,8 @@ export function resumoFundamento(
  *
  * O par exato e o caso normal; quando a RFB publica o cClassTrib com outro CST
  * (a divergencia do REG-011, justamente), devolve a primeira linha do
- * cClassTrib - sem isso o alerta de CST trocado ficaria sem norma.
+ * cClassTrib - sem isso o alerta de CST trocado ficaria sem norma. A lista ja
+ * vem com o conjunto amplo na frente (ver `buscarFundamentosLegais`).
  */
 export function escolherFundamento(
   fundamentos: FundamentosLegais,
@@ -113,16 +147,14 @@ export async function buscarFundamentosLegais(
   const resultado = fundamentosVazios(referencia);
   if (codigos.length === 0) return resultado;
 
-  const { data, error } = await supabase
-    .from('catalogo_fundamentacao')
-    .select(
-      'cclasstrib, cst, conjunto_tributo, descricao_cclasstrib, descricao_cst, texto, texto_curto, referencia_normativa, inicio_vigencia, fim_vigencia'
-    )
-    .in('cclasstrib', codigos);
+  const linhas: LinhaFundamento[] = [];
+  for (let i = 0; i < codigos.length; i += LOTE_CODIGOS) {
+    const { data, error } = await consultarFundamentos(codigos.slice(i, i + LOTE_CODIGOS));
+    if (error) return resultado;
+    linhas.push(...(data ?? []));
+  }
 
-  if (error) return resultado;
-
-  for (const bruto of data ?? []) {
+  for (const bruto of linhas) {
     const linha: FundamentoLegal = {
       cclasstrib: String(bruto.cclasstrib ?? '').trim(),
       cst: String(bruto.cst ?? '').trim(),
@@ -136,10 +168,26 @@ export async function buscarFundamentosLegais(
     if (!linha.cclasstrib) continue;
     if (!vigenteEm(bruto.inicio_vigencia, bruto.fim_vigencia, referencia)) continue;
     resultado.carregado = true;
-    resultado.porCst.set(chaveFundamentoLegal(linha.cclasstrib, linha.cst), linha);
+    // Mesmo cClassTrib/CST em dois conjuntos: o amplo vence. Guardar o ultimo
+    // da resposta faria o item sem fundamento nenhum quando o tributo isolado
+    // chegasse depois do conjunto CBS e IBS.
+    const chave = chaveFundamentoLegal(linha.cclasstrib, linha.cst);
+    const anterior = resultado.porCst.get(chave);
+    if (!anterior || (!ehConjuntoAmplo(anterior) && ehConjuntoAmplo(linha))) {
+      resultado.porCst.set(chave, linha);
+    }
     const lista = resultado.porCclasstrib.get(linha.cclasstrib);
     if (lista) lista.push(linha);
     else resultado.porCclasstrib.set(linha.cclasstrib, [linha]);
+  }
+
+  // Ordem estavel das listas: conjunto amplo primeiro, o resto em ordem
+  // alfabetica. `escolherFundamento` le a posicao zero.
+  for (const lista of resultado.porCclasstrib.values()) {
+    lista.sort((a, b) => {
+      const amplo = Number(ehConjuntoAmplo(b)) - Number(ehConjuntoAmplo(a));
+      return amplo !== 0 ? amplo : a.conjuntoTributo.localeCompare(b.conjuntoTributo);
+    });
   }
 
   return resultado;

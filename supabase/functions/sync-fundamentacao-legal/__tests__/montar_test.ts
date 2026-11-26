@@ -127,6 +127,20 @@ Deno.test('chave inclui o conjunto de tributos', () => {
   );
 });
 
+Deno.test('quebra de linha literal da API vira quebra real', () => {
+  const m = montarFundamentos(
+    [linha({ texto: 'Operacao com:\\nVIII - bens de capital;\\nIX - insumos.' })],
+    VIGENCIA,
+    'V0073'
+  );
+  assertEquals(m.linhas[0].texto, 'Operacao com:\nVIII - bens de capital;\nIX - insumos.');
+});
+
+Deno.test('quebra de linha real do payload e preservada', () => {
+  const m = montarFundamentos([linha({ texto: 'Art. 11.\nParagrafo 1.' })], VIGENCIA, 'V0073');
+  assertEquals(m.linhas[0].texto, 'Art. 11.\nParagrafo 1.');
+});
+
 Deno.test('literal do PostgREST preserva espaco e neutraliza a sintaxe do filtro', () => {
   assertEquals(literalPostgrest('CBS e IBS'), '"CBS e IBS"');
   assertEquals(literalPostgrest('a,b(c)"d'), '"a b c d"');

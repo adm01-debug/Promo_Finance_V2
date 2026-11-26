@@ -14,18 +14,7 @@
 export type CamadaId = 1 | 2 | 3 | 4;
 
 export type ModuloId =
-  | 'M01'
-  | 'M02'
-  | 'M03'
-  | 'M04'
-  | 'M05'
-  | 'M06'
-  | 'M07'
-  | 'M08'
-  | 'M09'
-  | 'M10'
-  | 'M11'
-  | 'M12';
+  'M01' | 'M02' | 'M03' | 'M04' | 'M05' | 'M06' | 'M07' | 'M08' | 'M09' | 'M10' | 'M11' | 'M12';
 
 export interface Camada {
   readonly id: CamadaId;
@@ -229,6 +218,9 @@ export const MODULOS: readonly Modulo[] = [
 export const ADAPTERS_AUTORIZADOS: readonly string[] = [
   'src/lib/tributario/catalogos/repositorio.ts',
   'src/lib/tributario/catalogos/cclasstrib.ts',
+  // Etapa 82: o catalogo de fundamentacoes legais e lido pelo validador fiscal,
+  // que e nucleo puro - o mesmo caso dos dois acima.
+  'src/lib/tributario/catalogos/fundamentacao-legal.ts',
 ] as const;
 
 /** Prefixos de import proibidos dentro do núcleo de domínio. */

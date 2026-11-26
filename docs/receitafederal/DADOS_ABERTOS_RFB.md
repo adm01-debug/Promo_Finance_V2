@@ -256,7 +256,7 @@ cinco jobs começa às 07:40 UTC: `40 7 * * *` para o cClassTrib
 `20261126100000_cron_sync_catalogo_cclasstrib_utc.sql`), `0 8 * * *` para NCM/NBS
 (`20261126060000_cron_sync_catalogo_ncm_nbs.sql`), `20 8 * * *` para as alíquotas
 de UF/CBS (`20261126080000_cron_sync_aliquota_referencia.sql`), `30 8 * * *` para
-as fundamentações (`20261126091000_cron_sync_fundamentacao_legal.sql`) e
+as fundamentações (`20261126111000_cron_sync_fundamentacao_legal.sql`) e
 `50 8 * * 0` (domingo) para as municipais — 07:40/08:00/08:20/08:30/08:50 UTC, ou
 seja 04:40/05:00/05:20/05:30/05:50 em Brasília. Cada disparo fixa
 `timeout_milliseconds` (60 s a 150 s): o padrão de `net.http_post` é 5 s e expira

@@ -146,6 +146,21 @@ describe('validarItensFiscais', () => {
     expect(r.score).toBe(100);
     expect(r.divergencias).toHaveLength(0);
   });
+
+  it('numera o item que gerou cada divergencia', () => {
+    // Duas linhas do mesmo cClassTrib eram indistinguiveis no alerta.
+    const r = validarItensFiscais(
+      [
+        { ncm: '02013000', cClassTrib: '200035', cstIbscbs: '000' },
+        { ncm: '99999999', cClassTrib: '999999', cstIbscbs: '000' },
+      ],
+      comCatalogo()
+    );
+    expect(r.divergencias.map((d) => [d.codigo, d.item]).sort()).toEqual([
+      ['REG-012', 2],
+      ['REG-013', 2],
+    ]);
+  });
 });
 
 describe('validarConsistenciaNcmCst (compatibilidade)', () => {
@@ -196,6 +211,24 @@ describe('fundamento legal do apontamento (etapa 82)', () => {
     const d = validarItemFiscal({ ncm: '02013000', cClassTrib: '200035', cstIbscbs: '200' }, refs);
     expect(d[0].codigo).toBe('REG-011');
     expect(d[0].fundamento).toEqual({
+      referencia: 'LC 214/2025',
+      texto: 'Art. 11. Texto do artigo.',
+    });
+  });
+
+  it('REG-013 sai com a norma quando o cClassTrib tem linha de outro CST', () => {
+    // A RFB publica o cClassTrib com o CST do catalogo e o item declarou outro:
+    // o mapa por par nao tem a chave, so a lista por cClassTrib tem a norma.
+    const refs = comCatalogo();
+    refs.fundamentos = {
+      referencia: '2026-11-22',
+      carregado: true,
+      porCst: new Map(),
+      porCclasstrib: new Map([['400001', [linhaFundamento]]]),
+    };
+    const d = validarItemFiscal({ ncm: '02013000', cClassTrib: '400001', cstIbscbs: '200' }, refs);
+    const reg013 = d.find((x) => x.codigo === 'REG-013');
+    expect(reg013?.fundamento).toEqual({
       referencia: 'LC 214/2025',
       texto: 'Art. 11. Texto do artigo.',
     });

@@ -84,6 +84,18 @@ const textoOuNulo = (valor: unknown): string | null => {
   return limpo ? limpo : null;
 };
 
+/**
+ * Texto legal com quebras de linha reais.
+ *
+ * A API publica parte dos textos com `\n` literal (barra invertida + n) no meio
+ * do artigo; sem normalizar, o PDF e o tooltip imprimem "operacao com:\nVIII" na
+ * mesma linha. Quebra de linha de verdade vinda no payload fica como esta.
+ */
+const textoComQuebras = (valor: unknown): string | null => {
+  const texto = textoOuNulo(valor);
+  return texto === null ? null : texto.replace(/\\r\\n|\\n/g, '\n');
+};
+
 /** Junta textos distintos de linhas repetidas, sem repetir o mesmo trecho. */
 const unir = (atual: string | null, novo: string | null, separador: string): string | null => {
   if (!novo) return atual;
@@ -136,9 +148,9 @@ export function montarFundamentos(
       conjunto_tributo: conjunto,
       descricao_cclasstrib: textoOuNulo(item.descricaoClassificacaoTributaria),
       descricao_cst: textoOuNulo(item.descricaoSituacaoTributaria),
-      texto: textoOuNulo(item.texto),
-      texto_curto: textoOuNulo(item.textoCurto),
-      referencia_normativa: textoOuNulo(item.referenciaNormativa),
+      texto: textoComQuebras(item.texto),
+      texto_curto: textoComQuebras(item.textoCurto),
+      referencia_normativa: textoComQuebras(item.referenciaNormativa),
       inicio_vigencia: inicioVigencia,
       versao_it: versaoIt,
     };

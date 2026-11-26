@@ -1,66 +1,77 @@
 #!/usr/bin/env node
 
-import { execFileSync } from "node:child_process";
-import { realpathSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { execFileSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-export const EXPECTED_PROJECT_REF = "bwwbeyolnnzppeuhgkcd";
+export const EXPECTED_PROJECT_REF = 'bwwbeyolnnzppeuhgkcd';
 
 export const REQUIRED_MIGRATIONS = Object.freeze([
-  "20260826010000",
-  "20260826020000",
-  "20260826030000",
-  "20260826040000",
-  "20260826050000",
-  "20260912100000",
+  '20260826010000',
+  '20260826020000',
+  '20260826030000',
+  '20260826040000',
+  '20260826050000',
+  '20260912100000',
 ]);
 
 export const EXPECTED_FUNCTION_PRIVILEGES = Object.freeze([
-  { functionName: "public.exec_sql(sql text)", expected: freezeMatrix() },
-  { functionName: "public.capture_pg_stat_statements_baseline(p_label text)", expected: freezeMatrix() },
-  { functionName: "public.capture_slow_queries(threshold_ms numeric)", expected: freezeMatrix() },
-  { functionName: "public.monitor_table_bloat()", expected: freezeMatrix() },
-  { functionName: "public.snapshot_table_bloat()", expected: freezeMatrix() },
-  { functionName: "public.refresh_performance_alerts_weekly()", expected: freezeMatrix() },
-  { functionName: "public.sefaz_run_observability_checks()", expected: freezeMatrix() },
+  { functionName: 'public.exec_sql(sql text)', expected: freezeMatrix() },
+  {
+    functionName: 'public.capture_pg_stat_statements_baseline(p_label text)',
+    expected: freezeMatrix(),
+  },
+  { functionName: 'public.capture_slow_queries(threshold_ms numeric)', expected: freezeMatrix() },
+  { functionName: 'public.monitor_table_bloat()', expected: freezeMatrix() },
+  { functionName: 'public.snapshot_table_bloat()', expected: freezeMatrix() },
+  { functionName: 'public.refresh_performance_alerts_weekly()', expected: freezeMatrix() },
+  { functionName: 'public.sefaz_run_observability_checks()', expected: freezeMatrix() },
   {
     functionName:
-      "public.nfe_apply_manifestacao(p_chave text, p_tipo_evento text, p_codigo_evento text, p_sequencial integer, p_data_evento timestamp with time zone, p_protocolo text, p_justificativa text, p_status_retorno text, p_motivo_retorno text, p_novo_status nfe_manifestacao_status, p_raw jsonb)",
+      'public.nfe_apply_manifestacao(p_chave text, p_tipo_evento text, p_codigo_evento text, p_sequencial integer, p_data_evento timestamp with time zone, p_protocolo text, p_justificativa text, p_status_retorno text, p_motivo_retorno text, p_novo_status nfe_manifestacao_status, p_raw jsonb)',
     expected: freezeMatrix(),
   },
   {
-    functionName: "public.nfe_create_conta_pagar_from_nfe(p_nfe_id uuid, p_data_vencimento date, p_categoria_id uuid)",
+    functionName:
+      'public.nfe_create_conta_pagar_from_nfe(p_nfe_id uuid, p_data_vencimento date, p_categoria_id uuid)',
     expected: freezeMatrix(),
   },
-  { functionName: "public.nfe_link_conta_pagar(p_nfe_id uuid, p_conta_pagar_id uuid)", expected: freezeMatrix() },
-  { functionName: "public.nfe_suggest_contas_pagar(p_nfe_id uuid)", expected: freezeMatrix() },
-  { functionName: "public.nfe_unlink_conta_pagar(p_nfe_id uuid)", expected: freezeMatrix() },
+  {
+    functionName: 'public.nfe_link_conta_pagar(p_nfe_id uuid, p_conta_pagar_id uuid)',
+    expected: freezeMatrix(),
+  },
+  { functionName: 'public.nfe_suggest_contas_pagar(p_nfe_id uuid)', expected: freezeMatrix() },
+  { functionName: 'public.nfe_unlink_conta_pagar(p_nfe_id uuid)', expected: freezeMatrix() },
   // confirmar_conciliacao(6 args) foi removida de propósito por
   // 20260902170000_fix_rpcs_security_definer_sem_escopo.sql (SECURITY DEFINER
   // sem escopo de empresa); não deve existir no canônico.
   {
     functionName:
-      "public.confirmar_conciliacao_manual(p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)",
+      'public.confirmar_conciliacao_manual(p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)',
     expected: freezeMatrix(),
   },
-  {
-    functionName: "public.desfazer_conciliacao(p_conciliacao_id uuid, p_transacao_id uuid, p_user_id uuid)",
-    expected: freezeMatrix(),
-  },
-  { functionName: "public.desfazer_conciliacao_manual(p_transacao_id uuid)", expected: freezeMatrix() },
   {
     functionName:
-      "public.generate_reconciliation_suggestions(p_empresa_id uuid, p_transaction_date date, p_transaction_value numeric, p_transaction_id uuid)",
+      'public.desfazer_conciliacao(p_conciliacao_id uuid, p_transacao_id uuid, p_user_id uuid)',
     expected: freezeMatrix(),
   },
   {
-    functionName: "public.get_acessos_suspeitos(_horas integer, _somente_abertos boolean)",
+    functionName: 'public.desfazer_conciliacao_manual(p_transacao_id uuid)',
+    expected: freezeMatrix(),
+  },
+  {
+    functionName:
+      'public.generate_reconciliation_suggestions(p_empresa_id uuid, p_transaction_date date, p_transaction_value numeric, p_transaction_id uuid)',
+    expected: freezeMatrix(),
+  },
+  {
+    functionName: 'public.get_acessos_suspeitos(_horas integer, _somente_abertos boolean)',
     // Painel administrativo: o corpo da RPC valida has_role(auth.uid(), 'admin').
     // A ACL precisa permitir a chamada autenticada, mas nunca anon/PUBLIC.
     expected: freezeAdminClientMatrix(),
   },
   {
-    functionName: "public.get_integrity_alerts(p_limit integer, p_incluir_resolvidos boolean)",
+    functionName: 'public.get_integrity_alerts(p_limit integer, p_incluir_resolvidos boolean)',
     // Painel administrativo: o corpo da RPC valida has_role(auth.uid(), 'admin').
     // A ACL precisa permitir a chamada autenticada, mas nunca anon/PUBLIC.
     expected: freezeAdminClientMatrix(),
@@ -69,80 +80,157 @@ export const EXPECTED_FUNCTION_PRIVILEGES = Object.freeze([
 
 export const EXPECTED_FIXED_POLICIES = Object.freeze([
   {
-    tableName: "kpis_operacionais",
-    policyName: "kpis_operacionais_owner",
-    cmd: "ALL",
-    rolesCsv: "authenticated",
-    qualMustInclude: ["user_id = auth.uid()"],
-    withCheckMustInclude: ["user_id = auth.uid()"],
+    tableName: 'kpis_operacionais',
+    policyName: 'kpis_operacionais_owner',
+    cmd: 'ALL',
+    rolesCsv: 'authenticated',
+    qualMustInclude: ['user_id = auth.uid()'],
+    withCheckMustInclude: ['user_id = auth.uid()'],
   },
   {
-    tableName: "scim_setup_checklist",
-    policyName: "scim_checklist_own",
-    cmd: "ALL",
-    rolesCsv: "authenticated",
-    qualMustInclude: ["user_id = auth.uid()"],
-    withCheckMustInclude: ["user_id = auth.uid()"],
+    tableName: 'scim_setup_checklist',
+    policyName: 'scim_checklist_own',
+    cmd: 'ALL',
+    rolesCsv: 'authenticated',
+    qualMustInclude: ['user_id = auth.uid()'],
+    withCheckMustInclude: ['user_id = auth.uid()'],
   },
   {
-    tableName: "simulacao_tributos_detalhados",
-    policyName: "sim_trib_acesso",
-    cmd: "ALL",
-    rolesCsv: "authenticated",
-    qualMustInclude: ["simulacoes", "empresa_acessivel", "simulacao_id"],
-    withCheckMustInclude: ["simulacoes", "empresa_acessivel", "simulacao_id"],
+    tableName: 'simulacao_tributos_detalhados',
+    policyName: 'sim_trib_acesso',
+    cmd: 'ALL',
+    rolesCsv: 'authenticated',
+    qualMustInclude: ['simulacoes', 'empresa_acessivel', 'simulacao_id'],
+    withCheckMustInclude: ['simulacoes', 'empresa_acessivel', 'simulacao_id'],
   },
   {
-    tableName: "sso_sandbox_runs",
-    policyName: "sso_sandbox_runs_admin",
-    cmd: "ALL",
-    rolesCsv: "authenticated",
+    tableName: 'sso_sandbox_runs',
+    policyName: 'sso_sandbox_runs_admin',
+    cmd: 'ALL',
+    rolesCsv: 'authenticated',
     qualMustInclude: ["has_role(auth.uid(),'admin'::app_role)"],
-    withCheckMustInclude: ["has_role(auth.uid(),'admin'::app_role)", "created_by = auth.uid()"],
+    withCheckMustInclude: ["has_role(auth.uid(),'admin'::app_role)", 'created_by = auth.uid()'],
   },
 ]);
 
 export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
-  allowPolicy("allowed_countries", "Public read", "SELECT", "authenticated"),
-  allowPolicy("aliquotas_interestaduais", "aliq_inter_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("aliquotas_internas_uf", "aliq_internas_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("aliquotas_iss_municipal", "aliq_iss_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("benchmarks_setoriais", "benchmarks_select", "SELECT", "authenticated"),
-  allowPolicy("audit_logs", "System can insert audit logs", "INSERT", "authenticated"),
-  allowPolicy("beneficios_fiscais", "beneficios_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("bitrix_oauth_tokens", "bitrix_oauth_tokens_service_role_only", "ALL", "service_role"),
-  allowPolicy("bling_tokens", "bling_tokens_service_role_only", "ALL", "service_role"),
-  allowPolicy("ci_security_gate_events", "Service role manages CI security gate events", "ALL", "service_role"),
-  allowPolicy("cnaes", "cnaes_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("cnpja_cache", "cnpja_cache_service_role_only", "ALL", "service_role"),
-  allowPolicy("estrategias_elisao", "estrategias_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("estrategias_elisao_catalogo", "estrategias_elisao_catalogo_select", "SELECT", "authenticated"),
-  allowPolicy("faixas_simples_nacional", "faixas_simples_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("frontend_error_logs", "frontend_error_anon_insert", "INSERT", "anon"),
-  allowPolicy("integrity_alerts", "integrity_alerts_service_all", "ALL", "service_role"),
-  allowPolicy("itens_lista_iss", "itens_iss_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("ncms", "ncms_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("protocolos_st", "protocolos_st_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("protocolos_st_ncms", "protocolos_st_ncms_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("protocolos_st_ufs", "protocolos_st_ufs_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("ufs", "ufs_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("elisao_regras_creditos", "regras_creditos_leitura", "SELECT", "authenticated"),
-  allowPolicy("asaas_payment_links", "Service role full access asaas_payment_links", "ALL", "service_role"),
-  allowPolicy("catalogo_cclasstrib", "catalogo_cclasstrib_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("catalogo_cclasstrib", "catalogo_cclasstrib_service_role_all", "ALL", "service_role"),
-  allowPolicy("catalogo_ncm", "catalogo_ncm_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("catalogo_ncm", "catalogo_ncm_service_role_all", "ALL", "service_role"),
-  allowPolicy("catalogo_nbs", "catalogo_nbs_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("catalogo_nbs", "catalogo_nbs_service_role_all", "ALL", "service_role"),
-  allowPolicy("catalogo_aliquota_referencia", "catalogo_aliquota_referencia_select_authenticated", "SELECT", "authenticated"),
-  allowPolicy("catalogo_aliquota_referencia", "catalogo_aliquota_referencia_service_role_all", "ALL", "service_role"),
+  allowPolicy('allowed_countries', 'Public read', 'SELECT', 'authenticated'),
+  allowPolicy(
+    'aliquotas_interestaduais',
+    'aliq_inter_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy(
+    'aliquotas_internas_uf',
+    'aliq_internas_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy(
+    'aliquotas_iss_municipal',
+    'aliq_iss_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy('benchmarks_setoriais', 'benchmarks_select', 'SELECT', 'authenticated'),
+  allowPolicy('audit_logs', 'System can insert audit logs', 'INSERT', 'authenticated'),
+  allowPolicy('beneficios_fiscais', 'beneficios_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy(
+    'bitrix_oauth_tokens',
+    'bitrix_oauth_tokens_service_role_only',
+    'ALL',
+    'service_role'
+  ),
+  allowPolicy('bling_tokens', 'bling_tokens_service_role_only', 'ALL', 'service_role'),
+  allowPolicy(
+    'ci_security_gate_events',
+    'Service role manages CI security gate events',
+    'ALL',
+    'service_role'
+  ),
+  allowPolicy('cnaes', 'cnaes_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy('cnpja_cache', 'cnpja_cache_service_role_only', 'ALL', 'service_role'),
+  allowPolicy('estrategias_elisao', 'estrategias_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy(
+    'estrategias_elisao_catalogo',
+    'estrategias_elisao_catalogo_select',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy(
+    'faixas_simples_nacional',
+    'faixas_simples_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy('frontend_error_logs', 'frontend_error_anon_insert', 'INSERT', 'anon'),
+  allowPolicy('integrity_alerts', 'integrity_alerts_service_all', 'ALL', 'service_role'),
+  allowPolicy('itens_lista_iss', 'itens_iss_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy('ncms', 'ncms_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy('protocolos_st', 'protocolos_st_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy(
+    'protocolos_st_ncms',
+    'protocolos_st_ncms_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy(
+    'protocolos_st_ufs',
+    'protocolos_st_ufs_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy('ufs', 'ufs_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy('elisao_regras_creditos', 'regras_creditos_leitura', 'SELECT', 'authenticated'),
+  allowPolicy(
+    'asaas_payment_links',
+    'Service role full access asaas_payment_links',
+    'ALL',
+    'service_role'
+  ),
+  allowPolicy(
+    'catalogo_cclasstrib',
+    'catalogo_cclasstrib_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy('catalogo_cclasstrib', 'catalogo_cclasstrib_service_role_all', 'ALL', 'service_role'),
+  allowPolicy('catalogo_ncm', 'catalogo_ncm_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy('catalogo_ncm', 'catalogo_ncm_service_role_all', 'ALL', 'service_role'),
+  allowPolicy('catalogo_nbs', 'catalogo_nbs_select_authenticated', 'SELECT', 'authenticated'),
+  allowPolicy('catalogo_nbs', 'catalogo_nbs_service_role_all', 'ALL', 'service_role'),
+  allowPolicy(
+    'catalogo_aliquota_referencia',
+    'catalogo_aliquota_referencia_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy(
+    'catalogo_aliquota_referencia',
+    'catalogo_aliquota_referencia_service_role_all',
+    'ALL',
+    'service_role'
+  ),
+  allowPolicy(
+    'catalogo_fundamentacao',
+    'catalogo_fundamentacao_select_authenticated',
+    'SELECT',
+    'authenticated'
+  ),
+  allowPolicy(
+    'catalogo_fundamentacao',
+    'catalogo_fundamentacao_service_role_all',
+    'ALL',
+    'service_role'
+  ),
 ]);
 
 export const ALLOWED_ANON_WRITE_GRANTS = Object.freeze([
-  Object.freeze({ tableName: "frontend_error_logs", grantee: "anon", privilegeType: "INSERT" }),
+  Object.freeze({ tableName: 'frontend_error_logs', grantee: 'anon', privilegeType: 'INSERT' }),
 ]);
 
-const READ_ONLY_ENDPOINT = "https://api.supabase.com/v1/projects";
+const READ_ONLY_ENDPOINT = 'https://api.supabase.com/v1/projects';
 
 function freezeMatrix() {
   return Object.freeze({
@@ -171,16 +259,16 @@ export function readEnv(env = process.env) {
   const projectRef = env.SUPABASE_PROJECT_REF;
 
   if (!accessToken) {
-    throw new Error("SUPABASE_ACCESS_TOKEN ausente.");
+    throw new Error('SUPABASE_ACCESS_TOKEN ausente.');
   }
 
   if (!projectRef) {
-    throw new Error("SUPABASE_PROJECT_REF ausente.");
+    throw new Error('SUPABASE_PROJECT_REF ausente.');
   }
 
   if (projectRef !== EXPECTED_PROJECT_REF) {
     throw new Error(
-      `Projeto incorreto para o gate canônico: esperado ${EXPECTED_PROJECT_REF}, recebido ${projectRef}.`,
+      `Projeto incorreto para o gate canônico: esperado ${EXPECTED_PROJECT_REF}, recebido ${projectRef}.`
     );
   }
 
@@ -188,19 +276,19 @@ export function readEnv(env = process.env) {
 }
 
 export function normalizeExpression(value) {
-  return String(value ?? "")
+  return String(value ?? '')
     .toLowerCase()
-    .replace(/"/g, "")
-    .replace(/\s+/g, "");
+    .replace(/"/g, '')
+    .replace(/\s+/g, '');
 }
 
 export function normalizeRolesCsv(value) {
-  return String(value ?? "")
-    .split(",")
+  return String(value ?? '')
+    .split(',')
     .map((part) => part.trim())
     .filter(Boolean)
     .sort()
-    .join(",");
+    .join(',');
 }
 
 /**
@@ -222,18 +310,18 @@ export function pendingPrMigrations(env = process.env, runGit = defaultRunGit) {
 
   try {
     const saida = runGit([
-      "diff",
-      "--name-only",
-      "--diff-filter=A",
+      'diff',
+      '--name-only',
+      '--diff-filter=A',
       `origin/${baseRef}...HEAD`,
-      "--",
-      "supabase/migrations/",
+      '--',
+      'supabase/migrations/',
     ]);
     const versoes = saida
-      .split("\n")
+      .split('\n')
       .map((linha) => linha.trim())
       .filter(Boolean)
-      .map((caminho) => caminho.split("/").pop() ?? "")
+      .map((caminho) => caminho.split('/').pop() ?? '')
       .map((arquivo) => arquivo.match(/^(\d{14})_/)?.[1])
       .filter(Boolean);
     return new Set(versoes);
@@ -245,10 +333,14 @@ export function pendingPrMigrations(env = process.env, runGit = defaultRunGit) {
 }
 
 function defaultRunGit(args) {
-  return execFileSync("git", args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+  return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
 }
 
-export function evaluateRequiredMigrations(rows, required = REQUIRED_MIGRATIONS, pendentesDoPr = new Set()) {
+export function evaluateRequiredMigrations(
+  rows,
+  required = REQUIRED_MIGRATIONS,
+  pendentesDoPr = new Set()
+) {
   const present = new Set(rows.map((row) => String(row.version)));
   const missing = required.filter((version) => !present.has(version));
 
@@ -256,24 +348,28 @@ export function evaluateRequiredMigrations(rows, required = REQUIRED_MIGRATIONS,
   const ausentes = missing.filter((version) => !pendentesDoPr.has(version));
 
   if (ausentes.length > 0) {
-    throw new Error(`Migrations obrigatórias ausentes no canônico: ${ausentes.join(", ")}.`);
+    throw new Error(`Migrations obrigatórias ausentes no canônico: ${ausentes.join(', ')}.`);
   }
   if (esperadas.length > 0) {
     console.warn(
-      `[canonical-db-gates] Migrations introduzidas por este PR e ainda não aplicadas ao canônico (esperado): ${esperadas.join(", ")}.`,
+      `[canonical-db-gates] Migrations introduzidas por este PR e ainda não aplicadas ao canônico (esperado): ${esperadas.join(', ')}.`
     );
   }
   return { checked: required.length, pendingFromPr: esperadas };
 }
 
-export function evaluateFunctionPrivileges(functionRows, grantRows, expected = EXPECTED_FUNCTION_PRIVILEGES) {
+export function evaluateFunctionPrivileges(
+  functionRows,
+  grantRows,
+  expected = EXPECTED_FUNCTION_PRIVILEGES
+) {
   const existingFunctions = new Set(functionRows.map((row) => String(row.function_name)));
   const missingFunctions = expected
     .map((entry) => entry.functionName)
     .filter((functionName) => !existingFunctions.has(functionName));
 
   if (missingFunctions.length > 0) {
-    throw new Error(`Funções sensíveis ausentes no canônico: ${missingFunctions.join(", ")}.`);
+    throw new Error(`Funções sensíveis ausentes no canônico: ${missingFunctions.join(', ')}.`);
   }
 
   const actualByFunction = new Map();
@@ -302,13 +398,15 @@ export function evaluateFunctionPrivileges(functionRows, grantRows, expected = E
     const actual = actualByFunction.get(entry.functionName);
     for (const [role, expectedValue] of Object.entries(entry.expected)) {
       if (actual[role] !== expectedValue) {
-        failures.push(`${entry.functionName} -> ${role}=${actual[role]} (esperado ${expectedValue})`);
+        failures.push(
+          `${entry.functionName} -> ${role}=${actual[role]} (esperado ${expectedValue})`
+        );
       }
     }
   }
 
   if (failures.length > 0) {
-    throw new Error(`ACL divergente em funções sensíveis: ${failures.join("; ")}.`);
+    throw new Error(`ACL divergente em funções sensíveis: ${failures.join('; ')}.`);
   }
 
   return { checked: expected.length };
@@ -329,7 +427,9 @@ export function evaluateFixedPolicies(rows, expected = EXPECTED_FIXED_POLICIES) 
 
     const actualRoles = normalizeRolesCsv(actual.roles_csv);
     if (actualRoles !== normalizeRolesCsv(entry.rolesCsv)) {
-      failures.push(`${entry.tableName}.${entry.policyName} roles=${actualRoles} (esperado ${entry.rolesCsv})`);
+      failures.push(
+        `${entry.tableName}.${entry.policyName} roles=${actualRoles} (esperado ${entry.rolesCsv})`
+      );
     }
 
     const actualQual = normalizeExpression(actual.qual);
@@ -337,7 +437,10 @@ export function evaluateFixedPolicies(rows, expected = EXPECTED_FIXED_POLICIES) 
 
     // Conter o fragmento esperado não basta: `(user_id = auth.uid()) OR true`
     // contém o predicado e libera todas as linhas.
-    for (const [campo, expressao] of [["qual", actual.qual], ["with_check", actual.with_check]]) {
+    for (const [campo, expressao] of [
+      ['qual', actual.qual],
+      ['with_check', actual.with_check],
+    ]) {
       if (hasTrueDisjunction(expressao)) {
         failures.push(`${entry.tableName}.${entry.policyName} ${campo} anulado por "OR true"`);
       }
@@ -357,14 +460,14 @@ export function evaluateFixedPolicies(rows, expected = EXPECTED_FIXED_POLICIES) 
   }
 
   if (failures.length > 0) {
-    throw new Error(`Policies corrigidas divergentes: ${failures.join("; ")}.`);
+    throw new Error(`Policies corrigidas divergentes: ${failures.join('; ')}.`);
   }
 
   return { checked: expected.length };
 }
 
 export function hasTrueDisjunction(value) {
-  const texto = String(value ?? "").toLowerCase();
+  const texto = String(value ?? '').toLowerCase();
   return /\bor\s*\(*\s*true\b/.test(texto) || /\btrue\s*\)*\s*or\b/.test(texto);
 }
 
@@ -378,13 +481,15 @@ export function evaluateLiteralTruePolicies(rows, allowlist = ALLOWED_LITERAL_TR
     const parts = [];
     if (unexpected.length > 0) {
       parts.push(
-        `extras: ${unexpected.map((row) => `${row.tableName ?? row.tablename}.${row.policyName ?? row.policyname}`).join(", ")}`,
+        `extras: ${unexpected.map((row) => `${row.tableName ?? row.tablename}.${row.policyName ?? row.policyname}`).join(', ')}`
       );
     }
     if (missing.length > 0) {
-      parts.push(`ausentes: ${missing.map((row) => `${row.tableName}.${row.policyName}`).join(", ")}`);
+      parts.push(
+        `ausentes: ${missing.map((row) => `${row.tableName}.${row.policyName}`).join(', ')}`
+      );
     }
-    throw new Error(`Policies literal-true fora do baseline: ${parts.join(" | ")}.`);
+    throw new Error(`Policies literal-true fora do baseline: ${parts.join(' | ')}.`);
   }
 
   return { checked: allowlist.length };
@@ -392,13 +497,17 @@ export function evaluateLiteralTruePolicies(rows, allowlist = ALLOWED_LITERAL_TR
 
 export function evaluatePerformanceAlertConstraint(rows) {
   if (rows.length !== 1) {
-    throw new Error(`Constraint performance_alerts_source_check esperada em 1 linha, recebidas ${rows.length}.`);
+    throw new Error(
+      `Constraint performance_alerts_source_check esperada em 1 linha, recebidas ${rows.length}.`
+    );
   }
 
   const normalized = normalizeExpression(rows[0].definition);
-  for (const token of ["query_telemetry", "pg_stat_statements", "cron"]) {
+  for (const token of ['query_telemetry', 'pg_stat_statements', 'cron']) {
     if (!normalized.includes(normalizeExpression(token))) {
-      throw new Error(`Constraint performance_alerts_source_check sem o valor obrigatório "${token}".`);
+      throw new Error(
+        `Constraint performance_alerts_source_check sem o valor obrigatório "${token}".`
+      );
     }
   }
 
@@ -415,21 +524,26 @@ export function evaluateAnonWriteGrants(rows, allowlist = ALLOWED_ANON_WRITE_GRA
     const parts = [];
     if (unexpected.length > 0) {
       parts.push(
-        `extras: ${unexpected.map((row) => `${row.tableName ?? row.tablename}:${row.privilegeType ?? row.privilege_type}:${row.grantee}`).join(", ")}`,
+        `extras: ${unexpected.map((row) => `${row.tableName ?? row.tablename}:${row.privilegeType ?? row.privilege_type}:${row.grantee}`).join(', ')}`
       );
     }
     if (missing.length > 0) {
-      parts.push(`ausentes: ${missing.map((row) => `${row.tableName}:${row.privilegeType}:${row.grantee}`).join(", ")}`);
+      parts.push(
+        `ausentes: ${missing.map((row) => `${row.tableName}:${row.privilegeType}:${row.grantee}`).join(', ')}`
+      );
     }
-    throw new Error(`Grants de escrita anônima fora do baseline: ${parts.join(" | ")}.`);
+    throw new Error(`Grants de escrita anônima fora do baseline: ${parts.join(' | ')}.`);
   }
 
   return { checked: allowlist.length };
 }
 
-export async function runCanonicalDbGates({ env = process.env, fetchImpl = globalThis.fetch } = {}) {
-  if (typeof fetchImpl !== "function") {
-    throw new Error("fetch indisponível para consultar a Management API do Supabase.");
+export async function runCanonicalDbGates({
+  env = process.env,
+  fetchImpl = globalThis.fetch,
+} = {}) {
+  if (typeof fetchImpl !== 'function') {
+    throw new Error('fetch indisponível para consultar a Management API do Supabase.');
   }
 
   const { accessToken, projectRef } = readEnv(env);
@@ -438,7 +552,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "migrations",
+    queryName: 'migrations',
     sql: `
       SELECT version
       FROM supabase_migrations.schema_migrations
@@ -451,7 +565,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "function-existence",
+    queryName: 'function-existence',
     sql: `
       SELECT pg_catalog.format('%I.%I(%s)', n.nspname, p.proname, pg_catalog.pg_get_function_identity_arguments(p.oid)) AS function_name
       FROM pg_catalog.pg_proc AS p
@@ -467,7 +581,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "function-grants",
+    queryName: 'function-grants',
     sql: `
       SELECT
         pg_catalog.format('%I.%I(%s)', n.nspname, p.proname, pg_catalog.pg_get_function_identity_arguments(p.oid)) AS function_name,
@@ -494,7 +608,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "fixed-policies",
+    queryName: 'fixed-policies',
     sql: `
       SELECT
         tablename,
@@ -507,8 +621,8 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
       WHERE schemaname = 'public'
         AND (${EXPECTED_FIXED_POLICIES.map(
           (entry) =>
-            `(tablename = ${sqlString(entry.tableName)} AND policyname = ${sqlString(entry.policyName)} AND cmd = ${sqlString(entry.cmd)})`,
-        ).join(" OR ")})
+            `(tablename = ${sqlString(entry.tableName)} AND policyname = ${sqlString(entry.policyName)} AND cmd = ${sqlString(entry.cmd)})`
+        ).join(' OR ')})
       ORDER BY tablename, policyname;
     `,
   });
@@ -517,7 +631,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "literal-true-policies",
+    queryName: 'literal-true-policies',
     sql: `
       SELECT
         tablename,
@@ -538,7 +652,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "performance-alerts-constraint",
+    queryName: 'performance-alerts-constraint',
     sql: `
       SELECT
         c.conname AS constraint_name,
@@ -556,7 +670,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
     fetchImpl,
     accessToken,
     projectRef,
-    queryName: "anon-write-grants",
+    queryName: 'anon-write-grants',
     sql: `
       SELECT
         c.relname AS tablename,
@@ -581,7 +695,11 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
 
   const summary = {
     projectRef,
-    migrations: evaluateRequiredMigrations(migrationRows, REQUIRED_MIGRATIONS, pendingPrMigrations(env)),
+    migrations: evaluateRequiredMigrations(
+      migrationRows,
+      REQUIRED_MIGRATIONS,
+      pendingPrMigrations(env)
+    ),
     functions: evaluateFunctionPrivileges(functionRows, functionGrantRows),
     fixedPolicies: evaluateFixedPolicies(fixedPolicyRows),
     literalTruePolicies: evaluateLiteralTruePolicies(
@@ -590,7 +708,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
         policyName: row.policyname,
         cmd: row.cmd,
         rolesCsv: row.roles_csv,
-      })),
+      }))
     ),
     performanceAlertsConstraint: evaluatePerformanceAlertConstraint(constraintRows),
     anonWriteGrants: evaluateAnonWriteGrants(
@@ -598,7 +716,7 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
         tableName: row.tablename,
         grantee: row.grantee,
         privilegeType: row.privilege_type,
-      })),
+      }))
     ),
   };
 
@@ -607,11 +725,11 @@ export async function runCanonicalDbGates({ env = process.env, fetchImpl = globa
 
 export async function queryReadOnlyCatalog({ fetchImpl, accessToken, projectRef, queryName, sql }) {
   const response = await fetchImpl(`${READ_ONLY_ENDPOINT}/${projectRef}/database/query/read-only`, {
-    method: "POST",
+    method: 'POST',
     headers: {
       authorization: `Bearer ${accessToken}`,
-      "content-type": "application/json",
-      accept: "application/json",
+      'content-type': 'application/json',
+      accept: 'application/json',
     },
     body: JSON.stringify({ query: sql }),
     // Sem resposta em 30s a consulta aborta e o gate reprova, em vez de pendurar o job.
@@ -623,19 +741,26 @@ export async function queryReadOnlyCatalog({ fetchImpl, accessToken, projectRef,
   try {
     parsed = rawBody ? JSON.parse(rawBody) : null;
   } catch {
-    throw new Error(`Management API (${queryName}) respondeu JSON inválido com HTTP ${response.status}.`);
+    throw new Error(
+      `Management API (${queryName}) respondeu JSON inválido com HTTP ${response.status}.`
+    );
   }
 
   if (![200, 201].includes(response.status)) {
     const detail =
-      parsed && typeof parsed === "object" && "message" in parsed && typeof parsed.message === "string"
+      parsed &&
+      typeof parsed === 'object' &&
+      'message' in parsed &&
+      typeof parsed.message === 'string'
         ? parsed.message
-        : "sem detalhe";
+        : 'sem detalhe';
     throw new Error(`Management API (${queryName}) falhou com HTTP ${response.status}: ${detail}.`);
   }
 
   if (!Array.isArray(parsed)) {
-    throw new Error(`Management API (${queryName}) retornou formato inesperado; esperava array de linhas.`);
+    throw new Error(
+      `Management API (${queryName}) retornou formato inesperado; esperava array de linhas.`
+    );
   }
 
   return parsed;
@@ -667,21 +792,21 @@ function sqlString(value) {
 }
 
 function sqlStringList(values) {
-  return values.map(sqlString).join(", ");
+  return values.map(sqlString).join(', ');
 }
 
 async function main() {
   const summary = await runCanonicalDbGates();
   console.log(
     [
-      "✅ Gate canônico validado.",
+      '✅ Gate canônico validado.',
       `Projeto: ${summary.projectRef}`,
       `Migrations: ${summary.migrations.checked}`,
       `Funções sensíveis: ${summary.functions.checked}`,
       `Policies corrigidas: ${summary.fixedPolicies.checked}`,
       `Policies literal-true allowlisted: ${summary.literalTruePolicies.checked}`,
       `Grants anon allowlisted: ${summary.anonWriteGrants.checked}`,
-    ].join(" "),
+    ].join(' ')
   );
 }
 
