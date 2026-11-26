@@ -205,6 +205,20 @@ describe('origemCompativelComCadastro', () => {
     expect(origemCompativelComCadastro(BB, { conta: '1234 5678' })).toBe(true);
   });
 
+  it('aceita quando só o extrato separa o dígito verificador', () => {
+    // Extrato "56789-1" contra cadastro "567891": mesmos dígitos, mesma conta.
+    expect(origemCompativelComCadastro('001/1234/56789-1', { conta: '567891' })).toBe(true);
+  });
+
+  it('aceita o dígito verificador zero separado só no cadastro', () => {
+    expect(origemCompativelComCadastro('001/1234/567890', { conta: '56789-0' })).toBe(true);
+  });
+
+  it('recusa quando os dígitos verificadores são diferentes', () => {
+    // Mesmo número-base, verificador 1 contra 2: contas diferentes da mesma agência.
+    expect(origemCompativelComCadastro('001/1234/56789-1', { conta: '56789-2' })).toBe(false);
+  });
+
   it('recusa número com dígitos extras apesar do prefixo comum', () => {
     // 5678912 começa com 56789, mas é outra conta da mesma agência.
     expect(origemCompativelComCadastro('001/1234/56789', { conta: '5678912-3' })).toBe(false);
@@ -227,5 +241,14 @@ describe('origemCompativelComCadastro', () => {
     expect(origemCompativelComCadastro(null, { conta: '5678' })).toBeNull();
     // Número curto demais para provar identidade (evita bloquear por coincidência).
     expect(origemCompativelComCadastro('001/1234/12', { conta: '345' })).toBeNull();
+  });
+
+  it('não bloqueia conta curta pelo código padrão "000" do cadastro', () => {
+    // A tela de contas bancárias grava "000" quando o banco não é escolhido: isso
+    // não é um código real e não pode reprovar o destino.
+    expect(origemCompativelComCadastro('001/1234/123', { codigo_banco: '000' })).toBeNull();
+    expect(
+      origemCompativelComCadastro('001/1234/123', { conta: '123', codigo_banco: '000' })
+    ).toBeNull();
   });
 });
