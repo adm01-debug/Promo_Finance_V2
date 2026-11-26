@@ -4,9 +4,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useConsultaCNAE } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
-import { OfflineBadge } from './OfflineBadge';
-import { ResultBlock } from './shared';
-import { pct } from './format';
+import { OfflineBadge } from '@/components/tributario/consulta-rapida/OfflineBadge';
+import { ResultBlock } from '@/components/tributario/consulta-rapida/shared';
+import { pct } from '@/components/tributario/consulta-rapida/format';
 
 /** Consulta por CNAE: anexo do Simples, Fator R, vedações e presunções. */
 export function ConsultaCnaeTab() {

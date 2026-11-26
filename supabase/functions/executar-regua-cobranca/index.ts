@@ -1,5 +1,13 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { dataAlvoUtc, normalizarCanais, normalizarDiasGatilho, type CanalRegua } from './domain.ts';
+import {
+  aplicarVariaveis,
+  dataAlvoUtc,
+  normalizarCanais,
+  normalizarDiasGatilho,
+  type CanalRegua,
+  type DadosMensagem,
+  type TemplateCobranca,
+} from './domain.ts';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
@@ -104,7 +112,19 @@ Deno.serve(
                 if (reservaError?.code === '23505') continue;
                 if (reservaError) throw reservaError;
 
-                const erroEnvio = await enviarCobranca(supabase, canal, conta, regra, requestId);
+                // Leitura de template (ou qualquer falha do envio) precisa
+                // finalizar a reserva: uma linha presa em `processando`
+                // bloqueia aquele conta/etapa/canal no dia pelo índice de
+                // idempotência (achado do review da PR #571).
+                let erroEnvio: string | null;
+                try {
+                  erroEnvio = await enviarCobranca(supabase, canal, conta, regra, requestId, {
+                    empresaId: regra.empresa_id,
+                    etapa,
+                  });
+                } catch (erro) {
+                  erroEnvio = mensagemErro(erro);
+                }
                 const sucesso = erroEnvio === null;
                 const { error: atualizacaoError } = await supabase
                   .from('execucoes_regua_cobranca')
@@ -145,6 +165,35 @@ Deno.serve(
   })
 );
 
+/**
+ * Mensagem real do envio: o template ativo de `templates_cobranca` para a
+ * empresa/etapa/canal. Antes desta mudança o texto vinha de
+ * `regua_cobranca.descricao` — campo de descrição da etapa, não de mensagem —
+ * então editar um template em Configurações não mudava nenhuma cobrança
+ * automática (achado do review da PR #571).
+ */
+async function carregarTemplate(
+  supabase: SupabaseClient<any, any, any>,
+  empresaId: string,
+  etapa: string,
+  canal: CanalRegua
+): Promise<TemplateCobranca | null> {
+  const { data, error } = await supabase
+    .from('templates_cobranca')
+    .select('assunto,corpo')
+    .eq('empresa_id', empresaId)
+    .eq('etapa', etapa)
+    .eq('canal', canal)
+    .eq('ativo', true)
+    // `updated_at` existe em todas as versões da tabela; `padrao` não, e um
+    // ORDER BY em coluna ausente derrubaria o envio inteiro.
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as TemplateCobranca | null) ?? null;
+}
+
 async function enviarCobranca(
   supabase: SupabaseClient<any, any, any>,
   canal: CanalRegua,
@@ -157,21 +206,40 @@ async function enviarCobranca(
       | null;
   },
   regra: { nome: string; descricao: string | null },
-  requestId: string
+  requestId: string,
+  origem: { empresaId: string; etapa: string }
 ): Promise<string | null> {
-  const template = regra.descricao || 'Seu título está próximo do vencimento.';
-  const mensagem = template.replace('{{valor}}', String(conta.valor));
   const cliente = Array.isArray(conta.clientes) ? conta.clientes[0] : conta.clientes;
+  const template = await carregarTemplate(supabase, origem.empresaId, origem.etapa, canal);
+  const corpoBase =
+    template?.corpo?.trim() || regra.descricao || 'Seu título está próximo do vencimento.';
+  const dados: DadosMensagem = {
+    cliente: cliente?.nome ?? 'cliente',
+    valor: conta.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    vencimento: new Date(`${conta.data_vencimento}T00:00:00Z`).toLocaleDateString('pt-BR', {
+      timeZone: 'UTC',
+    }),
+  };
+  const mensagem = aplicarVariaveis(corpoBase, dados);
+  // Assunto também passa pelas variáveis: `{{cliente}}` no assunto chegava
+  // literal ao cliente (achado do review da PR #571).
+  const assunto = aplicarVariaveis(
+    template?.assunto?.trim() || `Lembrete de Pagamento: ${regra.nome}`,
+    dados
+  );
 
   if (canal === 'email' && cliente?.email) {
+    // Texto cru: quem monta o HTML do e-mail (`enviar-alerta-email`) e que
+    // escapa. Escapar aqui mostrava entidades ao cliente no WhatsApp, que usa
+    // a mesma mensagem, e apagava o trecho entre `<` e `>` do assunto.
     const { error } = await supabase.functions.invoke('enviar-alerta-email', {
       headers: correlationHeaders(requestId),
       body: {
         tipo: 'vencimento',
         destinatario: cliente.email,
         dados: {
-          titulo: `Lembrete de Pagamento: ${regra.nome}`,
-          mensagem,
+          titulo: assunto,
+          mensagem: mensagem,
           valor: conta.valor,
           dataVencimento: conta.data_vencimento,
         },
@@ -181,9 +249,12 @@ async function enviarCobranca(
   }
 
   if (canal === 'whatsapp' && cliente?.telefone) {
+    // `whatsapp-ia-proativo` valida com schema estrito: exigia `action` e lia
+    // `data.telefone`/`data.mensagem`. O envio direto (`phone`/`message`) era
+    // recusado com 400 (achado do review da PR #571).
     const { error } = await supabase.functions.invoke('whatsapp-ia-proativo', {
       headers: correlationHeaders(requestId),
-      body: { phone: cliente.telefone, message: mensagem },
+      body: { action: 'enviar-mensagem', data: { telefone: cliente.telefone, mensagem } },
     });
     return error?.message ?? null;
   }

@@ -96,14 +96,6 @@
     "schedule": "*/30 * * * *"
   },
   {
-    "jobname": "pgss_baseline_cleanup",
-    "schedule": "0 4 1 * *"
-  },
-  {
-    "jobname": "pgss_weekly_baseline",
-    "schedule": "0 3 * * 0"
-  },
-  {
     "jobname": "pgss-baseline-cleanup",
     "schedule": "0 23 * * 0"
   },
@@ -118,10 +110,6 @@
   {
     "jobname": "recarregar-seeds-fiscais-diario",
     "schedule": "0 0 * * *"
-  },
-  {
-    "jobname": "refresh-benchmark-setorial-weekly",
-    "schedule": "0 3 * * 0"
   },
   {
     "jobname": "refresh-performance-alerts-weekly",
@@ -142,6 +130,26 @@
   {
     "jobname": "snapshot-table-bloat-daily",
     "schedule": "30 2 * * *"
+  },
+  {
+    "jobname": "sync-aliquota-referencia-municipio",
+    "schedule": "50 8 * * 0"
+  },
+  {
+    "jobname": "sync-aliquota-referencia-uf",
+    "schedule": "20 8 * * *"
+  },
+  {
+    "jobname": "sync-catalogo-cclasstrib",
+    "schedule": "40 7 * * *"
+  },
+  {
+    "jobname": "sync-catalogo-ncm-nbs",
+    "schedule": "0 8 * * *"
+  },
+  {
+    "jobname": "sync-fundamentacao-legal",
+    "schedule": "30 8 * * *"
   },
   {
     "jobname": "webhook-retry-worker-1min",

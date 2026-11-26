@@ -270,6 +270,9 @@ export const handler = async (req: Request) => {
     const gravados = await listarGravados(sb, ano);
     let requisicoes = 2;
     let interrompido = false;
+    // O teto de requisicoes corta a lista no meio: o resumo continua ok, mas a
+    // rodada nao cobre o escopo inteiro (o painel de saude le este campo).
+    let truncada = false;
 
     // CBS nacional: uma linha, sem ente.
     const cbs = vazio();
@@ -307,7 +310,10 @@ export const handler = async (req: Request) => {
       const linhas: LinhaAliquota[] = [];
       try {
         for (const codigoUf of selecao.alvos) {
-          if (requisicoes >= MAX_REQUISICOES) break;
+          if (requisicoes >= MAX_REQUISICOES) {
+            truncada = true;
+            break;
+          }
           if (uf.consultados > 0) await espera(PAUSA_MS);
           requisicoes += 1;
           const resposta = await consultar(
@@ -345,7 +351,10 @@ export const handler = async (req: Request) => {
       const linhas: LinhaAliquota[] = [];
       try {
         for (const codigo of selecao.alvos) {
-          if (requisicoes >= MAX_REQUISICOES) break;
+          if (requisicoes >= MAX_REQUISICOES) {
+            truncada = true;
+            break;
+          }
           if (municipio.consultados > 0) await espera(PAUSA_MS);
           requisicoes += 1;
           const resposta = await consultar(
@@ -380,17 +389,23 @@ export const handler = async (req: Request) => {
     };
     log.info('sync concluido', {
       context: {
+        // O painel de saude (etapa 83) casa esta linha com o `request_end` pelo
+        // `request_id`: sem o id aqui o run bem sucedido nao prova o escopo.
+        request_id: req.headers.get('x-request-id') ?? null,
         data,
         ano,
         escopo,
         versao_oficial: versaoDb,
         interrompido,
+        truncada,
         requisicoes,
         cbs_gravado: cbs.gravados,
         uf_gravados: uf.gravados,
+        uf_consultados: uf.consultados,
         uf_nao_publicadas: uf.nao_publicadas,
         uf_pendentes: uf.pendentes,
         municipio_gravados: municipio.gravados,
+        municipio_consultados: municipio.consultados,
         municipio_nao_publicadas: municipio.nao_publicadas,
         municipio_pendentes: municipio.pendentes,
       },

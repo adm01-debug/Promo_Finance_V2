@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useUrlTab } from '@/hooks/useUrlTab';
 import { motion } from 'framer-motion';
 import {
@@ -40,20 +39,13 @@ import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { usePreferenciasSistema } from '@/hooks/usePreferenciasSistema';
-import { ReguaCobrancaTab } from '@/components/configuracoes/ReguaCobrancaTab';
 import { SistemaTab } from '@/components/configuracoes/SistemaTab';
-import { TemplatesTab } from '@/components/configuracoes/TemplatesTab';
+import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { RegrasDuplicidadeTab } from '@/components/configuracoes/RegrasDuplicidadeTab';
 import { NotificacoesPreferencias } from '@/components/configuracoes/NotificacoesPreferencias';
 import { ShieldAlert } from 'lucide-react';
 import { AtalhosRapidos } from './Configuracoes.parts';
 import { containerVariants } from './Configuracoes.constants';
-import {
-  etapasIniciais,
-  templatesIniciais,
-  type EtapaConfig,
-  type Template,
-} from './Configuracoes.constants';
 
 const CONFIG_TABS = [
   'regua',
@@ -73,10 +65,6 @@ const CONFIG_TABS = [
 ] as const;
 
 export default function Configuracoes() {
-  const [etapas, setEtapas] = useState<EtapaConfig[]>(etapasIniciais);
-  const [templates] = useState<Template[]>(templatesIniciais);
-  const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
-  const [selectedTemplate] = useState<Template | null>(null);
   const { toast } = useToast();
   const [tab, setTab] = useUrlTab('regua', CONFIG_TABS);
 
@@ -88,14 +76,6 @@ export default function Configuracoes() {
     carregado,
     falhaLeitura,
   } = usePreferenciasSistema();
-
-  const toggleEtapa = (id: string) => {
-    setEtapas((prev) => prev.map((e) => (e.id === id ? { ...e, ativo: !e.ativo } : e)));
-    toast({
-      title: 'Etapa atualizada',
-      description: 'A régua de cobrança foi atualizada com sucesso.',
-    });
-  };
 
   const savePreferencias = async () => {
     if (!carregado) {
@@ -317,17 +297,12 @@ export default function Configuracoes() {
 
         {/* Régua de Cobrança */}
         <TabsContent value="regua">
-          <ReguaCobrancaTab etapas={etapas} onToggleEtapa={toggleEtapa} />
+          <ReguaCobrancaConfig secao="regua" />
         </TabsContent>
 
         {/* Templates de Mensagem */}
         <TabsContent value="templates">
-          <TemplatesTab
-            templates={templates}
-            templateDialogOpen={templateDialogOpen}
-            selectedTemplate={selectedTemplate}
-            onTemplateDialogChange={setTemplateDialogOpen}
-          />
+          <ReguaCobrancaConfig secao="templates" />
         </TabsContent>
 
         {/* Notificações */}

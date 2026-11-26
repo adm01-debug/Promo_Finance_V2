@@ -136,6 +136,8 @@ export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
   allowPolicy("catalogo_nbs", "catalogo_nbs_service_role_all", "ALL", "service_role"),
   allowPolicy("catalogo_aliquota_referencia", "catalogo_aliquota_referencia_select_authenticated", "SELECT", "authenticated"),
   allowPolicy("catalogo_aliquota_referencia", "catalogo_aliquota_referencia_service_role_all", "ALL", "service_role"),
+  allowPolicy("catalogo_fundamentacao", "catalogo_fundamentacao_select_authenticated", "SELECT", "authenticated"),
+  allowPolicy("catalogo_fundamentacao", "catalogo_fundamentacao_service_role_all", "ALL", "service_role"),
 ]);
 
 export const ALLOWED_ANON_WRITE_GRANTS = Object.freeze([

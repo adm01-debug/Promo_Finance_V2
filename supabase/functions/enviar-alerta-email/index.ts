@@ -11,6 +11,7 @@ import {
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { assuntoSeguro, escaparHtml, textoParaHtml } from './html.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('enviar-alerta-email');
 
@@ -70,18 +71,28 @@ export const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // O texto livre (título, mensagem e URL de ação) chega de outros fluxos e é
+    // interpolado no HTML abaixo: escapar aqui — no dono da marcação — cobre
+    // todos os chamadores. O assunto segue em texto puro no `subject`, então
+    // perde apenas CR/LF e nao ganha entidades.
+    const assunto = assuntoSeguro(dados.titulo);
+    const tituloHtml = textoParaHtml(dados.titulo);
+    const mensagemHtml = textoParaHtml(dados.mensagem);
+    const urlAcao = escaparHtml(dados.urlAcao ?? '');
+    const vencimentoHtml = dados.dataVencimento ? textoParaHtml(String(dados.dataVencimento)) : '';
+
     // Templates de email por tipo
     const templates: Record<string, { subject: string; html: string }> = {
       vencimento: {
-        subject: `⏰ Alerta de Vencimento: ${dados.titulo}`,
+        subject: `⏰ Alerta de Vencimento: ${assunto}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; text-align: center;">
               <h1 style="color: white; margin: 0;">⏰ Alerta de Vencimento</h1>
             </div>
             <div style="padding: 30px; background: #f9fafb;">
-              <h2 style="color: #1f2937; margin-top: 0;">${dados.titulo}</h2>
-              <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
+              <h2 style="color: #1f2937; margin-top: 0;">${tituloHtml}</h2>
+              <p style="color: #4b5563; line-height: 1.6;">${mensagemHtml}</p>
               ${
                 dados.valor
                   ? `<p style="font-size: 24px; font-weight: bold; color: #1f2937;">Valor: R$ ${dados.valor.toLocaleString(
@@ -92,12 +103,12 @@ export const handler = async (req: Request): Promise<Response> => {
               }
               ${
                 dados.dataVencimento
-                  ? `<p style="color: #6b7280;">Vencimento: ${dados.dataVencimento}</p>`
+                  ? `<p style="color: #6b7280;">Vencimento: ${vencimentoHtml}</p>`
                   : ''
               }
               ${
                 dados.urlAcao
-                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Detalhes</a>`
+                  ? `<a href="${urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Detalhes</a>`
                   : ''
               }
             </div>
@@ -108,15 +119,15 @@ export const handler = async (req: Request): Promise<Response> => {
         `,
       },
       inadimplencia: {
-        subject: `🚨 Alerta de Inadimplência: ${dados.titulo}`,
+        subject: `🚨 Alerta de Inadimplência: ${assunto}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: 20px; text-align: center;">
               <h1 style="color: white; margin: 0;">🚨 Alerta de Inadimplência</h1>
             </div>
             <div style="padding: 30px; background: #f9fafb;">
-              <h2 style="color: #1f2937; margin-top: 0;">${dados.titulo}</h2>
-              <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
+              <h2 style="color: #1f2937; margin-top: 0;">${tituloHtml}</h2>
+              <p style="color: #4b5563; line-height: 1.6;">${mensagemHtml}</p>
               ${
                 dados.valor
                   ? `<p style="font-size: 24px; font-weight: bold; color: #ef4444;">Valor em atraso: R$ ${dados.valor.toLocaleString(
@@ -127,7 +138,7 @@ export const handler = async (req: Request): Promise<Response> => {
               }
               ${
                 dados.urlAcao
-                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Iniciar Cobrança</a>`
+                  ? `<a href="${urlAcao}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Iniciar Cobrança</a>`
                   : ''
               }
             </div>
@@ -145,8 +156,8 @@ export const handler = async (req: Request): Promise<Response> => {
               <h1 style="color: white; margin: 0;">✅ Aprovação Necessária</h1>
             </div>
             <div style="padding: 30px; background: #f9fafb;">
-              <h2 style="color: #1f2937; margin-top: 0;">${dados.titulo}</h2>
-              <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
+              <h2 style="color: #1f2937; margin-top: 0;">${tituloHtml}</h2>
+              <p style="color: #4b5563; line-height: 1.6;">${mensagemHtml}</p>
               ${
                 dados.valor
                   ? `<p style="font-size: 24px; font-weight: bold; color: #1f2937;">Valor: R$ ${dados.valor.toLocaleString(
@@ -157,7 +168,7 @@ export const handler = async (req: Request): Promise<Response> => {
               }
               ${
                 dados.urlAcao
-                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Aprovar Agora</a>`
+                  ? `<a href="${urlAcao}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Aprovar Agora</a>`
                   : ''
               }
             </div>
@@ -175,8 +186,8 @@ export const handler = async (req: Request): Promise<Response> => {
               <h1 style="color: white; margin: 0;">⚠️ ALERTA CRÍTICO</h1>
             </div>
             <div style="padding: 30px; background: #fef2f2; border: 2px solid #fecaca;">
-              <h2 style="color: #991b1b; margin-top: 0;">${dados.titulo}</h2>
-              <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
+              <h2 style="color: #991b1b; margin-top: 0;">${tituloHtml}</h2>
+              <p style="color: #4b5563; line-height: 1.6;">${mensagemHtml}</p>
               ${
                 dados.valor
                   ? `<p style="font-size: 24px; font-weight: bold; color: #991b1b;">Déficit projetado: R$ ${Math.abs(
@@ -186,7 +197,7 @@ export const handler = async (req: Request): Promise<Response> => {
               }
               ${
                 dados.urlAcao
-                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Fluxo de Caixa</a>`
+                  ? `<a href="${urlAcao}" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Fluxo de Caixa</a>`
                   : ''
               }
             </div>
@@ -204,11 +215,11 @@ export const handler = async (req: Request): Promise<Response> => {
               <h1 style="color: white; margin: 0;">⚠️ FALHA NA FILA ASAAS</h1>
             </div>
             <div style="padding: 30px; background: #fff1f2; border: 2px solid #fecdd3;">
-              <h2 style="color: #9f1239; margin-top: 0;">${dados.titulo}</h2>
-              <p style="color: #4b5563; line-height: 1.6;">${dados.mensagem}</p>
+              <h2 style="color: #9f1239; margin-top: 0;">${tituloHtml}</h2>
+              <p style="color: #4b5563; line-height: 1.6;">${mensagemHtml}</p>
               ${
                 dados.urlAcao
-                  ? `<a href="${dados.urlAcao}" style="display: inline-block; background: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Painel de Retentativas</a>`
+                  ? `<a href="${urlAcao}" style="display: inline-block; background: #e11d48; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px;">Ver Painel de Retentativas</a>`
                   : ''
               }
             </div>
