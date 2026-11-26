@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "455790afad7767dec23f4032ae7a3ef77bfd1147",
+  "sha": "377e5cf5d80a06aae0922122d279ce98dc12e3b7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 01:20 UTC",
-  "files_total": 4124,
-  "code_files": 3703,
-  "code_lines": 529609
+  "generated_at": "2026-11-26 03:09 UTC",
+  "files_total": 4125,
+  "code_files": 3704,
+  "code_lines": 530643
  },
  "version": "1.3.2",
- "facts_hash": "df2fc3ba989961b0",
+ "facts_hash": "537f48763ea72478",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1298,
+   ".ts": 1299,
    ".sql": 1157,
    ".tsx": 1126,
    ".mjs": 68,
@@ -61865,9 +61865,15 @@
      "alertas",
      "anomalia_toast_eventos",
      "anomalias_detectadas",
+     "catalogo_aliquota_referencia",
+     "catalogo_cclasstrib",
+     "catalogo_fundamentacao",
+     "catalogo_nbs",
+     "catalogo_ncm",
      "centros_custo",
      "contas_pagar",
      "contas_receber",
+     "edge_function_logs",
      "empresas",
      "frontend_error_logs",
      "frontend_performance_logs",
@@ -61881,7 +61887,7 @@
      "registrar_auditoria_config",
      "resolve_integrity_alert"
     ],
-    "deps_count": 114
+    "deps_count": 123
    },
    {
     "path": "/aprovacoes",
@@ -71099,7 +71105,7 @@
   {
    "module": "src/components",
    "files": 1006,
-   "lines": 166552,
+   "lines": 166809,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71114,6 +71120,11 @@
     "bitrix_webhook_events",
     "bloqueios_duplicidade",
     "boletos",
+    "catalogo_aliquota_referencia",
+    "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
+    "catalogo_nbs",
+    "catalogo_ncm",
     "centros_custo",
     "clientes",
     "conciliacoes_parciais",
@@ -71122,6 +71133,7 @@
     "contas_pagar",
     "contas_receber",
     "divergencias_conciliacao",
+    "edge_function_logs",
     "elisao_creditos_auditoria",
     "elisao_simulacoes_regime",
     "elisao_tarefas_acionaveis",
@@ -71710,8 +71722,8 @@
   },
   {
    "module": "src/lib",
-   "files": 435,
-   "lines": 58846,
+   "files": 436,
+   "lines": 59597,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -72273,7 +72285,7 @@
   {
    "module": "supabase/functions",
    "files": 259,
-   "lines": 57496,
+   "lines": 57522,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -73144,18 +73156,31 @@
      "src/hooks/useBudget.ts"
     ]
    },
+   "catalogo_aliquota_referencia": {
+    "select": [
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx"
+    ]
+   },
    "catalogo_cclasstrib": {
     "select": [
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
      "src/lib/tributario/catalogos/cclasstrib.ts"
     ]
    },
    "catalogo_fundamentacao": {
     "select": [
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
      "src/lib/tributario/catalogos/fundamentacao-legal.ts"
+    ]
+   },
+   "catalogo_nbs": {
+    "select": [
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx"
     ]
    },
    "catalogo_ncm": {
     "select": [
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
      "src/lib/tributario/catalogos/cclasstrib.ts"
     ]
    },
@@ -73536,6 +73561,7 @@
    },
    "edge_function_logs": {
     "select": [
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
      "src/pages/AdminEdgeHealth.tsx"
     ],
     "insert": [
@@ -75419,8 +75445,13 @@
     "id",
     "period"
    ],
+   "catalogo_aliquota_referencia": [
+    "carregado_em",
+    "tributo"
+   ],
    "catalogo_cclasstrib": [
     "cclasstrib",
+    "created_at",
     "cst",
     "descricao",
     "exige_gibscbs",
@@ -75434,6 +75465,7 @@
    "catalogo_fundamentacao": [
     "cclasstrib",
     "conjunto_tributo",
+    "created_at",
     "cst",
     "descricao_cclasstrib",
     "descricao_cst",
@@ -75441,9 +75473,14 @@
     "inicio_vigencia",
     "referencia_normativa",
     "texto",
-    "texto_curto"
+    "texto_curto",
+    "versao_it"
+   ],
+   "catalogo_nbs": [
+    "carregado_em"
    ],
    "catalogo_ncm": [
+    "carregado_em",
     "descricao",
     "fim_vigencia",
     "inicio_vigencia",
@@ -75641,7 +75678,9 @@
     "event",
     "function_name",
     "id",
-    "level"
+    "level",
+    "metadata",
+    "status_code"
    ],
    "elisao_alertas": [
     "empresa_id"
@@ -77726,8 +77765,6 @@
    "bitrix24_stage_mappings",
    "bitrix24_tokens",
    "bloat_snapshots",
-   "catalogo_aliquota_referencia",
-   "catalogo_nbs",
    "catalogos_fiscais_cargas",
    "catalogos_tributarios_health_history",
    "cnpja_rate_limit",
@@ -80047,6 +80084,16 @@
     "file": "src/lib/tributario/catalogos/saude.ts",
     "name": "StatusSaudeCatalogos",
     "values": "saudavel | atencao | critico"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "name": "CatalogoRfbId",
+    "values": "cclasstrib | ncm | nbs | aliquota_cbs | aliquota_ibs_uf | aliquota_ibs_mun | fundamentacao"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "name": "StatusFrescorRfb",
+    "values": "ok | atencao | critico"
    },
    {
     "file": "src/lib/tributario/catalogos/types.ts",
@@ -85235,6 +85282,18 @@
     "text": "Step 3: Validação */}"
    },
    {
+    "file": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+    "text": "* Uma leitura por catálogo (limit 1, ordenada pela carga) mais o último run"
+   },
+   {
+    "file": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+    "text": "O cron municipal roda aos domingos: o prazo de 7 dias não dá margem"
+   },
+   {
+    "file": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+    "text": "para a rodada terminar, então este escopo usa o limite semanal."
+   },
+   {
     "file": "src/components/admin/telemetry/IntegrityAlertsPanel.tsx",
     "text": "(run_integrity_cycle). Sem este painel os alertas ficavam apenas no banco."
    },
@@ -86725,6 +86784,22 @@
    {
     "file": "src/lib/tributario/catalogos/saude.ts",
     "text": "\"sem problemas conhecidos\" em vez de lançar — o dashboard nunca deve quebrar"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "text": "* Prazo para catálogos de cadência semanal (o cron municipal de alíquotas roda"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "text": "* Prazo próprio do catálogo, em dias (padrão: `DIAS_ALERTA_CATALOGO_RFB`)."
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "text": "O limite é medido no relógio, não em dias cheios: 7 dias e 12 horas já é"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "text": "consultado nao pode datar o catalogo como fresco."
    },
    {
     "file": "src/lib/tributario/catalogos/types.ts",
@@ -102026,6 +102101,21 @@
     "value": "6"
    },
    {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "name": "DIAS_ALERTA_CATALOGO_RFB",
+    "value": "7"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "name": "DIAS_ALERTA_CATALOGO_RFB_SEMANAL",
+    "value": "9"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "name": "MS_POR_DIA",
+    "value": "86"
+   },
+   {
     "file": "src/lib/tributario/darf/tabelas.ts",
     "name": "VALOR_MINIMO_DARF",
     "value": "10"
@@ -112575,6 +112665,24 @@
     "file": "src/lib/tributario/catalogos/saude.ts",
     "field": "status",
     "value": "saudavel",
+    "kind": "compara"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "field": "status",
+    "value": "atencao",
+    "kind": "compara"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "field": "status",
+    "value": "atencao",
+    "kind": "compara"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/saude.ts",
+    "field": "status",
+    "value": "critico",
     "kind": "compara"
    },
    {
@@ -132696,6 +132804,122 @@
    {
     "file": "src/lib/tributario/__tests__/catalogos-painel.test.ts",
     "name": "detecta marcador possui_fcp inconsistente"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "avaliarFrescorCatalogosRfb"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "marca como critico o catalogo nunca sincronizado"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "mantem em dia o catalogo carregado hoje"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "trata o dia do limite como em dia e o excedente (mesmo parcial) como alerta"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "respeita o prazo semanal do escopo municipal"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "agrega o pior status e conta cada grupo"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "data invalida e relogio adiantado nao quebram a avaliacao"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "lista vazia nao inventa problema"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "cada escopo de aliquota e o NBS avaliam o proprio frescor"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "entradaSemLinhas"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "escopo vazio com run recente fica em dia e explica que nao ha linha"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "escopo vazio com run atrasado continua alertando"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "sem run nenhum volta a ser nunca sincronizado"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "escolherUltimaCarga"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "usa o run quando o carimbo do catalogo congelou"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "usa o carimbo do catalogo quando ele e mais novo que o run"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "aceita ISO, Date e devolve null quando nao ha evidencia"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "entradaIndisponivel"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "declara estado desconhecido em vez de catalogo vazio ou em dia"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "nao contamina o veredito dos outros catalogos"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "escolherRunComEscopo"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "so exige prova propria nos escopos que dividem o job"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "sync concluido sem request_id nao prova escopo nenhum"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "ignora o run do job quando o escopo nao foi consultado"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "aceita o run que consultou o escopo mesmo sem gravar linha"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "descarta requisicao que falhou ou que ainda nao terminou"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "nao deixa a rotina diaria datar o escopo municipal"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "nao deixa a rotina municipal datar o IBS estadual"
+   },
+   {
+    "file": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+    "name": "rodada interrompida ou truncada nao data o escopo"
    },
    {
     "file": "src/lib/tributario/__tests__/catalogos-saude.test.ts",
@@ -155790,6 +156014,14 @@
     "limit": "1"
    },
    {
+    "file": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+    "limit": "1"
+   },
+   {
+    "file": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+    "limit": "120"
+   },
+   {
     "file": "src/components/centros-custo/CentroCustoHistorico.tsx",
     "limit": "50"
    },
@@ -158692,6 +158924,14 @@
      "saudavel": [
       "compara:src/lib/tributario/catalogos/saude.ts"
      ],
+     "atencao": [
+      "compara:src/lib/tributario/catalogos/saude.ts",
+      "compara:src/pages/OrcamentoEvento.tsx",
+      "compara:supabase/functions/verificar-conformidade-fiscal/index.ts"
+     ],
+     "critico": [
+      "compara:src/lib/tributario/catalogos/saude.ts"
+     ],
      "sem_catalogo": [
       "compara:src/pages/tributario/IssSimulador.tsx",
       "escreve:src/lib/tributario/ipi-iss/overlay-iss.ts"
@@ -158714,10 +158954,6 @@
      ],
      "configurando": [
       "escreve:src/pages/Integracoes.tsx"
-     ],
-     "atencao": [
-      "compara:src/pages/OrcamentoEvento.tsx",
-      "compara:supabase/functions/verificar-conformidade-fiscal/index.ts"
      ],
      "operational": [
       "compara:src/pages/StatusPage.tsx",
@@ -184716,9 +184952,83 @@
   },
   "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx": {
    "path": "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
-   "lines": 186,
+   "lines": 443,
    "exports": [
     "function CatalogosTributariosHealthPanel"
+   ],
+   "tables": [
+    {
+     "table": "edge_function_logs",
+     "op": "select"
+    },
+    {
+     "table": "edge_function_logs",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_cclasstrib",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_ncm",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_nbs",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_aliquota_referencia",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_aliquota_referencia",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_aliquota_referencia",
+     "op": "select"
+    },
+    {
+     "table": "catalogo_fundamentacao",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "edge_function_logs": [
+     "created_at",
+     "event",
+     "function_name",
+     "metadata",
+     "status_code"
+    ],
+    "catalogo_cclasstrib": [
+     "created_at",
+     "versao_it"
+    ],
+    "catalogo_ncm": [
+     "carregado_em"
+    ],
+    "catalogo_nbs": [
+     "carregado_em"
+    ],
+    "catalogo_aliquota_referencia": [
+     "carregado_em",
+     "tributo"
+    ],
+    "catalogo_fundamentacao": [
+     "created_at",
+     "versao_it"
+    ]
+   },
+   "rule_comments": [
+    "* Uma leitura por catálogo (limit 1, ordenada pela carga) mais o último run",
+    "O cron municipal roda aos domingos: o prazo de 7 dias não dá margem",
+    "para a rodada terminar, então este escopo usa o limite semanal."
+   ],
+   "pagination": [
+    "1",
+    "120"
    ]
   },
   "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx": {
@@ -221531,6 +221841,46 @@
     "detecta marcador possui_fcp inconsistente"
    ]
   },
+  "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts": {
+   "path": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+   "lines": 389,
+   "is_test": true,
+   "rule_comments": [
+    "não pode esperar o dia 8 para aparecer.",
+    "Leitura falhada nao e \"sem sincronizar alem do prazo\": e outro estado."
+   ],
+   "tests": [
+    "avaliarFrescorCatalogosRfb",
+    "marca como critico o catalogo nunca sincronizado",
+    "mantem em dia o catalogo carregado hoje",
+    "trata o dia do limite como em dia e o excedente (mesmo parcial) como alerta",
+    "respeita o prazo semanal do escopo municipal",
+    "agrega o pior status e conta cada grupo",
+    "data invalida e relogio adiantado nao quebram a avaliacao",
+    "lista vazia nao inventa problema",
+    "cada escopo de aliquota e o NBS avaliam o proprio frescor",
+    "entradaSemLinhas",
+    "escopo vazio com run recente fica em dia e explica que nao ha linha",
+    "escopo vazio com run atrasado continua alertando",
+    "sem run nenhum volta a ser nunca sincronizado",
+    "escolherUltimaCarga",
+    "usa o run quando o carimbo do catalogo congelou",
+    "usa o carimbo do catalogo quando ele e mais novo que o run",
+    "aceita ISO, Date e devolve null quando nao ha evidencia",
+    "entradaIndisponivel",
+    "declara estado desconhecido em vez de catalogo vazio ou em dia",
+    "nao contamina o veredito dos outros catalogos",
+    "escolherRunComEscopo",
+    "so exige prova propria nos escopos que dividem o job",
+    "sync concluido sem request_id nao prova escopo nenhum",
+    "ignora o run do job quando o escopo nao foi consultado",
+    "aceita o run que consultou o escopo mesmo sem gravar linha",
+    "descarta requisicao que falhou ou que ainda nao terminou",
+    "nao deixa a rotina diaria datar o escopo municipal",
+    "nao deixa a rotina municipal datar o IBS estadual",
+    "rodada interrompida ou truncada nao data o escopo"
+   ]
+  },
   "src/lib/tributario/__tests__/catalogos-saude.test.ts": {
    "path": "src/lib/tributario/__tests__/catalogos-saude.test.ts",
    "lines": 48,
@@ -223798,7 +224148,7 @@
   },
   "src/lib/tributario/catalogos/saude.ts": {
    "path": "src/lib/tributario/catalogos/saude.ts",
-   "lines": 158,
+   "lines": 520,
    "exports": [
     "type OverlayId",
     "const TITULOS_OVERLAY",
@@ -223807,7 +224157,23 @@
     "interface SaudeCatalogos",
     "type EntradaRejeicoes",
     "interface EntradaSaudeCatalogos",
-    "function calcularSaudeCatalogos"
+    "function calcularSaudeCatalogos",
+    "type CatalogoRfbId",
+    "const TITULOS_CATALOGO_RFB",
+    "const DIAS_ALERTA_CATALOGO_RFB",
+    "const DIAS_ALERTA_CATALOGO_RFB_SEMANAL",
+    "type StatusFrescorRfb",
+    "interface EntradaFrescorCatalogoRfb",
+    "interface FrescorCatalogoRfb",
+    "interface SaudeCatalogosRfb",
+    "function escolherUltimaCarga",
+    "function entradaSemLinhas",
+    "function avaliarFrescorCatalogosRfb",
+    "function entradaIndisponivel",
+    "interface LinhaLedgerRun",
+    "function exigeProvaDeEscopo",
+    "function runComprovaEscopo",
+    "function escolherRunComEscopo"
    ],
    "enums": [
     {
@@ -223817,6 +224183,14 @@
     {
      "name": "StatusSaudeCatalogos",
      "values": "saudavel | atencao | critico"
+    },
+    {
+     "name": "CatalogoRfbId",
+     "values": "cclasstrib | ncm | nbs | aliquota_cbs | aliquota_ibs_uf | aliquota_ibs_mun | fundamentacao"
+    },
+    {
+     "name": "StatusFrescorRfb",
+     "values": "ok | atencao | critico"
     }
    ],
    "params": [
@@ -223831,6 +224205,18 @@
     {
      "name": "PESO_REJEICAO",
      "value": "6"
+    },
+    {
+     "name": "DIAS_ALERTA_CATALOGO_RFB",
+     "value": "7"
+    },
+    {
+     "name": "DIAS_ALERTA_CATALOGO_RFB_SEMANAL",
+     "value": "9"
+    },
+    {
+     "name": "MS_POR_DIA",
+     "value": "86"
     }
    ],
    "status_values": [
@@ -223838,12 +224224,31 @@
      "field": "status",
      "value": "saudavel",
      "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "atencao",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "atencao",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "critico",
+     "kind": "compara"
     }
    ],
    "rule_comments": [
     "* Detalhe por overlay que recusou registros (apenas os com quantidade > 0). */",
     "* Máximo de exemplos guardados por overlay (default 3). */",
-    "\"sem problemas conhecidos\" em vez de lançar — o dashboard nunca deve quebrar"
+    "\"sem problemas conhecidos\" em vez de lançar — o dashboard nunca deve quebrar",
+    "* Prazo para catálogos de cadência semanal (o cron municipal de alíquotas roda",
+    "* Prazo próprio do catálogo, em dias (padrão: `DIAS_ALERTA_CATALOGO_RFB`).",
+    "O limite é medido no relógio, não em dias cheios: 7 dias e 12 horas já é",
+    "consultado nao pode datar o catalogo como fresco."
    ],
    "doc": "CATÁLOGOS FISCAIS — Saúde consolidada (módulo puro, sem I/O e sem React). Consolida DUAS fontes de risco distintas em um único indicador: 1. DIVERGÊNCIAS — o banco (fonte de verdade) diverge das tabelas canônicas embarcadas no motor. Vêm de `gerarAlertasCatalogos`. 2. REJEIÇÕES — registros do banco …",
    "calc_fns": [
@@ -244672,7 +245077,7 @@
   },
   "supabase/functions/sync-aliquota-referencia/index.ts": {
    "path": "supabase/functions/sync-aliquota-referencia/index.ts",
-   "lines": 423,
+   "lines": 438,
    "exports": [
     "const handler"
    ],
@@ -244786,7 +245191,7 @@
   },
   "supabase/functions/sync-catalogo-cclasstrib/index.ts": {
    "path": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
-   "lines": 259,
+   "lines": 262,
    "exports": [
     "const BASE_DADOS_ABERTOS",
     "interface VersaoApi",
@@ -244888,7 +245293,7 @@
   },
   "supabase/functions/sync-catalogo-ncm-nbs/index.ts": {
    "path": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
-   "lines": 285,
+   "lines": 290,
    "exports": [
     "const handler"
    ],
@@ -244989,7 +245394,7 @@
   },
   "supabase/functions/sync-fundamentacao-legal/index.ts": {
    "path": "supabase/functions/sync-fundamentacao-legal/index.ts",
-   "lines": 238,
+   "lines": 241,
    "exports": [
     "const handler"
    ],
@@ -251216,10 +251621,28 @@
   }
  },
  "git": {
-  "sha": "455790afad7767dec23f4032ae7a3ef77bfd1147",
+  "sha": "377e5cf5d80a06aae0922122d279ce98dc12e3b7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "377e5cf",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)",
+    "files": [
+     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+     "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+     "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+     "src/lib/tributario/catalogos/saude.ts",
+     "supabase/functions/sync-aliquota-referencia/index.ts",
+     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+     "supabase/functions/sync-fundamentacao-legal/index.ts"
+    ]
+   },
    {
     "sha": "455790a",
     "date": "2026-11-25",
@@ -251679,15 +252102,6 @@
     "files": [
      "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
     ]
-   },
-   {
-    "sha": "856fef0",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "fix(docs): restaura marcacao ADR-004 no plano RT/RFB apos regressao (#525)",
-    "files": [
-     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md"
-    ]
    }
   ],
   "hot_files": [
@@ -251700,11 +252114,15 @@
     8
    ],
    [
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    5
+   ],
+   [
     "src/lib/tributario/catalogos/cclasstrib.ts",
     5
    ],
    [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    "docs/receitafederal/DADOS_ABERTOS_RFB.md",
     4
    ],
    [
@@ -251720,19 +252138,15 @@
     4
    ],
    [
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    3
+   ],
+   [
     "scripts/integrity/baseline/expected-policies.json",
     3
    ],
    [
     "scripts/integrity/baseline/schema-counts.json",
-    3
-   ],
-   [
-    "docs/receitafederal/DADOS_ABERTOS_RFB.md",
-    3
-   ],
-   [
-    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     3
    ],
    [
@@ -251748,27 +252162,27 @@
     3
    ],
    [
+    "supabase/functions/sync-aliquota-referencia/index.ts",
+    2
+   ],
+   [
+    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
+    2
+   ],
+   [
+    "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    2
+   ],
+   [
+    "supabase/functions/sync-fundamentacao-legal/index.ts",
+    2
+   ],
+   [
     "scripts/integrity/baseline/expected-crons.json",
     2
    ],
    [
     "SECURITY_RULES.md",
-    2
-   ],
-   [
-    "scripts/ci/deno-check-functions.sh",
-    2
-   ],
-   [
-    "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
-    2
-   ],
-   [
-    "src/lib/arquitetura/grafo-observado.json",
-    2
-   ],
-   [
-    "src/lib/arquitetura/modulos.ts",
     2
    ]
   ]

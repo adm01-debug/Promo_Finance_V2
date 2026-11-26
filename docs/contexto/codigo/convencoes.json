@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (313)",
+   "co-localizado (__tests__) (314)",
    "outro (113)",
    "co-localizado (*.test) (49)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)",
    "fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)",
    "feat: fundamentacao legal por item da nota (etapa 82) (#563)",
    "feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)",
-   "fix: remove import wildcard de lucide-react no chunk de Categorias (#559)",
-   "fix: migra react-day-picker para v10 (calendar + callers) (#544)"
+   "fix: remove import wildcard de lucide-react no chunk de Categorias (#559)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

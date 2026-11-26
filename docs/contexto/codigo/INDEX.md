@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `455790afad7767dec23f4032ae7a3ef77bfd1147` (2026-11-25T22:10:15-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `377e5cf5d80a06aae0922122d279ce98dc12e3b7` (2026-11-26T00:06:30-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2424), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2425), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4085 |
-| arquivos_codigo | 2545 |
-| linhas_codigo | 456286 |
+| arquivos_total | 4086 |
+| arquivos_codigo | 2546 |
+| linhas_codigo | 457319 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 318 |
 | migrations | 1084 |
 | cron_jobs | 28 |
-| testes | 517 |
+| testes | 518 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 231 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (779), src/pages (210), src/hooks (2)
 - hooks: src/hooks (240), src/components (27), src/pages (5)
 - servicos_logica: src/lib (271), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (313), outro (113), co-localizado (*.test) (49)
+- testes: co-localizado (__tests__) (314), outro (113), co-localizado (*.test) (49)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -69,7 +69,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Módulos (menu → domínio)
 | módulo | itens de menu | telas/rotas | arquivos | hooks locais | edges | tabelas |
 |---|---|---|---|---|---|---|
-| components/admin | 0 | 0 | 101 | 69 | 10 | 40 |
+| components/admin | 0 | 0 | 101 | 69 | 10 | 46 |
 | components/analytics | 0 | 0 | 6 | 10 | 0 | 12 |
 | components/aprovacoes | 0 | 0 | 6 | 16 | 0 | 7 |
 | components/asaas | 0 | 0 | 26 | 6 | 2 | 14 |
@@ -121,8 +121,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/tributario | 0 | 0 | 122 | 0 | 0 | 14 |
-| pages | 58 | 64 | 109 | 362 | 45 | 168 |
-| pages/admin | 4 | 15 | 24 | 118 | 14 | 55 |
+| pages | 58 | 64 | 109 | 362 | 45 | 170 |
+| pages/admin | 4 | 15 | 24 | 118 | 14 | 60 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
 | pages/clientes | 2 | 2 | 5 | 48 | 2 | 23 |
@@ -130,7 +130,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
 | pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
 | pages/tributario | 33 | 41 | 89 | 101 | 22 | 59 |
-| routes | 0 | 0 | 16 | 458 | 65 | 203 |
+| routes | 0 | 0 | 16 | 458 | 65 | 205 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -475,18 +475,18 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (33)
 - bun.lock (31)
 - .github/workflows/ci.yml (11)
-- src/integrations/supabase/types.ts (11)
 - scripts/integrity/baseline/schema-counts.json (10)
+- src/integrations/supabase/types.ts (10)
 - env.manifest.json (9)
 - scripts/automation.config.json (9)
 - supabase/functions/asaas-proxy/index.ts (9)
 - analise-prs/progresso.json (8)
+- docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (8)
 - scripts/integrity/baseline/expected-policies.json (8)
 - supabase/config.toml (8)
 - supabase/functions/n8n-callback/index.ts (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - docs/ci/README.md (7)
-- docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (7)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `377e5cf` feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)
 - 2026-11-25 `455790a` fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)
 - 2026-11-25 `6d2275f` feat: fundamentacao legal por item da nota (etapa 82) (#563)
 - 2026-11-25 `26cb299` feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `7a3a58d` feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)
 - 2026-11-25 `ba27656` feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)
 - 2026-11-24 `0f6d936` fix(docs): regenera README de CI a partir do kpi.json vigente (#553)
-- 2026-11-24 `45de89c` chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

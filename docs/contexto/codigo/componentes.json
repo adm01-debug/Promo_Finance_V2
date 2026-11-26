@@ -1118,10 +1118,17 @@
     "CatalogosTributariosHealthPanel"
    ],
    "export_default": null,
-   "linhas": 185,
+   "linhas": 442,
    "dominio": "components/admin",
    "hooks_locais": [],
-   "tabelas": [],
+   "tabelas": [
+    "catalogo_aliquota_referencia",
+    "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
+    "catalogo_nbs",
+    "catalogo_ncm",
+    "edge_function_logs"
+   ],
    "edges": [],
    "usado_por": 1,
    "orfao": false

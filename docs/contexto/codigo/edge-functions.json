@@ -4058,7 +4058,7 @@
    "nome": "sync-aliquota-referencia",
    "entrada": "supabase/functions/sync-aliquota-referencia/index.ts",
    "arquivos": 2,
-   "linhas": 578,
+   "linhas": 593,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4092,7 +4092,7 @@
    "nome": "sync-catalogo-cclasstrib",
    "entrada": "supabase/functions/sync-catalogo-cclasstrib/index.ts",
    "arquivos": 2,
-   "linhas": 533,
+   "linhas": 536,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4127,7 +4127,7 @@
    "nome": "sync-catalogo-ncm-nbs",
    "entrada": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
    "arquivos": 2,
-   "linhas": 492,
+   "linhas": 497,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4161,7 +4161,7 @@
    "nome": "sync-fundamentacao-legal",
    "entrada": "supabase/functions/sync-fundamentacao-legal/index.ts",
    "arquivos": 2,
-   "linhas": 415,
+   "linhas": 418,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"

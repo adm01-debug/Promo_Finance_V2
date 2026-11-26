@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 517,
+ "total": 518,
  "por_tipo": {
   "contrato": 4,
   "e2e": 36,
   "pytest": 31,
-  "unit": 439
+  "unit": 440
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 313
+   "arquivos": 314
   },
   {
    "padrao": "outro",
@@ -2873,6 +2873,15 @@
    "casos": 10
   },
   {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts",
+   "tipo": "unit",
+   "linhas": 388,
+   "testa": [
+    "src/lib/tributario/catalogos/saude.ts"
+   ],
+   "casos": 24
+  },
+  {
    "arquivo": "src/lib/tributario/__tests__/catalogos-saude.test.ts",
    "tipo": "unit",
    "linhas": 47,
@@ -4875,7 +4884,7 @@
   "src/lib/tributario/catalogos/rejeicoes-auditoria.ts": 2,
   "src/lib/tributario/catalogos/repositorio.ts": 1,
   "src/lib/tributario/catalogos/resumo-mva.ts": 1,
-  "src/lib/tributario/catalogos/saude.ts": 1,
+  "src/lib/tributario/catalogos/saude.ts": 2,
   "src/lib/tributario/catalogos/types.ts": 4,
   "src/lib/tributario/conciliacao-extrato.ts": 1,
   "src/lib/tributario/darf/index.ts": 1,

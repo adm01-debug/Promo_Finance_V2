@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "455790afad7767dec23f4032ae7a3ef77bfd1147",
+  "commit": "377e5cf5d80a06aae0922122d279ce98dc12e3b7",
   "branch": "main",
-  "data_commit": "2026-11-25T22:10:15-03:00",
+  "data_commit": "2026-11-26T00:06:30-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "377e5cf",
+    "data": "2026-11-26",
+    "assunto": "feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)"
+   },
    {
     "sha": "455790a",
     "data": "2026-11-25",
@@ -126,18 +131,13 @@
     "sha": "d3af1cc",
     "data": "2026-11-24",
     "assunto": "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)"
-   },
-   {
-    "sha": "f7e08e4",
-    "data": "2026-11-24",
-    "assunto": "feat: cClassTrib por item no NovaNFeForm com grupo IBS/CBS local (etapa 53) (#550)"
    }
   ],
-  "arquivos_mudados_7d": 292,
+  "arquivos_mudados_7d": 295,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 434
+    "mudancas": 436
    },
    {
     "pasta": "src/components/contabilidade",
@@ -149,7 +149,7 @@
    },
    {
     "pasta": "src/components/admin",
-    "mudancas": 214
+    "mudancas": 215
    },
    {
     "pasta": "src/pages/tributario",
@@ -210,11 +210,11 @@
     "mudancas": 11
    },
    {
-    "arquivo": "src/integrations/supabase/types.ts",
-    "mudancas": 11
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "mudancas": 10
    },
    {
-    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 10
    },
    {
@@ -231,6 +231,10 @@
    },
    {
     "arquivo": "analise-prs/progresso.json",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     "mudancas": 8
    },
    {
@@ -254,7 +258,7 @@
     "mudancas": 7
    },
    {
-    "arquivo": "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
+    "arquivo": "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     "mudancas": 7
    },
    {
@@ -271,10 +275,6 @@
    },
    {
     "arquivo": "docs/prod-readiness.md",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     "mudancas": 6
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 284
+    "commits": 283
    },
    {
     "autor": "dependabot[bot]",
@@ -314,9 +314,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4085,
-  "arquivos_codigo": 2545,
-  "linhas_codigo": 456286,
+  "arquivos_total": 4086,
+  "arquivos_codigo": 2546,
+  "linhas_codigo": 457319,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -328,7 +328,7 @@
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 517,
+  "testes": 518,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -644,7 +644,7 @@
   },
   "src/components": {
    "arquivos": 1006,
-   "linhas": 165546
+   "linhas": 165803
   },
   "src/config": {
    "arquivos": 2,
@@ -667,8 +667,8 @@
    "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 435,
-   "linhas": 58411
+   "arquivos": 436,
+   "linhas": 59161
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -692,7 +692,7 @@
   },
   "supabase/functions": {
    "arquivos": 259,
-   "linhas": 57237
+   "linhas": 57263
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -819,7 +819,7 @@
   "ts_ignore": 2,
   "eslint_disable": 1,
   "todos": 10,
-  "arquivos_acima_500_linhas": 30
+  "arquivos_acima_500_linhas": 31
  },
  "todos": [
   {

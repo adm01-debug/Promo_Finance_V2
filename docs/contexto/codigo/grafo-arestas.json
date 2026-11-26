@@ -684,7 +684,9 @@
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/skeleton.tsx",
-   "src/lib/supabase-dynamic.ts"
+   "src/integrations/supabase/client.ts",
+   "src/lib/supabase-dynamic.ts",
+   "src/lib/tributario/catalogos/saude.ts"
   ],
   "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx": [
    "src/components/ui/badge.tsx",

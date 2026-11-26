@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `455790afad` · branch `main` · 2026-11-26 01:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `377e5cf5d8` · branch `main` · 2026-11-26 03:09 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1360,7 +1360,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `aprovada` | compara | `src/components/contas-pagar/ContaPagarRowAprovacaoBadge.tsx` |
 | `status` | `aprovado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`<br>`src/hooks/useConformidadeFiscal.ts`<br>`src/hooks/useContasPagarLogic.calculos.ts`<br>… +4 |
 | `status` | `assinado` | compara | `src/components/documentos/AssinaturaDigital.tsx` |
-| `status` | `atencao` | compara | `src/pages/OrcamentoEvento.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
+| `status` | `atencao` | compara | `src/lib/tributario/catalogos/saude.ts`<br>`src/pages/OrcamentoEvento.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | `status` | `atendida` | compara, escreve | `src/pages/CentroPrivacidadeLGPD.tsx`<br>`supabase/functions/processar-solicitacao-lgpd/escrita.ts` |
 | `status` | `ativo` | compara, escreve | `src/components/contratos/GestaoContratos.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useAcordosParcelamento.types.ts`<br>`src/hooks/useContratos.ts`<br>`src/pages/Integracoes.tsx`<br>… +1 |
 | `status` | `atrasada` | compara | `src/components/reforma-tributaria/ObrigacoesAcessorias.tsx` |
@@ -1387,6 +1387,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `contact_not_found` | escreve | `supabase/functions/sync-profile-to-bitrix/index.ts` |
 | `status` | `corrigido` | escreve | `src/components/conciliacao/DivergenciasConciliacaoPanel.tsx` |
 | `status` | `credito_utilizado` | escreve | `supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
+| `status` | `critico` | compara | `src/lib/tributario/catalogos/saude.ts` |
 | `status` | `dead` | compara | `supabase/functions/monitor-health/index.ts` |
 | `status` | `deferido` | compara | `src/hooks/usePerDcomp.ts` |
 | `status` | `degraded` | compara | `src/pages/StatusPage.tsx` |
@@ -1516,8 +1517,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `9999` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
-| … +224 linhas — lista completa em `context.json` | | | |
+| … +225 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
@@ -1707,6 +1707,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | SeveridadeRejeicao | critico \| atencao | `src/lib/tributario/catalogos/rejeicoes-auditoria.ts` |
 | OverlayId | icms \| iss \| ncm \| monofasico \| mva_st | `src/lib/tributario/catalogos/saude.ts` |
 | StatusSaudeCatalogos | saudavel \| atencao \| critico | `src/lib/tributario/catalogos/saude.ts` |
+| CatalogoRfbId | cclasstrib \| ncm \| nbs \| aliquota_cbs \| aliquota_ibs_uf \| aliquota_ibs_mun \| fundamentacao | `src/lib/tributario/catalogos/saude.ts` |
+| StatusFrescorRfb | ok \| atencao \| critico | `src/lib/tributario/catalogos/saude.ts` |
 | RegiaoBrasil | NORTE \| NORDESTE \| CENTRO_OESTE \| SUDESTE \| SUL | `src/lib/tributario/catalogos/types.ts` |
 | TributoDarf | IRPJ \| CSLL \| PIS \| COFINS \| IPI \| IRRF \| CSRF \| INSS_RETENCAO | `src/lib/tributario/darf/types.ts` |
 | RegimeAplicavel | simples \| presumido \| real | `src/lib/tributario/elisao/types.ts` |
@@ -4284,6 +4286,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `PESO_CRITICO` | `12` | `src/lib/tributario/catalogos/saude.ts` |
 | `PESO_ATENCAO` | `4` | `src/lib/tributario/catalogos/saude.ts` |
 | `PESO_REJEICAO` | `6` | `src/lib/tributario/catalogos/saude.ts` |
+| `DIAS_ALERTA_CATALOGO_RFB` | `7` | `src/lib/tributario/catalogos/saude.ts` |
+| `DIAS_ALERTA_CATALOGO_RFB_SEMANAL` | `9` | `src/lib/tributario/catalogos/saude.ts` |
+| `MS_POR_DIA` | `86` | `src/lib/tributario/catalogos/saude.ts` |
 | `VALOR_MINIMO_DARF` | `10` | `src/lib/tributario/darf/tabelas.ts` |
 | `VALOR_MINIMO_QUOTA` | `1000` | `src/lib/tributario/darf/tabelas.ts` |
 | `MULTA_MORA_DIARIA` | `0.0033` | `src/lib/tributario/darf/tabelas.ts` |
@@ -4444,10 +4449,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MIN_NCM_API` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
 | `MIN_NBS_API` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
 | `TABELA` | `'catalogo_fundamentacao'` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
-| `COLUNAS_CHAVE` | `'cclasstrib, cst, conjunto_tributo'` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
-| `PAGINA` | `1000` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
-| `MAX_PAGINAS` | `10` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
-| … +10 linhas — lista completa em `context.json` | | |
+| … +13 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -4721,6 +4723,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 |---|---|
 | 50 | `src/components/admin/AnomaliaToastHistorico.tsx` |
 | 1 | `src/components/admin/FiscalHealthBadge.tsx` |
+| 1 | `src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx` |
+| 120 | `src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx` |
 | 50 | `src/components/centros-custo/CentroCustoHistorico.tsx` |
 | 1000 | `src/components/conciliacao/ConciliacaoExport.tsx` |
 | 1 | `src/components/configuracoes/RegrasDuplicidadeTab.tsx` |
@@ -5207,7 +5211,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3930 testes em 349 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3959 testes em 350 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5227,6 +5231,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sso-callback/claims.test.ts` | 31 | OIDC: extrai picture como avatar_url quando claim padrão presente · OIDC: extrai phone_number como telefone quando claim padrão presente · OIDC: avatar_url vazio retorna null (não sobrescreve valor existente) · OIDC: phone_number só com espaços retorna null … |
 | `src/hooks/__tests__/useContasReceberLogic.test.ts` | 30 | useContasReceberLogic - KPI calculation · Gap #5 - Cálculo vence hoje · identifica contas que vencem hoje · exclui contas pagas do vence hoje … |
 | `src/lib/tributario/__tests__/motor.test.ts` | 30 | Motor Tributário · RBT12 · calcula soma simples para 12+ meses · proporcionaliza para empresa com <13 meses (início de atividade) … |
+| `src/lib/tributario/__tests__/catalogos-rfb-frescor.test.ts` | 29 | avaliarFrescorCatalogosRfb · marca como critico o catalogo nunca sincronizado · mantem em dia o catalogo carregado hoje · trata o dia do limite como em dia e o excedente (mesmo parcial) como alerta … |
 | `src/lib/tributario/__tests__/conformidade-historico.test.ts` | 29 | competenciaValida · aceita apenas AAAA-MM válido · construirHistorico · retorna série vazia sem itens … |
 | `src/components/contas-receber/__tests__/ContasReceberKPIs.test.tsx` | 28 | ContasReceberKPIs · Gap #4 - Comparativo temporal · exibe variação positiva com seta para cima · exibe variação negativa corretamente … |
 | `src/components/reforma-tributaria/__tests__/EmptyStateTributario.test.tsx` | 28 | EmptyStateTributario · Tipo: apuracoes · exibe título correto · exibe botão primário Criar Apuração … |
@@ -5510,8 +5515,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/common/StartupDiagnostic.test.tsx` | 3 | StartupDiagnostic · não bloqueia a rota pública quando a checagem falha · mantém a tela da aplicação disponível durante a verificação |
 | `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
 | `src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx` | 3 | importar extrato não oferece Open Finance fabricado (#425) · o botão Conectar via Open Finance fica desabilitado com o motivo à mostra · o texto não promete sincronização em tempo real nem gateway inexistente |
-| `src/components/contas-pagar/__tests__/RegistrarPagamentoDialog.alcada.test.tsx` | 3 | RegistrarPagamentoDialog — empresa da alcada · consulta a alcada da empresa do titulo, nao a do filtro global · registro legado sem empresa_id cai no filtro global |
-| … +49 linhas — lista completa em `context.json` | | |
+| … +50 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5828,6 +5832,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Mensagem de validação do comentário (mínimo de caracteres por ação). */ | `src/components/admin/anomalias-review-queue/helpers.ts` |
 | de validação (ex.: comentário curto) nem conflito de concorrência. | `src/components/admin/anomalias-review-queue/retry.ts` |
 | Step 3: Validação */} | `src/components/admin/sso/SSOWizardDialog.tsx` |
+| * Uma leitura por catálogo (limit 1, ordenada pela carga) mais o último run | `src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx` |
+| O cron municipal roda aos domingos: o prazo de 7 dias não dá margem | `src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx` |
+| para a rodada terminar, então este escopo usa o limite semanal. | `src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx` |
 | (run_integrity_cycle). Sem este painel os alertas ficavam apenas no banco. | `src/components/admin/telemetry/IntegrityAlertsPanel.tsx` |
 | Alerta já encerrado é histórico: nunca deve gerar notificação. | `src/components/admin/telemetry/PerformanceAlertsPanel.tsx` |
 | Os contadores refletem apenas incidentes abertos — encerrados não pesam no topo. | `src/components/admin/telemetry/PerformanceAlertsPanel.tsx` |
@@ -6101,7 +6108,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Regra arquitetural: se o `queryFn` de uma query filtra por `empresa_id`, | `src/lib/arquitetura/escopo-empresa.ts` |
 | 1. O núcleo de domínio (camada 3) não pode importar framework/infra. | `src/lib/arquitetura/modulos.ts` |
 | 3. O grafo de dependências entre módulos deve ser acíclico. | `src/lib/arquitetura/modulos.ts` |
-| * Regra de camadas: um módulo nunca pode depender de uma camada mais alta | `src/lib/arquitetura/modulos.ts` |
-| (número menor). Ex.: domínio (3) não pode depender de apresentação (1). | `src/lib/arquitetura/modulos.ts` |
-| * Calcula apenas métricas sustentadas pelos pedidos persistidos. Lead time e | `src/lib/compras/pedidos.ts` |
-| … +472 linhas — lista completa em `context.json` | |
+| … +479 linhas — lista completa em `context.json` | |

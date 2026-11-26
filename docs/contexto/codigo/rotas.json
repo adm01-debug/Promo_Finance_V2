@@ -1881,6 +1881,11 @@
     "anomalia_toast_eventos",
     "anomalias_detectadas",
     "audit_logs",
+    "catalogo_aliquota_referencia",
+    "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
+    "catalogo_nbs",
+    "catalogo_ncm",
     "centros_custo",
     "cnpja_cache",
     "contas_pagar",
@@ -1946,6 +1951,9 @@
    ],
    "flags": [],
    "papeis": [
+    "AMBOS",
+    "DESTINO",
+    "ORIGEM",
     "alert",
     "assistant",
     "dialog",
@@ -1959,7 +1967,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 208
+   "arquivos_puxados": 228
   },
   {
    "protegida": true,
@@ -2655,9 +2663,15 @@
     "alertas",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "catalogo_aliquota_referencia",
+    "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
+    "catalogo_nbs",
+    "catalogo_ncm",
     "centros_custo",
     "contas_pagar",
     "contas_receber",
+    "edge_function_logs",
     "empresas",
     "frontend_error_logs",
     "frontend_performance_logs",
@@ -2696,6 +2710,9 @@
    ],
    "flags": [],
    "papeis": [
+    "AMBOS",
+    "DESTINO",
+    "ORIGEM",
     "alert",
     "assistant",
     "dialog",
@@ -2704,7 +2721,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 119
+   "arquivos_puxados": 139
   },
   {
    "protegida": true,
