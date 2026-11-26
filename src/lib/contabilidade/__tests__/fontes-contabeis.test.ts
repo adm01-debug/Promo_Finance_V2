@@ -6,6 +6,7 @@ type LinhaNota = {
   status: string | null;
   cliente_nome?: string | null;
   cliente_cnpj?: string | null;
+  data_emissao?: string | null;
 };
 type LinhaPagar = {
   valor: number | null;
@@ -15,6 +16,7 @@ type LinhaPagar = {
   categoria?: string | null;
   categoria_nome?: string | null;
   descricao?: string | null;
+  data_emissao?: string | null;
 };
 
 type LinhaFolha = {
@@ -310,6 +312,68 @@ describe('buscarFontesContabeis', () => {
 
     expect(fontes.folha12m).toBe(9000);
     expect(fontes.comprasServicos12m).toBe(5000);
+  });
+
+  it('conta rescisao de funcionario sem categoria de folha como folha', async () => {
+    pagar = [
+      {
+        valor: 7_000,
+        status: 'pago',
+        fornecedor_id: 'forn-1',
+        fornecedor_nome: 'Transportadora X',
+        categoria: 'Servicos',
+        categoria_nome: 'Servicos terceirizados',
+        descricao: 'Rescisao do funcionario',
+      },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    // "Rescisao do funcionario" nao tem a categoria Folha e a preposicao no meio
+    // impedia o termo antigo: sem a folha, o Fator R cai e o Simples vai ao Anexo V.
+    expect(fontes.folha12m).toBe(7000);
+    expect(fontes.comprasServicos12m).toBe(0);
+  });
+
+  it('corta notas e contas a pagar na janela de competencias fechadas', async () => {
+    vi.useFakeTimers({ now: new Date('2026-11-26T12:00:00Z') });
+    const nota = (valor: number, data: string): LinhaNota => ({
+      valor_total: valor,
+      status: 'autorizada',
+      cliente_nome: 'Cliente A',
+      data_emissao: data,
+    });
+    const compra = (valor: number, data: string): LinhaPagar => ({
+      valor,
+      status: 'pago',
+      fornecedor_id: 'forn-1',
+      fornecedor_nome: 'Fornecedor A',
+      categoria: 'Insumos',
+      categoria_nome: 'Mercadorias',
+      descricao: 'Compra de insumos',
+      data_emissao: data,
+    });
+    notas = [
+      nota(100, '2025-10-31'),
+      nota(200, '2025-11-01'),
+      nota(400, '2026-11-01'),
+      nota(800, '2026-11-26'),
+    ];
+    pagar = [compra(50, '2025-11-01'), compra(60, '2026-11-01')];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+    vi.useRealTimers();
+
+    // janela = [01/11/2025, 01/11/2026): o mes em aberto (nov/2026) e o mes anterior
+    // ao inicio ficam fora, como na folha.
+    expect(fontes.faturamento12m).toBe(200);
+    expect(fontes.comprasServicos12m).toBe(50);
+    for (const tabela of ['notas_fiscais', 'contas_pagar']) {
+      expect(filtros.filter((f) => f.tabela === tabela && f.coluna === 'data_emissao')).toEqual([
+        { tabela, coluna: 'data_emissao', valor: '2025-11-01' },
+        { tabela, coluna: 'data_emissao', valor: '2026-11-01' },
+      ]);
+    }
   });
 
   it('cai na folha total quando a folha nao detalha salarios e pro-labore', async () => {

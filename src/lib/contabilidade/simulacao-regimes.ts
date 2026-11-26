@@ -178,16 +178,17 @@ export function calcularCargaSimples(
   const remuneracao = fontes.remuneracao12m > 0 ? fontes.remuneracao12m : fontes.folha12m;
   const avisosFatorR: string[] = [];
 
-  // LC 123/2006 art. 18 §5º-I: o Fator R desloca a tributação de serviços entre os
-  // Anexos III e V — a escolha manual não sobrepõe o corte de 28% (mesma regra da
-  // Calculadora do Simples). O Anexo IV não é alcançado por esse corte e as
-  // atividades não sujeitas ao Fator R (§5º-I) mantêm o anexo informado.
+  // LC 123/2006 art. 18 §5º-J: as atividades de serviços do rol do §5º-I vão para o
+  // Anexo III com Fator R de 28% ou mais e para o Anexo V abaixo disso — a escolha
+  // manual não sobrepõe o corte (mesma regra da Calculadora do Simples). Atividade
+  // fora daquele rol não passa pelo teste e fica no Anexo III, e o Anexo IV nunca é
+  // alcançado por esse corte.
   const anexoServicos: AnexoSimples =
-    premissas.anexoSimples === 'IV' || !premissas.sujeitoFatorR
-      ? premissas.anexoSimples
-      : fatorR >= FATOR_R_CORTE
-        ? 'III'
-        : 'V';
+    premissas.anexoSimples === 'IV'
+      ? 'IV'
+      : premissas.sujeitoFatorR && fatorR < FATOR_R_CORTE
+        ? 'V'
+        : 'III';
   const anexoMercadorias: AnexoSimples = premissas.anexoSimples === 'II' ? 'II' : 'I';
   if (
     premissas.sujeitoFatorR &&
@@ -195,12 +196,12 @@ export function calcularCargaSimples(
     premissas.anexoSimples !== anexoServicos
   ) {
     avisosFatorR.push(
-      `Anexo ${premissas.anexoSimples} substituído pelo Anexo ${anexoServicos}: Fator R de ${(fatorR * 100).toFixed(2)}% contra o corte de 28% (LC 123/2006 art. 18 §5º-I).`
+      `Anexo ${premissas.anexoSimples} substituído pelo Anexo ${anexoServicos}: Fator R de ${(fatorR * 100).toFixed(2)}% contra o corte de 28% (LC 123/2006 art. 18 §5º-J).`
     );
   }
-  if (!premissas.sujeitoFatorR && fatorR < FATOR_R_CORTE && percentualServicos > 0) {
+  if (!premissas.sujeitoFatorR && anexoServicos !== premissas.anexoSimples) {
     avisosFatorR.push(
-      `Fator R de ${(fatorR * 100).toFixed(2)}% mantido no Anexo ${premissas.anexoSimples}: a atividade foi marcada como não sujeita ao Fator R (LC 123/2006 art. 18 §5º-I).`
+      `Atividade fora do rol do art. 18 §5º-I: serviços tributados pelo Anexo ${anexoServicos}, sem o teste de 28% do Fator R (LC 123/2006 art. 18 §5º-J).`
     );
   }
   const anexoEfetivo: AnexoSimples =
@@ -350,6 +351,7 @@ export function calcularCenario(
     cargaAtual = arredondar(simples.total);
     avisos.push(...simples.avisos);
     if (
+      premissas.sujeitoFatorR &&
       fontes.folha12m <= 0 &&
       (premissas.anexoSimples === 'III' || premissas.anexoSimples === 'V')
     ) {
@@ -388,7 +390,10 @@ export function calcularCenario(
   // O valor fica registrado em `cargaSimuladaBase` apenas como referência.
   const cargaSimulada = arredondar((linha.anoTeste ? 0 : cargaSimuladaBase) + residuais.total);
   if (linha.anoTeste) {
-    const cenarioPadrao = premissas.cenarioCbs === 'cronograma';
+    // Reduções de CBS/IBS por regime especial mudam a alíquota efetiva do cenário,
+    // então só o cronograma sem regime especial usa exatamente 0,9% + 0,1%.
+    const cenarioPadrao =
+      premissas.cenarioCbs === 'cronograma' && premissas.regimeEspecial === 'nenhum';
     avisos.push(
       cenarioPadrao
         ? `Ano-teste (${premissas.anoReferencia}): o valor de ${formatarMoeda(cargaSimuladaBase)} usa as alíquotas legais do ano-teste — CBS 0,9% + IBS 0,1% (LC 214/2025 art. 348) — e é apenas referência, porque a CBS/IBS experimental é compensável/dispensável com PIS/COFINS e tributos federais e não entra na carga simulada.`

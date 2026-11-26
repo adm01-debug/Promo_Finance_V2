@@ -244,7 +244,8 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
                 </SelectContent>
               </Select>
               <p className="text-[11px] text-muted-foreground">
-                Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V.
+                Comércio usa Anexo I. Serviços usam III (Fator R ≥ 28% sobre a folha apurada) ou V,
+                salvo atividade fora do rol do art. 18 §5º-I, que fica no Anexo III.
               </p>
             </div>
           )}
@@ -254,8 +255,9 @@ export function NovaSimulacaoElisaoDialog({ open, onOpenChange, empresaId }: Pro
               <div className="space-y-1">
                 <Label htmlFor="cenario-fator-r">Atividade sujeita ao Fator R</Label>
                 <p className="text-[11px] text-muted-foreground">
-                  Desligue para atividades do art. 18 §5º-I da LC 123/2006 (ex.: contabilidade), que
-                  não migram de anexo com folha abaixo de 28%.
+                  Ligado vale o art. 18 §5º-J da LC 123/2006: serviços do rol do §5º-I vão ao Anexo
+                  V com folha abaixo de 28% e ao Anexo III a partir de 28%. Desligue para atividades
+                  fora desse rol, que ficam no Anexo III sem o teste.
                 </p>
               </div>
               <Switch

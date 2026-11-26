@@ -108,13 +108,16 @@ const TERMOS_FOLHA_DESCRICAO = [
   'ferias',
   'inss',
   'fgts',
-  // `rescisao` sozinho pegaria "rescisão de contrato de fornecimento", que é
-  // compra com fornecedor e gera crédito de CBS/IBS — só conta com contexto trabalhista.
-  'rescisao trabalhista',
-  'rescisao de funcionario',
-  'rescisao de empregado',
-  'verbas rescisorias',
 ];
+
+/**
+ * Rescisão só é folha com contexto trabalhista: `rescisao` sozinho pegaria
+ * "rescisão de contrato de fornecimento", que é compra com fornecedor e gera
+ * crédito de CBS/IBS. "Rescisão do funcionário" chega sem categoria de folha,
+ * então o termo não pode depender da preposição usada na descrição.
+ */
+const CONTEXTO_RESCISAO_TRABALHISTA =
+  /(rescis.*(funcionari|empregad|colaborador|trabalhista)|verbas rescis)/;
 
 interface LinhaPagar {
   valor: number | null;
@@ -130,6 +133,7 @@ function ehFolha(linha: LinhaPagar): boolean {
   const categoria = semAcento(`${linha.categoria ?? ''} ${linha.categoria_nome ?? ''}`);
   if (TERMOS_FOLHA_CATEGORIA.some((termo) => categoria.includes(termo))) return true;
   const descricao = semAcento(linha.descricao ?? '');
+  if (CONTEXTO_RESCISAO_TRABALHISTA.test(descricao)) return true;
   return TERMOS_FOLHA_DESCRICAO.some((termo) => descricao.includes(termo));
 }
 

@@ -141,10 +141,45 @@ describe('calcularCenario', () => {
       premissas({ anexoSimples: 'III', percentualVendas: 0, sujeitoFatorR: false })
     );
 
-    // Fator R = 8,3%: sujeito ao corte vira Anexo V; nao sujeito (art. 18 §5o-I) fica no III.
+    // Fator R = 8,3%: sujeito ao corte vira Anexo V; nao sujeito (fora do rol do
+    // art. 18 §5o-I) fica no III sem passar pelo teste.
     expect(naoSujeito.cargaAtual).toBeLessThan(sujeito.cargaAtual);
-    expect(naoSujeito.avisos.join(' ')).toContain('não sujeita ao Fator R');
     expect(naoSujeito.avisos.join(' ')).not.toContain('substituído pelo Anexo V');
+    expect(naoSujeito.avisos.join(' ')).not.toContain('Folha não apurada');
+  });
+
+  it('tributa servicos pelo Anexo III quando o anexo informado e de mercadorias e a atividade nao esta sujeita ao Fator R', () => {
+    const fontesMistas: FontesContabeis = { ...fontes, folha12m: 100_000 };
+    const sujeito = calcularCenario(
+      fontesMistas,
+      premissas({ anexoSimples: 'I', percentualVendas: 50 })
+    );
+    const naoSujeito = calcularCenario(
+      fontesMistas,
+      premissas({ anexoSimples: 'I', percentualVendas: 50, sujeitoFatorR: false })
+    );
+
+    // Fator R = 8,3%: com o teste ligado os servicos caem no Anexo V; desligado ficam
+    // no Anexo III e o aviso diz que o anexo de mercadorias nao vale para eles.
+    expect(naoSujeito.cargaAtual).toBeLessThan(sujeito.cargaAtual);
+    expect(naoSujeito.avisos.join(' ')).toContain('Atividade fora do rol do art. 18 §5º-I');
+    expect(naoSujeito.avisos.join(' ')).toContain('serviços tributados pelo Anexo III');
+    expect(naoSujeito.avisos.join(' ')).not.toContain('substituído pelo Anexo V');
+  });
+
+  it('mantem o aviso do ano-teste ressalvado quando ha reducao de regime especial', () => {
+    const comReducao = calcularCenario(
+      fontes,
+      premissas({
+        anoReferencia: 2026,
+        cenarioCbs: 'cronograma',
+        regimeEspecial: 'alimentos',
+      })
+    );
+    const avisos = comReducao.avisos.join(' ');
+
+    expect(avisos).toContain('não as alíquotas legais do ano-teste');
+    expect(avisos).not.toContain('alíquotas legais do ano-teste —');
   });
 
   it('cai no modelo nao-cumulativo quando a receita passa do limite do Simples', () => {
