@@ -24,6 +24,7 @@ import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
+import { conciliarCreditos, ehMesmoPagador } from '@/lib/financeiro/conciliacao-extrato';
 import type { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { formatCurrency, toISOLocal } from '@/lib/formatters';
@@ -94,39 +95,35 @@ export function BaixaAutomaticaDialog({
 
     if (!contas) return { matched: [], unmatched: [] };
 
+    const creditos = extrato.transacoes.filter((t) => t.tipo === 'credito');
+    // Valor e vencimento sozinhos não dizem quem pagou: os títulos são
+    // decididos em conjunto para um crédito nunca quitar o título de outro
+    // cliente (vínculo ambíguo vira divergência, resolvida na vinculação
+    // manual do preview).
+    const titulos = conciliarCreditos(creditos, contas);
+
     const matched: MatchResult[] = [];
     const notMatched: TransacaoBancaria[] = [];
-    // Cada título só pode quitar um crédito do extrato: sem reservar, dois
-    // créditos do mesmo valor apontavam para o mesmo título e o segundo era
-    // rejeitado na confirmação sem virar divergência.
-    const disponiveis = [...contas];
 
-    for (const t of extrato.transacoes) {
-      if (t.tipo !== 'credito') continue;
-
-      // Matching simples por valor e data aproximada
-      const indice = disponiveis.findIndex((c) => {
-        const valorMatch = Math.abs(c.valor - t.valor) < 0.05;
-        const dataT = new Date(t.data);
-        const dataC = new Date(c.data_vencimento);
-        const diffDias = Math.abs(dataT.getTime() - dataC.getTime()) / (1000 * 60 * 60 * 24);
-        return valorMatch && diffDias <= 5;
-      });
-
-      if (indice >= 0) {
-        const [match] = disponiveis.splice(indice, 1);
-        matched.push({
-          transacao: t,
-          contaId: match.id,
-          cliente: match.cliente_nome ?? '',
-          vencimento: match.data_vencimento,
-          valor: match.valor,
-          confianca: 'alta',
-        });
-      } else {
+    creditos.forEach((t, indice) => {
+      const titulo = titulos[indice];
+      if (!titulo) {
         notMatched.push(t);
+        return;
       }
-    }
+
+      matched.push({
+        transacao: t,
+        contaId: titulo.id,
+        cliente: titulo.cliente_nome ?? '',
+        vencimento: titulo.data_vencimento,
+        valor: Number(titulo.valor ?? 0),
+        // Sem o nome do pagador no extrato, o vínculo se apoia só em valor e
+        // vencimento — a confiança exibida precisa dizer isso.
+        confianca: ehMesmoPagador(t, titulo) ? 'alta' : 'media',
+      });
+    });
+
     return { matched, unmatched: notMatched };
   };
 
@@ -299,20 +296,29 @@ export function BaixaAutomaticaDialog({
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        let alertasFalhos = 0;
         for (const t of [...unmatched, ...naoConfirmadas]) {
-          // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
-          await supabase.from('alertas').insert({
+          const { error: alertaError } = await supabase.from('alertas').insert({
             user_id: user.id,
+            // A empresa do lote vai explícita: sem ela o gatilho de alertas usa
+            // a empresa do perfil, que pode ser outra que não a selecionada.
+            empresa_id: empresaAlvo,
             tipo: 'divergencia_baixa',
             prioridade: 'alta',
             titulo: 'Divergência na Baixa Automática',
             mensagem: `Entrada bancária de ${formatCurrency(t.valor)} (${t.descricao}) não encontrou par correspondente no financeiro.`,
           });
+          if (alertaError) alertasFalhos++;
+        }
+        if (alertasFalhos > 0) {
+          auxFailCount++;
+          toast.error(
+            `${alertasFalhos} alerta(s) de divergência não puderam ser registrados — as entradas sem par seguem no preview para reprocesso.`
+          );
         }
 
         // Registra log global da importação
-        // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
-        await supabase.from('logs_baixa_automatica').insert([
+        const { error: logError } = await supabase.from('logs_baixa_automatica').insert([
           {
             user_id: user.id,
             resultado: `Arquivo ${resultado?.extrato?.nomeArquivo || 'unknown'}: ${successCount}/${matches.length} sucesso`,
@@ -326,6 +332,10 @@ export function BaixaAutomaticaDialog({
             },
           },
         ]);
+        if (logError) {
+          auxFailCount++;
+          toast.error(`Falha ao registrar o log da importação: ${logError.message}`);
+        }
       }
 
       setSuccessSummary({
