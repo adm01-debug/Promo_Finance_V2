@@ -17,7 +17,7 @@ export interface DadosCnpjaResumo {
   endereco?: { uf?: string } | null;
 }
 
-export type NivelAlerta = 'critico' | 'atencao' | 'info';
+export type NivelAlerta = "critico" | "atencao" | "info";
 
 export interface AlertaCredito {
   codigo: string;
@@ -27,36 +27,40 @@ export interface AlertaCredito {
 
 const MESES_MINIMOS_ATIVIDADE = 12;
 
-export function mesesDesde(dataIso: string | null | undefined, hoje = new Date()): number | null {
+export function mesesDesde(
+  dataIso: string | null | undefined,
+  hoje = new Date(),
+): number | null {
   if (!dataIso) return null;
   const inicio = new Date(dataIso);
   if (Number.isNaN(inicio.getTime())) return null;
-  const meses =
-    (hoje.getFullYear() - inicio.getFullYear()) * 12 + (hoje.getMonth() - inicio.getMonth());
+  const meses = (hoje.getFullYear() - inicio.getFullYear()) * 12 +
+    (hoje.getMonth() - inicio.getMonth());
   return hoje.getDate() < inicio.getDate() ? meses - 1 : meses;
 }
 
 export function avaliarAlertas(
   dados: DadosCnpjaResumo | null | undefined,
   valorPedido: number | null | undefined,
-  hoje = new Date()
+  hoje = new Date(),
 ): AlertaCredito[] {
   const alertas: AlertaCredito[] = [];
 
   if (!dados) {
     alertas.push({
-      codigo: 'cnpj_ausente',
-      nivel: 'critico',
-      mensagem: 'CNPJ não informado ou não consultado — pedir ao vendedor antes de decidir.',
+      codigo: "cnpj_ausente",
+      nivel: "critico",
+      mensagem:
+        "CNPJ não informado ou não consultado — pedir ao vendedor antes de decidir.",
     });
     return alertas;
   }
 
-  const situacao = (dados.situacaoCadastral ?? '').trim().toLowerCase();
-  if (situacao && situacao !== 'ativa') {
+  const situacao = (dados.situacaoCadastral ?? "").trim().toLowerCase();
+  if (situacao && situacao !== "ativa") {
     alertas.push({
-      codigo: 'situacao_cadastral',
-      nivel: 'critico',
+      codigo: "situacao_cadastral",
+      nivel: "critico",
       mensagem: `Situação cadastral na Receita: ${dados.situacaoCadastral}.`,
     });
   }
@@ -64,27 +68,33 @@ export function avaliarAlertas(
   const meses = mesesDesde(dados.dataAbertura, hoje);
   if (meses !== null && meses < MESES_MINIMOS_ATIVIDADE) {
     alertas.push({
-      codigo: 'empresa_recente',
-      nivel: 'atencao',
-      mensagem: `Empresa aberta há ${meses} mês(es) — menos de ${MESES_MINIMOS_ATIVIDADE} meses de atividade.`,
+      codigo: "empresa_recente",
+      nivel: "atencao",
+      mensagem:
+        `Empresa aberta há ${meses} mês(es) — menos de ${MESES_MINIMOS_ATIVIDADE} meses de atividade.`,
     });
   }
 
   if (dados.meiOptante) {
     alertas.push({
-      codigo: 'mei',
-      nivel: 'atencao',
-      mensagem: 'Optante pelo MEI — faturamento limitado; avaliar prazo com cautela.',
+      codigo: "mei",
+      nivel: "atencao",
+      mensagem:
+        "Optante pelo MEI — faturamento limitado; avaliar prazo com cautela.",
     });
   }
 
-  const capital = typeof dados.capitalSocial === 'number' ? dados.capitalSocial : null;
-  const valor = typeof valorPedido === 'number' ? valorPedido : null;
+  const capital = typeof dados.capitalSocial === "number"
+    ? dados.capitalSocial
+    : null;
+  const valor = typeof valorPedido === "number" ? valorPedido : null;
   if (capital !== null && valor !== null && valor > 0 && capital < valor) {
     alertas.push({
-      codigo: 'capital_menor_que_pedido',
-      nivel: 'atencao',
-      mensagem: `Capital social (R$ ${capital.toLocaleString('pt-BR')}) menor que o pedido (R$ ${valor.toLocaleString('pt-BR')}).`,
+      codigo: "capital_menor_que_pedido",
+      nivel: "atencao",
+      mensagem: `Capital social (R$ ${
+        capital.toLocaleString("pt-BR")
+      }) menor que o pedido (R$ ${valor.toLocaleString("pt-BR")}).`,
     });
   }
 
@@ -92,8 +102,10 @@ export function avaliarAlertas(
 }
 
 /** Só dígitos; null quando não forma um CNPJ de 14 posições. */
-export function normalizarCnpj(valor: string | null | undefined): string | null {
-  const digitos = (valor ?? '').replace(/\D/g, '');
+export function normalizarCnpj(
+  valor: string | null | undefined,
+): string | null {
+  const digitos = (valor ?? "").replace(/\D/g, "");
   if (digitos.length !== 14) return null;
   if (/^(\d)\1+$/.test(digitos)) return null;
   return digitos;
@@ -101,7 +113,10 @@ export function normalizarCnpj(valor: string | null | undefined): string | null 
 
 /** CNPJ com máscara (XX.XXX.XXX/XXXX-XX) — o cadastro de clientes grava assim. */
 export function formatarCnpj(cnpj: string): string {
-  return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  return cnpj.replace(
+    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+    "$1.$2.$3/$4-$5",
+  );
 }
 
 /** Filtro PostgREST `.or()` que casa `clientes.cnpj_cpf` gravado com ou sem máscara. */
@@ -118,7 +133,7 @@ export function filtroCnpjCliente(cnpj: string): string {
 export function vinculoDesatualizado(
   cnpjDoClienteVinculado: string | null | undefined,
   cnpjAnterior: string | null | undefined,
-  cnpjNovo: string | null | undefined
+  cnpjNovo: string | null | undefined,
 ): boolean {
   const anterior = normalizarCnpj(cnpjAnterior ?? null);
   const novo = normalizarCnpj(cnpjNovo ?? null);
@@ -141,18 +156,37 @@ export function destinoDoLimiteVinculo(params: {
   documentoVinculo: string | null | undefined;
   empresaAnalise: string | null | undefined;
   empresaVinculo: string | null | undefined;
-}): 'gravar' | 'conflito' | 'sem_destino' {
+}): "gravar" | "conflito" | "sem_destino" {
   const cnpj = normalizarCnpj(params.cnpjAnalise ?? null) ?? null;
-  const documento = normalizarCnpj(params.documentoVinculo ?? null) ?? '';
-  if (documento.length === 14 && documento !== cnpj) return cnpj ? 'sem_destino' : 'conflito';
+  const documento = normalizarCnpj(params.documentoVinculo ?? null) ?? "";
+  if (documento.length === 14 && documento !== cnpj) {
+    return cnpj ? "sem_destino" : "conflito";
+  }
   if (
     params.empresaAnalise &&
     params.empresaVinculo &&
     params.empresaVinculo !== params.empresaAnalise
   ) {
-    return 'sem_destino';
+    return "sem_destino";
   }
-  return 'gravar';
+  return "gravar";
+}
+
+/**
+ * Aprovar com limite só passa quando existe destino para gravá-lo: o CNPJ da
+ * análise, ou um cadastro vinculado que não guarde outro CNPJ (documento
+ * nenhum ou CPF). Sem destino o Champions receberia um crédito que a base não
+ * tem, e o analista não teria como corrigir depois — a fila não reaplica.
+ */
+export function bloqueioParaAprovarComLimite(params: {
+  cnpjAnalise: string | null | undefined;
+  clienteId: string | null | undefined;
+  documentoVinculo: string | null | undefined;
+}): "cnpj_necessario_limite" | null {
+  if (normalizarCnpj(params.cnpjAnalise ?? null)) return null;
+  if (!params.clienteId) return "cnpj_necessario_limite";
+  const documento = normalizarCnpj(params.documentoVinculo ?? null) ?? "";
+  return documento.length === 14 ? "cnpj_necessario_limite" : null;
 }
 
 /**
@@ -163,11 +197,13 @@ export function destinoDoLimiteVinculo(params: {
  */
 export function escolherCadastroDoCnpj<T extends { empresa_id: string | null }>(
   candidatos: readonly T[],
-  empresaDaAnalise: string | null | undefined
+  empresaDaAnalise: string | null | undefined,
 ): T | null {
   if (candidatos.length === 0) return null;
   if (empresaDaAnalise) {
-    const mesmoEscopo = candidatos.find((c) => c.empresa_id === empresaDaAnalise);
+    const mesmoEscopo = candidatos.find((c) =>
+      c.empresa_id === empresaDaAnalise
+    );
     if (mesmoEscopo) return mesmoEscopo;
   }
   return candidatos[0];

@@ -15,7 +15,7 @@ const MENSAGENS: Record<string, string> = {
   mfa_requerido:
     'Falta concluir a verificação em duas etapas (MFA) na sua conta para analisar crédito.',
   cnpj_necessario_limite:
-    'Para aprovar com limite, informe o CNPJ da análise: o cadastro vinculado tem outro documento e sem o CNPJ o sistema não sabe onde gravar.',
+    'Para aprovar com limite, informe o CNPJ da análise: sem ele o sistema não sabe em qual cadastro gravar — o cadastro vinculado pode ser de outro cliente, ou não existir.',
   limite_sem_destino:
     'Este CNPJ está vinculado a um cadastro com outro documento, então o limite não tem onde ser gravado. Corrija o CNPJ, desvincule o cadastro ou aprove sem limite.',
 };

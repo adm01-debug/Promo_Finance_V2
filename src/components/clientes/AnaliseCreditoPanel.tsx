@@ -260,10 +260,10 @@ function AnaliseCard({
           </p>
         )}
 
-        {!decidida && !analise.cnpj && analise.cliente_id && (
+        {!decidida && !analise.cnpj && (
           <p className="text-xs text-destructive">
-            Análise sem CNPJ com cadastro vinculado: aprovar com limite é recusado até você informar
-            o CNPJ ou desvincular o cadastro em “Registrar consultas”.
+            Análise sem CNPJ: aprovar com limite é recusado até você informar o CNPJ em “Registrar
+            consultas” — sem ele não há cadastro onde gravar o limite.
           </p>
         )}
 
