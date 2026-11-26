@@ -73,7 +73,13 @@ const etapaColors: Record<string, string> = {
 };
 
 const ETAPAS = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'] as const;
-const CANAIS = ['email', 'whatsapp', 'sms', 'telefone'] as const;
+/**
+ * Só canais com despacho real no executor (`executar-regua-cobranca`): e-mail via
+ * `enviar-alerta-email` e WhatsApp via `whatsapp-ia-proativo`. SMS e telefone não
+ * têm provedor — oferecê-los criava template que nunca chegava ao cliente
+ * (achado do review da PR #571).
+ */
+const CANAIS = ['email', 'whatsapp'] as const;
 const TONS = ['amigavel', 'profissional', 'firme', 'urgente', 'juridico'] as const;
 
 interface ReguaCobrancaConfigProps {
@@ -297,6 +303,10 @@ export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps
                             ))}
                           </SelectContent>
                         </Select>
+                        <p className="text-xs text-muted-foreground">
+                          E-mail e WhatsApp são os canais com envio automático ativo. SMS e telefone
+                          ainda não têm provedor.
+                        </p>
                       </div>
                     </div>
                     <div className="space-y-1">

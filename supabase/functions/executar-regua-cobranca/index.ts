@@ -1,5 +1,15 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { dataAlvoUtc, normalizarCanais, normalizarDiasGatilho, type CanalRegua } from './domain.ts';
+import {
+  aplicarVariaveis,
+  assuntoSeguro,
+  dataAlvoUtc,
+  escaparHtml,
+  normalizarCanais,
+  normalizarDiasGatilho,
+  type CanalRegua,
+  type DadosMensagem,
+  type TemplateCobranca,
+} from './domain.ts';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
@@ -104,10 +114,19 @@ Deno.serve(
                 if (reservaError?.code === '23505') continue;
                 if (reservaError) throw reservaError;
 
-                const erroEnvio = await enviarCobranca(supabase, canal, conta, regra, requestId, {
-                  empresaId: regra.empresa_id,
-                  etapa,
-                });
+                // Leitura de template (ou qualquer falha do envio) precisa
+                // finalizar a reserva: uma linha presa em `processando`
+                // bloqueia aquele conta/etapa/canal no dia pelo índice de
+                // idempotência (achado do review da PR #571).
+                let erroEnvio: string | null;
+                try {
+                  erroEnvio = await enviarCobranca(supabase, canal, conta, regra, requestId, {
+                    empresaId: regra.empresa_id,
+                    etapa,
+                  });
+                } catch (erro) {
+                  erroEnvio = mensagemErro(erro);
+                }
                 const sucesso = erroEnvio === null;
                 const { error: atualizacaoError } = await supabase
                   .from('execucoes_regua_cobranca')
@@ -148,17 +167,6 @@ Deno.serve(
   })
 );
 
-interface TemplateCobranca {
-  assunto: string | null;
-  corpo: string;
-}
-
-interface DadosMensagem {
-  cliente: string;
-  valor: string;
-  vencimento: string;
-}
-
 /**
  * Mensagem real do envio: o template ativo de `templates_cobranca` para a
  * empresa/etapa/canal. Antes desta mudança o texto vinha de
@@ -188,15 +196,6 @@ async function carregarTemplate(
   return (data as TemplateCobranca | null) ?? null;
 }
 
-function aplicarVariaveis(corpo: string, dados: DadosMensagem): string {
-  return corpo
-    .replaceAll('{{cliente}}', dados.cliente)
-    .replaceAll('{{nome_cliente}}', dados.cliente)
-    .replaceAll('{{valor}}', dados.valor)
-    .replaceAll('{{vencimento}}', dados.vencimento)
-    .replaceAll('{{data_vencimento}}', dados.vencimento);
-}
-
 async function enviarCobranca(
   supabase: SupabaseClient<any, any, any>,
   canal: CanalRegua,
@@ -216,14 +215,20 @@ async function enviarCobranca(
   const template = await carregarTemplate(supabase, origem.empresaId, origem.etapa, canal);
   const corpoBase =
     template?.corpo?.trim() || regra.descricao || 'Seu título está próximo do vencimento.';
-  const mensagem = aplicarVariaveis(corpoBase, {
+  const dados: DadosMensagem = {
     cliente: cliente?.nome ?? 'cliente',
     valor: conta.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
     vencimento: new Date(`${conta.data_vencimento}T00:00:00Z`).toLocaleDateString('pt-BR', {
       timeZone: 'UTC',
     }),
-  });
-  const assunto = template?.assunto?.trim() || `Lembrete de Pagamento: ${regra.nome}`;
+  };
+  const mensagem = aplicarVariaveis(corpoBase, dados);
+  // Assunto também passa pelas variáveis: `{{cliente}}` no assunto chegava
+  // literal ao cliente (achado do review da PR #571).
+  const assunto = aplicarVariaveis(
+    template?.assunto?.trim() || `Lembrete de Pagamento: ${regra.nome}`,
+    dados
+  );
 
   if (canal === 'email' && cliente?.email) {
     const { error } = await supabase.functions.invoke('enviar-alerta-email', {
@@ -232,8 +237,8 @@ async function enviarCobranca(
         tipo: 'vencimento',
         destinatario: cliente.email,
         dados: {
-          titulo: assunto,
-          mensagem,
+          titulo: assuntoSeguro(assunto),
+          mensagem: escaparHtml(mensagem),
           valor: conta.valor,
           dataVencimento: conta.data_vencimento,
         },
@@ -243,9 +248,12 @@ async function enviarCobranca(
   }
 
   if (canal === 'whatsapp' && cliente?.telefone) {
+    // `whatsapp-ia-proativo` valida com schema estrito: exigia `action` e lia
+    // `data.telefone`/`data.mensagem`. O envio direto (`phone`/`message`) era
+    // recusado com 400 (achado do review da PR #571).
     const { error } = await supabase.functions.invoke('whatsapp-ia-proativo', {
       headers: correlationHeaders(requestId),
-      body: { phone: cliente.telefone, message: mensagem },
+      body: { action: 'enviar-mensagem', data: { telefone: cliente.telefone, mensagem } },
     });
     return error?.message ?? null;
   }

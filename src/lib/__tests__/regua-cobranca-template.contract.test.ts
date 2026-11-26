@@ -16,7 +16,10 @@ const EXECUTOR = join(
   'index.ts'
 );
 
+const lerFonte = (...partes: string[]) => readFileSync(join(process.cwd(), ...partes), 'utf8');
+
 const fonte = readFileSync(EXECUTOR, 'utf8');
+const dominio = lerFonte('supabase', 'functions', 'executar-regua-cobranca', 'domain.ts');
 
 describe('executar-regua-cobranca — usa o template real', () => {
   it('consulta templates_cobranca', () => {
@@ -50,12 +53,63 @@ describe('executar-regua-cobranca — usa o template real', () => {
 
   it('substitui as variáveis publicadas no catálogo da tela', () => {
     for (const variavel of ['cliente', 'nome_cliente', 'valor', 'vencimento', 'data_vencimento']) {
-      expect(fonte).toContain(`{{${variavel}}}`);
+      expect(dominio).toContain(`{{${variavel}}}`);
     }
   });
 
   it('recebe empresa e etapa de cada envio (não usa template global)', () => {
     expect(fonte).toContain('origem: { empresaId: string; etapa: string }');
     expect(fonte).toContain('empresaId: regra.empresa_id');
+  });
+});
+
+/**
+ * Achados do review da PR #571: o template salvava para canais sem provedor, o
+ * assunto saía com marcador literal, o WhatsApp era recusado pelo schema do
+ * provedor e o e-mail aceitava marcação vinda do template.
+ */
+describe('executar-regua-cobranca — envio que realmente chega ao provedor', () => {
+  it('chama o WhatsApp no contrato do provedor (action + data.telefone/data.mensagem)', () => {
+    expect(fonte).toContain("action: 'enviar-mensagem'");
+    expect(fonte).toMatch(/data: \{ telefone: cliente\.telefone, mensagem \}/);
+    expect(lerFonte('supabase', 'functions', '_shared', 'validation.ts')).toContain(
+      "'enviar-mensagem'"
+    );
+    expect(lerFonte('supabase', 'functions', 'whatsapp-ia-proativo', 'index.ts')).toContain(
+      'const { telefone, mensagem } = data;'
+    );
+    expect(fonte).not.toMatch(/body: \{ phone: cliente\.telefone/);
+  });
+
+  it('não oferece na tela canal sem provedor no executor', () => {
+    expect(lerFonte('src', 'components', 'cobranca', 'ReguaCobrancaConfig.tsx')).toMatch(
+      /const CANAIS = \['email', 'whatsapp'\] as const;/
+    );
+  });
+
+  it('aplica as variáveis do catálogo também no assunto', () => {
+    expect(fonte).toMatch(/const assunto = aplicarVariaveis\(/);
+    expect(dominio).toContain('export function aplicarVariaveis(');
+  });
+
+  it('escapa o HTML do corpo e protege o assunto do e-mail', () => {
+    expect(fonte).toContain('mensagem: escaparHtml(mensagem)');
+    expect(fonte).toContain('titulo: assuntoSeguro(assunto)');
+    expect(dominio).toContain('export function escaparHtml(');
+    expect(dominio).toContain('export function assuntoSeguro(');
+  });
+
+  it('finaliza a reserva mesmo quando o envio lança', () => {
+    expect(fonte).toMatch(/try \{\s*erroEnvio = await enviarCobranca\(/);
+    expect(fonte).toMatch(/catch \(erro\) \{\s*erroEnvio = mensagemErro\(erro\);/);
+    expect(fonte).toContain("status: sucesso ? 'sucesso' : 'falha'");
+    expect(fonte).toContain('mensagem_erro: erroEnvio');
+  });
+
+  it('a reserva usa status aceito pela constraint da tabela', () => {
+    expect(fonte).toContain("status: 'processando'");
+    expect(
+      lerFonte('supabase', 'migrations', '20260822113000_reconciliar_execucoes_regua_cobranca.sql')
+    ).toMatch(/CHECK \(status IN \('sucesso', 'falha', 'erro', 'ignorado', 'processando'\)\)/);
   });
 });
