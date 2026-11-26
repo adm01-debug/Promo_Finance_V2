@@ -104,7 +104,10 @@ Deno.serve(
                 if (reservaError?.code === '23505') continue;
                 if (reservaError) throw reservaError;
 
-                const erroEnvio = await enviarCobranca(supabase, canal, conta, regra, requestId);
+                const erroEnvio = await enviarCobranca(supabase, canal, conta, regra, requestId, {
+                  empresaId: regra.empresa_id,
+                  etapa,
+                });
                 const sucesso = erroEnvio === null;
                 const { error: atualizacaoError } = await supabase
                   .from('execucoes_regua_cobranca')
@@ -145,6 +148,55 @@ Deno.serve(
   })
 );
 
+interface TemplateCobranca {
+  assunto: string | null;
+  corpo: string;
+}
+
+interface DadosMensagem {
+  cliente: string;
+  valor: string;
+  vencimento: string;
+}
+
+/**
+ * Mensagem real do envio: o template ativo de `templates_cobranca` para a
+ * empresa/etapa/canal. Antes desta mudança o texto vinha de
+ * `regua_cobranca.descricao` — campo de descrição da etapa, não de mensagem —
+ * então editar um template em Configurações não mudava nenhuma cobrança
+ * automática (achado do review da PR #571).
+ */
+async function carregarTemplate(
+  supabase: SupabaseClient<any, any, any>,
+  empresaId: string,
+  etapa: string,
+  canal: CanalRegua
+): Promise<TemplateCobranca | null> {
+  const { data, error } = await supabase
+    .from('templates_cobranca')
+    .select('assunto,corpo')
+    .eq('empresa_id', empresaId)
+    .eq('etapa', etapa)
+    .eq('canal', canal)
+    .eq('ativo', true)
+    // `updated_at` existe em todas as versões da tabela; `padrao` não, e um
+    // ORDER BY em coluna ausente derrubaria o envio inteiro.
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as TemplateCobranca | null) ?? null;
+}
+
+function aplicarVariaveis(corpo: string, dados: DadosMensagem): string {
+  return corpo
+    .replaceAll('{{cliente}}', dados.cliente)
+    .replaceAll('{{nome_cliente}}', dados.cliente)
+    .replaceAll('{{valor}}', dados.valor)
+    .replaceAll('{{vencimento}}', dados.vencimento)
+    .replaceAll('{{data_vencimento}}', dados.vencimento);
+}
+
 async function enviarCobranca(
   supabase: SupabaseClient<any, any, any>,
   canal: CanalRegua,
@@ -157,11 +209,20 @@ async function enviarCobranca(
       | null;
   },
   regra: { nome: string; descricao: string | null },
-  requestId: string
+  requestId: string,
+  origem: { empresaId: string; etapa: string }
 ): Promise<string | null> {
-  const template = regra.descricao || 'Seu título está próximo do vencimento.';
-  const mensagem = template.replace('{{valor}}', String(conta.valor));
   const cliente = Array.isArray(conta.clientes) ? conta.clientes[0] : conta.clientes;
+  const template = await carregarTemplate(supabase, origem.empresaId, origem.etapa, canal);
+  const corpoBase = template?.corpo?.trim() || regra.descricao || 'Seu título está próximo do vencimento.';
+  const mensagem = aplicarVariaveis(corpoBase, {
+    cliente: cliente?.nome ?? 'cliente',
+    valor: conta.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    vencimento: new Date(`${conta.data_vencimento}T00:00:00Z`).toLocaleDateString('pt-BR', {
+      timeZone: 'UTC',
+    }),
+  });
+  const assunto = template?.assunto?.trim() || `Lembrete de Pagamento: ${regra.nome}`;
 
   if (canal === 'email' && cliente?.email) {
     const { error } = await supabase.functions.invoke('enviar-alerta-email', {
@@ -170,7 +231,7 @@ async function enviarCobranca(
         tipo: 'vencimento',
         destinatario: cliente.email,
         dados: {
-          titulo: `Lembrete de Pagamento: ${regra.nome}`,
+          titulo: assunto,
           mensagem,
           valor: conta.valor,
           dataVencimento: conta.data_vencimento,

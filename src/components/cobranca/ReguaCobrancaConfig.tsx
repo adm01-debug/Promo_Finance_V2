@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   Settings,
   Mail,
@@ -9,6 +9,8 @@ import {
   Edit2,
   Check,
   X,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,11 +19,42 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { EmpresaScopeContext } from '@/contexts/useEmpresaScope';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   useReguaCobranca,
   useUpdateReguaCobranca,
   useTemplatesCobranca,
   useUpdateTemplate,
+  useCriarTemplate,
+  useExcluirTemplate,
 } from '@/hooks/useReguaCobranca';
 
 const canalIcons: Record<string, React.ElementType> = {
@@ -39,17 +72,70 @@ const etapaColors: Record<string, string> = {
   juridico: 'bg-destructive/20 text-destructive border-destructive/40',
 };
 
+const ETAPAS = ['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'] as const;
+const CANAIS = ['email', 'whatsapp', 'sms', 'telefone'] as const;
+const TONS = ['amigavel', 'profissional', 'firme', 'urgente', 'juridico'] as const;
+
 interface ReguaCobrancaConfigProps {
   secao?: 'tudo' | 'regua' | 'templates';
 }
 
 export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps = {}) {
-  const { data: regua, isLoading } = useReguaCobranca();
-  const { data: templates } = useTemplatesCobranca();
+  // `useContext` direto (e não `useEmpresaScope`) para o componente continuar
+  // renderizável fora do provider — é o que os testes fazem.
+  const scope = useContext(EmpresaScopeContext);
+  const empresaId = scope?.currentEmpresaId ?? undefined;
+  const nomeEmpresa = (id?: string | null) =>
+    scope?.availableEmpresas.find((v) => v.empresa_id === id)?.empresa?.razao_social ?? id ?? null;
+
+  const { data: regua, isLoading } = useReguaCobranca(empresaId);
+  const { data: templates } = useTemplatesCobranca(empresaId);
   const updateRegua = useUpdateReguaCobranca();
   const updateTemplate = useUpdateTemplate();
+  const criarTemplate = useCriarTemplate();
+  const excluirTemplate = useExcluirTemplate();
   const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
   const [editCorpo, setEditCorpo] = useState('');
+  const [novoAberto, setNovoAberto] = useState(false);
+  const [templateParaExcluir, setTemplateParaExcluir] = useState<{
+    id: string;
+    etapa: string | null;
+    canal: string;
+  } | null>(null);
+  const [novoTemplate, setNovoTemplate] = useState({
+    etapa: 'preventiva' as string,
+    canal: 'email' as string,
+    tom: 'profissional' as string,
+    assunto: '',
+    corpo: '',
+  });
+
+  const salvarNovoTemplate = () => {
+    if (!empresaId) return;
+    criarTemplate.mutate(
+      {
+        empresa_id: empresaId,
+        etapa: novoTemplate.etapa,
+        canal: novoTemplate.canal,
+        tom: novoTemplate.tom,
+        nome: `${novoTemplate.etapa} - ${novoTemplate.canal}`,
+        assunto: novoTemplate.assunto.trim() || null,
+        corpo: novoTemplate.corpo,
+      },
+      {
+        onSuccess: () => {
+          setNovoAberto(false);
+          setNovoTemplate({
+            etapa: 'preventiva',
+            canal: 'email',
+            tom: 'profissional',
+            assunto: '',
+            corpo: '',
+          });
+        },
+      }
+    );
+  };
 
   if (isLoading)
     return (
@@ -90,6 +176,11 @@ export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps
                       <p className="text-sm text-muted-foreground">
                         {etapa.descricao || `Dias gatilho: ${etapa.dias_gatilho}`}
                       </p>
+                      {!empresaId && (
+                        <p className="text-xs text-muted-foreground">
+                          Empresa: {nomeEmpresa((etapa as { empresa_id?: string }).empresa_id)}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
@@ -139,12 +230,127 @@ export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps
       {secao !== 'regua' && (
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Mail className="h-5 w-5 text-primary" />
-              <div>
-                <CardTitle>Templates de Cobrança</CardTitle>
-                <CardDescription>Mensagens parametrizadas por etapa e canal</CardDescription>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Mail className="h-5 w-5 text-primary" />
+                <div>
+                  <CardTitle>Templates de Cobrança</CardTitle>
+                  <CardDescription>Mensagens parametrizadas por etapa e canal</CardDescription>
+                </div>
               </div>
+              <Dialog open={novoAberto} onOpenChange={setNovoAberto}>
+                <DialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    disabled={!empresaId}
+                    title={
+                      !empresaId ? 'Selecione uma empresa no topo para criar templates' : undefined
+                    }
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Novo template
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Novo template de cobrança</DialogTitle>
+                    <DialogDescription>
+                      {empresaId
+                        ? `Será criado para ${nomeEmpresa(empresaId)}.`
+                        : 'Selecione uma empresa para criar o template.'}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="novo-template-etapa">Etapa</Label>
+                        <Select
+                          value={novoTemplate.etapa}
+                          onValueChange={(v) => setNovoTemplate((s) => ({ ...s, etapa: v }))}
+                        >
+                          <SelectTrigger id="novo-template-etapa">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ETAPAS.map((etapa) => (
+                              <SelectItem key={etapa} value={etapa} className="capitalize">
+                                {etapa}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="novo-template-canal">Canal</Label>
+                        <Select
+                          value={novoTemplate.canal}
+                          onValueChange={(v) => setNovoTemplate((s) => ({ ...s, canal: v }))}
+                        >
+                          <SelectTrigger id="novo-template-canal">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {CANAIS.map((canal) => (
+                              <SelectItem key={canal} value={canal} className="capitalize">
+                                {canal}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="novo-template-tom">Tom</Label>
+                      <Select
+                        value={novoTemplate.tom}
+                        onValueChange={(v) => setNovoTemplate((s) => ({ ...s, tom: v }))}
+                      >
+                        <SelectTrigger id="novo-template-tom">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TONS.map((tom) => (
+                            <SelectItem key={tom} value={tom} className="capitalize">
+                              {tom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="novo-template-assunto">Assunto (e-mail)</Label>
+                      <Input
+                        id="novo-template-assunto"
+                        value={novoTemplate.assunto}
+                        onChange={(e) =>
+                          setNovoTemplate((s) => ({ ...s, assunto: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="novo-template-corpo">Corpo</Label>
+                      <Textarea
+                        id="novo-template-corpo"
+                        rows={5}
+                        value={novoTemplate.corpo}
+                        onChange={(e) => setNovoTemplate((s) => ({ ...s, corpo: e.target.value }))}
+                        placeholder="Olá {{cliente}}, sua parcela de {{valor}} vence em {{vencimento}}."
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="ghost" onClick={() => setNovoAberto(false)}>
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={salvarNovoTemplate}
+                      disabled={!empresaId || !novoTemplate.corpo.trim() || criarTemplate.isPending}
+                    >
+                      Criar template
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardHeader>
           <CardContent>
@@ -177,6 +383,11 @@ export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps
                               <Badge variant="outline" className="text-xs">
                                 {template.tom}
                               </Badge>
+                              {!empresaId && (
+                                <span className="text-xs text-muted-foreground">
+                                  Empresa: {nomeEmpresa(template.empresa_id)}
+                                </span>
+                              )}
                             </div>
                             <div className="flex items-center gap-2">
                               <Switch
@@ -185,6 +396,20 @@ export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps
                                   updateTemplate.mutate({ id: template.id, ativo: checked })
                                 }
                               />
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                aria-label={`Excluir template ${template.canal} da etapa ${template.etapa}`}
+                                onClick={() =>
+                                  setTemplateParaExcluir({
+                                    id: template.id,
+                                    etapa: template.etapa,
+                                    canal: template.canal,
+                                  })
+                                }
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
                               {isEditing ? (
                                 <>
                                   <Button
@@ -259,6 +484,36 @@ export function ReguaCobrancaConfig({ secao = 'tudo' }: ReguaCobrancaConfigProps
           </CardContent>
         </Card>
       )}
+
+      <AlertDialog
+        open={templateParaExcluir !== null}
+        onOpenChange={(aberto) => {
+          if (!aberto) setTemplateParaExcluir(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir este template?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {templateParaExcluir
+                ? `O template de ${templateParaExcluir.canal} da etapa ${templateParaExcluir.etapa} deixa de ser usado nas cobranças automáticas. A ação não pode ser desfeita.`
+                : ''}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (templateParaExcluir) excluirTemplate.mutate({ id: templateParaExcluir.id });
+                setTemplateParaExcluir(null);
+              }}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
