@@ -288,6 +288,12 @@ export function calcularCenario(
     cargaAtual = arredondar(resultado.totalAntigo);
   }
 
+  if (premissas.regimeAtual !== 'Simples Nacional') {
+    avisos.push(
+      `Carga atual de ${premissas.regimeAtual} estimada pelo modelo não-cumulativo do motor (PIS/COFINS, ICMS, ISS e IRPJ/CSLL por presunção): Lucro Presumido e Lucro Real usam a mesma base, sem apuração por LALUR.`
+    );
+  }
+
   const linha = obterLinhaCronograma(premissas.anoReferencia);
   const residuais: ResiduaisTransicao = {
     icms: arredondar(resultado.icmsAntigo * (linha.icmsResidual / 100)),

@@ -189,6 +189,25 @@ describe('buscarFontesContabeis', () => {
     expect(fontes.fonteFolha).toBe('contas_pagar');
   });
 
+  it('nao conta folha lancada com fornecedor como compra', async () => {
+    pagar = [
+      { valor: 15_000, status: 'pago', fornecedor_id: 'forn-1', fornecedor_nome: 'Fornecedor X' },
+      {
+        valor: 20_000,
+        status: 'pago',
+        fornecedor_id: 'forn-folha',
+        fornecedor_nome: 'Contabilidade RH',
+        categoria: 'Folha de pagamento',
+        descricao: 'Salários',
+      },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.comprasServicos12m).toBe(15000);
+    expect(fontes.folha12m).toBe(20000);
+  });
+
   it('usa a folha mensal do Historico Financeiro com precedencia sobre contas a pagar', async () => {
     pagar = [
       { valor: 20_000, status: 'pago', categoria: 'Folha de pagamento', descricao: 'Salários' },

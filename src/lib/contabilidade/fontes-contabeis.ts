@@ -126,8 +126,9 @@ function valorDaLinhaFolha(l: LinhaFolha): number {
  *   a presença do cliente é o único sinal de venda disponível — sem ele as
  *   notas de compra inflariam a receita. Sem nota alguma, cai para os títulos
  *   a receber.
- * - Compras: só lançamentos de `contas_pagar` com fornecedor identificado.
- *   Folha, impostos e demais despesas internas não geram crédito de CBS/IBS.
+ * - Compras: só lançamentos de `contas_pagar` com fornecedor identificado e que
+ *   não sejam folha/encargos (o formulário exige fornecedor também na folha, e
+ *   a folha não gera crédito de CBS/IBS).
  * - Folha: `folha_pagamento` (Histórico Financeiro) tem precedência; na
  *   ausência dela, lançamentos de `contas_pagar` classificados como
  *   folha/encargos. Alimenta o Fator R do Simples Nacional.
@@ -204,7 +205,9 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
   truncado = truncado || pagar.truncado;
 
   const comFornecedor = pagar.linhas.filter(
-    (l) => (l.fornecedor_id ?? '').trim() !== '' || (l.fornecedor_nome ?? '').trim() !== ''
+    (l) =>
+      ((l.fornecedor_id ?? '').trim() !== '' || (l.fornecedor_nome ?? '').trim() !== '') &&
+      !ehFolha(l)
   );
   const folhaTitulos = arredondar(somar(pagar.linhas.filter(ehFolha)));
 

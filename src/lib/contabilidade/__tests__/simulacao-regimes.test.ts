@@ -148,6 +148,14 @@ describe('calcularCenario', () => {
     expect(c2026.avisos.join(' ')).toContain('Ano-teste');
   });
 
+  it('avisa que Presumido e Real compartilham o modelo nao-cumulativo', () => {
+    const presumido = calcularCenario(fontes, premissas({ regimeAtual: 'Lucro Presumido' }));
+    const simples = calcularCenario(fontes, premissas({ regimeAtual: 'Simples Nacional' }));
+
+    expect(presumido.avisos.join(' ')).toContain('modelo não-cumulativo');
+    expect(simples.avisos.join(' ')).not.toContain('modelo não-cumulativo');
+  });
+
   it('recolhe a CPP patronal fora do DAS no Anexo IV', () => {
     const comFolha: FontesContabeis = {
       ...fontes,
