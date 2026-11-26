@@ -204,12 +204,15 @@ jobs:
         run: |
           set -uo pipefail
           FALHA=0
+          # 0 = ledger de PROD ilegivel: a paridade NAO foi confirmada.
+          LEDGER_OK=0
 
           # 1) Convergência do ledger — não depende de shadow DB.
           #    Depois do apply, nenhuma migration local pode seguir pendente.
           if psql "$PROD_DB_URL" -Atc \
                "SELECT version FROM supabase_migrations.schema_migrations" \
                | sort -n > /tmp/ledger-pos.txt && [ -s /tmp/ledger-pos.txt ]; then
+            LEDGER_OK=1
             PENDENTES=0
             for f in supabase/migrations/*.sql; do
               bn=$(basename "$f")
@@ -261,8 +264,18 @@ jobs:
               FALHA=1
             fi
           else
-            echo "::warning::Diff de DDL não verificável: o shadow replay abortou no harness. Paridade verificada pelo ledger; detalhe no artefato."
             grep -m1 -E '^ERROR' /tmp/prod-diff-pos.sql || true
+            if grep -qE '42501|must be owner' /tmp/prod-diff-pos.sql; then
+              if [ "$LEDGER_OK" = 1 ]; then
+                echo "::warning::Diff de DDL nao verificavel: shadow replay abortou por ownership (limitacao conhecida). Paridade conferida apenas pelo ledger."
+              else
+                echo "::error::Diff de DDL nao verificavel E ledger de PROD ilegivel - paridade com migrations/ NAO verificada."
+                FALHA=1
+              fi
+            else
+              echo "::error::db diff falhou por erro do CLI, nao pela limitacao conhecida do shadow replay - DDL de PROD NAO verificado."
+              FALHA=1
+            fi
           fi
 
           exit "$FALHA"
@@ -339,6 +352,19 @@ jobs:
           perl -0777 -ne 'while (/CREATE (?:OR REPLACE )?VIEW public\.([a-z0-9_]+)[^;]*?WITH\s*\(\s*security_invoker/gi) { print "$1\n" }' \
             supabase/migrations/*.sql | sort -u >> /tmp/si-esperado.txt || true
           sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
+          # Views removidas de proposito por migration versionada
+          # (20261118003500_drop_particoes_orfas_e_views_mortas.sql:71-73):
+          # exigir security_invoker delas reprovava todo apply bem-sucedido.
+          sed -i '/^\(vw_notification_history_duplicates\|vw_rpc_hotspots\|vw_rpc_slow_calls\)$/d' /tmp/si-esperado.txt
+          # Mas se alguma reaparecer em PROD sem o atributo, o guard reprova
+          # (mesma logica do ADR-001): ausencia e o estado canonico, presenca
+          # sem security_invoker e vazamento de privilegio do owner.
+          REAPARECIDAS=$(psql "$PROD_DB_URL" -Atc \
+            "SELECT string_agg(c.relname, ',') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('v','m') AND COALESCE(array_to_string(c.reloptions,','),'') !~ 'security_invoker\\s*=\\s*(true|on|1|yes)' AND c.relname IN ('vw_notification_history_duplicates','vw_rpc_hotspots','vw_rpc_slow_calls')")
+          if [ -n "$REAPARECIDAS" ]; then
+            echo "::error::Views removidas por migration reapareceram em PROD sem security_invoker ($REAPARECIDAS)."
+            exit 1
+          fi
           # Views Lalamove listadas em docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md
           # (drivers_safe_view, orders_safe_view): o estado canônico é AUSENTE
           # em PROD. Saem da lista esperada, mas o guard falha se reaparecerem.
