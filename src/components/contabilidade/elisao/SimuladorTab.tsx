@@ -1,29 +1,49 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Calculator } from 'lucide-react';
 import { TabsContent } from '@/components/ui/tabs';
-
-interface SimulacaoRow {
-  id: string;
-  ano_base: number;
-  updated_at: string;
-  nome: string;
-}
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { nomeDoCenario, formatarMoeda } from '@/lib/contabilidade/simulacao-regimes';
+import type { SimulacaoElisao } from './ElisaoFiscalTab.types';
 
 interface Props {
-  simulacoes: SimulacaoRow[];
+  simulacoes: SimulacaoElisao[];
   onNovaSimulacao: () => void;
 }
 
+const ROTULO_FONTE: Record<string, string> = {
+  notas_fiscais: 'Notas fiscais emitidas',
+  contas_receber: 'Títulos a receber',
+  sem_dados: 'Sem dados no período',
+};
+
+function corEconomia(valor: number) {
+  if (valor > 0) return 'text-emerald-600';
+  if (valor < 0) return 'text-destructive';
+  return 'text-muted-foreground';
+}
+
 export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
+  const [detalhe, setDetalhe] = useState<SimulacaoElisao | null>(null);
+  const fontes = detalhe?.detalhes?.fontes;
+  const resultado = detalhe?.detalhes?.resultado;
+
   return (
     <TabsContent value="simulador" className="space-y-4 pt-4">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold">Cenários Tributários (2025+)</h3>
+          <h3 className="text-lg font-semibold">Cenários Tributários (CBS/IBS)</h3>
           <p className="text-sm text-muted-foreground">
-            Compare regimes tradicionais com a transição da Reforma Tributária (CBS/IBS).
+            Compare o regime atual com a transição da Reforma Tributária usando o faturamento real
+            dos últimos 12 meses.
           </p>
         </div>
         <Button onClick={onNovaSimulacao} className="gap-2">
@@ -37,7 +57,7 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
             <Calculator className="h-12 w-12 text-muted-foreground/20 mb-4" />
             <CardTitle className="text-muted-foreground">Nenhuma simulação ativa</CardTitle>
             <CardDescription>
-              Crie um cenário para projetar a carga tributária de 2025.
+              Crie um cenário para projetar a carga tributária com os dados da contabilidade.
             </CardDescription>
             <Button variant="outline" className="mt-4" onClick={onNovaSimulacao}>
               Começar Simulação
@@ -45,30 +65,43 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
           </Card>
         ) : (
           simulacoes.map((sim) => (
-            <Card key={sim.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+            <Card key={sim.id} className="hover:border-primary/50 transition-colors">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
-                  <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
-                    Ano Base {sim.ano_base}
-                  </Badge>
+                  <Badge variant="outline">Ano {sim.ano_referencia}</Badge>
                   <span className="text-[10px] text-muted-foreground">
-                    Atualizado em {new Date(sim.updated_at).toLocaleDateString()}
+                    Atualizado em {new Date(sim.updated_at).toLocaleDateString('pt-BR')}
                   </span>
                 </div>
-                <CardTitle className="text-base mt-2">{sim.nome}</CardTitle>
+                <CardTitle className="text-base mt-2">{nomeDoCenario(sim.premissas)}</CardTitle>
+                <CardDescription className="text-xs">
+                  {sim.regime_atual ?? 'Regime não informado'} →{' '}
+                  {sim.regime_simulado ?? 'Cenário simulado'}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span>Melhor Opção:</span>
-                    <span className="font-bold text-emerald-600">Simples Nacional</span>
+                    <span>Carga atual:</span>
+                    <span className="font-mono">{formatarMoeda(sim.carga_atual)}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span>Economia Anual:</span>
-                    <span className="font-bold">R$ 42.150,00</span>
+                    <span>Carga simulada:</span>
+                    <span className="font-mono">{formatarMoeda(sim.carga_simulada)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span>Economia estimada:</span>
+                    <span className={`font-bold ${corEconomia(sim.economia_estimada)}`}>
+                      {formatarMoeda(sim.economia_estimada)}
+                    </span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="w-full text-xs">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={() => setDetalhe(sim)}
+                >
                   Ver Detalhes do Cenário
                 </Button>
               </CardContent>
@@ -76,6 +109,60 @@ export function SimuladorTab({ simulacoes, onNovaSimulacao }: Props) {
           ))
         )}
       </div>
+
+      <Dialog open={!!detalhe} onOpenChange={(v) => !v && setDetalhe(null)}>
+        <DialogContent className="sm:max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle>{detalhe ? nomeDoCenario(detalhe.premissas) : 'Cenário'}</DialogTitle>
+            <DialogDescription>
+              Memória de cálculo gravada na criação do cenário.
+            </DialogDescription>
+          </DialogHeader>
+          {detalhe && (
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <p className="font-semibold text-sm">Base apurada</p>
+                <div className="flex justify-between">
+                  <span>Faturamento 12m</span>
+                  <span className="font-mono">{formatarMoeda(fontes?.faturamento12m)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Compras/serviços 12m</span>
+                  <span className="font-mono">{formatarMoeda(fontes?.comprasServicos12m)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Fonte</span>
+                  <span>{ROTULO_FONTE[fontes?.fonteFaturamento ?? ''] ?? 'Registrada'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Tributos no regime atual</span>
+                  <span className="font-mono">{formatarMoeda(resultado?.totalAntigo)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Tributos no cenário CBS/IBS</span>
+                  <span className="font-mono">{formatarMoeda(resultado?.totalNovo)}</span>
+                </div>
+                <div className="flex justify-between font-semibold">
+                  <span>Economia estimada</span>
+                  <span className={corEconomia(detalhe.economia_estimada)}>
+                    {formatarMoeda(detalhe.economia_estimada)}
+                  </span>
+                </div>
+              </div>
+              {resultado?.observacoes && resultado.observacoes.length > 0 && (
+                <div className="space-y-1">
+                  <p className="font-semibold text-sm">Observações do motor</p>
+                  {resultado.observacoes.map((obs) => (
+                    <p key={obs} className="text-muted-foreground">
+                      {obs}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </TabsContent>
   );
 }
