@@ -2297,22 +2297,26 @@
   {
    "arquivo": "src/hooks/useCatalogoCclasstrib.ts",
    "hooks_exportados": [
-    "useCatalogoCclasstrib"
+    "useCatalogoCclasstrib",
+    "useClassificacaoTributaria"
    ],
-   "linhas": 34,
+   "linhas": 176,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
    "edges": [],
    "hooks_internos": [
-    "useQuery"
+    "useEffect",
+    "useQuery",
+    "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
-    "src/components/nfe/NovaNFeForm.tsx"
+    "src/components/nfe/NovaNFeForm.tsx",
+    "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useCatalogoIssMunicipal.ts",

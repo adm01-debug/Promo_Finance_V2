@@ -10499,6 +10499,7 @@
     "useCallback",
     "useCatalogoCclasstrib",
     "useCentrosCusto",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useContasBancarias",
@@ -10563,6 +10564,7 @@
     "useBlingNFe",
     "useCatalogoCclasstrib",
     "useCentrosCusto",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useContasBancarias",
@@ -10665,7 +10667,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 190
+   "arquivos_puxados": 192
   },
   {
    "protegida": true,
@@ -14076,6 +14078,8 @@
     "useAprovacoesPendentesCount",
     "useAuth",
     "useCallback",
+    "useCatalogoCclasstrib",
+    "useClassificacaoTributaria",
     "useConsultaCNAE",
     "useConsultaNCM",
     "useConsultaUF",
@@ -14126,6 +14130,8 @@
     "useAnomaliaPreferences",
     "useAprovacoesPendentesCount",
     "useAuth",
+    "useCatalogoCclasstrib",
+    "useClassificacaoTributaria",
     "useConsultaCNAE",
     "useConsultaNCM",
     "useConsultaUF",
@@ -14154,16 +14160,28 @@
    ],
    "tabelas": [
     "alertas",
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
     "anomalia_toast_eventos",
     "anomalias_detectadas",
+    "catalogo_cclasstrib",
+    "catalogo_fundamentacao",
+    "catalogo_ncm",
     "centros_custo",
+    "cnaes",
     "contas_pagar",
     "contas_receber",
     "empresas",
+    "faixas_simples_nacional",
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "itens_lista_iss",
+    "ncms",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
     "solicitacoes_aprovacao",
+    "ufs",
     "user_anomalia_preferences",
     "user_empresas",
     "user_onboarding_progress"
@@ -14192,7 +14210,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 113
+   "arquivos_puxados": 129
   },
   {
    "protegida": true,

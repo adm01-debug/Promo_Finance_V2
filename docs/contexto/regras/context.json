@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "377e5cf5d80a06aae0922122d279ce98dc12e3b7",
+  "sha": "aeb9a5f724cf99678047f0f92100878acfc80bc9",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 03:09 UTC",
-  "files_total": 4125,
-  "code_files": 3704,
-  "code_lines": 530643
+  "generated_at": "2026-11-26 03:50 UTC",
+  "files_total": 4133,
+  "code_files": 3712,
+  "code_lines": 531968
  },
  "version": "1.3.2",
- "facts_hash": "537f48763ea72478",
+ "facts_hash": "546be9591ee88f70",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1299,
+   ".ts": 1303,
    ".sql": 1157,
-   ".tsx": 1126,
+   ".tsx": 1130,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -62911,7 +62911,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 158
+    "deps_count": 164
    },
    {
     "path": "/orcamento-evento",
@@ -68055,7 +68055,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1008,
+  "components_count": 1016,
   "hooks": [
    {
     "name": "useContacts",
@@ -68663,6 +68663,10 @@
    },
    {
     "name": "useCatalogoCclasstrib",
+    "file": "src/hooks/useCatalogoCclasstrib.ts"
+   },
+   {
+    "name": "useClassificacaoTributaria",
     "file": "src/hooks/useCatalogoCclasstrib.ts"
    },
    {
@@ -71104,8 +71108,8 @@
   },
   {
    "module": "src/components",
-   "files": 1006,
-   "lines": 166809,
+   "files": 1014,
+   "lines": 167322,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71250,6 +71254,7 @@
     "src/hooks",
     "src/integrations",
     "src/lib",
+    "src/pages",
     "src/types"
    ],
    "file_list": [
@@ -71382,8 +71387,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 328,
-   "lines": 49366,
+   "files": 330,
+   "lines": 49674,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71722,8 +71727,8 @@
   },
   {
    "module": "src/lib",
-   "files": 436,
-   "lines": 59597,
+   "files": 440,
+   "lines": 60295,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -71922,8 +71927,8 @@
   },
   {
    "module": "src/pages",
-   "files": 273,
-   "lines": 47179,
+   "files": 267,
+   "lines": 46985,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -85758,6 +85763,14 @@
     "text": "* @default false — deve ser true apenas com resposta SEFAZ homologada real */"
    },
    {
+    "file": "src/hooks/useCatalogoCclasstrib.ts",
+    "text": "Leitura vazia significa \"nao consegui carregar\" e nao pode apagar um"
+   },
+   {
+    "file": "src/hooks/useCatalogoCclasstrib.ts",
+    "text": "catalogo ou da norma). Quando o vencimento chega com a aba aberta, a consulta"
+   },
+   {
     "file": "src/hooks/useCatalogosFiscais.ts",
     "text": "Somente valores já validados pelo overlay chegam aqui."
    },
@@ -86466,6 +86479,10 @@
     "text": "UB12-10: CRT 3 a partir de 03/08/2026 não pode emitir nota sem o grupo."
    },
    {
+    "file": "src/lib/offline/fiscal-cache.ts",
+    "text": "* A entrada já não deve ser servida? Duas razões: TTL estourado ou vigência do"
+   },
+   {
     "file": "src/lib/ofx-parser/csv.ts",
     "text": "// A deteccao NAO pode ser so \"tem uma coluna a mais\": virgula sobrando no"
    },
@@ -86694,6 +86711,14 @@
     "text": "* Valor conhecido pelo motor/pela regra legal (null quando inaplicável). */"
    },
    {
+    "file": "src/lib/tributario/catalogos/cclasstrib-reducao.ts",
+    "text": "que a tela mostra, para o componente não carregar regra de negócio."
+   },
+   {
+    "file": "src/lib/tributario/catalogos/cclasstrib-reducao.ts",
+    "text": "validação não divergirem."
+   },
+   {
     "file": "src/lib/tributario/catalogos/cclasstrib.ts",
     "text": "* Carrega as refer?ncias vigentes apenas para os c?digos que a importa??o"
    },
@@ -86704,6 +86729,14 @@
    {
     "file": "src/lib/tributario/catalogos/cclasstrib.ts",
     "text": "demais - sem catalogo, o alerta continua saindo, apenas sem a norma."
+   },
+   {
+    "file": "src/lib/tributario/catalogos/classificacao-offline.ts",
+    "text": "- Fundamentacao com `falhou` nao regrava o cache: um erro de rede nao pode"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/classificacao-offline.ts",
+    "text": "fim da vigencia, o que vier antes. `null` quando nada declara vencimento."
    },
    {
     "file": "src/lib/tributario/catalogos/coerencia-mva.ts",
@@ -101576,6 +101609,16 @@
     "value": "1000"
    },
    {
+    "file": "src/hooks/useCatalogoCclasstrib.ts",
+    "name": "TTL_CATALOGO_MS",
+    "value": "30"
+   },
+   {
+    "file": "src/hooks/useCatalogoCclasstrib.ts",
+    "name": "MAX_AGENDAMENTO_MS",
+    "value": "2"
+   },
+   {
     "file": "src/hooks/useFinancialOperations.ts",
     "name": "MOVIMENTACOES_PAGE_SIZE",
     "value": "1000"
@@ -102024,6 +102067,11 @@
     "file": "src/lib/tributario/catalogos/cclasstrib.ts",
     "name": "LOTE_CODIGOS",
     "value": "300"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/classificacao-offline.ts",
+    "name": "MS_POR_DIA",
+    "value": "24"
    },
    {
     "file": "src/lib/tributario/catalogos/coerencia-iss.ts",
@@ -118184,6 +118232,12 @@
     "body": "if (!resposta || typeof resposta !== 'object') { throw new Error('ASAAS não retornou confirmação da emissão.'); } const dados = resposta as Record<string, unknown>; const id = dados.id; const linhaDigitavel = dados.identificationField; const codigoBarras = dados.barCode; if (typeof id !== 'string' || id.trim() === '') { const mensagem = typeof dados.error === 'string' && dados.error.trim() ? dados.error : 'ASAAS não retornou identificador'; throw new Error(mensagem); } if ( typeof linhaDigitavel …"
    },
    {
+    "file": "src/hooks/useCatalogoCclasstrib.ts",
+    "name": "invalidar",
+    "params": "",
+    "body": "ultimoVencimentoInvalidado.current = assinatura; void queryClient.invalidateQueries({ queryKey: [CHAVE_CLASSIFICACAO_TRIBUTARIA] });"
+   },
+   {
     "file": "src/hooks/useComparativoRegimes.ts",
     "name": "calcularLucroReal",
     "params": "params: ParametrosSimulacao",
@@ -120147,7 +120201,7 @@
    },
    {
     "file": "src/hooks/useCatalogoCclasstrib.ts",
-    "line": "staleTime: 30 * 60 * 1000,"
+    "line": "const TTL_CATALOGO_MS = 30 * 60 * 1000;"
    },
    {
     "file": "src/hooks/useCatalogoIssMunicipal.ts",
@@ -120416,6 +120470,10 @@
    {
     "file": "src/lib/transaction-matcher/similarity.ts",
     "line": "const diffDias = diffMs / (1000 * 60 * 60 * 24);"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/classificacao-offline.ts",
+    "line": "const MS_POR_DIA = 24 * 60 * 60 * 1000;"
    },
    {
     "file": "src/pages/AdminTelemetria.tsx",
@@ -125066,6 +125124,90 @@
     "name": "usa o valor residual e inclui título parcial"
    },
    {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "extrairOffline"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "devolve null para payloads sem metadado"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "rejeita metadado malformado"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "extrai metadado válido"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "formatarGravadoEm"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "formata timestamp válido"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+    "name": "tolera timestamp inválido"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "classificacao tributaria na consulta por NCM (etapa 84)"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "mostra cClassTrib, CST, reducao e a norma que fundamenta"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "com o pacote do cache mostra os dados e o selo Offline"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "sem catalogo sincronizado explica o vazio em vez de mostrar tabela"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "filtro sem resultado avisa em vez de tabela vazia"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "busca por codigo mantem so o codigo digitado"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+    "name": "filtro por CST mantem so as classificacoes daquele CST"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "pct"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "trata nulos e NaN como travessão"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "converte frações em percentual"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "mantém valores já expressos em pontos percentuais"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "zero é exibido explicitamente (não confundir com ausência)"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "UFS"
+   },
+   {
+    "file": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+    "name": "cobre as 27 unidades federativas sem duplicidade"
+   },
+   {
     "file": "src/components/tributario/dashboard/__tests__/fiscal-sem-dado.test.tsx",
     "name": "heatmap tributario — ano sem faturamento"
    },
@@ -126282,6 +126424,22 @@
     "name": "projeta valores anuais (x12)"
    },
    {
+    "file": "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx",
+    "name": "useCatalogoCclasstrib"
+   },
+   {
+    "file": "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx",
+    "name": "reconsulta ao remontar quando a leitura anterior voltou vazia"
+   },
+   {
+    "file": "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx",
+    "name": "nao reconsulta ao remontar quando a leitura esta fresca"
+   },
+   {
+    "file": "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx",
+    "name": "releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria"
+   },
+   {
     "file": "src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx",
     "name": "useUploadCertificado — erro da Edge Function"
    },
@@ -126304,6 +126462,14 @@
    {
     "file": "src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx",
     "name": "no sucesso, anuncia CNPJ e validade e invalida a lista"
+   },
+   {
+    "file": "src/hooks/__tests__/useClassificacaoTributaria.remontagem.test.tsx",
+    "name": "useClassificacaoTributaria"
+   },
+   {
+    "file": "src/hooks/__tests__/useClassificacaoTributaria.remontagem.test.tsx",
+    "name": "reabrir a consulta por NCM troca o pacote offline pela leitura da rede"
    },
    {
     "file": "src/hooks/__tests__/useConciliacao.confirmar.test.tsx",
@@ -131854,6 +132020,30 @@
     "name": "degrada com segurança quando IndexedDB não está disponível (jsdom)"
    },
    {
+    "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+    "name": "vigencia do dado (etapa 85)"
+   },
+   {
+    "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+    "name": "descarta a entrada no dia seguinte ao fim da vigencia, mesmo dentro do TTL"
+   },
+   {
+    "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+    "name": "mantem a entrada no ultimo dia de vigencia"
+   },
+   {
+    "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+    "name": "aceita timestamp completo em fimVigencia comparando so o dia"
+   },
+   {
+    "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+    "name": "sem vigencia declarada, vale apenas o TTL"
+   },
+   {
+    "file": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+    "name": "valor de vigencia invalido nao expira a entrada por engano"
+   },
+   {
     "file": "src/lib/organizacoes/__tests__/convites.test.ts",
     "name": "convites: token e validade"
    },
@@ -136506,6 +136696,98 @@
     "name": "categorias novas da LC 214/2025 aplicam alíquota na base de bens"
    },
    {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "consulta por NCM — classificação tributária (etapa 84)"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "lista os CST do catálogo em ordem, sem repetir nem aceitar vazio"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "filtra pelo CST escolhido mantendo o restante do catálogo"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "busca por trecho sem acento e sem caixa na descrição"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "combina CST e busca sem devolver linha de outro CST"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "anexa redução e norma do par cClassTrib/CST"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "cai para outra linha do mesmo cClassTrib quando o CST não bate"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "sem catálogo de fundamentação a linha sai sem norma, não sem redução"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+    "name": "horizonte de vigência devolve o menor fim declarado e ignora valor inválido"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "pacote offline de classificacao tributaria (etapa 84)"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "sem rede mas com cache: serve o pacote guardado e marca offline"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "sem rede e sem cache: catalogo vazio, nada de cache e nada gravado"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "falha na fundamentacao nao regrava o cache e mantem o texto guardado"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "falha na fundamentacao sem cache: mostra o catalogo e nao grava"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "leitura ok grava com o menor teto entre catalogo e norma"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "norma sem fim de vigencia usa o teto do catalogo"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "fundamentacao vazia mas sem falha tambem e gravada (tabela ainda nao sincronizada)"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "vencimento do pacote exibido"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "usa o TTL quando nao ha vigencia declarada"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "vence no fim do dia da vigencia, antes do TTL"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "vence no TTL quando a vigencia do dado e maior"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "sem TTL (dado veio da rede) so a vigencia conta"
+   },
+   {
+    "file": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+    "name": "sem gravacao e sem vigencia nao ha o que agendar"
+   },
+   {
     "file": "src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts",
     "name": "detectarJCP"
    },
@@ -137372,62 +137654,6 @@
    {
     "file": "src/pages/auth/__tests__/CorporateOnboardingUi.test.tsx",
     "name": "falha no sso-initiate: exibe "
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "extrairOffline"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "devolve null para payloads sem metadado"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "rejeita metadado malformado"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "extrai metadado válido"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "formatarGravadoEm"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "formata timestamp válido"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-    "name": "tolera timestamp inválido"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "pct"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "trata nulos e NaN como travessão"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "converte frações em percentual"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "mantém valores já expressos em pontos percentuais"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "zero é exibido explicitamente (não confundir com ausência)"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "UFS"
-   },
-   {
-    "file": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-    "name": "cobre as 27 unidades federativas sem duplicidade"
    },
    {
     "file": "src/pages/tributario/oportunidades-elisao/__tests__/AnaliseTab.catalogo.test.tsx",
@@ -199290,6 +199516,89 @@
     }
    ]
   },
+  "src/components/tributario/consulta-rapida/OfflineBadge.tsx": {
+   "path": "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+   "lines": 39,
+   "exports": [
+    "interface OfflineBadgeProps",
+    "function OfflineBadge"
+   ]
+  },
+  "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx": {
+   "path": "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx",
+   "lines": 158,
+   "exports": [
+    "function SecaoClassificacaoTributaria"
+   ]
+  },
+  "src/components/tributario/consulta-rapida/format.ts": {
+   "path": "src/components/tributario/consulta-rapida/format.ts",
+   "lines": 7,
+   "exports": [
+    "function pct"
+   ],
+   "doc": "Formata número como percentual. Aceita fração (0.18) ou pontos (18)."
+  },
+  "src/components/tributario/consulta-rapida/offlineMeta.ts": {
+   "path": "src/components/tributario/consulta-rapida/offlineMeta.ts",
+   "lines": 27,
+   "exports": [
+    "interface OfflineMeta",
+    "function extrairOffline",
+    "function formatarGravadoEm"
+   ],
+   "doc": "Metadado gravado pelo hook quando a resposta veio do IndexedDB."
+  },
+  "src/components/tributario/consulta-rapida/shared.tsx": {
+   "path": "src/components/tributario/consulta-rapida/shared.tsx",
+   "lines": 56,
+   "exports": [
+    "interface ResultBlockProps",
+    "function ResultBlock"
+   ]
+  },
+  "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts": {
+   "path": "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+   "lines": 36,
+   "is_test": true,
+   "tests": [
+    "extrairOffline",
+    "devolve null para payloads sem metadado",
+    "rejeita metadado malformado",
+    "extrai metadado válido",
+    "formatarGravadoEm",
+    "formata timestamp válido",
+    "tolera timestamp inválido"
+   ]
+  },
+  "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx": {
+   "path": "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+   "lines": 157,
+   "is_test": true,
+   "tests": [
+    "classificacao tributaria na consulta por NCM (etapa 84)",
+    "mostra cClassTrib, CST, reducao e a norma que fundamenta",
+    "com o pacote do cache mostra os dados e o selo Offline",
+    "sem catalogo sincronizado explica o vazio em vez de mostrar tabela",
+    "filtro sem resultado avisa em vez de tabela vazia",
+    "busca por codigo mantem so o codigo digitado",
+    "filtro por CST mantem so as classificacoes daquele CST"
+   ]
+  },
+  "src/components/tributario/consulta-rapida/__tests__/shared.test.ts": {
+   "path": "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+   "lines": 33,
+   "is_test": true,
+   "tests": [
+    "pct",
+    "trata nulos e NaN como travessão",
+    "converte frações em percentual",
+    "mantém valores já expressos em pontos percentuais",
+    "zero é exibido explicitamente (não confundir com ausência)",
+    "UFS",
+    "cobre as 27 unidades federativas sem duplicidade"
+   ]
+  },
   "src/components/tributario/dashboard/AlertasAtivosResumo.tsx": {
    "path": "src/components/tributario/dashboard/AlertasAtivosResumo.tsx",
    "lines": 58,
@@ -204284,18 +204593,43 @@
   },
   "src/hooks/useCatalogoCclasstrib.ts": {
    "path": "src/hooks/useCatalogoCclasstrib.ts",
-   "lines": 35,
+   "lines": 177,
    "exports": [
     "const CHAVE_CATALOGO_CCLASSTRIB",
     "interface CatalogoCclasstrib",
-    "function useCatalogoCclasstrib"
+    "function useCatalogoCclasstrib",
+    "const CHAVE_CLASSIFICACAO_TRIBUTARIA",
+    "interface ClassificacaoTributaria",
+    "function useClassificacaoTributaria"
    ],
-   "doc": "Catalogo oficial de cClassTrib vigente, para escolha em tela (etapa 53). Best effort, como o resto da leitura de catalogo: sem resposta do banco a lista volta vazia e a tela avisa \"catalogo indisponivel\" — nao inventa codigo.",
+   "params": [
+    {
+     "name": "TTL_CATALOGO_MS",
+     "value": "30"
+    },
+    {
+     "name": "MAX_AGENDAMENTO_MS",
+     "value": "2"
+    }
+   ],
+   "rule_comments": [
+    "Leitura vazia significa \"nao consegui carregar\" e nao pode apagar um",
+    "catalogo ou da norma). Quando o vencimento chega com a aba aberta, a consulta"
+   ],
+   "doc": "Catalogo oficial de cClassTrib vigente, para escolha em tela (etapa 53). Best effort, como o resto da leitura de catalogo: sem resposta do banco a lista volta vazia e a tela avisa \"catalogo indisponivel\" ? nao inventa codigo.",
    "hooks": [
-    "useCatalogoCclasstrib"
+    "useCatalogoCclasstrib",
+    "useClassificacaoTributaria"
+   ],
+   "calc_fns": [
+    {
+     "name": "invalidar",
+     "params": "",
+     "body": "ultimoVencimentoInvalidado.current = assinatura; void queryClient.invalidateQueries({ queryKey: [CHAVE_CLASSIFICACAO_TRIBUTARIA] });"
+    }
    ],
    "temporal": [
-    "staleTime: 30 * 60 * 1000,"
+    "const TTL_CATALOGO_MS = 30 * 60 * 1000;"
    ]
   },
   "src/hooks/useCatalogoIssMunicipal.ts": {
@@ -213119,6 +213453,17 @@
     "projeta valores anuais (x12)"
    ]
   },
+  "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx": {
+   "path": "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx",
+   "lines": 101,
+   "is_test": true,
+   "tests": [
+    "useCatalogoCclasstrib",
+    "reconsulta ao remontar quando a leitura anterior voltou vazia",
+    "nao reconsulta ao remontar quando a leitura esta fresca",
+    "releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria"
+   ]
+  },
   "src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx": {
    "path": "src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx",
    "lines": 154,
@@ -213137,6 +213482,15 @@
     "cai para a mensagem PT-BR do status quando o corpo não traz motivo",
     "propaga ",
     "no sucesso, anuncia CNPJ e validade e invalida a lista"
+   ]
+  },
+  "src/hooks/__tests__/useClassificacaoTributaria.remontagem.test.tsx": {
+   "path": "src/hooks/__tests__/useClassificacaoTributaria.remontagem.test.tsx",
+   "lines": 65,
+   "is_test": true,
+   "tests": [
+    "useClassificacaoTributaria",
+    "reabrir a consulta por NCM troca o pacote offline pela leitura da rede"
    ]
   },
   "src/hooks/__tests__/useConciliacao.confirmar.test.tsx": {
@@ -219409,10 +219763,12 @@
   },
   "src/lib/offline/fiscal-cache.ts": {
    "path": "src/lib/offline/fiscal-cache.ts",
-   "lines": 100,
+   "lines": 140,
    "exports": [
     "const TTL_PADRAO_MS",
     "interface EntradaCache",
+    "interface OpcoesCache",
+    "function entradaExpirada",
     "function chaveConsulta",
     "function salvarConsulta",
     "function lerConsulta",
@@ -219432,6 +219788,9 @@
      "value": "7"
     }
    ],
+   "rule_comments": [
+    "* A entrada já não deve ser servida? Duas razões: TTL estourado ou vigência do"
+   ],
    "doc": "Cache offline (IndexedDB) dos catálogos fiscais consultados. Motivação: os catálogos (UF/CNAE/NCM) mudam raramente, mas o contador frequentemente consulta em campo/rede instável. Guardamos a última resposta bem-sucedida por chave de consulta e a devolvemos quando a rede falha, sinalizando explicitam …",
    "temporal": [
     "export const TTL_PADRAO_MS = 7 * 24 * 60 * 60 * 1000;"
@@ -219439,12 +219798,27 @@
   },
   "src/lib/offline/__tests__/fiscal-cache.test.ts": {
    "path": "src/lib/offline/__tests__/fiscal-cache.test.ts",
-   "lines": 23,
+   "lines": 61,
    "is_test": true,
+   "params": [
+    {
+     "name": "DIA_MS",
+     "value": "24"
+    }
+   ],
+   "temporal": [
+    "const DIA_MS = 24 * 60 * 60 * 1000;"
+   ],
    "tests": [
     "fiscal-cache",
     "gera chave determinística e independente da ordem das propriedades",
-    "degrada com segurança quando IndexedDB não está disponível (jsdom)"
+    "degrada com segurança quando IndexedDB não está disponível (jsdom)",
+    "vigencia do dado (etapa 85)",
+    "descarta a entrada no dia seguinte ao fim da vigencia, mesmo dentro do TTL",
+    "mantem a entrada no ultimo dia de vigencia",
+    "aceita timestamp completo em fimVigencia comparando so o dia",
+    "sem vigencia declarada, vale apenas o TTL",
+    "valor de vigencia invalido nao expira a entrada por engano"
    ]
   },
   "src/lib/ofx-parser/csv.ts": {
@@ -223629,15 +224003,32 @@
     }
    ]
   },
+  "src/lib/tributario/catalogos/cclasstrib-reducao.ts": {
+   "path": "src/lib/tributario/catalogos/cclasstrib-reducao.ts",
+   "lines": 83,
+   "exports": [
+    "interface LinhaCclasstribReducao",
+    "interface FiltroCclasstrib",
+    "function cstsDoCatalogo",
+    "function montarLinhasCclasstrib"
+   ],
+   "rule_comments": [
+    "que a tela mostra, para o componente não carregar regra de negócio.",
+    "validação não divergirem."
+   ],
+   "doc": "Etapa 84: a consulta por NCM também responde \"qual cClassTrib, quanta redução e qual norma\". O catálogo é a fonte; aqui só filtramos e reduzimos as linhas ao que a tela mostra, para o componente não carregar regra de negócio."
+  },
   "src/lib/tributario/catalogos/cclasstrib.ts": {
    "path": "src/lib/tributario/catalogos/cclasstrib.ts",
-   "lines": 262,
+   "lines": 300,
    "exports": [
     "interface CclasstribCatalogo",
     "interface NcmCatalogo",
     "interface ReferenciasFiscais",
     "function buscarReferenciasFiscais",
-    "function listarCclasstribVigentes"
+    "function listarCclasstribVigentes",
+    "function horizonteVigencia",
+    "function menorVigencia"
    ],
    "tables": [
     {
@@ -223688,6 +224079,31 @@
    "doc": "Leitura do cat?logo oficial de cClassTrib (LC 214/2025) e do cat?logo de NCM. As duas tabelas nascem vazias: o conte?do vem das cargas da RFB (etapas 79-81). Por isso toda leitura aqui ? *best effort*: cat?logo vazio significa \"sem refer?ncia para comparar\", nunca \"registro inv?lido\". Quem valida (e …",
    "pagination": [
     "1"
+   ]
+  },
+  "src/lib/tributario/catalogos/classificacao-offline.ts": {
+   "path": "src/lib/tributario/catalogos/classificacao-offline.ts",
+   "lines": 125,
+   "exports": [
+    "interface PacoteClassificacaoTributaria",
+    "interface DadosClassificacaoTributaria",
+    "interface DepsClassificacaoTributaria",
+    "function carregarClassificacaoTributaria",
+    "function proximoVencimentoMs"
+   ],
+   "params": [
+    {
+     "name": "MS_POR_DIA",
+     "value": "24"
+    }
+   ],
+   "rule_comments": [
+    "- Fundamentacao com `falhou` nao regrava o cache: um erro de rede nao pode",
+    "fim da vigencia, o que vier antes. `null` quando nada declara vencimento."
+   ],
+   "doc": "Pacote de cClassTrib + fundamentacao que a tela consome, com o fallback offline decidido num unico lugar. A escolha \"sirvo o cache ou mostro indisponivel\" morava dentro do queryFn do hook, onde nao dava para testar falha parcial do banco. Aqui ela e funcao de dependencias injetadas: sem rede com cac …",
+   "temporal": [
+    "const MS_POR_DIA = 24 * 60 * 60 * 1000;"
    ]
   },
   "src/lib/tributario/catalogos/coerencia-iss.ts": {
@@ -223838,7 +224254,7 @@
   },
   "src/lib/tributario/catalogos/fundamentacao-legal.ts": {
    "path": "src/lib/tributario/catalogos/fundamentacao-legal.ts",
-   "lines": 199,
+   "lines": 223,
    "exports": [
     "interface FundamentoLegal",
     "interface FundamentoLegalResumo",
@@ -224279,6 +224695,52 @@
     "* Fim de vigência; `null` = vigente por prazo indeterminado. */"
    ],
    "doc": "CATÁLOGOS FISCAIS — Tipos da camada de acesso ao banco Fonte de verdade versionada: tabelas públicas de catálogo."
+  },
+  "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts": {
+   "path": "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+   "lines": 145,
+   "is_test": true,
+   "tests": [
+    "consulta por NCM — classificação tributária (etapa 84)",
+    "lista os CST do catálogo em ordem, sem repetir nem aceitar vazio",
+    "filtra pelo CST escolhido mantendo o restante do catálogo",
+    "busca por trecho sem acento e sem caixa na descrição",
+    "combina CST e busca sem devolver linha de outro CST",
+    "anexa redução e norma do par cClassTrib/CST",
+    "cai para outra linha do mesmo cClassTrib quando o CST não bate",
+    "sem catálogo de fundamentação a linha sai sem norma, não sem redução",
+    "horizonte de vigência devolve o menor fim declarado e ignora valor inválido"
+   ]
+  },
+  "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts": {
+   "path": "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+   "lines": 205,
+   "is_test": true,
+   "params": [
+    {
+     "name": "DIA",
+     "value": "24"
+    }
+   ],
+   "temporal": [
+    "const DIA = 24 * 60 * 60 * 1000;"
+   ],
+   "tests": [
+    "pacote offline de classificacao tributaria (etapa 84)",
+    "sem rede mas com cache: serve o pacote guardado e marca offline",
+    "sem rede e sem cache: catalogo vazio, nada de cache e nada gravado",
+    "falha na fundamentacao nao regrava o cache e mantem o texto guardado",
+    "falha na fundamentacao sem cache: mostra o catalogo e nao grava",
+    "leitura ok grava com o menor teto entre catalogo e norma",
+    "norma sem fim de vigencia usa o teto do catalogo",
+    "fundamentacao vazia mas sem falha tambem e gravada (tabela ainda nao sincronizada)",
+    "vencimento do pacote exibido",
+    "usa o TTL quando nao ha vigencia declarada",
+    "vence no fim do dia da vigencia, antes do TTL",
+    "vence no TTL quando a vigencia do dado e maior",
+    "sem TTL (dado veio da rede) so a vigencia conta",
+    "sem gravacao e sem vigencia nao ha o que agendar"
+   ]
   },
   "src/lib/tributario/darf/consolidar.ts": {
    "path": "src/lib/tributario/darf/consolidar.ts",
@@ -231645,7 +232107,7 @@
   },
   "src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx": {
    "path": "src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx",
-   "lines": 189,
+   "lines": 193,
    "exports": [
     "function ConsultaNcmTab"
    ]
@@ -231665,40 +232127,6 @@
     "function MatchBadge"
    ]
   },
-  "src/pages/tributario/consulta-rapida/OfflineBadge.tsx": {
-   "path": "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
-   "lines": 39,
-   "exports": [
-    "interface OfflineBadgeProps",
-    "function OfflineBadge"
-   ]
-  },
-  "src/pages/tributario/consulta-rapida/format.ts": {
-   "path": "src/pages/tributario/consulta-rapida/format.ts",
-   "lines": 7,
-   "exports": [
-    "function pct"
-   ],
-   "doc": "Formata número como percentual. Aceita fração (0.18) ou pontos (18)."
-  },
-  "src/pages/tributario/consulta-rapida/offlineMeta.ts": {
-   "path": "src/pages/tributario/consulta-rapida/offlineMeta.ts",
-   "lines": 27,
-   "exports": [
-    "interface OfflineMeta",
-    "function extrairOffline",
-    "function formatarGravadoEm"
-   ],
-   "doc": "Metadado gravado pelo hook quando a resposta veio do IndexedDB."
-  },
-  "src/pages/tributario/consulta-rapida/shared.tsx": {
-   "path": "src/pages/tributario/consulta-rapida/shared.tsx",
-   "lines": 56,
-   "exports": [
-    "interface ResultBlockProps",
-    "function ResultBlock"
-   ]
-  },
   "src/pages/tributario/consulta-rapida/ufs.ts": {
    "path": "src/pages/tributario/consulta-rapida/ufs.ts",
    "lines": 33,
@@ -231713,34 +232141,6 @@
     }
    ],
    "doc": "Unidades federativas usadas nas consultas rápidas (módulo próprio: shared.tsx só exporta componentes)."
-  },
-  "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts": {
-   "path": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
-   "lines": 36,
-   "is_test": true,
-   "tests": [
-    "extrairOffline",
-    "devolve null para payloads sem metadado",
-    "rejeita metadado malformado",
-    "extrai metadado válido",
-    "formatarGravadoEm",
-    "formata timestamp válido",
-    "tolera timestamp inválido"
-   ]
-  },
-  "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts": {
-   "path": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
-   "lines": 33,
-   "is_test": true,
-   "tests": [
-    "pct",
-    "trata nulos e NaN como travessão",
-    "converte frações em percentual",
-    "mantém valores já expressos em pontos percentuais",
-    "zero é exibido explicitamente (não confundir com ausência)",
-    "UFS",
-    "cobre as 27 unidades federativas sem duplicidade"
-   ]
   },
   "src/pages/tributario/oportunidades-elisao/AcoesTab.tsx": {
    "path": "src/pages/tributario/oportunidades-elisao/AcoesTab.tsx",
@@ -251621,10 +252021,40 @@
   }
  },
  "git": {
-  "sha": "377e5cf5d80a06aae0922122d279ce98dc12e3b7",
+  "sha": "aeb9a5f724cf99678047f0f92100878acfc80bc9",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "aeb9a5f",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)",
+    "files": [
+     "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+     "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx",
+     "src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+     "src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx",
+     "src/components/tributario/consulta-rapida/__tests__/shared.test.ts",
+     "src/components/tributario/consulta-rapida/format.ts",
+     "src/components/tributario/consulta-rapida/offlineMeta.ts",
+     "src/components/tributario/consulta-rapida/shared.tsx",
+     "src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx",
+     "src/hooks/__tests__/useClassificacaoTributaria.remontagem.test.tsx",
+     "src/hooks/useCatalogoCclasstrib.ts",
+     "src/lib/offline/__tests__/fiscal-cache.test.ts",
+     "src/lib/offline/fiscal-cache.ts",
+     "src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts",
+     "src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts",
+     "src/lib/tributario/catalogos/cclasstrib-reducao.ts",
+     "src/lib/tributario/catalogos/cclasstrib.ts",
+     "src/lib/tributario/catalogos/classificacao-offline.ts",
+     "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+     "src/pages/tributario/consulta-rapida/ConsultaCnaeTab.tsx",
+     "src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx",
+     "src/pages/tributario/consulta-rapida/ConsultaUFTab.tsx"
+    ]
+   },
    {
     "sha": "377e5cf",
     "date": "2026-11-26",
@@ -252093,15 +252523,6 @@
     "files": [
      "docs/PLANO_FRONTEND_190_ETAPAS_2026-11-22.md"
     ]
-   },
-   {
-    "sha": "60ece16",
-    "date": "2026-11-22",
-    "author": "adm01-debug",
-    "subject": "fix(docs): restaura checklists de conclusao do plano RT/RFB (#526)",
-    "files": [
-     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
-    ]
    }
   ],
   "hot_files": [
@@ -252114,15 +252535,15 @@
     8
    ],
    [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    5
-   ],
-   [
     "src/lib/tributario/catalogos/cclasstrib.ts",
-    5
+    6
    ],
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+    4
+   ],
+   [
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     4
    ],
    [
@@ -252162,6 +252583,14 @@
     3
    ],
    [
+    "src/hooks/useCatalogoCclasstrib.ts",
+    2
+   ],
+   [
+    "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+    2
+   ],
+   [
     "supabase/functions/sync-aliquota-referencia/index.ts",
     2
    ],
@@ -252175,14 +252604,6 @@
    ],
    [
     "supabase/functions/sync-fundamentacao-legal/index.ts",
-    2
-   ],
-   [
-    "scripts/integrity/baseline/expected-crons.json",
-    2
-   ],
-   [
-    "SECURITY_RULES.md",
     2
    ]
   ]

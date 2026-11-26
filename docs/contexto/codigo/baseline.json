@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "377e5cf5d80a06aae0922122d279ce98dc12e3b7",
+  "commit": "aeb9a5f724cf99678047f0f92100878acfc80bc9",
   "branch": "main",
-  "data_commit": "2026-11-26T00:06:30-03:00",
+  "data_commit": "2026-11-26T00:49:17-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "aeb9a5f",
+    "data": "2026-11-26",
+    "assunto": "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)"
+   },
    {
     "sha": "377e5cf",
     "data": "2026-11-26",
@@ -126,74 +131,69 @@
     "sha": "5e77362",
     "data": "2026-11-24",
     "assunto": "chore: adiciona auditoria de QA com inventario, achados e plano (parcial) (#533)"
-   },
-   {
-    "sha": "d3af1cc",
-    "data": "2026-11-24",
-    "assunto": "chore(graphify): sobe a versão fixada de 0.9.97 para 0.9.115 (#545)"
    }
   ],
-  "arquivos_mudados_7d": 295,
+  "arquivos_mudados_7d": 314,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
-    "mudancas": 436
-   },
-   {
-    "pasta": "src/components/contabilidade",
-    "mudancas": 221
+    "mudancas": 634
    },
    {
     "pasta": "src/components/ui",
-    "mudancas": 219
+    "mudancas": 326
+   },
+   {
+    "pasta": "src/components/contabilidade",
+    "mudancas": 312
    },
    {
     "pasta": "src/components/admin",
-    "mudancas": 215
+    "mudancas": 311
    },
    {
     "pasta": "src/pages/tributario",
-    "mudancas": 177
+    "mudancas": 247
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 170
+    "mudancas": 237
    },
    {
     "pasta": "src/components/reforma-tributaria",
-    "mudancas": 161
+    "mudancas": 214
    },
    {
     "pasta": "src/lib/__tests__",
-    "mudancas": 124
-   },
-   {
-    "pasta": "src/hooks/__tests__",
-    "mudancas": 110
+    "mudancas": 174
    },
    {
     "pasta": "src/components/tributario",
-    "mudancas": 108
+    "mudancas": 165
+   },
+   {
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 149
    },
    {
     "pasta": "src/components/contas-receber",
-    "mudancas": 93
+    "mudancas": 125
    },
    {
     "pasta": "src/components/nfe",
-    "mudancas": 80
+    "mudancas": 104
    },
    {
     "pasta": "docs/archive/sql",
-    "mudancas": 68
+    "mudancas": 102
    },
    {
     "pasta": "src/components/conciliacao",
-    "mudancas": 67
+    "mudancas": 92
    },
    {
     "pasta": "src/components/layout",
-    "mudancas": 61
+    "mudancas": 90
    }
   ],
   "arquivos_mais_mudados_90d": [
@@ -207,26 +207,38 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 11
+    "mudancas": 12
    },
    {
     "arquivo": "scripts/integrity/baseline/schema-counts.json",
-    "mudancas": 10
+    "mudancas": 11
    },
    {
     "arquivo": "src/integrations/supabase/types.ts",
-    "mudancas": 10
+    "mudancas": 11
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 9
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "mudancas": 10
    },
    {
     "arquivo": "scripts/automation.config.json",
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "arquivo": "scripts/integrity/baseline/expected-policies.json",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/config.toml",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
     "mudancas": 9
    },
    {
@@ -238,15 +250,15 @@
     "mudancas": 8
    },
    {
-    "arquivo": "scripts/integrity/baseline/expected-policies.json",
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
     "mudancas": 8
    },
    {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
     "mudancas": 8
    },
    {
@@ -262,46 +274,34 @@
     "mudancas": 7
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "docs/prod-readiness.md",
-    "mudancas": 6
-   },
-   {
     "arquivo": "scripts/ci/deno-check-functions.sh",
-    "mudancas": 6
+    "mudancas": 7
    },
    {
     "arquivo": "scripts/security/test-migration-replay-safety.sh",
-    "mudancas": 6
+    "mudancas": 7
    },
    {
     "arquivo": "src/components/dashboard/DashboardExecutivo.tsx",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 6
+    "mudancas": 7
    },
    {
     "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "mudancas": 6
+    "mudancas": 7
+   },
+   {
+    "arquivo": "src/lib/arquitetura/grafo-observado.json",
+    "mudancas": 7
+   },
+   {
+    "arquivo": "src/lib/reforma-tributaria/regras.ts",
+    "mudancas": 7
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 283
+    "commits": 282
    },
    {
     "autor": "dependabot[bot]",
@@ -314,21 +314,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4086,
-  "arquivos_codigo": 2546,
-  "linhas_codigo": 457319,
+  "arquivos_total": 4094,
+  "arquivos_codigo": 2554,
+  "linhas_codigo": 458636,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 119,
   "modulos": 129,
-  "componentes": 993,
+  "componentes": 994,
   "hooks": 276,
   "edge_functions": 112,
   "tabelas": 318,
   "migrations": 1084,
   "cron_jobs": 28,
-  "testes": 518,
+  "testes": 523,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 231
@@ -643,8 +643,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1006,
-   "linhas": 165803
+   "arquivos": 1014,
+   "linhas": 166308
   },
   "src/config": {
    "arquivos": 2,
@@ -655,8 +655,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 328,
-   "linhas": 49038
+   "arquivos": 330,
+   "linhas": 49344
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -667,16 +667,16 @@
    "linhas": 20222
   },
   "src/lib": {
-   "arquivos": 436,
-   "linhas": 59161
+   "arquivos": 440,
+   "linhas": 59855
   },
   "src/main.tsx": {
    "arquivos": 1,
    "linhas": 76
   },
   "src/pages": {
-   "arquivos": 273,
-   "linhas": 46906
+   "arquivos": 267,
+   "linhas": 46718
   },
   "src/routes": {
    "arquivos": 16,

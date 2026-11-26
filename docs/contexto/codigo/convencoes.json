@@ -6,8 +6,8 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (779)",
-   "src/pages (210)",
+   "src/components (782)",
+   "src/pages (208)",
    "src/hooks (2)"
   ],
   "hooks": [
@@ -16,12 +16,12 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (271)",
+   "src/lib (273)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (314)",
+   "co-localizado (__tests__) (319)",
    "outro (113)",
    "co-localizado (*.test) (49)"
   ],
@@ -41,13 +41,13 @@
  "nomenclatura": {
   "componentes": "PascalCase (90%)",
   "hooks": "use + PascalCase",
-  "servicos": "camelCase (51%)",
+  "servicos": "camelCase (50%)",
   "edge_functions": "kebab-case (99%)",
   "tabelas": "snake_case (79%)"
  },
  "barrels_index": 34,
  "extensao_componentes": [
-  ".tsx (993)"
+  ".tsx (994)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)",
    "feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)",
    "fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)",
    "feat: fundamentacao legal por item da nota (etapa 82) (#563)",
-   "feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)",
-   "fix: remove import wildcard de lucide-react no chunk de Categorias (#559)"
+   "feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

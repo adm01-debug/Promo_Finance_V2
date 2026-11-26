@@ -4219,6 +4219,7 @@
     "useBlingNFe",
     "useCatalogoCclasstrib",
     "useCentrosCusto",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useContasBancarias",
@@ -4764,6 +4765,7 @@
     "useCelebrations",
     "useCentrosCusto",
     "useCentrosCustoSelect",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useCobrancaKPIs",
@@ -5829,19 +5831,21 @@
   },
   {
    "modulo": "components/tributario",
-   "arquivos": 50,
-   "testes": 2,
-   "linhas": 6824,
+   "arquivos": 55,
+   "testes": 5,
+   "linhas": 7106,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
-   "componentes": 44,
+   "componentes": 47,
    "hooks_locais": [
     "useAlertasTributarios",
     "useAuth",
     "useBenchmarkSetorial",
+    "useCatalogoCclasstrib",
     "useCatalogosFiscais",
     "useCertificadosDigitais",
+    "useClassificacaoTributaria",
     "useCnaes",
     "useConformidadeFiscal",
     "useConformidadeSnapshots",
@@ -6528,7 +6532,7 @@
    "modulo": "hooks",
    "arquivos": 230,
    "testes": 9,
-   "linhas": 36126,
+   "linhas": 36268,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -6626,6 +6630,7 @@
     "useCentrosCusto",
     "useCentrosCustoSelect",
     "useCertificadosDigitais",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useCnaes",
@@ -7049,6 +7054,7 @@
     "useCancelamentoNFe",
     "useCashbackSimulador",
     "useCatalogoCclasstrib",
+    "useClassificacaoTributaria",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
     "useCategoria",
@@ -8081,7 +8087,7 @@
   {
    "modulo": "hooks/__tests__",
    "arquivos": 0,
-   "testes": 54,
+   "testes": 56,
    "linhas": 0,
    "itens_menu": [],
    "telas": [],
@@ -9149,7 +9155,7 @@
    "modulo": "lib/offline",
    "arquivos": 1,
    "testes": 1,
-   "linhas": 99,
+   "linhas": 139,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9170,7 +9176,8 @@
     "rpcs": []
    },
    "importado_por_outros_modulos": [
-    "hooks"
+    "hooks",
+    "lib/tributario"
    ],
    "depende_de_modulos": [],
    "pacotes_externos": []
@@ -9523,9 +9530,9 @@
   },
   {
    "modulo": "lib/tributario",
-   "arquivos": 122,
-   "testes": 84,
-   "linhas": 18153,
+   "arquivos": 124,
+   "testes": 86,
+   "linhas": 18421,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9600,9 +9607,11 @@
    ],
    "depende_de_modulos": [
     "integrations/supabase",
+    "lib/offline",
     "lib/reforma-tributaria"
    ],
    "pacotes_externos": [
+    "date-fns",
     "jspdf",
     "jspdf-autotable"
    ]
@@ -9828,6 +9837,7 @@
     "useCelebrations",
     "useCentrosCusto",
     "useCentrosCustoSelect",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useCnaes",
@@ -11783,9 +11793,9 @@
   },
   {
    "modulo": "pages/tributario",
-   "arquivos": 89,
-   "testes": 3,
-   "linhas": 12688,
+   "arquivos": 85,
+   "testes": 1,
+   "linhas": 12567,
    "itens_menu": [
     "Arquitetura Modular",
     "Cashback Simulador",
@@ -11865,7 +11875,7 @@
     "/tributario/split-payment"
    ],
    "rotas_http": [],
-   "componentes": 73,
+   "componentes": 71,
    "hooks_locais": [
     "useAlertas",
     "useAlertasNaoLidos",
@@ -11881,9 +11891,11 @@
     "useBenchmarkSetorial",
     "useCalculadoraDadosReais",
     "useCashbackSimulador",
+    "useCatalogoCclasstrib",
     "useCatalogoIssMunicipal",
     "useCatalogosFiscais",
     "useCertificadosDigitais",
+    "useClassificacaoTributaria",
     "useCnaes",
     "useCnpjaLookup",
     "useComparativoConformidade",
@@ -12240,6 +12252,7 @@
     "useCentrosCusto",
     "useCentrosCustoSelect",
     "useCertificadosDigitais",
+    "useClassificacaoTributaria",
     "useClientes",
     "useClientesPaginated",
     "useCnaes",

@@ -5846,6 +5846,27 @@
    "src/components/ui/tooltip.tsx",
    "src/lib/tributario/calculadora/index.ts"
   ],
+  "src/components/tributario/consulta-rapida/OfflineBadge.tsx": [
+   "src/components/tributario/consulta-rapida/offlineMeta.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/tooltip.tsx"
+  ],
+  "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx": [
+   "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+   "src/components/tributario/consulta-rapida/format.ts",
+   "src/components/tributario/consulta-rapida/shared.tsx",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/table.tsx",
+   "src/hooks/useCatalogoCclasstrib.ts",
+   "src/lib/tributario/catalogos/cclasstrib-reducao.ts"
+  ],
+  "src/components/tributario/consulta-rapida/shared.tsx": [
+   "src/components/ui/card.tsx",
+   "src/components/ui/skeleton.tsx"
+  ],
   "src/components/tributario/dashboard/AlertasAtivosResumo.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
@@ -6794,7 +6815,11 @@
    "src/types/reforma-tributaria.ts"
   ],
   "src/hooks/useCatalogoCclasstrib.ts": [
-   "src/lib/tributario/catalogos/cclasstrib.ts"
+   "src/lib/offline/fiscal-cache.ts",
+   "src/lib/tributario/catalogos/cclasstrib.ts",
+   "src/lib/tributario/catalogos/classificacao-offline.ts",
+   "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+   "src/lib/tributario/catalogos/repositorio.ts"
   ],
   "src/hooks/useCatalogoIssMunicipal.ts": [
    "src/lib/tributario/catalogos/repositorio.ts",
@@ -7924,8 +7949,18 @@
    "src/lib/tributario/catalogos/painel.ts",
    "src/lib/tributario/catalogos/types.ts"
   ],
+  "src/lib/tributario/catalogos/cclasstrib-reducao.ts": [
+   "src/lib/tributario/catalogos/cclasstrib.ts",
+   "src/lib/tributario/catalogos/fundamentacao-legal.ts"
+  ],
   "src/lib/tributario/catalogos/cclasstrib.ts": [
    "src/integrations/supabase/client.ts",
+   "src/lib/tributario/catalogos/fundamentacao-legal.ts",
+   "src/lib/tributario/catalogos/repositorio.ts"
+  ],
+  "src/lib/tributario/catalogos/classificacao-offline.ts": [
+   "src/lib/offline/fiscal-cache.ts",
+   "src/lib/tributario/catalogos/cclasstrib.ts",
    "src/lib/tributario/catalogos/fundamentacao-legal.ts",
    "src/lib/tributario/catalogos/repositorio.ts"
   ],
@@ -10668,16 +10703,20 @@
    "src/pages/tributario/IcmsStDifal.helpers.ts"
   ],
   "src/pages/tributario/consulta-rapida/ConsultaCnaeTab.tsx": [
+   "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+   "src/components/tributario/consulta-rapida/format.ts",
+   "src/components/tributario/consulta-rapida/shared.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/hooks/useConsultaTributaria.ts",
-   "src/pages/tributario/consulta-rapida/MatchBadge.tsx",
-   "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
-   "src/pages/tributario/consulta-rapida/format.ts",
-   "src/pages/tributario/consulta-rapida/shared.tsx"
+   "src/pages/tributario/consulta-rapida/MatchBadge.tsx"
   ],
   "src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx": [
+   "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+   "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx",
+   "src/components/tributario/consulta-rapida/format.ts",
+   "src/components/tributario/consulta-rapida/shared.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
@@ -10686,36 +10725,24 @@
    "src/components/ui/table.tsx",
    "src/hooks/useConsultaTributaria.ts",
    "src/pages/tributario/consulta-rapida/MatchBadge.tsx",
-   "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
-   "src/pages/tributario/consulta-rapida/format.ts",
-   "src/pages/tributario/consulta-rapida/shared.tsx",
    "src/pages/tributario/consulta-rapida/ufs.ts"
   ],
   "src/pages/tributario/consulta-rapida/ConsultaUFTab.tsx": [
+   "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+   "src/components/tributario/consulta-rapida/format.ts",
+   "src/components/tributario/consulta-rapida/shared.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
    "src/hooks/useConsultaTributaria.ts",
    "src/pages/tributario/consulta-rapida/MatchBadge.tsx",
-   "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
-   "src/pages/tributario/consulta-rapida/format.ts",
-   "src/pages/tributario/consulta-rapida/shared.tsx",
    "src/pages/tributario/consulta-rapida/ufs.ts"
   ],
   "src/pages/tributario/consulta-rapida/MatchBadge.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/tooltip.tsx",
    "src/hooks/useConsultaTributaria.ts"
-  ],
-  "src/pages/tributario/consulta-rapida/OfflineBadge.tsx": [
-   "src/components/ui/badge.tsx",
-   "src/components/ui/tooltip.tsx",
-   "src/pages/tributario/consulta-rapida/offlineMeta.ts"
-  ],
-  "src/pages/tributario/consulta-rapida/shared.tsx": [
-   "src/components/ui/card.tsx",
-   "src/components/ui/skeleton.tsx"
   ],
   "src/pages/tributario/obrigacoes-helpers.ts": [
    "src/lib/tributario/obrigacoes/index.ts"

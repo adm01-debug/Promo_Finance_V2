@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `377e5cf5d8` · branch `main` · 2026-11-26 03:09 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `aeb9a5f724` · branch `main` · 2026-11-26 03:50 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -2764,6 +2764,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   if (!resposta || typeof resposta !== 'object') { throw new Error('ASAAS não retornou confirmação da emissão.'); } const dados = resposta as Record<string, unknown>; const id = dados.id; const linhaDigitavel = dados.identificationField; const codigoBarras = dados.barCode; if (typeof id !== 'string' || id.trim() === '') { const mensagem = typeof dados.error === 'string' && dados.error.trim() ? dados.error : 'ASAAS não retornou identificador'; throw new Error(mensagem); } if ( typeof linhaDigitavel …
   ```
+- **invalidar()** — `src/hooks/useCatalogoCclasstrib.ts`
+  ```
+  ultimoVencimentoInvalidado.current = assinatura; void queryClient.invalidateQueries({ queryKey: [CHAVE_CLASSIFICACAO_TRIBUTARIA] });
+  ```
 - **calcularLucroReal(params: ParametrosSimulacao)** — `src/hooks/useComparativoRegimes.ts`
   ```
   const aliquotas = ALIQUOTAS_TRANSICAO.find((a) => a.ano === params.ano) || ALIQUOTAS_TRANSICAO[0]; // Base de cálculo do IRPJ/CSLL = Lucro Contábil const lucroContabil = params.faturamentoAnual - params.despesasOperacionais - params.folhaPagamento; const baseCalculoIR = Math.max(0, lucroContabil); // IRPJ: 15% + adicional 10% sobre excedente de R$ 240.000/ano const irpjNormal = baseCalculoIR * 0.15; const irpjAdicional = Math.max(0, baseCalculoIR - 240000) * 0.1; const irpj = irpjNormal + irpjAd …
@@ -4181,6 +4185,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TOAST_DURACAO_MAX` | `30` | `src/hooks/useAnomaliaPreferences.ts` |
 | `TOAST_DURACAO_DEFAULT` | `12` | `src/hooks/useAnomaliaPreferences.ts` |
 | `PAGINA` | `1000` | `src/hooks/useApuracoesTributarias.ts` |
+| `TTL_CATALOGO_MS` | `30` | `src/hooks/useCatalogoCclasstrib.ts` |
+| `MAX_AGENDAMENTO_MS` | `2` | `src/hooks/useCatalogoCclasstrib.ts` |
 | `MOVIMENTACOES_PAGE_SIZE` | `1000` | `src/hooks/useFinancialOperations.ts` |
 | `MOVIMENTACOES_SAFETY_CAP` | `5000` | `src/hooks/useFinancialOperations.ts` |
 | `LIMITE_ADICIONAL_MES` | `20000` | `src/hooks/useIRPJCSLL.ts` |
@@ -4271,6 +4277,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `SUBLIMITE_PADRAO` | `3` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `FATOR_R_CORTE` | `0.28` | `src/lib/tributario/calculadora/simples-nacional.ts` |
 | `LOTE_CODIGOS` | `300` | `src/lib/tributario/catalogos/cclasstrib.ts` |
+| `MS_POR_DIA` | `24` | `src/lib/tributario/catalogos/classificacao-offline.ts` |
 | `ISS_PISO_LEGAL` | `0.02` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
 | `ISS_TETO_LEGAL` | `0.05` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
 | `EPSILON` | `1` | `src/lib/tributario/catalogos/coerencia-iss.ts` |
@@ -4446,10 +4453,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `PAGINA` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
 | `MAX_PAGINAS` | `100` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
 | `LOTE_ENCERRAMENTO` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/index.ts` |
-| `MIN_NCM_API` | `1000` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
-| `MIN_NBS_API` | `200` | `supabase/functions/sync-catalogo-ncm-nbs/montar.ts` |
-| `TABELA` | `'catalogo_fundamentacao'` | `supabase/functions/sync-fundamentacao-legal/index.ts` |
-| … +13 linhas — lista completa em `context.json` | | |
+| … +16 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -4543,7 +4547,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `staleTime: 30 * 60 * 1000,` | `src/hooks/useBenchmarkSetorial.ts` |
 | `const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);` | `src/hooks/useBlingNFe.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useCalculadoraDadosReais.ts` |
-| `staleTime: 30 * 60 * 1000,` | `src/hooks/useCatalogoCclasstrib.ts` |
+| `const TTL_CATALOGO_MS = 30 * 60 * 1000;` | `src/hooks/useCatalogoCclasstrib.ts` |
 | `staleTime: 10 * 60 * 1000,` | `src/hooks/useCatalogoIssMunicipal.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useCatalogosFiscais.ts` |
 | `gcTime: 60 * 60 * 1000,` | `src/hooks/useCnaes.ts` |
@@ -4611,6 +4615,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `(Date.now() - new Date(dados.dataEmissao).getTime()) / (1000 * 60 * 60 * 24)` | `src/lib/sefaz-simulator/validacao.ts` |
 | `descricao: `Data próxima ao vencimento (${Math.floor(Math.abs(transacao.data.getTime() - lancamento.dataVencimento.getTime()) / (1000 * 60 * 60 * 24))} dias)`,` | `src/lib/transaction-matcher/matcher.ts` |
 | `const diffDias = diffMs / (1000 * 60 * 60 * 24);` | `src/lib/transaction-matcher/similarity.ts` |
+| `const MS_POR_DIA = 24 * 60 * 60 * 1000;` | `src/lib/tributario/catalogos/classificacao-offline.ts` |
 | `const threshold = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();` | `src/pages/AdminTelemetria.tsx` |
 | `return { from: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), to };` | `src/pages/AdminTelemetria.tsx` |
 | `return { from: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(), to };` | `src/pages/AdminTelemetria.tsx` |
@@ -5211,7 +5216,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3959 testes em 350 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4001 testes em 355 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5305,6 +5310,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/imunidade-exportacao.test.ts` | 14 | Lucro Presumido — imunidade das exportações · zera PIS/COFINS quando toda a receita é exportada · mantém IRPJ e CSLL integralmente devidos sobre a receita exportada · reduz PIS/COFINS proporcionalmente à fatia exportada … |
 | `src/lib/tributario/__tests__/pf-vinculada.test.ts` | 14 | Tributação PF vinculada — Lei 15.270/2025 · isenta IRPF até R$ 5.000/mês · aplica redutor linear entre R$ 5.000 e R$ 7.350 · não aplica IRPFM para renda total de R$ 480k … |
 | `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 14 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS = REF_CBS_2027 − 0,1, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
+| `src/lib/tributario/catalogos/__tests__/classificacao-offline.test.ts` | 14 | pacote offline de classificacao tributaria (etapa 84) · sem rede mas com cache: serve o pacote guardado e marca offline · sem rede e sem cache: catalogo vazio, nada de cache e nada gravado · falha na fundamentacao nao regrava o cache e mantem o texto guardado … |
 | `supabase/functions/sso-test-login/pipeline.test.ts` | 14 | pipeline: JIT + role por grupo (usuário não existe) · pipeline: usuário JÁ existe → não provisiona · pipeline: auto_provision_users=false bloqueia JIT com motivo · pipeline: múltiplos grupos — primeiro match vence, demais  … |
 | `supabase/functions/sync-catalogo-cclasstrib/__tests__/montar_test.ts` | 14 | normalizarData — aceita ISO valida e cai para hoje em Brasilia no resto · fracaoReducao — pontos percentuais viram fracao 0-1 · mapearCst — junta CST pelas situacoes e descarta codigo em duas situacoes · mapearCst — terceira ocorrencia nao ressuscita codigo ambiguo … |
 | `supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts` | 14 | payload fora do contrato vira lista vazia · linha valida vai para a tabela com vigencia e versao da base · codigo fora do formato e descartado, nao gravado · pontuacao no codigo e normalizada antes da checagem de tamanho … |
@@ -5377,8 +5383,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/sharedFiltersExport.test.ts` | 9 | sharedFiltersExport > buildBundle · constrói bundle limpo, ignorando papéis inválidos · sharedFiltersExport > parseBundle · aceita bundle válido e higieniza papéis … |
 | `src/lib/__tests__/storage-path.test.ts` | 9 | caminhoNoStorage · extrai o caminho de uma URL pública · extrai o caminho de uma URL assinada, descartando o token · decodifica nomes com espaço e acento … |
 | `src/lib/__tests__/transaction-matcher-multi.test.ts` | 9 | encontrarTodosMatches - alocação gulosa · não reutiliza lançamento já matcheado com score alto · ordena transações por valor absoluto decrescente · mantém sugestão sem consumir lançamento quando score < 80 … |
+| `src/lib/offline/__tests__/fiscal-cache.test.ts` | 9 | fiscal-cache · gera chave determinística e independente da ordem das propriedades · degrada com segurança quando IndexedDB não está disponível (jsdom) · vigencia do dado (etapa 85) … |
 | `src/lib/tributario/__tests__/catalogos-coerencia.test.ts` | 9 | coerência entre catálogo do banco e constantes do motor · não acusa divergência quando o catálogo espelha o código · cobre as 30 faixas (5 anexos × 6 faixas) · detecta alíquota divergente … |
 | `src/lib/tributario/__tests__/simular-presumido.test.ts` | 9 | simularPresumido · retorna inelegível quando faturamento > R$ 78mi · aplica presunção 8% comércio para empresa puramente comercial · aplica presunção 32% serviços … |
+| `src/lib/tributario/catalogos/__tests__/cclasstrib-reducao.test.ts` | 9 | consulta por NCM — classificação tributária (etapa 84) · lista os CST do catálogo em ordem, sem repetir nem aceitar vazio · filtra pelo CST escolhido mantendo o restante do catálogo · busca por trecho sem acento e sem caixa na descrição … |
 | `src/test/scenarios/__tests__/invariants.spec.ts` | 9 | invariants · estado vazio passa em todos · detecta duplicidade de transacao_externa_id · detecta violação de conservação de saldo … |
 | `supabase/functions/_shared/nfe/__tests__/itens_test.ts` | 9 | extrairItens — le os campos obrigatorios de prod · extrairItens — percentual do XML vira fracao (11.30 -> 0.113) · extrairItens — valores absolutos e grupo IS do item · extrairItens — totais sao a soma dos itens, nao o IBSCBSTot … |
 | `supabase/functions/sefaz-manifestar/__tests__/payload_test.ts` | 9 | payload: envelope contém chave, CNPJ autor e tpEvento corretos · payload: 210240 injeta xJust e propaga justificativa ao RPC · payload: 210210 NÃO injeta xJust mesmo se fornecida · payload: ambiente produção → endpoint www1 e tpAmb=1 … |
@@ -5408,6 +5416,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/api-keys-manage/index.test.ts` | 8 | api-keys: preflight não exige autenticação · api-keys: método não permitido falha fechado · api-keys: usuário não autenticado não alcança o banco · api-keys: payload inválido não gera escrita … |
 | `src/components/layout/transitions/__tests__/presets.test.ts` | 7 | resolvePreset · retorna variants completas para %s · marca needsPerspective em flip-x/flip-y · aplica duração customizada (ms → s) … |
 | `src/components/reforma-tributaria/__tests__/ImportacaoXMLPanel.test.tsx` | 7 | ImportacaoXMLPanel — etapa 47 · mostra CST, cClassTrib, vIBS e vCBS do XML · classifica 2026 como informativo · classifica 2027 como apropriavel … |
+| `src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts` | 7 | extrairOffline · devolve null para payloads sem metadado · rejeita metadado malformado · extrai metadado válido … |
+| `src/components/tributario/consulta-rapida/__tests__/SecaoClassificacaoTributaria.test.tsx` | 7 | classificacao tributaria na consulta por NCM (etapa 84) · mostra cClassTrib, CST, reducao e a norma que fundamenta · com o pacote do cache mostra os dados e o selo Offline · sem catalogo sincronizado explica o vazio em vez de mostrar tabela … |
+| `src/components/tributario/consulta-rapida/__tests__/shared.test.ts` | 7 | pct · trata nulos e NaN como travessão · converte frações em percentual · mantém valores já expressos em pontos percentuais … |
 | `src/hooks/__tests__/tenant-mutations.test.tsx` | 7 | isolamento multiempresa em categorias · não consulta categorias sem empresa ativa · lista categorias somente da empresa ativa · vincula criação, atualização e exclusão à empresa ativa e ignora empresa forjada … |
 | `src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx` | 7 | importarNFes — créditos CBS/IBS · grava nota e créditos numa chamada só, e contabiliza depois de confirmado · manda natureza_operacao e created_by para a função decidir, não os descarta · usa a data local da emissão, não a conversão para UTC … |
 | `src/hooks/financial/__tests__/views.schemas.test.ts` | 7 | views.schemas — parseRows · aceita linhas válidas mínimas de contas a receber · aceita linhas válidas mínimas de contas a pagar · preserva colunas adicionais via passthrough … |
@@ -5427,8 +5438,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/versao.test.ts` | 7 | versionamento do motor tributário · expõe uma versão semântica válida · compara versões corretamente · é tolerante a entradas malformadas … |
 | `src/pages/auth/__tests__/CorporateOnboarding.test.tsx` | 7 | /auth/corporate — CorporateOnboarding · renderiza o formulário inicial sem providers nem chamadas SSO · domínio SEM match em allowed_domains: mostra fallback e navega para /auth com o e-mail · domínio COM match sem force_sso: lista providers e dispara invoke ao escolher manualmente … |
 | `src/pages/auth/__tests__/CorporateOnboardingUi.test.tsx` | 7 | /auth/corporate · CTAs aparecem nos momentos corretos · estado inicial: não exibe nenhum dos CTAs contextuais · domínio sem providers: exibe  · domínio com provider sem force: NÃO mostra cancelar/tentar novamente, só lista o provider … |
-| `src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts` | 7 | extrairOffline · devolve null para payloads sem metadado · rejeita metadado malformado · extrai metadado válido … |
-| `src/pages/tributario/consulta-rapida/__tests__/shared.test.ts` | 7 | pct · trata nulos e NaN como travessão · converte frações em percentual · mantém valores já expressos em pontos percentuais … |
 | `supabase/functions/reprocessar-creditos-ibscbs/__tests__/reprocessar_test.ts` | 7 | montarCreditos — nota 2026 destacada gera credito informativo (saldo 0) · montarCreditos — nota 2027+ destacada gera credito apropriavel (saldo cheio) · montarCreditos — sem grupo nao inventa credito · montarCreditos — grupo presente com valores zerados nao gera credito … |
 | `src/components/admin/__tests__/fiscal-health-ibscbs.test.tsx` | 6 | FiscalHealthBadge -- metrica IBS/CBS nao fabricada (etapa 57) · sem empresaId -> badge IBS/CBS nao aparece · com empresaId mas sem verificacao previa -> badge IBS/CBS nao aparece · 20 de 100 sem IBS/CBS -> exibe IBS/CBS 80% … |
 | `src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts` | 6 | buildDryRunPayload · passa no schema strict (sem lote_quantidade, evento_id uuid) · com ignoreRules envia ignore_rules e continua válido · categoria  … |
@@ -5490,6 +5499,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
 | `src/components/ui/__tests__/calendar.test.tsx` | 4 | Calendar (react-day-picker v10 mapping) · renderiza grid, cabecalho de semana e navegacao · aplica aria-selected e as classes de estado na celula do dia · mantem range middle/end com classes proprias |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
+| `src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx` | 4 | useCatalogoCclasstrib · reconsulta ao remontar quando a leitura anterior voltou vazia · nao reconsulta ao remontar quando a leitura esta fresca · releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx` | 4 | useImportacaoXMLNFe — itens no payload da RPC (etapa 45) · manda um item por det da nota, com o grupo IBS/CBS em fração decimal · não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint · preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100 |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
@@ -5510,12 +5520,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sefaz-dfe-puxar/__tests__/soap_test.ts` | 4 | buildDistDFeEnvelope inclui CNPJ, tpAmb e ultNSU 15 dígitos · parseDistDFeResponse extrai cStat/ultNSU/maxNSU e docs · classifyCStat mapeia códigos corretamente · parseDistDFeResponse lança em envelope malformado |
 | `supabase/functions/sso-test-login/index.test.ts` | 4 | JIT + group mapping: payload completo quando usuário não existe e grupo mapeia role · JIT + múltiplos grupos: apenas o primeiro match define a role; demais ficam  · JIT bloqueado: auto_provision_users=false retorna would_jit_provision=false com motivo · Domínio fora da allowlist: success=false e payload ainda preserva role mapping |
 | `src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx` | 3 | IntegrityAlertsPanel · consulta invariantes usando os parâmetros canônicos · resolve alerta com p_alert_id |
-| `src/components/cobranca/__tests__/CustomerDeepScore.test.tsx` | 3 | CustomerDeepScore · não inventa scores de bureaus nem data de consulta quando a integração não forneceu dados · apresenta somente scores externos informados por uma integração |
-| `src/components/cobranca/__tests__/MetricasPorCanal.test.tsx` | 3 | MetricasPorCanal · não projeta métricas financeiras quando não há registros reais por canal · apresenta apenas os números fornecidos por uma fonte de dados |
-| `src/components/common/StartupDiagnostic.test.tsx` | 3 | StartupDiagnostic · não bloqueia a rota pública quando a checagem falha · mantém a tela da aplicação disponível durante a verificação |
-| `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
-| `src/components/conciliacao/__tests__/importar-extrato-sem-open-finance-fabricado.test.tsx` | 3 | importar extrato não oferece Open Finance fabricado (#425) · o botão Conectar via Open Finance fica desabilitado com o motivo à mostra · o texto não promete sincronização em tempo real nem gateway inexistente |
-| … +50 linhas — lista completa em `context.json` | | |
+| … +55 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5951,6 +5956,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta | `src/hooks/useBoletos.ts` |
 | validação o boleto nasceria sem vínculo ASAAS silenciosamente. | `src/hooks/useBoletos.ts` |
 | * @default false — deve ser true apenas com resposta SEFAZ homologada real */ | `src/hooks/useCancelamentoNFe.ts` |
+| Leitura vazia significa "nao consegui carregar" e nao pode apagar um | `src/hooks/useCatalogoCclasstrib.ts` |
+| catalogo ou da norma). Quando o vencimento chega com a aba aberta, a consulta | `src/hooks/useCatalogoCclasstrib.ts` |
 | Somente valores já validados pelo overlay chegam aqui. | `src/hooks/useCatalogosFiscais.ts` |
 | ISS: somente registros dentro do piso/teto da LC 116 chegam ao motor. | `src/hooks/useCatalogosFiscais.ts` |
 | IPI: o catálogo `ncms` sobrepõe a TIPI embarcada após validação de | `src/hooks/useCatalogosFiscais.ts` |
@@ -6106,6 +6113,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Cores temáticas para confetti (hex required by canvas-confetti library) | `src/lib/toast-confetti.tsx` |
 | porque roda apenas em ambiente de teste/CI — nunca é importado pelo bundle | `src/lib/arquitetura/analisador-imports.ts` |
 | * Regra arquitetural: se o `queryFn` de uma query filtra por `empresa_id`, | `src/lib/arquitetura/escopo-empresa.ts` |
-| 1. O núcleo de domínio (camada 3) não pode importar framework/infra. | `src/lib/arquitetura/modulos.ts` |
-| 3. O grafo de dependências entre módulos deve ser acíclico. | `src/lib/arquitetura/modulos.ts` |
-| … +479 linhas — lista completa em `context.json` | |
+| … +486 linhas — lista completa em `context.json` | |

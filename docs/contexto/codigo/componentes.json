@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 993,
+ "total": 994,
  "orfaos": 38,
  "nomes_duplicados": {
   "Accordion": [
@@ -10362,6 +10362,52 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/tributario/consulta-rapida/OfflineBadge.tsx",
+   "exports": [
+    "OfflineBadge",
+    "OfflineBadgeProps"
+   ],
+   "export_default": null,
+   "linhas": 38,
+   "dominio": "components/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx",
+   "exports": [
+    "SecaoClassificacaoTributaria"
+   ],
+   "export_default": null,
+   "linhas": 157,
+   "dominio": "components/tributario",
+   "hooks_locais": [
+    "useClassificacaoTributaria"
+   ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/tributario/consulta-rapida/shared.tsx",
+   "exports": [
+    "ResultBlock",
+    "ResultBlockProps"
+   ],
+   "export_default": null,
+   "linhas": 55,
+   "dominio": "components/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 4,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/tributario/CsvImportDialog.tsx",
    "exports": [
     "CsvImportDialog"
@@ -11021,7 +11067,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 450,
+   "usado_por": 451,
    "orfao": false
   },
   {
@@ -11571,7 +11617,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 216,
+   "usado_por": 217,
    "orfao": false
   },
   {
@@ -11585,7 +11631,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 164,
+   "usado_por": 165,
    "orfao": false
   },
   {
@@ -11960,7 +12006,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 169,
+   "usado_por": 170,
    "orfao": false
   },
   {
@@ -12168,7 +12214,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 129,
+   "usado_por": 130,
    "orfao": false
   },
   {
@@ -14901,7 +14947,7 @@
     "ConsultaNcmTab"
    ],
    "export_default": null,
-   "linhas": 188,
+   "linhas": 192,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useConsultaNCM"
@@ -14935,36 +14981,6 @@
    ],
    "export_default": null,
    "linhas": 38,
-   "dominio": "pages/tributario",
-   "hooks_locais": [],
-   "tabelas": [],
-   "edges": [],
-   "usado_por": 3,
-   "orfao": false
-  },
-  {
-   "arquivo": "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
-   "exports": [
-    "OfflineBadge",
-    "OfflineBadgeProps"
-   ],
-   "export_default": null,
-   "linhas": 38,
-   "dominio": "pages/tributario",
-   "hooks_locais": [],
-   "tabelas": [],
-   "edges": [],
-   "usado_por": 3,
-   "orfao": false
-  },
-  {
-   "arquivo": "src/pages/tributario/consulta-rapida/shared.tsx",
-   "exports": [
-    "ResultBlock",
-    "ResultBlockProps"
-   ],
-   "export_default": null,
-   "linhas": 55,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],

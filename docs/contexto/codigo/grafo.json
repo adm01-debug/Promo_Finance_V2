@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2035,
- "arestas": 8581,
+ "nos": 2038,
+ "arestas": 8602,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -14,7 +14,7 @@
   },
   {
    "arquivo": "src/components/ui/badge.tsx",
-   "importado_por": 451
+   "importado_por": 452
   },
   {
    "arquivo": "src/integrations/supabase/client.ts",
@@ -30,15 +30,15 @@
   },
   {
    "arquivo": "src/components/ui/input.tsx",
-   "importado_por": 218
+   "importado_por": 219
   },
   {
    "arquivo": "src/components/ui/select.tsx",
-   "importado_por": 169
+   "importado_por": 170
   },
   {
    "arquivo": "src/components/ui/label.tsx",
-   "importado_por": 165
+   "importado_por": 166
   },
   {
    "arquivo": "src/components/ui/dialog.tsx",
@@ -46,7 +46,7 @@
   },
   {
    "arquivo": "src/components/ui/table.tsx",
-   "importado_por": 130
+   "importado_por": 131
   },
   {
    "arquivo": "src/components/ui/skeleton.tsx",
@@ -98,7 +98,7 @@
   },
   {
    "arquivo": "src/components/ui/tooltip.tsx",
-   "importado_por": 59
+   "importado_por": 60
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
@@ -372,14 +372,14 @@
    "importado_por": 1
   },
   {
+   "modulo": "lib/tributario",
+   "depende_de": 3,
+   "importado_por": 8
+  },
+  {
    "modulo": "components/auth",
    "depende_de": 7,
    "importado_por": 3
-  },
-  {
-   "modulo": "lib/tributario",
-   "depende_de": 2,
-   "importado_por": 8
   },
   {
    "modulo": "components/dashboard",

@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 292,
+ "total": 294,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 271,
+  "lib": 273,
   "python": 15
  },
  "arquivos": [
@@ -2867,14 +2867,16 @@
    "camada": "lib",
    "exports": [
     "EntradaCache",
+    "OpcoesCache",
     "TTL_PADRAO_MS",
     "chaveConsulta",
+    "entradaExpirada",
     "lerConsulta",
     "limparCacheFiscal",
     "salvarConsulta"
    ],
    "export_default": null,
-   "linhas": 99,
+   "linhas": 139,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -2883,11 +2885,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 3,
    "usado_por_modulos": [
-    "hooks"
+    "hooks",
+    "lib/tributario"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -5392,6 +5395,32 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/tributario/catalogos/cclasstrib-reducao.ts",
+   "camada": "lib",
+   "exports": [
+    "FiltroCclasstrib",
+    "LinhaCclasstribReducao",
+    "cstsDoCatalogo",
+    "montarLinhasCclasstrib"
+   ],
+   "export_default": null,
+   "linhas": 82,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/tributario/catalogos/cclasstrib.ts",
    "camada": "lib",
    "exports": [
@@ -5399,10 +5428,12 @@
     "NcmCatalogo",
     "ReferenciasFiscais",
     "buscarReferenciasFiscais",
-    "listarCclasstribVigentes"
+    "horizonteVigencia",
+    "listarCclasstribVigentes",
+    "menorVigencia"
    ],
    "export_default": null,
-   "linhas": 261,
+   "linhas": 299,
    "tabelas": [
     "catalogo_cclasstrib",
     "catalogo_ncm"
@@ -5414,12 +5445,41 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 5,
    "usado_por_modulos": [
     "hooks",
     "lib/tributario"
    ],
-   "coberto_por_testes": 2,
+   "coberto_por_testes": 5,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/classificacao-offline.ts",
+   "camada": "lib",
+   "exports": [
+    "DadosClassificacaoTributaria",
+    "DepsClassificacaoTributaria",
+    "PacoteClassificacaoTributaria",
+    "carregarClassificacaoTributaria",
+    "proximoVencimentoMs"
+   ],
+   "export_default": null,
+   "linhas": 124,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -5570,7 +5630,7 @@
     "resumoFundamento"
    ],
    "export_default": null,
-   "linhas": 198,
+   "linhas": 222,
    "tabelas": [
     "catalogo_fundamentacao"
    ],
@@ -5581,11 +5641,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 6,
    "usado_por_modulos": [
+    "hooks",
     "lib/tributario"
    ],
-   "coberto_por_testes": 2,
+   "coberto_por_testes": 5,
    "orfao": false
   },
   {
@@ -5693,7 +5754,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 7,
    "usado_por_modulos": [
     "hooks",
     "lib/tributario"
