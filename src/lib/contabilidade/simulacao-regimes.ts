@@ -14,6 +14,8 @@ export interface FontesContabeis {
   comprasServicos12m: number;
   /** Folha + encargos do período — alimenta o Fator R do Simples Nacional. */
   folha12m: number;
+  /** Salários + pró-labore do período — base da CPP patronal recolhida fora do DAS no Anexo IV. */
+  remuneracao12m: number;
   notasConsideradas: number;
   titulosConsiderados: number;
   fonteFaturamento: 'notas_fiscais' | 'contas_receber' | 'sem_dados';
@@ -121,14 +123,25 @@ const RAT_PADRAO = 0.02;
 const ALIQ_ICMS_FORA_DAS = 0.18;
 const ALIQ_ISS_FORA_DAS = 0.05;
 
+/**
+ * Parcela de ICMS/ISS que a 6ª faixa do Simples ainda reserva ao DAS: 0% nos Anexos
+ * I, II, III e V e 42,10% de ISS no Anexo IV (LC 123/2006, Anexos I a V). Nas faixas
+ * anteriores essa parcela existe e é deduzida pelo motor.
+ */
+const PARCELA_ESTADUAL_MUNICIPAL_6A_FAIXA: Record<AnexoSimples, number> = {
+  I: 0,
+  II: 0,
+  III: 0,
+  IV: 0.421,
+  V: 0,
+};
+
 /** Alíquota efetiva do anexo para a RBT12 informada: [(RBT12 × nominal) − PD] / RBT12. */
 function aliquotaEfetiva(anexo: AnexoSimples, rbt12: number): number {
   const faixas = ANEXOS[anexo];
   const faixa = faixas.find((f) => rbt12 <= f.ate) ?? faixas[faixas.length - 1];
   return rbt12 > 0 ? Math.max(0, (rbt12 * faixa.aliq - faixa.pd) / rbt12) : faixa.aliq;
 }
-
-const ANEXOS_SERVICO: AnexoSimples[] = ['III', 'IV', 'V'];
 
 /**
  * Carga atual pelo Simples Nacional.
@@ -139,8 +152,9 @@ const ANEXOS_SERVICO: AnexoSimples[] = ['III', 'IV', 'V'];
  *
  * Receita mista (vendas + serviços) é segregada por anexo (LC 123/2006 art. 21,
  * §4º-A): cada parcela é tributada pelo anexo da sua atividade, com a alíquota
- * efetiva calculada sobre a RBT12 total. Acima do sublimite a segregação não é
- * aplicada — o motor reproporcionaliza o DAS e recolhe ICMS/ISS por fora.
+ * efetiva calculada sobre a RBT12 total. Acima do sublimite estadual o DAS segue a
+ * 6ª faixa (federal, sem parcela de ICMS/ISS) e **ambos** os tributos são recolhidos
+ * por fora — ICMS sobre as mercadorias e ISS sobre os serviços.
  */
 export function calcularCargaSimples(
   fontes: FontesContabeis,
@@ -151,15 +165,25 @@ export function calcularCargaSimples(
   const rbt12 = fontes.faturamento12m;
   const fatorR = rbt12 > 0 ? fontes.folha12m / rbt12 : 0;
   const misto = percentualServicos > 0 && percentualVendas > 0;
+  // CPP patronal incide sobre a remuneração paga (salários + pró-labore), não sobre
+  // os encargos lançados na folha; sem detalhamento cai na folha total.
+  const remuneracao = fontes.remuneracao12m > 0 ? fontes.remuneracao12m : fontes.folha12m;
+  const avisosFatorR: string[] = [];
 
-  // Serviços: anexo escolhido quando é de serviço, senão deriva do Fator R
-  // (LC 123/2006 art. 18 §5º-§5º-L). Mercadorias: Anexo II se escolhido, senão I.
-  const anexoServicos: AnexoSimples = ANEXOS_SERVICO.includes(premissas.anexoSimples)
-    ? premissas.anexoSimples
-    : fatorR >= FATOR_R_CORTE
-      ? 'III'
-      : 'V';
+  // LC 123/2006 art. 18 §5º-I: o Fator R desloca a tributação de serviços entre os
+  // Anexos III e V — a escolha manual não sobrepõe o corte de 28% (mesma regra da
+  // Calculadora do Simples). O Anexo IV não é alcançado por esse corte.
+  const anexoServicos: AnexoSimples =
+    premissas.anexoSimples === 'IV' ? 'IV' : fatorR >= FATOR_R_CORTE ? 'III' : 'V';
   const anexoMercadorias: AnexoSimples = premissas.anexoSimples === 'II' ? 'II' : 'I';
+  if (
+    (premissas.anexoSimples === 'III' || premissas.anexoSimples === 'V') &&
+    premissas.anexoSimples !== anexoServicos
+  ) {
+    avisosFatorR.push(
+      `Anexo ${premissas.anexoSimples} substituído pelo Anexo ${anexoServicos}: Fator R de ${(fatorR * 100).toFixed(2)}% contra o corte de 28% (LC 123/2006 art. 18 §5º-I).`
+    );
+  }
   const anexoEfetivo: AnexoSimples =
     percentualServicos === 100
       ? anexoServicos
@@ -170,7 +194,7 @@ export function calcularCargaSimples(
   const motor = simularSimples(
     {
       faturamentoAnual: rbt12,
-      folhaAnual: fontes.folha12m,
+      folhaAnual: remuneracao,
       margemLucro: 0,
       percentualServicos,
       sublimiteEstadual: SUBLIMITE_ESTADUAL,
@@ -183,12 +207,7 @@ export function calcularCargaSimples(
     anexoEfetivo
   );
 
-  const avisos = [...motor.observacoes];
-  if (misto && motor.sublimiteExcedido) {
-    avisos.push(
-      `Receita mista acima do sublimite estadual (R$ ${SUBLIMITE_ESTADUAL.toLocaleString('pt-BR')}): não há segregação por anexo — o DAS foi calculado com o Anexo ${anexoEfetivo} sobre a receita total e o ICMS/ISS recolhidos por fora dele.`
-    );
-  }
+  const avisos = [...avisosFatorR, ...motor.observacoes];
 
   if (!motor.elegivel) {
     return {
@@ -203,14 +222,41 @@ export function calcularCargaSimples(
   }
 
   const cppForaDAS = arredondar(motor.cppForaDAS ?? 0);
-  const icmsForaDAS = arredondar(motor.icmsForaDAS ?? 0);
-  const issForaDAS = arredondar(motor.issForaDAS ?? 0);
+  const receitaServicos = rbt12 * (percentualServicos / 100);
+  const receitaMercadorias = rbt12 * (percentualVendas / 100);
 
-  if (!misto || motor.sublimiteExcedido) {
+  // Acima do sublimite o DAS fica com a 6ª faixa (parcela federal) e ICMS/ISS são
+  // apurados no regime normal. Deduzir do DAS a fração de ICMS/ISS das faixas
+  // anteriores tiraria um tributo que a tabela da 6ª faixa não contém.
+  if (motor.sublimiteExcedido) {
+    const na6aFaixa = (motor.faixaAplicavel ?? 0) >= 6;
+    const icmsForaDAS = na6aFaixa
+      ? arredondar(receitaMercadorias * ALIQ_ICMS_FORA_DAS)
+      : arredondar(motor.icmsForaDAS ?? 0);
+    const issForaDAS = na6aFaixa
+      ? arredondar(receitaServicos * ALIQ_ISS_FORA_DAS)
+      : arredondar(motor.issForaDAS ?? 0);
+    const das = na6aFaixa
+      ? arredondar(
+          rbt12 *
+            aliquotaEfetiva(anexoEfetivo, rbt12) *
+            (1 - PARCELA_ESTADUAL_MUNICIPAL_6A_FAIXA[anexoEfetivo])
+        )
+      : arredondar(motor.totalTributos - cppForaDAS - icmsForaDAS - issForaDAS);
+
+    if (misto) {
+      avisos.push(
+        `Receita mista acima do sublimite estadual (${formatarMoeda(SUBLIMITE_ESTADUAL)}): sem segregação por anexo, o DAS é o do Anexo ${anexoEfetivo} sobre a receita total e ICMS + ISS são recolhidos por fora dele.`
+      );
+    }
+    avisos.push(
+      `RBT12 acima do sublimite estadual (${formatarMoeda(SUBLIMITE_ESTADUAL)}): ICMS de ${formatarMoeda(icmsForaDAS)} (${(ALIQ_ICMS_FORA_DAS * 100).toFixed(0)}% sobre mercadorias) e ISS de ${formatarMoeda(issForaDAS)} (${(ALIQ_ISS_FORA_DAS * 100).toFixed(0)}% sobre serviços) apurados fora do DAS pelo regime normal (LC 123/2006 arts. 19 e 20).`
+    );
+
     return {
       elegivel: true,
-      total: arredondar(motor.totalTributos),
-      das: arredondar(motor.totalTributos - cppForaDAS - icmsForaDAS - issForaDAS),
+      total: arredondar(das + icmsForaDAS + issForaDAS + cppForaDAS),
+      das,
       cppForaDAS,
       icmsForaDAS,
       issForaDAS,
@@ -218,19 +264,32 @@ export function calcularCargaSimples(
     };
   }
 
-  const receitaServicos = rbt12 * (percentualServicos / 100);
-  const receitaMercadorias = rbt12 * (percentualVendas / 100);
+  if (!misto) {
+    return {
+      elegivel: true,
+      total: arredondar(motor.totalTributos),
+      das: arredondar(motor.totalTributos - cppForaDAS),
+      cppForaDAS,
+      icmsForaDAS: 0,
+      issForaDAS: 0,
+      avisos,
+    };
+  }
+
   const aliqServicos = aliquotaEfetiva(anexoServicos, rbt12);
   const aliqMercadorias = aliquotaEfetiva(anexoMercadorias, rbt12);
   const das = arredondar(receitaServicos * aliqServicos + receitaMercadorias * aliqMercadorias);
-  const cppServicos = anexoServicos === 'IV' ? arredondar(fontes.folha12m * (0.2 + RAT_PADRAO)) : 0;
+  const cppServicos =
+    anexoServicos === 'IV'
+      ? arredondar(remuneracao * (percentualServicos / 100) * (0.2 + RAT_PADRAO))
+      : 0;
 
   avisos.push(
     `Receita mista segregada por anexo (LC 123/2006 art. 21, §4º-A): serviços a ${(aliqServicos * 100).toFixed(2)}% (Anexo ${anexoServicos}) e mercadorias a ${(aliqMercadorias * 100).toFixed(2)}% (Anexo ${anexoMercadorias}), ambas com alíquota efetiva sobre a RBT12 total.`
   );
   if (cppServicos > 0) {
     avisos.push(
-      `Anexo IV nos serviços: CPP patronal de ${formatarMoeda(cppServicos)} (20% + RAT ${(RAT_PADRAO * 100).toFixed(2)}% sobre a folha) recolhida fora do DAS.`
+      `Anexo IV nos serviços: CPP patronal de ${formatarMoeda(cppServicos)} (20% + RAT ${(RAT_PADRAO * 100).toFixed(2)}% sobre a remuneração dos serviços) recolhida fora do DAS.`
     );
   }
 
@@ -290,7 +349,7 @@ export function calcularCenario(
 
   if (premissas.regimeAtual !== 'Simples Nacional') {
     avisos.push(
-      `Carga atual de ${premissas.regimeAtual} estimada pelo modelo não-cumulativo do motor (PIS/COFINS, ICMS, ISS e IRPJ/CSLL por presunção): Lucro Presumido e Lucro Real usam a mesma base, sem apuração por LALUR.`
+      `Carga atual de ${premissas.regimeAtual} estimada pelo modelo não-cumulativo do motor: soma apenas ICMS, ISS, PIS e COFINS do regime — IRPJ/CSLL não entram nesta estimativa, e Lucro Presumido e Lucro Real usam a mesma base, sem apuração por LALUR.`
     );
   }
 
@@ -311,7 +370,7 @@ export function calcularCenario(
   const cargaSimulada = arredondar((linha.anoTeste ? 0 : cargaSimuladaBase) + residuais.total);
   if (linha.anoTeste) {
     avisos.push(
-      `Ano-teste (${premissas.anoReferencia}): CBS ${linha.cbs}% + IBS ${(linha.ibsUf + linha.ibsMun).toFixed(1)}% (${formatarMoeda(cargaSimuladaBase)}) são compensáveis/dispensáveis com PIS/COFINS e tributos federais (LC 214/2025 art. 348) — não entram na carga simulada.`
+      `Ano-teste (${premissas.anoReferencia}): as alíquotas legais são CBS 0,9% + IBS 0,1% (LC 214/2025 art. 348). O valor de ${formatarMoeda(cargaSimuladaBase)} usa a alíquota do cenário CBS aplicado e é apenas referência — não corresponde às alíquotas legais do ano-teste, e a CBS/IBS experimental é compensável/dispensável com PIS/COFINS e tributos federais, então não entra na carga simulada.`
     );
   }
   if (residuais.total > 0) {

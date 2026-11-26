@@ -28,6 +28,18 @@ export function janela12m(agora: Date = new Date()): string {
   return d.toISOString().slice(0, 10);
 }
 
+/**
+ * Competências de folha do Fator R: os 12 meses **fechados** anteriores ao mês de
+ * apuração. `folha_pagamento.mes_referencia` é o primeiro dia da competência, e um
+ * corte por dia (mesmo dia do mês anterior) descartaria a competência de fronteira
+ * e aceitaria competências futuras já cadastradas.
+ */
+export function janelaFolha12m(agora: Date = new Date()): { inicio: string; fim: string } {
+  const inicio = new Date(Date.UTC(agora.getFullYear(), agora.getMonth() - 12, 1));
+  const fim = new Date(Date.UTC(agora.getFullYear(), agora.getMonth(), 1));
+  return { inicio: inicio.toISOString().slice(0, 10), fim: fim.toISOString().slice(0, 10) };
+}
+
 type LinhaValor = { valor?: number | null; valor_total?: number | null };
 
 function somar(linhas: LinhaValor[]): number {
@@ -58,19 +70,47 @@ async function lerTudo<T>(
   return { linhas, truncado: true };
 }
 
-const TERMOS_FOLHA = [
+/** Remove acentos e caixa — a descrição do título é texto livre digitado pelo usuário. */
+const semAcento = (texto: string) =>
+  texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+/** Termos de folha aceitos na categoria do lançamento (campo estruturado). */
+const TERMOS_FOLHA_CATEGORIA = [
   'folha',
   'salar',
   'pro-labore',
   'prolabore',
-  'pró-labore',
   '13o',
   'decimo terceiro',
-  'décimo terceiro',
   'ferias',
-  'férias',
   'inss',
   'fgts',
+];
+
+/**
+ * Termos aceitos na descrição livre. Aqui `folha` sozinho não basta: "Folhas de
+ * papel A4" é compra com fornecedor e gera crédito de CBS/IBS, não folha salarial.
+ */
+const TERMOS_FOLHA_DESCRICAO = [
+  'folha de pagamento',
+  'folha salarial',
+  'folha mensal',
+  'folha de salario',
+  'folha de funcionario',
+  'folha dos funcionarios',
+  'pro-labore',
+  'prolabore',
+  'salario',
+  'salarios',
+  '13o salario',
+  'decimo terceiro',
+  'ferias',
+  'inss',
+  'fgts',
+  'rescisao',
 ];
 
 interface LinhaPagar {
@@ -84,9 +124,10 @@ interface LinhaPagar {
 }
 
 function ehFolha(linha: LinhaPagar): boolean {
-  const texto =
-    `${linha.categoria ?? ''} ${linha.categoria_nome ?? ''} ${linha.descricao ?? ''}`.toLowerCase();
-  return TERMOS_FOLHA.some((termo) => texto.includes(termo));
+  const categoria = semAcento(`${linha.categoria ?? ''} ${linha.categoria_nome ?? ''}`);
+  if (TERMOS_FOLHA_CATEGORIA.some((termo) => categoria.includes(termo))) return true;
+  const descricao = semAcento(linha.descricao ?? '');
+  return TERMOS_FOLHA_DESCRICAO.some((termo) => descricao.includes(termo));
 }
 
 interface LinhaNota {
@@ -135,6 +176,7 @@ function valorDaLinhaFolha(l: LinhaFolha): number {
  */
 export async function buscarFontesContabeis(empresaId: string): Promise<FontesContabeis> {
   const inicio = janela12m();
+  const { inicio: inicioFolha, fim: fimFolha } = janelaFolha12m();
 
   const notasConsulta = await lerTudo<LinhaNota>((de, ate) =>
     supabase
@@ -182,13 +224,22 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
       .from('folha_pagamento')
       .select('valor_total, total_folha, salarios, encargos, beneficios, pro_labore')
       .eq('empresa_id', empresaId)
-      .gte('mes_referencia', inicio)
+      .gte('mes_referencia', inicioFolha)
+      .lt('mes_referencia', fimFolha)
       .order('id', { ascending: true })
       .range(de, ate)
   );
   truncado = truncado || folhaMensal.truncado;
   const totalFolhaMensal = arredondar(
     folhaMensal.linhas.reduce((acc, l) => acc + valorDaLinhaFolha(l), 0)
+  );
+  // CPP patronal (20% + RAT) incide sobre a remuneração paga — salários e pró-labore —,
+  // não sobre os encargos lançados na mesma competência.
+  const remuneracaoMensal = arredondar(
+    folhaMensal.linhas.reduce(
+      (acc, l) => acc + Number(l.salarios ?? 0) + Number(l.pro_labore ?? 0),
+      0
+    )
   );
 
   const pagar = await lerTudo<LinhaPagar>((de, ate) =>
@@ -217,11 +268,17 @@ export async function buscarFontesContabeis(empresaId: string): Promise<FontesCo
   const folha12m = totalFolhaMensal > 0 ? totalFolhaMensal : folhaTitulos;
   const fonteFolha: FontesContabeis['fonteFolha'] =
     totalFolhaMensal > 0 ? 'folha_pagamento' : folhaTitulos > 0 ? 'contas_pagar' : 'sem_dados';
+  // Base da CPP patronal. Sem detalhamento (lançamentos de folha em contas a pagar
+  // ou folha sem salários/Pró-labore separados) cai na folha total, como antes.
+  const remuneracao12m = arredondar(
+    totalFolhaMensal > 0 && remuneracaoMensal > 0 ? remuneracaoMensal : folha12m
+  );
 
   return {
     faturamento12m: arredondar(faturamento),
     comprasServicos12m: arredondar(somar(comFornecedor)),
     folha12m,
+    remuneracao12m,
     notasConsideradas: notasReceita.length,
     titulosConsiderados,
     fonteFaturamento,

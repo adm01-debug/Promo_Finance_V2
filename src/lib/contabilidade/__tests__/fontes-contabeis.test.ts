@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { buscarFontesContabeis, janela12m } from '../fontes-contabeis';
+import { buscarFontesContabeis, janela12m, janelaFolha12m } from '../fontes-contabeis';
 
 type LinhaNota = {
   valor_total: number | null;
@@ -24,6 +24,7 @@ type LinhaFolha = {
   encargos?: number | null;
   beneficios?: number | null;
   pro_labore?: number | null;
+  mes_referencia?: string | null;
 };
 
 let notas: LinhaNota[] = [];
@@ -34,13 +35,16 @@ let erro: unknown = null;
 /** Quando true, toda pagina vem cheia — simula mais de 100 mil linhas no servidor. */
 let paginaSempreCheia = false;
 const intervalos: Array<{ tabela: string; de: number; ate: number }> = [];
+/** Filtros de data pedidos ao PostgREST — prova a janela de competência da folha. */
+const filtros: Array<{ tabela: string; coluna: string; valor: string }> = [];
 
 interface ConsultaFake {
   select: () => ConsultaFake;
   eq: () => ConsultaFake;
   is: () => ConsultaFake;
   neq: () => ConsultaFake;
-  gte: () => ConsultaFake;
+  gte: (coluna: string, valor: string) => ConsultaFake;
+  lt: (coluna: string, valor: string) => ConsultaFake;
   order: () => ConsultaFake;
   range: (de: number, ate: number) => Promise<{ data: unknown[]; error: unknown }>;
 }
@@ -55,21 +59,43 @@ function linhasDa(tabela: string): unknown[] {
 }
 
 function consulta(tabela: string): ConsultaFake {
+  // Predicados desta consulta: linhas sem a coluna filtrada passam direto, então
+  // o filtro de `mes_referencia` só afeta a tabela que realmente a tem.
+  const predicados: Array<(l: Record<string, unknown>) => boolean> = [];
+  const comparar = (coluna: string, valor: string, op: 'gte' | 'lt') => {
+    filtros.push({ tabela, coluna, valor });
+    predicados.push((l) =>
+      !(coluna in l)
+        ? true
+        : op === 'gte'
+          ? String(l[coluna] ?? '') >= valor
+          : String(l[coluna] ?? '') < valor
+    );
+  };
   const api: ConsultaFake = {
     select: () => api,
     eq: () => api,
     is: () => api,
     neq: () => api,
-    gte: () => api,
+    gte: (coluna, valor) => {
+      comparar(coluna, valor, 'gte');
+      return api;
+    },
+    lt: (coluna, valor) => {
+      comparar(coluna, valor, 'lt');
+      return api;
+    },
     order: () => api,
     range: (de, ate) => {
       intervalos.push({ tabela, de, ate });
       if (erro) return Promise.resolve({ data: null, error: erro });
+      const linhas = linhasDa(tabela).filter((l) =>
+        predicados.every((filtro) => filtro(l as Record<string, unknown>))
+      );
       if (paginaSempreCheia) {
-        const todas = linhasDa(tabela);
-        return Promise.resolve({ data: todas.slice(0, ate - de + 1), error: null });
+        return Promise.resolve({ data: linhas.slice(0, ate - de + 1), error: null });
       }
-      return Promise.resolve({ data: linhasDa(tabela).slice(de, ate + 1), error: null });
+      return Promise.resolve({ data: linhas.slice(de, ate + 1), error: null });
     },
   };
   return api;
@@ -81,6 +107,7 @@ vi.mock('@/lib/supabase-dynamic', () => ({
 
 beforeEach(() => {
   intervalos.length = 0;
+  filtros.length = 0;
   erro = null;
   paginaSempreCheia = false;
   notas = [];
@@ -92,6 +119,23 @@ beforeEach(() => {
 describe('janela12m', () => {
   it('devolve a data de corte em ISO (AAAA-MM-DD)', () => {
     expect(janela12m(new Date('2026-11-26T12:00:00Z'))).toBe('2025-11-26');
+  });
+});
+
+describe('janelaFolha12m', () => {
+  it('pega as 12 competencias fechadas anteriores ao mes de apuracao', () => {
+    // 26/11/2026 => competencias de 01/11/2025 a 01/11/2026 (nov/2026 fica de fora)
+    expect(janelaFolha12m(new Date('2026-11-26T12:00:00Z'))).toEqual({
+      inicio: '2025-11-01',
+      fim: '2026-11-01',
+    });
+  });
+
+  it('fecha a janela no primeiro dia do mes mesmo em 31 de marco', () => {
+    expect(janelaFolha12m(new Date('2026-03-31T23:00:00Z'))).toEqual({
+      inicio: '2025-03-01',
+      fim: '2026-03-01',
+    });
   });
 });
 
@@ -230,6 +274,78 @@ describe('buscarFontesContabeis', () => {
 
     expect(fontes.folha12m).toBe(17500);
     expect(fontes.fonteFolha).toBe('folha_pagamento');
+  });
+
+  it('apura a remuneracao (salarios + pro-labore) separada dos encargos', async () => {
+    folha = [
+      { salarios: 10_000, encargos: 3_000, beneficios: 1_000, pro_labore: 4_000 },
+      { valor_total: 8_000 },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.folha12m).toBe(26000);
+    expect(fontes.remuneracao12m).toBe(14000);
+  });
+
+  it('cai na folha total quando a folha nao detalha salarios e pro-labore', async () => {
+    folha = [{ valor_total: 12_000 }, { total_folha: 13_500 }];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.folha12m).toBe(25500);
+    expect(fontes.remuneracao12m).toBe(25500);
+  });
+
+  it('limita a folha as competencias fechadas dos ultimos 12 meses', async () => {
+    vi.useFakeTimers({ now: new Date('2026-11-26T12:00:00Z') });
+    folha = [
+      { valor_total: 10_000, mes_referencia: '2025-10-01' },
+      { valor_total: 20_000, mes_referencia: '2025-11-01' },
+      { valor_total: 30_000, mes_referencia: '2026-10-01' },
+      { valor_total: 40_000, mes_referencia: '2026-11-01' },
+      { valor_total: 50_000, mes_referencia: '2026-12-01' },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+    vi.useRealTimers();
+
+    // entram o limite inferior (nov/2025) e a ultima competencia fechada (out/2026)
+    expect(fontes.folha12m).toBe(50000);
+    expect(filtros).toContainEqual({
+      tabela: 'folha_pagamento',
+      coluna: 'mes_referencia',
+      valor: '2025-11-01',
+    });
+    expect(filtros).toContainEqual({
+      tabela: 'folha_pagamento',
+      coluna: 'mes_referencia',
+      valor: '2026-11-01',
+    });
+  });
+
+  it('nao trata "Folhas de papel A4" como folha salarial', async () => {
+    pagar = [
+      {
+        valor: 5_000,
+        status: 'pago',
+        fornecedor_id: 'forn-1',
+        fornecedor_nome: 'Papelaria',
+        descricao: 'Folhas de papel A4',
+      },
+      {
+        valor: 20_000,
+        status: 'pago',
+        fornecedor_id: 'forn-2',
+        fornecedor_nome: 'Contabilidade RH',
+        descricao: 'Folha de pagamento dos funcionários',
+      },
+    ];
+
+    const fontes = await buscarFontesContabeis('empresa-1');
+
+    expect(fontes.comprasServicos12m).toBe(5000);
+    expect(fontes.folha12m).toBe(20000);
   });
 
   it('marca sem_dados quando nao ha folha de nenhuma fonte', async () => {

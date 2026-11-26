@@ -16,6 +16,7 @@ const fontes: FontesContabeis = {
   faturamento12m: 1_200_000,
   comprasServicos12m: 300_000,
   folha12m: 0,
+  remuneracao12m: 0,
   notasConsideradas: 120,
   titulosConsiderados: 0,
   fonteFaturamento: 'notas_fiscais',
@@ -95,7 +96,8 @@ describe('calcularCenario', () => {
     expect(simples.cargaAtual).not.toBeCloseTo(presumido.cargaAtual, 2);
   });
 
-  it('usa o anexo escolhido nos servicos e deriva do Fator R quando o anexo nao e de servico', () => {
+  it('sobrepoe o anexo de servico escolhido pelo corte de 28% do Fator R', () => {
+    // Folha 400k / RBT12 1,2M = 33,3% (>= 28%) => Anexo III mesmo se o usuario escolheu V
     const servicosIII = calcularCenario(
       { ...fontes, folha12m: 400_000 },
       premissas({ anexoSimples: 'III', percentualVendas: 0 })
@@ -109,9 +111,24 @@ describe('calcularCenario', () => {
       premissas({ anexoSimples: 'I', percentualVendas: 0 })
     );
 
-    expect(servicosIII.cargaAtual).toBeLessThan(servicosV.cargaAtual);
-    // Fator R = 400k / 1,2M = 33% (>= 28%) => Anexo III
+    expect(servicosV.cargaAtual).toBeCloseTo(servicosIII.cargaAtual, 2);
+    expect(servicosV.avisos.join(' ')).toContain('Anexo V substituído pelo Anexo III');
     expect(derivadoDoFatorR.cargaAtual).toBeCloseTo(servicosIII.cargaAtual, 2);
+  });
+
+  it('mantem o Anexo V escolhido quando o Fator R fica abaixo de 28%', () => {
+    const v = calcularCenario(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ anexoSimples: 'V', percentualVendas: 0 })
+    );
+    const iii = calcularCenario(
+      { ...fontes, folha12m: 100_000 },
+      premissas({ anexoSimples: 'III', percentualVendas: 0 })
+    );
+
+    // Fator R = 8,3% => o Anexo III informado tambem e substituido pelo V
+    expect(iii.cargaAtual).toBeCloseTo(v.cargaAtual, 2);
+    expect(iii.avisos.join(' ')).toContain('Anexo III substituído pelo Anexo V');
   });
 
   it('cai no modelo nao-cumulativo quando a receita passa do limite do Simples', () => {
@@ -156,6 +173,21 @@ describe('calcularCenario', () => {
     expect(simples.avisos.join(' ')).not.toContain('modelo não-cumulativo');
   });
 
+  it('nao afirma que IRPJ/CSLL entram na carga atual de Presumido/Real', () => {
+    const presumido = calcularCenario(fontes, premissas({ regimeAtual: 'Lucro Presumido' }));
+
+    expect(presumido.cargaAtual).toBeCloseTo(presumido.resultado.totalAntigo, 2);
+    expect(presumido.avisos.join(' ')).toContain('IRPJ/CSLL não entram');
+  });
+
+  it('avisa que o valor do ano-teste nao corresponde as aliquotas legais de 0,9%/0,1%', () => {
+    const c2026 = calcularCenario(fontes, premissas({ anoReferencia: 2026 }));
+    const avisos = c2026.avisos.join(' ');
+
+    expect(avisos).toContain('0,9%');
+    expect(avisos).toContain('não corresponde às alíquotas legais');
+  });
+
   it('recolhe a CPP patronal fora do DAS no Anexo IV', () => {
     const comFolha: FontesContabeis = {
       ...fontes,
@@ -168,8 +200,20 @@ describe('calcularCenario', () => {
     );
 
     expect(carga.elegivel).toBe(true);
+    // Sem detalhamento de salarios/pro-labore a base cai na folha total.
     expect(carga.cppForaDAS).toBeCloseTo(300_000 * 0.22, 2);
     expect(carga.total).toBeCloseTo(carga.das + carga.cppForaDAS, 2);
+  });
+
+  it('calcula a CPP do Anexo IV sobre a remuneracao, sem os encargos da folha', () => {
+    const carga = calcularCargaSimples(
+      { ...fontes, folha12m: 130_000, remuneracao12m: 100_000 },
+      premissas({ anexoSimples: 'IV', percentualVendas: 0 })
+    );
+
+    // 20% + RAT 2% sobre 100k de salarios/pro-labore (nao sobre os 130k de folha + encargos)
+    expect(carga.cppForaDAS).toBeCloseTo(100_000 * 0.22, 2);
+    expect(carga.total).toBeCloseTo(carga.das + 22_000, 2);
   });
 
   it('segrega receita mista por anexo (servicos x mercadorias)', () => {
@@ -200,6 +244,47 @@ describe('calcularCenario', () => {
     expect(carga.elegivel).toBe(true);
     expect(carga.icmsForaDAS).toBeGreaterThan(0);
     expect(carga.total).toBeCloseTo(carga.das + carga.icmsForaDAS, 2);
+  });
+
+  it('nao deduz do DAS da 6a faixa uma parcela de ICMS que a tabela nao contem', () => {
+    const carga = calcularCargaSimples(
+      { ...fontes, faturamento12m: 4_000_000 },
+      premissas({ percentualVendas: 100 })
+    );
+
+    // Anexo I, 6a faixa: nominal 19%, PD 378k -> efetiva 9,55% sobre 4M = 382k de DAS
+    expect(carga.das).toBeCloseTo(382_000, 2);
+    expect(carga.icmsForaDAS).toBeCloseTo(720_000, 2);
+    expect(carga.total).toBeCloseTo(1_102_000, 2);
+  });
+
+  it('recolhe ICMS e ISS nas duas atividades quando a receita mista passa do sublimite', () => {
+    const carga = calcularCargaSimples(
+      { ...fontes, faturamento12m: 4_000_000 },
+      premissas({ percentualVendas: 50, anexoSimples: 'I' })
+    );
+
+    expect(carga.icmsForaDAS).toBeCloseTo(2_000_000 * 0.18, 2);
+    expect(carga.issForaDAS).toBeCloseTo(2_000_000 * 0.05, 2);
+    expect(carga.total).toBeCloseTo(
+      carga.das + carga.icmsForaDAS + carga.issForaDAS + carga.cppForaDAS,
+      2
+    );
+    expect(carga.avisos.join(' ')).toContain('ICMS');
+  });
+
+  it('move apenas o ISS da 6a faixa do Anexo IV para fora do DAS', () => {
+    const carga = calcularCargaSimples(
+      { ...fontes, faturamento12m: 4_000_000, folha12m: 1_000_000, remuneracao12m: 800_000 },
+      premissas({ percentualVendas: 0, anexoSimples: 'IV' })
+    );
+
+    // 42,10% da 6a faixa do Anexo IV e ISS, que passa a ser apurado por fora
+    expect(carga.issForaDAS).toBeCloseTo(4_000_000 * 0.05, 2);
+    expect(carga.icmsForaDAS).toBe(0);
+    expect(carga.cppForaDAS).toBeCloseTo(800_000 * 0.22, 2);
+    // DAS = efetiva da 6a faixa do Anexo IV (4M x 33% - 828k = 492k) x 57,90% (sem os 42,10% de ISS)
+    expect(carga.das).toBeCloseTo(492_000 * 0.579, 0);
   });
 
   it('avisa quando a leitura contabil foi truncada', () => {

@@ -66,6 +66,7 @@ interface PayloadInsert {
     resultado: { totalAntigo: number; totalNovo: number };
     carga_simulada_base: number;
     residuais_transicao: { total: number };
+    ano_teste: boolean;
     avisos: string[];
   };
 }
@@ -80,6 +81,7 @@ interface ConsultaFake {
   is: () => ConsultaFake;
   neq: () => ConsultaFake;
   gte: () => ConsultaFake;
+  lt: () => ConsultaFake;
   order: () => ConsultaFake;
   range: (de: number, ate: number) => Promise<{ data: unknown[]; error: unknown }>;
 }
@@ -97,6 +99,7 @@ function consulta(tabela: string): ConsultaFake {
     is: () => api,
     neq: () => api,
     gte: () => api,
+    lt: () => api,
     order: () => api,
     range: (de, ate) => {
       intervalos.push({ tabela, de, ate });
@@ -224,15 +227,15 @@ describe('NovaSimulacaoElisaoDialog', () => {
     expect(payload.detalhes.fontes.faturamento12m).toBe(100000);
     expect(payload.detalhes.fontes.comprasServicos12m).toBe(15000);
     expect(payload.detalhes.fontes.fonteFaturamento).toBe('notas_fiscais');
-    // em 2026 (ano-teste) a CBS/IBS experimental não entra na carga simulada
-    if (payload.detalhes.ano_teste) {
-      expect(payload.carga_simulada).toBeCloseTo(payload.detalhes.residuais_transicao.total, 2);
-    } else {
-      expect(payload.carga_simulada).toBeCloseTo(
-        payload.detalhes.carga_simulada_base + payload.detalhes.residuais_transicao.total,
-        2
-      );
-    }
+    // Regra do ano-teste derivada do ANO gravado (2026), não do flag que se quer provar:
+    // o flag precisa casar com o ano e a carga simulada seguir a regra.
+    const anoTesteEsperado = payload.ano_referencia === 2026;
+    expect(payload.detalhes.ano_teste).toBe(anoTesteEsperado);
+    expect(payload.carga_simulada).toBeCloseTo(
+      (anoTesteEsperado ? 0 : payload.detalhes.carga_simulada_base) +
+        payload.detalhes.residuais_transicao.total,
+      2
+    );
     expect(payload.detalhes.avisos.length).toBeGreaterThan(0);
   });
 
