@@ -29,7 +29,7 @@ vi.mock('@/lib/logger', () => ({
   logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }));
 
-import { useImportacaoXMLNFe } from '../useImportacaoXMLNFe';
+import { useImportacaoXMLNFe, dataNotaBr } from '../useImportacaoXMLNFe';
 
 // NCM 02013000 + cClassTrib 200035 declarando CST 200. O cat?logo diz que o
 // cClassTrib 200035 tem CST 000 ? ? exatamente a diverg?ncia da evid?ncia.
@@ -46,6 +46,16 @@ const XML_COM_GRUPO = `<?xml version="1.0" encoding="UTF-8"?>
     </det>
     <total><ICMSTot><vNF>100.00</vNF><vProd>100.00</vProd><vBC>100.00</vBC><vICMS>18.00</vICMS></ICMSTot></total>
   </infNFe></NFe></nfeProc>`;
+
+/**
+ * Mesma nota, emitida em 2025. Serve para o recorte de vigencia dos catalogos:
+ * as cargas da RFB comecam em 2026-01-01, entao uma nota de 2025 nao tem
+ * referencia de catalogo e nao pode gerar divergencia por isso.
+ */
+const XML_COM_GRUPO_2025 = XML_COM_GRUPO.replace(
+  '<dhEmi>2026-03-31T22:30:00-03:00</dhEmi>',
+  '<dhEmi>2025-03-31T22:30:00-03:00</dhEmi>'
+);
 
 type Resposta = { data: unknown; error: unknown };
 type Registro = { tabela: string; metodo: string };
@@ -70,7 +80,18 @@ function montaCliente(catalogos: Record<string, Resposta | Resposta[]>) {
   };
   mockFrom.mockImplementation((tabela: string) => {
     const chain: Record<string, unknown> = {};
-    for (const metodo of ['select', 'insert', 'update', 'delete', 'eq', 'in', 'limit', 'single']) {
+    for (const metodo of [
+      'select',
+      'insert',
+      'update',
+      'delete',
+      'eq',
+      'in',
+      'lte',
+      'or',
+      'limit',
+      'single',
+    ]) {
       chain[metodo] = vi.fn(() => {
         chamadas.push({ tabela, metodo });
         return chain;
@@ -83,8 +104,8 @@ function montaCliente(catalogos: Record<string, Resposta | Resposta[]>) {
   return chamadas;
 }
 
-function arquivo(): File {
-  return { name: 'nfe.xml', text: () => Promise.resolve(XML_COM_GRUPO) } as unknown as File;
+function arquivo(xml: string = XML_COM_GRUPO): File {
+  return { name: 'nfe.xml', text: () => Promise.resolve(xml) } as unknown as File;
 }
 
 let queryClient: QueryClient;
@@ -101,11 +122,11 @@ beforeEach(() => {
   mockRpc.mockResolvedValue({ data: { id: 'nf-1' }, error: null });
 });
 
-async function importar(catalogos: Record<string, Resposta>) {
+async function importar(catalogos: Record<string, Resposta>, xml: string = XML_COM_GRUPO) {
   const chamadas = montaCliente(catalogos);
   const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
   await act(async () => {
-    await result.current.processarArquivos([arquivo()] as unknown as FileList);
+    await result.current.processarArquivos([arquivo(xml)] as unknown as FileList);
   });
   await waitFor(() => expect(result.current.nfesParsed).toHaveLength(1));
 
@@ -202,5 +223,168 @@ describe('importarNFes ? valida??o contra cat?logo (etapa 46)', () => {
     const selecoes = chamadas.filter((c) => c.tabela === 'catalogo_cclasstrib');
     expect(selecoes.filter((c) => c.metodo === 'select')).toHaveLength(2);
     expect(selecoes.filter((c) => c.metodo === 'limit')).toHaveLength(1);
+  });
+
+  it('NCM encerrado no meio do ano só alerta a nota emitida depois do encerramento', async () => {
+    // Duas notas do mesmo exercício, mesmo NCM: uma de março (antes do
+    // encerramento em 2026-09-01) e uma de outubro (depois). Com o recorte por
+    // 31/12 as duas levavam REG-012; o recorte passa a ser a data de emissão.
+    const xmlOutubro = XML_COM_GRUPO.replace(
+      '2026-03-31T22:30:00-03:00',
+      '2026-10-05T10:00:00-03:00'
+    )
+      .replace(
+        'Id="NFe35260312345678000199550010000000011000000017"',
+        'Id="NFe35261012345678000199550010000000021000000028"'
+      )
+      .replace('<nNF>1</nNF>', '<nNF>2</nNF>');
+
+    const chamadas = montaCliente({
+      catalogo_cclasstrib: CATALOGO.catalogo_cclasstrib,
+      // Ordem das consultas de NCM: março (linha aberta), outubro (linha já
+      // encerrada) e a sonda de cobertura de outubro (catálogo tem conteúdo).
+      catalogo_ncm: [
+        CATALOGO.catalogo_ncm,
+        {
+          data: [
+            {
+              ncm: '02013000',
+              descricao: 'Carnes de bovino',
+              // Vigência de um dia só: qualquer outra data de referência
+              // (31/08 ou 02/09) deixa o código fora do catálogo, então o teste
+              // só passa se a consulta usar exatamente 2026-09-01.
+              inicio_vigencia: '2026-09-01',
+              fim_vigencia: '2026-09-01',
+            },
+          ],
+          error: null,
+        },
+        CATALOGO.catalogo_ncm,
+      ],
+    });
+
+    const { result } = renderHook(() => useImportacaoXMLNFe('emp-1'), { wrapper });
+    const arquivos = [
+      { name: 'marco.xml', text: () => Promise.resolve(XML_COM_GRUPO) },
+      { name: 'outubro.xml', text: () => Promise.resolve(xmlOutubro) },
+    ] as unknown as FileList;
+
+    await act(async () => {
+      await result.current.processarArquivos(arquivos);
+    });
+    await waitFor(() => expect(result.current.nfesParsed).toHaveLength(2));
+
+    let resumo!: Awaited<ReturnType<typeof result.current.importarNFes.mutateAsync>>;
+    await act(async () => {
+      resumo = await result.current.importarNFes.mutateAsync();
+    });
+
+    expect(resumo.sucesso).toBe(2);
+    const [marco, outubro] = resumo.nfesProcessadas;
+    expect((marco.alertasFiscais ?? []).map((a) => a.codigo)).toEqual(['REG-011']);
+    expect((outubro.alertasFiscais ?? []).map((a) => a.codigo)).toContain('REG-012');
+
+    // Uma leitura de NCM por data distinta do lote (2), não por nota, mais a
+    // sonda de cobertura `.limit(1)` da data em que o código não estava vigente.
+    const selecoesNcm = chamadas.filter(
+      (c) => c.tabela === 'catalogo_ncm' && c.metodo === 'select'
+    );
+    expect(selecoesNcm).toHaveLength(3);
+    expect(
+      chamadas.filter((c) => c.tabela === 'catalogo_ncm' && c.metodo === 'limit')
+    ).toHaveLength(1);
+  });
+
+  it('nota de fuso fora de Brasília usa o dia declarado no dhEmi para a vigência', async () => {
+    // dhEmi 2026-09-01T23:30:00-04:00 (Manaus) é 2026-09-02 00:30 em Brasília.
+    // O NCM teve 2026-09-01 como último dia vigente (fim inclusivo): validando
+    // pelo dia de Brasília a nota cairia no dia seguinte e levaria REG-012.
+    const xmlManaus = XML_COM_GRUPO.replace(
+      '2026-03-31T22:30:00-03:00',
+      '2026-09-01T23:30:00-04:00'
+    );
+    const { resumo, chamadas } = await importar(
+      {
+        catalogo_cclasstrib: CATALOGO.catalogo_cclasstrib,
+        catalogo_ncm: {
+          data: [
+            {
+              ncm: '02013000',
+              descricao: 'Carnes de bovino',
+              inicio_vigencia: '2022-04-01',
+              fim_vigencia: '2026-09-01',
+            },
+          ],
+          error: null,
+        },
+      },
+      xmlManaus
+    );
+
+    // Sem estas provas o teste passaria de graça: nota com erro não gera alerta
+    // nenhum. REG-011 só aparece quando a conferência roda de fato.
+    expect(resumo.sucesso).toBe(1);
+    const [nota] = resumo.nfesProcessadas;
+    const codigos = (nota.alertasFiscais ?? []).map((a) => a.codigo);
+    expect(codigos).toContain('REG-011');
+    expect(codigos).not.toContain('REG-012');
+    // O código foi achado vigente na data declarada: com 2026-09-02 (dia de
+    // Brasília) a linha viria expirada e o hook dispararia a sonda de cobertura.
+    expect(
+      chamadas.filter((c) => c.tabela === 'catalogo_ncm' && c.metodo === 'select')
+    ).toHaveLength(1);
+    expect(
+      chamadas.filter((c) => c.tabela === 'catalogo_ncm' && c.metodo === 'limit')
+    ).toHaveLength(0);
+  });
+
+  it('nota anterior à vigência do catálogo não gera alerta (sem referência na data)', async () => {
+    // Catálogo cheio, mas com inicio_vigencia 2026-01-01, e a nota é de 2025.
+    // A consulta por código volta com linha e a sonda de cobertura volta vazia:
+    // não há referência para aquela data, então não há o que divergir.
+    const { resumo } = await importar(
+      {
+        catalogo_cclasstrib: [
+          { data: CATALOGO.catalogo_cclasstrib.data, error: null },
+          { data: [], error: null },
+        ],
+        catalogo_ncm: [
+          {
+            data: [
+              {
+                ncm: '02013000',
+                descricao: 'Carnes de bovino',
+                inicio_vigencia: '2026-01-01',
+                fim_vigencia: null,
+              },
+            ],
+            error: null,
+          },
+          { data: [], error: null },
+        ],
+      },
+      XML_COM_GRUPO_2025
+    );
+
+    expect(resumo.sucesso).toBe(1);
+    expect(resumo.notasComAlertaFiscal).toBe(0);
+    expect(resumo.nfesProcessadas[0].alertasFiscais).toBeUndefined();
+  });
+});
+
+describe('dataNotaBr', () => {
+  it('usa o dia declarado no XML, mesmo quando o dia em Brasilia e outro', () => {
+    // dhEmi 26/11 as 03:00 em Brasilia, mas o emitente declarou 25/11 — e esse
+    // o dia que a conferencia fiscal usa para escolher a vigencia.
+    expect(
+      dataNotaBr({
+        dataEmissao: new Date('2026-11-26T06:00:00Z'),
+        dataEmissaoDeclarada: '2026-11-25',
+      })
+    ).toBe('25/11/2026');
+  });
+
+  it('sem data declarada cai no dia em Brasilia, nao no do navegador', () => {
+    expect(dataNotaBr({ dataEmissao: new Date('2026-11-26T06:00:00Z') })).toBe('26/11/2026');
   });
 });

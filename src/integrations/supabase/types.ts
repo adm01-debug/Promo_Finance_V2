@@ -3616,6 +3616,51 @@ export type Database = {
         }
         Relationships: []
       }
+      catalogo_fundamentacao: {
+        Row: {
+          cclasstrib: string
+          conjunto_tributo: string
+          created_at: string
+          cst: string
+          descricao_cclasstrib: string | null
+          descricao_cst: string | null
+          fim_vigencia: string | null
+          inicio_vigencia: string
+          referencia_normativa: string | null
+          texto: string | null
+          texto_curto: string | null
+          versao_it: string
+        }
+        Insert: {
+          cclasstrib: string
+          conjunto_tributo: string
+          created_at?: string
+          cst: string
+          descricao_cclasstrib?: string | null
+          descricao_cst?: string | null
+          fim_vigencia?: string | null
+          inicio_vigencia: string
+          referencia_normativa?: string | null
+          texto?: string | null
+          texto_curto?: string | null
+          versao_it: string
+        }
+        Update: {
+          cclasstrib?: string
+          conjunto_tributo?: string
+          created_at?: string
+          cst?: string
+          descricao_cclasstrib?: string | null
+          descricao_cst?: string | null
+          fim_vigencia?: string | null
+          inicio_vigencia?: string
+          referencia_normativa?: string | null
+          texto?: string | null
+          texto_curto?: string | null
+          versao_it?: string
+        }
+        Relationships: []
+      }
       catalogo_ncm: {
         Row: {
           carregado_em: string

@@ -351,6 +351,19 @@ verify_jwt = false
 [functions.sync-catalogo-cclasstrib]
 verify_jwt = false
 
+# verify_jwt=false: sync dos catalogos NCM/NBS da RFB (etapa 80), pelo mesmo
+# motivo do cClassTrib acima.
+[functions.sync-catalogo-ncm-nbs]
+verify_jwt = false
+
+[functions.sync-aliquota-referencia]
+verify_jwt = false
+
+# verify_jwt=false: sync das fundamentacoes legais por cClassTrib/CST da RFB
+# (etapa 82), pelo mesmo motivo dos catalogos acima.
+[functions.sync-fundamentacao-legal]
+verify_jwt = false
+
 [functions.calculo-iva]
 verify_jwt = true
 
