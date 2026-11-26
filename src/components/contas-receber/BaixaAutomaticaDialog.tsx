@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, CheckCircle2, Loader2, AlertTriangle, Info, Landmark } from 'lucide-react';
 import {
@@ -55,6 +55,7 @@ export function BaixaAutomaticaDialog({
     falhasAuxiliares: 0,
   });
   const [contaBancariaId, setContaBancariaId] = useState('');
+  const [empresaDoLote, setEmpresaDoLote] = useState('');
 
   const queryClient = useQueryClient();
   const { data: contasBancarias = [] } = useContasBancarias(empresaId || undefined);
@@ -64,9 +65,17 @@ export function BaixaAutomaticaDialog({
     setProgress(0);
     setResultado(null);
     setMatches([]);
+    setUnmatched([]);
     setProcessing(false);
     setContaBancariaId('');
+    setEmpresaDoLote('');
   };
+
+  useEffect(() => {
+    if (!empresaDoLote || !empresaId || empresaId === empresaDoLote) return;
+    resetState();
+    toast.error('Empresa alterada — importe novamente o arquivo de retorno desta empresa.');
+  }, [empresaId, empresaDoLote]);
 
   const handleClose = () => {
     resetState();
@@ -80,6 +89,7 @@ export function BaixaAutomaticaDialog({
       .select('id, valor, data_vencimento, cliente_nome, status')
       .eq('empresa_id', empresaId)
       .neq('status', 'pago')
+      .neq('status', 'recebido')
       .neq('status', 'cancelado');
 
     if (!contas) return { matched: [], unmatched: [] };
@@ -124,6 +134,7 @@ export function BaixaAutomaticaDialog({
       const result = parseExtratoBancario(content, file.name);
 
       if (result.sucesso && result.extrato) {
+        setEmpresaDoLote(empresaId);
         const { matched: foundMatches, unmatched: foundUnmatched } = await findMatches(
           result.extrato
         );
@@ -169,6 +180,12 @@ export function BaixaAutomaticaDialog({
       toast.error('Selecione uma empresa antes de executar a baixa automática.');
       return;
     }
+    if (empresaDoLote && empresaDoLote !== empresaId) {
+      toast.error('A empresa mudou desde a importação. Importe o arquivo de retorno novamente.');
+      resetState();
+      return;
+    }
+    const empresaAlvo = empresaDoLote || empresaId;
     setProcessing(true);
     let successCount = 0;
     let totalValue = 0;
@@ -180,12 +197,15 @@ export function BaixaAutomaticaDialog({
 
     try {
       for (const m of matches) {
-        const { error } = await supabase
+        const { data: liquidadas, error } = await supabase
           .from('contas_receber')
           .update({
             status: 'pago',
             data_recebimento: toISOLocal(m.transacao.data),
-            valor_recebido: m.valor,
+            // O valor liquidado é o que entrou na conta bancária, não o valor
+            // nominal do título — a baixa manual só é oferecida para títulos
+            // de valor idêntico ao crédito.
+            valor_recebido: m.transacao.valor,
             // Mesmo padrão do RegistrarRecebimentoDialog: grava a conta
             // escolhida também no título, para o filtro de contas a receber
             // por banco (useContasReceberPaginated) continuar encontrando o
@@ -193,7 +213,12 @@ export function BaixaAutomaticaDialog({
             // preserva o vínculo anterior (nunca grava '' em coluna uuid).
             ...(contaBancariaId ? { conta_bancaria_id: contaBancariaId } : {}),
           })
-          .eq('id', m.contaId);
+          .eq('id', m.contaId)
+          .eq('empresa_id', empresaAlvo)
+          // Revalidação no ato da escrita: o título pode ter sido liquidado
+          // (pago/recebido) ou cancelado depois da leitura das candidatas.
+          .not('status', 'in', '(pago,recebido,cancelado)')
+          .select('id');
 
         if (error) {
           failCount++;
@@ -201,8 +226,16 @@ export function BaixaAutomaticaDialog({
           continue;
         }
 
+        if (!liquidadas || liquidadas.length === 0) {
+          failCount++;
+          toast.error(
+            `${m.cliente} não foi liquidado: o título já estava pago, recebido ou cancelado.`
+          );
+          continue;
+        }
+
         successCount++;
-        totalValue += m.valor;
+        totalValue += m.transacao.valor;
 
         // Registra transação bancária confirmada para conciliação.
         // OFX não traz a conta: usa o id escolhido no preview. Sem conta
@@ -213,7 +246,7 @@ export function BaixaAutomaticaDialog({
             conta_bancaria_id: contaBancariaId,
             data: toISOLocal(m.transacao.data),
             descricao: `BAIXA AUT LOTE: ${m.cliente} - ${m.transacao.descricao}`,
-            valor: m.valor,
+            valor: m.transacao.valor,
             tipo: 'receita',
             conciliada: true,
             status: 'confirmado',
@@ -314,7 +347,15 @@ export function BaixaAutomaticaDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(aberto) => {
+        // Fechar pelo X do diálogo precisa descartar o preview — senão um
+        // extrato importado para uma empresa fica pendente na tela.
+        if (aberto) onOpenChange(true);
+        else handleClose();
+      }}
+    >
       <DialogContent
         className={cn(
           'transition-all duration-300',
