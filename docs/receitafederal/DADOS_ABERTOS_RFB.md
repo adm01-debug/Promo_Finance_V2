@@ -221,7 +221,7 @@ leva a lista de divergências com a fundamentação integral.
 
 O frescor dos quatro catálogos (cClassTrib, NCM/NBS, alíquotas e fundamentações)
 é medido pelo `CatalogosTributariosHealthPanel`: idade da última carga, versão IT e
-alerta acima de 7 dias sem sincronização (`avaliarFrescorCatalogosRfb`).
+alerta acima de 7 dias sem sincronização (`avaliarFrescorCatalogosRfb`, com prazo próprio por cadência: `DIAS_ALERTA_CATALOGO_RFB` = 7 dias para cClassTrib, NCM, NBS, CBS, IBS/UF e fundamentações, e `DIAS_ALERTA_CATALOGO_RFB_SEMANAL` = 9 dias para o IBS municipal, que roda aos domingos — o intervalo exato de 7 dias não daria margem para a rodada terminar).
 O frescor tem duas evidências: o carimbo da linha mais nova do catálogo (que
 congela quando a carga só reescreve chaves existentes, porque o `upsert` preserva
 `created_at`/`carregado_em`) e o último run bem-sucedido do job em `edge_function_logs`
