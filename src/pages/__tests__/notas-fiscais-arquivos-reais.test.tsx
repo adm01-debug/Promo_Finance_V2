@@ -100,25 +100,53 @@ describe('/notas-fiscais — lista e arquivos reais', () => {
   });
 
   it('abre só o XML/DANFE que a nota realmente tem', async () => {
+    const url = 'https://projeto.supabase.co/storage/v1/object/sign/nfe-xml/a.xml?token=abc';
     renderAbas([
-      criarNota({ id: 'com', xmlUrl: 'https://x/nfe.xml', pdfUrl: 'https://x/nfe.pdf' }),
+      criarNota({ id: 'com', xmlUrl: url, pdfUrl: url }),
       criarNota({ id: 'sem', chaveAcesso: '35240112345678000190550010000012341234567891' }),
     ]);
 
     const xml = screen.getAllByTitle('Abrir o XML autorizado')[0];
     await userEvent.click(xml);
-    expect(window.open).toHaveBeenCalledWith('https://x/nfe.xml', '_blank', 'noopener,noreferrer');
+    expect(window.open).toHaveBeenCalledWith(url, '_blank', 'noopener,noreferrer');
 
     const danfe = screen.getAllByTitle('Abrir o DANFE (PDF)')[0];
     await userEvent.click(danfe);
-    expect(window.open).toHaveBeenCalledWith('https://x/nfe.pdf', '_blank', 'noopener,noreferrer');
+    expect(window.open).toHaveBeenCalledWith(url, '_blank', 'noopener,noreferrer');
 
     const semArquivo = screen.getAllByTitle('XML não importado para esta nota');
     expect(semArquivo).toHaveLength(1);
     expect(semArquivo[0]).toBeDisabled();
-    expect(screen.getByTitle('DANFE não importado para esta nota')).toBeDisabled();
+    expect(screen.getByTitle('DANFE não armazenado — abra pelo Bling ERP')).toBeDisabled();
 
     expect(mockToast.success).not.toHaveBeenCalled();
+  });
+
+  it('não abre XML de host desconhecido mesmo gravado na nota', async () => {
+    renderAbas([criarNota({ id: 'phish', xmlUrl: 'https://phishing.example/nfe.xml' })]);
+
+    await userEvent.click(screen.getByTitle('Abrir o XML autorizado'));
+
+    expect(window.open).not.toHaveBeenCalled();
+    await vi.waitFor(() =>
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'XML não encontrado no armazenamento desta empresa.'
+      )
+    );
+  });
+
+  it('marca a nota de compra como entrada e mostra o fornecedor', () => {
+    renderAbas([
+      criarNota({
+        id: 'compra',
+        direcao: 'entrada',
+        destinatarioNome: '',
+        emitenteNome: 'Fornecedor ABC',
+      }),
+    ]);
+
+    expect(screen.getByText('Entrada')).toBeInTheDocument();
+    expect(screen.getByText('Fornecedor: Fornecedor ABC')).toBeInTheDocument();
   });
 
   it('soma os itens faturados das notas autorizadas', () => {

@@ -42,6 +42,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { statusConfig } from '@/components/nfe/nfe-types';
 import type { NotaFiscal } from '@/components/nfe/nfe-types';
+import { resolverUrlArquivo } from '@/hooks/useNotasFiscaisLocais';
 import { NFePreview } from '@/components/nfe/NFePreview';
 import { EventosHistorico } from '@/components/nfe/EventosHistorico';
 import { AlertasRejeicao } from '@/components/nfe/AlertasRejeicao';
@@ -57,9 +58,21 @@ import type { Dispatch, SetStateAction } from 'react';
  * XML e DANFE são links de arquivo importado. Antes desta correção os dois
  * botões anunciavam "XML baixado!" e "DANFE gerado!" sem baixar nada — o cliente
  * ficava com a impressão de que o arquivo fiscal existia.
+ *
+ * O XML autorizado pelo Bling não tem URL na nota: o arquivo vive no bucket
+ * privado. Nesse caso a URL assinada é gerada no clique, com o nome da empresa e
+ * a chave da nota, e nunca é persistida.
  */
-function abrirArquivoFiscal(url?: string) {
-  if (!url) return;
+async function abrirArquivoFiscal(nota: NotaFiscal, tipo: 'xml' | 'pdf') {
+  const url = await resolverUrlArquivo(nota, tipo);
+  if (!url) {
+    toast.error(
+      tipo === 'xml'
+        ? 'XML não encontrado no armazenamento desta empresa.'
+        : 'DANFE não armazenado para esta nota — abra pelo Bling ERP.'
+    );
+    return;
+  }
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 interface NotasFiscaisAbasProps {
@@ -181,13 +194,23 @@ export function NotasFiscaisAbas({
                               <span className="text-muted-foreground text-sm">
                                 Série {nota.serie}
                               </span>
+                              {nota.direcao === 'entrada' && (
+                                <Badge
+                                  variant="outline"
+                                  className="border-secondary/30 text-secondary"
+                                >
+                                  Entrada
+                                </Badge>
+                              )}
                               <Badge variant="outline" className={statusConfig[nota.status].color}>
                                 <StatusIcon className="h-3 w-3 mr-1" />
                                 {statusConfig[nota.status].label}
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground truncate">
-                              {nota.destinatarioNome}
+                              {nota.direcao === 'entrada'
+                                ? `Fornecedor: ${nota.emitenteNome || 'não informado'}`
+                                : `Destinatário: ${nota.destinatarioNome || 'não informado'}`}
                             </p>
                             <p className="text-xs text-muted-foreground font-mono mt-1 truncate">
                               {nota.chaveAcesso}
@@ -233,13 +256,13 @@ export function NotasFiscaisAbas({
                           <Button
                             variant="ghost"
                             size="icon"
-                            disabled={!nota.xmlUrl}
+                            disabled={!nota.xmlUrl && !nota.xmlNoStorage}
                             title={
-                              nota.xmlUrl
+                              nota.xmlUrl || nota.xmlNoStorage
                                 ? 'Abrir o XML autorizado'
                                 : 'XML não importado para esta nota'
                             }
-                            onClick={() => abrirArquivoFiscal(nota.xmlUrl)}
+                            onClick={() => void abrirArquivoFiscal(nota, 'xml')}
                           >
                             <FileCode className="h-4 w-4" />
                           </Button>
@@ -250,9 +273,9 @@ export function NotasFiscaisAbas({
                             title={
                               nota.pdfUrl
                                 ? 'Abrir o DANFE (PDF)'
-                                : 'DANFE não importado para esta nota'
+                                : 'DANFE não armazenado — abra pelo Bling ERP'
                             }
-                            onClick={() => abrirArquivoFiscal(nota.pdfUrl)}
+                            onClick={() => void abrirArquivoFiscal(nota, 'pdf')}
                           >
                             <Download className="h-4 w-4" />
                           </Button>
@@ -315,7 +338,7 @@ export function NotasFiscaisAbas({
                 <div>
                   <p className="text-sm text-muted-foreground">Ticket Médio</p>
                   <p className="text-2xl font-bold">
-                    {formatCurrency(totalEmitido / (notasAutorizadas || 1))}
+                    {notasAutorizadas > 0 ? formatCurrency(totalEmitido / notasAutorizadas) : '—'}
                   </p>
                 </div>
               </div>

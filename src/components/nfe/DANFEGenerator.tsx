@@ -70,12 +70,12 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.rect(10, 10, pageWidth - 20, 25);
-      doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, {
+      doc.text('Espelho da NF-e - resumo interno (nao substitui o DANFE)', pageWidth / 2, 18, {
         align: 'center',
       });
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
-      doc.text(`0 - ENTRADA / 1 - SAÍDA`, pageWidth / 2, 24, { align: 'center' });
+      doc.text('Documento de uso interno', pageWidth / 2, 24, { align: 'center' });
       doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie}`, pageWidth / 2, 30, {
         align: 'center',
       });
@@ -170,10 +170,10 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
       doc.setFont('helvetica', 'normal');
       doc.text(`Emissão: ${formatDate(nota.dataEmissao)}`, 14, finalY + 24);
 
-      doc.save(`DANFE_${nota.numero}.pdf`);
-      toast.success('DANFE gerado com sucesso!');
+      doc.save(`Espelho_Nota_${nota.numero}.pdf`);
+      toast.success('Espelho da nota gerado em PDF!');
     } catch {
-      toast.error('Erro ao gerar DANFE');
+      toast.error('Erro ao gerar o espelho da nota');
     } finally {
       setGenerating(false);
     }
@@ -185,9 +185,11 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            DANFE - NF-e {nota.numero}
+            Espelho da nota — NF-e {nota.numero}
           </DialogTitle>
-          <DialogDescription>Visualize e baixe o DANFE em PDF</DialogDescription>
+          <DialogDescription>
+            Resumo interno da nota. O DANFE fiscal é o PDF armazenado da nota.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -257,15 +259,8 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                generatePDF();
-                window.print();
-              }}
-              className="gap-2"
-            >
-              <Printer className="h-4 w-4" /> Imprimir
+            <Button variant="outline" onClick={() => window.print()} className="gap-2">
+              <Printer className="h-4 w-4" /> Imprimir resumo
             </Button>
             <Button onClick={generatePDF} disabled={generating} className="gap-2">
               {generating ? (
@@ -273,7 +268,7 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              Baixar DANFE (PDF)
+              Baixar resumo (PDF)
             </Button>
           </div>
         </div>

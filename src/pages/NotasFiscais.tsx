@@ -10,14 +10,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { FileText, Plus, Clock, CheckCircle2, XCircle, AlertCircle, RotateCw } from 'lucide-react';
+import {
+  FileText,
+  Plus,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  RotateCw,
+  TrendingDown,
+} from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { NotaFiscal } from '@/components/nfe/nfe-types';
 import { NovaNFeForm } from '@/components/nfe/NovaNFeForm';
 import { CancelamentoNFe } from '@/components/nfe/CancelamentoNFe';
 import { containerVariants, itemVariants } from './NotasFiscais.helpers';
 import { NotasFiscaisAbas } from './NotasFiscaisAbas';
-import { useNotasFiscaisLocais } from '@/hooks/useNotasFiscaisLocais';
+import { resumirNotas, useNotasFiscaisLocais } from '@/hooks/useNotasFiscaisLocais';
 
 export default function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,16 +49,10 @@ export default function NotasFiscais() {
     void recarregar();
   }, [recarregar]);
 
-  const totalEmitido = notas
-    .filter((n) => n.status === 'autorizada')
-    .reduce((acc, n) => acc + n.valorTotal, 0);
-  const totalCancelado = notas
-    .filter((n) => n.status === 'cancelada')
-    .reduce((acc, n) => acc + n.valorTotal, 0);
-  const totalPendente = notas
-    .filter((n) => n.status === 'pendente')
-    .reduce((acc, n) => acc + n.valorTotal, 0);
-  const notasAutorizadas = notas.filter((n) => n.status === 'autorizada').length;
+  // Os indicadores de emissão contam só saída: a importação de XML grava a
+  // contraparte em `cliente_*` e uma nota de compra não pode inflar o
+  // faturamento nem aparecer com o fornecedor no lugar do cliente.
+  const resumo = resumirNotas(notas);
   const agora = new Date();
   const notasDoMes = notas.filter((nota) => {
     const emissao = new Date(nota.dataEmissao);
@@ -64,6 +67,7 @@ export default function NotasFiscais() {
     const matchesSearch =
       nota.numero.includes(searchTerm) ||
       nota.destinatarioNome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      nota.emitenteNome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       nota.chaveAcesso.includes(searchTerm);
     const matchesStatus = statusFilter === 'todos' || nota.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -72,21 +76,27 @@ export default function NotasFiscais() {
   const kpis = [
     {
       label: 'Total Emitido',
-      value: totalEmitido,
-      count: notasAutorizadas,
+      value: resumo.totalEmitido,
+      count: resumo.notasAutorizadas,
       icon: CheckCircle2,
       color: 'text-success',
     },
     {
+      label: 'Entradas (compras)',
+      value: resumo.totalEntradas,
+      icon: TrendingDown,
+      color: 'text-secondary',
+    },
+    {
       label: 'Pendente Autorização',
-      value: totalPendente,
+      value: resumo.totalPendente,
       count: notas.filter((n) => n.status === 'pendente').length,
       icon: Clock,
       color: 'text-warning',
     },
     {
       label: 'Canceladas',
-      value: totalCancelado,
+      value: resumo.totalCancelado,
       count: notas.filter((n) => n.status === 'cancelada').length,
       icon: XCircle,
       color: 'text-destructive',
@@ -155,7 +165,7 @@ export default function NotasFiscais() {
 
         <motion.div
           variants={itemVariants}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
         >
           {kpis.map((kpi) => {
             const Icon = kpi.icon;
@@ -182,6 +192,13 @@ export default function NotasFiscais() {
           })}
         </motion.div>
 
+        {resumo.semClassificacao > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {resumo.semClassificacao} nota(s) sem CFOP nem natureza que identifique entrada ou saída
+            — contadas em "Total Emitido" até a próxima importação.
+          </p>
+        )}
+
         <motion.div variants={itemVariants}>
           <NotasFiscaisAbas
             searchTerm={searchTerm}
@@ -191,8 +208,8 @@ export default function NotasFiscais() {
             filteredNotas={filteredNotas}
             setNotaCancelar={setNotaCancelar}
             notas={notas}
-            totalEmitido={totalEmitido}
-            notasAutorizadas={notasAutorizadas}
+            totalEmitido={resumo.totalEmitido}
+            notasAutorizadas={resumo.notasAutorizadas}
           />
         </motion.div>
 

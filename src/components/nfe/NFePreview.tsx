@@ -8,7 +8,6 @@ import {
   Download,
   Copy,
   Check,
-  Printer,
   Mail,
   Building2,
   FileCode,
@@ -20,10 +19,24 @@ import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { DANFEGenerator } from '@/components/nfe/DANFEGenerator';
 import { NotaFiscal, statusConfig } from './nfe-types';
+import { resolverUrlArquivo } from '@/hooks/useNotasFiscaisLocais';
 
 export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
   const [copied, setCopied] = useState(false);
   const [danfeOpen, setDanfeOpen] = useState(false);
+
+  const abrirArquivo = async (tipo: 'xml' | 'pdf') => {
+    const url = await resolverUrlArquivo(nfe, tipo);
+    if (!url) {
+      toast.error(
+        tipo === 'xml'
+          ? 'XML não encontrado no armazenamento desta empresa.'
+          : 'DANFE não armazenado para esta nota — abra pelo Bling ERP.'
+      );
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   const handleCopyChave = () => {
     navigator.clipboard.writeText(nfe.chaveAcesso);
@@ -185,28 +198,33 @@ export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
       {/* Ações */}
       <div className="flex flex-wrap gap-2">
         <Button
-          onClick={() => toast.success('XML da NF-e baixado com sucesso!')}
+          onClick={() => void abrirArquivo('xml')}
+          disabled={!nfe.xmlUrl && !nfe.xmlNoStorage}
+          title={
+            nfe.xmlUrl || nfe.xmlNoStorage
+              ? 'Abrir o XML autorizado'
+              : 'XML não importado para esta nota'
+          }
           variant="outline"
           className="gap-2"
         >
           <FileCode className="h-4 w-4" /> Download XML
         </Button>
-        <Button onClick={() => setDanfeOpen(true)} className="gap-2">
-          <Download className="h-4 w-4" /> Download DANFE
-        </Button>
         <Button
-          variant="outline"
-          onClick={() => {
-            window.print();
-            toast.success('Enviado para impressão!');
-          }}
+          onClick={() => void abrirArquivo('pdf')}
+          disabled={!nfe.pdfUrl}
+          title={nfe.pdfUrl ? 'Abrir o DANFE (PDF)' : 'DANFE não armazenado — abra pelo Bling ERP'}
           className="gap-2"
         >
-          <Printer className="h-4 w-4" /> Imprimir
+          <Download className="h-4 w-4" /> Download DANFE
+        </Button>
+        <Button variant="outline" onClick={() => setDanfeOpen(true)} className="gap-2">
+          <FileText className="h-4 w-4" /> Espelho da nota
         </Button>
         <Button
           variant="outline"
-          onClick={() => toast.success('NF-e enviada por e-mail!')}
+          disabled
+          title="O envio por e-mail é feito pelo Bling ERP — este sistema não dispara a NF-e ao cliente"
           className="gap-2"
         >
           <Mail className="h-4 w-4" /> Enviar
