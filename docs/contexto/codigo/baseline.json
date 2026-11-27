@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "7c864eb93134033dd7dbd26128c7d7372d5edd5b",
+  "commit": "0ff86af849f609438c9424dbe12bb30fd24a2faa",
   "branch": "main",
-  "data_commit": "2026-11-26T21:19:18-03:00",
+  "data_commit": "2026-11-26T22:03:31-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0ff86af",
+    "data": "2026-11-26",
+    "assunto": "chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)"
+   },
    {
     "sha": "7c864eb",
     "data": "2026-11-26",
@@ -126,11 +131,6 @@
     "sha": "45de89c",
     "data": "2026-11-24",
     "assunto": "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)"
-   },
-   {
-    "sha": "8b0db85",
-    "data": "2026-11-24",
-    "assunto": "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)"
    }
   ],
   "arquivos_mudados_7d": 348,
@@ -161,7 +161,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 102
+    "mudancas": 95
    },
    {
     "pasta": "src/lib/__tests__",
@@ -210,15 +210,15 @@
     "mudancas": 10
    },
    {
+    "arquivo": "scripts/integrity/baseline/schema-counts.json",
+    "mudancas": 10
+   },
+   {
     "arquivo": "src/integrations/supabase/types.ts",
     "mudancas": 10
    },
    {
     "arquivo": "scripts/automation.config.json",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "scripts/integrity/baseline/schema-counts.json",
     "mudancas": 9
    },
    {
@@ -238,6 +238,10 @@
     "mudancas": 8
    },
    {
+    "arquivo": "scripts/integrity/baseline/expected-policies.json",
+    "mudancas": 8
+   },
+   {
     "arquivo": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 7
    },
@@ -246,19 +250,11 @@
     "mudancas": 7
    },
    {
-    "arquivo": "scripts/integrity/baseline/expected-policies.json",
-    "mudancas": 7
-   },
-   {
     "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
     "mudancas": 7
    },
    {
     "arquivo": "supabase/config.toml",
-    "mudancas": 7
-   },
-   {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 7
    },
    {
@@ -274,11 +270,7 @@
     "mudancas": 6
    },
    {
-    "arquivo": "supabase/functions/contabilizar-evento/index.ts",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 6
    },
    {
@@ -296,16 +288,24 @@
    {
     "arquivo": "src/components/dashboard/DashboardExecutivo.tsx",
     "mudancas": 5
+   },
+   {
+    "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "src/lib/arquitetura/grafo-observado.json",
+    "mudancas": 5
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 280
+    "commits": 281
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 20
+    "commits": 19
    }
   ]
  },

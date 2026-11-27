@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-27 01:18 UTC
+
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_23`
+
 ## 2026-11-27 00:38 UTC
 
 - **colunas** adicionado (7): `public.produto_cclasstrib_padrao.atualizado_em`, `public.produto_cclasstrib_padrao.atualizado_por`, `public.produto_cclasstrib_padrao.cclasstrib`, `public.produto_cclasstrib_padrao.codigo`, `public.produto_cclasstrib_padrao.cst`, `public.produto_cclasstrib_padrao.ncm`, `public.produto_cclasstrib_padrao.produto_id`

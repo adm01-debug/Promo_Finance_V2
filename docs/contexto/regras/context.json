@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "7c864eb93134033dd7dbd26128c7d7372d5edd5b",
+  "sha": "0ff86af849f609438c9424dbe12bb30fd24a2faa",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-27 00:27 UTC",
+  "generated_at": "2026-11-27 01:17 UTC",
   "files_total": 4164,
   "code_files": 3743,
   "code_lines": 540616
@@ -255333,10 +255333,20 @@
   }
  },
  "git": {
-  "sha": "7c864eb93134033dd7dbd26128c7d7372d5edd5b",
+  "sha": "0ff86af849f609438c9424dbe12bb30fd24a2faa",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "0ff86af",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)",
+    "files": [
+     "scripts/integrity/baseline/expected-policies.json",
+     "scripts/integrity/baseline/schema-counts.json"
+    ]
+   },
    {
     "sha": "7c864eb",
     "date": "2026-11-26",
@@ -255785,26 +255795,16 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "62b115c",
-    "date": "2026-11-24",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump framer-motion from 14.9.1 to 14.14.0 (#537)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    7
+    6
    ],
    [
     "package.json",
-    7
+    6
    ],
    [
     "src/hooks/useImportacaoXMLNFe.ts",
@@ -255821,6 +255821,14 @@
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
     4
+   ],
+   [
+    "scripts/integrity/baseline/expected-policies.json",
+    3
+   ],
+   [
+    "scripts/integrity/baseline/schema-counts.json",
+    3
    ],
    [
     "src/integrations/supabase/types.ts",
@@ -255860,14 +255868,6 @@
    ],
    [
     "supabase/functions/sync-fundamentacao-legal/index.ts",
-    2
-   ],
-   [
-    "scripts/integrity/baseline/expected-policies.json",
-    2
-   ],
-   [
-    "scripts/integrity/baseline/schema-counts.json",
     2
    ],
    [

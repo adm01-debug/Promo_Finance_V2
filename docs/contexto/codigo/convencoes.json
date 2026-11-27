@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)",
    "feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)",
    "feat: vínculo manual na baixa automática liquida o título escolhido (#574)",
    "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)",
-   "feat: simulador de elisão calcula e grava cenário com dados reais (#575)",
-   "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)"
+   "feat: simulador de elisão calcula e grava cenário com dados reais (#575)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
