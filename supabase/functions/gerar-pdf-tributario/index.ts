@@ -8,6 +8,8 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
+import { renderNotaCreditoApuracao } from './memoria-calculo.ts';
+
 import { getRequestId } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
@@ -318,18 +320,9 @@ Deno.serve(
         doc.setFontSize(9);
         doc.setTextColor(100, 116, 139);
         doc.text('Valores consolidados da apuração mensal.', 15, 28);
-        // A apuração só apropria crédito com origem = xml_destacado e
-        // efeito_tributario = true (useApuracoesTributarias.ts:247-263). O crédito
-        // estimado por alíquota existe na base e aparece na aba Créditos do
-        // painel (GestorCreditosTributarios.tsx:160-170), mas não entra nestes
-        // números — a nota anterior dizia o contrário disto e do rodapé desta
-        // página.
-        doc.text(
-          'Créditos apropriados: documentos com origem XML destacado (grupo IBSCBS da NF-e). Crédito estimado por alíquota não entra neste total; a discriminação por documento consta na aba Créditos do painel da Reforma Tributária.',
-          15,
-          33,
-          { maxWidth: 180 }
-        );
+        // A regra do crédito apropriado e o texto da nota vivem em
+        // memoria-calculo.ts; esta página só emite a nota da empresa do relatório.
+        renderNotaCreditoApuracao(doc, empresaNome);
         doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 44);
         doc.setTextColor(0, 0, 0);
 

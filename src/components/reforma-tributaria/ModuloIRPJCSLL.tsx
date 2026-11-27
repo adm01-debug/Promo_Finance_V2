@@ -32,9 +32,10 @@ import { Calculator, Plus } from 'lucide-react';
 import { useIRPJCSLL } from '@/hooks/useIRPJCSLL';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
-export function ModuloIRPJCSLL() {
+export function ModuloIRPJCSLL({ empresaId: empresaIdProp }: { empresaId?: string } = {}) {
   const { data: empresas } = useAllEmpresas();
-  const empresaId = empresas?.[0]?.id;
+  // A empresa do relatorio/painel manda; sem filtro, mantem a primeira da lista.
+  const empresaId = empresaIdProp || empresas?.[0]?.id;
 
   const {
     apuracoes,

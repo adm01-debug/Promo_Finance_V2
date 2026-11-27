@@ -197,11 +197,11 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
         );
 
       case 'apuracao':
-        return <ApuracaoMensal />;
+        return <ApuracaoMensal empresaId={empresaIdFiltro} />;
       case 'operacoes':
-        return <OperacoesLista />;
+        return <OperacoesLista empresaId={empresaIdFiltro} />;
       case 'creditos':
-        return <GestorCreditosTributarios />;
+        return <GestorCreditosTributarios empresaId={empresaIdFiltro} />;
       case 'calculadora':
         return <CalculadoraTributos />;
       case 'simulador':
@@ -211,7 +211,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       case 'cronograma':
         return <CronogramaTransicao />;
       case 'irpj-csll':
-        return <ModuloIRPJCSLL />;
+        return <ModuloIRPJCSLL empresaId={empresaIdFiltro} />;
       case 'retencoes':
         return <RetencoesFonte />;
       case 'exportacao':

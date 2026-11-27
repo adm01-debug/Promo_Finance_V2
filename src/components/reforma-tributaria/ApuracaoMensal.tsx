@@ -47,9 +47,10 @@ import { ApuracaoDetalheCard } from './apuracao/ApuracaoDetalheCard';
 import { meses } from './ApuracaoMensal.helpers';
 import { ApuracaoMensalKPICards } from './ApuracaoMensalKPICards';
 
-export function ApuracaoMensal() {
+export function ApuracaoMensal({ empresaId: empresaIdProp }: { empresaId?: string } = {}) {
   const { data: empresas } = useAllEmpresas();
-  const empresaId = empresas?.[0]?.id;
+  // A empresa do relatorio/painel manda; sem filtro, mantem a primeira da lista.
+  const empresaId = empresaIdProp || empresas?.[0]?.id;
   const { apuracoes, isLoading, criarApuracao, calcularApuracao, transmitirApuracao } =
     useApuracoesTributarias(empresaId);
 
