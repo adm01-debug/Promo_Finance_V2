@@ -3,9 +3,9 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2463)",
+   "TypeScript (2465)",
    "SQL (1158)",
-   "Markdown (231)",
+   "Markdown (232)",
    "JavaScript (77)",
    "Python (46)",
    "JSON (45)",
@@ -1259,7 +1259,7 @@
   },
   {
    "pasta": "docs/receitafederal",
-   "arquivos_md": 10
+   "arquivos_md": 11
   },
   {
    "pasta": "docs/guides",

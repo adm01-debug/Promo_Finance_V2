@@ -4650,6 +4650,7 @@
    "src/lib/formatters.ts"
   ],
   "src/components/nfe/NovaNFeForm.tsx": [
+   "src/components/nfe/PreValidacaoIbscbs.tsx",
    "src/components/nfe/nfe-types.ts",
    "src/components/ui/button.tsx",
    "src/components/ui/input.tsx",
@@ -4662,8 +4663,13 @@
    "src/hooks/useProdutoCclasstribPadrao.ts",
    "src/lib/formatters.ts",
    "src/lib/nfe/grupo-ibscbs-item.ts",
+   "src/lib/nfe/pre-validacao-nota.ts",
+   "src/lib/nfe/pre-validar-ibscbs.ts",
    "src/lib/reforma-tributaria/base-calculo.ts",
    "src/lib/tributario/produtos/cclasstrib-padrao.ts"
+  ],
+  "src/components/nfe/PreValidacaoIbscbs.tsx": [
+   "src/lib/nfe/pre-validar-ibscbs.ts"
   ],
   "src/components/nfe/SefazAnalytics.tsx": [
    "src/components/nfe/CustomTooltip.tsx",

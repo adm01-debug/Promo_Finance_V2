@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 301,
+ "total": 302,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 280,
+  "lib": 281,
   "python": 15
  },
  "arquivos": [
@@ -2607,7 +2607,7 @@
     "pages/clientes",
     "pages/tributario"
    ],
-   "coberto_por_testes": 2,
+   "coberto_por_testes": 3,
    "orfao": false
   },
   {
@@ -2962,6 +2962,30 @@
    "orfao": false
   },
   {
+   "arquivo": "src/lib/nfe/pre-validacao-nota.ts",
+   "camada": "lib",
+   "exports": [
+    "crtDoRegime",
+    "totaisDaNota"
+   ],
+   "export_default": null,
+   "linhas": 52,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/lib/nfe/pre-validar-ibscbs.ts",
    "camada": "lib",
    "exports": [
@@ -2986,10 +3010,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 0,
-   "usado_por_modulos": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
    "coberto_por_testes": 1,
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "src/lib/offline/fiscal-cache.ts",

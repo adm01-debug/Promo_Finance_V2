@@ -4257,13 +4257,13 @@
   },
   {
    "modulo": "components/nfe",
-   "arquivos": 31,
+   "arquivos": 32,
    "testes": 4,
-   "linhas": 6201,
+   "linhas": 6252,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
-   "componentes": 25,
+   "componentes": 26,
    "hooks_locais": [
     "useAuth",
     "useBlingNFe",
@@ -9276,9 +9276,9 @@
   },
   {
    "modulo": "lib/nfe",
-   "arquivos": 3,
+   "arquivos": 4,
    "testes": 3,
-   "linhas": 613,
+   "linhas": 665,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],

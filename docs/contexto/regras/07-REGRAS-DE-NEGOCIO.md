@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `0ff86af849` · branch `main` · 2026-11-27 01:17 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4bed532321` · branch `main` · 2026-11-27 02:42 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -3169,6 +3169,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const centavos = Math.round(base * 100); const aliquotaEscala4 = Math.round(arredondarAliquota(aliquota) * 10_000); return centavosPorRegraDoPar(centavos * aliquotaEscala4, 1_000_000) / 100;
   ```
+- **totaisDaNota(itens: readonly ItemComGrupo[])** — `src/lib/nfe/pre-validacao-nota.ts`
+  ```
+  vIBS: number; vCBS: number
+  ```
 - **preValidarIbscbs(ctx: ContextoValidacao)** — `src/lib/nfe/pre-validar-ibscbs.ts`
   ```
   const achados: AchadoValidacao[] = []; const { itens, totais, crt, dataEmissao } = ctx; const temGrupo = itens.some((i) => i.cst !== undefined && i.cst !== ''); const semGrupo = itens.filter((i) => i.cst === undefined || i.cst === ''); // UB12-10: CRT 3 a partir de 03/08/2026 não pode emitir nota sem o grupo. // A obrigatoriedade é por item: um item sem CST já basta para a rejeição. if (crt === 3 && dataEmissao >= INICIO_OBRIGATORIEDADE_IBSCBS && semGrupo.length > 0) { const todos = semGrupo.len …
@@ -5282,7 +5286,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4307 testes em 375 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4315 testes em 375 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5373,6 +5377,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/irpj-csll.test.ts` | 15 | IRPJ/CSLL — Lucro Real · aplica 15% + adicional 10% sobre o excedente trimestral · não gera adicional quando a base fica no limite de R$ 20 mil/mês · respeita a trava de 30% na compensação de prejuízo … |
 | `src/lib/tributario/__tests__/overlay-monofasico.test.ts` | 15 | aplicarOverlayMonofasico · não gera override quando o banco confirma o catálogo embarcado · registra inclusão de NCM não coberto pelo motor · registra exclusão de NCM classificado pelo motor … |
 | `src/lib/tributario/__tests__/robustness-consistency.test.ts` | 15 | Testes de Robustez e Casos de Borda Tributários · Valores Extremos e Arredondamentos · deve lidar com faturamento zero corretamente · deve lidar com margem de lucro de 100% corretamente … |
+| `src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx` | 14 | NovaNFeForm ao trocar de SKU · troca o NCM herdado do SKU anterior pelo NCM do SKU novo · limpa o NCM herdado quando o SKU novo nao tem padrao · marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo … |
 | `src/hooks/useBoletos.validation.test.ts` | 14 | validarEmissaoBoletoConfirmada · aceita uma confirmação completa do provedor · impede criar boleto sem identificador externo · impede criar boleto sem instrumentos de pagamento … |
 | `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 14 | registrarPagamento · grava data_pagamento e valor_pago na parcela · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  … |
 | `src/hooks/__tests__/usePreferenciasSistema.test.tsx` | 14 | usePreferenciasSistema — estados de leitura · carregado=false enquanto a leitura está pendente · carregado=true com os defaults quando não há registro · carrega o payload salvo mesclado aos defaults … |
@@ -5521,7 +5526,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/reprocessar-creditos-ibscbs/__tests__/reprocessar_test.ts` | 7 | montarCreditos — nota 2026 destacada gera credito informativo (saldo 0) · montarCreditos — nota 2027+ destacada gera credito apropriavel (saldo cheio) · montarCreditos — sem grupo nao inventa credito · montarCreditos — grupo presente com valores zerados nao gera credito … |
 | `src/components/admin/__tests__/fiscal-health-ibscbs.test.tsx` | 6 | FiscalHealthBadge -- metrica IBS/CBS nao fabricada (etapa 57) · sem empresaId -> badge IBS/CBS nao aparece · com empresaId mas sem verificacao previa -> badge IBS/CBS nao aparece · 20 de 100 sem IBS/CBS -> exibe IBS/CBS 80% … |
 | `src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts` | 6 | buildDryRunPayload · passa no schema strict (sem lote_quantidade, evento_id uuid) · com ignoreRules envia ignore_rules e continua válido · categoria  … |
-| `src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx` | 6 | NovaNFeForm ao trocar de SKU · troca o NCM herdado do SKU anterior pelo NCM do SKU novo · limpa o NCM herdado quando o SKU novo nao tem padrao · marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo … |
 | `src/hooks/__tests__/useAlertasPreditivos.test.ts` | 6 | useAlertasPreditivos · gera alerta de ruptura quando saldo projetado fica negativo · detecta concentração de risco quando cliente >30% do total · não gera alertas se cenário saudável … |
 | `src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx` | 6 | useUploadCertificado — erro da Edge Function · leva o motivo devolvido pela função até o toast · aceita  · cai para a mensagem PT-BR do status quando o corpo não traz motivo … |
 | `src/hooks/__tests__/useConciliacao.confirmar.test.tsx` | 6 | confirmarConciliacao · confirma pelo proxy sem reescrever nada fora da transação · manda os metadados de compensação junto com a confirmação · não manda bloco de compensação quando não houve ajuste … |
@@ -5979,6 +5983,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | (mínimo 15 caracteres)</Label> | `src/components/nfe/InutilizacaoNFe.tsx` |
 | * O par CST + cClassTrib e uma decisao fiscal (padrao do produto, regra por NCM | `src/components/nfe/NovaNFeForm.tsx` |
 | So o padrao herdado do SKU anterior sai de cena, e a regra por NCM | `src/components/nfe/NovaNFeForm.tsx` |
+| * Achados da pré-validação IBS/CBS do contexto atual (etapa 54 do plano RT/RFB). */ | `src/components/nfe/NovaNFeForm.tsx` |
 | Must be rendered inside QueryClientProvider and AuthProvider. | `src/components/providers/DataPrefetcher.tsx` |
 | aproveitável ou é apenas informativo (ano de teste de 2026). | `src/components/reforma-tributaria/ImportacaoXMLPanel.tsx` |
 | a mensagem de cada regra para o usuário conferir com o contador. | `src/components/reforma-tributaria/ImportacaoXMLPanel.tsx` |
@@ -6180,5 +6185,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Classificação de mensagens de validação SPED (ECF/ECD) em categorias | `src/lib/sped-validacoes-categorias.ts` |
 | # PASSO A PASSO — Validação no ${pvaNome}`, | `src/lib/sped-zip.ts` |
 | Auditoria nunca deve quebrar o fluxo de logout. | `src/lib/sso-slo-audit.ts` |
-| * Motivação: o gerador de tipos do Supabase reflete apenas o snapshot do schema | `src/lib/supabase-dynamic.ts` |
-| … +527 linhas — lista completa em `context.json` | |
+| … +533 linhas — lista completa em `context.json` | |

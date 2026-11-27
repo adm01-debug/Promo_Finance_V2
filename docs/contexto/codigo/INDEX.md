@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0ff86af849f609438c9424dbe12bb30fd24a2faa` (2026-11-26T22:03:31-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4bed5323219eb36ab017d99a90f52f2521bf7fff` (2026-11-26T23:42:10-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2463), SQL (1158), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2465), SQL (1158), Markdown (232), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,15 +34,15 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4125 |
-| arquivos_codigo | 2584 |
-| linhas_codigo | 467228 |
+| arquivos_total | 4128 |
+| arquivos_codigo | 2586 |
+| linhas_codigo | 467431 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
 | modulos | 129 |
-| componentes | 994 |
+| componentes | 995 |
 | hooks | 278 |
 | edge_functions | 112 |
 | tabelas | 319 |
@@ -51,13 +51,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 543 |
 | workflows | 20 |
 | scripts | 117 |
-| docs_md | 231 |
+| docs_md | 232 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (782), src/pages (208), src/hooks (2)
+- componentes: src/components (783), src/pages (208), src/hooks (2)
 - hooks: src/hooks (242), src/components (27), src/pages (5)
-- servicos_logica: src/lib (280), scripts/graphify (7), src/integrations (3)
+- servicos_logica: src/lib (281), scripts/graphify (7), src/integrations (3)
 - testes: co-localizado (__tests__) (338), outro (113), co-localizado (*.test) (50)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
@@ -99,7 +99,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/integracoes | 0 | 0 | 6 | 1 | 3 | 5 |
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
 | components/navigation | 0 | 0 | 5 | 3 | 0 | 2 |
-| components/nfe | 0 | 0 | 31 | 27 | 3 | 30 |
+| components/nfe | 0 | 0 | 32 | 27 | 3 | 30 |
 | components/reforma-tributaria | 0 | 0 | 67 | 31 | 1 | 32 |
 | components/relatorios | 0 | 0 | 22 | 27 | 3 | 16 |
 | components/security | 0 | 0 | 6 | 5 | 2 | 10 |
@@ -472,21 +472,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (31)
-- bun.lock (29)
+- package.json (30)
+- bun.lock (28)
 - .github/workflows/ci.yml (10)
 - scripts/integrity/baseline/schema-counts.json (10)
 - src/integrations/supabase/types.ts (10)
+- docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md (9)
+- docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (9)
 - scripts/automation.config.json (9)
 - analise-prs/progresso.json (8)
-- docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md (8)
-- docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (8)
-- env.manifest.json (8)
 - scripts/integrity/baseline/expected-policies.json (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - docs/ci/README.md (7)
+- env.manifest.json (7)
 - src/hooks/useImportacaoXMLNFe.ts (7)
-- supabase/config.toml (7)
+- docs/prod-readiness.md (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -643,10 +643,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/contract-conformance-summary.md` — Conformidade de Contratos — Edge Functions (117 linhas)
 - `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (907 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
-- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/receitafederal (10), docs/guides (9), docs/execucao-cline (5), docs/qa (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (16), docs/agentes (13), docs/receitafederal (11), docs/guides (9), docs/execucao-cline (5), docs/qa (5), docs/runbooks (5), docs/auditoria (2), docs/auditoria-financeira-20260910 (2), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/auditoria-20260912 (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `4bed532` feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)
+- 2026-11-26 `197f2a2` docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)
 - 2026-11-26 `0ff86af` chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)
 - 2026-11-26 `7c864eb` feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)
 - 2026-11-26 `5bf3c2d` feat: vínculo manual na baixa automática liquida o título escolhido (#574)
@@ -660,8 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `455790a` fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)
 - 2026-11-25 `6d2275f` feat: fundamentacao legal por item da nota (etapa 82) (#563)
 - 2026-11-25 `26cb299` feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)
-- 2026-11-25 `b449a65` fix: remove import wildcard de lucide-react no chunk de Categorias (#559)
-- 2026-11-25 `729184f` fix: migra react-day-picker para v10 (calendar + callers) (#544)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

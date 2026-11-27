@@ -1196,12 +1196,15 @@
   {
    "arquivo": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
    "tipo": "unit",
-   "linhas": 128,
+   "linhas": 228,
    "testa": [
     "src/components/nfe/NovaNFeForm.tsx",
+    "src/components/nfe/nfe-types.ts",
+    "src/lib/formatters.ts",
+    "src/lib/nfe/pre-validacao-nota.ts",
     "src/lib/tributario/produtos/cclasstrib-padrao.ts"
    ],
-   "casos": 5
+   "casos": 11
   },
   {
    "arquivo": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
@@ -4947,7 +4950,7 @@
   "src/components/nfe/NovaNFeForm.tsx": 1,
   "src/components/nfe/SefazMonitor.tsx": 1,
   "src/components/nfe/contingencia/ContingenciaPendingList.tsx": 1,
-  "src/components/nfe/nfe-types.ts": 2,
+  "src/components/nfe/nfe-types.ts": 3,
   "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx": 1,
   "src/components/nfe/sefaz-monitor/SefazMetricsCards.tsx": 1,
   "src/components/nfe/sefaz-monitor/SefazStatusBanner.tsx": 1,
@@ -5085,7 +5088,7 @@
   "src/lib/financeiro/conciliacao-extrato.ts": 1,
   "src/lib/financeiro/divergencias-pendentes.ts": 1,
   "src/lib/format-filter-value.ts": 1,
-  "src/lib/formatters.ts": 2,
+  "src/lib/formatters.ts": 3,
   "src/lib/import-checkpoint.ts": 1,
   "src/lib/ip-mask.ts": 1,
   "src/lib/lancamentos-csv-importer.ts": 1,
@@ -5095,6 +5098,7 @@
   "src/lib/navigation.ts": 3,
   "src/lib/nfe/grupo-ibscbs-item.ts": 1,
   "src/lib/nfe/parse-ibscbs.ts": 2,
+  "src/lib/nfe/pre-validacao-nota.ts": 1,
   "src/lib/nfe/pre-validar-ibscbs.ts": 1,
   "src/lib/offline/fiscal-cache.ts": 2,
   "src/lib/ofx-parser.ts": 8,

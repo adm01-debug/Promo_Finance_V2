@@ -6,7 +6,7 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (782)",
+   "src/components (783)",
    "src/pages (208)",
    "src/hooks (2)"
   ],
@@ -16,7 +16,7 @@
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (280)",
+   "src/lib (281)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
@@ -47,7 +47,7 @@
  },
  "barrels_index": 34,
  "extensao_componentes": [
-  ".tsx (994)"
+  ".tsx (995)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)",
+   "docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)",
    "chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)",
    "feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)",
-   "feat: vínculo manual na baixa automática liquida o título escolhido (#574)",
-   "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)",
-   "feat: simulador de elisão calcula e grava cenário com dados reais (#575)"
+   "feat: vínculo manual na baixa automática liquida o título escolhido (#574)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

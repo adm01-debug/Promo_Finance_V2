@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 994,
+ "total": 995,
  "orfaos": 38,
  "nomes_duplicados": {
   "Accordion": [
@@ -8242,13 +8242,27 @@
     "NovaNFeForm"
    ],
    "export_default": null,
-   "linhas": 463,
+   "linhas": 481,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useCatalogoCclasstrib",
     "useEmpresas",
     "useProdutoCclasstribPadrao"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/nfe/PreValidacaoIbscbs.tsx",
+   "exports": [
+    "PreValidacaoIbscbs"
+   ],
+   "export_default": null,
+   "linhas": 33,
+   "dominio": "components/nfe",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,

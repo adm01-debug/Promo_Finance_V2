@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "0ff86af849f609438c9424dbe12bb30fd24a2faa",
+  "sha": "4bed5323219eb36ab017d99a90f52f2521bf7fff",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-27 01:17 UTC",
-  "files_total": 4164,
-  "code_files": 3743,
-  "code_lines": 540616
+  "generated_at": "2026-11-27 02:42 UTC",
+  "files_total": 4167,
+  "code_files": 3745,
+  "code_lines": 540821
  },
  "version": "1.3.2",
- "facts_hash": "be5483fb048863f7",
+ "facts_hash": "45f39d7b3b503729",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1324,
+   ".ts": 1325,
    ".sql": 1158,
-   ".tsx": 1139,
+   ".tsx": 1140,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -63046,7 +63046,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 169
+    "deps_count": 172
    },
    {
     "path": "/orcamento-evento",
@@ -68192,7 +68192,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1022,
+  "components_count": 1023,
   "hooks": [
    {
     "name": "useContacts",
@@ -71265,8 +71265,8 @@
   },
   {
    "module": "src/components",
-   "files": 1020,
-   "lines": 170712,
+   "files": 1021,
+   "lines": 170864,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71886,8 +71886,8 @@
   },
   {
    "module": "src/lib",
-   "files": 456,
-   "lines": 64091,
+   "files": 457,
+   "lines": 64144,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -85939,6 +85939,10 @@
     "text": "So o padrao herdado do SKU anterior sai de cena, e a regra por NCM"
    },
    {
+    "file": "src/components/nfe/NovaNFeForm.tsx",
+    "text": "* Achados da pré-validação IBS/CBS do contexto atual (etapa 54 do plano RT/RFB). */"
+   },
+   {
     "file": "src/components/providers/DataPrefetcher.tsx",
     "text": "Must be rendered inside QueryClientProvider and AuthProvider."
    },
@@ -86941,6 +86945,26 @@
    {
     "file": "src/lib/nfe/parse-ibscbs.ts",
     "text": "isso o crédito regular não pode ser lido só de `vIBS`/`vCBS`."
+   },
+   {
+    "file": "src/lib/nfe/pre-validacao-nota.ts",
+    "text": "* Insumos que o formulário de NF-e (NovaNFeForm) passa à pré-validação IBS/CBS e que"
+   },
+   {
+    "file": "src/lib/nfe/pre-validacao-nota.ts",
+    "text": "o componente e os testes (regra react-refresh/only-export-components)."
+   },
+   {
+    "file": "src/lib/nfe/pre-validacao-nota.ts",
+    "text": "desconhecido devolve `undefined` — sem CRT a pré-validação não afirma nada sobre a"
+   },
+   {
+    "file": "src/lib/nfe/pre-validacao-nota.ts",
+    "text": "dos itens é o valor que a nota carrega, então passá-la à pré-validação evita o"
+   },
+   {
+    "file": "src/lib/nfe/pre-validacao-nota.ts",
+    "text": "pré-validação não comparar total zero com nota sem grupo."
    },
    {
     "file": "src/lib/nfe/pre-validar-ibscbs.ts",
@@ -119526,6 +119550,12 @@
     "body": "const centavos = Math.round(base * 100); const aliquotaEscala4 = Math.round(arredondarAliquota(aliquota) * 10_000); return centavosPorRegraDoPar(centavos * aliquotaEscala4, 1_000_000) / 100;"
    },
    {
+    "file": "src/lib/nfe/pre-validacao-nota.ts",
+    "name": "totaisDaNota",
+    "params": "itens: readonly ItemComGrupo[]",
+    "body": "vIBS: number; vCBS: number"
+   },
+   {
     "file": "src/lib/nfe/pre-validar-ibscbs.ts",
     "name": "preValidarIbscbs",
     "params": "ctx: ContextoValidacao",
@@ -125590,6 +125620,38 @@
    {
     "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
     "name": "preserva o NCM digitado a mao"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "NovaNFeForm: pre-validacao do grupo IBS/CBS"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "lista o cClassTrib do padrao do SKU quando ele nao existe no catalogo vigente"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "NovaNFeForm: totais do grupo e CRT do emitente"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "soma os totais do grupo a partir dos itens enquadrados"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "usa vIBSUF + vIBSMun quando o item nao traz o total de IBS"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "nao informa totais quando nenhum item tem grupo"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "mapeia Lucro Arbitrado para CRT 3"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "nao acusa total ausente nem divergencia 1091 com dois itens enquadrados e valorizados"
    },
    {
     "file": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
@@ -198867,7 +198929,7 @@
   },
   "src/components/nfe/NovaNFeForm.tsx": {
    "path": "src/components/nfe/NovaNFeForm.tsx",
-   "lines": 464,
+   "lines": 482,
    "exports": [
     "function NovaNFeForm"
    ],
@@ -198876,7 +198938,8 @@
    ],
    "rule_comments": [
     "* O par CST + cClassTrib e uma decisao fiscal (padrao do produto, regra por NCM",
-    "So o padrao herdado do SKU anterior sai de cena, e a regra por NCM"
+    "So o padrao herdado do SKU anterior sai de cena, e a regra por NCM",
+    "* Achados da pré-validação IBS/CBS do contexto atual (etapa 54 do plano RT/RFB). */"
    ],
    "calc_fns": [
     {
@@ -198884,6 +198947,13 @@
      "params": "item: ItemNFe",
      "body": ""
     }
+   ]
+  },
+  "src/components/nfe/PreValidacaoIbscbs.tsx": {
+   "path": "src/components/nfe/PreValidacaoIbscbs.tsx",
+   "lines": 34,
+   "exports": [
+    "function PreValidacaoIbscbs"
    ]
   },
   "src/components/nfe/SefazAnalytics.helpers.ts": {
@@ -199025,11 +199095,12 @@
   },
   "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx": {
    "path": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
-   "lines": 129,
+   "lines": 229,
    "is_test": true,
    "rule_comments": [
     "Mesma regra do hook real: `codigos` e derivado das `opcoes`, nunca um set a",
-    "parte. Catalogo vazio = nenhum cClassTrib disponivel para a regra por NCM."
+    "parte. Catalogo vazio = nenhum cClassTrib disponivel para a regra por NCM.",
+    "Item 2 com base diferente: se a tela mandasse a pre-validacao apenas o"
    ],
    "doc": "Achados do Devin na PR #569: trocar o SKU do item carregava o NCM do produto anterior (digitar `KIT-12` passa por `KIT-1` e herdava o NCM dele) e o NCM digitado a mao era sobrescrito. Os dois casos sao dirigidos pela tela. A classificacao manual (escolha no seletor) e coberta em `cclasstribManualApo …",
    "tests": [
@@ -199038,7 +199109,15 @@
     "limpa o NCM herdado quando o SKU novo nao tem padrao",
     "marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo",
     "nao marca o total como parcial quando o catalogo tem o cClassTrib do padrao",
-    "preserva o NCM digitado a mao"
+    "preserva o NCM digitado a mao",
+    "NovaNFeForm: pre-validacao do grupo IBS/CBS",
+    "lista o cClassTrib do padrao do SKU quando ele nao existe no catalogo vigente",
+    "NovaNFeForm: totais do grupo e CRT do emitente",
+    "soma os totais do grupo a partir dos itens enquadrados",
+    "usa vIBSUF + vIBSMun quando o item nao traz o total de IBS",
+    "nao informa totais quando nenhum item tem grupo",
+    "mapeia Lucro Arbitrado para CRT 3",
+    "nao acusa total ausente nem divergencia 1091 com dois itens enquadrados e valorizados"
    ]
   },
   "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx": {
@@ -222818,6 +222897,29 @@
    ],
    "rule_comments": [
     "isso o crédito regular não pode ser lido só de `vIBS`/`vCBS`."
+   ]
+  },
+  "src/lib/nfe/pre-validacao-nota.ts": {
+   "path": "src/lib/nfe/pre-validacao-nota.ts",
+   "lines": 53,
+   "exports": [
+    "const crtDoRegime",
+    "const totaisDaNota"
+   ],
+   "rule_comments": [
+    "* Insumos que o formulário de NF-e (NovaNFeForm) passa à pré-validação IBS/CBS e que",
+    "o componente e os testes (regra react-refresh/only-export-components).",
+    "desconhecido devolve `undefined` — sem CRT a pré-validação não afirma nada sobre a",
+    "dos itens é o valor que a nota carrega, então passá-la à pré-validação evita o",
+    "pré-validação não comparar total zero com nota sem grupo."
+   ],
+   "doc": "Insumos que o formulário de NF-e (NovaNFeForm) passa à pré-validação IBS/CBS e que não são lidos de campo da tela: o CRT do emitente e os totais do grupo. Ficam aqui, e não no componente, porque são funções puras compartilhadas entre o componente e os testes (regra react-refresh/only-export-componen …",
+   "calc_fns": [
+    {
+     "name": "totaisDaNota",
+     "params": "itens: readonly ItemComGrupo[]",
+     "body": "vIBS: number; vCBS: number"
+    }
    ]
   },
   "src/lib/nfe/pre-validar-ibscbs.ts": {
@@ -255333,10 +255435,33 @@
   }
  },
  "git": {
-  "sha": "0ff86af849f609438c9424dbe12bb30fd24a2faa",
+  "sha": "4bed5323219eb36ab017d99a90f52f2521bf7fff",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "4bed532",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)",
+    "files": [
+     "docs/receitafederal/BLING_NFE_IBSCBS.md",
+     "src/components/nfe/NovaNFeForm.tsx",
+     "src/components/nfe/PreValidacaoIbscbs.tsx",
+     "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+     "src/lib/nfe/pre-validacao-nota.ts"
+    ]
+   },
+   {
+    "sha": "197f2a2",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)",
+    "files": [
+     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md"
+    ]
+   },
    {
     "sha": "0ff86af",
     "date": "2026-11-26",
@@ -255775,43 +255900,19 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "6ef837b",
-    "date": "2026-11-24",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps-dev): bump @testing-library/user-event from 14.6.1 to 14.6.13 (#543)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
-   },
-   {
-    "sha": "3f209ea",
-    "date": "2026-11-24",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps-dev): bump lint-staged from 15.5.2 to 17.6.1 (#540)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
-    "bun.lock",
-    6
+    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    5
    ],
    [
-    "package.json",
-    6
-   ],
-   [
-    "src/hooks/useImportacaoXMLNFe.ts",
+    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
     4
    ],
    [
-    "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
+    "src/hooks/useImportacaoXMLNFe.ts",
     4
    ],
    [
@@ -255820,6 +255921,14 @@
    ],
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
+    4
+   ],
+   [
+    "bun.lock",
+    4
+   ],
+   [
+    "package.json",
     4
    ],
    [
@@ -255835,10 +255944,6 @@
     3
    ],
    [
-    "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    3
-   ],
-   [
     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
     3
    ],
@@ -255849,6 +255954,14 @@
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
     3
+   ],
+   [
+    "src/components/nfe/NovaNFeForm.tsx",
+    2
+   ],
+   [
+    "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    2
    ],
    [
     "src/lib/tributario/catalogos/fundamentacao-legal.ts",
@@ -255868,14 +255981,6 @@
    ],
    [
     "supabase/functions/sync-fundamentacao-legal/index.ts",
-    2
-   ],
-   [
-    "SECURITY_RULES.md",
-    2
-   ],
-   [
-    "scripts/ci/deno-check-functions.sh",
     2
    ]
   ]
