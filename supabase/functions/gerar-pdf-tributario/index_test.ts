@@ -14,16 +14,19 @@ import { notaCreditoApuracao, renderNotaCreditoApuracao } from './memoria-calcul
 
 const FONTE = await Deno.readTextFile(new URL('./index.ts', import.meta.url));
 
-Deno.test('a nota de crédito é impressa na página com a regra e o destino do crédito estimado', () => {
-  const impressos: string[] = [];
-  renderNotaCreditoApuracao({ text: (texto) => impressos.push(texto) }, 'Alfa Ltda');
+Deno.test(
+  'a nota de crédito é impressa na página com a regra e o destino do crédito estimado',
+  () => {
+    const impressos: string[] = [];
+    renderNotaCreditoApuracao({ text: (texto) => impressos.push(texto) }, 'Alfa Ltda');
 
-  assertEquals(impressos.length, 1, 'a nota tem de sair em uma única chamada de doc.text');
-  assertStringIncludes(impressos[0], 'origem XML destacado');
-  assertStringIncludes(impressos[0], 'Crédito estimado por alíquota não entra neste total');
-  assertStringIncludes(impressos[0], 'aba Créditos do painel da Reforma Tributária');
-  assertStringIncludes(impressos[0], 'com a empresa Alfa Ltda selecionada');
-});
+    assertEquals(impressos.length, 1, 'a nota tem de sair em uma única chamada de doc.text');
+    assertStringIncludes(impressos[0], 'origem XML destacado');
+    assertStringIncludes(impressos[0], 'Crédito estimado por alíquota não entra neste total');
+    assertStringIncludes(impressos[0], 'aba Créditos do painel da Reforma Tributária');
+    assertStringIncludes(impressos[0], 'com a empresa Alfa Ltda selecionada');
+  }
+);
 
 Deno.test('a nota de crédito não volta a somar a estimativa no total', () => {
   assert(
@@ -37,12 +40,16 @@ Deno.test('quem emite a nota é a página da memória de cálculo', () => {
   const rodape = FONTE.indexOf('Base legal: LC 214/2025 arts. 7-11', titulo);
   const pagina = FONTE.slice(FONTE.lastIndexOf('doc.addPage();', titulo), rodape);
 
-  assert(titulo > 0 && rodape > titulo, 'o título ou o rodapé da memória de cálculo sumiu do handler');
+  assert(
+    titulo > 0 && rodape > titulo,
+    'o título ou o rodapé da memória de cálculo sumiu do handler'
+  );
   assertStringIncludes(pagina, 'doc.addPage();');
   assertStringIncludes(pagina, 'renderNotaCreditoApuracao(doc, empresaNome);');
   // Nota que sai antes da página existir não chega ao PDF.
   assert(
-    pagina.indexOf('doc.addPage();') < pagina.indexOf('renderNotaCreditoApuracao(doc, empresaNome);'),
+    pagina.indexOf('doc.addPage();') <
+      pagina.indexOf('renderNotaCreditoApuracao(doc, empresaNome);'),
     'a nota tem de ser emitida depois de a página ser criada'
   );
 });
