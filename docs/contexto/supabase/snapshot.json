@@ -302,7 +302,7 @@
         "is_default": true,
         "name": "main",
         "persistent": false,
-        "status": "FUNCTIONS_FAILED"
+        "status": "MIGRATIONS_FAILED"
       }
     ],
     "custom_hostname": null,
@@ -36313,6 +36313,97 @@
         "type": "integer"
       },
       {
+        "comment": null,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "produto_id",
+        "nullable": false,
+        "position": 1,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "text"
+      },
+      {
+        "comment": null,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "codigo",
+        "nullable": true,
+        "position": 2,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "text"
+      },
+      {
+        "comment": null,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "ncm",
+        "nullable": true,
+        "position": 3,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "character(8)"
+      },
+      {
+        "comment": null,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "cst",
+        "nullable": false,
+        "position": 4,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "character(3)"
+      },
+      {
+        "comment": null,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "cclasstrib",
+        "nullable": false,
+        "position": 5,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "character(6)"
+      },
+      {
+        "comment": null,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "atualizado_em",
+        "nullable": false,
+        "position": 6,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "timestamp with time zone"
+      },
+      {
+        "comment": null,
+        "default": "auth.uid()",
+        "generated": null,
+        "identity": null,
+        "is_enum": false,
+        "name": "atualizado_por",
+        "nullable": true,
+        "position": 7,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "uuid"
+      },
+      {
         "comment": "Dicionário estrutural da coluna id em public.profiles. Papel funcional indicado pelo identificador: id; o catálogo não especifica significado adicional. Tipo: uuid. Nulabilidade: NOT NULL. Geração: não declarada como gerada. Default: nenhum. Valores de enum: não aplicável. Restrições que envolvem a coluna: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE; PRIMARY KEY (id). Não há domínio enumerado imposto pelo banco quando nenhuma restrição ou enum é listada. Comentário anterior no catálogo: nenhum",
         "default": null,
         "generated": null,
@@ -63343,6 +63434,74 @@
       },
       {
         "columns": [
+          "cclasstrib"
+        ],
+        "deferrable": false,
+        "definition": "CHECK (cclasstrib ~ '^[0-9]{6}$'::text)",
+        "name": "produto_cclasstrib_padrao_cclasstrib_chk",
+        "on_delete": null,
+        "on_update": null,
+        "ref_columns": [],
+        "ref_schema": null,
+        "ref_table": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "CHECK",
+        "validated": true
+      },
+      {
+        "columns": [
+          "cst"
+        ],
+        "deferrable": false,
+        "definition": "CHECK (cst ~ '^[0-9]{3}$'::text)",
+        "name": "produto_cclasstrib_padrao_cst_chk",
+        "on_delete": null,
+        "on_update": null,
+        "ref_columns": [],
+        "ref_schema": null,
+        "ref_table": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "CHECK",
+        "validated": true
+      },
+      {
+        "columns": [
+          "ncm"
+        ],
+        "deferrable": false,
+        "definition": "CHECK (ncm IS NULL OR ncm ~ '^[0-9]{8}$'::text)",
+        "name": "produto_cclasstrib_padrao_ncm_chk",
+        "on_delete": null,
+        "on_update": null,
+        "ref_columns": [],
+        "ref_schema": null,
+        "ref_table": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "CHECK",
+        "validated": true
+      },
+      {
+        "columns": [
+          "produto_id"
+        ],
+        "deferrable": false,
+        "definition": "PRIMARY KEY (produto_id)",
+        "name": "produto_cclasstrib_padrao_pkey",
+        "on_delete": null,
+        "on_update": null,
+        "ref_columns": [],
+        "ref_schema": null,
+        "ref_table": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "type": "PRIMARY KEY",
+        "validated": true
+      },
+      {
+        "columns": [
           "id"
         ],
         "deferrable": false,
@@ -73846,7 +74005,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 41,
+          "code_total_files": 42,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -81556,6 +81715,18 @@
           "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
           "schema": "public",
           "table": "prejuizos_fiscais"
+        },
+        {
+          "grantee": "authenticated",
+          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
+          "schema": "public",
+          "table": "produto_cclasstrib_padrao"
+        },
+        {
+          "grantee": "service_role",
+          "privileges": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE",
+          "schema": "public",
+          "table": "produto_cclasstrib_padrao"
         },
         {
           "grantee": "authenticated",
@@ -90521,6 +90692,48 @@
       },
       {
         "columns": [
+          "codigo"
+        ],
+        "definition": "CREATE INDEX produto_cclasstrib_padrao_codigo_idx ON public.produto_cclasstrib_padrao USING btree (codigo)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "produto_cclasstrib_padrao_codigo_idx",
+        "predicate": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao"
+      },
+      {
+        "columns": [
+          "ncm"
+        ],
+        "definition": "CREATE INDEX produto_cclasstrib_padrao_ncm_idx ON public.produto_cclasstrib_padrao USING btree (ncm)",
+        "is_primary": false,
+        "is_unique": false,
+        "is_valid": true,
+        "method": "btree",
+        "name": "produto_cclasstrib_padrao_ncm_idx",
+        "predicate": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao"
+      },
+      {
+        "columns": [
+          "produto_id"
+        ],
+        "definition": "CREATE UNIQUE INDEX produto_cclasstrib_padrao_pkey ON public.produto_cclasstrib_padrao USING btree (produto_id)",
+        "is_primary": true,
+        "is_unique": true,
+        "is_valid": true,
+        "method": "btree",
+        "name": "produto_cclasstrib_padrao_pkey",
+        "predicate": null,
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao"
+      },
+      {
+        "columns": [
           "empresa_id"
         ],
         "definition": "CREATE INDEX idx_profiles_empresa_id ON public.profiles USING btree (empresa_id)",
@@ -94095,6 +94308,12 @@
         "code": "policy_auth_fn_not_wrapped",
         "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
         "object": "public.prejuizos_fiscais.Financeiro+ podem ver prejuizos_fiscais",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "policy_auth_fn_not_wrapped",
+        "detail": "Policy chama auth.uid()/jwt() sem `(select ...)`: é reavaliada por linha; envolva em subselect.",
+        "object": "public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_admin",
         "severity": "BAIXA"
       },
       {
@@ -105475,6 +105694,18 @@
       },
       {
         "cmd": "ALL",
+        "name": "produto_cclasstrib_padrao_admin",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "produto_cclasstrib_padrao",
+        "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])",
+        "with_check": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])"
+      },
+      {
+        "cmd": "ALL",
         "name": "Admins can manage profiles",
         "permissive": "PERMISSIVE",
         "roles": [
@@ -107922,6 +108153,11 @@
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
           "table": "messages_2026_11_29"
+        },
+        {
+          "publication": "supabase_realtime_messages_publication",
+          "schema": "realtime",
+          "table": "messages_2026_11_30"
         }
       ]
     },
@@ -111127,6 +111363,21 @@
         "is_partition": false,
         "kind": "table",
         "name": "prejuizos_fiscais",
+        "owner": "postgres",
+        "parent": null,
+        "partition_bound": null,
+        "partition_key": null,
+        "replica_identity": "default",
+        "rls_enabled": true,
+        "rls_forced": false,
+        "schema": "public"
+      },
+      {
+        "comment": null,
+        "from_extension": false,
+        "is_partition": false,
+        "kind": "table",
+        "name": "produto_cclasstrib_padrao",
         "owner": "postgres",
         "parent": null,
         "partition_bound": null,

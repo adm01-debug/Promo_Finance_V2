@@ -2,6 +2,18 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-27 00:38 UTC
+
+- **colunas** adicionado (7): `public.produto_cclasstrib_padrao.atualizado_em`, `public.produto_cclasstrib_padrao.atualizado_por`, `public.produto_cclasstrib_padrao.cclasstrib`, `public.produto_cclasstrib_padrao.codigo`, `public.produto_cclasstrib_padrao.cst`, `public.produto_cclasstrib_padrao.ncm`, `public.produto_cclasstrib_padrao.produto_id`
+- **constraints** adicionado (4): `public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_cclasstrib_chk`, `public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_cst_chk`, `public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_ncm_chk`, `public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_pkey`
+- **functions** alterado (1): `public.has_any_role(_user_id uuid, _roles app_role[])`
+- **grants** adicionado (2): `public.produto_cclasstrib_padrao:authenticated`, `public.produto_cclasstrib_padrao:service_role`
+- **indexes** adicionado (3): `public.produto_cclasstrib_padrao_codigo_idx`, `public.produto_cclasstrib_padrao_ncm_idx`, `public.produto_cclasstrib_padrao_pkey`
+- **lints** adicionado (1): `policy_auth_fn_not_wrapped:public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_admin`
+- **policies (RLS)** adicionado (1): `public.produto_cclasstrib_padrao.produto_cclasstrib_padrao_admin`
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_30`
+- **tabelas** adicionado (1): `public.produto_cclasstrib_padrao`
+
 ## 2026-11-26 23:30 UTC
 
 - **edge functions** alterado (109): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+69)

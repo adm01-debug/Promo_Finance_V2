@@ -543,6 +543,9 @@ Uso e tamanho em `stats.md`.
 | public.prejuizos_fiscais | idx_prejuizos_fiscais_created_by_fk | btree | created_by | não | sim |  |
 | public.prejuizos_fiscais | idx_prejuizos_fiscais_empresa_id | btree | empresa_id | não | sim |  |
 | public.prejuizos_fiscais | prejuizos_fiscais_pkey | btree | id | sim | sim |  |
+| public.produto_cclasstrib_padrao | produto_cclasstrib_padrao_codigo_idx | btree | codigo | não | sim |  |
+| public.produto_cclasstrib_padrao | produto_cclasstrib_padrao_ncm_idx | btree | ncm | não | sim |  |
+| public.produto_cclasstrib_padrao | produto_cclasstrib_padrao_pkey | btree | produto_id | sim | sim |  |
 | public.profiles | idx_profiles_empresa_id | btree | empresa_id | não | sim |  |
 | public.profiles | profiles_pkey | btree | id | sim | sim |  |
 | public.profiles | profiles_user_id_key | btree | user_id | sim | sim |  |
