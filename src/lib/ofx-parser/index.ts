@@ -4,7 +4,7 @@ import { parseOFC, parseOFX } from './ofx-sgml';
 import { parseCSV } from './csv';
 
 export * from './types';
-export { parseOFX, parseOFC } from './ofx-sgml';
+export { parseOFX, parseOFC, identidadeConta } from './ofx-sgml';
 export { parseCSV } from './csv';
 export { parseExcel } from './xlsx';
 

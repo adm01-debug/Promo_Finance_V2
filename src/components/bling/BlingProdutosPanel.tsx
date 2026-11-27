@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- painel legado do catalogo Bling (393 linhas antes da etapa 86); a acao de enquadramento tributario por produto acrescentou ~20 e dividir o componente nao cabe neste escopo. */
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,10 +36,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Package, Search, Plus, Layers, Trash2, Loader2, MoreHorizontal } from 'lucide-react';
+import { Package, Search, Plus, Layers, Trash2, Loader2, MoreHorizontal, Tag } from 'lucide-react';
 import { useBlingProdutos, useBlingProdutoMutations, useBlingVariacoes } from '@/hooks/useBling';
 import { PaginationControls, LoadingSkeleton } from './BlingShared';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ProdutoCclasstribDialog } from './ProdutoCclasstribDialog';
+import { useProdutoCclasstribPadrao } from '@/hooks/useProdutoCclasstribPadrao';
 
 interface BlingProduto {
   id: number;
@@ -48,6 +51,8 @@ interface BlingProduto {
   tipo?: string;
   formato?: string;
   situacao?: string;
+  ncm?: string;
+  tributacao?: { ncm?: string };
 }
 
 interface BlingVariacao {
@@ -62,6 +67,8 @@ export function BlingProdutosPanel() {
   const [pagina, setPagina] = useState(1);
   const [showCreate, setShowCreate] = useState(false);
   const [showVariacoes, setShowVariacoes] = useState<string | null>(null);
+  const [padraoProduto, setPadraoProduto] = useState<BlingProduto | null>(null);
+  const { porProduto: padroesPorProduto } = useProdutoCclasstribPadrao();
   const { data, refetch, isFetching } = useBlingProdutos({ nome: nome || undefined, pagina });
   const { criarProduto, excluirProdutos } = useBlingProdutoMutations();
   const {
@@ -163,7 +170,20 @@ export function BlingProdutosPanel() {
                     {produtos.map((p: BlingProduto) => (
                       <TableRow key={p.id}>
                         <TableCell className="font-mono text-xs">{p.codigo || '-'}</TableCell>
-                        <TableCell className="font-medium">{p.nome}</TableCell>
+                        <TableCell className="font-medium">
+                          <span className="inline-flex items-center gap-2">
+                            {p.nome}
+                            {padroesPorProduto.has(String(p.id)) && (
+                              <Badge
+                                variant="outline"
+                                className="font-mono text-[10px]"
+                                title="Enquadramento tributario padrao definido"
+                              >
+                                {padroesPorProduto.get(String(p.id))?.cclasstrib}
+                              </Badge>
+                            )}
+                          </span>
+                        </TableCell>
                         <TableCell className="text-right">
                           R${' '}
                           {Number(p.preco || 0).toLocaleString('pt-BR', {
@@ -215,6 +235,10 @@ export function BlingProdutosPanel() {
                                   <Layers className="h-4 w-4 mr-2" /> Ver Variações
                                 </DropdownMenuItem>
                               )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => setPadraoProduto(p)}>
+                                <Tag className="h-4 w-4 mr-2" /> cClassTrib padrão
+                              </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 className="text-destructive"
@@ -387,6 +411,11 @@ export function BlingProdutosPanel() {
         onConfirm={() => {
           if (confirmExcluir !== null) excluirProdutos.mutate([String(confirmExcluir)]);
         }}
+      />
+      <ProdutoCclasstribDialog
+        produto={padraoProduto}
+        aberto={!!padraoProduto}
+        onFechar={() => setPadraoProduto(null)}
       />
     </div>
   );

@@ -1,20 +1,34 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import type { MatchResult, TransacaoBancaria } from './BaixaAutomaticaDialog.types';
+import { VincularManualmenteDialog, ContaCandidata } from './VincularManualmenteDialog';
 
 interface BaixaAutomaticaDialogCorrespondenciasAutomaticasProps {
   matches: MatchResult[];
   unmatched: TransacaoBancaria[];
+  empresaId: string;
+  onVincular: (transacao: TransacaoBancaria, conta: ContaCandidata) => void;
 }
+
+const ROTULO_CONFIANCA: Record<MatchResult['confianca'], string> = {
+  alta: 'MATCH ALTO',
+  media: 'MATCH MÉDIO',
+  baixa: 'MATCH BAIXO',
+  manual: 'VÍNCULO MANUAL',
+};
 
 export function BaixaAutomaticaDialogCorrespondenciasAutomaticas({
   matches,
   unmatched,
+  empresaId,
+  onVincular,
 }: BaixaAutomaticaDialogCorrespondenciasAutomaticasProps) {
+  const [transacaoSelecionada, setTransacaoSelecionada] = useState<TransacaoBancaria | null>(null);
+
   return (
     <motion.div key="preview" className="py-4 space-y-4">
       <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex gap-3">
@@ -49,7 +63,7 @@ export function BaixaAutomaticaDialogCorrespondenciasAutomaticas({
                       variant="outline"
                       className="text-[8px] bg-success/20 text-success border-none h-4"
                     >
-                      MATCH ALTO
+                      {ROTULO_CONFIANCA[m.confianca]}
                     </Badge>
                   </div>
                 </div>
@@ -81,10 +95,7 @@ export function BaixaAutomaticaDialogCorrespondenciasAutomaticas({
                       variant="link"
                       size="sm"
                       className="h-4 p-0 text-[8px] uppercase font-black"
-                      onClick={() => {
-                        // Futuro: Abrir modal de busca manual
-                        toast.info('Funcionalidade de vinculação manual em desenvolvimento');
-                      }}
+                      onClick={() => setTransacaoSelecionada(t)}
                     >
                       Vincular Manualmente
                     </Button>
@@ -95,6 +106,20 @@ export function BaixaAutomaticaDialogCorrespondenciasAutomaticas({
           </div>
         )}
       </div>
+
+      <VincularManualmenteDialog
+        open={transacaoSelecionada !== null}
+        onOpenChange={(aberto) => {
+          if (!aberto) setTransacaoSelecionada(null);
+        }}
+        empresaId={empresaId}
+        transacao={transacaoSelecionada}
+        idsJaVinculados={matches.map((m) => m.contaId)}
+        onVincular={(conta) => {
+          if (transacaoSelecionada) onVincular(transacaoSelecionada, conta);
+          setTransacaoSelecionada(null);
+        }}
+      />
     </motion.div>
   );
 }
