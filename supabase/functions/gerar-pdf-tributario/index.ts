@@ -319,12 +319,13 @@ Deno.serve(
         doc.setTextColor(100, 116, 139);
         doc.text('Valores consolidados da apuração mensal.', 15, 28);
         // A apuração só apropria crédito com origem = xml_destacado e
-        // efeito_tributario = true (useApuracoesTributarias.ts:247-263): crédito
-        // estimado por alíquota existe na base, aparece na tela de apuração e
-        // não entra nestes números — a nota anterior dizia o contrário disto e
-        // do próprio rodapé desta página.
+        // efeito_tributario = true (useApuracoesTributarias.ts:247-263). O crédito
+        // estimado por alíquota existe na base e aparece na aba Créditos do
+        // painel (GestorCreditosTributarios.tsx:160-170), mas não entra nestes
+        // números — a nota anterior dizia o contrário disto e do rodapé desta
+        // página.
         doc.text(
-          'Créditos apropriados: documentos com origem XML destacado (grupo IBSCBS da NF-e). Crédito estimado por alíquota não entra neste total; a discriminação consta na tela de apuração.',
+          'Créditos apropriados: documentos com origem XML destacado (grupo IBSCBS da NF-e). Crédito estimado por alíquota não entra neste total; a discriminação por documento consta na aba Créditos do painel da Reforma Tributária.',
           15,
           33,
           { maxWidth: 180 }
@@ -368,10 +369,18 @@ Deno.serve(
           15,
           afterTable + 6
         );
+        // Apurações gravadas antes de 6a4604988 somavam crédito vindo de
+        // `operacoes_tributaveis` (compras e serviços tomados) sem filtrar
+        // origem/efeito: o total guardado nelas não segue a regra acima.
+        doc.text(
+          'Apurações gravadas antes de 23/11/2026 podem ter somado crédito estimado por alíquota (regra anterior de apuração).',
+          15,
+          afterTable + 12
+        );
         doc.text(
           `Competência: ${String(body.mesReferencia).padStart(2, '0')}/${body.anoReferencia}`,
           15,
-          afterTable + 12
+          afterTable + 18
         );
       }
 
