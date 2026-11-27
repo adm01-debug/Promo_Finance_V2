@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 04:00:00 | succeeded | 0.50 | 1 row |
+| 2026-11-27 03:00:00 | succeeded | 1.00 | 1 row |
 | 2026-11-27 02:00:00 | succeeded | 0.31 | 1 row |
-| 2026-11-27 01:00:00 | succeeded | 0.18 | 1 row |
-| 2026-11-27 00:00:00 | succeeded | 0.57 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-27 02:00:00 | succeeded | 0.60 | 1 row |
-| 2026-11-27 01:30:00 | succeeded | 0.36 | 1 row |
-| 2026-11-27 01:00:00 | succeeded | 0.77 | 1 row |
+| 2026-11-27 04:00:00 | succeeded | 1.17 | 1 row |
+| 2026-11-27 03:30:00 | succeeded | 0.53 | 1 row |
+| 2026-11-27 03:00:00 | succeeded | 2.37 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 03:45:00 | succeeded | 0.01 | 1 row |
+| 2026-11-27 02:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-27 01:45:00 | succeeded | 0.01 | 1 row |
-| 2026-11-27 00:45:00 | succeeded | 0.00 | 1 row |
-| 2026-11-26 23:45:00 | succeeded | 0.00 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -123,18 +123,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 04:15:00 | succeeded | 0.09 | 1 row |
+| 2026-11-27 03:15:00 | succeeded | 0.16 | 1 row |
 | 2026-11-27 02:15:00 | succeeded | 0.08 | 1 row |
-| 2026-11-27 01:15:00 | succeeded | 0.07 | 1 row |
-| 2026-11-27 00:15:00 | succeeded | 0.05 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 02:30:00 | succeeded | 0.41 | 1 row |
 | 2026-11-26 02:30:00 | succeeded | 0.25 | 1 row |
 | 2026-11-25 02:30:00 | succeeded | 0.49 | 1 row |
-| 2026-11-24 02:30:00 | succeeded | 0.50 | 1 row |
 
 
 ## 22 · gerar-alertas-vencimento-diario
@@ -150,9 +150,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 03:35:00 | succeeded | 0.01 | 1 row |
 | 2026-11-26 03:35:00 | succeeded | 0.04 | 1 row |
 | 2026-11-25 03:35:00 | succeeded | 0.03 | 1 row |
-| 2026-11-24 03:35:00 | succeeded | 0.04 | 1 row |
 
 
 ## 24 · processar-regua-cobranca-diario
@@ -175,45 +175,45 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 04:10:00 | succeeded | 4.54 | 1 row |
+| 2026-11-27 03:10:00 | succeeded | 13.04 | 1 row |
 | 2026-11-27 02:10:00 | succeeded | 1.96 | 1 row |
-| 2026-11-27 01:10:00 | succeeded | 1.99 | 1 row |
-| 2026-11-27 00:10:00 | succeeded | 2.01 | 1 row |
 
 
 ## 31 · daily-log-retention
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 03:00:00 | succeeded | 4.96 | 1 row |
 | 2026-11-26 03:00:00 | succeeded | 1.92 | 1 row |
 | 2026-11-25 03:00:00 | succeeded | 2.21 | 1 row |
-| 2026-11-24 03:00:00 | succeeded | 1.61 | 1 row |
 
 
 ## 32 · sefaz-dfe-dispatcher-15min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-27 02:15:00 | succeeded | 0.07 | 1 row |
-| 2026-11-27 02:00:00 | succeeded | 0.07 | 1 row |
-| 2026-11-27 01:45:00 | succeeded | 0.06 | 1 row |
+| 2026-11-27 04:15:00 | succeeded | 0.05 | 1 row |
+| 2026-11-27 04:00:00 | succeeded | 0.13 | 1 row |
+| 2026-11-27 03:45:00 | succeeded | 0.03 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-27 02:21:00 | succeeded | 0.02 | 1 row |
-| 2026-11-27 02:20:00 | succeeded | 0.02 | 1 row |
-| 2026-11-27 02:19:00 | succeeded | 0.01 | 1 row |
+| 2026-11-27 04:18:00 | succeeded | 0.01 | 1 row |
+| 2026-11-27 04:17:00 | succeeded | 0.02 | 1 row |
+| 2026-11-27 04:16:00 | succeeded | 0.03 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 04:10:00 | succeeded | 0.10 | 1 row |
+| 2026-11-27 03:10:00 | succeeded | 0.06 | 1 row |
 | 2026-11-27 02:10:00 | succeeded | 0.06 | 1 row |
-| 2026-11-27 01:10:00 | succeeded | 0.08 | 1 row |
-| 2026-11-27 00:10:00 | succeeded | 0.03 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-27 02:00:00 | succeeded | 0.03 | 1 row |
-| 2026-11-27 01:30:00 | succeeded | 0.02 | 1 row |
-| 2026-11-27 01:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-27 04:00:00 | succeeded | 0.12 | 1 row |
+| 2026-11-27 03:30:00 | succeeded | 0.05 | 1 row |
+| 2026-11-27 03:00:00 | succeeded | 0.19 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,9 +250,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 03:30:00 | succeeded | 0.01 | 1 row |
+| 2026-11-27 02:30:00 | succeeded | 0.08 | 1 row |
 | 2026-11-27 01:30:00 | succeeded | 0.07 | 1 row |
-| 2026-11-27 00:30:00 | succeeded | 0.01 | 1 row |
-| 2026-11-26 23:30:00 | succeeded | 0.02 | 1 row |
 
 
 ## 43 · enviar-digest-conformidade-diario
@@ -268,27 +268,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-27 02:00:00 | succeeded | 0.01 | 1 row |
-| 2026-11-27 01:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-27 01:00:00 | succeeded | 0.04 | 1 row |
+| 2026-11-27 04:00:00 | succeeded | 0.04 | 1 row |
+| 2026-11-27 03:30:00 | succeeded | 0.05 | 1 row |
+| 2026-11-27 03:00:00 | succeeded | 0.23 | 1 row |
 
 
 ## 49 · marcar-contas-vencidas
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 03:05:00 | succeeded | 0.09 | 1 row |
 | 2026-11-26 03:05:00 | succeeded | 0.04 | 1 row |
 | 2026-11-25 03:05:00 | succeeded | 0.14 | 1 row |
-| 2026-11-24 03:05:00 | succeeded | 0.12 | 1 row |
 
 
 ## 50 · reprocessar-creditos-ibscbs
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-27 03:20:00 | succeeded | 0.01 | 1 row |
 | 2026-11-27 02:20:00 | succeeded | 0.02 | 1 row |
 | 2026-11-27 01:20:00 | succeeded | 0.01 | 1 row |
-| 2026-11-27 00:20:00 | succeeded | 0.00 | 1 row |
 
 
 ## 52 · sync-catalogo-ncm-nbs
