@@ -318,11 +318,13 @@ Deno.serve(
         doc.setFontSize(9);
         doc.setTextColor(100, 116, 139);
         doc.text('Valores consolidados da apuração mensal.', 15, 28);
-        // A apuração soma créditos de origens diferentes (XML destacado e
-        // estimativa por alíquota) e a tabela não guarda essa quebra: dizer
-        // "a partir dos DF-e" era afirmar uma origem que o número não tem.
+        // A apuração só apropria crédito com origem = xml_destacado e
+        // efeito_tributario = true (useApuracoesTributarias.ts:247-263): crédito
+        // estimado por alíquota existe na base, aparece na tela de apuração e
+        // não entra nestes números — a nota anterior dizia o contrário disto e
+        // do próprio rodapé desta página.
         doc.text(
-          'Créditos podem ter origem em XML destacado (grupo IBSCBS da NF-e) ou em estimativa por alíquota; a discriminação consta na tela de apuração.',
+          'Créditos apropriados: documentos com origem XML destacado (grupo IBSCBS da NF-e). Crédito estimado por alíquota não entra neste total; a discriminação consta na tela de apuração.',
           15,
           33,
           { maxWidth: 180 }
