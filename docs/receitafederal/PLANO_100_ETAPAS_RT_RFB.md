@@ -1,5 +1,12 @@
 # Promo Finance V2 — Plano de Conformidade com a Reforma Tributária e Integração ReceitaFederal (100 etapas)
 
+> **Documento histórico.** Este é o plano-base de 100 etapas como foi escrito antes das correções.
+> Ele é citado por `PLANO_MELHORIAS_100_ETAPAS_CADASTRO_FISCAL.md` e por
+> `src/lib/__tests__/rt-snapshot-pre-correcao.test.ts` (baseline congelada), então não é apagado —
+> mas o estado real das etapas, com evidência `arquivo:linha`, vive em
+> [`PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md`](./PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md),
+> que é o plano de referência (ver `README.md` e ADR-004). Marcações de checklist aqui podem estar defasadas.
+
 **Base:** auditoria de 21/11/2026 sobre `adm01-debug/Promo_Finance_V2@ea8ccc8` e `ReceitaFederal/calculadora-rtc-regime-regular@1.7.2` (DB `V0073`).
 **Ordem:** primeiro parar de calcular errado (Fases 1-2), depois guardar os dados fiscais certos (Fases 3-5), depois delegar o cálculo à calculadora oficial (Fases 6-8), por fim apuração/split/encerramento (Fases 9-10). Nenhuma etapa reescreve módulo inteiro; cada uma é diff mínimo.
 
