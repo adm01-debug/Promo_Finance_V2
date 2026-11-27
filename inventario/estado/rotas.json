@@ -1,0 +1,757 @@
+{
+  "format_version": 1,
+  "fonte": "scripts/inventario/gerar-rotas.mjs (le src/App.tsx, src/components/layout/sidebar/SidebarNavGroups.tsx, src/components/layout/sidebar/sidebarFiscalNavGroup.ts e os imports de cada pagina)",
+  "resumo": {
+    "urls": 9,
+    "urls_protegidas": 0,
+    "itens_de_menu": 91,
+    "hooks_distintos": 9,
+    "problemas": 91
+  },
+  "urls": [
+    {
+      "caminho": "*",
+      "componente": "NotFound",
+      "arquivo": "src/pages/NotFound.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 2,
+      "hooks": [],
+      "buckets": [],
+      "edges": [],
+      "rpcs": [],
+      "tabelas": [],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/__especimes",
+      "componente": "Especimes",
+      "arquivo": "src/pages/dev/Especimes.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 10,
+      "hooks": [
+        {
+          "nome": "useTheme",
+          "arquivo": "src/components/theme/ThemeContext.ts"
+        }
+      ],
+      "buckets": [],
+      "edges": [],
+      "rpcs": [],
+      "tabelas": [],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/auth",
+      "componente": "Auth",
+      "arquivo": "src/pages/Auth.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 27,
+      "hooks": [
+        {
+          "nome": "useAuth",
+          "arquivo": "src/hooks/useAuth.tsx"
+        },
+        {
+          "nome": "useAuthPage",
+          "arquivo": "src/pages/Auth.hooks.ts"
+        },
+        {
+          "nome": "useAuthValidation",
+          "arquivo": "src/hooks/useAuthValidation.ts"
+        },
+        {
+          "nome": "useDeviceDetection",
+          "arquivo": "src/hooks/useDeviceDetection.ts"
+        },
+        {
+          "nome": "useWebAuthn",
+          "arquivo": "src/hooks/useWebAuthn.ts"
+        }
+      ],
+      "buckets": [],
+      "edges": [
+        "send-device-alert",
+        "sso-callback",
+        "sso-initiate",
+        "sso-logout",
+        "validate-ip-geo"
+      ],
+      "rpcs": [
+        "is_user_locked",
+        "log_sso_onboarding_event",
+        "reset_failed_attempts",
+        "resolve_sso_providers_for_domain"
+      ],
+      "tabelas": [
+        "blocked_ips",
+        "dispositivos_conhecidos",
+        "frontend_error_logs",
+        "frontend_performance_logs",
+        "login_attempts",
+        "new_device_alerts",
+        "password_reset_requests",
+        "profiles",
+        "webauthn_credentials"
+      ],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/auth/corporate",
+      "componente": "CorporateOnboarding",
+      "arquivo": "src/pages/auth/CorporateOnboarding.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 10,
+      "hooks": [
+        {
+          "nome": "useCorporateOnboarding",
+          "arquivo": "src/pages/auth/CorporateOnboarding.hook.ts"
+        },
+        {
+          "nome": "useSsoDomainResolver",
+          "arquivo": "src/hooks/useSsoDomainResolver.ts"
+        },
+        {
+          "nome": "useSsoOnboardingAudit",
+          "arquivo": "src/hooks/useSsoOnboardingAudit.ts"
+        }
+      ],
+      "buckets": [],
+      "edges": [
+        "sso-initiate"
+      ],
+      "rpcs": [
+        "log_sso_onboarding_event",
+        "resolve_sso_providers_for_domain"
+      ],
+      "tabelas": [
+        "frontend_error_logs",
+        "frontend_performance_logs"
+      ],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/contador/:token",
+      "componente": "ContadorReadonly",
+      "arquivo": "src/pages/ContadorReadonly.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 6,
+      "hooks": [],
+      "buckets": [],
+      "edges": [
+        "validar-token-contador"
+      ],
+      "rpcs": [],
+      "tabelas": [
+        "frontend_error_logs",
+        "frontend_performance_logs"
+      ],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/design-system-debug",
+      "componente": "DesignSystemDebug",
+      "arquivo": "src/pages/design-system-debug.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 5,
+      "hooks": [],
+      "buckets": [],
+      "edges": [],
+      "rpcs": [],
+      "tabelas": [],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/reset-password",
+      "componente": "ResetPassword",
+      "arquivo": "src/pages/ResetPassword.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 6,
+      "hooks": [],
+      "buckets": [],
+      "edges": [],
+      "rpcs": [],
+      "tabelas": [
+        "frontend_error_logs",
+        "frontend_performance_logs"
+      ],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/status",
+      "componente": "StatusPage",
+      "arquivo": "src/pages/StatusPage.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 6,
+      "hooks": [],
+      "buckets": [],
+      "edges": [
+        "health"
+      ],
+      "rpcs": [],
+      "tabelas": [
+        "frontend_error_logs",
+        "frontend_performance_logs"
+      ],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/theme-diagnostics",
+      "componente": "ThemeDiagnostics",
+      "arquivo": "src/pages/ThemeDiagnostics.tsx",
+      "protegida": false,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [],
+      "arquivos_lidos": 2,
+      "hooks": [
+        {
+          "nome": "useTheme",
+          "arquivo": "src/components/theme/ThemeContext.ts"
+        }
+      ],
+      "buckets": [],
+      "edges": [],
+      "rpcs": [],
+      "tabelas": [],
+      "imports_quebrados": []
+    }
+  ],
+  "hooks": {
+    "useAuth": {
+      "arquivo": "src/hooks/useAuth.tsx",
+      "rotas": [
+        "/auth"
+      ]
+    },
+    "useAuthPage": {
+      "arquivo": "src/pages/Auth.hooks.ts",
+      "rotas": [
+        "/auth"
+      ]
+    },
+    "useAuthValidation": {
+      "arquivo": "src/hooks/useAuthValidation.ts",
+      "rotas": [
+        "/auth"
+      ]
+    },
+    "useCorporateOnboarding": {
+      "arquivo": "src/pages/auth/CorporateOnboarding.hook.ts",
+      "rotas": [
+        "/auth/corporate"
+      ]
+    },
+    "useDeviceDetection": {
+      "arquivo": "src/hooks/useDeviceDetection.ts",
+      "rotas": [
+        "/auth"
+      ]
+    },
+    "useSsoDomainResolver": {
+      "arquivo": "src/hooks/useSsoDomainResolver.ts",
+      "rotas": [
+        "/auth/corporate"
+      ]
+    },
+    "useSsoOnboardingAudit": {
+      "arquivo": "src/hooks/useSsoOnboardingAudit.ts",
+      "rotas": [
+        "/auth/corporate"
+      ]
+    },
+    "useTheme": {
+      "arquivo": "src/components/theme/ThemeContext.ts",
+      "rotas": [
+        "/__especimes",
+        "/theme-diagnostics"
+      ]
+    },
+    "useWebAuthn": {
+      "arquivo": "src/hooks/useWebAuthn.ts",
+      "rotas": [
+        "/auth"
+      ]
+    }
+  },
+  "problemas": [
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/",
+      "detalhe": "item \"Dashboard Executivo\" aponta para /, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/admin/api",
+      "detalhe": "item \"API & Integrações\" aponta para /admin/api, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/admin/campos-customizados",
+      "detalhe": "item \"Campos Customizados\" aponta para /admin/campos-customizados, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/admin/erros-frontend",
+      "detalhe": "item \"Erros do Front-end\" aponta para /admin/erros-frontend, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/admin/sso-jit-events",
+      "detalhe": "item \"Eventos JIT (SSO)\" aponta para /admin/sso-jit-events, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/alertas",
+      "detalhe": "item \"Alertas do Sistema\" aponta para /alertas, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/aprovacoes",
+      "detalhe": "item \"Aprovações\" aponta para /aprovacoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/asaas",
+      "detalhe": "item \"Asaas Pagamentos\" aponta para /asaas, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/assinatura-digital",
+      "detalhe": "item \"Assinatura Digital\" aponta para /assinatura-digital, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/audit-logs",
+      "detalhe": "item \"Logs de Auditoria\" aponta para /audit-logs, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/benchmarking",
+      "detalhe": "item \"Benchmarking Setorial\" aponta para /benchmarking, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/bi",
+      "detalhe": "item \"BI Gestão Estratégica\" aponta para /bi, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/boletos",
+      "detalhe": "item \"Área de Gestão de Boletos\" aponta para /boletos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/categorias",
+      "detalhe": "item \"Categorias de Lançamento\" aponta para /categorias, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/centro-custos",
+      "detalhe": "item \"Centros de Custo\" aponta para /centro-custos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/clientes",
+      "detalhe": "item \"Gestão de Clientes\" aponta para /clientes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/clientes/portal-tokens",
+      "detalhe": "item \"Portal de Tokens API\" aponta para /clientes/portal-tokens, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/clientes/scoring",
+      "detalhe": "item \"Scoring de Crédito & Risco\" aponta para /clientes/scoring, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/cobrancas",
+      "detalhe": "item \"Gestão de Cobrança\" aponta para /cobrancas, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/cobrancas#whatsapp",
+      "detalhe": "item \"Histórico & Chat WA\" aponta para /cobrancas#whatsapp, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/compras",
+      "detalhe": "item \"Gestão de Compras\" aponta para /compras, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/comprovante-ocr",
+      "detalhe": "item \"Comprovante OCR\" aponta para /comprovante-ocr, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/conciliacao",
+      "detalhe": "item \"Conciliação\" aponta para /conciliacao, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/configuracoes",
+      "detalhe": "item \"Configurações\" aponta para /configuracoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/configuracoes/preferencias",
+      "detalhe": "item \"Preferências\" aponta para /configuracoes/preferencias, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/configuracoes/privacidade",
+      "detalhe": "item \"Privacidade & LGPD\" aponta para /configuracoes/privacidade, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/contabilidade",
+      "detalhe": "item \"Contabilidade & SPED\" aponta para /contabilidade, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/contas-bancarias",
+      "detalhe": "item \"Gestão de Contas Bancárias\" aponta para /contas-bancarias, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/contas-pagar",
+      "detalhe": "item \"Contas a Pagar\" aponta para /contas-pagar, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/contas-pagar/bloqueios",
+      "detalhe": "item \"Cofre de Integridade\" aponta para /contas-pagar/bloqueios, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/contas-receber",
+      "detalhe": "item \"Contas a Receber\" aponta para /contas-receber, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/contratos",
+      "detalhe": "item \"Contratos\" aponta para /contratos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/dashboard-empresa",
+      "detalhe": "item \"Dashboard Empresa\" aponta para /dashboard-empresa, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/demonstrativos",
+      "detalhe": "item \"Demonstrativos\" aponta para /demonstrativos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/empresas",
+      "detalhe": "item \"Empresas (Multicnpj)\" aponta para /empresas, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/expert",
+      "detalhe": "item \"EXPERT IA Financeira\" aponta para /expert, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/financeiro",
+      "detalhe": "item \"Visão Geral Financeira\" aponta para /financeiro, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/fluxo-caixa",
+      "detalhe": "item \"Fluxo de Caixa\" aponta para /fluxo-caixa, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/fornecedores",
+      "detalhe": "item \"Gestão de Fornecedores\" aponta para /fornecedores, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/integracoes",
+      "detalhe": "item \"Integrações Hub\" aponta para /integracoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/inteligencia",
+      "detalhe": "item \"Inteligência Operacional 360°\" aponta para /inteligencia, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/inteligencia#action-matrix",
+      "detalhe": "item \"Action Matrix Audit\" aponta para /inteligencia#action-matrix, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/inteligencia#alertas-preditivos",
+      "detalhe": "item \"Quantum-Sentinel: Riscos\" aponta para /inteligencia#alertas-preditivos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/metas",
+      "detalhe": "item \"Metas Financeiras\" aponta para /metas, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/meu-perfil",
+      "detalhe": "item \"Meu Perfil\" aponta para /meu-perfil, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/movimentacoes",
+      "detalhe": "item \"Movimentações\" aponta para /movimentacoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/notas-fiscais",
+      "detalhe": "item \"Notas Fiscais\" aponta para /notas-fiscais, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/orcamento-evento",
+      "detalhe": "item \"Orçamento vs Realizado\" aponta para /orcamento-evento, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/orcamentos",
+      "detalhe": "item \"Orçamentos\" aponta para /orcamentos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/organizacoes",
+      "detalhe": "item \"Organizações & Equipes\" aponta para /organizacoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/reforma-tributaria/visao-geral",
+      "detalhe": "item \"Reforma Tributária\" aponta para /reforma-tributaria/visao-geral, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/relatorios",
+      "detalhe": "item \"Relatórios & BI\" aponta para /relatorios, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/seguranca",
+      "detalhe": "item \"Segurança\" aponta para /seguranca, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/simulador-antecipacao",
+      "detalhe": "item \"Simulador Antecipação\" aponta para /simulador-antecipacao, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/style-guide",
+      "detalhe": "item \"Guia de Estilo\" aponta para /style-guide, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tesouraria",
+      "detalhe": "item \"Tesouraria Multi-CNPJ\" aponta para /tesouraria, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/arquitetura",
+      "detalhe": "item \"Arquitetura Modular\" aponta para /tributario/arquitetura, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/auditoria",
+      "detalhe": "item \"Compliance & Auditoria\" aponta para /tributario/auditoria, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/cashback",
+      "detalhe": "item \"Cashback Simulador\" aponta para /tributario/cashback, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/certificados-digitais",
+      "detalhe": "item \"Certificados Digitais A1\" aponta para /tributario/certificados-digitais, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/comparativo",
+      "detalhe": "item \"Comparativo Regimes\" aponta para /tributario/comparativo, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/comparativo-conformidade",
+      "detalhe": "item \"Comparativo de Conformidade\" aponta para /tributario/comparativo-conformidade, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/conciliacao",
+      "detalhe": "item \"Conciliação Tributária\" aponta para /tributario/conciliacao, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/consulta-rapida",
+      "detalhe": "item \"Consulta Rápida Fiscal\" aponta para /tributario/consulta-rapida, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/darf",
+      "detalhe": "item \"DARF Consolidado\" aponta para /tributario/darf, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/dashboard",
+      "detalhe": "item \"Quantum-Sentinel: Tributário\" aponta para /tributario/dashboard, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/fechamento-mensal",
+      "detalhe": "item \"Fechamento Mensal\" aponta para /tributario/fechamento-mensal, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/folha-encargos",
+      "detalhe": "item \"Encargos de Folha (RAT/FAP)\" aponta para /tributario/folha-encargos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/historico-financeiro",
+      "detalhe": "item \"Histórico Tributário\" aponta para /tributario/historico-financeiro, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/icms-st",
+      "detalhe": "item \"ICMS-ST e DIFAL\" aponta para /tributario/icms-st, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/importacao-xml",
+      "detalhe": "item \"Importação XML\" aponta para /tributario/importacao-xml, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/incentivos",
+      "detalhe": "item \"Incentivos Fiscais\" aponta para /tributario/incentivos, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/ipi-iss",
+      "detalhe": "item \"IPI e ISS\" aponta para /tributario/ipi-iss, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/irpj-csll",
+      "detalhe": "item \"IRPJ/CSLL (Lucro Real)\" aponta para /tributario/irpj-csll, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/monofasico",
+      "detalhe": "item \"Monofásico PIS/COFINS\" aponta para /tributario/monofasico, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/nfe-recebidas",
+      "detalhe": "item \"NF-e Recebidas (SEFAZ)\" aponta para /tributario/nfe-recebidas, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/obrigacoes",
+      "detalhe": "item \"Obrigações Acessórias\" aponta para /tributario/obrigacoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/observabilidade-digest",
+      "detalhe": "item \"Observabilidade do Resumo\" aponta para /tributario/observabilidade-digest, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/oportunidades-elisao",
+      "detalhe": "item \"Oportunidades de Elisão\" aponta para /tributario/oportunidades-elisao, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/per-dcomp",
+      "detalhe": "item \"PER/DCOMP\" aponta para /tributario/per-dcomp, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/pis-cofins",
+      "detalhe": "item \"PIS/COFINS (créditos)\" aponta para /tributario/pis-cofins, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/preferencias-digest",
+      "detalhe": "item \"Preferências do Resumo\" aponta para /tributario/preferencias-digest, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/projecao-reforma",
+      "detalhe": "item \"Projeção 2026-2033\" aponta para /tributario/projecao-reforma, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/relatorios-contabeis",
+      "detalhe": "item \"Relatórios Contábeis\" aponta para /tributario/relatorios-contabeis, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/retencoes",
+      "detalhe": "item \"Retenções na Fonte\" aponta para /tributario/retencoes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/sefaz-observabilidade",
+      "detalhe": "item \"Observabilidade SEFAZ\" aponta para /tributario/sefaz-observabilidade, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/simulacao-regimes",
+      "detalhe": "item \"Simulação de Regimes\" aponta para /tributario/simulacao-regimes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/sped",
+      "detalhe": "item \"Exportação SPED\" aponta para /tributario/sped, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/tributario/split-payment",
+      "detalhe": "item \"Split Payment\" aponta para /tributario/split-payment, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/usuarios",
+      "detalhe": "item \"Usuários\" aponta para /usuarios, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/vendedores",
+      "detalhe": "item \"Gestão de Vendedores\" aponta para /vendedores, sem <Route path> correspondente em src/App.tsx"
+    }
+  ]
+}
