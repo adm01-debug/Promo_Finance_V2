@@ -104,6 +104,10 @@ on:
           - sso-logout
           - sso-test-login
           - sso-validate-config
+          - sync-aliquota-referencia
+          - sync-catalogo-cclasstrib
+          - sync-catalogo-ncm-nbs
+          - sync-fundamentacao-legal
           - sync-profile-to-bitrix
           - validar-token-contador
           - validate-ip-geo
@@ -119,6 +123,11 @@ on:
         description: 'Implantar TODAS as functions com index.ts (ignora function_name)'
         type: boolean
         default: false
+      functions_batch:
+        description: 'Lote separado por virgula, sobrepoe function_name (ex.: sync-catalogo-ncm-nbs,sync-fundamentacao-legal)'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -165,10 +174,10 @@ jobs:
           python3 scripts/security/test-supabase-config.py
           bash scripts/security/test-functions-deploy.sh
 
-      - name: Implantar somente a função aprovada
+      - name: Implantar a função aprovada (ou o lote informado)
         if: ${{ !inputs.deploy_all }}
         env:
-          FUNCTION_NAME: ${{ inputs.function_name }}
+          FUNCTION_NAME: ${{ inputs.functions_batch || inputs.function_name }}
         run: |
           set -euo pipefail
           bash scripts/migrate-functions.sh --only "$FUNCTION_NAME"
