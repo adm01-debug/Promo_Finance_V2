@@ -10,6 +10,13 @@ export interface TransacaoOFX {
   tipoTransacao?: string;
   checkNum?: string;
   memo?: string;
+  /**
+   * Conta de origem da transação (banco/agência/conta), preenchida pelo parser
+   * quando o arquivo declara a conta. Um OFX pode trazer vários blocos de extrato,
+   * e o FITID só é único dentro da conta que o emitiu — por isso a origem vive na
+   * transação, e não no extrato inteiro.
+   */
+  origemConta?: string;
 }
 
 export interface ContaOFX {

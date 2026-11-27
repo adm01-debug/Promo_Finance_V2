@@ -42,6 +42,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { statusConfig } from '@/components/nfe/nfe-types';
 import type { NotaFiscal } from '@/components/nfe/nfe-types';
+import { abrirArquivoFiscal as abrirArquivoFiscalSeguro } from '@/hooks/useNotasFiscaisLocais';
 import { NFePreview } from '@/components/nfe/NFePreview';
 import { EventosHistorico } from '@/components/nfe/EventosHistorico';
 import { AlertasRejeicao } from '@/components/nfe/AlertasRejeicao';
@@ -52,6 +53,29 @@ import { SefazMonitor } from '@/components/nfe/SefazMonitor';
 import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
 
 import type { Dispatch, SetStateAction } from 'react';
+
+/**
+ * XML e DANFE são links de arquivo importado. Antes desta correção os dois
+ * botões anunciavam "XML baixado!" e "DANFE gerado!" sem baixar nada — o cliente
+ * ficava com a impressão de que o arquivo fiscal existia.
+ *
+ * O XML autorizado pelo Bling não tem URL na nota: o arquivo vive no bucket
+ * privado. Nesse caso a URL assinada é gerada no clique, com o nome da empresa e
+ * a chave da nota, e nunca é persistida.
+ */
+async function abrirArquivoFiscal(nota: NotaFiscal, tipo: 'xml' | 'pdf') {
+  const resultado = await abrirArquivoFiscalSeguro(nota, tipo);
+  if (resultado === 'sem_arquivo') {
+    toast.error(
+      tipo === 'xml'
+        ? 'XML não encontrado no armazenamento desta empresa.'
+        : 'DANFE não armazenado para esta nota — abra pelo Bling ERP.'
+    );
+  }
+  if (resultado === 'bloqueado') {
+    toast.error('O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo.');
+  }
+}
 interface NotasFiscaisAbasProps {
   searchTerm: string;
   setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
@@ -171,13 +195,23 @@ export function NotasFiscaisAbas({
                               <span className="text-muted-foreground text-sm">
                                 Série {nota.serie}
                               </span>
+                              {nota.direcao === 'entrada' && (
+                                <Badge
+                                  variant="outline"
+                                  className="border-secondary/30 text-secondary"
+                                >
+                                  Entrada
+                                </Badge>
+                              )}
                               <Badge variant="outline" className={statusConfig[nota.status].color}>
                                 <StatusIcon className="h-3 w-3 mr-1" />
                                 {statusConfig[nota.status].label}
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground truncate">
-                              {nota.destinatarioNome}
+                              {nota.direcao === 'entrada'
+                                ? `Fornecedor: ${nota.emitenteNome || 'não informado'}`
+                                : `Destinatário: ${nota.destinatarioNome || 'não informado'}`}
                             </p>
                             <p className="text-xs text-muted-foreground font-mono mt-1 truncate">
                               {nota.chaveAcesso}
@@ -223,14 +257,26 @@ export function NotasFiscaisAbas({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => toast.success('XML baixado!')}
+                            disabled={!nota.xmlUrl && !nota.xmlNoStorage}
+                            title={
+                              nota.xmlUrl || nota.xmlNoStorage
+                                ? 'Buscar o XML autorizado no armazenamento da empresa'
+                                : 'XML não importado para esta nota'
+                            }
+                            onClick={() => void abrirArquivoFiscal(nota, 'xml')}
                           >
                             <FileCode className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => toast.success('DANFE gerado!')}
+                            disabled={!nota.pdfUrl}
+                            title={
+                              nota.pdfUrl
+                                ? 'Abrir o DANFE (PDF)'
+                                : 'DANFE não armazenado — abra pelo Bling ERP'
+                            }
+                            onClick={() => void abrirArquivoFiscal(nota, 'pdf')}
                           >
                             <Download className="h-4 w-4" />
                           </Button>
@@ -272,10 +318,12 @@ export function NotasFiscaisAbas({
                 <div>
                   <p className="text-sm text-muted-foreground">Taxa de Autorização</p>
                   <p className="text-2xl font-bold">
-                    {(
-                      (notas.filter((n) => n.status === 'autorizada').length / notas.length) *
-                      100
-                    ).toFixed(1)}
+                    {notas.length > 0
+                      ? (
+                          (notas.filter((n) => n.status === 'autorizada').length / notas.length) *
+                          100
+                        ).toFixed(1)
+                      : '0.0'}
                     %
                   </p>
                 </div>
@@ -291,7 +339,7 @@ export function NotasFiscaisAbas({
                 <div>
                   <p className="text-sm text-muted-foreground">Ticket Médio</p>
                   <p className="text-2xl font-bold">
-                    {formatCurrency(totalEmitido / (notasAutorizadas || 1))}
+                    {notasAutorizadas > 0 ? formatCurrency(totalEmitido / notasAutorizadas) : '—'}
                   </p>
                 </div>
               </div>
@@ -307,7 +355,7 @@ export function NotasFiscaisAbas({
                   <p className="text-sm text-muted-foreground">Itens Faturados</p>
                   <p className="text-2xl font-bold">
                     {notas
-                      .filter((n) => n.status === 'autorizada')
+                      .filter((n) => n.status === 'autorizada' && n.direcao !== 'entrada')
                       .reduce((acc, n) => acc + n.itens.reduce((a, i) => a + i.quantidade, 0), 0)}
                   </p>
                 </div>

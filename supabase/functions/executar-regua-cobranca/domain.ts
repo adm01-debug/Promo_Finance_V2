@@ -1,6 +1,27 @@
 export const CANAIS_REGUA = ['email', 'whatsapp', 'sms', 'telefone'] as const;
 export type CanalRegua = (typeof CANAIS_REGUA)[number];
 
+export interface TemplateCobranca {
+  assunto: string | null;
+  corpo: string;
+}
+
+export interface DadosMensagem {
+  cliente: string;
+  valor: string;
+  vencimento: string;
+}
+
+/** Variáveis publicadas no catálogo da tela de templates. */
+export function aplicarVariaveis(texto: string, dados: DadosMensagem): string {
+  return texto
+    .replaceAll('{{cliente}}', dados.cliente)
+    .replaceAll('{{nome_cliente}}', dados.cliente)
+    .replaceAll('{{valor}}', dados.valor)
+    .replaceAll('{{vencimento}}', dados.vencimento)
+    .replaceAll('{{data_vencimento}}', dados.vencimento);
+}
+
 export function normalizarDiasGatilho(valor: unknown): number[] {
   if (!Array.isArray(valor)) return [];
   return [

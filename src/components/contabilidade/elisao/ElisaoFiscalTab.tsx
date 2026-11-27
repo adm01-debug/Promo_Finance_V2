@@ -366,7 +366,11 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
       </Tabs>
 
       {/* Modal Nova Simulação */}
-      <NovaSimulacaoElisaoDialog open={isSimModalOpen} onOpenChange={setIsSimModalOpen} />
+      <NovaSimulacaoElisaoDialog
+        open={isSimModalOpen}
+        onOpenChange={setIsSimModalOpen}
+        empresaId={empresaId}
+      />
     </div>
   );
 }
