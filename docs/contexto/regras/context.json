@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "a9d112422529a632e6c9551ad033f767379ca3d7",
+  "sha": "42a12620536bbd871dd5c7fa44cb9a4a18756963",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-27 17:14 UTC",
+  "generated_at": "2026-11-27 17:42 UTC",
   "files_total": 4192,
   "code_files": 3770,
   "code_lines": 544681
@@ -257487,10 +257487,19 @@
   }
  },
  "git": {
-  "sha": "a9d112422529a632e6c9551ad033f767379ca3d7",
+  "sha": "42a12620536bbd871dd5c7fa44cb9a4a18756963",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "42a1262",
+    "date": "2026-11-27",
+    "author": "adm01-debug",
+    "subject": "infra: verificacao de drift do prod-migrate deixa de falhar por limitacao do shadow replay (#558)",
+    "files": [
+     ".github/workflows/prod-migrate.yml"
+    ]
+   },
    {
     "sha": "a9d1124",
     "date": "2026-11-27",
@@ -257977,19 +257986,6 @@
      "src/lib/tributario/catalogos/cclasstrib.ts",
      "supabase/migrations/20261124110000_carga_catalogo_cclasstrib_rfb.sql"
     ]
-   },
-   {
-    "sha": "ba27656",
-    "date": "2026-11-25",
-    "author": "adm01-debug",
-    "subject": "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)",
-    "files": [
-     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
-     "src/hooks/useImportacaoXMLNFe.ts",
-     "src/integrations/supabase/types.ts",
-     "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
-     "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -258003,10 +257999,6 @@
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
-    4
-   ],
-   [
-    "src/hooks/useImportacaoXMLNFe.ts",
     4
    ],
    [
@@ -258030,15 +258022,11 @@
     3
    ],
    [
-    "src/integrations/supabase/types.ts",
+    "src/hooks/useImportacaoXMLNFe.ts",
     3
    ],
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.validacao.test.tsx",
-    3
-   ],
-   [
-    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
     3
    ],
    [
@@ -258066,11 +258054,19 @@
     2
    ],
    [
+    "src/integrations/supabase/types.ts",
+    2
+   ],
+   [
     "src/lib/tributario/catalogos/fundamentacao-legal.ts",
     2
    ],
    [
     "supabase/functions/sync-aliquota-referencia/index.ts",
+    2
+   ],
+   [
+    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     2
    ]
   ]

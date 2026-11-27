@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "a9d112422529a632e6c9551ad033f767379ca3d7",
+  "commit": "42a12620536bbd871dd5c7fa44cb9a4a18756963",
   "branch": "main",
-  "data_commit": "2026-11-27T14:12:37-03:00",
+  "data_commit": "2026-11-27T14:42:13-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "42a1262",
+    "data": "2026-11-27",
+    "assunto": "infra: verificacao de drift do prod-migrate deixa de falhar por limitacao do shadow replay (#558)"
+   },
    {
     "sha": "a9d1124",
     "data": "2026-11-27",
@@ -126,14 +131,9 @@
     "sha": "d32f10e",
     "data": "2026-11-25",
     "assunto": "fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)"
-   },
-   {
-    "sha": "1c79a8f",
-    "data": "2026-11-25",
-    "assunto": "chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)"
    }
   ],
-  "arquivos_mudados_7d": 384,
+  "arquivos_mudados_7d": 385,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 28
+    "mudancas": 27
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -274,6 +274,10 @@
     "mudancas": 6
    },
    {
+    "arquivo": ".github/workflows/prod-migrate.yml",
+    "mudancas": 5
+   },
+   {
     "arquivo": "docs/agentes/auditoria-branches-2026-11-17.md",
     "mudancas": 5
    },
@@ -291,10 +295,6 @@
    },
    {
     "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
-    "mudancas": 5
-   },
-   {
-    "arquivo": "src/lib/reforma-tributaria/regras.ts",
     "mudancas": 5
    }
   ],

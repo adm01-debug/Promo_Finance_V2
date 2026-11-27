@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: verificacao de drift do prod-migrate deixa de falhar por limitacao do shadow replay (#558)",
    "feat: fila de análise de crédito da 1ª venda (Champions → Finance → Champions) (#578)",
    "infra: agendar os crons tributarios que nunca rodavam (#572)",
    "infra: libera os 4 syncs de catalogos RFB no deploy controlado de Edge Functions (#567)",
-   "fix(db): reconcilia colunas de elisao_simulacoes_regime nas migrations (#576)",
-   "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)"
+   "fix(db): reconcilia colunas de elisao_simulacoes_regime nas migrations (#576)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

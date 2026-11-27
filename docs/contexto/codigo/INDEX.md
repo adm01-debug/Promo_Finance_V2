@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a9d112422529a632e6c9551ad033f767379ca3d7` (2026-11-27T14:12:37-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `42a12620536bbd871dd5c7fa44cb9a4a18756963` (2026-11-27T14:42:13-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -477,8 +477,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (30)
-- bun.lock (28)
+- package.json (29)
+- bun.lock (27)
 - .github/workflows/ci.yml (10)
 - scripts/integrity/baseline/schema-counts.json (10)
 - src/integrations/supabase/types.ts (10)
@@ -652,6 +652,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-27 `42a1262` infra: verificacao de drift do prod-migrate deixa de falhar por limitacao do shadow replay (#558)
 - 2026-11-27 `a9d1124` feat: fila de análise de crédito da 1ª venda (Champions → Finance → Champions) (#578)
 - 2026-11-27 `254c8f9` infra: agendar os crons tributarios que nunca rodavam (#572)
 - 2026-11-27 `e7ba866` infra: libera os 4 syncs de catalogos RFB no deploy controlado de Edge Functions (#567)
@@ -666,7 +667,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-26 `f2dbe02` feat: simulador de elisão calcula e grava cenário com dados reais (#575)
 - 2026-11-26 `22c61ea` fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)
 - 2026-11-26 `ae407b8` fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)
-- 2026-11-26 `5991337` docs: fecha as etapas 84, 85 e 86 no plano RT/RFB com a evidencia real (#570)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
