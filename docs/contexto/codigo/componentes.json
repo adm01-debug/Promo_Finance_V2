@@ -8708,7 +8708,7 @@
     "ApuracaoMensal"
    ],
    "export_default": "ApuracaoMensal",
-   "linhas": 377,
+   "linhas": 382,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8887,7 +8887,7 @@
     "DashboardReformaTributaria"
    ],
    "export_default": "DashboardReformaTributaria",
-   "linhas": 309,
+   "linhas": 315,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -8981,7 +8981,7 @@
     "GestorCreditosTributarios"
    ],
    "export_default": "GestorCreditosTributarios",
-   "linhas": 466,
+   "linhas": 473,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -9142,7 +9142,7 @@
     "ModuloIRPJCSLL"
    ],
    "export_default": "ModuloIRPJCSLL",
-   "linhas": 296,
+   "linhas": 307,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -9201,7 +9201,7 @@
     "OperacoesLista"
    ],
    "export_default": "OperacoesLista",
-   "linhas": 113,
+   "linhas": 118,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",

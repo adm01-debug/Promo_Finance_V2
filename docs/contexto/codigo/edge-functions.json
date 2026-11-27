@@ -2227,8 +2227,8 @@
   {
    "nome": "gerar-pdf-tributario",
    "entrada": "supabase/functions/gerar-pdf-tributario/index.ts",
-   "arquivos": 1,
-   "linhas": 439,
+   "arquivos": 2,
+   "linhas": 518,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2267,7 +2267,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "gerar-relatorio-anual",

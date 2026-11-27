@@ -5168,6 +5168,7 @@
    "src/components/reforma-tributaria/irpj-csll/IRPJCSLLCalculadora.tsx",
    "src/components/reforma-tributaria/irpj-csll/IRPJCSLLLalurTab.tsx",
    "src/components/reforma-tributaria/irpj-csll/IRPJCSLLResumoCards.tsx",
+   "src/components/reforma-tributaria/irpj-csll/form-calculo.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -11567,7 +11568,8 @@
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/observability.ts",
-   "supabase/functions/_shared/rate-limit.ts"
+   "supabase/functions/_shared/rate-limit.ts",
+   "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts"
   ],
   "supabase/functions/gerar-relatorio-anual/index.ts": [
    "supabase/functions/_shared/contract-validator.ts",

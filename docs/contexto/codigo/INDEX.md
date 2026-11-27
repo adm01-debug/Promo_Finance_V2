@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4bed5323219eb36ab017d99a90f52f2521bf7fff` (2026-11-26T23:42:10-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `afc23fef49f1d9a620100ac7c0165f1a550d493a` (2026-11-27T00:17:54-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2465), SQL (1158), Markdown (232), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2469), SQL (1158), Markdown (232), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4128 |
-| arquivos_codigo | 2586 |
-| linhas_codigo | 467431 |
+| arquivos_total | 4132 |
+| arquivos_codigo | 2590 |
+| linhas_codigo | 467741 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 319 |
 | migrations | 1085 |
 | cron_jobs | 28 |
-| testes | 543 |
+| testes | 545 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 232 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (783), src/pages (208), src/hooks (2)
 - hooks: src/hooks (242), src/components (27), src/pages (5)
 - servicos_logica: src/lib (281), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (338), outro (113), co-localizado (*.test) (50)
+- testes: co-localizado (__tests__) (339), outro (114), co-localizado (*.test) (50)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -100,7 +100,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
 | components/navigation | 0 | 0 | 5 | 3 | 0 | 2 |
 | components/nfe | 0 | 0 | 32 | 27 | 3 | 30 |
-| components/reforma-tributaria | 0 | 0 | 67 | 31 | 1 | 32 |
+| components/reforma-tributaria | 0 | 0 | 68 | 31 | 1 | 32 |
 | components/relatorios | 0 | 0 | 22 | 27 | 3 | 16 |
 | components/security | 0 | 0 | 6 | 5 | 2 | 10 |
 | components/shared | 0 | 0 | 15 | 4 | 0 | 6 |
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-27 `afc23fe` fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)
 - 2026-11-26 `4bed532` feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)
 - 2026-11-26 `197f2a2` docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)
 - 2026-11-26 `0ff86af` chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-26 `377e5cf` feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)
 - 2026-11-25 `455790a` fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)
 - 2026-11-25 `6d2275f` feat: fundamentacao legal por item da nota (etapa 82) (#563)
-- 2026-11-25 `26cb299` feat: sync diario dos catalogos de NCM e NBS (etapa 80) (#561)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

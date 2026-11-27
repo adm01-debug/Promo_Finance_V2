@@ -21,8 +21,8 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (338)",
-   "outro (113)",
+   "co-localizado (__tests__) (339)",
+   "outro (114)",
    "co-localizado (*.test) (50)"
   ],
   "edge_functions": "supabase/functions",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)",
    "feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)",
    "docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)",
    "chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)",
-   "feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)",
-   "feat: vínculo manual na baixa automática liquida o título escolhido (#574)"
+   "feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -5,21 +5,21 @@
   "vitest",
   "playwright"
  ],
- "total": 543,
+ "total": 545,
  "por_tipo": {
   "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 464
+  "unit": 466
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 338
+   "arquivos": 339
   },
   {
    "padrao": "outro",
-   "arquivos": 113
+   "arquivos": 114
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -1277,13 +1277,22 @@
    "casos": 19
   },
   {
+   "arquivo": "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+   "tipo": "unit",
+   "linhas": 31,
+   "testa": [
+    "src/components/reforma-tributaria/irpj-csll/form-calculo.ts"
+   ],
+   "casos": 3
+  },
+  {
    "arquivo": "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx",
    "tipo": "unit",
-   "linhas": 72,
+   "linhas": 104,
    "testa": [
     "src/components/reforma-tributaria/GestorCreditosTributarios.tsx"
    ],
-   "casos": 2
+   "casos": 4
   },
   {
    "arquivo": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
@@ -4528,6 +4537,15 @@
    "casos": 3
   },
   {
+   "arquivo": "supabase/functions/gerar-pdf-tributario/index_test.ts",
+   "tipo": "unit",
+   "linhas": 119,
+   "testa": [
+    "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts"
+   ],
+   "casos": 7
+  },
+  {
    "arquivo": "supabase/functions/gerar-sped-ecd/__fixtures__/ecd-fixture.ts",
    "tipo": "unit",
    "linhas": 113,
@@ -4964,6 +4982,7 @@
   "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx": 1,
   "src/components/reforma-tributaria/KPIComparativo.tsx": 1,
   "src/components/reforma-tributaria/NavigationTributaria.tsx": 1,
+  "src/components/reforma-tributaria/irpj-csll/form-calculo.ts": 1,
   "src/components/tesouraria/ProjectedCashFlowChart.tsx": 1,
   "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx": 1,
   "src/components/tributario/consulta-rapida/format.ts": 1,
@@ -5285,6 +5304,7 @@
   "supabase/functions/exportar-sped-contribuicoes/layout.ts": 2,
   "supabase/functions/gerar-alertas-tributarios/index.ts": 2,
   "supabase/functions/gerar-heatmap-tributario/index.ts": 1,
+  "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts": 1,
   "supabase/functions/gerar-sped-ecd/layout.ts": 2,
   "supabase/functions/gerar-sped-ecf/layout.ts": 2,
   "supabase/functions/guardar-xml-nfe-autorizada/index.ts": 1,
@@ -5691,7 +5711,6 @@
    "gerar-alertas-dispatcher",
    "gerar-dre-tributaria",
    "gerar-pacote-evidencias",
-   "gerar-pdf-tributario",
    "gerar-relatorio-anual",
    "gerar-resumo-executivo-semanal",
    "gerar-resumo-financeiro-diario",

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "4bed5323219eb36ab017d99a90f52f2521bf7fff",
+  "commit": "afc23fef49f1d9a620100ac7c0165f1a550d493a",
   "branch": "main",
-  "data_commit": "2026-11-26T23:42:10-03:00",
+  "data_commit": "2026-11-27T00:17:54-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "afc23fe",
+    "data": "2026-11-27",
+    "assunto": "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)"
+   },
    {
     "sha": "4bed532",
     "data": "2026-11-26",
@@ -126,14 +131,9 @@
     "sha": "7a3a58d",
     "data": "2026-11-25",
     "assunto": "feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)"
-   },
-   {
-    "sha": "ba27656",
-    "data": "2026-11-25",
-    "assunto": "feat: [STEP 45] RPC de importacao XML grava os itens da nota (#547)"
    }
   ],
-  "arquivos_mudados_7d": 351,
+  "arquivos_mudados_7d": 358,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -148,16 +148,16 @@
     "mudancas": 119
    },
    {
+    "pasta": "src/components/reforma-tributaria",
+    "mudancas": 116
+   },
+   {
     "pasta": "src/pages/tributario",
     "mudancas": 113
    },
    {
     "pasta": "src/components/ui",
     "mudancas": 112
-   },
-   {
-    "pasta": "src/components/reforma-tributaria",
-    "mudancas": 108
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -258,10 +258,6 @@
     "mudancas": 6
    },
    {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-    "mudancas": 6
-   },
-   {
     "arquivo": "src/lib/tributario/catalogos/cclasstrib.ts",
     "mudancas": 6
    },
@@ -278,11 +274,7 @@
     "mudancas": 5
    },
    {
-    "arquivo": "scripts/ci/deno-check-functions.sh",
-    "mudancas": 5
-   },
-   {
-    "arquivo": "scripts/security/test-migration-replay-safety.sh",
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 5
    },
    {
@@ -295,6 +287,14 @@
    },
    {
     "arquivo": "src/lib/arquitetura/grafo-observado.json",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "src/lib/reforma-tributaria/regras.ts",
+    "mudancas": 5
+   },
+   {
+    "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "mudancas": 5
    }
   ],
@@ -310,9 +310,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4128,
-  "arquivos_codigo": 2586,
-  "linhas_codigo": 467431,
+  "arquivos_total": 4132,
+  "arquivos_codigo": 2590,
+  "linhas_codigo": 467741,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -324,7 +324,7 @@
   "tabelas": 319,
   "migrations": 1085,
   "cron_jobs": 28,
-  "testes": 543,
+  "testes": 545,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 232
@@ -639,8 +639,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1021,
-   "linhas": 169843
+   "arquivos": 1023,
+   "linhas": 169955
   },
   "src/config": {
    "arquivos": 2,
@@ -687,8 +687,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 261,
-   "linhas": 57425
+   "arquivos": 263,
+   "linhas": 57623
   },
   "supabase/tests": {
    "arquivos": 2,

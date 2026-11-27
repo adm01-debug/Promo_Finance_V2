@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "4bed5323219eb36ab017d99a90f52f2521bf7fff",
+  "sha": "afc23fef49f1d9a620100ac7c0165f1a550d493a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-27 02:42 UTC",
-  "files_total": 4167,
-  "code_files": 3745,
-  "code_lines": 540821
+  "generated_at": "2026-11-27 03:19 UTC",
+  "files_total": 4171,
+  "code_files": 3749,
+  "code_lines": 541135
  },
  "version": "1.3.2",
- "facts_hash": "45f39d7b3b503729",
+ "facts_hash": "b304ff5f1dd5a76e",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1325,
+   ".ts": 1329,
    ".sql": 1158,
    ".tsx": 1140,
    ".mjs": 68,
@@ -63183,7 +63183,7 @@
      "registrar_auditoria_config",
      "registrar_nfe_com_creditos"
     ],
-    "deps_count": 203
+    "deps_count": 204
    },
    {
     "path": "/reset-password",
@@ -68192,7 +68192,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1023,
+  "components_count": 1025,
   "hooks": [
    {
     "name": "useContacts",
@@ -71265,8 +71265,8 @@
   },
   {
    "module": "src/components",
-   "files": 1021,
-   "lines": 170864,
+   "files": 1023,
+   "lines": 170978,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -72452,8 +72452,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 261,
-   "lines": 57686,
+   "files": 263,
+   "lines": 57886,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -88553,6 +88553,30 @@
    {
     "file": "supabase/functions/gerar-pdf-tributario/index.ts",
     "text": "Step 36: rate limit 30 req/min — geração de PDF consome CPU e storage"
+   },
+   {
+    "file": "supabase/functions/gerar-pdf-tributario/index.ts",
+    "text": "A regra do crédito apropriado e o texto da nota vivem em"
+   },
+   {
+    "file": "supabase/functions/gerar-pdf-tributario/index.ts",
+    "text": "origem/efeito: o total guardado nelas não segue a regra acima."
+   },
+   {
+    "file": "supabase/functions/gerar-pdf-tributario/index_test.ts",
+    "text": "* A memória de cálculo IBS/CBS do PDF (etapa 94) afirma qual regra de crédito"
+   },
+   {
+    "file": "supabase/functions/gerar-pdf-tributario/index_test.ts",
+    "text": "Razão social no limite do cadastro (255 caracteres) quebra em quatro linhas: o"
+   },
+   {
+    "file": "supabase/functions/gerar-pdf-tributario/index_test.ts",
+    "text": "não pode encolher o bloco a ponto de voltar a sobrepor o texto."
+   },
+   {
+    "file": "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts",
+    "text": "* Y minimo da base legal; a tabela entra 6 mm abaixo dela. */"
    },
    {
     "file": "supabase/functions/gerar-snapshots-conformidade/index.ts",
@@ -125914,6 +125938,14 @@
     "name": "crédito apropriável exibe o saldo na linha"
    },
    {
+    "file": "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx",
+    "name": "busca os créditos da empresa informada pelo painel, não da primeira da lista"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx",
+    "name": "sem empresa informada continua usando a primeira da lista"
+   },
+   {
     "file": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
     "name": "GlossarioTooltip"
    },
@@ -126284,6 +126316,22 @@
    {
     "file": "src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx",
     "name": "aba ativa tem fundo primário"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+    "name": "formCalculoDaEmpresa"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+    "name": "descarta a apuracao que nao e da empresa/ano exibidos"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+    "name": "mantem os valores digitados quando a apuracao e da empresa exibida"
+   },
+   {
+    "file": "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+    "name": "descarta a apuracao enquanto a lista do periodo ainda nao carregou"
    },
    {
     "file": "src/components/tesouraria/__tests__/ProjectedCashFlowChart.test.tsx",
@@ -199790,7 +199838,7 @@
   },
   "src/components/reforma-tributaria/ApuracaoMensal.tsx": {
    "path": "src/components/reforma-tributaria/ApuracaoMensal.tsx",
-   "lines": 378,
+   "lines": 383,
    "exports": [
     "function ApuracaoMensal"
    ],
@@ -200038,7 +200086,7 @@
   },
   "src/components/reforma-tributaria/DashboardReformaTributaria.tsx": {
    "path": "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
-   "lines": 310,
+   "lines": 316,
    "exports": [
     "function DashboardReformaTributaria"
    ],
@@ -200101,7 +200149,7 @@
   },
   "src/components/reforma-tributaria/GestorCreditosTributarios.tsx": {
    "path": "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
-   "lines": 467,
+   "lines": 474,
    "exports": [
     "function GestorCreditosTributarios"
    ],
@@ -200235,7 +200283,7 @@
   },
   "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx": {
    "path": "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
-   "lines": 297,
+   "lines": 308,
    "exports": [
     "function ModuloIRPJCSLL"
    ],
@@ -200357,7 +200405,7 @@
   },
   "src/components/reforma-tributaria/OperacoesLista.tsx": {
    "path": "src/components/reforma-tributaria/OperacoesLista.tsx",
-   "lines": 114,
+   "lines": 119,
    "exports": [
     "function OperacoesLista"
    ],
@@ -200606,7 +200654,7 @@
   },
   "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx": {
    "path": "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx",
-   "lines": 73,
+   "lines": 105,
    "is_test": true,
    "rule_comments": [
     "valor que o usuário não pode apropriar."
@@ -200614,7 +200662,9 @@
    "tests": [
     "GestorCreditosTributarios - coluna Disponível (etapa 48/88)",
     "crédito informativo não exibe saldo disponível na linha",
-    "crédito apropriável exibe o saldo na linha"
+    "crédito apropriável exibe o saldo na linha",
+    "busca os créditos da empresa informada pelo painel, não da primeira da lista",
+    "sem empresa informada continua usando a primeira da lista"
    ]
   },
   "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx": {
@@ -200754,6 +200804,18 @@
     "aba ativa tem fundo primário"
    ]
   },
+  "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts": {
+   "path": "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+   "lines": 32,
+   "is_test": true,
+   "doc": "Achado do Devin na PR #582: a escolha da apuracao do IRPJ/CSLL vive em estado local do modulo, entao trocar o filtro de empresa mantinha o id da empresa anterior no formulario e o calculo gravava nessa apuracao com o saldo de prejuizos da empresa exibida.",
+   "tests": [
+    "formCalculoDaEmpresa",
+    "descarta a apuracao que nao e da empresa/ano exibidos",
+    "mantem os valores digitados quando a apuracao e da empresa exibida",
+    "descarta a apuracao enquanto a lista do periodo ainda nao carregou"
+   ]
+  },
   "src/components/reforma-tributaria/apuracao/ApuracaoDetalheCard.tsx": {
    "path": "src/components/reforma-tributaria/apuracao/ApuracaoDetalheCard.tsx",
    "lines": 169,
@@ -200808,6 +200870,14 @@
    "percents": [
     "Alíquota: {(aliquotaIRPJ * 100).toFixed(0)}% + 10% adicional"
    ]
+  },
+  "src/components/reforma-tributaria/irpj-csll/form-calculo.ts": {
+   "path": "src/components/reforma-tributaria/irpj-csll/form-calculo.ts",
+   "lines": 16,
+   "exports": [
+    "function formCalculoDaEmpresa"
+   ],
+   "doc": "A escolha da apuracao do IRPJ/CSLL fica em estado local do modulo. Quando o filtro do painel troca de empresa (ou de ano) o id guardado pode nao existir na lista exibida: manter o id antigo faz o calculo gravar na apuracao da empresa anterior usando o saldo de prejuizos da empresa atual (achado do D …"
   },
   "src/components/reforma-tributaria/per-dcomp/PerDcompFormDialog.tsx": {
    "path": "src/components/reforma-tributaria/per-dcomp/PerDcompFormDialog.tsx",
@@ -244719,7 +244789,7 @@
   },
   "supabase/functions/gerar-pdf-tributario/index.ts": {
    "path": "supabase/functions/gerar-pdf-tributario/index.ts",
-   "lines": 440,
+   "lines": 446,
    "tables": [
     {
      "table": "user_empresas",
@@ -244780,10 +244850,36 @@
     }
    ],
    "rule_comments": [
-    "Step 36: rate limit 30 req/min — geração de PDF consome CPU e storage"
+    "Step 36: rate limit 30 req/min — geração de PDF consome CPU e storage",
+    "A regra do crédito apropriado e o texto da nota vivem em",
+    "origem/efeito: o total guardado nelas não segue a regra acima."
    ],
    "doc": "Edge Function: gerar-pdf-tributario Gera PDF executivo com recomendação tributária e faz upload no bucket",
    "uses_service_role": true
+  },
+  "supabase/functions/gerar-pdf-tributario/index_test.ts": {
+   "path": "supabase/functions/gerar-pdf-tributario/index_test.ts",
+   "lines": 120,
+   "rule_comments": [
+    "* A memória de cálculo IBS/CBS do PDF (etapa 94) afirma qual regra de crédito",
+    "Razão social no limite do cadastro (255 caracteres) quebra em quatro linhas: o",
+    "não pode encolher o bloco a ponto de voltar a sobrepor o texto."
+   ],
+   "doc": "A memória de cálculo IBS/CBS do PDF (etapa 94) afirma qual regra de crédito produziu os números e com qual empresa a aba Créditos abre. O buffer do jspdf não é legível (streams comprimidos), então a emissão da nota é exercitada com um dublê da página — e a fonte é conferida só para garantir que a pá …"
+  },
+  "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts": {
+   "path": "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts",
+   "lines": 74,
+   "exports": [
+    "interface DocPaginaPdf",
+    "const NOTA_GEOMETRIA",
+    "function notaCreditoApuracao",
+    "function renderNotaCreditoApuracao"
+   ],
+   "rule_comments": [
+    "* Y minimo da base legal; a tabela entra 6 mm abaixo dela. */"
+   ],
+   "doc": "Nota da página \"Memória de Cálculo IBS/CBS\" (etapa 94) do PDF executivo. A apuração só apropria crédito com origem = xml_destacado e efeito_tributario = true (useApuracoesTributarias.ts). O crédito estimado por alíquota existe na base e aparece na aba Créditos do painel (GestorCreditosTributarios.ts …"
   },
   "supabase/functions/gerar-relatorio-anual/index.ts": {
    "path": "supabase/functions/gerar-relatorio-anual/index.ts",
@@ -255435,10 +255531,29 @@
   }
  },
  "git": {
-  "sha": "4bed5323219eb36ab017d99a90f52f2521bf7fff",
+  "sha": "afc23fef49f1d9a620100ac7c0165f1a550d493a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "afc23fe",
+    "date": "2026-11-27",
+    "author": "adm01-debug",
+    "subject": "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)",
+    "files": [
+     "src/components/reforma-tributaria/ApuracaoMensal.tsx",
+     "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
+     "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
+     "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
+     "src/components/reforma-tributaria/OperacoesLista.tsx",
+     "src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx",
+     "src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts",
+     "src/components/reforma-tributaria/irpj-csll/form-calculo.ts",
+     "supabase/functions/gerar-pdf-tributario/index.ts",
+     "supabase/functions/gerar-pdf-tributario/index_test.ts",
+     "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts"
+    ]
+   },
    {
     "sha": "4bed532",
     "date": "2026-11-26",
@@ -255890,16 +256005,6 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "04504ef",
-    "date": "2026-11-24",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump dompurify from 3.4.17 to 3.4.18 (#535)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
@@ -255924,14 +256029,6 @@
     4
    ],
    [
-    "bun.lock",
-    4
-   ],
-   [
-    "package.json",
-    4
-   ],
-   [
     "scripts/integrity/baseline/expected-policies.json",
     3
    ],
@@ -255953,6 +256050,14 @@
    ],
    [
     "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
+    3
+   ],
+   [
+    "bun.lock",
+    3
+   ],
+   [
+    "package.json",
     3
    ],
    [

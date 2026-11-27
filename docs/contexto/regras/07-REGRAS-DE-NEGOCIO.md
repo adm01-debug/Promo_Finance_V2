@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4bed532321` · branch `main` · 2026-11-27 02:42 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `afc23fef49` · branch `main` · 2026-11-27 03:19 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5286,7 +5286,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4315 testes em 375 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4321 testes em 376 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5559,6 +5559,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/categorias/__tests__/categoria-icones.test.ts` | 5 | iconeCategoria · resolve todos os ícones oferecidos pelo seletor · resolve os ícones gravados pela carga inicial de categorias · cai no Tag quando o nome não está no mapa … |
 | `src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx` | 5 | ValidacoesPreSpedDialog — bloqueio de download por erros · desabilita .txt e .zip quando há erros em validacoes.erros · habilita .txt e .zip quando validacoes.erros está vazio (mesmo com avisos) · habilita downloads quando não há erros nem avisos … |
 | `src/components/nfe/__tests__/sefaz-sem-protocolo-fabricado.test.tsx` | 5 | NF-e nao anuncia ato fiscal que nao aconteceu (F12) · inutilizacao: botao desabilitado, aviso na tela e simulador nunca chamado · cancelamento: botao desabilitado e sem chamada ao simulador · contingencia: transmissao de pendentes desabilitada … |
+| `src/components/reforma-tributaria/__tests__/GestorCreditosTributarios.test.tsx` | 5 | GestorCreditosTributarios - coluna Disponível (etapa 48/88) · crédito informativo não exibe saldo disponível na linha · crédito apropriável exibe o saldo na linha · busca os créditos da empresa informada pelo painel, não da primeira da lista … |
 | `src/hooks/useCancelamentoNFe.test.ts` | 5 | useCancelamentoNFe -- estorno xml_destacado (etapa 58) · sefazConfirmado=false -> retorna early, nao chama rpc nem registra evento · sefazConfirmado=true + rpc ok -> ok=true, creditosEstornados=2, evento gravado com chaveAcesso · sefazConfirmado=true + rpc erro -> ok=false com reason … |
 | `src/hooks/__tests__/useAlertasTributariosCount.test.ts` | 5 | useAlertasTributariosCount · retorna count quando query bem-sucedida · retorna 0 quando count é null · filtra por tipos tributários e lido=false … |
 | `src/hooks/__tests__/useConciliacaoIA.test.ts` | 5 | useConciliacaoIA · deve retornar erro se não houver dados para análise · deve processar matches retornados pela Edge Function com sucesso · deve lidar com erros de rate limit (429) graciosamente … |
@@ -5583,14 +5584,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/contabilidade/elisao/__tests__/simulador-tab.test.tsx` | 4 | SimuladorTab · mostra estado vazio quando não há cenários · renderiza os números reais gravados no cenário · abre a memória de cálculo no  |
 | `src/components/dashboard/__tests__/DashboardExecutivo.duplicidades.test.tsx` | 4 | DashboardExecutivo — escopo por empresa do card de duplicidades · usa a empresa atual no queryKey e filtra a consulta por ela · a seleção explícita do filtro tem precedência sobre a empresa atual · sem empresa atual não aplica filtro (sentinela  |
 | `src/components/integracoes/__tests__/open-finance-sem-extrato-fabricado.test.tsx` | 4 | painel do Open Finance não promete integração que não existe · o botão Conectar Banco fica desabilitado com o motivo à mostra · o texto não anuncia sincronização automática de saldos · avisa que nada é importado para a conciliação |
+| `src/components/reforma-tributaria/__tests__/formCalculoIRPJCSLL.test.ts` | 4 | formCalculoDaEmpresa · descarta a apuracao que nao e da empresa/ano exibidos · mantem os valores digitados quando a apuracao e da empresa exibida · descarta a apuracao enquanto a lista do periodo ainda nao carregou |
 | `src/components/tributario/historico/__tests__/faturamento-grava-impostos.test.tsx` | 4 | FaturamentoTab — imposto do mês · tem campo de imposto no formulário e na tabela · manda valor_impostos no payload do upsert · não bloqueia o salvamento quando o imposto fica zero |
 | `src/components/ui/__tests__/calendar.test.tsx` | 4 | Calendar (react-day-picker v10 mapping) · renderiza grid, cabecalho de semana e navegacao · aplica aria-selected e as classes de estado na celula do dia · mantem range middle/end com classes proprias |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx` | 4 | useCatalogoCclasstrib · reconsulta ao remontar quando a leitura anterior voltou vazia · nao reconsulta ao remontar quando a leitura esta fresca · releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
-| `src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx` | 4 | useImportacaoXMLNFe — itens no payload da RPC (etapa 45) · manda um item por det da nota, com o grupo IBS/CBS em fração decimal · não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint · preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100 |
-| `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
-| … +75 linhas — lista completa em `context.json` | | |
+| … +76 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6185,4 +6185,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Classificação de mensagens de validação SPED (ECF/ECD) em categorias | `src/lib/sped-validacoes-categorias.ts` |
 | # PASSO A PASSO — Validação no ${pvaNome}`, | `src/lib/sped-zip.ts` |
 | Auditoria nunca deve quebrar o fluxo de logout. | `src/lib/sso-slo-audit.ts` |
-| … +533 linhas — lista completa em `context.json` | |
+| … +539 linhas — lista completa em `context.json` | |
