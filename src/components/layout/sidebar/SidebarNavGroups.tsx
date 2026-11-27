@@ -135,6 +135,12 @@ const navGroups: NavGroup[] = [
         href: '/clientes/scoring',
         highlight: true,
       },
+      {
+        label: 'Análise de Crédito (1ª venda)',
+        icon: ShieldCheck,
+        href: '/clientes/analise-credito',
+        highlight: true,
+      },
       { label: 'Portal de Tokens API', icon: Key, href: '/clientes/portal-tokens' },
       { label: 'Gestão de Fornecedores', icon: Truck, href: '/fornecedores' },
       { label: 'Gestão de Vendedores', icon: UserCog, href: '/vendedores' },

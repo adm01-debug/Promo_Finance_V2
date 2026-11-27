@@ -167,7 +167,11 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.enviar-relatorios-tributarios-agendados]
-verify_jwt = true
+# false: chamada por pg_cron (job `enviar-relatorios-tributarios`, migration
+# 20261126122000), que nao envia JWT. A prova de origem e o header
+# `x-cron-secret` conferido por `exigirChamadaInterna(req, 'relatorios_tributarios_cron')`
+# no handler — sem nenhuma chamada de usuario final.
+verify_jwt = false
 
 [functions.executar-fechamento-tributario]
 verify_jwt = true
@@ -197,7 +201,12 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.gerar-relatorio-anual]
-verify_jwt = true
+# false: a funcao tem dois chamadores (usuario logado e o job pg_cron
+# `enviar-relatorios-tributarios`, que a invoca com o client service_role) e a
+# prova de origem fica no codigo, em `exigirInternaOuUsuarioComPapel`
+# (supabase/functions/_shared/auth-guard.ts). Com `true` o pg_cron levava 401 no
+# gateway e o relatorio agendado nunca era enviado.
+verify_jwt = false
 
 [functions.gerar-resumo-executivo-semanal]
 verify_jwt = true

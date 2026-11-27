@@ -19,4 +19,5 @@ export const Tesouraria = lazy(() => import('../pages/Tesouraria'));
 export const MetasFinanceirasPage = lazy(() => import('../pages/MetasFinanceiras'));
 export const PortalTokensPage = lazy(() => import('../pages/clientes/PortalTokens'));
 export const ScoringClientesPage = lazy(() => import('../pages/clientes/ScoringClientes'));
+export const AnaliseCreditoPage = lazy(() => import('../pages/clientes/AnaliseCredito'));
 export const Compras = lazy(() => import('../pages/Compras'));
