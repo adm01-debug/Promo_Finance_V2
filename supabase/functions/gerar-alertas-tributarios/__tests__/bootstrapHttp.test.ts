@@ -1,11 +1,15 @@
 import { assert, assertEquals } from 'https://deno.land/std@0.208.0/assert/mod.ts';
-import { bootstrap } from '../index.ts';
 
 const originalEnvGet = Deno.env.get;
 
-// Origem da allowlist de producao (supabase/functions/_shared/cors.ts): uma
-// origem fora da lista nao recebe echo e o navegador bloqueia a resposta.
+// `_shared/cors.ts` resolve a allowlist uma unica vez, no import. Fixar a lista
+// aqui, antes do import dinamico, mantem o teste independente do ambiente: com
+// um `ALLOWED_ORIGINS` no shell sem esta origem, o echo simplesmente nao viria e
+// o preflight "passaria" no teste e falharia no navegador.
 const ORIGEM_PERMITIDA = 'http://localhost:5173';
+const ORIGEM_BLOQUEADA = 'https://origem-fora-da-allowlist.test';
+Deno.env.set('ALLOWED_ORIGINS', ORIGEM_PERMITIDA);
+const { bootstrap } = await import('../index.ts');
 
 // Exercita a inicializacao HTTP de verdade: sobe o mesmo servidor que o runtime
 // sobe (`bootstrap` -> `Deno.serve`) e faz a chamada pelo loopback. Um erro no
@@ -57,6 +61,17 @@ Deno.test('gerar-alertas-tributarios preserva o preflight CORS pela porta HTTP',
       (response.headers.get('access-control-allow-methods') ?? '').includes('POST'),
       'preflight nao anuncia POST em Access-Control-Allow-Methods'
     );
+
+    // Origem fora da allowlist nao recebe echo: `origemCors()` devolve a
+    // primeira origem permitida, entao o navegador bloqueia a resposta.
+    const bloqueado = await fetch(`http://127.0.0.1:${porta}/gerar-alertas-tributarios`, {
+      method: 'OPTIONS',
+      headers: {
+        Origin: ORIGEM_BLOQUEADA,
+        'Access-Control-Request-Method': 'POST',
+      },
+    });
+    assertEquals(bloqueado.headers.get('access-control-allow-origin'), ORIGEM_PERMITIDA);
   } finally {
     await servidor.shutdown();
   }
