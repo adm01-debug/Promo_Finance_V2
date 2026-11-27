@@ -126,3 +126,20 @@ describe('NovaNFeForm ao trocar de SKU', () => {
     expect(ncm().value).toBe('84713012');
   });
 });
+
+describe('NovaNFeForm: pre-validacao do grupo IBS/CBS', () => {
+  it('lista o cClassTrib do padrao do SKU quando ele nao existe no catalogo vigente', () => {
+    // Catalogo carregado, mas sem o codigo que o padrao do SKU carrega: o item
+    // enquadra em 200032 e o catalogo so conhece 000001.
+    catalogo.opcoes = [
+      { cst: '000', cclasstrib: '000001', descricao: 'padrao', vigencia_inicio: '2026-01-01' },
+    ];
+    render(<NovaNFeForm onClose={() => {}} />);
+
+    expect(screen.queryByText(/Pré-validação do grupo IBS\/CBS/)).toBeNull();
+
+    digitarSku('KIT-1');
+    expect(screen.getByText(/Pré-validação do grupo IBS\/CBS/)).toBeTruthy();
+    expect(screen.getByText(/200032 não existe no catálogo vigente/)).toBeTruthy();
+  });
+});

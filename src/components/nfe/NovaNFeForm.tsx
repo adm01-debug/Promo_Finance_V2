@@ -18,6 +18,8 @@ import { useCatalogoCclasstrib } from '@/hooks/useCatalogoCclasstrib';
 import { useProdutoCclasstribPadrao } from '@/hooks/useProdutoCclasstribPadrao';
 import { calcularGrupoIbscbs, resolverCclassTribPadrao } from '@/lib/nfe/grupo-ibscbs-item';
 import { calcularBaseCalculo } from '@/lib/reforma-tributaria/base-calculo';
+import { adaptarItem, preValidarIbscbs } from '@/lib/nfe/pre-validar-ibscbs';
+import { PreValidacaoIbscbs } from './PreValidacaoIbscbs';
 import {
   cclasstribManualAposTroca,
   ncmAposTrocaDeCodigo,
@@ -27,6 +29,18 @@ import { NotaFiscal, ItemNFe } from './nfe-types';
 
 /** Ano do cronograma usado na estimativa local do grupo IBS/CBS. */
 const ANO_REFERENCIA = new Date().getFullYear();
+
+/**
+ * CRT (código de regime tributário) do emitente: 1 = Simples Nacional,
+ * 3 = regime normal (Lucro Presumido e Lucro Real). Regime desconhecido devolve
+ * `undefined` — sem CRT a pré-validação não afirma nada sobre a obrigatoriedade
+ * do grupo, em vez de bloquear por suposição.
+ */
+const crtDoRegime = (regime?: string | null): number | undefined => {
+  if (regime === 'simples_nacional') return 1;
+  if (regime === 'lucro_presumido' || regime === 'lucro_real') return 3;
+  return undefined;
+};
 
 interface NovaNFeFormProps {
   onClose: () => void;
@@ -200,6 +214,15 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
   ).length;
   const avisosBase = Array.from(new Set(itens.flatMap((item) => calcularBaseItem(item).avisos)));
 
+  /** Achados da pré-validação IBS/CBS do contexto atual (etapa 54 do plano RT/RFB). */
+  const empresaEmitente = empresas.find((emp) => emp.id === formData.empresa);
+  const preValidacao = preValidarIbscbs({
+    crt: crtDoRegime(empresaEmitente?.regime_tributario),
+    dataEmissao: new Date().toISOString().slice(0, 10),
+    itens: itens.map((item, indice) => adaptarItem({ ...item, nItem: indice + 1 })),
+    cclasstribVigentes: codigos,
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     toast.error(
@@ -214,6 +237,8 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
         Esta tela não transmite NF-e até que a integração SEFAZ esteja homologada. Nenhum protocolo
         será simulado.
       </div>
+
+      <PreValidacaoIbscbs achados={preValidacao.achados} />
 
       <div className="space-y-4">
         <h4 className="font-medium flex items-center gap-2">
