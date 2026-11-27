@@ -4,9 +4,9 @@
   "resumo": {
     "urls": 9,
     "urls_protegidas": 0,
-    "itens_de_menu": 91,
+    "itens_de_menu": 92,
     "hooks_distintos": 9,
-    "problemas": 91
+    "problemas": 92
   },
   "urls": [
     {
@@ -377,6 +377,11 @@
       "tipo": "menu_sem_rota",
       "id": "/clientes",
       "detalhe": "item \"Gestão de Clientes\" aponta para /clientes, sem <Route path> correspondente em src/App.tsx"
+    },
+    {
+      "tipo": "menu_sem_rota",
+      "id": "/clientes/analise-credito",
+      "detalhe": "item \"Análise de Crédito (1ª venda)\" aponta para /clientes/analise-credito, sem <Route path> correspondente em src/App.tsx"
     },
     {
       "tipo": "menu_sem_rota",
