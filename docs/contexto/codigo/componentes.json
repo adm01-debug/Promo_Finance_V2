@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 995,
+ "total": 997,
  "orfaos": 38,
  "nomes_duplicados": {
   "Accordion": [
@@ -2891,6 +2891,22 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/clientes/AnaliseCreditoPanel.tsx",
+   "exports": [
+    "AnaliseCreditoPanel"
+   ],
+   "export_default": null,
+   "linhas": 493,
+   "dominio": "components/clientes",
+   "hooks_locais": [
+    "useAnalisesCredito"
+   ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -7756,7 +7772,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 94,
+   "usado_por": 95,
    "orfao": false
   },
   {
@@ -7785,7 +7801,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 42,
+   "usado_por": 43,
    "orfao": false
   },
   {
@@ -7871,7 +7887,7 @@
     "SidebarNavGroups"
    ],
    "export_default": null,
-   "linhas": 414,
+   "linhas": 420,
    "dominio": "components/layout",
    "hooks_locais": [
     "useAlertasNaoLidos",
@@ -11097,7 +11113,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 452,
+   "usado_por": 453,
    "orfao": false
   },
   {
@@ -11146,7 +11162,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 530,
+   "usado_por": 531,
    "orfao": false
   },
   {
@@ -11187,7 +11203,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 479,
+   "usado_por": 480,
    "orfao": false
   },
   {
@@ -11433,7 +11449,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 141,
+   "usado_por": 142,
    "orfao": false
   },
   {
@@ -11647,7 +11663,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 219,
+   "usado_por": 220,
    "orfao": false
   },
   {
@@ -11661,7 +11677,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 166,
+   "usado_por": 167,
    "orfao": false
   },
   {
@@ -12135,7 +12151,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 126,
+   "usado_por": 127,
    "orfao": false
   },
   {
@@ -12264,7 +12280,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 90,
+   "usado_por": 91,
    "orfao": false
   },
   {
@@ -12297,7 +12313,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 47,
+   "usado_por": 48,
    "orfao": false
   },
   {
@@ -13472,6 +13488,20 @@
    ],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/clientes/AnaliseCredito.tsx",
+   "exports": [
+    "AnaliseCreditoPage"
+   ],
+   "export_default": "AnaliseCreditoPage",
+   "linhas": 28,
+   "dominio": "pages/clientes",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {

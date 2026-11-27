@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `254c8f958b` · branch `main` · 2026-11-27 17:13 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a9d1124225` · branch `main` · 2026-11-27 17:14 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -31,6 +31,7 @@
 | `aliquotas_iss_municipal` | enabled | authenticated: true<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) |
 | `allowed_countries` | enabled | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: true<br>authenticated: true<br>authenticated: true<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role … | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: true<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role … | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: true<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role … | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: true<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role … |
 | `allowed_ips` | enabled | public: auth.uid() = user_id OR has_role(auth.uid(), 'admin'::app_role)<br>public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) |
+| `analises_credito` | enabled | authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (empresa_id IS NULL OR empresa_acessivel(empre … | — | — | — |
 | `anexos_financeiros` | enabled | authenticated: EXISTS ( SELECT 1 FROM public.user_empresas ue WHERE ue.user_id = auth.uid() AND ue.ativo AND ue.empresa_id = anexos_financei … | authenticated: empresa_id IS NOT NULL AND empresa_id = private.empresa_da_entidade_financeira(entidade_tipo, entidade_id) AND (storage_path … | authenticated: EXISTS ( SELECT 1 FROM public.user_empresas ue WHERE ue.user_id = auth.uid() AND ue.ativo AND ue.role IN ('admin', 'financeir … | authenticated: EXISTS ( SELECT 1 FROM public.user_empresas ue WHERE ue.user_id = auth.uid() AND ue.ativo AND ue.role IN ('admin', 'financeir … |
 | `anomalia_detection_runs` | enabled | public: has_role(auth.uid(), 'admin'::app_role)<br>authenticated: ((triggered_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) | public: has_role(auth.uid(), 'admin'::app_role) | public: has_role(auth.uid(), 'admin'::app_role) | — |
 | `anomalia_toast_eventos` | enabled | authenticated: user_id = auth.uid() OR public.has_role(auth.uid(), 'admin')<br>authenticated: ((SELECT auth.uid()) = user_id) | authenticated: user_id = auth.uid()<br>authenticated: ((SELECT auth.uid()) = user_id) | — | authenticated: user_id = auth.uid() OR public.has_role(auth.uid(), 'admin') |
@@ -306,7 +307,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 376 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 377 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -458,7 +459,7 @@
 - `supabase/functions/sso-callback/index.ts`
 - `supabase/functions/sso-initiate/index.ts`
 - `supabase/functions/sso-logout/index.ts`
-- … +226 (lista completa em `context.json`)
+- … +227 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -759,6 +760,7 @@
 | /categorias | ProtectedRoute |  | `src/routes/geralRoutes.tsx` |
 | /centro-custos | ProtectedRoute |  | `src/routes/contabilRoutes.tsx` |
 | /clientes | ProtectedRoute |  | `src/routes/financeiroRoutes.tsx` |
+| /clientes/analise-credito | ProtectedRoute |  | `src/routes/financeiroRoutes.tsx` |
 | /clientes/portal-tokens | ProtectedRoute |  | `src/routes/financeiroRoutes.tsx` |
 | /clientes/scoring | ProtectedRoute |  | `src/routes/financeiroRoutes.tsx` |
 | /cobrancas | ProtectedRoute |  | `src/routes/financeiroRoutes.tsx` |
@@ -871,7 +873,7 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | all | `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `user_preferences`, `public`, `public`, `public`, `anomalias_detectadas`, `anomalia_toast_eventos`, `centros_custo`, `contratos`, `metas_financeiras`, `partidas_contabeis` … +42 |
 | grant | authenticated | execute | `registrar_evento_receber`, `processar_regua_cobranca`, `confirmar_envio_cobranca`, `gerar_numero_acordo`, `registrar_auditoria_config`, `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `reprocess_dlq`, `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `compare_pg_stat_baseline` … +27 |
 | grant | authenticated | insert, update, delete | `ufs` |
-| grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +47 |
+| grant | authenticated | select | `vw_fluxo_caixa_diario`, `vw_metricas_cobranca`, `vw_saldos_contas`, `vw_webhooks_recentes`, `vw_contas_receber_painel`, `vw_contas_pagar_painel`, `slow_query_alerts`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_dispatch_logs`, `integrity_alerts`, `sefaz_dfe_cursor`, `nfe_eventos` … +48 |
 | grant | authenticated | select, delete | `api_keys` |
 | grant | authenticated | select, insert | `audit_log`, `audit_logs`, `bling_sync_logs`, `audit_logs`, `audit_logs` |
 | grant | authenticated | select, insert, delete | `sso_sandbox_runs` |
@@ -886,7 +888,7 @@ Middleware matcher (Next.js): nenhum
 | grant | postgres | all privileges | `cron` |
 | grant | postgres, service_role | execute | `notify_performance_alert_trigger`, `internal_job_secret` |
 | grant | public | execute | `is_ip_allowed_for_login`, `is_country_allowed_for_login` |
-| grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +143 |
+| grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +144 |
 | grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +82 |
 | grant | service_role | select | `mv_benchmark_setorial`, `v_table_bloat`, `mv_performance_alerts_weekly`, `estrategias_elisao_catalogo`, `mv_benchmark_setorial`, `vw_edge_health`, `vw_transferencias_painel`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel`, `estrategias_elisao_catalogo`, `vw_webhooks_recentes` |
 | grant | service_role | usage, select | `rpc_observability_metrics_id_seq` |
@@ -903,7 +905,7 @@ Middleware matcher (Next.js): nenhum
 | revoke | anon | insert | `frontend_error_logs` |
 | revoke | anon | insert, update, delete, truncate | `audit_logs` |
 | revoke | anon, PUBLIC | execute | `reprocess_dlq`, `cleanup_pgss_baseline`, `compare_pg_stat_baseline` |
-| revoke | anon, authenticated | all | `mv_benchmark_setorial`, `integration_secrets`, `mv_benchmark_setorial`, `sync_regime_tributario_empresa`, `pix_template_sync_legacy`, `bling_tokens`, `bitrix_oauth_tokens`, `frontend_error_alert_state`, `tax_audit_trail`, `regime_decision_cache` |
+| revoke | anon, authenticated | all | `mv_benchmark_setorial`, `integration_secrets`, `mv_benchmark_setorial`, `sync_regime_tributario_empresa`, `pix_template_sync_legacy`, `bling_tokens`, `bitrix_oauth_tokens`, `frontend_error_alert_state`, `tax_audit_trail`, `regime_decision_cache`, `analises_credito` |
 | revoke | anon, authenticated | execute | `capture_pg_stat_statements_baseline`, `detect_query_regressions`, `refresh_performance_alerts_weekly`, `capture_slow_queries`, `maintain_monthly_partitions`, `cleanup_old_cron_logs`, `cleanup_expired_tokens`, `cleanup_old_login_attempts`, `run_daily_cleanup`, `enqueue_webhook_retry`, `cleanup_pgss_baseline`, `check_nfe_xml_path_invariants`, `sync_regime_tributario_empresa` |
 | revoke | anon, authenticated | insert | `frontend_error_logs` |
 | revoke | anon, authenticated | insert, update, delete, truncate, references, trigger | `frontend_error_silence_digest_log` |
@@ -929,8 +931,8 @@ Middleware matcher (Next.js): nenhum
 
 ## Multi-tenancy
 
-- Chave de tenant: **`empresa_id`** presente em 131 tabela(s): `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `bitrix_oauth_tokens`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `security_alerts`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `bling_tokens`, `bling_sync_logs`, `bling_webhook_events`, `plano_contas`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `sso_login_attempts`, `sso_role_mappings`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `regua_cobranca_status`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `kpis_operacionais`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `overlay_rejeicoes_auditoria`, `simulacoes`, `simulacao_tributos_detalhados`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `asaas_payment_links`
-- Cobertura: 47% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
+- Chave de tenant: **`empresa_id`** presente em 132 tabela(s): `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `bitrix_oauth_tokens`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `security_alerts`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `bling_tokens`, `bling_sync_logs`, `bling_webhook_events`, `plano_contas`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `sso_login_attempts`, `sso_role_mappings`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `regua_cobranca_status`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `kpis_operacionais`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `overlay_rejeicoes_auditoria`, `simulacoes`, `simulacao_tributos_detalhados`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `asaas_payment_links`, `analises_credito`
+- Cobertura: 48% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
 
 ## Soft delete (registros 'apagados' continuam na tabela — filtre!)
 
@@ -1252,6 +1254,7 @@ Middleware matcher (Next.js): nenhum
 | `catalogo_cclasstrib` | `created_at` |
 | `catalogo_fundamentacao` | `created_at` |
 | `produto_cclasstrib_padrao` | `atualizado_em` |
+| `analises_credito` | `created_at`, `updated_at` |
 | `frontend_error_logs_2026_01` | `created_at` |
 | `frontend_error_logs_2026_02` | `created_at` |
 | `frontend_error_logs_2026_03` | `created_at` |
@@ -1308,6 +1311,7 @@ Middleware matcher (Next.js): nenhum
 | `email_verifications` | `email` |
 | `mfa_sessions` | `ip_address` |
 | `user_devices` | `ip_address` |
+| `analises_credito` | `cnpj` |
 
 ## Colunas de dinheiro (tipo importa: numeric ✅ / float ❌)
 
@@ -1475,3 +1479,4 @@ Middleware matcher (Next.js): nenhum
 | `projecoes_reforma` | `total_tributos` | `numeric(15,2)` |
 | `oportunidades_elisao` | `custo_implementacao` | `NUMERIC(15,2)` |
 | `asaas_payment_links` | `valor` | `NUMERIC(14,2)` |
+| `analises_credito` | `valor_pedido` | `numeric(14,2)` |

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "254c8f958bb2c50ee7a40e06f0add46671eb7f35",
+  "sha": "a9d112422529a632e6c9551ad033f767379ca3d7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-27 17:13 UTC",
-  "files_total": 4181,
-  "code_files": 3759,
-  "code_lines": 542283
+  "generated_at": "2026-11-27 17:14 UTC",
+  "files_total": 4192,
+  "code_files": 3770,
+  "code_lines": 544681
  },
  "version": "1.3.2",
- "facts_hash": "dfdcd162dabd519b",
+ "facts_hash": "2202adfa51abec84",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1335,
-   ".sql": 1162,
-   ".tsx": 1140,
+   ".ts": 1342,
+   ".sql": 1164,
+   ".tsx": 1142,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -28968,6 +28968,235 @@
     "comment": "",
     "origin": "migration"
    },
+   "analises_credito": {
+    "columns": [
+     {
+      "name": "id",
+      "type": "uuid PRIMARY KEY DEFAULT gen_random_uuid()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "origem",
+      "type": "text NOT NULL DEFAULT 'promo_champions'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "referencia_externa",
+      "type": "text NOT NULL",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "correlation_key",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "pedido_numero",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "valor_pedido",
+      "type": "numeric(14,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "cliente_id",
+      "type": "uuid REFERENCES public.clientes(id) ON DELETE SET NULL",
+      "fk": "clientes.id ON DELETE SET NULL",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "empresa_id",
+      "type": "uuid REFERENCES public.empresas(id) ON DELETE SET NULL",
+      "fk": "empresas.id ON DELETE SET NULL",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "cliente_nome",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "cliente_empresa",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "cliente_email",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "cliente_telefone",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "cnpj",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "vendedor_email",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "status",
+      "type": "text NOT NULL DEFAULT 'pendente'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "dados_cnpja",
+      "type": "jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "dados_escavador",
+      "type": "jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "dados_consulta_financeira",
+      "type": "jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "alertas",
+      "type": "jsonb NOT NULL DEFAULT '[]'::jsonb",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "limite_aprovado",
+      "type": "numeric(14,2)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "parcelas_max",
+      "type": "integer",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "parecer",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "decidido_por",
+      "type": "uuid",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "decidido_em",
+      "type": "timestamptz",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "callback_status",
+      "type": "text NOT NULL DEFAULT 'pendente'",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "callback_erro",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "callback_em",
+      "type": "timestamptz",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "solicitado_em",
+      "type": "timestamptz",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "created_at",
+      "type": "timestamptz NOT NULL DEFAULT now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "updated_at",
+      "type": "timestamptz NOT NULL DEFAULT now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126193000_analises_credito.sql"
+     },
+     {
+      "name": "limite_aplicado_em",
+      "type": "timestamptz",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126200000_analises_credito_limite_aplicado.sql"
+     }
+    ],
+    "constraints": [
+     "CONSTRAINT analises_credito_status_check CHECK (status = ANY (ARRAY['pendente', 'em_analise', 'aprovado', 'reprovado']::text[]))",
+     "CONSTRAINT analises_credito_callback_check CHECK (callback_status = ANY (ARRAY['pendente', 'enviado', 'falhou', 'nao_aplicavel']::text[]))",
+     "CONSTRAINT analises_credito_origem_ref_key UNIQUE (origem, referencia_externa)"
+    ],
+    "src": "supabase/migrations/20261126193000_analises_credito.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "frontend_error_logs_2026_01": {
     "columns": [
      {
@@ -37525,6 +37754,16 @@
     "using": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
     "check": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
     "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "name": "analises_credito_leitura_financeiro",
+    "table": "analises_credito",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (empresa_id IS NULL OR empresa_acessivel(empresa_id))",
+    "check": "",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "triggers": [
@@ -40191,6 +40430,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
+   },
+   {
+    "name": "trg_analises_credito_updated_at",
+    "when": "BEFORE UPDATE",
+    "table": "analises_credito",
+    "function": "tg_analises_credito_updated_at",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "functions": {
@@ -44118,6 +44366,17 @@
      "v_nota",
      "v_soma"
     ]
+   },
+   "tg_analises_credito_updated_at": {
+    "args": "",
+    "returns": "trigger",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "BEGIN NEW.updated_at := now(); RETURN NEW; END;",
+    "raises": [],
+    "tables": []
    },
    "migration_aplicada": {
     "args": "versao text",
@@ -50272,6 +50531,30 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "name": "idx_analises_credito_status_created",
+    "table": "analises_credito",
+    "columns": "status, created_at DESC",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
+   },
+   {
+    "name": "idx_analises_credito_cnpj",
+    "table": "analises_credito",
+    "columns": "cnpj",
+    "unique": false,
+    "where": "WHERE cnpj IS NOT NULL",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
+   },
+   {
+    "name": "idx_analises_credito_empresa_id",
+    "table": "analises_credito",
+    "columns": "empresa_id",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "cron_jobs": [
@@ -51638,6 +51921,8 @@
    "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql",
    "supabase/migrations/20261126123000_endurece_rls_relatorios_agendados.sql",
    "supabase/migrations/20261126123500_normaliza_proximo_envio_agendados.sql",
+   "supabase/migrations/20261126193000_analises_credito.sql",
+   "supabase/migrations/20261126200000_analises_credito_limite_aplicado.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -51907,7 +52192,8 @@
    "catalogo_nbs": "enabled",
    "catalogo_aliquota_referencia": "enabled",
    "catalogo_fundamentacao": "enabled",
-   "produto_cclasstrib_padrao": "enabled"
+   "produto_cclasstrib_padrao": "enabled",
+   "analises_credito": "enabled"
   },
   "grants": [
    {
@@ -59997,6 +60283,30 @@
     "objkind": "table",
     "roles": "service_role",
     "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "analises_credito",
+    "objkind": "table",
+    "roles": "anon, authenticated",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select",
+    "object": "analises_credito",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "all",
+    "object": "analises_credito",
+    "objkind": "table",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "raises": [
@@ -60924,7 +61234,8 @@
    "table:frontend_error_silence_digest_log": "Gap #28: trilha dos digests de silenciamento enviados. Serve de trava de idempotência para o agendador semanal.",
    "column:contas_receber.status": "em_acordo: conta vinculada a um acordo de parcelamento ativo (acordos_parcelamento.contas_receber_ids) — excluída da régua de cobrança automática enquanto durar.",
    "function:obter_totais_movimentacoes": "Agregação server-side dos totais de Movimentações (Entradas/Saídas/Saldo). Exclui origem=transferencia: transferências internas movimentam saldo, não são receita/despesa. origem=transferencia_externa é contada normalmente (saída real a favorecido externo). SECURITY INVOKER: respeita a RLS de movimentacoes por empresa.",
-   "table:asaas_payment_links": "Espelho local de paymentLinks criados via asaas-proxy, com empresa_id — permite a listar_links_pagamento filtrar por empresa, já que a API do Asaas não amarra paymentLinks a empresa."
+   "table:asaas_payment_links": "Espelho local de paymentLinks criados via asaas-proxy, com empresa_id — permite a listar_links_pagamento filtrar por empresa, já que a API do Asaas não amarra paymentLinks a empresa.",
+   "column:analises_credito.limite_aplicado_em": "Quando o limite aprovado foi gravado no cadastro do cliente; reenvio ao Champions não reescreve limite já aplicado."
   },
   "types_file": "src/integrations/supabase/types.ts",
   "policies_dinamicas": [
@@ -64182,6 +64493,61 @@
     "idempotency": false
    },
    {
+    "name": "credito-analise",
+    "file": "supabase/functions/credito-analise/index.ts",
+    "methods": [
+     "OPTIONS"
+    ],
+    "auth": "service_role (ignora RLS) — NÃO valida usuário no código",
+    "tables": [
+     "analises_credito",
+     "clientes",
+     "cnpja_cache",
+     "edge_function_logs",
+     "integration_secrets",
+     "user_empresas",
+     "user_roles"
+    ],
+    "env": [
+     "CHAMPIONS_CREDITO_CALLBACK_SECRET",
+     "CHAMPIONS_CREDITO_CALLBACK_URL"
+    ],
+    "external": [],
+    "invokes": [],
+    "doc": "Edge Function: credito-analise Fila de análise de crédito da 1ª venda para o Financeiro (admin/financeiro): listar -> linhas de analises_credito (default: pendentes) atualizar_dados -> CNPJ corrigido (reconsulta CNPJ.já), Escavador e consulta financeira registrados pelo analista decidir -> aprovado/ …",
+    "errors": [],
+    "side_effects": [],
+    "webhook_events": [],
+    "idempotency": true
+   },
+   {
+    "name": "credito-solicitacao",
+    "file": "supabase/functions/credito-solicitacao/index.ts",
+    "methods": [
+     "OPTIONS"
+    ],
+    "auth": "service_role (ignora RLS) — NÃO valida usuário no código",
+    "tables": [
+     "analises_credito",
+     "clientes",
+     "cnpja_cache",
+     "edge_function_logs",
+     "integration_secrets",
+     "user_empresas",
+     "user_roles"
+    ],
+    "env": [
+     "CHAMPIONS_CREDITO_WEBHOOK_SECRET"
+    ],
+    "external": [],
+    "invokes": [],
+    "doc": "Edge Function: credito-solicitacao Recebe do Promo Champions a solicitação de análise de crédito da 1ª venda (evento `credito.solicitado`), abre a linha em `analises_credito`, consulta o CNPJ.já quando há CNPJ e grava os alertas para o analista. Envelope (igual ao supply-dispatch do Champions): head …",
+    "errors": [],
+    "side_effects": [],
+    "webhook_events": [],
+    "idempotency": true
+   },
+   {
     "name": "decidir-regime",
     "file": "supabase/functions/decidir-regime/index.ts",
     "methods": [
@@ -67164,6 +67530,13 @@
     "file": "src/routes/financeiroRoutes.tsx"
    },
    {
+    "path": "/clientes/analise-credito",
+    "component": "AnaliseCreditoPage",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "src/routes/financeiroRoutes.tsx"
+   },
+   {
     "path": "/clientes/portal-tokens",
     "component": "PortalTokensPage",
     "guard": "ProtectedRoute",
@@ -68190,7 +68563,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1025,
+  "components_count": 1026,
   "hooks": [
    {
     "name": "useContacts",
@@ -68567,6 +68940,10 @@
    {
     "name": "useAlertasTributariosCount",
     "file": "src/hooks/useAlertasTributariosCount.ts"
+   },
+   {
+    "name": "useAnalisesCredito",
+    "file": "src/hooks/useAnalisesCredito.ts"
    },
    {
     "name": "useAnomaliaAuditHistory",
@@ -70501,6 +70878,10 @@
    },
    {
     "guard": "ProtectedRoute",
+    "file": "src/routes/financeiroRoutes.tsx"
+   },
+   {
+    "guard": "ProtectedRoute",
     "file": "src/routes/fiscalRoutes.tsx"
    },
    {
@@ -70964,7 +71345,7 @@
   {
    "module": "scripts",
    "files": 154,
-   "lines": 50835,
+   "lines": 50837,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -71263,8 +71644,8 @@
   },
   {
    "module": "src/components",
-   "files": 1023,
-   "lines": 170978,
+   "files": 1024,
+   "lines": 171478,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71542,8 +71923,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 337,
-   "lines": 50939,
+   "files": 338,
+   "lines": 51165,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71717,6 +72098,7 @@
     "useAlertasPreditivos.ts: AlertaPreditivo, useAlertasPreditivos",
     "useAlertasTributarios.ts: TipoAlerta, PrioridadeAlerta, AlertaTributario, ALERTA_CONFIG, useAlertasTributarios",
     "useAlertasTributariosCount.ts: useAlertasTributariosCount",
+    "useAnalisesCredito.ts: StatusAnaliseCredito, FiltroAnaliseCredito, AlertaCredito, DadosCnpjaAnalise, AnaliseCredito, DecisaoCreditoInput",
     "useAnomaliaAuditHistory.ts: AnomaliaAuditEntry, useAnomaliaAuditHistory",
     "useAnomaliaDetalhe.ts: EntidadeRelacionada, PontoHistorico, useAnomaliaDetalhe",
     "useAnomaliaDetectionRun.ts: AnomaliaDetectionRun, useAnomaliaDetectionRun",
@@ -71740,8 +72122,7 @@
     "useAuthValidation.ts: useAuthValidation",
     "useBalancete.ts: UseBalanceteParams, useBalancete",
     "useBankAccounts.ts: BankAccount, BankAccountInput, BankTransaction, useBankAccounts, useBankAccount, useBankAccountMutations",
-    "useBenchmarkSetorial.ts: BenchmarkResult, useBenchmarkSetorial",
-    "useBitrix24.ts: useBitrix24"
+    "useBenchmarkSetorial.ts: BenchmarkResult, useBenchmarkSetorial"
    ],
    "docs": [
     "anomaliaPreferencesValidation.ts: Validações puras para preferências de alerta de anomalias. Espelha as restrições do trigger Postgres `validate_user_anomalia_preferences` e adiciona regras de UX que evitam \"configurações zumbi\" (ex.: ativar toasts sem nenhuma severidade ou sem nenhuma ação clicável). Mantido sem dependência de Reac …",
@@ -71791,6 +72172,7 @@
     "src/hooks/useAlertasPreditivos.ts",
     "src/hooks/useAlertasTributarios.ts",
     "src/hooks/useAlertasTributariosCount.ts",
+    "src/hooks/useAnalisesCredito.ts",
     "src/hooks/useAnomaliaAuditHistory.ts",
     "src/hooks/useAnomaliaDetalhe.ts",
     "src/hooks/useAnomaliaDetectionRun.ts",
@@ -71853,8 +72235,7 @@
     "src/hooks/useConfetti.ts",
     "src/hooks/useConformidadeFiscal.ts",
     "src/hooks/useConformidadeSnapshots.ts",
-    "src/hooks/useConsultaTributaria.ts",
-    "src/hooks/useContasPagarLogic.calculos.ts"
+    "src/hooks/useConsultaTributaria.ts"
    ]
   },
   {
@@ -72088,8 +72469,8 @@
   },
   {
    "module": "src/pages",
-   "files": 268,
-   "lines": 47144,
+   "files": 269,
+   "lines": 47173,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -72280,7 +72661,7 @@
   {
    "module": "src/routes",
    "files": 16,
-   "lines": 1373,
+   "lines": 1383,
    "tables": [],
    "exports": [
     "adminPages.ts: Configuracoes, Usuarios, AuditLogs, Seguranca, Integracoes, AdminTelemetria",
@@ -72450,8 +72831,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 266,
-   "lines": 58430,
+   "files": 272,
+   "lines": 59951,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72460,6 +72841,7 @@
     "aliquotas_interestaduais",
     "aliquotas_internas_uf",
     "aliquotas_iss_municipal",
+    "analises_credito",
     "anexos_financeiros",
     "anomalia_detection_runs",
     "anomalias_detectadas",
@@ -72595,6 +72977,9 @@
     "versioned-contract.ts: CONTRACT_VERSION_HEADER, SUPPORTED_CONTRACT_VERSIONS, ContractVersion, VersionedContractResult, validateVersionedContract, contractVersionHeaders",
     "webhook-auth.ts: WebhookAuthOk, WebhookAuthFail, WebhookAuthResult, resolveSecret, authenticateWebhook",
     "webhook-idempotency.ts: WebhookClaim, WebhookFailureResult, serviceClient, claimWebhook, markSuccess, markFailure",
+    "cnpja.ts: DadosCnpja, normalizarRetornoCnpja, ResultadoCnpja, consultarCnpjInterno",
+    "regras.ts: DadosCnpjaResumo, NivelAlerta, AlertaCredito, mesesDesde, avaliarAlertas, normalizarCnpj",
+    "schemas.ts: CreditoSolicitacaoSchema, CreditoAnaliseSchema",
     "ibscbs.ts: IbscbsRed, IbscbsItem, IbscbsTotais, IbscbsNota, extrairIbscbs",
     "itens.ts: ItemNFeExtraido, TotaisItens, ItensNfe, extrairItens, calcularTotais, itensParaRpc",
     "xml-storage.ts: NFE_XML_BUCKET, NfeXmlPathError, XmlPathParts, buildXmlPath, buildEventoXmlPath, parseXmlPath",
@@ -72602,10 +72987,7 @@
     "calendario.ts: postergarDiaUtil, enesimoDiaUtil, ultimoDiaUtil, calcularPrazo, GerarCalendarioParams, chaveItem",
     "catalogo.ts: OBRIGACOES, MARCOS_RT, buscarObrigacao",
     "conformidade.ts: StatusRegistro, RegistroEntrega, NivelConformidade, ConformidadePorOrgao, ResultadoConformidade, classificarConformidade",
-    "dias-uteis.ts: isDiaUtil, anteciparDiaUtil, parsePeriodo, round2",
-    "digest.ts: AlertaDigest, BlocoEmpresaDigest, DigestConformidade, OpcoesDigest, normalizarSeveridade, escaparHtml",
-    "preferencias-digest.ts: SEVERIDADES_DIGEST, SeveridadeDigest, FREQUENCIAS_DIGEST, FrequenciaDigest, PreferenciaDigest, PreferenciaDigestRaw",
-    "types.ts: RegimeAplicavel, Periodicidade, Orgao, RegraPrazo, AjusteDiaNaoUtil, BaseMulta"
+    "dias-uteis.ts: isDiaUtil, anteciparDiaUtil, parsePeriodo, round2"
    ],
    "docs": [
     "asaas-config.ts: Leitura das configurações do Asaas. A tela de configuração (src/hooks/useAsaas.ts) grava tudo dentro da coluna JSONB `asaas_config.configuracoes` — a tabela não tem colunas planas para esses parâmetros. As edge functions, porém, liam `config?.retry_limit`, `config?.alert_email_address` e companhia d …",
@@ -72677,6 +73059,10 @@
     "supabase/functions/_shared/webhook-auth_test.ts",
     "supabase/functions/_shared/webhook-idempotency.ts",
     "supabase/functions/_shared/zod.ts",
+    "supabase/functions/_shared/credito/cnpja.ts",
+    "supabase/functions/_shared/credito/regras.ts",
+    "supabase/functions/_shared/credito/regras_test.ts",
+    "supabase/functions/_shared/credito/schemas.ts",
     "supabase/functions/_shared/nfe/ibscbs.ts",
     "supabase/functions/_shared/nfe/itens.ts",
     "supabase/functions/_shared/nfe/xml-storage.ts",
@@ -72704,17 +73090,13 @@
     "supabase/functions/_shared/sped/bloco9_test.ts",
     "supabase/functions/_shared/sped/push-helper.ts",
     "supabase/functions/aceitar-convite/index.ts",
-    "supabase/functions/analise-fluxo-ia/auth_test.ts",
-    "supabase/functions/analise-fluxo-ia/index.ts",
-    "supabase/functions/analise-preditiva/index.ts",
-    "supabase/functions/analyze-document/index.ts",
-    "supabase/functions/api-keys-manage/index.test.ts"
+    "supabase/functions/analise-fluxo-ia/auth_test.ts"
    ]
   },
   {
    "module": "supabase/migrations",
-   "files": 1089,
-   "lines": 84228,
+   "files": 1091,
+   "lines": 84338,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -72957,6 +73339,19 @@
     ],
     "delete": [
      "src/components/configuracoes/SecuritySettings.tsx"
+    ]
+   },
+   "analises_credito": {
+    "update": [
+     "supabase/functions/credito-analise/index.ts",
+     "supabase/functions/credito-solicitacao/index.ts"
+    ],
+    "select": [
+     "supabase/functions/credito-analise/index.ts",
+     "supabase/functions/credito-solicitacao/index.ts"
+    ],
+    "insert": [
+     "supabase/functions/credito-solicitacao/index.ts"
     ]
    },
    "anexos_financeiros": {
@@ -73395,7 +73790,8 @@
      "src/hooks/expert-actions/financial-actions.ts",
      "src/hooks/useScoringClientes.ts",
      "src/pages/Clientes.tsx",
-     "supabase/functions/bitrix24-sync/index.ts"
+     "supabase/functions/bitrix24-sync/index.ts",
+     "supabase/functions/credito-analise/index.ts"
     ],
     "select": [
      "src/hooks/expert-actions/financial-actions.ts",
@@ -73406,6 +73802,8 @@
      "supabase/functions/analise-preditiva/index.ts",
      "supabase/functions/asaas-proxy/index.ts",
      "supabase/functions/bitrix24-sync/index.ts",
+     "supabase/functions/credito-analise/index.ts",
+     "supabase/functions/credito-solicitacao/index.ts",
      "supabase/functions/executar-analise-preditiva/index.ts",
      "supabase/functions/whatsapp-ia-proativo/index.ts"
     ]
@@ -73419,6 +73817,7 @@
    "cnpja_cache": {
     "select": [
      "src/pages/AdminSystemHealth.tsx",
+     "supabase/functions/_shared/credito/cnpja.ts",
      "supabase/functions/cnpja-lookup/index.ts"
     ],
     "upsert": [
@@ -75146,6 +75545,7 @@
      "supabase/functions/comparar-benchmark-setorial/index.ts",
      "supabase/functions/contabilizar-evento/index.ts",
      "supabase/functions/convidar-contador/index.ts",
+     "supabase/functions/credito-analise/index.ts",
      "supabase/functions/enviar-bitrix24-tributario/index.ts",
      "supabase/functions/executar-analise-preditiva/index.ts",
      "supabase/functions/executar-relatorios/index.ts",
@@ -75457,6 +75857,10 @@
    "allowed_ips": [
     "id"
    ],
+   "analises_credito": [
+    "id",
+    "status"
+   ],
    "anexos_financeiros": [
     "entidade_id",
     "entidade_tipo",
@@ -75702,7 +76106,9 @@
     "ativo",
     "bitrix_company_id",
     "bitrix_contact_id",
+    "cnpj_cpf",
     "created_at",
+    "email",
     "empresa_id",
     "id",
     "limite_credito",
@@ -76715,6 +77121,15 @@
    "BLING_CLIENT_SECRET": [
     "supabase/functions/bling-proxy/index.ts"
    ],
+   "CHAMPIONS_CREDITO_CALLBACK_SECRET": [
+    "supabase/functions/credito-analise/index.ts"
+   ],
+   "CHAMPIONS_CREDITO_CALLBACK_URL": [
+    "supabase/functions/credito-analise/index.ts"
+   ],
+   "CHAMPIONS_CREDITO_WEBHOOK_SECRET": [
+    "supabase/functions/credito-solicitacao/index.ts"
+   ],
    "CHROMIUM_EXECUTABLE_PATH": [
     "playwright.config.ts",
     "playwright.critical.config.ts",
@@ -76728,6 +77143,7 @@
     "playwright.financeiro.config.ts"
    ],
    "CNPJA_API_KEY": [
+    "supabase/functions/_shared/credito/cnpja.ts",
     "supabase/functions/cnpja-lookup/index.ts"
    ],
    "COMMIT_SHA": [
@@ -77720,6 +78136,7 @@
     "supabase/functions/processar-nf-ocr/index.ts"
    ],
    "https://api.cnpja.com": [
+    "supabase/functions/_shared/credito/cnpja.ts",
     "supabase/functions/cnpja-lookup/index.ts"
    ],
    "https://api.ipify.org": [
@@ -78610,6 +79027,38 @@
     "name": "v1",
     "kind": "object",
     "body": "{ event: z.string().trim().min(1) }",
+    "refines": [],
+    "chain": []
+   },
+   {
+    "file": "supabase/functions/_shared/credito/schemas.ts",
+    "name": "uuid",
+    "kind": "string",
+    "body": "",
+    "refines": [],
+    "chain": []
+   },
+   {
+    "file": "supabase/functions/_shared/credito/schemas.ts",
+    "name": "CreditoClienteSchema",
+    "kind": "object",
+    "body": "{ id: z.string().optional().nullable(), nome: z.string().max(200).optional().nullable(), empresa: z.string().max(200).optional().nullable(), email: z.string().max(200).optional().nullable(), telefone: z.string().max(40).optional().nullable(), cnpj: z.string().max(20).optional().nullable(), }",
+    "refines": [],
+    "chain": []
+   },
+   {
+    "file": "supabase/functions/_shared/credito/schemas.ts",
+    "name": "CreditoSolicitacaoSchema",
+    "kind": "object",
+    "body": "{ event: z.literal('credito.solicitado'), correlation_key: z.string().min(1).max(128), payload: z .object({ pedido_id: z.string().min(1).max(64), pedido_numero: z.string().max(64).optional().nullable(), valor_total: z.union([z.number(), z.string()]).optional().nullable(), cliente: CreditoClienteSchema, vendedor_email: z.string().max(200).optional().nullable(), origem: z.string().max(40).optional().nullable(), solicitado_em: z.string().optional().nullable(), }) .passthrough(), }",
+    "refines": [],
+    "chain": []
+   },
+   {
+    "file": "supabase/functions/_shared/credito/schemas.ts",
+    "name": "CreditoAnaliseSchema",
+    "kind": "discriminatedUnion",
+    "body": "'action', [ z .object({ action: z.literal('listar'), status: z.enum(['pendente', 'em_analise', 'aprovado', 'reprovado', 'todos']).optional(), limite: z.number().int().min(1).max(200).optional(), }) .strict(), z .object({ action: z.literal('decidir'), analise_id: uuid, decisao: z.enum(['aprovado', 'reprovado']), limite_aprovado: z.number().nonnegative().optional().nullable(), parcelas_max: z.number().int().positive().max(60).optional().nullable(), parecer: z.string().max(2000).optional().nullable(), }) .strict(), z .object({ action: z.literal('atualizar_dados'), analise_id: uuid, cnpj: z.string().max(20).optional().nullable(), escavador: z.string().max(4000).optional().nullable(), consulta_financeira: z.string().max(4000).optional().nullable(), // Ação explícita do analista: o vínculo com o …",
     "refines": [],
     "chain": []
    },
@@ -79858,6 +80307,11 @@
     "values": "baixa | media | alta | critica"
    },
    {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "name": "StatusAnaliseCredito",
+    "values": "pendente | em_analise | aprovado | reprovado"
+   },
+   {
     "file": "src/hooks/useAnomaliaPreferences.ts",
     "name": "Severidade",
     "values": "baixa | media | alta | critica"
@@ -80731,6 +81185,11 @@
     "file": "supabase/functions/_shared/versioned-contract.ts",
     "name": "SUPPORTED_CONTRACT_VERSIONS",
     "values": "'v1', 'v2'"
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "name": "NivelAlerta",
+    "values": "critico | atencao | info"
    },
    {
     "file": "supabase/functions/_shared/obrigacoes/alertas.ts",
@@ -82851,6 +83310,30 @@
    {
     "file": "src/hooks/useAlertasPreditivos.ts",
     "msg": "Erro na análise preditiva"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "msg": "Champions ainda não recebeu: ${resposta.callback?.erro ?? "
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "msg": "Crédito ${rotulo}${resposta.callback?.ok ? "
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "msg": "Crédito ${rotulo}, mas o Champions não recebeu: ${resposta.callback?.erro ?? "
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "msg": "Erro ao atualizar dados: ${mensagemCredito(err)}"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "msg": "Erro ao reenviar: ${mensagemCredito(err)}"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "msg": "Erro ao registrar decisão: ${mensagemCredito(err)}"
    },
    {
     "file": "src/hooks/useAnomaliaDetalhe.ts",
@@ -85717,6 +86200,14 @@
     "text": "vencimento FEBRABAN passou de 9999 em fev/2025: qualquer vencimento futuro"
    },
    {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "text": "gravar um limite mil vezes menor."
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "text": "* Mesmo prazo da edge function: aviso 'pendente' recém-gravado pode estar em curso. */"
+   },
+   {
     "file": "src/components/clientes/ClienteFormFields.tsx",
     "text": "Limite de Crédito */}"
    },
@@ -86079,6 +86570,18 @@
    {
     "file": "src/hooks/useAlertasPreditivos.ts",
     "text": "0.02, 0); // 2% de desconto estimado"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "text": "* Só vem em `decidir`: `false` = aprovado sem conseguir gravar o limite. */"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "text": "Aprovado com limite que nenhum cadastro pôde receber: a decisão vale,"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "text": "não pode esconder o botão depois que o servidor já aceita o reenvio."
    },
    {
     "file": "src/hooks/useAnomaliaPreferences.ts",
@@ -88105,6 +88608,46 @@
     "text": "* Regra: NENHUM arquivo em `supabase/functions/` deve importar zod"
    },
    {
+    "file": "supabase/functions/_shared/credito/cnpja.ts",
+    "text": "* `cnpja-lookup` exige JWT de usuário e rate limit por usuário; a fila de"
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "text": "devolve os alertas que o analista precisa ver antes de aprovar venda a prazo."
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "text": "refeito: senão a aprovação grava o limite no cliente errado depois de o"
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "text": "* Onde o limite aprovado pode ser gravado quando o cadastro veio do vínculo"
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "text": "análise já tendo CNPJ (nesse caso o limite segue pelo CNPJ da análise)."
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "text": "* Aprovar com limite só passa quando existe destino para gravá-lo: o CNPJ da"
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras_test.ts",
+    "text": "Cadastro com outro CNPJ e análise com CNPJ → o limite segue pelo CNPJ."
+   },
+   {
+    "file": "supabase/functions/_shared/credito/regras_test.ts",
+    "text": "Cadastro de outra empresa → não recebe o limite."
+   },
+   {
+    "file": "supabase/functions/_shared/credito/schemas.ts",
+    "text": "Separados de `_shared/validation.ts` para não tocar o arquivo compartilhado;"
+   },
+   {
+    "file": "supabase/functions/_shared/credito/schemas.ts",
+    "text": "Ação explícita do analista: o vínculo com o cadastro não pode ser"
+   },
+   {
     "file": "supabase/functions/_shared/nfe/ibscbs.ts",
     "text": "* Regra de negócio: crédito só nasce de `procNFe`. Resumo não tem o valor"
    },
@@ -88443,6 +88986,66 @@
    {
     "file": "supabase/functions/copilot-global/index.ts",
     "text": "cliente em laco consome credito sem limite. 60/min por IP acomoda o"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "decidir           -> aprovado/reprovado + limite/parcelas/parecer; devolve a"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "se aprovado e o cliente existe no Finance, grava o limite."
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "* IDs das empresas ativas do usuário (mesma regra da policy da tabela). */"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "* Grava o limite aprovado no cadastro do cliente e marca a gravação na"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "completar uma execução interrompida sem reescrever um limite que o"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "sem limite ou desfazer a decisão."
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "Vínculo por e-mail: recebe o limite quando o cadastro não guarda"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "admin/financeiro ativo — a policy da tabela aplica a mesma regra."
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "A decisão é gravada antes do limite do cliente: se a execução parou no"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "A marca `limite_aplicado_em` garante que um limite já gravado — e que"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "(ver `aplicarLimite` e a barreira em `decidir`), então o limite não"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "primeiro na empresa da análise (escopada, limit 1) para o cadastro"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "acessível, e o limite nunca poderia ir para empresa sem acesso."
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "Aprovar com limite exige um destino para gravá-lo. Sem CNPJ na análise só"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "text": "Aprovar sem gravar o limite deixaria o Champions recebendo por um"
    },
    {
     "file": "supabase/functions/digest-silenciamentos-erro/index.ts",
@@ -102033,6 +102636,71 @@
     "rule": "constraint produto_cclasstrib_padrao_ncm_chk check (ncm is null or ncm ~ '^[0-9]{8}$')"
    },
    {
+    "table": "analises_credito",
+    "column": "id",
+    "rule": "PK; default gen_random_uuid()"
+   },
+   {
+    "table": "analises_credito",
+    "column": "origem",
+    "rule": "default 'promo_champions'"
+   },
+   {
+    "table": "analises_credito",
+    "column": "referencia_externa",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "analises_credito",
+    "column": "cliente_id",
+    "rule": "FK → clientes.id ON DELETE SET NULL"
+   },
+   {
+    "table": "analises_credito",
+    "column": "empresa_id",
+    "rule": "FK → empresas.id ON DELETE SET NULL"
+   },
+   {
+    "table": "analises_credito",
+    "column": "status",
+    "rule": "default 'pendente'"
+   },
+   {
+    "table": "analises_credito",
+    "column": "alertas",
+    "rule": "default '[]'::jsonb"
+   },
+   {
+    "table": "analises_credito",
+    "column": "callback_status",
+    "rule": "default 'pendente'"
+   },
+   {
+    "table": "analises_credito",
+    "column": "created_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "analises_credito",
+    "column": "updated_at",
+    "rule": "default now()"
+   },
+   {
+    "table": "analises_credito",
+    "column": "(tabela)",
+    "rule": "CONSTRAINT analises_credito_status_check CHECK (status = ANY (ARRAY['pendente', 'em_analise', 'aprovado', 'reprovado']::text[]))"
+   },
+   {
+    "table": "analises_credito",
+    "column": "(tabela)",
+    "rule": "CONSTRAINT analises_credito_callback_check CHECK (callback_status = ANY (ARRAY['pendente', 'enviado', 'falhou', 'nao_aplicavel']::text[]))"
+   },
+   {
+    "table": "analises_credito",
+    "column": "(tabela)",
+    "rule": "CONSTRAINT analises_credito_origem_ref_key UNIQUE (origem, referencia_externa)"
+   },
+   {
     "table": "frontend_error_logs_2026_01",
     "column": "created_at",
     "rule": "obrigatório"
@@ -102113,6 +102781,11 @@
     "file": "src/components/bling/ProdutoCclasstribDialog.tsx",
     "name": "LIMITE_OPCOES",
     "value": "200"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "name": "CALLBACK_EM_CURSO_MS",
+    "value": "2"
    },
    {
     "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
@@ -102243,6 +102916,11 @@
     "file": "src/hooks/use-mobile.tsx",
     "name": "MOBILE_BREAKPOINT",
     "value": "768"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "name": "FUNCAO",
+    "value": "'credito-analise'"
    },
    {
     "file": "src/hooks/useAnomaliaPreferences.ts",
@@ -103335,6 +104013,11 @@
     "value": "'x-contract-version'"
    },
    {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "name": "MESES_MINIMOS_ATIVIDADE",
+    "value": "12"
+   },
+   {
     "file": "supabase/functions/_shared/nfe/xml-storage.ts",
     "name": "NFE_XML_BUCKET",
     "value": "'nfe-xml'"
@@ -103403,6 +104086,16 @@
     "file": "supabase/functions/cnpja-lookup/index.ts",
     "name": "RATE_LIMIT_WINDOW_MIN",
     "value": "60"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "name": "CALLBACK_EM_CURSO_MS",
+    "value": "2"
+   },
+   {
+    "file": "supabase/functions/credito-solicitacao/index.ts",
+    "name": "MAX_BODY_BYTES",
+    "value": "64"
    },
    {
     "file": "supabase/functions/enviar-digest-conformidade/index.ts",
@@ -104970,6 +105663,48 @@
     "file": "src/components/boletos/NovoBoletoForm.tsx",
     "field": "type",
     "value": "pagar",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "callback_status",
+    "value": "falhou",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "callback_status",
+    "value": "pendente",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "status",
+    "value": "aprovado",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "status",
+    "value": "reprovado",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "callback_status",
+    "value": "enviado",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "callback_status",
+    "value": "enviado",
+    "kind": "compara"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "field": "status",
+    "value": "aprovado",
     "kind": "compara"
    },
    {
@@ -110077,6 +110812,12 @@
     "field": "status",
     "value": "disponivel",
     "kind": "filtra"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "field": "callback_status",
+    "value": "pendente",
+    "kind": "escreve"
    },
    {
     "file": "src/hooks/useAnomaliaDetectionRun.ts",
@@ -115749,6 +116490,12 @@
     "kind": "compara"
    },
    {
+    "file": "supabase/functions/_shared/credito/regras.ts",
+    "field": "situacao",
+    "value": "ativa",
+    "kind": "compara"
+   },
+   {
     "file": "supabase/functions/_shared/obrigacoes/alertas.ts",
     "field": "tipo",
     "value": "score_baixo",
@@ -116718,6 +117465,168 @@
     "file": "supabase/functions/copilot-tributario/index.ts",
     "field": "role",
     "value": "system",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "escrito",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "conflito",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "sem_destino",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "sem_destino",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "escrito",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "em_analise",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "pendente",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "todos",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "aprovado",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "reprovado",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "callback_status",
+    "value": "enviado",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "callback_status",
+    "value": "pendente",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "aprovado",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "escrito",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "erro",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "conflito",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "tipo",
+    "value": "escrito",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "callback_status",
+    "value": "enviado",
+    "kind": "filtra"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "field": "status",
+    "value": "aprovado",
+    "kind": "filtra"
+   },
+   {
+    "file": "supabase/functions/credito-solicitacao/index.ts",
+    "field": "status",
+    "value": "duplicate_ignored",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/credito-solicitacao/index.ts",
+    "field": "status",
+    "value": "processed",
     "kind": "escreve"
    },
    {
@@ -118631,6 +119540,18 @@
     "body": "previsto: number; realizado: number"
    },
    {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "name": "parseValorBRL",
+    "params": "texto: string",
+    "body": "if (!texto.trim()) return null; // Parser único do sistema: recusa separador ambíguo (\"1,500.00\") em vez de // gravar um limite mil vezes menor. const n = parseCurrency(texto, 'BRL'); return Number.isFinite(n) && n > 0 ? n : null;"
+   },
+   {
+    "file": "src/components/clientes/AnaliseCreditoPanel.tsx",
+    "name": "podeReenviar",
+    "params": "analise: AnaliseCredito, desvioRelogioMs = 0",
+    "body": ""
+   },
+   {
     "file": "src/components/cobranca/CustomerDeepScore.tsx",
     "name": "scoreDisponivel",
     "params": "valor: number | null | undefined",
@@ -119001,6 +119922,12 @@
     "name": "gerarAlertasAutomaticos",
     "params": "",
     "body": "const hoje = todayISOLocal(); const emTresDias = toISOLocal(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)); // Buscar contas a pagar próximas do vencimento const { data: contasPagar } = await supabase .from('contas_pagar') .select('id, descricao, valor, data_vencimento, fornecedor_nome') .lte('data_vencimento', emTresDias) .gte('data_vencimento', hoje) .eq('status', 'pendente'); // Buscar contas a receber vencidas const { data: contasVencidas } = await supabase .from('contas_receber') .select(' …"
+   },
+   {
+    "file": "src/hooks/useAnalisesCredito.ts",
+    "name": "invalidar",
+    "params": "",
+    "body": "queryClient.invalidateQueries({ queryKey: ['analises-credito'] });"
    },
    {
     "file": "src/hooks/useAnomaliaPreferences.ts",
@@ -120525,6 +121452,12 @@
     "name": "gerarInsightsIA",
     "params": "score: Record<string, number>",
     "body": "const apiKey = Deno.env.get('LOVABLE_API_KEY'); if (!apiKey) return '_IA indisponível._'; try { const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', { method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', }, body: JSON.stringify({ model: 'google/gemini-2.5-flash', messages: [ { role: 'system', content: 'Você é consultor financeiro/tributário sênior. Gere 3 insights priorizados em markdown (use ✅/⚠️/🚨), curtos e acionáveis em p …"
+   },
+   {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "name": "aplicarLimite",
+    "params": "alvo: Analise, limite: number",
+    "body": "let gravou = false; if (alvo.cnpj) { let query = admin .from('clientes') .update({ limite_credito: limite }) .or(filtroCnpjCliente(alvo.cnpj)); // Quem autoriza o analista é a empresa da análise: crédito de cadastro // de outra empresa não muda por aqui. if (alvo.empresa_id) { query = query.eq('empresa_id', alvo.empresa_id); } else { const empresas = await empresasAcessiveis(admin, guard.dados.userId).catch(() => []); query = query.in('empresa_id', empresas); } const r = await query.select('id') …"
    },
    {
     "file": "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
@@ -150629,6 +151562,16 @@
     "using": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
     "check": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
     "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "name": "analises_credito_leitura_financeiro",
+    "table": "analises_credito",
+    "cmd": "SELECT",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (empresa_id IS NULL OR empresa_acessivel(empresa_id))",
+    "check": "",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "db_triggers": [
@@ -153295,6 +154238,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261124095000_restaura_rls_update_auditoria_elisao.sql"
+   },
+   {
+    "name": "trg_analises_credito_updated_at",
+    "when": "BEFORE UPDATE",
+    "table": "analises_credito",
+    "function": "tg_analises_credito_updated_at",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "db_functions": {
@@ -157223,6 +158175,17 @@
      "v_soma"
     ]
    },
+   "tg_analises_credito_updated_at": {
+    "args": "",
+    "returns": "trigger",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "BEGIN NEW.updated_at := now(); RETURN NEW; END;",
+    "raises": [],
+    "tables": []
+   },
    "migration_aplicada": {
     "args": "versao text",
     "returns": "boolean",
@@ -158903,6 +159866,14 @@
     "limit": "5"
    },
    {
+    "file": "supabase/functions/credito-analise/index.ts",
+    "limit": "1"
+   },
+   {
+    "file": "supabase/functions/credito-solicitacao/index.ts",
+    "limit": "1"
+   },
+   {
     "file": "supabase/functions/decidir-regime/index.ts",
     "limit": "24"
    },
@@ -160035,6 +161006,32 @@
      "allowed": [],
      "default": "",
      "type": "text"
+    },
+    {
+     "table": "analises_credito",
+     "column": "status",
+     "enum": "",
+     "allowed": [
+      "aprovado",
+      "em_analise",
+      "pendente",
+      "reprovado"
+     ],
+     "default": "pendente",
+     "type": "text NOT NULL DEFAULT 'pendente'"
+    },
+    {
+     "table": "analises_credito",
+     "column": "callback_status",
+     "enum": "",
+     "allowed": [
+      "enviado",
+      "falhou",
+      "nao_aplicavel",
+      "pendente"
+     ],
+     "default": "pendente",
+     "type": "text NOT NULL DEFAULT 'pendente'"
     }
    ],
    "usage": {
@@ -160791,6 +161788,7 @@
       "compara:src/pages/Empresas.helpers.ts",
       "compara:src/pages/Financeiro.tsx",
       "compara:src/pages/NotasFiscais.tsx",
+      "compara:supabase/functions/credito-analise/index.ts",
       "escreve:src/components/aprovacoes/AprovacoesPendentesConteudo.tsx",
       "escreve:src/components/contas-receber/ContaReceberForm.tsx",
       "escreve:src/components/documentos/AssinaturaDigital.tsx",
@@ -160839,16 +161837,19 @@
      ],
      "aprovado": [
       "compara:src/components/aprovacoes/HistoricoAprovacoes.tsx",
+      "compara:src/components/clientes/AnaliseCreditoPanel.tsx",
       "compara:src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
       "compara:src/hooks/useContasPagarLogic.calculos.ts",
       "compara:src/hooks/useOportunidadesElisao.ts",
       "compara:src/pages/Compras.tsx",
+      "compara:supabase/functions/credito-analise/index.ts",
       "compara:supabase/functions/verificar-conformidade-fiscal/index.ts",
       "escreve:src/components/aprovacoes/PasswordResetApprovals.tsx",
       "escreve:src/hooks/useConformidadeFiscal.ts",
       "escreve:src/hooks/useOportunidadesElisao.ts",
       "escreve:src/pages/tributario/oportunidades-elisao/AuditoriaTab.tsx",
-      "escreve:supabase/functions/verificar-conformidade-fiscal/index.ts"
+      "escreve:supabase/functions/verificar-conformidade-fiscal/index.ts",
+      "filtra:supabase/functions/credito-analise/index.ts"
      ],
      "rejeitado": [
       "compara:src/components/aprovacoes/HistoricoAprovacoes.tsx",
@@ -160977,6 +161978,10 @@
       "filtra:src/lib/contabilidade/fontes-contabeis.ts",
       "filtra:supabase/functions/gerar-sped-ecd/index.ts",
       "filtra:supabase/functions/gerar-sped-ecf/index.ts"
+     ],
+     "reprovado": [
+      "compara:src/components/clientes/AnaliseCreditoPanel.tsx",
+      "compara:supabase/functions/credito-analise/index.ts"
      ],
      "parcial": [
       "compara:src/components/clientes/ClienteDetailDialog.tsx",
@@ -161397,6 +162402,7 @@
      ],
      "todos": [
       "compara:src/hooks/useNfeRecebidas.ts",
+      "compara:supabase/functions/credito-analise/index.ts",
       "escreve:src/pages/tributario/NfeRecebidas.tsx"
      ],
      "identificada": [
@@ -161405,7 +162411,8 @@
      ],
      "em_analise": [
       "compara:src/hooks/usePerDcomp.ts",
-      "compara:src/pages/CentroPrivacidadeLGPD.tsx"
+      "compara:src/pages/CentroPrivacidadeLGPD.tsx",
+      "escreve:supabase/functions/credito-analise/index.ts"
      ],
      "deferido": [
       "compara:src/hooks/usePerDcomp.ts"
@@ -161535,6 +162542,12 @@
      ],
      "duplicado": [
       "escreve:supabase/functions/contabilizar-evento/index.ts"
+     ],
+     "duplicate_ignored": [
+      "escreve:supabase/functions/credito-solicitacao/index.ts"
+     ],
+     "processed": [
+      "escreve:supabase/functions/credito-solicitacao/index.ts"
      ],
      "cancelled": [
       "escreve:supabase/functions/detectar-anomalias-financeiras/index.ts"
@@ -162480,6 +163493,21 @@
      "bling_estoque": [
       "escreve:supabase/functions/bling-webhook/index.ts"
      ],
+     "escrito": [
+      "compara:supabase/functions/credito-analise/index.ts",
+      "escreve:supabase/functions/credito-analise/index.ts"
+     ],
+     "conflito": [
+      "compara:supabase/functions/credito-analise/index.ts",
+      "escreve:supabase/functions/credito-analise/index.ts"
+     ],
+     "sem_destino": [
+      "escreve:supabase/functions/credito-analise/index.ts"
+     ],
+     "erro": [
+      "compara:supabase/functions/credito-analise/index.ts",
+      "escreve:supabase/functions/credito-analise/index.ts"
+     ],
      "darf": [
       "filtra:supabase/functions/executar-fechamento-tributario/index.ts"
      ],
@@ -162572,6 +163600,21 @@
      ],
      "select": [
       "compara:src/components/quick-create/QuickCreateModal.tsx"
+     ]
+    },
+    "callback_status": {
+     "falhou": [
+      "compara:src/components/clientes/AnaliseCreditoPanel.tsx"
+     ],
+     "pendente": [
+      "compara:src/components/clientes/AnaliseCreditoPanel.tsx",
+      "compara:supabase/functions/credito-analise/index.ts",
+      "escreve:src/hooks/useAnalisesCredito.ts"
+     ],
+     "enviado": [
+      "compara:src/components/clientes/AnaliseCreditoPanel.tsx",
+      "compara:supabase/functions/credito-analise/index.ts",
+      "filtra:supabase/functions/credito-analise/index.ts"
      ]
     },
     "etapa": {
@@ -162676,6 +163719,9 @@
      ],
      "entregue": [
       "compara:src/pages/tributario/ObrigacoesAcessorias.tsx"
+     ],
+     "ativa": [
+      "compara:supabase/functions/_shared/credito/regras.ts"
      ]
     },
     "manifestacao_status": {
@@ -163046,6 +164092,15 @@
      "public: has_role(auth.uid(), 'admin'::app_role)",
      "authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)"
     ]
+   },
+   "analises_credito": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role]) AND (empresa_id IS NULL OR empresa_acessivel(empre …"
+    ],
+    "INSERT": [],
+    "UPDATE": [],
+    "DELETE": []
    },
    "anexos_financeiros": {
     "rls": "enabled",
@@ -167557,6 +168612,7 @@
    "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
    "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
    "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql",
+   "supabase/migrations/20261126193000_analises_credito.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -175909,6 +176965,30 @@
     "objkind": "table",
     "roles": "service_role",
     "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "analises_credito",
+    "objkind": "table",
+    "roles": "anon, authenticated",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select",
+    "object": "analises_credito",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "all",
+    "object": "analises_credito",
+    "objkind": "table",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261126193000_analises_credito.sql"
    }
   ],
   "guards": [
@@ -176123,6 +177203,10 @@
    {
     "guard": "ProtectedRoute",
     "file": "src/routes/contabilRoutes.tsx"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "src/routes/financeiroRoutes.tsx"
    },
    {
     "guard": "ProtectedRoute",
@@ -176691,6 +177775,13 @@
    {
     "path": "/clientes",
     "component": "Clientes",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "src/routes/financeiroRoutes.tsx"
+   },
+   {
+    "path": "/clientes/analise-credito",
+    "component": "AnaliseCreditoPage",
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/routes/financeiroRoutes.tsx"
@@ -177494,10 +178585,11 @@
    "risk_rules",
    "acessos_suspeitos",
    "bitrix24_stage_mappings",
-   "asaas_payment_links"
+   "asaas_payment_links",
+   "analises_credito"
   ],
   "tenant_missing": [],
-  "tenant_cov": 0.47,
+  "tenant_cov": 0.48,
   "soft_delete": [
    [
     "clientes",
@@ -178675,6 +179767,10 @@
    "produto_cclasstrib_padrao": [
     "atualizado_em"
    ],
+   "analises_credito": [
+    "created_at",
+    "updated_at"
+   ],
    "frontend_error_logs_2026_01": [
     "created_at"
    ],
@@ -178876,6 +179972,10 @@
    [
     "user_devices",
     "ip_address"
+   ],
+   [
+    "analises_credito",
+    "cnpj"
    ]
   ],
   "money_float": [
@@ -179695,6 +180795,11 @@
     "asaas_payment_links",
     "valor",
     "NUMERIC(14,2)"
+   ],
+   [
+    "analises_credito",
+    "valor_pedido",
+    "numeric(14,2)"
    ]
   ]
  },
@@ -180131,6 +181236,20 @@
    },
    {
     "kind": "status",
+    "msg": "valor `duplicate_ignored` para `status` usado no código não existe em nenhum enum do banco/TS",
+    "where": [
+     "escreve:supabase/functions/credito-solicitacao/index.ts"
+    ]
+   },
+   {
+    "kind": "status",
+    "msg": "valor `processed` para `status` usado no código não existe em nenhum enum do banco/TS",
+    "where": [
+     "escreve:supabase/functions/credito-solicitacao/index.ts"
+    ]
+   },
+   {
+    "kind": "status",
     "msg": "valor `cancelled` para `status` usado no código não existe em nenhum enum do banco/TS",
     "where": [
      "escreve:supabase/functions/detectar-anomalias-financeiras/index.ts"
@@ -180290,6 +181409,13 @@
     "msg": "valor `resolvidas` para `situacao` usado no código não existe em nenhum enum do banco/TS",
     "where": [
      "compara:src/hooks/useOverlayRejeicoesAuditoria.ts"
+    ]
+   },
+   {
+    "kind": "status",
+    "msg": "valor `ativa` para `situacao` usado no código não existe em nenhum enum do banco/TS",
+    "where": [
+     "compara:supabase/functions/_shared/credito/regras.ts"
     ]
    },
    {
@@ -180672,7 +181798,9 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "270/276 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "`analises_credito.status` tem valores ['aprovado', 'em_analise', 'pendente', 'reprovado'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
+   "`analises_credito.callback_status` tem valores ['enviado', 'falhou', 'nao_aplicavel', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.",
+   "271/277 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -181642,7 +182770,7 @@
   },
   "scripts/generate-env-manifest.mjs": {
    "path": "scripts/generate-env-manifest.mjs",
-   "lines": 230,
+   "lines": 232,
    "errors": [
     "ALERTS_EMAIL_FROM"
    ],
@@ -189825,6 +190953,72 @@
   "src/components/charts/index.ts": {
    "path": "src/components/charts/index.ts",
    "lines": 4
+  },
+  "src/components/clientes/AnaliseCreditoPanel.tsx": {
+   "path": "src/components/clientes/AnaliseCreditoPanel.tsx",
+   "lines": 494,
+   "exports": [
+    "function AnaliseCreditoPanel"
+   ],
+   "params": [
+    {
+     "name": "CALLBACK_EM_CURSO_MS",
+     "value": "2"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "callback_status",
+     "value": "falhou",
+     "kind": "compara"
+    },
+    {
+     "field": "callback_status",
+     "value": "pendente",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "aprovado",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "reprovado",
+     "kind": "compara"
+    },
+    {
+     "field": "callback_status",
+     "value": "enviado",
+     "kind": "compara"
+    },
+    {
+     "field": "callback_status",
+     "value": "enviado",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "aprovado",
+     "kind": "compara"
+    }
+   ],
+   "rule_comments": [
+    "gravar um limite mil vezes menor.",
+    "* Mesmo prazo da edge function: aviso 'pendente' recém-gravado pode estar em curso. */"
+   ],
+   "calc_fns": [
+    {
+     "name": "parseValorBRL",
+     "params": "texto: string",
+     "body": "if (!texto.trim()) return null; // Parser único do sistema: recusa separador ambíguo (\"1,500.00\") em vez de // gravar um limite mil vezes menor. const n = parseCurrency(texto, 'BRL'); return Number.isFinite(n) && n > 0 ? n : null;"
+    },
+    {
+     "name": "podeReenviar",
+     "params": "analise: AnaliseCredito, desvioRelogioMs = 0",
+     "body": ""
+    }
+   ]
   },
   "src/components/clientes/ClienteDetailDialog.tsx": {
    "path": "src/components/clientes/ClienteDetailDialog.tsx",
@@ -198485,7 +199679,7 @@
   },
   "src/components/layout/sidebar/SidebarNavGroups.tsx": {
    "path": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-   "lines": 415,
+   "lines": 421,
    "exports": [
     "const SidebarNavGroups"
    ],
@@ -205288,6 +206482,62 @@
    "doc": "HOOK: contagem de alertas tributários não lidos",
    "hooks": [
     "useAlertasTributariosCount"
+   ]
+  },
+  "src/hooks/useAnalisesCredito.ts": {
+   "path": "src/hooks/useAnalisesCredito.ts",
+   "lines": 226,
+   "exports": [
+    "type StatusAnaliseCredito",
+    "type FiltroAnaliseCredito",
+    "interface AlertaCredito",
+    "interface DadosCnpjaAnalise",
+    "interface AnaliseCredito",
+    "interface DecisaoCreditoInput",
+    "interface DadosCreditoInput",
+    "function useAnalisesCredito"
+   ],
+   "errors": [
+    "Champions ainda não recebeu: ${resposta.callback?.erro ?? ",
+    "Crédito ${rotulo}${resposta.callback?.ok ? ",
+    "Crédito ${rotulo}, mas o Champions não recebeu: ${resposta.callback?.erro ?? ",
+    "Erro ao atualizar dados: ${mensagemCredito(err)}",
+    "Erro ao reenviar: ${mensagemCredito(err)}",
+    "Erro ao registrar decisão: ${mensagemCredito(err)}"
+   ],
+   "enums": [
+    {
+     "name": "StatusAnaliseCredito",
+     "values": "pendente | em_analise | aprovado | reprovado"
+    }
+   ],
+   "params": [
+    {
+     "name": "FUNCAO",
+     "value": "'credito-analise'"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "callback_status",
+     "value": "pendente",
+     "kind": "escreve"
+    }
+   ],
+   "rule_comments": [
+    "* Só vem em `decidir`: `false` = aprovado sem conseguir gravar o limite. */",
+    "Aprovado com limite que nenhum cadastro pôde receber: a decisão vale,",
+    "não pode esconder o botão depois que o servidor já aceita o reenvio."
+   ],
+   "hooks": [
+    "useAnalisesCredito"
+   ],
+   "calc_fns": [
+    {
+     "name": "invalidar",
+     "params": "",
+     "body": "queryClient.invalidateQueries({ queryKey: ['analises-credito'] });"
+    }
    ]
   },
   "src/hooks/useAnomaliaAuditHistory.ts": {
@@ -234272,6 +235522,13 @@
     "function CentroCustoCards"
    ]
   },
+  "src/pages/clientes/AnaliseCredito.tsx": {
+   "path": "src/pages/clientes/AnaliseCredito.tsx",
+   "lines": 29,
+   "exports": [
+    "function AnaliseCreditoPage"
+   ]
+  },
   "src/pages/clientes/ClientesFiltersPanel.tsx": {
    "path": "src/pages/clientes/ClientesFiltersPanel.tsx",
    "lines": 143,
@@ -236216,7 +237473,7 @@
   },
   "src/routes/financeiroPages.ts": {
    "path": "src/routes/financeiroPages.ts",
-   "lines": 23,
+   "lines": 24,
    "exports": [
     "const ContasPagar",
     "const ContasReceber",
@@ -236236,13 +237493,14 @@
     "const MetasFinanceirasPage",
     "const PortalTokensPage",
     "const ScoringClientesPage",
+    "const AnaliseCreditoPage",
     "const Compras"
    ],
    "doc": "Páginas (lazy chunks) do domínio \"financeiro\" — módulo só de componentes (Fast Refresh)."
   },
   "src/routes/financeiroRoutes.tsx": {
    "path": "src/routes/financeiroRoutes.tsx",
-   "lines": 187,
+   "lines": 196,
    "exports": [
     "function financeiroRoutes"
    ],
@@ -236356,6 +237614,12 @@
      "roles": []
     },
     {
+     "path": "/clientes/analise-credito",
+     "component": "AnaliseCreditoPage",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
      "path": "/compras",
      "component": "Compras",
      "guard": "ProtectedRoute",
@@ -236363,6 +237627,7 @@
     }
    ],
    "guards": [
+    "ProtectedRoute",
     "ProtectedRoute",
     "ProtectedRoute",
     "ProtectedRoute",
@@ -238997,6 +240262,135 @@
     "criado em `_shared/validation.ts` não era atribuível a um schema declarado",
     "* Regra: NENHUM arquivo em `supabase/functions/` deve importar zod"
    ]
+  },
+  "supabase/functions/_shared/credito/cnpja.ts": {
+   "path": "supabase/functions/_shared/credito/cnpja.ts",
+   "lines": 128,
+   "exports": [
+    "interface DadosCnpja",
+    "function normalizarRetornoCnpja",
+    "type ResultadoCnpja",
+    "function consultarCnpjInterno"
+   ],
+   "tables": [
+    {
+     "table": "cnpja_cache",
+     "op": "select"
+    }
+   ],
+   "table_cols": {
+    "cnpja_cache": [
+     "cnpj",
+     "data",
+     "expires_at"
+    ]
+   },
+   "external_urls": [
+    "https://api.cnpja.com/office/…"
+   ],
+   "env": [
+    "CNPJA_API_KEY"
+   ],
+   "rule_comments": [
+    "* `cnpja-lookup` exige JWT de usuário e rate limit por usuário; a fila de"
+   ],
+   "doc": "Consulta de CNPJ para a análise de crédito (chamada interna, sem usuário). `cnpja-lookup` exige JWT de usuário e rate limit por usuário; a fila de crédito roda a partir de um webhook do Champions, então a consulta é feita aqui com o service role: lê o cache persistente `cnpja_cache` (alimentado pelo …"
+  },
+  "supabase/functions/_shared/credito/regras.ts": {
+   "path": "supabase/functions/_shared/credito/regras.ts",
+   "lines": 196,
+   "exports": [
+    "interface DadosCnpjaResumo",
+    "type NivelAlerta",
+    "interface AlertaCredito",
+    "function mesesDesde",
+    "function avaliarAlertas",
+    "function normalizarCnpj",
+    "function formatarCnpj",
+    "function filtroCnpjCliente",
+    "function vinculoDesatualizado",
+    "function destinoDoLimiteVinculo",
+    "function bloqueioParaAprovarComLimite",
+    "function escolherCadastroDoCnpj"
+   ],
+   "enums": [
+    {
+     "name": "NivelAlerta",
+     "values": "critico | atencao | info"
+    }
+   ],
+   "params": [
+    {
+     "name": "MESES_MINIMOS_ATIVIDADE",
+     "value": "12"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "situacao",
+     "value": "ativa",
+     "kind": "compara"
+    }
+   ],
+   "rule_comments": [
+    "devolve os alertas que o analista precisa ver antes de aprovar venda a prazo.",
+    "refeito: senão a aprovação grava o limite no cliente errado depois de o",
+    "* Onde o limite aprovado pode ser gravado quando o cadastro veio do vínculo",
+    "análise já tendo CNPJ (nesse caso o limite segue pelo CNPJ da análise).",
+    "* Aprovar com limite só passa quando existe destino para gravá-lo: o CNPJ da"
+   ],
+   "doc": "Regras de alerta da análise de crédito da 1ª venda. Puro (sem rede, sem banco) para ser testado: recebe o retorno normalizado do CNPJ.já (mesmo formato gravado em `cnpja_cache.data`) e o valor do pedido e devolve os alertas que o analista precisa ver antes de aprovar venda a prazo."
+  },
+  "supabase/functions/_shared/credito/regras_test.ts": {
+   "path": "supabase/functions/_shared/credito/regras_test.ts",
+   "lines": 228,
+   "rule_comments": [
+    "Cadastro com outro CNPJ e análise com CNPJ → o limite segue pelo CNPJ.",
+    "Cadastro de outra empresa → não recebe o limite."
+   ]
+  },
+  "supabase/functions/_shared/credito/schemas.ts": {
+   "path": "supabase/functions/_shared/credito/schemas.ts",
+   "lines": 77,
+   "exports": [
+    "const CreditoSolicitacaoSchema",
+    "const CreditoAnaliseSchema"
+   ],
+   "zod": [
+    {
+     "name": "uuid",
+     "kind": "string",
+     "body": "",
+     "refines": [],
+     "chain": []
+    },
+    {
+     "name": "CreditoClienteSchema",
+     "kind": "object",
+     "body": "{ id: z.string().optional().nullable(), nome: z.string().max(200).optional().nullable(), empresa: z.string().max(200).optional().nullable(), email: z.string().max(200).optional().nullable(), telefone: z.string().max(40).optional().nullable(), cnpj: z.string().max(20).optional().nullable(), }",
+     "refines": [],
+     "chain": []
+    },
+    {
+     "name": "CreditoSolicitacaoSchema",
+     "kind": "object",
+     "body": "{ event: z.literal('credito.solicitado'), correlation_key: z.string().min(1).max(128), payload: z .object({ pedido_id: z.string().min(1).max(64), pedido_numero: z.string().max(64).optional().nullable(), valor_total: z.union([z.number(), z.string()]).optional().nullable(), cliente: CreditoClienteSchema, vendedor_email: z.string().max(200).optional().nullable(), origem: z.string().max(40).optional().nullable(), solicitado_em: z.string().optional().nullable(), }) .passthrough(), }",
+     "refines": [],
+     "chain": []
+    },
+    {
+     "name": "CreditoAnaliseSchema",
+     "kind": "discriminatedUnion",
+     "body": "'action', [ z .object({ action: z.literal('listar'), status: z.enum(['pendente', 'em_analise', 'aprovado', 'reprovado', 'todos']).optional(), limite: z.number().int().min(1).max(200).optional(), }) .strict(), z .object({ action: z.literal('decidir'), analise_id: uuid, decisao: z.enum(['aprovado', 'reprovado']), limite_aprovado: z.number().nonnegative().optional().nullable(), parcelas_max: z.number().int().positive().max(60).optional().nullable(), parecer: z.string().max(2000).optional().nullable(), }) .strict(), z .object({ action: z.literal('atualizar_dados'), analise_id: uuid, cnpj: z.string().max(20).optional().nullable(), escavador: z.string().max(4000).optional().nullable(), consulta_financeira: z.string().max(4000).optional().nullable(), // Ação explícita do analista: o vínculo com o …",
+     "refines": [],
+     "chain": []
+    }
+   ],
+   "rule_comments": [
+    "Separados de `_shared/validation.ts` para não tocar o arquivo compartilhado;",
+    "Ação explícita do analista: o vínculo com o cadastro não pode ser"
+   ],
+   "doc": "Schemas Zod da análise de crédito da 1ª venda (Champions -> Finance -> Champions). Separados de `_shared/validation.ts` para não tocar o arquivo compartilhado; as funções continuam validando com `validatePayload` de lá."
   },
   "supabase/functions/_shared/nfe/ibscbs.ts": {
    "path": "supabase/functions/_shared/nfe/ibscbs.ts",
@@ -242586,6 +243980,318 @@
    ],
    "doc": "Edge: copilot-tributario — chat IA streaming SSE com tool calling",
    "uses_service_role": true
+  },
+  "supabase/functions/credito-analise/index.ts": {
+   "path": "supabase/functions/credito-analise/index.ts",
+   "lines": 687,
+   "tables": [
+    {
+     "table": "user_empresas",
+     "op": "select"
+    },
+    {
+     "table": "analises_credito",
+     "op": "update"
+    },
+    {
+     "table": "analises_credito",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "update"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "update"
+    },
+    {
+     "table": "analises_credito",
+     "op": "update"
+    },
+    {
+     "table": "analises_credito",
+     "op": "select"
+    },
+    {
+     "table": "analises_credito",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "analises_credito",
+     "op": "select,update"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "analises_credito",
+     "op": "select,update"
+    },
+    {
+     "table": "analises_credito",
+     "op": "update"
+    }
+   ],
+   "table_cols": {
+    "user_empresas": [
+     "ativo",
+     "empresa_id",
+     "user_id"
+    ],
+    "analises_credito": [
+     "id",
+     "status"
+    ],
+    "clientes": [
+     "cnpj_cpf",
+     "empresa_id",
+     "id"
+    ]
+   },
+   "env": [
+    "CHAMPIONS_CREDITO_CALLBACK_SECRET",
+    "CHAMPIONS_CREDITO_CALLBACK_URL"
+   ],
+   "params": [
+    {
+     "name": "CALLBACK_EM_CURSO_MS",
+     "value": "2"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "tipo",
+     "value": "escrito",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "conflito",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "sem_destino",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "sem_destino",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "escrito",
+     "kind": "escreve"
+    },
+    {
+     "field": "status",
+     "value": "em_analise",
+     "kind": "escreve"
+    },
+    {
+     "field": "status",
+     "value": "pendente",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "todos",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "aprovado",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "reprovado",
+     "kind": "compara"
+    },
+    {
+     "field": "callback_status",
+     "value": "enviado",
+     "kind": "compara"
+    },
+    {
+     "field": "callback_status",
+     "value": "pendente",
+     "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "aprovado",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "escrito",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "erro",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "conflito",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "escrito",
+     "kind": "compara"
+    },
+    {
+     "field": "callback_status",
+     "value": "enviado",
+     "kind": "filtra"
+    },
+    {
+     "field": "status",
+     "value": "aprovado",
+     "kind": "filtra"
+    }
+   ],
+   "rule_comments": [
+    "decidir           -> aprovado/reprovado + limite/parcelas/parecer; devolve a",
+    "se aprovado e o cliente existe no Finance, grava o limite.",
+    "* IDs das empresas ativas do usuário (mesma regra da policy da tabela). */",
+    "* Grava o limite aprovado no cadastro do cliente e marca a gravação na",
+    "completar uma execução interrompida sem reescrever um limite que o",
+    "sem limite ou desfazer a decisão.",
+    "Vínculo por e-mail: recebe o limite quando o cadastro não guarda",
+    "admin/financeiro ativo — a policy da tabela aplica a mesma regra.",
+    "A decisão é gravada antes do limite do cliente: se a execução parou no",
+    "A marca `limite_aplicado_em` garante que um limite já gravado — e que",
+    "(ver `aplicarLimite` e a barreira em `decidir`), então o limite não",
+    "primeiro na empresa da análise (escopada, limit 1) para o cadastro",
+    "acessível, e o limite nunca poderia ir para empresa sem acesso.",
+    "Aprovar com limite exige um destino para gravá-lo. Sem CNPJ na análise só",
+    "Aprovar sem gravar o limite deixaria o Champions recebendo por um"
+   ],
+   "doc": "Edge Function: credito-analise Fila de análise de crédito da 1ª venda para o Financeiro (admin/financeiro): listar -> linhas de analises_credito (default: pendentes) atualizar_dados -> CNPJ corrigido (reconsulta CNPJ.já), Escavador e consulta financeira registrados pelo analista decidir -> aprovado/ …",
+   "calc_fns": [
+    {
+     "name": "aplicarLimite",
+     "params": "alvo: Analise, limite: number",
+     "body": "let gravou = false; if (alvo.cnpj) { let query = admin .from('clientes') .update({ limite_credito: limite }) .or(filtroCnpjCliente(alvo.cnpj)); // Quem autoriza o analista é a empresa da análise: crédito de cadastro // de outra empresa não muda por aqui. if (alvo.empresa_id) { query = query.eq('empresa_id', alvo.empresa_id); } else { const empresas = await empresasAcessiveis(admin, guard.dados.userId).catch(() => []); query = query.in('empresa_id', empresas); } const r = await query.select('id') …"
+    }
+   ],
+   "pagination": [
+    "1"
+   ]
+  },
+  "supabase/functions/credito-solicitacao/index.ts": {
+   "path": "supabase/functions/credito-solicitacao/index.ts",
+   "lines": 205,
+   "tables": [
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "clientes",
+     "op": "select"
+    },
+    {
+     "table": "analises_credito",
+     "op": "insert,select"
+    },
+    {
+     "table": "analises_credito",
+     "op": "update"
+    }
+   ],
+   "table_cols": {
+    "clientes": [
+     "email",
+     "empresa_id",
+     "id"
+    ],
+    "analises_credito": [
+     "id"
+    ]
+   },
+   "env": [
+    "CHAMPIONS_CREDITO_WEBHOOK_SECRET"
+   ],
+   "params": [
+    {
+     "name": "MAX_BODY_BYTES",
+     "value": "64"
+    }
+   ],
+   "status_values": [
+    {
+     "field": "status",
+     "value": "duplicate_ignored",
+     "kind": "escreve"
+    },
+    {
+     "field": "status",
+     "value": "processed",
+     "kind": "escreve"
+    }
+   ],
+   "doc": "Edge Function: credito-solicitacao Recebe do Promo Champions a solicitação de análise de crédito da 1ª venda (evento `credito.solicitado`), abre a linha em `analises_credito`, consulta o CNPJ.já quando há CNPJ e grava os alertas para o analista. Envelope (igual ao supply-dispatch do Champions): head …",
+   "pagination": [
+    "1"
+   ]
   },
   "supabase/functions/decidir-regime/index.ts": {
    "path": "supabase/functions/decidir-regime/index.ts",
@@ -255653,6 +257359,15 @@
    "path": "supabase/migrations/20261126123500_normaliza_proximo_envio_agendados.sql",
    "lines": 43
   },
+  "supabase/migrations/20261126193000_analises_credito.sql": {
+   "path": "supabase/migrations/20261126193000_analises_credito.sql",
+   "lines": 97,
+   "uses_service_role": true
+  },
+  "supabase/migrations/20261126200000_analises_credito_limite_aplicado.sql": {
+   "path": "supabase/migrations/20261126200000_analises_credito_limite_aplicado.sql",
+   "lines": 13
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -255772,10 +257487,35 @@
   }
  },
  "git": {
-  "sha": "254c8f958bb2c50ee7a40e06f0add46671eb7f35",
+  "sha": "a9d112422529a632e6c9551ad033f767379ca3d7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "a9d1124",
+    "date": "2026-11-27",
+    "author": "adm01-debug",
+    "subject": "feat: fila de análise de crédito da 1ª venda (Champions → Finance → Champions) (#578)",
+    "files": [
+     "deno.lock",
+     "env.manifest.json",
+     "scripts/generate-env-manifest.mjs",
+     "src/components/clientes/AnaliseCreditoPanel.tsx",
+     "src/components/layout/sidebar/SidebarNavGroups.tsx",
+     "src/hooks/useAnalisesCredito.ts",
+     "src/pages/clientes/AnaliseCredito.tsx",
+     "src/routes/financeiroPages.ts",
+     "src/routes/financeiroRoutes.tsx",
+     "supabase/functions/_shared/credito/cnpja.ts",
+     "supabase/functions/_shared/credito/regras.ts",
+     "supabase/functions/_shared/credito/regras_test.ts",
+     "supabase/functions/_shared/credito/schemas.ts",
+     "supabase/functions/credito-analise/index.ts",
+     "supabase/functions/credito-solicitacao/index.ts",
+     "supabase/migrations/20261126193000_analises_credito.sql",
+     "supabase/migrations/20261126200000_analises_credito_limite_aplicado.sql"
+    ]
+   },
    {
     "sha": "254c8f9",
     "date": "2026-11-27",
@@ -256250,16 +257990,6 @@
      "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
      "supabase/migrations/20261124150000_amplia_escala_aliquotas_itens.sql"
     ]
-   },
-   {
-    "sha": "0f6d936",
-    "date": "2026-11-24",
-    "author": "adm01-debug",
-    "subject": "fix(docs): regenera README de CI a partir do kpi.json vigente (#553)",
-    "files": [
-     "docs/ci/README.md",
-     "docs/ci/kpi.json"
-    ]
    }
   ],
   "hot_files": [
@@ -256312,6 +258042,10 @@
     3
    ],
    [
+    "deno.lock",
+    2
+   ],
+   [
     "src/lib/arquitetura/grafo-observado.json",
     2
    ],
@@ -256337,10 +258071,6 @@
    ],
    [
     "supabase/functions/sync-aliquota-referencia/index.ts",
-    2
-   ],
-   [
-    "supabase/functions/sync-catalogo-cclasstrib/index.ts",
     2
    ]
   ]

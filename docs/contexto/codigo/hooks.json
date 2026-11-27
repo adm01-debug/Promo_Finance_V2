@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 278,
+ "total": 279,
  "hooks": [
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
@@ -1298,6 +1298,29 @@
    "coberto_por_testes": 1
   },
   {
+   "arquivo": "src/hooks/useAnalisesCredito.ts",
+   "hooks_exportados": [
+    "useAnalisesCredito"
+   ],
+   "linhas": 225,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/clientes/AnaliseCreditoPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
    "arquivo": "src/hooks/useAnomaliaAuditHistory.ts",
    "hooks_exportados": [
     "useAnomaliaAuditHistory"
@@ -1883,7 +1906,7 @@
     "useContext"
    ],
    "canais_realtime": [],
-   "usado_por": 109,
+   "usado_por": 110,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliaToastHistorico.tsx",
     "src/components/admin/CronJobsStatus.tsx",

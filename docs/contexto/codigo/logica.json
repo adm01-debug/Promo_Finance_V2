@@ -1943,9 +1943,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 10,
+   "usado_por": 11,
    "usado_por_modulos": [
     "components/asaas",
+    "components/clientes",
     "components/ui",
     "pages"
    ],
@@ -1975,7 +1976,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 6,
+   "usado_por": 7,
    "usado_por_modulos": [
     "hooks"
    ],
@@ -8977,7 +8978,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 314,
+   "usado_por": 315,
    "usado_por_modulos": [
     "components/admin",
     "components/alertas",

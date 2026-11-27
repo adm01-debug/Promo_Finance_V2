@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "254c8f958bb2c50ee7a40e06f0add46671eb7f35",
+  "commit": "a9d112422529a632e6c9551ad033f767379ca3d7",
   "branch": "main",
-  "data_commit": "2026-11-27T14:12:33-03:00",
+  "data_commit": "2026-11-27T14:12:37-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a9d1124",
+    "data": "2026-11-27",
+    "assunto": "feat: fila de análise de crédito da 1ª venda (Champions → Finance → Champions) (#578)"
+   },
    {
     "sha": "254c8f9",
     "data": "2026-11-27",
@@ -126,14 +131,9 @@
     "sha": "1c79a8f",
     "data": "2026-11-25",
     "assunto": "chore(db): cria indice da FK kpis_operacionais.empresa_id (residual do PR #232) (#554)"
-   },
-   {
-    "sha": "cdaca4d",
-    "data": "2026-11-25",
-    "assunto": "fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)"
    }
   ],
-  "arquivos_mudados_7d": 369,
+  "arquivos_mudados_7d": 384,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -161,7 +161,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 95
+    "mudancas": 99
    },
    {
     "pasta": "src/hooks/__tests__",
@@ -246,6 +246,10 @@
     "mudancas": 7
    },
    {
+    "arquivo": "env.manifest.json",
+    "mudancas": 7
+   },
+   {
     "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
     "mudancas": 7
    },
@@ -255,10 +259,6 @@
    },
    {
     "arquivo": "docs/prod-readiness.md",
-    "mudancas": 6
-   },
-   {
-    "arquivo": "env.manifest.json",
     "mudancas": 6
    },
    {
@@ -278,6 +278,10 @@
     "mudancas": 5
    },
    {
+    "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 5
+   },
+   {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 5
    },
@@ -291,10 +295,6 @@
    },
    {
     "arquivo": "src/lib/reforma-tributaria/regras.ts",
-    "mudancas": 5
-   },
-   {
-    "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
     "mudancas": 5
    }
   ],
@@ -310,21 +310,21 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4142,
-  "arquivos_codigo": 2596,
-  "linhas_codigo": 468577,
-  "rotas": 130,
+  "arquivos_total": 4153,
+  "arquivos_codigo": 2605,
+  "linhas_codigo": 470856,
+  "rotas": 131,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
-  "itens_menu": 119,
+  "itens_menu": 120,
   "modulos": 129,
-  "componentes": 995,
-  "hooks": 278,
-  "edge_functions": 112,
-  "tabelas": 319,
-  "migrations": 1089,
+  "componentes": 997,
+  "hooks": 279,
+  "edge_functions": 114,
+  "tabelas": 320,
+  "migrations": 1091,
   "cron_jobs": 30,
-  "testes": 551,
+  "testes": 552,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 232
@@ -520,7 +520,7 @@
   },
   "scripts/generate-env-manifest.mjs": {
    "arquivos": 1,
-   "linhas": 229
+   "linhas": 231
   },
   "scripts/generate-env-manifest.unit.mjs": {
    "arquivos": 1,
@@ -639,8 +639,8 @@
    "linhas": 44
   },
   "src/components": {
-   "arquivos": 1023,
-   "linhas": 169955
+   "arquivos": 1024,
+   "linhas": 170454
   },
   "src/config": {
    "arquivos": 2,
@@ -651,8 +651,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 337,
-   "linhas": 50602
+   "arquivos": 338,
+   "linhas": 50827
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -671,12 +671,12 @@
    "linhas": 76
   },
   "src/pages": {
-   "arquivos": 268,
-   "linhas": 46876
+   "arquivos": 269,
+   "linhas": 46904
   },
   "src/routes": {
    "arquivos": 16,
-   "linhas": 1357
+   "linhas": 1367
   },
   "src/test": {
    "arquivos": 21,
@@ -687,8 +687,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 266,
-   "linhas": 58164
+   "arquivos": 272,
+   "linhas": 59679
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -797,16 +797,16 @@
    "linhas": 690
   },
   {
+   "arquivo": "supabase/functions/credito-analise/index.ts",
+   "linhas": 686
+  },
+  {
    "arquivo": "supabase/functions/gerar-alertas-tributarios/index.ts",
    "linhas": 637
   },
   {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",
    "linhas": 593
-  },
-  {
-   "arquivo": "supabase/functions/executar-relatorios/index.ts",
-   "linhas": 582
   }
  ],
  "qualidade": {
@@ -814,8 +814,8 @@
   "console_log": 239,
   "ts_ignore": 2,
   "eslint_disable": 1,
-  "todos": 10,
-  "arquivos_acima_500_linhas": 33
+  "todos": 11,
+  "arquivos_acima_500_linhas": 34
  },
  "todos": [
   {
@@ -859,6 +859,12 @@
    "linha": 259,
    "tipo": "TODO",
    "texto": "(2026-08-14): patch tipado com colunas canônicas de organizacao_membros (types.ts)"
+  },
+  {
+   "arquivo": "supabase/functions/_shared/credito/regras.ts",
+   "linha": 104,
+   "tipo": "XXX",
+   "texto": ".XXX/XXXX-XX) — o cadastro de clientes grava assim. */"
   },
   {
    "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",
@@ -907,6 +913,8 @@
   "edges_orfas": [
    "calcular-slo-metrics-diario",
    "calculo-iva",
+   "credito-analise",
+   "credito-solicitacao",
    "gerar-snapshots-conformidade",
    "get-mapbox-token",
    "n8n-dispatch",
@@ -917,7 +925,9 @@
    "simular-simples",
    "sync-profile-to-bitrix"
   ],
-  "edges_chamadas_sem_pasta": [],
+  "edges_chamadas_sem_pasta": [
+   "receive-credit-decision"
+  ],
   "tabelas_sem_rls": [],
   "tabelas_usadas_sem_definicao": [
    "companies",

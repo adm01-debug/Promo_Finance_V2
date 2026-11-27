@@ -5,12 +5,12 @@
   "vitest",
   "playwright"
  ],
- "total": 551,
+ "total": 552,
  "por_tipo": {
   "contrato": 6,
   "e2e": 36,
   "pytest": 31,
-  "unit": 471
+  "unit": 472
  },
  "onde_ficam": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 114
+   "arquivos": 115
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -4203,6 +4203,15 @@
    "casos": 2
   },
   {
+   "arquivo": "supabase/functions/_shared/credito/regras_test.ts",
+   "tipo": "unit",
+   "linhas": 227,
+   "testa": [
+    "supabase/functions/_shared/credito/regras.ts"
+   ],
+   "casos": 10
+  },
+  {
    "arquivo": "supabase/functions/_shared/edge-observability_test.ts",
    "tipo": "unit",
    "linhas": 130,
@@ -5308,6 +5317,7 @@
   "supabase/functions/_shared/cnae.ts": 1,
   "supabase/functions/_shared/contract-response.ts": 1,
   "supabase/functions/_shared/cors.ts": 2,
+  "supabase/functions/_shared/credito/regras.ts": 1,
   "supabase/functions/_shared/edge-observability.ts": 1,
   "supabase/functions/_shared/fuzzer.ts": 1,
   "supabase/functions/_shared/load-tester.ts": 1,
@@ -5466,6 +5476,7 @@
    "src/pages/admin/ScimAudit.tsx",
    "src/pages/admin/SharedFiltersAdmin.tsx",
    "src/pages/admin/SsoEvents.tsx",
+   "src/pages/clientes/AnaliseCredito.tsx",
    "src/pages/clientes/PortalTokens.tsx",
    "src/pages/clientes/ScoringClientes.tsx",
    "src/pages/configuracoes/FiltrosSalvos.tsx",
@@ -5562,6 +5573,7 @@
    "src/hooks/useAcordosParcelamento.helpers.ts",
    "src/hooks/useAcordosParcelamento.types.ts",
    "src/hooks/useAlertas.ts",
+   "src/hooks/useAnalisesCredito.ts",
    "src/hooks/useAnomaliaAuditHistory.ts",
    "src/hooks/useAnomaliaDetalhe.ts",
    "src/hooks/useAnomaliaDetectionRun.ts",
@@ -5750,6 +5762,8 @@
    "convidar-contador",
    "copilot-global",
    "copilot-tributario",
+   "credito-analise",
+   "credito-solicitacao",
    "detectar-anomalias-financeiras",
    "digest-silenciamentos-erro",
    "enviar-bitrix24-tributario",

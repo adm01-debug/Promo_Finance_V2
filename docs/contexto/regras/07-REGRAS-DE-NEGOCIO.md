@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `254c8f958b` · branch `main` · 2026-11-27 17:13 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a9d1124225` · branch `main` · 2026-11-27 17:14 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
 | `solicitacoes_lgpd` | lgpd_scoped_update | UPDATE | authenticated | permissive | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` |
-| … +530 linhas — lista completa em `context.json` | | | | | | |
+| … +531 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2330 linhas — lista completa em `context.json` | | |
+| … +2343 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -919,6 +919,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | notas_fiscais_verifica_totais_ibscbs | BEFORE INSERT OR UPDATE OF V_BC_IBSCBS, V_IBS, V_IBS_UF, V_IBS_MUN, V_CBS, V_IS | `notas_fiscais` | `verificar_totais_ibscbs_nota` |  |
 | notas_fiscais_itens_verifica_totais_ibscbs | AFTER INSERT OR UPDATE OR DELETE | `notas_fiscais_itens` | `verificar_totais_ibscbs_item` |  |
 | tr_registrar_decisao_elisao | BEFORE UPDATE | `elisao_creditos_auditoria` | `registrar_decisao_elisao` |  |
+| trg_analises_credito_updated_at | BEFORE UPDATE | `analises_credito` | `tg_analises_credito_updated_at` |  |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -1208,6 +1209,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `bitrix24_stage_mappings` | `bitrix_stage_name` | **livre (sem enum/CHECK)** |  |
 | `alerts_sent` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `cron_job_logs` | `status` | **livre (sem enum/CHECK)** |  |
+| `analises_credito` | `status` | `aprovado`, `em_analise`, `pendente`, `reprovado` | `pendente` |
+| `analises_credito` | `callback_status` | `enviado`, `falhou`, `nao_aplicavel`, `pendente` | `pendente` |
 
 ### E.2 Mapas de transição declarados no código
 
@@ -1358,7 +1361,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `all` | compara, escreve | `src/hooks/financial/useContasPagar.ts`<br>`src/hooks/financial/useContasReceber.ts`<br>`src/pages/Clientes.tsx`<br>`src/pages/Fornecedores.tsx` |
 | `status` | `analyzing` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
 | `status` | `aprovada` | compara | `src/components/contas-pagar/ContaPagarRowAprovacaoBadge.tsx` |
-| `status` | `aprovado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`<br>`src/hooks/useConformidadeFiscal.ts`<br>`src/hooks/useContasPagarLogic.calculos.ts`<br>… +4 |
+| `status` | `aprovado` | compara, escreve, filtra | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/clientes/AnaliseCreditoPanel.tsx`<br>`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`<br>`src/hooks/useConformidadeFiscal.ts`<br>… +6 |
 | `status` | `assinado` | compara | `src/components/documentos/AssinaturaDigital.tsx` |
 | `status` | `atencao` | compara | `src/lib/tributario/catalogos/saude.ts`<br>`src/pages/OrcamentoEvento.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | `status` | `atendida` | compara, escreve | `src/pages/CentroPrivacidadeLGPD.tsx`<br>`supabase/functions/processar-solicitacao-lgpd/escrita.ts` |
@@ -1398,8 +1401,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `divergente` | compara, escreve | `src/components/compliance/verificar-integridade/LinhaResultado.tsx`<br>`src/components/compliance/verificar-integridade/types.ts`<br>`src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts`<br>`src/hooks/useConciliacaoTributaria.ts`<br>`src/lib/tributario/ipi-iss/overlay-iss.ts`<br>… +1 |
 | `status` | `done` | compara | `src/components/contabilidade/elisao/ElisaoFiscalTab.tsx` |
 | `status` | `duplicado` | escreve | `supabase/functions/contabilizar-evento/index.ts` |
+| `status` | `duplicate_ignored` | escreve | `supabase/functions/credito-solicitacao/index.ts` |
 | `status` | `em_acordo` | compara, escreve, filtra | `src/hooks/useAcordosParcelamento.ts` |
-| `status` | `em_analise` | compara | `src/hooks/usePerDcomp.ts`<br>`src/pages/CentroPrivacidadeLGPD.tsx` |
+| `status` | `em_analise` | compara, escreve | `src/hooks/usePerDcomp.ts`<br>`src/pages/CentroPrivacidadeLGPD.tsx`<br>`supabase/functions/credito-analise/index.ts` |
 | `status` | `em_andamento` | compara | `src/components/reforma-tributaria/CronogramaTransicao.tsx`<br>`src/components/reforma-tributaria/ObrigacoesAcessorias.tsx` |
 | `status` | `em_revisao` | escreve | `src/hooks/useFechamentoTributario.ts`<br>`supabase/functions/executar-fechamento-tributario/index.ts` |
 | `status` | `empty` | compara, escreve | `src/pages/configuracoes/filtros-salvos/Badges.tsx`<br>`src/pages/configuracoes/filtros-salvos/helpers.ts` |
@@ -1443,12 +1447,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +47 |
 | `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/cobranca/previsao/risco.ts`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
 | `status` | `partial` | compara, escreve | `src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
-| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +60 |
+| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +61 |
 | `status` | `pendente_aprovacao` | compara, escreve | `src/components/compras/PedidoCompraForm.tsx`<br>`src/lib/compras/pedidos.ts`<br>`src/pages/Compras.tsx` |
 | `status` | `pending` | compara, escreve | `src/components/admin/WebhookSimulator.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>`src/components/ui/ux-validator/helpers.tsx`<br>… +2 |
 | `status` | `pior` | compara | `src/components/analytics/BenchmarkingSetorial.tsx` |
 | `status` | `processado` | compara, escreve, filtra | `src/components/reforma-tributaria/OperacoesLista.tsx`<br>`src/hooks/useOperacoesTributaveis.ts`<br>`src/hooks/useSplitPayment.ts` |
 | `status` | `processando` | compara, escreve | `src/components/cobranca/FilaCobrancasPanel.tsx`<br>`src/components/conciliacao/ConciliacaoRetroativaPanel.tsx`<br>`src/hooks/useConciliacaoRetroativa.ts`<br>`supabase/functions/executar-regua-cobranca/index.ts`<br>`supabase/functions/processar-nf-ocr/index.ts` |
+| `status` | `processed` | escreve | `supabase/functions/credito-solicitacao/index.ts` |
 | `status` | `protocolado` | escreve | `src/components/cobranca/NegativacoesProtestosPanel.tsx` |
 | `status` | `queued` | escreve, filtra | `src/hooks/useAnomaliaDetectionRun.ts`<br>`supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `quitado` | compara, escreve | `src/hooks/useAcordosParcelamento.ts` |
@@ -1461,6 +1466,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `rejected` | compara | `src/lib/adaptive-chunk.ts`<br>`supabase/functions/sefaz-dfe-dispatcher/index.ts` |
 | `status` | `rejeitada` | compara | `src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/pages/CentroPrivacidadeLGPD.tsx` |
 | `status` | `rejeitado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/ValidacoesPreSpedDialog.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>… +7 |
+| `status` | `reprovado` | compara | `src/components/clientes/AnaliseCreditoPanel.tsx`<br>`supabase/functions/credito-analise/index.ts` |
 | `status` | `resolvido` | compara, escreve | `src/hooks/useAuditoriaCompliance.ts` |
 | `status` | `retificada` | compara | `src/lib/tributario/obrigacoes/conformidade.ts`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
 | `status` | `retificado` | compara | `src/components/reforma-tributaria/ApuracaoMensal.tsx` |
@@ -1481,7 +1487,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `success` | compara, escreve | `src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`src/components/contas-receber/WebhookConfigPanel.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>… +4 |
 | `status` | `sucesso` | compara, escreve, filtra | `src/components/contabilidade/contabilizacao-automatica/LogsTable.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/StatsCards.tsx`<br>`src/components/tributario/dashboard/UploadNotaFiscalOCR.tsx`<br>`supabase/functions/contabilizar-evento/index.ts`<br>`supabase/functions/executar-relatorios/index.ts`<br>… +1 |
 | `status` | `todas` | compara | `src/components/admin/AnomaliasDetectadasPanel.tsx`<br>`src/hooks/saved-filter-alerts/matchers.ts` |
-| `status` | `todos` | compara, escreve | `src/hooks/useNfeRecebidas.ts`<br>`src/pages/tributario/NfeRecebidas.tsx` |
+| `status` | `todos` | compara, escreve | `src/hooks/useNfeRecebidas.ts`<br>`src/pages/tributario/NfeRecebidas.tsx`<br>`supabase/functions/credito-analise/index.ts` |
 | `status` | `transmitida` | compara | `src/components/reforma-tributaria/ObrigacoesAcessorias.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | `status` | `transmitido` | compara, escreve | `src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>`src/components/contabilidade/sped-contabil/SpedKpiCards.tsx`<br>`src/components/contabilidade/sped-contabil/useSpedContabilState.ts`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>… +7 |
 | `status` | `transmitindo` | compara | `src/components/nfe/contingencia/ContingenciaPendingList.tsx` |
@@ -1514,10 +1520,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `210240` | compara | `src/hooks/useManifestarNfe.ts`<br>`src/pages/tributario/NfeRecebidas.tsx`<br>`supabase/functions/_shared/sefaz/manifestacao.ts`<br>`supabase/functions/sefaz-manifestar/index.ts` |
 | `tipo` | `9001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `9900` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
-| `tipo` | `9999` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
-| `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| … +220 linhas — lista completa em `context.json` | | | |
+| … +231 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
@@ -1610,6 +1613,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | PrioridadeAlerta | baixa \| media \| alta \| critica | `src/hooks/useAlertas.ts` |
 | TipoAlerta | vencimento_apuracao \| vencimento_darf \| vencimento_obrigacao \| prazo_credito \| limite_compensacao \| pendencia_conciliacao \| inconsistencia_fiscal \| atualizacao_legislacao \| split_payment \| retencao_pendente \| nfe_rejeitada \| saldo_negativo | `src/hooks/useAlertasTributarios.ts` |
 | PrioridadeAlerta | baixa \| media \| alta \| critica | `src/hooks/useAlertasTributarios.ts` |
+| StatusAnaliseCredito | pendente \| em_analise \| aprovado \| reprovado | `src/hooks/useAnalisesCredito.ts` |
 | Severidade | baixa \| media \| alta \| critica | `src/hooks/useAnomaliaPreferences.ts` |
 | ToastAcaoKey | drill_down \| abrir_pagina \| copiar_id \| marcar_lida | `src/hooks/useAnomaliaPreferences.ts` |
 | DrawerAcaoKey | abrir_entidade \| pagina_completa \| copiar_id \| marcar_lida | `src/hooks/useAnomaliaPreferences.ts` |
@@ -1785,6 +1789,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | AnexoSimples | I \| II \| III \| IV \| V | `supabase/functions/_shared/tributario-logic.ts` |
 | PeriodicidadeApuracao | trimestral \| anual | `supabase/functions/_shared/tributario-logic.ts` |
 | SUPPORTED_CONTRACT_VERSIONS | 'v1', 'v2' | `supabase/functions/_shared/versioned-contract.ts` |
+| NivelAlerta | critico \| atencao \| info | `supabase/functions/_shared/credito/regras.ts` |
 | TipoAlertaConformidade | score_baixo \| queda_abrupta \| tendencia_negativa \| obrigacoes_vencidas \| multa_acumulada | `supabase/functions/_shared/obrigacoes/alertas.ts` |
 | SeveridadeAlerta | baixa \| media \| alta \| critica | `supabase/functions/_shared/obrigacoes/alertas.ts` |
 | StatusRegistro | pendente \| entregue \| dispensada \| retificada | `supabase/functions/_shared/obrigacoes/conformidade.ts` |
@@ -2080,6 +2085,22 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **v1** (`supabase/functions/_shared/versioned-contract_test.ts`, z.object):
   ```ts
   { event: z.string().trim().min(1) }
+  ```
+- **uuid** (`supabase/functions/_shared/credito/schemas.ts`, z.string):
+  ```ts
+  
+  ```
+- **CreditoClienteSchema** (`supabase/functions/_shared/credito/schemas.ts`, z.object):
+  ```ts
+  { id: z.string().optional().nullable(), nome: z.string().max(200).optional().nullable(), empresa: z.string().max(200).optional().nullable(), email: z.string().max(200).optional().nullable(), telefone: z.string().max(40).optional().nullable(), cnpj: z.string().max(20).optional().nullable(), }
+  ```
+- **CreditoSolicitacaoSchema** (`supabase/functions/_shared/credito/schemas.ts`, z.object):
+  ```ts
+  { event: z.literal('credito.solicitado'), correlation_key: z.string().min(1).max(128), payload: z .object({ pedido_id: z.string().min(1).max(64), pedido_numero: z.string().max(64).optional().nullable(), valor_total: z.union([z.number(), z.string()]).optional().nullable(), cliente: CreditoClienteSchema, vendedor_email: z.string().max(200).optional().nullable(), origem: z.string().max(40).optional().nullable(), solicitado_em: z.string().optional().nullable(), }) .passthrough(), }
+  ```
+- **CreditoAnaliseSchema** (`supabase/functions/_shared/credito/schemas.ts`, z.discriminatedUnion):
+  ```ts
+  'action', [ z .object({ action: z.literal('listar'), status: z.enum(['pendente', 'em_analise', 'aprovado', 'reprovado', 'todos']).optional(), limite: z.number().int().min(1).max(200).optional(), }) .strict(), z .object({ action: z.literal('decidir'), analise_id: uuid, decisao: z.enum(['aprovado', 'reprovado']), limite_aprovado: z.number().nonnegative().optional().nullable(), parcelas_max: z.number().int().positive().max(60).optional().nullable(), parecer: z.string().max(2000).optional().nullable(), }) .strict(), z .object({ action: z.literal('atualizar_dados'), analise_id: uuid, cnpj: z.string().max(20).optional().nullable(), escavador: z.string().max(4000).optional().nullable(), consulta_financeira: z.string().max(4000).optional().nullable(), // Ação explícita do analista: o vínculo com o …
   ```
 - **BodySchema** (`supabase/functions/aceitar-convite/index.ts`, z.object):
   ```ts
@@ -2525,6 +2546,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   previsto: number; realizado: number
   ```
+- **parseValorBRL(texto: string)** — `src/components/clientes/AnaliseCreditoPanel.tsx`
+  ```
+  if (!texto.trim()) return null; // Parser único do sistema: recusa separador ambíguo ("1,500.00") em vez de // gravar um limite mil vezes menor. const n = parseCurrency(texto, 'BRL'); return Number.isFinite(n) && n > 0 ? n : null;
+  ```
+- **podeReenviar(analise: AnaliseCredito, desvioRelogioMs = 0)** — `src/components/clientes/AnaliseCreditoPanel.tsx`
+  ```
+  
+  ```
 - **scoreDisponivel(valor: number | null | undefined)** — `src/components/cobranca/CustomerDeepScore.tsx`
   ```
   
@@ -2772,6 +2801,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **gerarAlertasAutomaticos()** — `src/hooks/useAlertas.ts`
   ```
   const hoje = todayISOLocal(); const emTresDias = toISOLocal(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)); // Buscar contas a pagar próximas do vencimento const { data: contasPagar } = await supabase .from('contas_pagar') .select('id, descricao, valor, data_vencimento, fornecedor_nome') .lte('data_vencimento', emTresDias) .gte('data_vencimento', hoje) .eq('status', 'pendente'); // Buscar contas a receber vencidas const { data: contasVencidas } = await supabase .from('contas_receber') .select(' …
+  ```
+- **invalidar()** — `src/hooks/useAnalisesCredito.ts`
+  ```
+  queryClient.invalidateQueries({ queryKey: ['analises-credito'] });
   ```
 - **shouldNotify(prefs: AnomaliaPreferences | null | undefined, anomalia: { severidade?: string | null; centro_custo_id?: string | null; )** — `src/hooks/useAnomaliaPreferences.ts`
   ```
@@ -3789,6 +3822,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const apiKey = Deno.env.get('LOVABLE_API_KEY'); if (!apiKey) return '_IA indisponível._'; try { const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', { method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', }, body: JSON.stringify({ model: 'google/gemini-2.5-flash', messages: [ { role: 'system', content: 'Você é consultor financeiro/tributário sênior. Gere 3 insights priorizados em markdown (use ✅/⚠️/🚨), curtos e acionáveis em p …
   ```
+- **aplicarLimite(alvo: Analise, limite: number)** — `supabase/functions/credito-analise/index.ts`
+  ```
+  let gravou = false; if (alvo.cnpj) { let query = admin .from('clientes') .update({ limite_credito: limite }) .or(filtroCnpjCliente(alvo.cnpj)); // Quem autoriza o analista é a empresa da análise: crédito de cadastro // de outra empresa não muda por aqui. if (alvo.empresa_id) { query = query.eq('empresa_id', alvo.empresa_id); } else { const empresas = await empresasAcessiveis(admin, guard.dados.userId).catch(() => []); query = query.in('empresa_id', empresas); } const r = await query.select('id') …
+  ```
 - **calcularProximoEnvio(freq: Agendamento['frequencia'], dia: number)** — `supabase/functions/enviar-relatorios-tributarios-agendados/index.ts`
   ```
   const d = new Date(); d.setUTCHours(6, 0, 0, 0); if (freq === 'mensal') d.setUTCMonth(d.getUTCMonth() + 1); else if (freq === 'trimestral') d.setUTCMonth(d.getUTCMonth() + 3); else d.setUTCFullYear(d.getUTCFullYear() + 1); d.setUTCDate(Math.min(dia, 28)); return d.toISOString();
@@ -4230,6 +4267,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MIN_FALSO_POSITIVO` | `15` | `src/components/admin/anomalias-review-queue/types.ts` |
 | `SCIM_SP_CONFIG_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'` | `src/components/admin/sso/ScimSetupGuide.helpers.ts` |
 | `LIMITE_OPCOES` | `200` | `src/components/bling/ProdutoCclasstribDialog.tsx` |
+| `CALLBACK_EM_CURSO_MS` | `2` | `src/components/clientes/AnaliseCreditoPanel.tsx` |
 | `IDS_POR_LOTE` | `100` | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
 | `SCORE_RISCO_ALTO` | `300` | `src/components/cobranca/previsao/risco.ts` |
 | `SCORE_RISCO_MEDIO` | `500` | `src/components/cobranca/previsao/risco.ts` |
@@ -4256,6 +4294,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `SIDEBAR_WIDTH` | `'16rem'` | `src/components/ui/sidebar.tsx` |
 | `SIDEBAR_WIDTH_MOBILE` | `'18rem'` | `src/components/ui/sidebar.tsx` |
 | `MOBILE_BREAKPOINT` | `768` | `src/hooks/use-mobile.tsx` |
+| `FUNCAO` | `'credito-analise'` | `src/hooks/useAnalisesCredito.ts` |
 | `TOAST_DURACAO_MIN` | `3` | `src/hooks/useAnomaliaPreferences.ts` |
 | `TOAST_DURACAO_MAX` | `30` | `src/hooks/useAnomaliaPreferences.ts` |
 | `TOAST_DURACAO_DEFAULT` | `12` | `src/hooks/useAnomaliaPreferences.ts` |
@@ -4474,6 +4513,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `LIMITE_PRESUMIDO` | `78000000` | `supabase/functions/_shared/tributario-logic.ts` |
 | `TERCEIROS_PADRAO` | `0.058` | `supabase/functions/_shared/tributario-logic.ts` |
 | `CONTRACT_VERSION_HEADER` | `'x-contract-version'` | `supabase/functions/_shared/versioned-contract.ts` |
+| `MESES_MINIMOS_ATIVIDADE` | `12` | `supabase/functions/_shared/credito/regras.ts` |
 | `NFE_XML_BUCKET` | `'nfe-xml'` | `supabase/functions/_shared/nfe/xml-storage.ts` |
 | `EMP` | `'11111111-2222-3333-4444-555555555555'` | `supabase/functions/_shared/nfe/xml-storage_test.ts` |
 | `CHAVE` | `'35260600000000000000550010000000011000000001'` | `supabase/functions/_shared/nfe/xml-storage_test.ts` |
@@ -4488,6 +4528,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `CACHE_TTL_DAYS` | `30` | `supabase/functions/cnpja-lookup/index.ts` |
 | `RATE_LIMIT_MAX` | `10` | `supabase/functions/cnpja-lookup/index.ts` |
 | `RATE_LIMIT_WINDOW_MIN` | `60` | `supabase/functions/cnpja-lookup/index.ts` |
+| `CALLBACK_EM_CURSO_MS` | `2` | `supabase/functions/credito-analise/index.ts` |
+| `MAX_BODY_BYTES` | `64` | `supabase/functions/credito-solicitacao/index.ts` |
 | `STATUS_NOTIFICADO` | `'notificado'` | `supabase/functions/enviar-digest-conformidade/index.ts` |
 | `FUSO` | `'America/Sao_Paulo'` | `supabase/functions/enviar-digest-conformidade/index.ts` |
 | `SIMPLES_SUBLIMITE` | `3` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
@@ -4517,12 +4559,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `PER_CNPJ_TIMEOUT_MS` | `45` | `supabase/functions/sefaz-dfe-dispatcher/index.ts` |
 | `BASE_INTERVAL_MS` | `15` | `supabase/functions/sefaz-dfe-dispatcher/policy.ts` |
 | `MAX_BACKOFF_MS` | `4` | `supabase/functions/sefaz-dfe-dispatcher/policy.ts` |
-| `CIRCUIT_OPEN_THRESHOLD` | `8` | `supabase/functions/sefaz-dfe-dispatcher/policy.ts` |
-| `PULLER_MISSING_TAG` | `'puller-missing'` | `supabase/functions/sefaz-dfe-dispatcher/policy.ts` |
-| `SCENARIOS` | `1000` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
-| `TICKS` | `96` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
-| `TICK_MS` | `15` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
-| … +39 linhas — lista completa em `context.json` | | |
+| … +44 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -4891,6 +4928,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 1 | `supabase/functions/copilot-global/index.ts` |
 | 10 | `supabase/functions/copilot-global/index.ts` |
 | 5 | `supabase/functions/copilot-global/index.ts` |
+| 1 | `supabase/functions/credito-analise/index.ts` |
+| 1 | `supabase/functions/credito-solicitacao/index.ts` |
 | 24 | `supabase/functions/decidir-regime/index.ts` |
 | 1 | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | 2000 | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
@@ -5228,7 +5267,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +827 linhas — lista completa em `context.json` | |
+| … +833 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5929,6 +5968,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Provedor sem end_session_endpoint — apenas confirmamos sucesso local. | `src/components/auth/SloFailureBanner.tsx` |
 | * A versao anterior fabricava os dois a partir de banco + valor + vencimento + | `src/components/boletos/BoletoBarcode.tsx` |
 | vencimento FEBRABAN passou de 9999 em fev/2025: qualquer vencimento futuro | `src/components/boletos/BoletoBarcode.tsx` |
+| gravar um limite mil vezes menor. | `src/components/clientes/AnaliseCreditoPanel.tsx` |
+| * Mesmo prazo da edge function: aviso 'pendente' recém-gravado pode estar em curso. */ | `src/components/clientes/AnaliseCreditoPanel.tsx` |
 | Limite de Crédito */} | `src/components/clientes/ClienteFormFields.tsx` |
 | Proposta 1: Desconto à vista | `src/components/cobranca/NegociacaoIA.tsx` |
 | estourariam o limite de URI. | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
@@ -6020,6 +6061,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Buscar contas a pagar próximas do vencimento | `src/hooks/useAlertas.ts` |
 | Apenas alertas de alta prioridade ou ruptura | `src/hooks/useAlertasPreditivos.ts` |
 | 0.02, 0); // 2% de desconto estimado | `src/hooks/useAlertasPreditivos.ts` |
+| * Só vem em `decidir`: `false` = aprovado sem conseguir gravar o limite. */ | `src/hooks/useAnalisesCredito.ts` |
+| Aprovado com limite que nenhum cadastro pôde receber: a decisão vale, | `src/hooks/useAnalisesCredito.ts` |
+| não pode esconder o botão depois que o servidor já aceita o reenvio. | `src/hooks/useAnalisesCredito.ts` |
 | Validação client-side espelha o trigger Postgres + regras de UX. | `src/hooks/useAnomaliaPreferences.ts` |
 | limite salvo nao faz efeito; | `src/hooks/useAprovacoes.ts` |
 | limite fica gravado, o erro aparece, e a nova | `src/hooks/useAprovacoes.ts` |
@@ -6181,9 +6225,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mantém apenas os últimos 50 alertas | `src/lib/sefaz-rejection-monitor.ts` |
 | * Empacotamento e validação de bundles de exportação de filtros compartilhados. | `src/lib/sharedFiltersExport.ts` |
 | - Inclui o `exportedFromEmpresaId` apenas como metadado de origem; a empresa | `src/lib/sharedFiltersExport.ts` |
-| - O importador deve revalidar `shared_with_roles` contra os papéis do tenant | `src/lib/sharedFiltersExport.ts` |
-| * Apenas metadado — útil para auditoria visual no JSON. */ | `src/lib/sharedFiltersExport.ts` |
-| * Parse + validação estrutural. NÃO valida ainda contra o tenant de destino; | `src/lib/sharedFiltersExport.ts` |
-| * Classificação de mensagens de validação SPED (ECF/ECD) em categorias | `src/lib/sped-validacoes-categorias.ts` |
-| # PASSO A PASSO — Validação no ${pvaNome}`, | `src/lib/sped-zip.ts` |
-| … +544 linhas — lista completa em `context.json` | |
+| … +574 linhas — lista completa em `context.json` | |

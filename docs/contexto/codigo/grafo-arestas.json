@@ -1591,6 +1591,20 @@
    "src/components/charts/Sparkline.tsx",
    "src/components/charts/chartColors.ts"
   ],
+  "src/components/clientes/AnaliseCreditoPanel.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/skeleton.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/components/ui/textarea.tsx",
+   "src/hooks/useAnalisesCredito.ts",
+   "src/lib/currency.ts",
+   "src/lib/utils.ts"
+  ],
   "src/components/clientes/ClienteDetailDialog.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
@@ -6722,6 +6736,10 @@
   "src/hooks/useAlertasTributariosCount.ts": [
    "src/integrations/supabase/client.ts"
   ],
+  "src/hooks/useAnalisesCredito.ts": [
+   "src/hooks/useAuth.tsx",
+   "src/lib/edge-function-error.ts"
+  ],
   "src/hooks/useAnomaliaAuditHistory.ts": [
    "src/integrations/supabase/client.ts"
   ],
@@ -9918,6 +9936,11 @@
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
   ],
+  "src/pages/clientes/AnaliseCredito.tsx": [
+   "src/components/clientes/AnaliseCreditoPanel.tsx",
+   "src/components/layout/MainLayout.tsx",
+   "src/components/layout/PageHeader.tsx"
+  ],
   "src/pages/clientes/ClientesFiltersPanel.tsx": [
    "src/components/shared/StandardFilterSection.tsx",
    "src/components/ui/button.tsx",
@@ -10961,6 +10984,7 @@
    "src/pages/MetasFinanceiras.tsx",
    "src/pages/PagamentosRecorrentes.tsx",
    "src/pages/Tesouraria.tsx",
+   "src/pages/clientes/AnaliseCredito.tsx",
    "src/pages/clientes/PortalTokens.tsx",
    "src/pages/clientes/ScoringClientes.tsx"
   ],
@@ -11106,6 +11130,9 @@
   ],
   "supabase/functions/_shared/cors.ts": [
    "supabase/functions/_shared/console-persist.ts"
+  ],
+  "supabase/functions/_shared/credito/schemas.ts": [
+   "supabase/functions/_shared/zod.ts"
   ],
   "supabase/functions/_shared/edge-observability.ts": [
    "supabase/functions/_shared/observability.ts"
@@ -11384,6 +11411,28 @@
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/observability.ts"
+  ],
+  "supabase/functions/credito-analise/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/correlation.ts",
+   "supabase/functions/_shared/cors.ts",
+   "supabase/functions/_shared/credito/cnpja.ts",
+   "supabase/functions/_shared/credito/regras.ts",
+   "supabase/functions/_shared/credito/schemas.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/validation.ts"
+  ],
+  "supabase/functions/credito-solicitacao/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
+   "supabase/functions/_shared/correlation.ts",
+   "supabase/functions/_shared/cors.ts",
+   "supabase/functions/_shared/credito/cnpja.ts",
+   "supabase/functions/_shared/credito/regras.ts",
+   "supabase/functions/_shared/credito/schemas.ts",
+   "supabase/functions/_shared/edge-observability.ts",
+   "supabase/functions/_shared/observability.ts",
+   "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/decidir-regime/index.ts": [
    "supabase/functions/_shared/correlation.ts",

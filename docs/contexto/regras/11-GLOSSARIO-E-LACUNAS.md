@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `254c8f958b` · branch `main` · 2026-11-27 17:13 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `a9d1124225` · branch `main` · 2026-11-27 17:14 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -22,6 +22,7 @@
 | `aliquotas_iss_municipal` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `allowed_countries` | _(sem COMMENT ON TABLE — significado não documentado)_ | 6 colunas | migration |
 | `allowed_ips` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
+| `analises_credito` | _(sem COMMENT ON TABLE — significado não documentado)_ | 31 colunas | migration |
 | `anexos_financeiros` | _(sem COMMENT ON TABLE — significado não documentado)_ | 12 colunas | migration |
 | `anomalia_detection_runs` | _(sem COMMENT ON TABLE — significado não documentado)_ | 11 colunas | migration |
 | `anomalia_toast_eventos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 14 colunas | migration |
@@ -306,8 +307,7 @@
 | `alert_severity` (enum) | INFO, WARNING, CRITICAL |  | banco |
 | `alert_type` (enum) | DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED |  | banco |
 | `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
-| `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
-| … +256 linhas — lista completa em `context.json` | | | |
+| … +259 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -378,6 +378,8 @@
 | status | valor `OPEN` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/_shared/resilience.ts` |
 | status | valor `ACCEPTED` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/asaas-proxy/index.ts` |
 | status | valor `finalizado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/calcular-health-score-operacional/index.ts` |
+| status | valor `duplicate_ignored` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/credito-solicitacao/index.ts` |
+| status | valor `processed` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/credito-solicitacao/index.ts` |
 | status | valor `cancelled` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `regravado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/reprocessar-creditos-ibscbs/index.ts`<br>`escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
 | status | valor `sem_xml` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/reprocessar-creditos-ibscbs/index.ts` |
@@ -401,6 +403,7 @@
 | status | valor `welcome` para `last_step` usado no código não existe em nenhum enum do banco/TS | `escreve:src/hooks/useOnboardingProgress.ts` |
 | status | valor `abertas` para `situacao` usado no código não existe em nenhum enum do banco/TS | `compara:src/hooks/useOverlayRejeicoesAuditoria.ts` |
 | status | valor `resolvidas` para `situacao` usado no código não existe em nenhum enum do banco/TS | `compara:src/hooks/useOverlayRejeicoesAuditoria.ts` |
+| status | valor `ativa` para `situacao` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/_shared/credito/regras.ts` |
 | status | valor `iniciando` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `detector_outlier` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | status | valor `detector_duplicado` para `current_step` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
@@ -542,7 +545,9 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 270/276 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- `analises_credito.status` tem valores ['aprovado', 'em_analise', 'pendente', 'reprovado'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
+- `analises_credito.callback_status` tem valores ['enviado', 'falhou', 'nao_aplicavel', 'pendente'] mas nenhum mapa de transições foi encontrado no código — a ordem permitida (ex.: pago → cancelado?) não está declarada.
+- 271/277 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "pasta": "supabase/functions",
- "total": 112,
+ "total": 114,
  "verify_jwt_false": [
   "analise-fluxo-ia",
   "analyze-document",
@@ -83,6 +83,10 @@
   "supabase/functions/_shared/contract-validator.ts",
   "supabase/functions/_shared/correlation.ts",
   "supabase/functions/_shared/cors.ts",
+  "supabase/functions/_shared/credito/cnpja.ts",
+  "supabase/functions/_shared/credito/regras.ts",
+  "supabase/functions/_shared/credito/regras_test.ts",
+  "supabase/functions/_shared/credito/schemas.ts",
   "supabase/functions/_shared/edge-observability.ts",
   "supabase/functions/_shared/edge-observability_test.ts",
   "supabase/functions/_shared/erros.ts",
@@ -1284,6 +1288,86 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "credito-analise",
+   "entrada": "supabase/functions/credito-analise/index.ts",
+   "arquivos": 1,
+   "linhas": 686,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "analises_credito",
+    "clientes",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "CHAMPIONS_CREDITO_CALLBACK_SECRET",
+    "CHAMPIONS_CREDITO_CALLBACK_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "receive-credit-decision"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cnpja.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "regras.ts",
+    "schemas.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "credito-solicitacao",
+   "entrada": "supabase/functions/credito-solicitacao/index.ts",
+   "arquivos": 1,
+   "linhas": 204,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "analises_credito",
+    "clientes"
+   ],
+   "rpcs": [],
+   "env": [
+    "CHAMPIONS_CREDITO_WEBHOOK_SECRET"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cnpja.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "regras.ts",
+    "schemas.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
    "testes": 0
   },
   {
@@ -4639,5 +4723,7 @@
    "testes": 1
   }
  ],
- "chamadas_sem_pasta": []
+ "chamadas_sem_pasta": [
+  "receive-credit-decision"
+ ]
 }

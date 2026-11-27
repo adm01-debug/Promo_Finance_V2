@@ -3,15 +3,15 @@
  "format_version": 2,
  "onde_ficam": {
   "telas": [
-   "src/pages (127)"
+   "src/pages (128)"
   ],
   "componentes": [
-   "src/components (783)",
-   "src/pages (208)",
+   "src/components (784)",
+   "src/pages (209)",
    "src/hooks (2)"
   ],
   "hooks": [
-   "src/hooks (242)",
+   "src/hooks (243)",
    "src/components (27)",
    "src/pages (5)"
   ],
@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (345)",
-   "outro (114)",
+   "outro (115)",
    "co-localizado (*.test) (50)"
   ],
   "edge_functions": "supabase/functions",
@@ -47,7 +47,7 @@
  },
  "barrels_index": 34,
  "extensao_componentes": [
-  ".tsx (995)"
+  ".tsx (997)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: fila de análise de crédito da 1ª venda (Champions → Finance → Champions) (#578)",
    "infra: agendar os crons tributarios que nunca rodavam (#572)",
    "infra: libera os 4 syncs de catalogos RFB no deploy controlado de Edge Functions (#567)",
    "fix(db): reconcilia colunas de elisao_simulacoes_regime nas migrations (#576)",
-   "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)",
-   "feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)"
+   "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

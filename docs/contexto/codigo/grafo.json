@@ -1,20 +1,20 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 2052,
- "arestas": 8671,
+ "nos": 2060,
+ "arestas": 8708,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
-   "importado_por": 532
+   "importado_por": 533
   },
   {
    "arquivo": "src/components/ui/card.tsx",
-   "importado_por": 480
+   "importado_por": 481
   },
   {
    "arquivo": "src/components/ui/badge.tsx",
-   "importado_por": 453
+   "importado_por": 454
   },
   {
    "arquivo": "src/integrations/supabase/client.ts",
@@ -22,7 +22,7 @@
   },
   {
    "arquivo": "src/lib/utils.ts",
-   "importado_por": 315
+   "importado_por": 316
   },
   {
    "arquivo": "src/lib/formatters.ts",
@@ -30,7 +30,7 @@
   },
   {
    "arquivo": "src/components/ui/input.tsx",
-   "importado_por": 221
+   "importado_por": 222
   },
   {
    "arquivo": "src/components/ui/select.tsx",
@@ -38,11 +38,11 @@
   },
   {
    "arquivo": "src/components/ui/label.tsx",
-   "importado_por": 167
+   "importado_por": 168
   },
   {
    "arquivo": "src/components/ui/dialog.tsx",
-   "importado_por": 141
+   "importado_por": 142
   },
   {
    "arquivo": "src/components/ui/table.tsx",
@@ -50,31 +50,35 @@
   },
   {
    "arquivo": "src/components/ui/skeleton.tsx",
-   "importado_por": 126
+   "importado_por": 127
   },
   {
    "arquivo": "supabase/functions/_shared/edge-observability.ts",
-   "importado_por": 114
+   "importado_por": 116
   },
   {
    "arquivo": "src/hooks/useAuth.tsx",
-   "importado_por": 110
+   "importado_por": 111
   },
   {
    "arquivo": "supabase/functions/_shared/cors.ts",
-   "importado_por": 107
+   "importado_por": 109
   },
   {
    "arquivo": "src/components/layout/MainLayout.tsx",
-   "importado_por": 94
+   "importado_por": 95
+  },
+  {
+   "arquivo": "src/components/ui/tabs.tsx",
+   "importado_por": 93
   },
   {
    "arquivo": "src/lib/logger.ts",
    "importado_por": 93
   },
   {
-   "arquivo": "src/components/ui/tabs.tsx",
-   "importado_por": 92
+   "arquivo": "supabase/functions/_shared/observability.ts",
+   "importado_por": 82
   },
   {
    "arquivo": "src/components/ui/alert.tsx",
@@ -82,10 +86,6 @@
   },
   {
    "arquivo": "src/components/ui/progress.tsx",
-   "importado_por": 80
-  },
-  {
-   "arquivo": "supabase/functions/_shared/observability.ts",
    "importado_por": 80
   },
   {
@@ -97,23 +97,23 @@
    "importado_por": 70
   },
   {
-   "arquivo": "src/components/ui/tooltip.tsx",
-   "importado_por": 60
+   "arquivo": "supabase/functions/_shared/auth-guard.ts",
+   "importado_por": 61
   },
   {
-   "arquivo": "supabase/functions/_shared/auth-guard.ts",
-   "importado_por": 59
+   "arquivo": "src/components/ui/tooltip.tsx",
+   "importado_por": 60
   },
   {
    "arquivo": "supabase/functions/_shared/erros.ts",
    "importado_por": 56
   },
   {
-   "arquivo": "src/hooks/useFinancialData.ts",
-   "importado_por": 54
+   "arquivo": "supabase/functions/_shared/validation.ts",
+   "importado_por": 56
   },
   {
-   "arquivo": "supabase/functions/_shared/validation.ts",
+   "arquivo": "src/hooks/useFinancialData.ts",
    "importado_por": 54
   },
   {
@@ -122,15 +122,15 @@
   },
   {
    "arquivo": "src/components/ui/textarea.tsx",
-   "importado_por": 47
+   "importado_por": 48
+  },
+  {
+   "arquivo": "src/components/layout/PageHeader.tsx",
+   "importado_por": 44
   },
   {
    "arquivo": "src/components/ui/dropdown-menu.tsx",
    "importado_por": 44
-  },
-  {
-   "arquivo": "src/components/layout/PageHeader.tsx",
-   "importado_por": 43
   },
   {
    "arquivo": "src/integrations/supabase/types.ts",
@@ -142,7 +142,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/zod.ts",
-   "importado_por": 34
+   "importado_por": 35
   },
   {
    "arquivo": "src/lib/tributario/types.ts",

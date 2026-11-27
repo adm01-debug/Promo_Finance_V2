@@ -3,8 +3,8 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2475)",
-   "SQL (1162)",
+   "TypeScript (2484)",
+   "SQL (1164)",
    "Markdown (232)",
    "JavaScript (77)",
    "Python (46)",
@@ -1390,6 +1390,9 @@
    "BITRIX24_DOMAIN",
    "BLING_CLIENT_ID",
    "BLING_CLIENT_SECRET",
+   "CHAMPIONS_CREDITO_CALLBACK_SECRET",
+   "CHAMPIONS_CREDITO_CALLBACK_URL",
+   "CHAMPIONS_CREDITO_WEBHOOK_SECRET",
    "CNPJA_API_KEY",
    "CONTADOR_INVITE_SECRET",
    "CRON_DISPATCH_SECRET",
@@ -1606,6 +1609,10 @@
     "arquivos": 2
    },
    {
+    "host": "api.cnpja.com",
+    "arquivos": 2
+   },
+   {
     "host": "api.ipify.org",
     "arquivos": 2
    },
@@ -1671,10 +1678,6 @@
    },
    {
     "host": "accounts.google.com",
-    "arquivos": 1
-   },
-   {
-    "host": "api.cnpja.com",
     "arquivos": 1
    },
    {
@@ -1950,6 +1953,10 @@
     "arquivos": 1
    },
    {
+    "host": "usyxfpqlsspldubptrdl.supabase.co",
+    "arquivos": 1
+   },
+   {
     "host": "w.example.dev",
     "arquivos": 1
    },
@@ -1994,6 +2001,8 @@
    "BITRIX24_CLIENT_SECRET",
    "BLING_CLIENT_ID",
    "BLING_CLIENT_SECRET",
+   "CHAMPIONS_CREDITO_CALLBACK_SECRET",
+   "CHAMPIONS_CREDITO_WEBHOOK_SECRET",
    "CI_GATE_LOG_SECRET",
    "CNPJA_API_KEY",
    "CONTADOR_INVITE_SECRET",
@@ -2302,7 +2311,7 @@
    "src/components/auth/ProtectedRoute.tsx",
    "src/components/navigation/UnsavedGuardProvider.tsx"
   ],
-  "rotas_protegidas": 120,
+  "rotas_protegidas": 121,
   "rotas_publicas": [
    "/__especimes",
    "/*",

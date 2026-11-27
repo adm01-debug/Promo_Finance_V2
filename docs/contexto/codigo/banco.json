@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1089,
+ "migrations": 1091,
  "seeds": [],
  "avisos": [
   "204 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -530,6 +530,7 @@
   "snapshot_table_bloat",
   "sync_integration_secret_identifier",
   "sync_regime_tributario_empresa",
+  "tg_analises_credito_updated_at",
   "tg_touch_updated_at",
   "toggle_cron_job",
   "totais_contas_pagar",
@@ -666,6 +667,13 @@
    "evento": "insert or delete or update",
    "tabela": "allowed_ips",
    "funcao": "audit_trigger_generic"
+  },
+  {
+   "nome": "trg_analises_credito_updated_at",
+   "quando": "before",
+   "evento": "update",
+   "tabela": "analises_credito",
+   "funcao": "tg_analises_credito_updated_at"
   },
   {
    "nome": "update_anexos_financeiros_updated_at",
@@ -5785,6 +5793,268 @@
    "usada_em_edges": [],
    "triggers": [
     "trg_audit_allowed_ips"
+   ],
+   "sem_rls": false,
+   "nao_usada": false
+  },
+  "analises_credito": {
+   "colunas": {
+    "alertas": {
+     "tipo": "jsonb",
+     "nn": true,
+     "pk": false,
+     "default": "'[]'::jsonb",
+     "ref": null
+    },
+    "callback_em": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "callback_erro": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "callback_status": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'pendente'",
+     "ref": null
+    },
+    "cliente_email": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cliente_empresa": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cliente_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": "clientes"
+    },
+    "cliente_nome": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cliente_telefone": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cnpj": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "correlation_key": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "dados_cnpja": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "dados_consulta_financeira": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "dados_escavador": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "decidido_em": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "decidido_por": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "empresa_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": "empresas"
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "limite_aplicado_em": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "limite_aprovado": {
+     "tipo": "numeric(14,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "origem": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'promo_champions'",
+     "ref": null
+    },
+    "parcelas_max": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "parecer": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "pedido_numero": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "referencia_externa": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "solicitado_em": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "status": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'pendente'",
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "valor_pedido": {
+     "tipo": "numeric(14,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "vendedor_email": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "analises_credito_leitura_financeiro",
+     "comando": "select",
+     "para": "authenticated",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [
+    {
+     "nome": "idx_analises_credito_cnpj",
+     "colunas": "cnpj",
+     "unico": false
+    },
+    {
+     "nome": "idx_analises_credito_empresa_id",
+     "colunas": "empresa_id",
+     "unico": false
+    },
+    {
+     "nome": "idx_analises_credito_status_created",
+     "colunas": "status, created_at DESC",
+     "unico": false
+    }
+   ],
+   "fks": [
+    "cliente_id->clientes",
+    "empresa_id->empresas"
+   ],
+   "criada_em": "20261126193000_analises_credito.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [
+    "credito-analise",
+    "credito-solicitacao"
+   ],
+   "triggers": [
+    "trg_analises_credito_updated_at"
    ],
    "sem_rls": false,
    "nao_usada": false
@@ -14378,6 +14648,8 @@
     "analise-preditiva",
     "asaas-proxy",
     "bitrix24-sync",
+    "credito-analise",
+    "credito-solicitacao",
     "executar-analise-preditiva",
     "whatsapp-ia-proativo"
    ],
@@ -14624,7 +14896,8 @@
    },
    "usada_no_front": 1,
    "usada_em_edges": [
-    "cnpja-lookup"
+    "cnpja-lookup",
+    "credito"
    ],
    "triggers": [
     "trg_cnpja_cache_updated_at"
@@ -47522,6 +47795,7 @@
     "comparar-benchmark-setorial",
     "contabilizar-evento",
     "convidar-contador",
+    "credito-analise",
     "enviar-bitrix24-tributario",
     "executar-analise-preditiva",
     "executar-relatorios",
