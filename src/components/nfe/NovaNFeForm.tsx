@@ -19,6 +19,7 @@ import { useProdutoCclasstribPadrao } from '@/hooks/useProdutoCclasstribPadrao';
 import { calcularGrupoIbscbs, resolverCclassTribPadrao } from '@/lib/nfe/grupo-ibscbs-item';
 import { calcularBaseCalculo } from '@/lib/reforma-tributaria/base-calculo';
 import { adaptarItem, preValidarIbscbs } from '@/lib/nfe/pre-validar-ibscbs';
+import { crtDoRegime, totaisDaNota } from '@/lib/nfe/pre-validacao-nota';
 import { PreValidacaoIbscbs } from './PreValidacaoIbscbs';
 import {
   cclasstribManualAposTroca,
@@ -29,18 +30,6 @@ import { NotaFiscal, ItemNFe } from './nfe-types';
 
 /** Ano do cronograma usado na estimativa local do grupo IBS/CBS. */
 const ANO_REFERENCIA = new Date().getFullYear();
-
-/**
- * CRT (código de regime tributário) do emitente: 1 = Simples Nacional,
- * 3 = regime normal (Lucro Presumido e Lucro Real). Regime desconhecido devolve
- * `undefined` — sem CRT a pré-validação não afirma nada sobre a obrigatoriedade
- * do grupo, em vez de bloquear por suposição.
- */
-const crtDoRegime = (regime?: string | null): number | undefined => {
-  if (regime === 'simples_nacional') return 1;
-  if (regime === 'lucro_presumido' || regime === 'lucro_real') return 3;
-  return undefined;
-};
 
 interface NovaNFeFormProps {
   onClose: () => void;
@@ -220,6 +209,7 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
     crt: crtDoRegime(empresaEmitente?.regime_tributario),
     dataEmissao: new Date().toISOString().slice(0, 10),
     itens: itens.map((item, indice) => adaptarItem({ ...item, nItem: indice + 1 })),
+    totais: totaisDaNota(itens),
     cclasstribVigentes: codigos,
   });
 

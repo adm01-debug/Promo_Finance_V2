@@ -9,7 +9,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { resolverPadraoPorCodigo } from '@/lib/tributario/produtos/cclasstrib-padrao';
+import { crtDoRegime, totaisDaNota } from '@/lib/nfe/pre-validacao-nota';
 import { NovaNFeForm } from '../NovaNFeForm';
+import type { ItemNFe } from '../nfe-types';
 
 vi.mock('@/hooks/useFinancialData', () => ({
   useEmpresas: () => ({ data: [] }),
@@ -141,5 +143,61 @@ describe('NovaNFeForm: pre-validacao do grupo IBS/CBS', () => {
     digitarSku('KIT-1');
     expect(screen.getByText(/Pré-validação do grupo IBS\/CBS/)).toBeTruthy();
     expect(screen.getByText(/200032 não existe no catálogo vigente/)).toBeTruthy();
+  });
+});
+
+describe('NovaNFeForm: totais do grupo e CRT do emitente', () => {
+  const item = (extra: Partial<ItemNFe>): ItemNFe => ({
+    codigo: 'KIT-1',
+    descricao: 'Item',
+    ncm: '12345678',
+    cfop: '5102',
+    unidade: 'UN',
+    quantidade: 1,
+    valorUnitario: 100,
+    valorTotal: 100,
+    ...extra,
+  });
+
+  it('soma os totais do grupo a partir dos itens enquadrados', () => {
+    expect(
+      totaisDaNota([
+        item({ cstIbsCbs: '200', vIBSUF: 5.65, vIBSMun: 5, vCBS: 9 }),
+        item({ codigo: 'KIT-2', cstIbsCbs: '200', vIBSUF: 0.05, vIBSMun: 0.05, vCBS: 0.9 }),
+        item({ codigo: 'SEM-GRUPO' }),
+      ])
+    ).toEqual({ vIBS: 10.75, vCBS: 9.9 });
+  });
+
+  it('usa vIBSUF + vIBSMun quando o item nao traz o total de IBS', () => {
+    expect(totaisDaNota([item({ cstIbsCbs: '200', vIBSUF: 5.66, vIBSMun: 5.01 })])).toEqual({
+      vIBS: 10.67,
+      vCBS: 0,
+    });
+  });
+
+  it('nao informa totais quando nenhum item tem grupo', () => {
+    expect(totaisDaNota([item({})])).toBeUndefined();
+  });
+
+  it('mapeia Lucro Arbitrado para CRT 3', () => {
+    expect(crtDoRegime('arbitrado')).toBe(3);
+    expect(crtDoRegime('lucro_presumido')).toBe(3);
+    expect(crtDoRegime('lucro_real')).toBe(3);
+    expect(crtDoRegime('simples_nacional')).toBe(1);
+    expect(crtDoRegime('mei')).toBeUndefined();
+    expect(crtDoRegime(null)).toBeUndefined();
+  });
+
+  it('nao acusa total ausente quando o item ja tem o grupo calculado', () => {
+    catalogo.opcoes = [
+      { cst: '200', cclasstrib: '200032', descricao: 'tributado', vigencia_inicio: '2026-01-01' },
+    ];
+    render(<NovaNFeForm onClose={() => {}} />);
+
+    digitarSku('KIT-1');
+    // A tela nao tem campo de totais: o aviso de total ausente seria impossivel
+    // de resolver aqui se os totais nao saissem da soma dos itens.
+    expect(screen.queryByText(/não informa os totais/)).toBeNull();
   });
 });
