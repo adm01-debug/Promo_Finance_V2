@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 993,
+ "total": 994,
  "orfaos": 38,
  "nomes_duplicados": {
   "Accordion": [
@@ -2614,12 +2614,13 @@
     "BlingProdutosPanel"
    ],
    "export_default": null,
-   "linhas": 393,
+   "linhas": 422,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingProdutoMutations",
     "useBlingProdutos",
-    "useBlingVariacoes"
+    "useBlingVariacoes",
+    "useProdutoCclasstribPadrao"
    ],
    "tabelas": [],
    "edges": [],
@@ -2652,6 +2653,26 @@
    "hooks_locais": [
     "useBlingSyncLogs",
     "useBlingWebhookEvents"
+   ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/bling/ProdutoCclasstribDialog.tsx",
+   "exports": [
+    "ProdutoCclasstribDialog",
+    "ProdutoParaPadrao"
+   ],
+   "export_default": null,
+   "linhas": 327,
+   "dominio": "components/bling",
+   "hooks_locais": [
+    "useBlingProdutoDetail",
+    "useClassificacaoTributaria",
+    "useProdutoCclasstribPadrao",
+    "useProdutoCclasstribPadraoMutations"
    ],
    "tabelas": [],
    "edges": [],
@@ -8221,11 +8242,12 @@
     "NovaNFeForm"
    ],
    "export_default": null,
-   "linhas": 386,
+   "linhas": 463,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useCatalogoCclasstrib",
-    "useEmpresas"
+    "useEmpresas",
+    "useProdutoCclasstribPadrao"
    ],
    "tabelas": [],
    "edges": [],
@@ -11061,7 +11083,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 451,
+   "usado_por": 452,
    "orfao": false
   },
   {
@@ -11110,7 +11132,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 529,
+   "usado_por": 530,
    "orfao": false
   },
   {
@@ -11397,7 +11419,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 140,
+   "usado_por": 141,
    "orfao": false
   },
   {
@@ -11611,7 +11633,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 218,
+   "usado_por": 219,
    "orfao": false
   },
   {
@@ -11625,7 +11647,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 165,
+   "usado_por": 166,
    "orfao": false
   },
   {
@@ -12000,7 +12022,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 171,
+   "usado_por": 172,
    "orfao": false
   },
   {

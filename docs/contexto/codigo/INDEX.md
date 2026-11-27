@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5bf3c2dd4fc63854744ebdb8e2d280feb299b33c` (2026-11-26T17:11:48-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `7c864eb93134033dd7dbd26128c7d7372d5edd5b` (2026-11-26T21:19:18-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2456), SQL (1157), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2463), SQL (1158), Markdown (231), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,31 +34,31 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4117 |
-| arquivos_codigo | 2577 |
-| linhas_codigo | 465756 |
+| arquivos_total | 4125 |
+| arquivos_codigo | 2584 |
+| linhas_codigo | 467228 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
 | modulos | 129 |
-| componentes | 993 |
-| hooks | 277 |
+| componentes | 994 |
+| hooks | 278 |
 | edge_functions | 112 |
-| tabelas | 318 |
-| migrations | 1084 |
+| tabelas | 319 |
+| migrations | 1085 |
 | cron_jobs | 28 |
-| testes | 539 |
+| testes | 543 |
 | workflows | 20 |
 | scripts | 117 |
 | docs_md | 231 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (781), src/pages (208), src/hooks (2)
-- hooks: src/hooks (241), src/components (27), src/pages (5)
-- servicos_logica: src/lib (279), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (334), outro (113), co-localizado (*.test) (50)
+- componentes: src/components (782), src/pages (208), src/hooks (2)
+- hooks: src/hooks (242), src/components (27), src/pages (5)
+- servicos_logica: src/lib (280), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (338), outro (113), co-localizado (*.test) (50)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (15)
@@ -77,7 +77,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/auth | 0 | 0 | 15 | 10 | 2 | 8 |
 | components/bi | 0 | 0 | 6 | 0 | 0 | 0 |
 | components/bitrix | 0 | 0 | 6 | 0 | 0 | 0 |
-| components/bling | 0 | 0 | 13 | 39 | 2 | 9 |
+| components/bling | 0 | 0 | 14 | 43 | 2 | 22 |
 | components/boletos | 0 | 0 | 5 | 1 | 0 | 5 |
 | components/charts | 0 | 0 | 5 | 0 | 0 | 0 |
 | components/clientes | 0 | 0 | 5 | 24 | 1 | 15 |
@@ -99,7 +99,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/integracoes | 0 | 0 | 6 | 1 | 3 | 5 |
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
 | components/navigation | 0 | 0 | 5 | 3 | 0 | 2 |
-| components/nfe | 0 | 0 | 31 | 25 | 3 | 29 |
+| components/nfe | 0 | 0 | 31 | 27 | 3 | 30 |
 | components/reforma-tributaria | 0 | 0 | 67 | 31 | 1 | 32 |
 | components/relatorios | 0 | 0 | 22 | 27 | 3 | 16 |
 | components/security | 0 | 0 | 6 | 5 | 2 | 10 |
@@ -107,7 +107,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/tesouraria | 0 | 0 | 5 | 16 | 1 | 14 |
 | components/tributario | 0 | 0 | 55 | 36 | 13 | 33 |
 | components/ui | 0 | 0 | 102 | 17 | 0 | 3 |
-| hooks | 0 | 0 | 231 | 447 | 60 | 186 |
+| hooks | 0 | 0 | 232 | 449 | 60 | 187 |
 | hooks/bling | 0 | 0 | 11 | 39 | 2 | 9 |
 | hooks/financial | 0 | 0 | 10 | 18 | 1 | 13 |
 | lib | 0 | 0 | 69 | 10 | 3 | 9 |
@@ -120,8 +120,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/sefaz-contingency | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
-| lib/tributario | 0 | 0 | 125 | 0 | 0 | 14 |
-| pages | 58 | 64 | 109 | 367 | 45 | 173 |
+| lib/tributario | 0 | 0 | 126 | 0 | 0 | 14 |
+| pages | 58 | 64 | 109 | 369 | 45 | 174 |
 | pages/admin | 4 | 15 | 24 | 118 | 14 | 60 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
@@ -130,7 +130,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
 | pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
 | pages/tributario | 33 | 41 | 85 | 104 | 22 | 60 |
-| routes | 0 | 0 | 16 | 462 | 65 | 206 |
+| routes | 0 | 0 | 16 | 464 | 65 | 207 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -475,9 +475,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (31)
 - bun.lock (29)
 - .github/workflows/ci.yml (10)
+- src/integrations/supabase/types.ts (10)
 - scripts/automation.config.json (9)
 - scripts/integrity/baseline/schema-counts.json (9)
-- src/integrations/supabase/types.ts (9)
 - analise-prs/progresso.json (8)
 - docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md (8)
 - docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md (8)
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-26 `7c864eb` feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)
 - 2026-11-26 `5bf3c2d` feat: vínculo manual na baixa automática liquida o título escolhido (#574)
 - 2026-11-26 `acf2202` feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)
 - 2026-11-26 `f2dbe02` feat: simulador de elisão calcula e grava cenário com dados reais (#575)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-25 `b449a65` fix: remove import wildcard de lucide-react no chunk de Categorias (#559)
 - 2026-11-25 `729184f` fix: migra react-day-picker para v10 (calendar + callers) (#544)
 - 2026-11-25 `448f7ea` fix: regenera baseline do Gate #26 com os objetos ja aplicados em producao (#557)
-- 2026-11-25 `d32f10e` fix: remove BOM UTF-8 de 4 migrations que impediam o apply em producao (#556)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

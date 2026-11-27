@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 539,
+ "total": 543,
  "por_tipo": {
   "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 460
+  "unit": 464
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 334
+   "arquivos": 338
   },
   {
    "padrao": "outro",
@@ -856,6 +856,15 @@
    "casos": 8
   },
   {
+   "arquivo": "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx",
+   "tipo": "unit",
+   "linhas": 118,
+   "testa": [
+    "src/components/bling/ProdutoCclasstribDialog.tsx"
+   ],
+   "casos": 2
+  },
+  {
    "arquivo": "src/components/boletos/__tests__/BoletoBarcode.test.tsx",
    "tipo": "unit",
    "linhas": 65,
@@ -1183,6 +1192,16 @@
     "src/lib/navigation.ts"
    ],
    "casos": 11
+  },
+  {
+   "arquivo": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+   "tipo": "unit",
+   "linhas": 128,
+   "testa": [
+    "src/components/nfe/NovaNFeForm.tsx",
+    "src/lib/tributario/produtos/cclasstrib-padrao.ts"
+   ],
+   "casos": 5
   },
   {
    "arquivo": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
@@ -1919,6 +1938,15 @@
     "src/hooks/usePreferenciasSistema.ts"
    ],
    "casos": 12
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+   "tipo": "unit",
+   "linhas": 107,
+   "testa": [
+    "src/hooks/useProdutoCclasstribPadrao.ts"
+   ],
+   "casos": 3
   },
   {
    "arquivo": "src/hooks/__tests__/useQueuedMessage.test.tsx",
@@ -3809,6 +3837,15 @@
    "casos": 2
   },
   {
+   "arquivo": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+   "tipo": "unit",
+   "linhas": 308,
+   "testa": [
+    "src/lib/tributario/produtos/cclasstrib-padrao.ts"
+   ],
+   "casos": 31
+  },
+  {
    "arquivo": "src/pages/__tests__/admin-telemetria-logica.test.ts",
    "tipo": "unit",
    "linhas": 330,
@@ -4858,6 +4895,7 @@
   "src/components/admin/telemetry/RetentionPoliciesPanel.tsx": 1,
   "src/components/admin/telemetry/TelemetryCharts.tsx": 1,
   "src/components/admin/telemetry/performance-alerts-deeplink.ts": 1,
+  "src/components/bling/ProdutoCclasstribDialog.tsx": 1,
   "src/components/boletos/BoletoBarcode.tsx": 1,
   "src/components/categorias/categoria-icones.ts": 1,
   "src/components/cobranca/CustomerDeepScore.tsx": 1,
@@ -4906,6 +4944,7 @@
   "src/components/nfe/CancelamentoNFe.tsx": 1,
   "src/components/nfe/EventosHistorico.tsx": 1,
   "src/components/nfe/InutilizacaoNFe.tsx": 1,
+  "src/components/nfe/NovaNFeForm.tsx": 1,
   "src/components/nfe/SefazMonitor.tsx": 1,
   "src/components/nfe/contingencia/ContingenciaPendingList.tsx": 1,
   "src/components/nfe/nfe-types.ts": 2,
@@ -5002,6 +5041,7 @@
   "src/hooks/usePixTemplates.ts": 1,
   "src/hooks/usePlanoContas.ts": 1,
   "src/hooks/usePreferenciasSistema.ts": 1,
+  "src/hooks/useProdutoCclasstribPadrao.ts": 1,
   "src/hooks/useQueuedMessage.ts": 1,
   "src/hooks/useRegrasConciliacao.ts": 1,
   "src/hooks/useReguaCobranca.ts": 1,
@@ -5163,6 +5203,7 @@
   "src/lib/tributario/obrigacoes/types.ts": 2,
   "src/lib/tributario/pf-vinculada.ts": 1,
   "src/lib/tributario/pis-cofins/index.ts": 1,
+  "src/lib/tributario/produtos/cclasstrib-padrao.ts": 2,
   "src/lib/tributario/projecao-reforma.ts": 3,
   "src/lib/tributario/rbt12.ts": 3,
   "src/lib/tributario/recomendar-empresa.ts": 1,

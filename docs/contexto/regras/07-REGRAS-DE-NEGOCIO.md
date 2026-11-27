@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5bf3c2dd4f` · branch `main` · 2026-11-26 20:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7c864eb931` · branch `main` · 2026-11-27 00:27 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
 | `solicitacoes_lgpd` | lgpd_scoped_update | UPDATE | authenticated | permissive | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` |
-| … +531 linhas — lista completa em `context.json` | | | | | | |
+| … +532 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -617,7 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_score_saude` | `score` | obrigatório |
 | `historico_score_saude` | `data_calculo` | default now() |
 | `historico_score_saude` | `created_at` | default now() |
-| … +2322 linhas — lista completa em `context.json` | | |
+| … +2330 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -1633,6 +1633,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | StatusPedido | rascunho \| aguardando_transmissao \| transmitido \| em_analise \| deferido \| indeferido \| cancelado | `src/hooks/usePerDcomp.ts` |
 | TipoCreditoOrigem | saldo_negativo \| pagamento_indevido \| retencao \| ressarcimento \| exportacao | `src/hooks/usePerDcomp.ts` |
 | SeveridadeAlerta | error \| warning \| info | `src/hooks/usePreValidacaoSped.ts` |
+| CHAVE_PADRAO_CCLASSTRIB | 'produto-cclasstrib-padrao' | `src/hooks/useProdutoCclasstribPadrao.ts` |
 | TipoRetencao | irrf \| csrf \| pis_cofins_csll \| inss \| iss \| cbs \| ibs | `src/hooks/useRetencoesFonte.ts` |
 | StatusRetencao | pendente \| recolhido \| compensado \| cancelado | `src/hooks/useRetencoesFonte.ts` |
 | SSOTipo | oidc \| saml | `src/hooks/useSSO.ts` |
@@ -2375,6 +2376,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `login-email` | type=email | `src/components/auth/LoginForm.tsx` |
 | `register-email` | type=email | `src/components/auth/RegisterForm.tsx` |
 | `verify-code` | max | `src/components/auth/TwoFactorSetup.tsx` |
+| `padrao-ncm` | max | `src/components/bling/ProdutoCclasstribDialog.tsx` |
+| `padrao-cst` | max | `src/components/bling/ProdutoCclasstribDialog.tsx` |
+| `padrao-cclasstrib` | max | `src/components/bling/ProdutoCclasstribDialog.tsx` |
 | `valor` | type=number, step=0.01 | `src/components/boletos/NovoBoletoForm.tsx` |
 | `vencimento` | type=date | `src/components/boletos/NovoBoletoForm.tsx` |
 | `ofx-file-upload` | accept=.ofx,.ofc,.csv,.txt,.xlsx,.xls | `src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx` |
@@ -2512,6 +2516,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **formatarValor(valor: number, unidade: IndicadorBenchmark['unidade'])** — `src/components/analytics/BenchmarkingSetorial.tsx`
   ```
   switch (unidade) { case 'percent': return `${valor.toFixed(1)}%`; case 'currency': return formatCurrency(valor); case 'days': return `${Math.round(valor)} dias`; case 'ratio': return valor.toFixed(2); }
+  ```
+- **aplicarSugestao()** — `src/components/bling/ProdutoCclasstribDialog.tsx`
+  ```
+  if (!sugestao) return; setCst(sugestao.cst); setCclasstrib(sugestao.cclasstrib);
   ```
 - **calculateAggregatedBudget(node: TreeNode)** — `src/components/centros-custo/CentroCustoTree.tsx`
   ```
@@ -2824,6 +2832,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **calcularValorAtualizado(valorOriginal: number, dataOrigem: Date)** — `src/hooks/usePerDcomp.ts`
   ```
   const mesesDecorridos = Math.floor( (new Date().getTime() - dataOrigem.getTime()) / (1000 * 60 * 60 * 24 * 30) ); // Aproximação da SELIC mensal (0.9% ao mês) const taxaMensal = 0.009; const fatorCorrecao = Math.pow(1 + taxaMensal, mesesDecorridos); return valorOriginal * fatorCorrecao;
+  ```
+- **invalidar()** — `src/hooks/useProdutoCclasstribPadrao.ts`
+  ```
+  queryClient.invalidateQueries({ queryKey: CHAVE_PADRAO_CCLASSTRIB });
   ```
 - **invalidate()** — `src/hooks/useRefetchAnomaliasOnFocus.ts`
   ```
@@ -3593,6 +3605,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   Math.round((v + Number.EPSILON) * 100) / 100;
   ```
+- **validarPadrao(entrada: { cst?: string | null; cclasstrib?: string | null; ncm?: string | null; })** — `src/lib/tributario/produtos/cclasstrib-padrao.ts`
+  ```
+  const cst = normalizarCodigo(entrada.cst, 3); const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6); if (cst.length !== 3) return 'Informe o CST com 3 digitos.'; if (cclasstrib.length !== 6) return 'Informe o cClassTrib com 6 digitos.'; const ncm = (entrada.ncm ?? '').replace(/\D/g, ''); if (ncm.length !== 0 && ncm.length !== 8) return 'NCM deve ter 8 digitos (ou ficar vazio).'; return null;
+  ```
+- **validarCoerenciaCst(entrada: { cst?: string | null; cclasstrib?: string | null }, opcoes: readonly { cst: string; cclasstrib: string }[])** — `src/lib/tributario/produtos/cclasstrib-padrao.ts`
+  ```
+  const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6); if (cclasstrib.length !== 6 || opcoes.length === 0) return null; const referencia = opcoes.find((o) => normalizarCodigo(o.cclasstrib, 6) === cclasstrib); if (!referencia) return null; const cst = normalizarCodigo(entrada.cst, 3); const cstReferencia = normalizarCodigo(referencia.cst, 3); if (cst === cstReferencia) return null; return `O cClassTrib ${cclasstrib} usa CST ${cstReferencia} no catalogo da RFB (informado: ${cst || 'vazio'}).` …
+  ```
 - **totalAlertas(nfes: NotaComAlertas[])** — `src/lib/tributario/relatorio-pdf/alertas-fiscais.ts`
   ```
   
@@ -4205,6 +4225,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `MIN_CONFIRMAR` | `10` | `src/components/admin/anomalias-review-queue/types.ts` |
 | `MIN_FALSO_POSITIVO` | `15` | `src/components/admin/anomalias-review-queue/types.ts` |
 | `SCIM_SP_CONFIG_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'` | `src/components/admin/sso/ScimSetupGuide.helpers.ts` |
+| `LIMITE_OPCOES` | `200` | `src/components/bling/ProdutoCclasstribDialog.tsx` |
 | `IDS_POR_LOTE` | `100` | `src/components/cobranca/PrevisaoInadimplencia.tsx` |
 | `SCORE_RISCO_ALTO` | `300` | `src/components/cobranca/previsao/risco.ts` |
 | `SCORE_RISCO_MEDIO` | `500` | `src/components/cobranca/previsao/risco.ts` |
@@ -4497,8 +4518,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TICKS` | `96` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
 | `TICK_MS` | `15` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
 | `MAX_BATCHES_PER_CNPJ` | `10` | `supabase/functions/sefaz-dfe-puxar/index.ts` |
-| `SSO_FINALIZE_JANELA_MS` | `10` | `supabase/functions/sso-callback/index.ts` |
-| … +37 linhas — lista completa em `context.json` | | |
+| … +38 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -4627,6 +4647,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `window.requestIdleCallback(prefetch, { timeout: 3000 });` | `src/hooks/usePrefetchRoutes.ts` |
 | `{ timeout: 2000 }` | `src/hooks/usePrefetchRoutes.ts` |
 | `staleTime: 30 * 60 * 1000,` | `src/hooks/usePrevisaoTributaria.ts` |
+| `staleTime: 5 * 60 * 1000,` | `src/hooks/useProdutoCclasstribPadrao.ts` |
 | `const ID_TTL_MS = 5 * 60 * 1000; // mesmo id nunca repete em 5 min` | `src/hooks/useRealtimeAuditToasts.ts` |
 | `staleTime: 30 * 60 * 1000,` | `src/hooks/useRelatorioAnual.ts` |
 | `const mesAnterior = subMonths(mesAtual, 12); // Mesmo mês do ano anterior` | `src/hooks/useRelatoriosData.ts` |
@@ -5202,7 +5223,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Mapeamento incompleto: preencha nome e contas de D/C | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Preencha nome, conta débito e conta crédito | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
 | Prioridade inválida: deve ser um número positivo | `src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| … +825 linhas — lista completa em `context.json` | |
+| … +827 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5261,7 +5282,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4253 testes em 371 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4307 testes em 375 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5273,6 +5294,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 54 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/contabil/__tests__/indices.test.ts` | 50 | safeDiv / round2 · divide normalmente · retorna null para divisor zero · retorna null para divisor infinitesimal … |
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
+| `src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts` | 41 | normalizarNcm · aceita NCM com mascara e devolve so digitos · recusa NCM incompleto, vazio ou ausente · normalizarCodigo … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
 | `src/lib/contabilidade/__tests__/simulacao-regimes.test.ts` | 36 | montarDadosSimulacao · distribui vendas e serviços conforme o percentual informado · trava o percentual de vendas no intervalo 0..100 · só envia alíquota CBS livre quando o cenário é livre … |
 | `src/lib/financeiro/__tests__/divergencias-pendentes.test.ts` | 35 | origemDoExtrato · usa banco, agência e conta do arquivo como identidade · devolve null quando o arquivo não traz o número da conta · origemDaTransacao … |
@@ -5499,6 +5521,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/reprocessar-creditos-ibscbs/__tests__/reprocessar_test.ts` | 7 | montarCreditos — nota 2026 destacada gera credito informativo (saldo 0) · montarCreditos — nota 2027+ destacada gera credito apropriavel (saldo cheio) · montarCreditos — sem grupo nao inventa credito · montarCreditos — grupo presente com valores zerados nao gera credito … |
 | `src/components/admin/__tests__/fiscal-health-ibscbs.test.tsx` | 6 | FiscalHealthBadge -- metrica IBS/CBS nao fabricada (etapa 57) · sem empresaId -> badge IBS/CBS nao aparece · com empresaId mas sem verificacao previa -> badge IBS/CBS nao aparece · 20 de 100 sem IBS/CBS -> exibe IBS/CBS 80% … |
 | `src/components/contabilidade/contabilizacao-automatica/buildDryRunPayload.test.ts` | 6 | buildDryRunPayload · passa no schema strict (sem lote_quantidade, evento_id uuid) · com ignoreRules envia ignore_rules e continua válido · categoria  … |
+| `src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx` | 6 | NovaNFeForm ao trocar de SKU · troca o NCM herdado do SKU anterior pelo NCM do SKU novo · limpa o NCM herdado quando o SKU novo nao tem padrao · marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo … |
 | `src/hooks/__tests__/useAlertasPreditivos.test.ts` | 6 | useAlertasPreditivos · gera alerta de ruptura quando saldo projetado fica negativo · detecta concentração de risco quando cliente >30% do total · não gera alertas se cenário saudável … |
 | `src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx` | 6 | useUploadCertificado — erro da Edge Function · leva o motivo devolvido pela função até o toast · aceita  · cai para a mensagem PT-BR do status quando o corpo não traz motivo … |
 | `src/hooks/__tests__/useConciliacao.confirmar.test.tsx` | 6 | confirmarConciliacao · confirma pelo proxy sem reescrever nada fora da transação · manda os metadados de compensação junto com a confirmação · não manda bloco de compensação quando não houve ajuste … |
@@ -5563,9 +5586,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
 | `src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx` | 4 | useImportacaoXMLNFe — itens no payload da RPC (etapa 45) · manda um item por det da nota, com o grupo IBS/CBS em fração decimal · não manda v_ibs: a RPC deriva de v_ibs_uf + v_ibs_mun pela constraint · preserva a alíquota específica do IS (pISEspec) em ad_rem_is, sem dividir por 100 |
 | `src/hooks/__tests__/useOrganizacoes.test.tsx` | 4 | useOrganizacoes · lista organizações quando há usuário logado · propaga erro da listagem · não dispara query sem usuário logado (enabled=false) |
-| `src/hooks/__tests__/useSsoDomainResolver.test.tsx` | 4 | useSsoDomainResolver · normaliza o domínio e aceita o retorno canônico sem allowed_domains · falha fechando o loading quando a RPC retorna erro · encerra loading e limpa providers quando a RPC falha |
-| `src/lib/queryClient.retry.test.ts` | 4 | defaults do QueryClient · não reexecuta mutação automaticamente · não deixa retryDelay de mutação configurado, que só teria uso com retry · mantém retry em queries, que são leituras e podem repetir |
-| … +71 linhas — lista completa em `context.json` | | |
+| … +75 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -5956,6 +5977,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | dele não pode ser reinterpretado como nova tentativa de sair. | `src/components/navigation/UnsavedGuardProvider.tsx` |
 | saída não pode mais ser confundido com nova tentativa de sair. | `src/components/navigation/UnsavedGuardProvider.tsx` |
 | (mínimo 15 caracteres)</Label> | `src/components/nfe/InutilizacaoNFe.tsx` |
+| * O par CST + cClassTrib e uma decisao fiscal (padrao do produto, regra por NCM | `src/components/nfe/NovaNFeForm.tsx` |
+| So o padrao herdado do SKU anterior sai de cena, e a regra por NCM | `src/components/nfe/NovaNFeForm.tsx` |
 | Must be rendered inside QueryClientProvider and AuthProvider. | `src/components/providers/DataPrefetcher.tsx` |
 | aproveitável ou é apenas informativo (ano de teste de 2026). | `src/components/reforma-tributaria/ImportacaoXMLPanel.tsx` |
 | a mensagem de cada regra para o usuário conferir com o contador. | `src/components/reforma-tributaria/ImportacaoXMLPanel.tsx` |
@@ -6158,6 +6181,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | # PASSO A PASSO — Validação no ${pvaNome}`, | `src/lib/sped-zip.ts` |
 | Auditoria nunca deve quebrar o fluxo de logout. | `src/lib/sso-slo-audit.ts` |
 | * Motivação: o gerador de tipos do Supabase reflete apenas o snapshot do schema | `src/lib/supabase-dynamic.ts` |
-| um único ponto de cast — auditável, tipado por builder mínimo e documentado. | `src/lib/supabase-dynamic.ts` |
-| * Este módulo expõe as duas — e apenas duas — formas legítimas de consumir uma | `src/lib/supabase-write.ts` |
-| … +520 linhas — lista completa em `context.json` | |
+| … +527 linhas — lista completa em `context.json` | |

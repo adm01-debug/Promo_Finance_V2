@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 277,
+ "total": 278,
  "hooks": [
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
@@ -818,8 +818,9 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
+    "src/components/bling/ProdutoCclasstribDialog.tsx",
     "src/hooks/bling/index.ts"
    ],
    "coberto_por_testes": 0
@@ -2313,8 +2314,9 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "usado_por_arquivos": [
+    "src/components/bling/ProdutoCclasstribDialog.tsx",
     "src/components/nfe/NovaNFeForm.tsx",
     "src/components/tributario/consulta-rapida/SecaoClassificacaoTributaria.tsx"
    ],
@@ -5460,6 +5462,35 @@
     "src/components/tributario/dashboard/UploadNotaFiscalOCR.tsx"
    ],
    "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useProdutoCclasstribPadrao.ts",
+   "hooks_exportados": [
+    "useProdutoCclasstribPadrao",
+    "useProdutoCclasstribPadraoMutations"
+   ],
+   "linhas": 122,
+   "dominio": "hooks",
+   "tabelas": [
+    "produto_cclasstrib_padrao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/bling/BlingProdutosPanel.tsx",
+    "src/components/bling/ProdutoCclasstribDialog.tsx",
+    "src/components/nfe/NovaNFeForm.tsx"
+   ],
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useProfilesByIds.ts",

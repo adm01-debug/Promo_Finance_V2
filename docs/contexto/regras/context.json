@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "5bf3c2dd4fc63854744ebdb8e2d280feb299b33c",
+  "sha": "7c864eb93134033dd7dbd26128c7d7372d5edd5b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-26 20:25 UTC",
-  "files_total": 4156,
-  "code_files": 3735,
-  "code_lines": 539111
+  "generated_at": "2026-11-27 00:27 UTC",
+  "files_total": 4164,
+  "code_files": 3743,
+  "code_lines": 540616
  },
  "version": "1.3.2",
- "facts_hash": "d04dee2ed7f8d028",
+ "facts_hash": "be5483fb048863f7",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,9 +340,9 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1321,
-   ".sql": 1157,
-   ".tsx": 1135,
+   ".ts": 1324,
+   ".sql": 1158,
+   ".tsx": 1139,
    ".mjs": 68,
    ".py": 46,
    ".js": 8,
@@ -28905,6 +28905,67 @@
     "comment": "",
     "origin": "migration"
    },
+   "produto_cclasstrib_padrao": {
+    "columns": [
+     {
+      "name": "produto_id",
+      "type": "text primary key",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     },
+     {
+      "name": "codigo",
+      "type": "text",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     },
+     {
+      "name": "ncm",
+      "type": "character(8)",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     },
+     {
+      "name": "cst",
+      "type": "character(3) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     },
+     {
+      "name": "cclasstrib",
+      "type": "character(6) not null",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     },
+     {
+      "name": "atualizado_em",
+      "type": "timestamptz not null default now()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     },
+     {
+      "name": "atualizado_por",
+      "type": "uuid default auth.uid()",
+      "fk": "",
+      "generated": "",
+      "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+     }
+    ],
+    "constraints": [
+     "constraint produto_cclasstrib_padrao_cst_chk check (cst ~ '^[0-9]{3}$')",
+     "constraint produto_cclasstrib_padrao_cclasstrib_chk check (cclasstrib ~ '^[0-9]{6}$')",
+     "constraint produto_cclasstrib_padrao_ncm_chk check (ncm is null or ncm ~ '^[0-9]{8}$')"
+    ],
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql",
+    "comment": "",
+    "origin": "migration"
+   },
    "frontend_error_logs_2026_01": {
     "columns": [
      {
@@ -37472,6 +37533,16 @@
     "using": "true",
     "check": "true",
     "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+   },
+   {
+    "name": "produto_cclasstrib_padrao_admin",
+    "table": "produto_cclasstrib_padrao",
+    "cmd": "ALL",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
+    "check": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
    }
   ],
   "triggers": [
@@ -50203,6 +50274,22 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+   },
+   {
+    "name": "produto_cclasstrib_padrao_ncm_idx",
+    "table": "produto_cclasstrib_padrao",
+    "columns": "ncm",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "name": "produto_cclasstrib_padrao_codigo_idx",
+    "table": "produto_cclasstrib_padrao",
+    "columns": "codigo",
+    "unique": false,
+    "where": "",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
    }
   ],
   "cron_jobs": [
@@ -51552,6 +51639,7 @@
    "supabase/migrations/20261126100000_cron_sync_catalogo_cclasstrib_utc.sql",
    "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
    "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql",
+   "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -51820,7 +51908,8 @@
    "catalogo_ncm": "enabled",
    "catalogo_nbs": "enabled",
    "catalogo_aliquota_referencia": "enabled",
-   "catalogo_fundamentacao": "enabled"
+   "catalogo_fundamentacao": "enabled",
+   "produto_cclasstrib_padrao": "enabled"
   },
   "grants": [
    {
@@ -59894,6 +59983,22 @@
     "objkind": "function",
     "roles": "authenticated, service_role",
     "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select, insert, update, delete",
+    "object": "produto_cclasstrib_padrao",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "all",
+    "object": "produto_cclasstrib_padrao",
+    "objkind": "table",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
    }
   ],
   "raises": [
@@ -61150,19 +61255,32 @@
     "component": "Bling",
     "tables_transitive": [
      "alertas",
+     "aliquotas_interestaduais",
+     "aliquotas_iss_municipal",
      "anomalia_toast_eventos",
      "anomalias_detectadas",
      "bling_sync_logs",
      "bling_webhook_events",
+     "catalogo_cclasstrib",
+     "catalogo_fundamentacao",
+     "catalogo_ncm",
      "centros_custo",
+     "cnaes",
      "contas_pagar",
      "contas_receber",
      "empresas",
+     "faixas_simples_nacional",
      "frontend_error_logs",
      "frontend_performance_logs",
      "historico_cobranca_whatsapp",
+     "itens_lista_iss",
+     "ncms",
      "notas_fiscais",
+     "produto_cclasstrib_padrao",
+     "protocolos_st_ncms",
+     "protocolos_st_ufs",
      "solicitacoes_aprovacao",
+     "ufs",
      "user_empresas"
     ],
     "invokes_transitive": [
@@ -61173,7 +61291,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 115
+    "deps_count": 124
    },
    {
     "path": "",
@@ -62911,6 +63029,7 @@
      "nfe_recebidas",
      "notas_fiscais",
      "notas_fiscais_itens",
+     "produto_cclasstrib_padrao",
      "protocolos_st_ncms",
      "protocolos_st_ufs",
      "solicitacoes_aprovacao",
@@ -62927,7 +63046,7 @@
      "cancelar_nfe_estornar_xml_destacado",
      "registrar_auditoria_config"
     ],
-    "deps_count": 167
+    "deps_count": 169
    },
    {
     "path": "/orcamento-evento",
@@ -68073,7 +68192,7 @@
     "file": ".github/workflows/settings-guard.yml"
    }
   ],
-  "components_count": 1019,
+  "components_count": 1022,
   "hooks": [
    {
     "name": "useContacts",
@@ -69582,6 +69701,14 @@
    {
     "name": "useListaNotasFiscaisOCR",
     "file": "src/hooks/useProcessarNFOCR.ts"
+   },
+   {
+    "name": "useProdutoCclasstribPadrao",
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts"
+   },
+   {
+    "name": "useProdutoCclasstribPadraoMutations",
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts"
    },
    {
     "name": "useProfilesByIds",
@@ -71138,8 +71265,8 @@
   },
   {
    "module": "src/components",
-   "files": 1017,
-   "lines": 170030,
+   "files": 1020,
+   "lines": 170712,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -71417,8 +71544,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 333,
-   "lines": 50526,
+   "files": 335,
+   "lines": 50757,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71520,6 +71647,7 @@
     "portal_cliente_acessos",
     "portal_cliente_tokens",
     "prejuizos_fiscais",
+    "produto_cclasstrib_padrao",
     "profiles",
     "protestos",
     "push_subscriptions",
@@ -71758,8 +71886,8 @@
   },
   {
    "module": "src/lib",
-   "files": 454,
-   "lines": 63555,
+   "files": 456,
+   "lines": 64091,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -72587,8 +72715,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1084,
-   "lines": 83866,
+   "files": 1085,
+   "lines": 83922,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -74402,6 +74530,17 @@
      "src/hooks/useIRPJCSLL.ts"
     ]
    },
+   "produto_cclasstrib_padrao": {
+    "select": [
+     "src/hooks/useProdutoCclasstribPadrao.ts"
+    ],
+    "upsert": [
+     "src/hooks/useProdutoCclasstribPadrao.ts"
+    ],
+    "delete": [
+     "src/hooks/useProdutoCclasstribPadrao.ts"
+    ]
+   },
    "profiles": {
     "select": [
      "src/components/admin/anomalias-review-queue/conflito.ts",
@@ -76146,6 +76285,14 @@
    ],
    "prejuizos_fiscais": [
     "status"
+   ],
+   "produto_cclasstrib_padrao": [
+    "atualizado_em",
+    "cclasstrib",
+    "codigo",
+    "cst",
+    "ncm",
+    "produto_id"
    ],
    "profiles": [
     "avatar_url",
@@ -79071,6 +79218,21 @@
     "rules": "max"
    },
    {
+    "file": "src/components/bling/ProdutoCclasstribDialog.tsx",
+    "field": "padrao-ncm",
+    "rules": "max"
+   },
+   {
+    "file": "src/components/bling/ProdutoCclasstribDialog.tsx",
+    "field": "padrao-cst",
+    "rules": "max"
+   },
+   {
+    "file": "src/components/bling/ProdutoCclasstribDialog.tsx",
+    "field": "padrao-cclasstrib",
+    "rules": "max"
+   },
+   {
     "file": "src/components/boletos/NovoBoletoForm.tsx",
     "field": "valor",
     "rules": "type=number, step=0.01"
@@ -79811,6 +79973,11 @@
     "file": "src/hooks/usePreValidacaoSped.ts",
     "name": "SeveridadeAlerta",
     "values": "error | warning | info"
+   },
+   {
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts",
+    "name": "CHAVE_PADRAO_CCLASSTRIB",
+    "values": "'produto-cclasstrib-padrao'"
    },
    {
     "file": "src/hooks/useRetencoesFonte.ts",
@@ -83492,6 +83659,14 @@
     "msg": "Erro ao processar NF: ${e.message}"
    },
    {
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts",
+    "msg": "Nao foi possivel remover: ${err.message}"
+   },
+   {
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts",
+    "msg": "Nao foi possivel salvar: ${err.message}"
+   },
+   {
     "file": "src/hooks/useProtestos.ts",
     "msg": "Erro: ${e.message}"
    },
@@ -85756,6 +85931,14 @@
     "text": "(mínimo 15 caracteres)</Label>"
    },
    {
+    "file": "src/components/nfe/NovaNFeForm.tsx",
+    "text": "* O par CST + cClassTrib e uma decisao fiscal (padrao do produto, regra por NCM"
+   },
+   {
+    "file": "src/components/nfe/NovaNFeForm.tsx",
+    "text": "So o padrao herdado do SKU anterior sai de cena, e a regra por NCM"
+   },
+   {
     "file": "src/components/providers/DataPrefetcher.tsx",
     "text": "Must be rendered inside QueryClientProvider and AuthProvider."
    },
@@ -87578,6 +87761,26 @@
    {
     "file": "src/lib/tributario/pis-cofins/types.ts",
     "text": "* Observação de risco/limite aplicável à natureza. */"
+   },
+   {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "text": "* O catalogo de produtos e do Bling; aqui ficam apenas as decisoes puras do"
+   },
+   {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "text": "* Validacao do que vai para o banco. Devolve a mensagem de erro ou `null` se ok. */"
+   },
+   {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "text": "honesta, entao devolve `null` e a emissao cai na regra por NCM."
+   },
+   {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "text": "* O NCM herdado do padrao do produto anterior nao pode sobreviver a troca: ao"
+   },
+   {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "text": "operador fica de pe e volta para a regra por NCM como classificacao atual."
    },
    {
     "file": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
@@ -101724,6 +101927,46 @@
     "rule": "constraint catalogo_fundamentacao_pkey primary key (cclasstrib, cst, conjunto_tributo, inicio_vigencia)"
    },
    {
+    "table": "produto_cclasstrib_padrao",
+    "column": "produto_id",
+    "rule": "PK"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "cst",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "cclasstrib",
+    "rule": "obrigatório"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "atualizado_em",
+    "rule": "default now()"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "atualizado_por",
+    "rule": "default auth.uid()"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "(tabela)",
+    "rule": "constraint produto_cclasstrib_padrao_cst_chk check (cst ~ '^[0-9]{3}$')"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "(tabela)",
+    "rule": "constraint produto_cclasstrib_padrao_cclasstrib_chk check (cclasstrib ~ '^[0-9]{6}$')"
+   },
+   {
+    "table": "produto_cclasstrib_padrao",
+    "column": "(tabela)",
+    "rule": "constraint produto_cclasstrib_padrao_ncm_chk check (ncm is null or ncm ~ '^[0-9]{8}$')"
+   },
+   {
     "table": "frontend_error_logs_2026_01",
     "column": "created_at",
     "rule": "obrigatório"
@@ -101799,6 +102042,11 @@
     "file": "src/components/admin/sso/ScimSetupGuide.helpers.ts",
     "name": "SCIM_SP_CONFIG_SCHEMA",
     "value": "'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'"
+   },
+   {
+    "file": "src/components/bling/ProdutoCclasstribDialog.tsx",
+    "name": "LIMITE_OPCOES",
+    "value": "200"
    },
    {
     "file": "src/components/cobranca/PrevisaoInadimplencia.tsx",
@@ -118300,6 +118548,12 @@
     "body": "switch (unidade) { case 'percent': return `${valor.toFixed(1)}%`; case 'currency': return formatCurrency(valor); case 'days': return `${Math.round(valor)} dias`; case 'ratio': return valor.toFixed(2); }"
    },
    {
+    "file": "src/components/bling/ProdutoCclasstribDialog.tsx",
+    "name": "aplicarSugestao",
+    "params": "",
+    "body": "if (!sugestao) return; setCst(sugestao.cst); setCclasstrib(sugestao.cclasstrib);"
+   },
+   {
     "file": "src/components/centros-custo/CentroCustoTree.tsx",
     "name": "calculateAggregatedBudget",
     "params": "node: TreeNode",
@@ -118766,6 +119020,12 @@
     "name": "calcularValorAtualizado",
     "params": "valorOriginal: number, dataOrigem: Date",
     "body": "const mesesDecorridos = Math.floor( (new Date().getTime() - dataOrigem.getTime()) / (1000 * 60 * 60 * 24 * 30) ); // Aproximação da SELIC mensal (0.9% ao mês) const taxaMensal = 0.009; const fatorCorrecao = Math.pow(1 + taxaMensal, mesesDecorridos); return valorOriginal * fatorCorrecao;"
+   },
+   {
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts",
+    "name": "invalidar",
+    "params": "",
+    "body": "queryClient.invalidateQueries({ queryKey: CHAVE_PADRAO_CCLASSTRIB });"
    },
    {
     "file": "src/hooks/useRefetchAnomaliasOnFocus.ts",
@@ -119920,6 +120180,18 @@
     "body": "Math.round((v + Number.EPSILON) * 100) / 100;"
    },
    {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "name": "validarPadrao",
+    "params": "entrada: { cst?: string | null; cclasstrib?: string | null; ncm?: string | null; }",
+    "body": "const cst = normalizarCodigo(entrada.cst, 3); const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6); if (cst.length !== 3) return 'Informe o CST com 3 digitos.'; if (cclasstrib.length !== 6) return 'Informe o cClassTrib com 6 digitos.'; const ncm = (entrada.ncm ?? '').replace(/\\D/g, ''); if (ncm.length !== 0 && ncm.length !== 8) return 'NCM deve ter 8 digitos (ou ficar vazio).'; return null;"
+   },
+   {
+    "file": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+    "name": "validarCoerenciaCst",
+    "params": "entrada: { cst?: string | null; cclasstrib?: string | null }, opcoes: readonly { cst: string; cclasstrib: string }[]",
+    "body": "const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6); if (cclasstrib.length !== 6 || opcoes.length === 0) return null; const referencia = opcoes.find((o) => normalizarCodigo(o.cclasstrib, 6) === cclasstrib); if (!referencia) return null; const cst = normalizarCodigo(entrada.cst, 3); const cstReferencia = normalizarCodigo(referencia.cst, 3); if (cst === cstReferencia) return null; return `O cClassTrib ${cclasstrib} usa CST ${cstReferencia} no catalogo da RFB (informado: ${cst || 'vazio'}).` …"
+   },
+   {
     "file": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
     "name": "totalAlertas",
     "params": "nfes: NotaComAlertas[]",
@@ -120850,6 +121122,10 @@
    {
     "file": "src/hooks/usePrevisaoTributaria.ts",
     "line": "staleTime: 30 * 60 * 1000,"
+   },
+   {
+    "file": "src/hooks/useProdutoCclasstribPadrao.ts",
+    "line": "staleTime: 5 * 60 * 1000,"
    },
    {
     "file": "src/hooks/useRealtimeAuditToasts.ts",
@@ -123884,6 +124160,18 @@
     "name": "preserva params não relacionados"
    },
    {
+    "file": "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx",
+    "name": "ProdutoCclasstribDialog - SKU compartilhado"
+   },
+   {
+    "file": "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx",
+    "name": "grava o enquadramento dos tres produtos do SKU numa unica chamada"
+   },
+   {
+    "file": "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx",
+    "name": "bloqueia a unificacao quando um produto do SKU tem NCM diferente"
+   },
+   {
     "file": "src/components/boletos/__tests__/BoletoBarcode.test.tsx",
     "name": "BoletoBarcode"
    },
@@ -125278,6 +125566,30 @@
    {
     "file": "src/components/navigation/__tests__/BackButton.test.tsx",
     "name": "falls back to "
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "NovaNFeForm ao trocar de SKU"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "troca o NCM herdado do SKU anterior pelo NCM do SKU novo"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "limpa o NCM herdado quando o SKU novo nao tem padrao"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "nao marca o total como parcial quando o catalogo tem o cClassTrib do padrao"
+   },
+   {
+    "file": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+    "name": "preserva o NCM digitado a mao"
    },
    {
     "file": "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx",
@@ -128330,6 +128642,22 @@
    {
     "file": "src/hooks/__tests__/usePreferenciasSistema.test.tsx",
     "name": "edições feitas DURANTE a gravação pendente não são descartadas na falha"
+   },
+   {
+    "file": "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+    "name": "useProdutoCclasstribPadraoMutations.salvarVarios"
+   },
+   {
+    "file": "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+    "name": "grava todos os produtos do SKU num unico upsert"
+   },
+   {
+    "file": "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+    "name": "nao chama o banco quando a lista de produtos vem vazia"
+   },
+   {
+    "file": "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+    "name": "propaga o erro do banco em vez de engolir a gravacao parcial"
    },
    {
     "file": "src/hooks/__tests__/useQueuedMessage.test.tsx",
@@ -138558,6 +138886,170 @@
    {
     "file": "src/lib/tributario/elisao/__tests__/orquestrador-elisao.test.ts",
     "name": "deve retornar zero economia aplicável para uma empresa recém-aberta sem dados"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "normalizarNcm"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "aceita NCM com mascara e devolve so digitos"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "recusa NCM incompleto, vazio ou ausente"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "normalizarCodigo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "mantem apenas digitos e limita ao tamanho pedido"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "sugerirPadraoPorNcm"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "nao sugere nada sem NCM valido ou sem historico do NCM"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "ignora o proprio produto ao sugerir"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "sugere o enquadramento da maioria dos produtos do mesmo NCM"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "empate fica com o enquadramento mais recente"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "nao sugere quando todos os produtos do NCM sao o proprio"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "validarPadrao"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "aceita CST, cClassTrib e NCM validos"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "aponta o campo incompleto"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "normalizarCodigoComercial"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "compara SKU sem espaco nas pontas nem diferenca de caixa"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "resolverPadraoPorCodigo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "encontra o padrao do SKU informado no item"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "nao confunde o id do produto com o SKU"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "nao resolve nada sem codigo, sem padrao gravado ou sem SKU salvo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "SKU compartilhado com enquadramentos diferentes nao decide sozinho"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "SKU repetido com o mesmo enquadramento resolve normalmente"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "mesmo par CST/cClassTrib com NCM diferente nao decide sozinho"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "conflitosDeSku"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "aponta todos os produtos que ja ocupam o SKU com outro enquadramento"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "libera o mesmo enquadramento, o proprio produto e SKU vazio"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "mesmo SKU com NCM diferente tambem conflita"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "ncmAposTrocaDeCodigo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "troca o NCM herdado do produto anterior pelo do SKU novo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "limpa o NCM herdado quando o SKU novo nao tem padrao"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "preserva o NCM digitado a mao"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "cclasstribManualAposTroca"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "descarta o enquadramento herdado do SKU anterior"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "devolve a escolha manual do operador"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "sem padrao no SKU anterior nada e herdado"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "validarCoerenciaCst"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "sem catalogo a digitacao manual continua livre"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "nao opina sobre codigo fora do catalogo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "aceita o CST que o catalogo associa ao cClassTrib"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "recusa CST que contradiz o catalogo"
+   },
+   {
+    "file": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+    "name": "nao valida antes do codigo estar completo"
    },
    {
     "file": "src/pages/AsaasQueueHistoryDialog.test.ts",
@@ -149910,6 +150402,16 @@
     "using": "true",
     "check": "true",
     "src": "supabase/migrations/20261126110000_catalogo_fundamentacao.sql"
+   },
+   {
+    "name": "produto_cclasstrib_padrao_admin",
+    "table": "produto_cclasstrib_padrao",
+    "cmd": "ALL",
+    "roles": "authenticated",
+    "mode": "permissive",
+    "using": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
+    "check": "public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
    }
   ],
   "db_triggers": [
@@ -165073,6 +165575,21 @@
      "authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id))"
     ]
    },
+   "produto_cclasstrib_padrao": {
+    "rls": "enabled",
+    "SELECT": [
+     "authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])"
+    ],
+    "INSERT": [
+     "authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])"
+    ],
+    "UPDATE": [
+     "authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])"
+    ],
+    "DELETE": [
+     "authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role])"
+    ]
+   },
    "profiles": {
     "rls": "enabled",
     "SELECT": [
@@ -166822,6 +167339,7 @@
    "supabase/migrations/20261122170000_rpc_cancelar_nfe_estornar_xml_destacado.sql",
    "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql",
    "supabase/migrations/20261126110000_catalogo_fundamentacao.sql",
+   "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -175156,6 +175674,22 @@
     "objkind": "function",
     "roles": "authenticated, service_role",
     "src": "supabase/migrations/20261124095500_rpc_registrar_nfe_grava_itens.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "select, insert, update, delete",
+    "object": "produto_cclasstrib_padrao",
+    "objkind": "table",
+    "roles": "authenticated",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "all",
+    "object": "produto_cclasstrib_padrao",
+    "objkind": "table",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
    }
   ],
   "guards": [
@@ -176744,7 +177278,7 @@
    "asaas_payment_links"
   ],
   "tenant_missing": [],
-  "tenant_cov": 0.48,
+  "tenant_cov": 0.47,
   "soft_delete": [
    [
     "clientes",
@@ -177918,6 +178452,9 @@
    "catalogo_aliquota_referencia": [],
    "catalogo_fundamentacao": [
     "created_at"
+   ],
+   "produto_cclasstrib_padrao": [
+    "atualizado_em"
    ],
    "frontend_error_logs_2026_01": [
     "created_at"
@@ -179916,7 +180453,7 @@
    "`bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
    "`cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.",
-   "269/275 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
+   "270/276 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …",
    "Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel."
   ]
  },
@@ -188654,10 +189191,11 @@
   },
   "src/components/bling/BlingProdutosPanel.tsx": {
    "path": "src/components/bling/BlingProdutosPanel.tsx",
-   "lines": 394,
+   "lines": 423,
    "exports": [
     "function BlingProdutosPanel"
-   ]
+   ],
+   "doc": "eslint-disable max-lines -- painel legado do catalogo Bling (393 linhas antes da etapa 86); a acao de enquadramento tributario por produto acrescentou ~20 e dividir o componente nao cabe neste escopo."
   },
   "src/components/bling/BlingShared.tsx": {
    "path": "src/components/bling/BlingShared.tsx",
@@ -188684,6 +189222,53 @@
      "value": "erro",
      "kind": "compara"
     }
+   ]
+  },
+  "src/components/bling/ProdutoCclasstribDialog.tsx": {
+   "path": "src/components/bling/ProdutoCclasstribDialog.tsx",
+   "lines": 328,
+   "exports": [
+    "interface ProdutoParaPadrao",
+    "function ProdutoCclasstribDialog"
+   ],
+   "html_constraints": [
+    {
+     "field": "padrao-ncm",
+     "rules": "max"
+    },
+    {
+     "field": "padrao-cst",
+     "rules": "max"
+    },
+    {
+     "field": "padrao-cclasstrib",
+     "rules": "max"
+    }
+   ],
+   "params": [
+    {
+     "name": "LIMITE_OPCOES",
+     "value": "200"
+    }
+   ],
+   "doc": "Etapa 86: onde o enquadramento padrao do produto e escolhido. O catalogo de produtos e do Bling, mas o enquadramento (CST + cClassTrib) e decisao fiscal nossa e precisa sobreviver a emissao de cada nota. Como o catalogo da RFB pode estar vazio (carga pendente), CST e cClassTrib sao campos digitaveis …",
+   "calc_fns": [
+    {
+     "name": "aplicarSugestao",
+     "params": "",
+     "body": "if (!sugestao) return; setCst(sugestao.cst); setCclasstrib(sugestao.cclasstrib);"
+    }
+   ]
+  },
+  "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx": {
+   "path": "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx",
+   "lines": 119,
+   "is_test": true,
+   "doc": "Etapa 86: o SKU compartilhado so pode ser unificado numa gravacao (um upsert), e produtos com NCM diferente nao podem ser unificados.",
+   "tests": [
+    "ProdutoCclasstribDialog - SKU compartilhado",
+    "grava o enquadramento dos tres produtos do SKU numa unica chamada",
+    "bloqueia a unificacao quando um produto do SKU tem NCM diferente"
    ]
   },
   "src/components/boletos/BoletoBarcode.tsx": {
@@ -198282,12 +198867,16 @@
   },
   "src/components/nfe/NovaNFeForm.tsx": {
    "path": "src/components/nfe/NovaNFeForm.tsx",
-   "lines": 387,
+   "lines": 464,
    "exports": [
     "function NovaNFeForm"
    ],
    "errors": [
     "Emissão indisponível: a integração SEFAZ ainda precisa ser homologada e confirmar protocolo real."
+   ],
+   "rule_comments": [
+    "* O par CST + cClassTrib e uma decisao fiscal (padrao do produto, regra por NCM",
+    "So o padrao herdado do SKU anterior sai de cena, e a regra por NCM"
    ],
    "calc_fns": [
     {
@@ -198432,6 +199021,24 @@
      "value": "autorizada",
      "kind": "escreve"
     }
+   ]
+  },
+  "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx": {
+   "path": "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+   "lines": 129,
+   "is_test": true,
+   "rule_comments": [
+    "Mesma regra do hook real: `codigos` e derivado das `opcoes`, nunca um set a",
+    "parte. Catalogo vazio = nenhum cClassTrib disponivel para a regra por NCM."
+   ],
+   "doc": "Achados do Devin na PR #569: trocar o SKU do item carregava o NCM do produto anterior (digitar `KIT-12` passa por `KIT-1` e herdava o NCM dele) e o NCM digitado a mao era sobrescrito. Os dois casos sao dirigidos pela tela. A classificacao manual (escolha no seletor) e coberta em `cclasstribManualApo …",
+   "tests": [
+    "NovaNFeForm ao trocar de SKU",
+    "troca o NCM herdado do SKU anterior pelo NCM do SKU novo",
+    "limpa o NCM herdado quando o SKU novo nao tem padrao",
+    "marca o total de IBS/CBS como parcial quando o padrao do SKU nao esta no catalogo",
+    "nao marca o total como parcial quando o catalogo tem o cClassTrib do padrao",
+    "preserva o NCM digitado a mao"
    ]
   },
   "src/components/nfe/__tests__/sefaz-monitor-sem-laco.test.tsx": {
@@ -212141,6 +212748,69 @@
     "invoke("
    ]
   },
+  "src/hooks/useProdutoCclasstribPadrao.ts": {
+   "path": "src/hooks/useProdutoCclasstribPadrao.ts",
+   "lines": 123,
+   "exports": [
+    "const CHAVE_PADRAO_CCLASSTRIB",
+    "interface PadraoProdutoEntrada",
+    "function useProdutoCclasstribPadrao",
+    "function useProdutoCclasstribPadraoMutations"
+   ],
+   "tables": [
+    {
+     "table": "produto_cclasstrib_padrao",
+     "op": "select"
+    },
+    {
+     "table": "produto_cclasstrib_padrao",
+     "op": "upsert"
+    },
+    {
+     "table": "produto_cclasstrib_padrao",
+     "op": "upsert"
+    },
+    {
+     "table": "produto_cclasstrib_padrao",
+     "op": "delete"
+    }
+   ],
+   "table_cols": {
+    "produto_cclasstrib_padrao": [
+     "atualizado_em",
+     "cclasstrib",
+     "codigo",
+     "cst",
+     "ncm",
+     "produto_id"
+    ]
+   },
+   "errors": [
+    "Nao foi possivel remover: ${err.message}",
+    "Nao foi possivel salvar: ${err.message}"
+   ],
+   "enums": [
+    {
+     "name": "CHAVE_PADRAO_CCLASSTRIB",
+     "values": "'produto-cclasstrib-padrao'"
+    }
+   ],
+   "doc": "Etapa 86: enquadramento tributario padrao por produto. Le todos os padroes de uma vez (o catalogo do Bling e paginado em 100 itens, a tabela e pequena) para a sugestao por NCM e a marcacao na lista saírem do mesmo snapshot, sem uma consulta por linha.",
+   "hooks": [
+    "useProdutoCclasstribPadrao",
+    "useProdutoCclasstribPadraoMutations"
+   ],
+   "calc_fns": [
+    {
+     "name": "invalidar",
+     "params": "",
+     "body": "queryClient.invalidateQueries({ queryKey: CHAVE_PADRAO_CCLASSTRIB });"
+    }
+   ],
+   "temporal": [
+    "staleTime: 5 * 60 * 1000,"
+   ]
+  },
   "src/hooks/useProfilesByIds.ts": {
    "path": "src/hooks/useProfilesByIds.ts",
    "lines": 58,
@@ -215985,6 +216655,20 @@
     "erro de upsert rejeita e reporta a mensagem",
     "falha de gravação preserva o formulário atual (edições posteriores ficam)",
     "edições feitas DURANTE a gravação pendente não são descartadas na falha"
+   ]
+  },
+  "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx": {
+   "path": "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+   "lines": 108,
+   "is_test": true,
+   "rule_comments": [
+    "Payload inteiro, nao so os IDs: com o banco simulado, conferir apenas"
+   ],
+   "tests": [
+    "useProdutoCclasstribPadraoMutations.salvarVarios",
+    "grava todos os produtos do SKU num unico upsert",
+    "nao chama o banco quando a lista de produtos vem vazia",
+    "propaga o erro do banco em vez de engolir a gravacao parcial"
    ]
   },
   "src/hooks/__tests__/useQueuedMessage.test.tsx": {
@@ -229932,6 +230616,92 @@
     "* Observação de risco/limite aplicável à natureza. */"
    ],
    "doc": "Tipos do módulo PIS/COFINS não cumulativo (apuração de débitos e créditos). Base normativa: - Lei 10.637/2002, art. 1º (base) e art. 3º (créditos de PIS); - Lei 10.833/2003, art. 1º (base) e art. 3º (créditos de COFINS); - IN RFB 2.121/2022 (consolidação da legislação de PIS/COFINS); - STF, RE 574.7 …"
+  },
+  "src/lib/tributario/produtos/cclasstrib-padrao.ts": {
+   "path": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+   "lines": 227,
+   "exports": [
+    "interface PadraoProduto",
+    "function normalizarNcm",
+    "function normalizarCodigo",
+    "function sugerirPadraoPorNcm",
+    "function validarPadrao",
+    "function normalizarCodigoComercial",
+    "function resolverPadraoPorCodigo",
+    "type ResolverPadraoPorCodigo",
+    "function conflitosDeSku",
+    "function ncmAposTrocaDeCodigo",
+    "function cclasstribManualAposTroca",
+    "function validarCoerenciaCst"
+   ],
+   "rule_comments": [
+    "* O catalogo de produtos e do Bling; aqui ficam apenas as decisoes puras do",
+    "* Validacao do que vai para o banco. Devolve a mensagem de erro ou `null` se ok. */",
+    "honesta, entao devolve `null` e a emissao cai na regra por NCM.",
+    "* O NCM herdado do padrao do produto anterior nao pode sobreviver a troca: ao",
+    "operador fica de pe e volta para a regra por NCM como classificacao atual."
+   ],
+   "doc": "Etapa 86 do plano RT/RFB: enquadramento tributario padrao por produto. O catalogo de produtos e do Bling; aqui ficam apenas as decisoes puras do padrao: como normalizar o que foi digitado, o que validar antes de gravar e qual cClassTrib sugerir quando outro produto do mesmo NCM ja tem um. Nao ha tab …",
+   "calc_fns": [
+    {
+     "name": "validarPadrao",
+     "params": "entrada: { cst?: string | null; cclasstrib?: string | null; ncm?: string | null; }",
+     "body": "const cst = normalizarCodigo(entrada.cst, 3); const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6); if (cst.length !== 3) return 'Informe o CST com 3 digitos.'; if (cclasstrib.length !== 6) return 'Informe o cClassTrib com 6 digitos.'; const ncm = (entrada.ncm ?? '').replace(/\\D/g, ''); if (ncm.length !== 0 && ncm.length !== 8) return 'NCM deve ter 8 digitos (ou ficar vazio).'; return null;"
+    },
+    {
+     "name": "validarCoerenciaCst",
+     "params": "entrada: { cst?: string | null; cclasstrib?: string | null }, opcoes: readonly { cst: string; cclasstrib: string }[]",
+     "body": "const cclasstrib = normalizarCodigo(entrada.cclasstrib, 6); if (cclasstrib.length !== 6 || opcoes.length === 0) return null; const referencia = opcoes.find((o) => normalizarCodigo(o.cclasstrib, 6) === cclasstrib); if (!referencia) return null; const cst = normalizarCodigo(entrada.cst, 3); const cstReferencia = normalizarCodigo(referencia.cst, 3); if (cst === cstReferencia) return null; return `O cClassTrib ${cclasstrib} usa CST ${cstReferencia} no catalogo da RFB (informado: ${cst || 'vazio'}).` …"
+    }
+   ]
+  },
+  "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts": {
+   "path": "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+   "lines": 309,
+   "is_test": true,
+   "tests": [
+    "normalizarNcm",
+    "aceita NCM com mascara e devolve so digitos",
+    "recusa NCM incompleto, vazio ou ausente",
+    "normalizarCodigo",
+    "mantem apenas digitos e limita ao tamanho pedido",
+    "sugerirPadraoPorNcm",
+    "nao sugere nada sem NCM valido ou sem historico do NCM",
+    "ignora o proprio produto ao sugerir",
+    "sugere o enquadramento da maioria dos produtos do mesmo NCM",
+    "empate fica com o enquadramento mais recente",
+    "nao sugere quando todos os produtos do NCM sao o proprio",
+    "validarPadrao",
+    "aceita CST, cClassTrib e NCM validos",
+    "aponta o campo incompleto",
+    "normalizarCodigoComercial",
+    "compara SKU sem espaco nas pontas nem diferenca de caixa",
+    "resolverPadraoPorCodigo",
+    "encontra o padrao do SKU informado no item",
+    "nao confunde o id do produto com o SKU",
+    "nao resolve nada sem codigo, sem padrao gravado ou sem SKU salvo",
+    "SKU compartilhado com enquadramentos diferentes nao decide sozinho",
+    "SKU repetido com o mesmo enquadramento resolve normalmente",
+    "mesmo par CST/cClassTrib com NCM diferente nao decide sozinho",
+    "conflitosDeSku",
+    "aponta todos os produtos que ja ocupam o SKU com outro enquadramento",
+    "libera o mesmo enquadramento, o proprio produto e SKU vazio",
+    "mesmo SKU com NCM diferente tambem conflita",
+    "ncmAposTrocaDeCodigo",
+    "troca o NCM herdado do produto anterior pelo do SKU novo",
+    "limpa o NCM herdado quando o SKU novo nao tem padrao",
+    "preserva o NCM digitado a mao",
+    "cclasstribManualAposTroca",
+    "descarta o enquadramento herdado do SKU anterior",
+    "devolve a escolha manual do operador",
+    "sem padrao no SKU anterior nada e herdado",
+    "validarCoerenciaCst",
+    "sem catalogo a digitacao manual continua livre",
+    "nao opina sobre codigo fora do catalogo",
+    "aceita o CST que o catalogo associa ao cClassTrib",
+    "recusa CST que contradiz o catalogo",
+    "nao valida antes do codigo estar completo"
+   ]
   },
   "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts": {
    "path": "src/lib/tributario/relatorio-pdf/alertas-fiscais.ts",
@@ -254439,6 +255209,11 @@
    "path": "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql",
    "lines": 60
   },
+  "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql": {
+   "path": "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql",
+   "lines": 56,
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -254558,10 +255333,29 @@
   }
  },
  "git": {
-  "sha": "5bf3c2dd4fc63854744ebdb8e2d280feb299b33c",
+  "sha": "7c864eb93134033dd7dbd26128c7d7372d5edd5b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "7c864eb",
+    "date": "2026-11-26",
+    "author": "adm01-debug",
+    "subject": "feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)",
+    "files": [
+     "src/components/bling/BlingProdutosPanel.tsx",
+     "src/components/bling/ProdutoCclasstribDialog.tsx",
+     "src/components/bling/__tests__/ProdutoCclasstribDialog.unificar.test.tsx",
+     "src/components/nfe/NovaNFeForm.tsx",
+     "src/components/nfe/__tests__/nova-nfe-form-troca-de-sku.test.tsx",
+     "src/hooks/__tests__/useProdutoCclasstribPadrao.mutations.test.tsx",
+     "src/hooks/useProdutoCclasstribPadrao.ts",
+     "src/integrations/supabase/types.ts",
+     "src/lib/tributario/produtos/__tests__/cclasstrib-padrao.test.ts",
+     "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+     "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql"
+    ]
+   },
    {
     "sha": "5bf3c2d",
     "date": "2026-11-26",
@@ -255001,26 +255795,16 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "4d880db",
-    "date": "2026-11-24",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump react-i18next from 17.0.7 to 18.0.3 (#536)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    8
+    7
    ],
    [
     "package.json",
-    8
+    7
    ],
    [
     "src/hooks/useImportacaoXMLNFe.ts",
@@ -255037,6 +255821,10 @@
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
     4
+   ],
+   [
+    "src/integrations/supabase/types.ts",
+    3
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
@@ -255088,10 +255876,6 @@
    ],
    [
     "scripts/ci/deno-check-functions.sh",
-    2
-   ],
-   [
-    "src/integrations/supabase/types.ts",
     2
    ]
   ]

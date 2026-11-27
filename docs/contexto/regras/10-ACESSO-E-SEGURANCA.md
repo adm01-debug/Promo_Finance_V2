@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5bf3c2dd4f` · branch `main` · 2026-11-26 20:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7c864eb931` · branch `main` · 2026-11-27 00:27 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -210,6 +210,7 @@
 | `portal_cliente_acessos` | enabled | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role])<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | authenticated: token_id IS NOT NULL AND acao IS NOT NULL AND length(trim(acao)) > 0<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | — |
 | `portal_cliente_tokens` | enabled | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) AND empresa_acessivel(empresa …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) AND empresa_acessivel(empresa …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) AND empresa_acessivel(empresa …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id) | authenticated: public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) AND empresa_acessivel(empresa …<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id) |
 | `prejuizos_fiscais` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
+| `produto_cclasstrib_padrao` | enabled | authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role]) | authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role]) | authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role]) | authenticated: public.has_any_role(auth.uid(), array['admin'::public.app_role, 'financeiro'::public.app_role]) |
 | `profiles` | enabled | authenticated: (has_role(auth.uid(), 'admin') AND empresa_acessivel(empresa_id))<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id))<br>authenticated: (((SELECT auth.uid()) = id) OR ((SELECT auth.uid()) = user_id) OR (has_role((SELECT auth.uid()), 'admin'::app_role) AND empre … | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (((SELECT auth.uid()) = id) OR ((SELECT auth.uid()) = user_id))<br>authenticated: (has_role(auth.uid(), 'admin') AND empresa_acessivel(empresa_id))<br>authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)) | authenticated: (has_role((SELECT auth.uid()), 'admin'::app_role) AND empresa_acessivel(empresa_id)) |
 | `projecoes_reforma` | enabled | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id) |
 | `protestos` | enabled | authenticated: (empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND …<br>authenticated: (has_any_role((SELECT auth.uid()), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)) | authenticated: (has_any_role((SELECT auth.uid()), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)) | authenticated: (has_any_role((SELECT auth.uid()), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)) | authenticated: (has_any_role((SELECT auth.uid()), ARRAY['admin','financeiro']::app_role[]) AND empresa_acessivel(empresa_id)) |
@@ -305,7 +306,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 374 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 375 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -457,7 +458,7 @@
 - `supabase/functions/sso-initiate/index.ts`
 - `supabase/functions/sso-logout/index.ts`
 - `supabase/functions/sso-test-login/index.ts`
-- … +224 (lista completa em `context.json`)
+- … +225 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -873,7 +874,7 @@ Middleware matcher (Next.js): nenhum
 | grant | authenticated | select, insert | `audit_log`, `audit_logs`, `bling_sync_logs`, `audit_logs`, `audit_logs` |
 | grant | authenticated | select, insert, delete | `sso_sandbox_runs` |
 | grant | authenticated | select, insert, update | `fechamentos_tributarios` |
-| grant | authenticated | select, insert, update, delete | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `n8n_workflow_configs`, `empresas_certificados`, `plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`, `entregas_obrigacoes`, `conformidade_snapshots`, `user_digest_preferences`, `aliquotas_interestaduais`, `aliquotas_internas_uf`, `cnaes` … +46 |
+| grant | authenticated | select, insert, update, delete | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `n8n_workflow_configs`, `empresas_certificados`, `plano_contas`, `lancamentos_contabeis`, `partidas_contabeis`, `entregas_obrigacoes`, `conformidade_snapshots`, `user_digest_preferences`, `aliquotas_interestaduais`, `aliquotas_internas_uf`, `cnaes` … +47 |
 | grant | authenticated | select, update | `webhook_dlq`, `nfe_recebidas`, `convites_contador` |
 | grant | authenticated | usage, select | `public` |
 | grant | authenticated, anon | execute | `registrar_tentativa_sso` |
@@ -883,7 +884,7 @@ Middleware matcher (Next.js): nenhum
 | grant | postgres | all privileges | `cron` |
 | grant | postgres, service_role | execute | `notify_performance_alert_trigger`, `internal_job_secret` |
 | grant | public | execute | `is_ip_allowed_for_login`, `is_country_allowed_for_login` |
-| grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +142 |
+| grant | service_role | all | `user_empresas`, `scim_tokens`, `user_onboarding_progress`, `darfs`, `slow_query_alerts`, `webhook_dlq`, `audit_logs`, `frontend_error_logs`, `bloat_snapshots`, `performance_alerts`, `pg_stat_statements_baseline`, `n8n_workflow_configs`, `n8n_dispatch_logs`, `integrity_alerts`, `empresas_certificados` … +143 |
 | grant | service_role | execute | `get_user_roles`, `has_role`, `get_user_permissions`, `has_permission`, `capture_slow_queries`, `enqueue_webhook_retry`, `cleanup_log_tables`, `ensure_monthly_partitions`, `maintain_monthly_partitions`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `capture_pg_stat_statements_baseline`, `check_integrity_invariants`, `certificado_upsert` … +82 |
 | grant | service_role | select | `mv_benchmark_setorial`, `v_table_bloat`, `mv_performance_alerts_weekly`, `estrategias_elisao_catalogo`, `mv_benchmark_setorial`, `vw_edge_health`, `vw_transferencias_painel`, `vw_auditoria_tributaria_recente`, `vw_transferencias_painel`, `estrategias_elisao_catalogo`, `vw_webhooks_recentes` |
 | grant | service_role | usage, select | `rpc_observability_metrics_id_seq` |
@@ -927,7 +928,7 @@ Middleware matcher (Next.js): nenhum
 ## Multi-tenancy
 
 - Chave de tenant: **`empresa_id`** presente em 131 tabela(s): `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `saved_filters`, `profiles`, `contas_bancarias`, `centros_custo`, `notas_fiscais`, `alertas`, `configuracoes_aprovacao`, `relatorios_agendados`, `bitrix_sync_logs`, `bitrix_field_mappings`, `bitrix_oauth_tokens`, `boletos`, `historico_cobranca`, `expert_conversations`, `metas_financeiras`, `historico_analises_preditivas`, `historico_score_saude`, `alertas_preditivos`, `recomendacoes_metas_ia`, `pagamentos_recorrentes`, `regua_cobranca`, `historico_cobranca_whatsapp`, `acordos_parcelamento`, `vendedores`, `security_alerts`, `apuracoes_tributarias`, `creditos_tributarios`, `operacoes_tributaveis`, `split_payment_transacoes`, `regimes_especiais_empresa`, `apuracoes_irpj_csll`, `prejuizos_fiscais`, `incentivos_fiscais`, `retencoes_fonte`, `darfs`, `alertas_tributarios`, `per_dcomp`, `regras_conciliacao`, `asaas_customers`, `asaas_payments`, `bling_tokens`, `bling_sync_logs`, `bling_webhook_events`, `plano_contas`, `formas_pagamento`, `movimentacoes`, `transferencias`, `conciliacoes`, `anexos_financeiros`, `auditoria_financeira`, `templates_cobranca`, `fila_cobrancas`, `execucoes_cobranca`, `negativacoes`, `protestos`, `pix_templates`, `query_telemetry`, `faturamento_mensal`, `folha_pagamento`, `regimes_simulados`, `convites_contador`, `regime_decision_cache`, `relatorios_tributarios_agendados`, `verificacoes_conformidade`, `auditoria_tributaria`, `fechamentos_tributarios`, `notas_fiscais_ocr`, `resumos_executivos_semanais`, `solicitacoes_lgpd`, `health_scores_operacionais`, `anomalias_detectadas`, `acoes_recomendadas`, `sso_providers`, `sso_login_attempts`, `sso_role_mappings`, `lancamentos_contabeis`, `partidas_contabeis`, `sped_contabil_arquivos`, `user_empresas`, `scim_tokens`, `scim_operations_log`, `execucoes_regua_cobranca`, `user_filter_presets`, `logs_conciliacao_retroativa`, `divergencias_conciliacao`, `regras_contabilizacao_automatica`, `eventos_contabilizacao_log`, `elisao_simulacoes_regime`, `elisao_creditos_auditoria`, `elisao_tarefas_acionaveis`, `elisao_alertas`, `regua_cobranca_status`, `asaas_config`, `asaas_transfers`, `asaas_reconciliation_suggestions`, `bloqueios_duplicidade`, `configuracoes_duplicidade`, `regras_roteamento_financeiro`, `api_keys`, `kpis_operacionais`, `pedidos_compra`, `whatsapp_conversas`, `fluxos_aprovacao_niveis`, `tax_audit_trail`, `sessoes_conciliacao`, `contratos`, `regimes_tributarios`, `custom_field_definitions`, `regras_duplicidade`, `alerts`, `alert_configurations`, `empresas_certificados`, `nfe_recebidas`, `entregas_obrigacoes`, `conformidade_snapshots`, `integration_secrets`, `overlay_rejeicoes_auditoria`, `simulacoes`, `simulacao_tributos_detalhados`, `operacoes_icms`, `projecoes_reforma`, `oportunidades_elisao`, `risk_rules`, `acessos_suspeitos`, `bitrix24_stage_mappings`, `asaas_payment_links`
-- Cobertura: 48% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
+- Cobertura: 47% das tabelas. Abaixo de 60% — isolamento provavelmente por usuário (auth.uid()) ou misto; não flagado por tabela.
 
 ## Soft delete (registros 'apagados' continuam na tabela — filtre!)
 
@@ -1248,6 +1249,7 @@ Middleware matcher (Next.js): nenhum
 | `notas_fiscais_itens` | `created_at` |
 | `catalogo_cclasstrib` | `created_at` |
 | `catalogo_fundamentacao` | `created_at` |
+| `produto_cclasstrib_padrao` | `atualizado_em` |
 | `frontend_error_logs_2026_01` | `created_at` |
 | `frontend_error_logs_2026_02` | `created_at` |
 | `frontend_error_logs_2026_03` | `created_at` |

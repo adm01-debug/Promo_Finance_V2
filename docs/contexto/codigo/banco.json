@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1084,
+ "migrations": 1085,
  "seeds": [],
  "avisos": [
   "203 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -36204,6 +36204,100 @@
    "triggers": [
     "update_prejuizos_updated_at"
    ],
+   "sem_rls": false,
+   "nao_usada": false
+  },
+  "produto_cclasstrib_padrao": {
+   "colunas": {
+    "atualizado_em": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "atualizado_por": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": "auth.uid()",
+     "ref": null
+    },
+    "cclasstrib": {
+     "tipo": "character(6)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "codigo": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cst": {
+     "tipo": "character(3)",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "ncm": {
+     "tipo": "character(8)",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "produto_id": {
+     "tipo": "text",
+     "nn": false,
+     "pk": true,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
+   "policies": [
+    {
+     "nome": "produto_cclasstrib_padrao_admin",
+     "comando": "all",
+     "para": "authenticated",
+     "tipo": "permissive"
+    }
+   ],
+   "indices": [
+    {
+     "nome": "produto_cclasstrib_padrao_codigo_idx",
+     "colunas": "codigo",
+     "unico": false
+    },
+    {
+     "nome": "produto_cclasstrib_padrao_ncm_idx",
+     "colunas": "ncm",
+     "unico": false
+    }
+   ],
+   "fks": [],
+   "criada_em": "20261126120000_produto_cclasstrib_padrao.sql",
+   "colunas_types": {
+    "atualizado_em": "string",
+    "atualizado_por": "string | null",
+    "cclasstrib": "string",
+    "codigo": "string | null",
+    "cst": "string",
+    "ncm": "string | null",
+    "produto_id": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
+   },
+   "usada_no_front": 1,
+   "usada_em_edges": [],
+   "triggers": [],
    "sem_rls": false,
    "nao_usada": false
   },

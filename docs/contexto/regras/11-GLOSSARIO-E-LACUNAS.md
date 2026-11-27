@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `5bf3c2dd4f` · branch `main` · 2026-11-26 20:25 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7c864eb931` · branch `main` · 2026-11-27 00:27 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -201,6 +201,7 @@
 | `portal_cliente_acessos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `portal_cliente_tokens` | _(sem COMMENT ON TABLE — significado não documentado)_ | 9 colunas | migration |
 | `prejuizos_fiscais` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
+| `produto_cclasstrib_padrao` | _(sem COMMENT ON TABLE — significado não documentado)_ | 7 colunas | migration |
 | `profiles` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
 | `projecoes_reforma` | _(sem COMMENT ON TABLE — significado não documentado)_ | 21 colunas | migration |
 | `protestos` | _(sem COMMENT ON TABLE — significado não documentado)_ | 17 colunas | migration |
@@ -306,8 +307,7 @@
 | `alert_type` (enum) | DRIVER_BLOCKED, ROUTE_DEVIATION, DRIVER_STOPPED, LATE_DELIVERY, APPROVAL_REQUIRED, ORDER_CANCELLED |  | banco |
 | `sefaz_ambiente` (enum) | homologacao, producao |  | banco |
 | `nfe_manifestacao_status` (enum) | pendente, ciencia, confirmada, desconhecida, nao_realizada |  | banco |
-| `nfe_schema_tipo` (enum) | resNFe, procNFe, resEvento, procEventoNFe, resCTe, procCTe |  | banco |
-| … +254 linhas — lista completa em `context.json` | | | |
+| … +256 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -542,7 +542,7 @@
 - `bitrix24_stage_mappings.lalamove_status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `alerts_sent.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
 - `cron_job_logs.status` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.
-- 269/275 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
+- 270/276 tabelas sem `COMMENT ON TABLE` — o significado de negócio não está no schema: `clientes`, `fornecedores`, `contas_pagar`, `contas_receber`, `categorias`, `profiles`, `user_roles`, `empresas`, `contas_bancarias`, `centros_custo`, `transacoes_bancarias`, `notas_fiscais` …
 - Há tabelas usadas no código sem migration no repo — o schema real pode ter sido alterado pelo painel.
 
 ## Regras manuais presentes

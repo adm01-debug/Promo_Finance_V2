@@ -6,22 +6,22 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (781)",
+   "src/components (782)",
    "src/pages (208)",
    "src/hooks (2)"
   ],
   "hooks": [
-   "src/hooks (241)",
+   "src/hooks (242)",
    "src/components (27)",
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (279)",
+   "src/lib (280)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (334)",
+   "co-localizado (__tests__) (338)",
    "outro (113)",
    "co-localizado (*.test) (50)"
   ],
@@ -47,7 +47,7 @@
  },
  "barrels_index": 34,
  "extensao_componentes": [
-  ".tsx (993)"
+  ".tsx (994)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: cClassTrib padrao por produto no cadastro do Bling e no item da NF-e (etapa 86) (#569)",
    "feat: vínculo manual na baixa automática liquida o título escolhido (#574)",
    "feat: natureza da operação e CFOP de venda pela UF da empresa emissora e do destinatário (#577)",
    "feat: simulador de elisão calcula e grava cenário com dados reais (#575)",
-   "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)",
-   "fix: abas Régua e Templates das Configurações usam a configuração real (grava regua_cobranca) (#571)"
+   "fix: /notas-fiscais lê a tabela real e abre XML/DANFE de verdade (#573)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

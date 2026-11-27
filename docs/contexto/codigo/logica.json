@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 300,
+ "total": 301,
  "por_camada": {
   "config": 2,
   "contexts": 1,
   "integrations": 3,
-  "lib": 279,
+  "lib": 280,
   "python": 15
  },
  "arquivos": [
@@ -784,7 +784,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 317,
+   "usado_por": 318,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -854,7 +854,7 @@
     "TablesUpdate"
    ],
    "export_default": null,
-   "linhas": 20086,
+   "linhas": 20116,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -8374,6 +8374,42 @@
     "lib/tributario"
    ],
    "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/produtos/cclasstrib-padrao.ts",
+   "camada": "lib",
+   "exports": [
+    "PadraoProduto",
+    "ResolverPadraoPorCodigo",
+    "cclasstribManualAposTroca",
+    "conflitosDeSku",
+    "ncmAposTrocaDeCodigo",
+    "normalizarCodigo",
+    "normalizarCodigoComercial",
+    "normalizarNcm",
+    "resolverPadraoPorCodigo",
+    "sugerirPadraoPorNcm",
+    "validarCoerenciaCst",
+    "validarPadrao"
+   ],
+   "export_default": null,
+   "linhas": 226,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/bling",
+    "components/nfe",
+    "hooks"
+   ],
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
