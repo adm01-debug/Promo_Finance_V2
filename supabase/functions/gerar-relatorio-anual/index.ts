@@ -2,13 +2,13 @@
 // EDGE FUNCTION: gerar-relatorio-anual
 // Agrega dados anuais para Relatório Tributário PDF (P6)
 // ============================================
-import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { exigirInternaOuUsuarioComPapel } from '../_shared/auth-guard.ts';
 
 const RelatorioAnualBodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -30,65 +30,52 @@ Deno.serve(
     logger.info('fn_start');
 
     try {
-      const authHeader = req.headers.get('Authorization');
-      if (!authHeader?.startsWith('Bearer ')) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
       const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-      const supabaseAuth = createClient(supabaseUrl, anonKey, {
-        global: { headers: { Authorization: authHeader } },
-      });
-      const token = authHeader.replace('Bearer ', '');
-      const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
-      if (claimsErr || !claimsData?.claims) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
+      // Dois chamadores legitimos:
+      //   1. usuario logado (tela Relatorio Tributario): JWT + papel RBAC + vinculo;
+      //   2. `enviar-relatorios-tributarios-agendados` (job pg_cron), que invoca
+      //      esta funcao com o client service_role e NAO tem usuario.
+      // Antes daqui a funcao exigia claims + user_roles em qualquer chamada, entao
+      // o envio agendado levava 401 em 100% das execucoes: o relatorio nunca saia
+      // e o agendamento ficava vencido para sempre.
+      const authHeader = req.headers.get('Authorization') ?? `Bearer ${serviceKey}`;
+      const guard = await exigirInternaOuUsuarioComPapel(
+        req,
+        ['admin', 'financeiro', 'contador_readonly'],
+        'Apenas admin, financeiro ou contador_readonly pode gerar o relatorio anual.'
+      );
+      if (!guard.ok) return guard.resposta;
 
-      const userId = claimsData.claims.sub as string;
-      const admin = createClient(supabaseUrl, serviceKey);
-
-      // RBAC — admin/financeiro/contador_readonly
-      const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', userId);
-      const allowedRoles = new Set(['admin', 'financeiro', 'contador_readonly']);
-      const hasAccess = (roles ?? []).some((r) => allowedRoles.has(String(r.role)));
-      if (!hasAccess) {
-        return new Response(JSON.stringify({ error: 'Forbidden' }), {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
+      const admin = guard.dados.supabase;
+      const chamadaInterna = guard.dados.origem === 'interna';
 
       const rawBody = await req.json().catch(() => ({}));
       const validation = await validateContract(RelatorioAnualBodySchema, rawBody);
       if (!validation.success) return validation.response;
       const body: ReqBody = validation.data;
 
-      // user_roles é global (não por empresa) — sem esta checagem, qualquer
-      // usuário autenticado com role admin/financeiro/contador_readonly em UMA
-      // empresa consegue gerar relatório tributário anual de QUALQUER empresa
-      // via este client service_role (que ignora RLS).
-      const { data: vinculo } = await admin
-        .from('user_empresas')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('empresa_id', body.empresa_id)
-        .eq('ativo', true)
-        .maybeSingle();
-      if (!vinculo) {
-        return new Response(JSON.stringify({ error: 'Forbidden' }), {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+      // user_roles e global (nao por empresa): sem esta checagem, qualquer usuario
+      // autenticado com papel admin/financeiro/contador_readonly em UMA empresa
+      // gera relatorio de QUALQUER empresa via este client service_role (que ignora
+      // RLS). O job interno nao tem usuario e nao escolhe empresa: o `empresa_id`
+      // vem de `relatorios_tributarios_agendados`, tabela que so o service_role
+      // escreve.
+      if (!chamadaInterna && guard.dados.userId) {
+        const { data: vinculo } = await admin
+          .from('user_empresas')
+          .select('id')
+          .eq('user_id', guard.dados.userId)
+          .eq('empresa_id', body.empresa_id)
+          .eq('ativo', true)
+          .maybeSingle();
+        if (!vinculo) {
+          return new Response(JSON.stringify({ error: 'Forbidden' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
       }
 
       // Empresa

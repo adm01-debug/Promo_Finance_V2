@@ -201,7 +201,12 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.gerar-relatorio-anual]
-verify_jwt = true
+# false: a funcao tem dois chamadores (usuario logado e o job pg_cron
+# `enviar-relatorios-tributarios`, que a invoca com o client service_role) e a
+# prova de origem fica no codigo, em `exigirInternaOuUsuarioComPapel`
+# (supabase/functions/_shared/auth-guard.ts). Com `true` o pg_cron levava 401 no
+# gateway e o relatorio agendado nunca era enviado.
+verify_jwt = false
 
 [functions.gerar-resumo-executivo-semanal]
 verify_jwt = true

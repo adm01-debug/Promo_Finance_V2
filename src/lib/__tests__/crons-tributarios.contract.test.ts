@@ -44,6 +44,13 @@ const JOBS: readonly JobCron[] = [
   },
 ];
 
+function blocoDoJob(sql: string, jobname: string): string {
+  const inicio = sql.indexOf(`cron.schedule(\n  '${jobname}'`);
+  if (inicio === -1) throw new Error(`cron.schedule do job ${jobname} nao encontrado`);
+  const fim = sql.indexOf('\n  $$\n);', inicio);
+  return sql.slice(inicio, fim === -1 ? undefined : fim);
+}
+
 function migrationsSql(): string {
   return readdirSync(MIGRATIONS)
     .filter((arquivo) => arquivo.endsWith('.sql'))
@@ -67,12 +74,18 @@ describe('crons tributários — contrato entre pg_cron, config.toml e edge func
   it.each(JOBS.map((job) => [job.job, job] as const))(
     'o job %s existe em migration, chamando a edge com x-cron-secret',
     (_nome, job) => {
-      expect(sql).toContain(`cron.schedule(\n  '${job.job}'`);
-      expect(sql).toContain(`functions/v1/${job.funcao}`);
-      expect(sql).toContain(`chave = '${job.chaveSegredo}'`);
-      expect(sql).toContain(`'x-cron-secret'`);
+      // Recorte por bloco: asserts sobre o SQL inteiro (todas as migrations
+      // concatenadas) passavam mesmo com os segredos trocados entre os jobs,
+      // porque os dois `cron.schedule` vivem no mesmo arquivo.
+      const bloco = blocoDoJob(sql, job.job);
+      expect(bloco).toContain(`functions/v1/${job.funcao}`);
+      expect(bloco).toContain(`'x-cron-secret'`);
+      expect(bloco).toContain(`chave = '${job.chaveSegredo}'`);
+      for (const outro of JOBS.filter((j) => j.job !== job.job)) {
+        expect(bloco).not.toContain(`chave = '${outro.chaveSegredo}'`);
+      }
       // Sem o segredo semeado o job nasce condenado a 401.
-      expect(sql).toContain(`'${job.chaveSegredo}'`);
+      expect(sql).toContain(`'${job.chaveSegredo}',`);
     }
   );
 
