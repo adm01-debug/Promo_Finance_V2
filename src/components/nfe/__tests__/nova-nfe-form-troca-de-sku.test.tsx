@@ -191,7 +191,7 @@ describe('NovaNFeForm: totais do grupo e CRT do emitente', () => {
     expect(crtDoRegime(null)).toBeUndefined();
   });
 
-  it('nao acusa total ausente nem divergencia 1091 com o item enquadrado e valorizado', () => {
+  it('nao acusa total ausente nem divergencia 1091 com dois itens enquadrados e valorizados', () => {
     catalogo.opcoes = [
       { cst: '200', cclasstrib: '200032', descricao: 'tributado', vigencia_inicio: '2026-01-01' },
     ];
@@ -200,12 +200,25 @@ describe('NovaNFeForm: totais do grupo e CRT do emitente', () => {
     digitarSku('KIT-1');
     // Sem valor unitario a base do item fica zerada e as duas guardas de total
     // passariam por vacuidade (0 = soma de itens sem grupo). 2 x 100 fixa base
-    // tributavel de 200 para o item enquadrado.
+    // tributavel de 200 no item 1.
     fireEvent.change(campoDoItem('Quantidade'), { target: { value: '2' } });
     fireEvent.change(campoDoItem('Valor Unitário'), { target: { value: '100' } });
 
-    // Vacuidade descartada: o item destacou IBS/CBS sobre a base informada.
-    expect(campoDoItem('CBS + IBS').value).not.toBe(formatCurrency(0));
+    // Item 2 com base diferente: se a tela mandasse a pre-validacao apenas o
+    // subtotal do item 1, o total da nota divergiria da soma dos itens (1091).
+    fireEvent.click(screen.getByRole('button', { name: /Adicionar Item/ }));
+    fireEvent.change(screen.getAllByPlaceholderText('SKU')[1], { target: { value: 'KIT-12' } });
+    fireEvent.change(screen.getAllByLabelText('Quantidade')[1], { target: { value: '3' } });
+    fireEvent.change(screen.getAllByLabelText('Valor Unitário')[1], { target: { value: '50' } });
+
+    // Vacuidade descartada nos dois itens: cada um destacou IBS/CBS sobre a base.
+    const destacados = screen
+      .getAllByLabelText('CBS + IBS')
+      .map((input) => (input as HTMLInputElement).value);
+    expect(destacados).toHaveLength(2);
+    for (const valor of destacados) {
+      expect(valor).not.toBe(formatCurrency(0));
+    }
 
     // A tela nao tem campo de totais: o total da nota sai da soma dos itens, entao
     // nem o aviso de total ausente nem a divergencia 1091 podem aparecer.
