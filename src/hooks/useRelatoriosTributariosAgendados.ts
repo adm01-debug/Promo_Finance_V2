@@ -23,6 +23,32 @@ export interface CreateAgendamentoInput {
   destinatarios: string[];
 }
 
+/**
+ * Primeiro envio do agendamento.
+ *
+ * A coluna nasce com `DEFAULT now()` (migration 20260418132402) e o job horario
+ * `enviar-relatorios-tributarios` processa tudo que esta com
+ * `proximo_envio_em <= now()`. Sem calcular aqui, todo agendamento era enviado
+ * no minuto da criacao e o `dia_envio` escolhido so passava a valer do segundo
+ * envio em diante (a edge reprograma com a mesma regra:
+ * supabase/functions/enviar-relatorios-tributarios-agendados/index.ts:23 —
+ * dia limitado a 28, 06:00 UTC).
+ */
+export function proximoEnvioInicial(
+  frequencia: 'mensal' | 'trimestral' | 'anual',
+  dia: number
+): string {
+  const proximo = new Date();
+  proximo.setUTCHours(6, 0, 0, 0);
+  proximo.setUTCDate(Math.min(dia, 28));
+  if (proximo.getTime() <= Date.now()) {
+    if (frequencia === 'mensal') proximo.setUTCMonth(proximo.getUTCMonth() + 1);
+    else if (frequencia === 'trimestral') proximo.setUTCMonth(proximo.getUTCMonth() + 3);
+    else proximo.setUTCFullYear(proximo.getUTCFullYear() + 1);
+  }
+  return proximo.toISOString();
+}
+
 export function useRelatoriosTributariosAgendados(empresaId?: string) {
   const qc = useQueryClient();
 
@@ -45,7 +71,10 @@ export function useRelatoriosTributariosAgendados(empresaId?: string) {
     mutationFn: async (input: CreateAgendamentoInput) => {
       const { data, error } = await supabase
         .from('relatorios_tributarios_agendados' as never)
-        .insert(input as never)
+        .insert({
+          ...input,
+          proximo_envio_em: proximoEnvioInicial(input.frequencia, input.dia_envio),
+        } as never)
         .select()
         .maybeSingle();
       if (error) throw error;

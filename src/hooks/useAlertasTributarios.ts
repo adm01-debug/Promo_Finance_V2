@@ -122,7 +122,16 @@ export function useAlertasTributarios(empresaId?: string) {
           schema: 'public',
           table: 'alertas_tributarios',
         },
-        () => {
+        (payload) => {
+          // O cron escala o alerta com UPDATE. Sem mesclar aqui, a copia do
+          // INSERT guardada em alertasRealtime continuava vencendo na lista e o
+          // cartao (e os contadores) mostravam a prioridade antiga.
+          const atualizado = payload.new as AlertaTributario;
+          setAlertasRealtime((prev) =>
+            prev.map((alerta) =>
+              alerta.id === atualizado.id ? { ...alerta, ...atualizado } : alerta
+            )
+          );
           queryClient.invalidateQueries({ queryKey: ['alertas-tributarios'] });
         }
       )

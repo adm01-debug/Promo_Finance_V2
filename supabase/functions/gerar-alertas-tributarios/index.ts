@@ -15,7 +15,12 @@ import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
-const SIMPLES_SUBLIMITE = 4_800_000;
+// Sublimite ESTADUAL do Simples Nacional (ICMS/ISS): R$ 3.600.000. Acima dele a
+// empresa continua no Simples federal, mas fica impedida de recolher ICMS/ISS
+// nesse regime. Antes o unico limiar era o teto federal de R$ 4.800.000, entao o
+// aviso chegava depois do estouro do sublimite.
+const SIMPLES_SUBLIMITE = 3_600_000;
+const SIMPLES_TETO_FEDERAL = 4_800_000;
 const SIMPLES_LIMITE_ALERTA = SIMPLES_SUBLIMITE * 0.9;
 const FATOR_R_MIN = 0.28;
 const IRPFM_MENSAL_LIMITE = 50_000;
@@ -32,6 +37,8 @@ interface AlertaInsert {
   data_vencimento?: string | null;
   acao_url?: string | null;
   acao_label?: string | null;
+  entidade_tipo?: string | null;
+  entidade_id?: string | null;
 }
 
 // ─── Structured logging helper ───────────────────────────────────────────────
@@ -120,12 +127,18 @@ export const handler = async (req: Request): Promise<Response> => {
           .reduce((acc, f) => acc + Number(f.receita_bruta || 0), 0);
 
         if (empresa.regime_tributario === 'simples_nacional' && rbt12 >= SIMPLES_LIMITE_ALERTA) {
+          const pctSublimite = (rbt12 / SIMPLES_SUBLIMITE) * 100;
+          const estourouSublimite = rbt12 > SIMPLES_SUBLIMITE;
           novosAlertas.push({
             empresa_id: empresa.id,
             tipo: 'sublimite_simples',
-            titulo: `Sublimite do Simples Nacional próximo (${((rbt12 / SIMPLES_SUBLIMITE) * 100).toFixed(1)}%)`,
-            mensagem: `RBT12 atual de R$ ${rbt12.toLocaleString('pt-BR')} já atingiu ${((rbt12 / SIMPLES_SUBLIMITE) * 100).toFixed(1)}% do sublimite estadual de R$ 4.800.000. Avalie migração para Lucro Presumido antes do estouro.`,
-            prioridade: rbt12 >= SIMPLES_SUBLIMITE * 0.95 ? 'critica' : 'alta',
+            titulo: estourouSublimite
+              ? `Sublimite estadual do Simples Nacional excedido (${pctSublimite.toFixed(1)}%)`
+              : `Sublimite do Simples Nacional próximo (${pctSublimite.toFixed(1)}%)`,
+            mensagem: estourouSublimite
+              ? `RBT12 atual de R$ ${rbt12.toLocaleString('pt-BR')} ultrapassou o sublimite estadual de R$ ${SIMPLES_SUBLIMITE.toLocaleString('pt-BR')}: a empresa continua no Simples federal, mas fica impedida de recolher ICMS/ISS nesse regime. O teto federal de R$ ${SIMPLES_TETO_FEDERAL.toLocaleString('pt-BR')} exclui a empresa do Simples. Avalie a migração para Lucro Presumido.`
+              : `RBT12 atual de R$ ${rbt12.toLocaleString('pt-BR')} já atingiu ${pctSublimite.toFixed(1)}% do sublimite estadual de R$ ${SIMPLES_SUBLIMITE.toLocaleString('pt-BR')} (teto federal: R$ ${SIMPLES_TETO_FEDERAL.toLocaleString('pt-BR')}). Avalie a migração para Lucro Presumido antes do estouro.`,
+            prioridade: estourouSublimite ? 'critica' : 'alta',
             competencia: competenciaAtual,
             acao_url: '/tributario/simulacao-regimes',
             acao_label: 'Simular regimes',
@@ -190,6 +203,8 @@ export const handler = async (req: Request): Promise<Response> => {
               prioridade: diasParaVencer <= 2 ? 'critica' : 'alta',
               data_vencimento: vencimento.toISOString().slice(0, 10),
               competencia: `${ap.ano}-${String(ap.mes).padStart(2, '0')}`,
+              entidade_tipo: 'apuracao_tributaria',
+              entidade_id: ap.id,
               acao_url: '/reforma-tributaria',
             });
           }
@@ -347,23 +362,54 @@ export const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Persiste alertas evitando duplicatas (mesmo tipo+empresa nos últimos 7d)
+    // Persiste alertas evitando duplicatas da MESMA origem: tipo + empresa +
+    // competencia, nos ultimos 7 dias e ainda nao resolvido. Casar so
+    // tipo + empresa fazia a escalada de uma apuracao reescrever a linha de
+    // outro DARF, que segue exibindo a data e a referencia originais.
     let inseridos = 0;
+    let atualizados = 0;
     for (const alerta of novosAlertas) {
       try {
-        const { data: existe } = await withRetry(
-          () =>
-            supabase
-              .from('alertas_tributarios')
-              .select('id')
-              .eq('empresa_id', alerta.empresa_id)
-              .eq('tipo', alerta.tipo)
-              .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString())
-              .limit(1),
-          `dedup_${alerta.tipo}`
-        );
+        let dedup = supabase
+          .from('alertas_tributarios')
+          .select('id, prioridade, entidade_id, resolvido')
+          .eq('empresa_id', alerta.empresa_id)
+          .eq('tipo', alerta.tipo)
+          .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString());
+        // A competencia separa o que a tela cria (DARF/credito, sem competencia)
+        // do que este cron cria por apuracao: sem ela os dois disputam a linha.
+        dedup = alerta.competencia
+          ? dedup.eq('competencia', alerta.competencia)
+          : dedup.is('competencia', null);
 
-        if (existe && existe.length > 0) continue;
+        const { data: existe } = await withRetry(() => dedup.limit(5), `dedup_${alerta.tipo}`);
+        const decisao = decidirAlerta(alerta, (existe ?? []) as LinhaAlerta[]);
+
+        if (decisao.acao === 'ignorar') continue;
+
+        if (decisao.acao === 'escalar') {
+          // O dedup antigo descartava a versao nova, entao um alerta 'alta' criado
+          // 5 dias antes do vencimento escondia o 'critica' de 2 dias e o usuario
+          // nunca recebia a escalada. Quando a severidade realmente sobe, a linha
+          // aberta e atualizada em vez de ignorada.
+          const { error } = await withRetry(
+            () =>
+              supabase
+                .from('alertas_tributarios')
+                .update({
+                  prioridade: alerta.prioridade,
+                  titulo: alerta.titulo,
+                  mensagem: alerta.mensagem,
+                  ...(alerta.data_vencimento ? { data_vencimento: alerta.data_vencimento } : {}),
+                  ...(alerta.acao_url ? { acao_url: alerta.acao_url } : {}),
+                  ...(alerta.acao_label ? { acao_label: alerta.acao_label } : {}),
+                })
+                .eq('id', decisao.id),
+            `escalate_${alerta.tipo}`
+          );
+          if (!error) atualizados++;
+          continue;
+        }
 
         const { error } = await withRetry(
           () => supabase.from('alertas_tributarios').insert(alerta),
@@ -384,6 +430,7 @@ export const handler = async (req: Request): Promise<Response> => {
       empresas_processadas: empresas?.length ?? 0,
       alertas_avaliados: novosAlertas.length,
       alertas_inseridos: inseridos,
+      alertas_atualizados: atualizados,
       duration_ms,
     });
 
@@ -445,7 +492,80 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-if (import.meta.main) Deno.serve(withEdgeObservability('gerar-alertas-tributarios', handler));
+/** Ordem de severidade dos alertas (maior = mais grave). */
+function pesoPrioridade(prioridade: string | undefined): number {
+  switch (prioridade) {
+    case 'critica':
+      return 3;
+    case 'alta':
+      return 2;
+    case 'media':
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+export interface LinhaAlerta {
+  id: string;
+  prioridade?: string | null;
+  entidade_id?: string | null;
+  resolvido?: boolean | null;
+}
+
+export type DecisaoAlerta =
+  | { acao: 'ignorar' }
+  | { acao: 'escalar'; id: string }
+  | { acao: 'criar' };
+
+/**
+ * Decide o que fazer com um alerta recem-gerado a partir das linhas recentes da
+ * mesma origem (tipo + empresa + competencia). Funcao pura: sem I/O.
+ *
+ * - Sem referencia: cria.
+ * - Prioridade igual ou menor: ignora — inclusive a linha ja resolvida. Sem
+ *   isso o cron recriava no dia seguinte o alerta que o usuario acabara de
+ *   resolver, porque a apuracao segue pendente e a consulta so via linhas
+ *   abertas.
+ * - Prioridade maior em linha aberta: escala a linha existente.
+ * - Prioridade maior em linha resolvida: escalada real, entao cria alerta novo
+ *   (o que o usuario resolveu era de severidade menor).
+ */
+export function decidirAlerta(
+  alerta: { prioridade: string; entidade_id?: string | null },
+  linhas: LinhaAlerta[]
+): DecisaoAlerta {
+  if (linhas.length === 0) return { acao: 'criar' };
+
+  const daMesmaEntidade = alerta.entidade_id
+    ? linhas.filter((l) => l.entidade_id === alerta.entidade_id)
+    : linhas;
+  // Linhas antigas (anteriores a este ajuste) nao tem entidade_id e seguem
+  // sendo reconhecidas pela competencia, para nao duplicar o alerta.
+  const candidatos =
+    daMesmaEntidade.length > 0 ? daMesmaEntidade : linhas.filter((l) => !l.entidade_id);
+  if (candidatos.length === 0) return { acao: 'criar' };
+
+  // Escalar uma linha resolvida enquanto existe uma aberta perderia o
+  // historico da aberta.
+  const referencia = candidatos.find((l) => !l.resolvido) ?? candidatos[0];
+  if (pesoPrioridade(alerta.prioridade) <= pesoPrioridade(referencia.prioridade ?? undefined)) {
+    return { acao: 'ignorar' };
+  }
+  return referencia.resolvido ? { acao: 'criar' } : { acao: 'escalar', id: referencia.id };
+}
+
+/**
+ * Sobe o servidor HTTP com o handler instrumentado. Exportado para o teste de
+ * fumaca provar que a inicializacao responde, e nao apenas a funcao interna:
+ * uma falha em `Deno.serve` (ou no wrapper de observabilidade) nao aparecia
+ * nos testes que chamavam `handler` direto.
+ */
+export function bootstrap(): Deno.HttpServer {
+  return Deno.serve(withEdgeObservability('gerar-alertas-tributarios', handler));
+}
+
+if (import.meta.main) bootstrap();
 
 // ---------------------------------------------------------------------------
 // Lógica RT/RFB extraída como função pura — testável sem banco

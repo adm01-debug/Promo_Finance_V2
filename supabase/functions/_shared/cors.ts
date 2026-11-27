@@ -27,7 +27,8 @@ const ORIGENS_PADRAO = [
   'http://127.0.0.1:3000',
 ];
 
-const origensPermitidas: readonly string[] = (() => {
+/** Allowlist efetiva (env `ALLOWED_ORIGINS` ou o padrao) — so leitura, para testes. */
+export const origensPermitidas: readonly string[] = (() => {
   const bruto = Deno.env.get('ALLOWED_ORIGINS');
   if (!bruto) return ORIGENS_PADRAO;
   const lista = bruto
