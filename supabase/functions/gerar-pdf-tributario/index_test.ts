@@ -90,3 +90,30 @@ Deno.test('o handler posiciona o rodapé e a tabela a partir da nota', () => {
   assertStringIncludes(FONTE, 'const yBaseLegal = renderNotaCreditoApuracao(doc, empresaNome);');
   assertStringIncludes(FONTE, 'startY: yBaseLegal + 6');
 });
+
+Deno.test('a base legal sai no Y devolvido pela nota, abaixo da última linha', () => {
+  // Página que registra o que o handler pediria ao jsPDF.
+  const impressos: Array<{ texto: string; y: number }> = [];
+  const pagina = {
+    text: (texto: string, _x: number, y: number) => impressos.push({ texto, y }),
+    splitTextToSize: () => new Array<string>(4).fill('x'),
+  };
+  const yBaseLegal = renderNotaCreditoApuracao(pagina, 'Comercial de Produtos Ltda');
+
+  assert(impressos.length === 1, 'a nota tem de ser impressa uma única vez');
+  assertEquals(impressos[0].y, NOTA_GEOMETRIA.y);
+
+  // Simula a chamada que o handler faz com o retorno da nota.
+  pagina.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, yBaseLegal);
+  const baseLegal = impressos[1];
+  const ultimaLinhaNota = NOTA_GEOMETRIA.y + 4 * NOTA_GEOMETRIA.alturaLinha;
+
+  assert(
+    baseLegal.y >= ultimaLinhaNota,
+    `a base legal saiu em ${baseLegal.y} mm, antes da última linha da nota (${ultimaLinhaNota} mm)`
+  );
+  assert(
+    baseLegal.y - ultimaLinhaNota <= NOTA_GEOMETRIA.folga,
+    'a base legal não pode descer mais do que a folga prevista'
+  );
+});
