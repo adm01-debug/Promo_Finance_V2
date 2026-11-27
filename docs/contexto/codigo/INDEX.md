@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `afc23fef49f1d9a620100ac7c0165f1a550d493a` (2026-11-27T00:17:54-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `858a8f1953f46d6d49eff70f48bd2682a185e37a` (2026-11-27T00:29:32-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2469), SQL (1158), Markdown (232), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
+- linguagens: TypeScript (2469), SQL (1159), Markdown (232), JavaScript (77), Python (46), JSON (45), Shell (29), YAML (26)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 4132 |
+| arquivos_total | 4133 |
 | arquivos_codigo | 2590 |
 | linhas_codigo | 467741 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 278 |
 | edge_functions | 112 |
 | tabelas | 319 |
-| migrations | 1085 |
+| migrations | 1086 |
 | cron_jobs | 28 |
 | testes | 545 |
 | workflows | 20 |
@@ -484,9 +484,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - scripts/integrity/baseline/expected-policies.json (8)
 - analise-prs/RELATORIO_PRS.md (7)
 - docs/ci/README.md (7)
-- env.manifest.json (7)
 - src/hooks/useImportacaoXMLNFe.ts (7)
 - docs/prod-readiness.md (6)
+- env.manifest.json (6)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -647,6 +647,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-27 `858a8f1` fix(db): reconcilia colunas de elisao_simulacoes_regime nas migrations (#576)
 - 2026-11-27 `afc23fe` fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)
 - 2026-11-26 `4bed532` feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)
 - 2026-11-26 `197f2a2` docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)
@@ -661,7 +662,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-26 `aeb9a5f` feat: cClassTrib com reducao e fundamento na consulta por NCM e TTL por vigencia (etapas 84-85) (#568)
 - 2026-11-26 `377e5cf` feat: painel de saude mede frescor dos catalogos RFB (etapa 83) (#565)
 - 2026-11-25 `455790a` fix: regera baseline de schema/policies a partir de produção e reconhece catálogo de fundamentação (#566)
-- 2026-11-25 `6d2275f` feat: fundamentacao legal por item da nota (etapa 82) (#563)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

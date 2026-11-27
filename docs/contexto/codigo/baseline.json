@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "afc23fef49f1d9a620100ac7c0165f1a550d493a",
+  "commit": "858a8f1953f46d6d49eff70f48bd2682a185e37a",
   "branch": "main",
-  "data_commit": "2026-11-27T00:17:54-03:00",
+  "data_commit": "2026-11-27T00:29:32-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "858a8f1",
+    "data": "2026-11-27",
+    "assunto": "fix(db): reconcilia colunas de elisao_simulacoes_regime nas migrations (#576)"
+   },
    {
     "sha": "afc23fe",
     "data": "2026-11-27",
@@ -126,14 +131,9 @@
     "sha": "de045cd",
     "data": "2026-11-25",
     "assunto": "feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)"
-   },
-   {
-    "sha": "7a3a58d",
-    "data": "2026-11-25",
-    "assunto": "feat(db): carga inicial do catalogo cClassTrib a partir da base oficial da RFB (#548)"
    }
   ],
-  "arquivos_mudados_7d": 358,
+  "arquivos_mudados_7d": 359,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -246,15 +246,15 @@
     "mudancas": 7
    },
    {
-    "arquivo": "env.manifest.json",
-    "mudancas": 7
-   },
-   {
     "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
     "mudancas": 7
    },
    {
     "arquivo": "docs/prod-readiness.md",
+    "mudancas": 6
+   },
+   {
+    "arquivo": "env.manifest.json",
     "mudancas": 6
    },
    {
@@ -310,7 +310,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4132,
+  "arquivos_total": 4133,
   "arquivos_codigo": 2590,
   "linhas_codigo": 467741,
   "rotas": 130,
@@ -322,7 +322,7 @@
   "hooks": 278,
   "edge_functions": 112,
   "tabelas": 319,
-  "migrations": 1085,
+  "migrations": 1086,
   "cron_jobs": 28,
   "testes": 545,
   "workflows": 20,

@@ -9,10 +9,10 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1085,
+ "migrations": 1086,
  "seeds": [],
  "avisos": [
-  "203 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "204 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
   "ignorado",
@@ -19795,7 +19795,14 @@
    "colunas": {
     "ano_base": {
      "tipo": "integer",
-     "nn": true,
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "ano_referencia": {
+     "tipo": "integer",
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -19849,11 +19856,18 @@
      "default": "'{}'",
      "ref": null
     },
-    "economia_estimada": {
-     "tipo": "numeric(15,2)",
-     "nn": true,
+    "detalhes": {
+     "tipo": "jsonb",
+     "nn": false,
      "pk": false,
-     "default": "0",
+     "default": null,
+     "ref": null
+    },
+    "economia_estimada": {
+     "tipo": "numeric(14,2)",
+     "nn": false,
+     "pk": false,
+     "default": null,
      "ref": null
     },
     "empresa_id": {
@@ -19872,7 +19886,7 @@
     },
     "nome": {
      "tipo": "text",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -19900,14 +19914,14 @@
     },
     "regime_atual": {
      "tipo": "text",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
     },
     "regime_simulado": {
      "tipo": "text",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": null
@@ -20004,10 +20018,7 @@
      "premissas_reforma",
      "premissas_operacionais"
     ],
-    "so_no_types": [
-     "ano_referencia",
-     "detalhes"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 2,
    "usada_em_edges": [],
