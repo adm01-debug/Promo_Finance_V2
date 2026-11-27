@@ -8,7 +8,7 @@
     },
     {
       "detalhe": [
-        "245016 linhas com mais de 7 dias"
+        "245242 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -28,10 +28,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 146718720,
-      "linhas": 257934,
+      "bytes": 146866176,
+      "linhas": 258162,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 245016
+      "mais_de_7_dias": 245242
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -185,7 +185,7 @@
         "chama": [
           "public.cleanup_log_tables"
         ],
-        "duracao_max_s_7d": 2,
+        "duracao_max_s_7d": 5,
         "execucoes_24h": 1,
         "execucoes_7d": 7,
         "falhas_24h": 0,
@@ -505,7 +505,7 @@
         ],
         "duracao_max_s_7d": 0,
         "execucoes_24h": 24,
-        "execucoes_7d": 36,
+        "execucoes_7d": 38,
         "falhas_24h": 0,
         "falhas_7d": 0,
         "nome": "reprocessar-creditos-ibscbs",
@@ -1477,7 +1477,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-27T00:26:58Z",
+  "medido_em": "2026-11-27T03:18:24Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 271,
     "tabelas_em_types_ts": 271
@@ -1493,7 +1493,7 @@
     "postgres": "17.6",
     "tabelas_public": 271,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 417344659,
+    "tamanho_bytes": 419064979,
     "triggers_public": 175,
     "views_public": 18
   },
@@ -2024,9 +2024,9 @@
       }
     },
     {
-      "bytes": 794624,
+      "bytes": 802816,
       "citada_no_banco": true,
-      "linhas": 3245,
+      "linhas": 3336,
       "linhas_exatas": true,
       "nome": "auth_logs",
       "policies": 3,
@@ -2219,7 +2219,7 @@
       }
     },
     {
-      "bytes": 6995968,
+      "bytes": 6815744,
       "citada_no_banco": true,
       "linhas": 24831,
       "linhas_exatas": true,
@@ -2684,9 +2684,9 @@
       }
     },
     {
-      "bytes": 843776,
+      "bytes": 860160,
       "citada_no_banco": true,
-      "linhas": 1515,
+      "linhas": 1527,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2789,7 +2789,7 @@
       }
     },
     {
-      "bytes": 78495744,
+      "bytes": 79732736,
       "citada_no_banco": true,
       "linhas": 255561,
       "linhas_exatas": false,
@@ -3421,7 +3421,7 @@
     {
       "bytes": 39182336,
       "citada_no_banco": true,
-      "linhas": 52354,
+      "linhas": 38265,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3644,9 +3644,9 @@
       }
     },
     {
-      "bytes": 2088960,
+      "bytes": 2097152,
       "citada_no_banco": true,
-      "linhas": 2241,
+      "linhas": 2244,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3734,9 +3734,9 @@
       }
     },
     {
-      "bytes": 4407296,
+      "bytes": 4456448,
       "citada_no_banco": true,
-      "linhas": 3174,
+      "linhas": 3214,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4201,7 +4201,7 @@
     {
       "bytes": 4653056,
       "citada_no_banco": true,
-      "linhas": 4869,
+      "linhas": 4884,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4456,7 +4456,7 @@
     {
       "bytes": 13221888,
       "citada_no_banco": true,
-      "linhas": 8920,
+      "linhas": 8288,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4469,9 +4469,9 @@
       }
     },
     {
-      "bytes": 1138688,
+      "bytes": 1155072,
       "citada_no_banco": true,
-      "linhas": 3247,
+      "linhas": 3338,
       "linhas_exatas": true,
       "nome": "rate_limit_logs",
       "policies": 2,
@@ -4996,7 +4996,7 @@
     {
       "bytes": 16949248,
       "citada_no_banco": true,
-      "linhas": 9763,
+      "linhas": 9697,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
