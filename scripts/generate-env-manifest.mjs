@@ -142,6 +142,8 @@ const opcionais = new Set([
   'SENTRY_DSN',
   // sentry.ts aplica o fallback `?? 'production'` quando ausente
   'SENTRY_ENVIRONMENT',
+  // credito-analise usa DEFAULT_CALLBACK_URL quando ausente (Champions de produção)
+  'CHAMPIONS_CREDITO_CALLBACK_URL',
 ]);
 const edge = [...edgeSet].sort().map(name => ({
   name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),
