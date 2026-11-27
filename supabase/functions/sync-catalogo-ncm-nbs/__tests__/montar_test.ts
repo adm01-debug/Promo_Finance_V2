@@ -21,6 +21,7 @@ import {
   MIN_NCM_API,
   montarNbs,
   montarNcms,
+  semFimVigencia,
   separarReativados,
 } from '../montar.ts';
 
@@ -171,7 +172,10 @@ Deno.test('separarReativados abre periodo novo para codigo que voltou a aparecer
   const { base, reativadas } = separarReativados(
     linhas,
     (linha) => linha.ncm,
-    { abertos: ['22030000'], conhecidos: ['22030000', '27101100'] },
+    {
+      abertos: new Map([['22030000', VIGENCIA_BASE_CATALOGO]]),
+      conhecidos: ['22030000', '27101100'],
+    },
     '2026-06-01'
   );
 
@@ -189,7 +193,7 @@ Deno.test('separarReativados nao reativa codigo que continua aberto', () => {
   const { base, reativadas } = separarReativados(
     linhas,
     (linha) => linha.ncm,
-    { abertos: ['22030000'], conhecidos: ['22030000'] },
+    { abertos: new Map([['22030000', VIGENCIA_BASE_CATALOGO]]), conhecidos: ['22030000'] },
     '2026-06-01'
   );
 
@@ -204,12 +208,115 @@ Deno.test('separarReativados nao reativa na data-base do catalogo', () => {
   const { base, reativadas } = separarReativados(
     linhas,
     (linha) => linha.ncm,
-    { abertos: [], conhecidos: ['27101100'] },
+    { abertos: new Map<string, string>(), conhecidos: ['27101100'] },
     VIGENCIA_BASE_CATALOGO
   );
 
   assertEquals(base.length, 1);
   assertEquals(reativadas.length, 0);
+});
+
+Deno.test('separarReativados mantem fora da data-base o periodo reaberto antes', () => {
+  // Carga seguinte a uma reativacao: o codigo ja tem periodo aberto com inicio
+  // na data daquela reativacao. Gravar a data-base colidiria com a linha
+  // encerrada (mesma chave) e o upsert apagaria o fim daquele periodo, deixando
+  // o codigo com dois periodos abertos.
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
+  const { base, reativadas, reabertas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-06-01']]), conhecidos: ['27101100'] },
+    '2026-07-01'
+  );
+
+  assertEquals(base.length, 0);
+  assertEquals(reativadas.length, 0);
+  assertEquals(reabertas.length, 1);
+  assertEquals(reabertas[0].inicio_vigencia, '2026-06-01');
+  assertEquals(reabertas[0].ncm, '27101100');
+});
+
+Deno.test('separarReativados preserva o periodo aberto em carga retroativa', () => {
+  // Data consultada anterior ao inicio do periodo aberto: a lista recebida
+  // descreve o periodo antigo, mas a chave (codigo, inicio) e a do periodo
+  // futuro. Gravar ali trocaria a descricao oficial do futuro pela antiga.
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'A' }]).linhas;
+  const { base, reativadas, reabertas, preservadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-07-01']]), conhecidos: ['27101100'] },
+    '2026-03-01'
+  );
+
+  assertEquals(base.length, 0);
+  assertEquals(reativadas.length, 0);
+  assertEquals(reabertas.length, 0);
+  assertEquals(preservadas.length, 1);
+  assertEquals(preservadas[0].descricao, 'A');
+  assertEquals(preservadas[0].ncm, '27101100');
+});
+
+Deno.test('separarReativados preserva quando a data e igual ou anterior a base', () => {
+  // A base nao e sempre a chave mais antiga do codigo: um periodo aberto depois
+  // dela significa que o codigo apareceu mais tarde. Gravar na chave da base
+  // criaria um segundo periodo aberto (a linha nao existe para colidir).
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'A' }]).linhas;
+  const conjuntos = {
+    abertos: new Map([['27101100', '2026-07-01']]),
+    conhecidos: ['27101100'],
+  };
+
+  const naBase = separarReativados(linhas, (linha) => linha.ncm, conjuntos, VIGENCIA_BASE_CATALOGO);
+  assertEquals(naBase.base.length, 0);
+  assertEquals(naBase.preservadas.length, 1);
+
+  const anterior = separarReativados(linhas, (linha) => linha.ncm, conjuntos, '2025-12-01');
+  assertEquals(anterior.base.length, 0);
+  assertEquals(anterior.reabertas.length, 0);
+  assertEquals(anterior.preservadas.length, 1);
+});
+
+Deno.test('separarReativados reabre no inicio do periodo aberto quando a data e igual', () => {
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
+  const { reabertas, preservadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-07-01']]), conhecidos: ['27101100'] },
+    '2026-07-01'
+  );
+
+  assertEquals(preservadas.length, 0);
+  assertEquals(reabertas.length, 1);
+  assertEquals(reabertas[0].inicio_vigencia, '2026-07-01');
+});
+
+Deno.test('separarReativados reabre quando a data consultada e posterior ao inicio', () => {
+  const linhas = montarNcms([{ ncm: '27101100', descricao: 'B' }]).linhas;
+  const { reabertas, preservadas } = separarReativados(
+    linhas,
+    (linha) => linha.ncm,
+    { abertos: new Map([['27101100', '2026-07-01']]), conhecidos: ['27101100'] },
+    '2026-08-01'
+  );
+
+  assertEquals(preservadas.length, 0);
+  assertEquals(reabertas.length, 1);
+  assertEquals(reabertas[0].inicio_vigencia, '2026-07-01');
+});
+
+Deno.test('semFimVigencia tira a coluna do payload sem perder os demais campos', () => {
+  // O payload do upsert nao pode carregar `fim_vigencia`: com a coluna, o
+  // `ON CONFLICT DO UPDATE` zera o encerramento de uma linha fechada na mesma
+  // chave e o codigo encerrado voltaria a valer.
+  const linha = montarNcms([{ ncm: '22030000', descricao: 'A' }]).linhas[0];
+  const payload = semFimVigencia(linha);
+
+  assertEquals('fim_vigencia' in payload, false);
+  assertEquals(payload, {
+    ncm: '22030000',
+    descricao: 'A',
+    inicio_vigencia: VIGENCIA_BASE_CATALOGO,
+  });
 });
 
 Deno.test('diaAnterior devolve o ultimo dia vigente antes do recorte', () => {

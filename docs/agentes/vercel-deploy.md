@@ -38,8 +38,10 @@ ver "Próximos passos".
 ### Deploy de Edge Functions — **manual, não automático**
 
 Diferente do padrão do Zapp (deploy automático no push da `main`): aqui o deploy de Edge Function é
-só por `.github/workflows/functions-deploy.yml` (`workflow_dispatch`), **uma função por vez**,
-escolhida de uma lista de funções pré-aprovadas (`type: choice`). Não existe push-to-deploy de
+só por `.github/workflows/functions-deploy.yml` (`workflow_dispatch`), a partir de uma lista de
+funções pré-aprovadas (`type: choice`) — uma por dispatch, ou um lote separado por vírgula no
+input opcional `functions_batch`, que sobrepõe `function_name` (ex.:
+`sync-catalogo-ncm-nbs,sync-fundamentacao-legal`). Não existe push-to-deploy de
 `supabase/functions/` neste repo. Depois de mergear uma mudança em Edge Function, é preciso
 disparar esse workflow manualmente para ela ir ao ar.
 
