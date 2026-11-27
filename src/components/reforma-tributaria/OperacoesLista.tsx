@@ -20,7 +20,11 @@ import { useOperacoesTributaveis } from '@/hooks/useOperacoesTributaveis';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 
-export function OperacoesLista({ empresaId: empresaIdProp }: { empresaId?: string } = {}) {
+interface OperacoesListaProps {
+  empresaId?: string;
+}
+
+export function OperacoesLista({ empresaId: empresaIdProp }: OperacoesListaProps = {}) {
   const { data: empresas } = useAllEmpresas();
   // A empresa do relatorio/painel manda; sem filtro, mantem a primeira da lista.
   const empresaId = empresaIdProp || empresas?.[0]?.id;

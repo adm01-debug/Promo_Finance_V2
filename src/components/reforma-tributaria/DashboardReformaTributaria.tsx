@@ -196,12 +196,17 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
           />
         );
 
+      // A empresa e prop das abas: sem `key` o estado local (apuracao escolhida,
+      // mes/ano, filtros) sobrevive a troca de empresa e o calculo do IRPJ/CSLL
+      // gravava na apuracao da empresa anterior.
       case 'apuracao':
-        return <ApuracaoMensal empresaId={empresaIdFiltro} />;
+        return <ApuracaoMensal key={empresaIdFiltro ?? 'todas'} empresaId={empresaIdFiltro} />;
       case 'operacoes':
-        return <OperacoesLista empresaId={empresaIdFiltro} />;
+        return <OperacoesLista key={empresaIdFiltro ?? 'todas'} empresaId={empresaIdFiltro} />;
       case 'creditos':
-        return <GestorCreditosTributarios empresaId={empresaIdFiltro} />;
+        return (
+          <GestorCreditosTributarios key={empresaIdFiltro ?? 'todas'} empresaId={empresaIdFiltro} />
+        );
       case 'calculadora':
         return <CalculadoraTributos />;
       case 'simulador':
@@ -211,7 +216,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       case 'cronograma':
         return <CronogramaTransicao />;
       case 'irpj-csll':
-        return <ModuloIRPJCSLL empresaId={empresaIdFiltro} />;
+        return <ModuloIRPJCSLL key={empresaIdFiltro ?? 'todas'} empresaId={empresaIdFiltro} />;
       case 'retencoes':
         return <RetencoesFonte />;
       case 'exportacao':

@@ -13,7 +13,27 @@ export interface DocPaginaPdf {
   setFontSize?(tamanho: number): void;
   setTextColor?(r: number, g: number, b: number): void;
   text(texto: string, x: number, y: number, opcoes?: { maxWidth: number }): void;
+  splitTextToSize?(texto: string, largura: number): string[];
 }
+
+/**
+ * Geometria da nota na pagina (mm) e o piso do bloco seguinte. `baseLegalMinY` e o
+ * Y historico da base legal: com a nota em duas linhas o layout nao muda; com
+ * razao social longa (o cadastro aceita 255 caracteres) a base legal e a tabela
+ * descem junto, em vez de o texto da nota escrever por cima delas.
+ */
+export const NOTA_GEOMETRIA = {
+  y: 33,
+  maxWidth: 180,
+  /** Entrelinha da fonte 9 no jsPDF (mm). */
+  alturaLinha: 3.7,
+  /** Folga entre a ultima linha da nota e a base legal (mm). */
+  folga: 4,
+  /** Y minimo da base legal; a tabela entra 6 mm abaixo dela. */
+  baseLegalMinY: 44,
+  /** Caracteres por linha usados quando o doc nao expoe `splitTextToSize`. */
+  caracteresPorLinha: 112,
+};
 
 /**
  * Texto da nota. `empresaNome` é a empresa do relatório: a aba Créditos segue a
@@ -28,9 +48,26 @@ export function notaCreditoApuracao(empresaNome: string): string {
   );
 }
 
-/** Emite a nota na página de memória de cálculo, abaixo do subtítulo. */
-export function renderNotaCreditoApuracao(doc: DocPaginaPdf, empresaNome: string): void {
+/**
+ * Emite a nota na página de memória de cálculo, abaixo do subtítulo, e devolve o Y
+ * livre para o bloco seguinte (base legal e tabela).
+ */
+export function renderNotaCreditoApuracao(
+  doc: DocPaginaPdf,
+  empresaNome: string,
+  y: number = NOTA_GEOMETRIA.y
+): number {
+  const texto = notaCreditoApuracao(empresaNome);
   doc.setFontSize?.(9);
   doc.setTextColor?.(100, 116, 139);
-  doc.text(notaCreditoApuracao(empresaNome), 15, 33, { maxWidth: 180 });
+  doc.text(texto, 15, y, { maxWidth: NOTA_GEOMETRIA.maxWidth });
+
+  const linhas = doc.splitTextToSize
+    ? doc.splitTextToSize(texto, NOTA_GEOMETRIA.maxWidth).length
+    : Math.ceil(texto.length / NOTA_GEOMETRIA.caracteresPorLinha);
+
+  return Math.max(
+    NOTA_GEOMETRIA.baseLegalMinY,
+    y + Math.max(1, linhas) * NOTA_GEOMETRIA.alturaLinha + NOTA_GEOMETRIA.folga
+  );
 }

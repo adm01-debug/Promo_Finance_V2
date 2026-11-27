@@ -322,12 +322,14 @@ Deno.serve(
         doc.text('Valores consolidados da apuração mensal.', 15, 28);
         // A regra do crédito apropriado e o texto da nota vivem em
         // memoria-calculo.ts; esta página só emite a nota da empresa do relatório.
-        renderNotaCreditoApuracao(doc, empresaNome);
-        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 44);
+        // A funcao devolve o Y livre: razao social longa passa de duas linhas e a
+        // base legal precisa descer em vez de ficar sob o texto.
+        const yBaseLegal = renderNotaCreditoApuracao(doc, empresaNome);
+        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, yBaseLegal);
         doc.setTextColor(0, 0, 0);
 
         autoTable(doc, {
-          startY: 50,
+          startY: yBaseLegal + 6,
           head: [['Tributo', 'Débitos', 'Créditos', 'Saldo Anterior', 'A Pagar / Compensar']],
           body: [
             [

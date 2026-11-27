@@ -10,7 +10,11 @@ import {
   assertEquals,
   assertStringIncludes,
 } from 'https://deno.land/std@0.224.0/assert/mod.ts';
-import { notaCreditoApuracao, renderNotaCreditoApuracao } from './memoria-calculo.ts';
+import {
+  NOTA_GEOMETRIA,
+  notaCreditoApuracao,
+  renderNotaCreditoApuracao,
+} from './memoria-calculo.ts';
 
 const FONTE = await Deno.readTextFile(new URL('./index.ts', import.meta.url));
 
@@ -56,4 +60,33 @@ Deno.test('quem emite a nota é a página da memória de cálculo', () => {
 
 Deno.test('memória de cálculo avisa das apurações anteriores à regra por origem', () => {
   assertStringIncludes(FONTE, 'antes de 23/11/2026');
+});
+
+Deno.test('a base legal e a tabela descem quando a razão social passa de duas linhas', () => {
+  const pagina = (linhas: number) => ({
+    text: () => {},
+    splitTextToSize: () => new Array<string>(linhas).fill('x'),
+  });
+
+  // Nota de uma linha: o rodapé e a tabela ficam nas posições históricas.
+  assertEquals(renderNotaCreditoApuracao(pagina(1), 'Alfa Ltda'), NOTA_GEOMETRIA.baseLegalMinY);
+
+  // Razão social no limite do cadastro (255 caracteres) quebra em quatro linhas: o
+  // rodapé tem de sair abaixo da última linha, não por cima dela.
+  const y = renderNotaCreditoApuracao(pagina(4), 'Comercial de Produtos Ltda');
+  assert(
+    y >= NOTA_GEOMETRIA.y + 4 * NOTA_GEOMETRIA.alturaLinha,
+    `a base legal saiu em ${y} mm, dentro da nota`
+  );
+  assert(y > NOTA_GEOMETRIA.baseLegalMinY);
+
+  // Dublê sem splitTextToSize (não é um doc do jsPDF): a estimativa por caractere
+  // não pode encolher o bloco a ponto de voltar a sobrepor o texto.
+  const estimado = renderNotaCreditoApuracao({ text: () => {} }, 'X'.repeat(255));
+  assert(estimado > NOTA_GEOMETRIA.baseLegalMinY, `estimativa devolveu ${estimado} mm`);
+});
+
+Deno.test('o handler posiciona o rodapé e a tabela a partir da nota', () => {
+  assertStringIncludes(FONTE, 'const yBaseLegal = renderNotaCreditoApuracao(doc, empresaNome);');
+  assertStringIncludes(FONTE, 'startY: yBaseLegal + 6');
 });
