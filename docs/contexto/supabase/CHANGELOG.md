@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-27 17:15 UTC
+
+- **functions** alterado (2): `public.empresa_acessivel(_empresa_id uuid)`, `public.has_any_role(_user_id uuid, _roles app_role[])`
+
 ## 2026-11-27 01:18 UTC
 
 - **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_23`

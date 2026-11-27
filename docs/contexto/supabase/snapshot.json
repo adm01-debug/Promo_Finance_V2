@@ -70910,7 +70910,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 67,
+          "code_total_files": 69,
           "cron": [],
           "db": [
             "public.cancelar_nfe_estornar_xml_destacado",
@@ -74005,7 +74005,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 42,
+          "code_total_files": 43,
           "cron": [],
           "db": [],
           "triggers": [],
