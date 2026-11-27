@@ -4,21 +4,27 @@ import { bootstrap } from '../index.ts';
 const originalEnvGet = Deno.env.get;
 
 // `_shared/cors.ts` resolve a allowlist uma unica vez, no import, a partir de
-// `ALLOWED_ORIGINS` (que substitui a lista padrao). Derivar a origem esperada da
-// mesma fonte mantem o teste deterministico sem mexer no ambiente do processo
-// (outros testes deste repositorio dependem da primeira entrada padrao).
-function primeiraOrigemPermitida(): string {
+// `ALLOWED_ORIGINS` (que substitui a lista padrao). Usar a segunda origem da
+// lista impede que um preflight devolvendo sempre a primeira passe no teste.
+function origensDaAllowlist(): string[] {
   const bruto = Deno.env.get('ALLOWED_ORIGINS');
   const lista = (bruto ?? '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
-  return lista[0] ?? 'https://app.promo-finance.com';
+  return lista.length > 0
+    ? lista
+    : ['https://app.promo-finance.com', 'http://localhost:8080', 'http://localhost:5173'];
 }
+
+const ALLOWLIST = origensDaAllowlist();
+const PRIMEIRA_ORIGEM = ALLOWLIST[0];
+const ORIGEM_PERMITIDA = ALLOWLIST[1] ?? ALLOWLIST[0];
+// Curinga em `ALLOWED_ORIGINS` ecoa qualquer origem: nao ha origem "bloqueada".
+const CURINGA = ALLOWLIST.includes('*');
 
 // Origem da allowlist: recebe echo. Uma origem fora da lista nao recebe echo, e
 // o navegador bloqueia a resposta mesmo com status 200.
-const ORIGEM_PERMITIDA = primeiraOrigemPermitida();
 const ORIGEM_BLOQUEADA = 'https://origem-fora-da-allowlist.test';
 
 // Exercita a inicializacao HTTP de verdade: sobe o mesmo servidor que o runtime
@@ -65,7 +71,15 @@ Deno.test('gerar-alertas-tributarios preserva o preflight CORS pela porta HTTP',
     assertEquals(response.status, 200);
     // Status 200 sozinho nao prova CORS: sem o echo da origem o navegador
     // bloqueia a resposta e o preflight "passa" aqui e falha no browser.
+    // A origem escolhida e a segunda da lista, nunca a primeira (o fallback de
+    // `origemCors`), para que um eco fixo nao passe como se fosse echo real.
     assertEquals(response.headers.get('access-control-allow-origin'), ORIGEM_PERMITIDA);
+    if (!CURINGA) {
+      assert(
+        ORIGEM_PERMITIDA !== PRIMEIRA_ORIGEM,
+        'a allowlist tem uma unica origem: o teste nao distingue echo do fallback'
+      );
+    }
     assertEquals(response.headers.get('vary'), 'Origin');
     assert(
       (response.headers.get('access-control-allow-methods') ?? '').includes('POST'),
@@ -81,10 +95,24 @@ Deno.test('gerar-alertas-tributarios preserva o preflight CORS pela porta HTTP',
         'Access-Control-Request-Method': 'POST',
       },
     });
+    const origemDaBloqueada = bloqueado.headers.get('access-control-allow-origin');
     assert(
-      bloqueado.headers.get('access-control-allow-origin') !== ORIGEM_BLOQUEADA,
+      origemDaBloqueada !== ORIGEM_BLOQUEADA,
       'origem fora da allowlist recebeu echo em Access-Control-Allow-Origin'
     );
+    // `*` liberaria qualquer origem sem credenciais — so e aceitavel quando
+    // `ALLOWED_ORIGINS` pede o curinga explicitamente.
+    if (!CURINGA) {
+      assert(
+        origemDaBloqueada !== '*',
+        'preflight respondeu com Access-Control-Allow-Origin: * para origem fora da allowlist'
+      );
+      assertEquals(
+        origemDaBloqueada,
+        PRIMEIRA_ORIGEM,
+        'origem bloqueada deveria receber a primeira origem permitida (o navegador descarta)'
+      );
+    }
   } finally {
     await servidor.shutdown();
   }
