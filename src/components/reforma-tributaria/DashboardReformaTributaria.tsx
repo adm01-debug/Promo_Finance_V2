@@ -93,6 +93,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
   // Dados reais
   const { data: empresas = [] } = useAllEmpresas();
   const { alertas: alertasData } = useAlertasTributarios(empresaIdFiltro);
+  const chaveEmpresaAba = empresaIdFiltro ?? empresas?.[0]?.id ?? 'todas';
   const { apuracoes } = useApuracoesTributarias(empresaIdFiltro);
 
   // Contagem real de alertas críticos
@@ -196,12 +197,17 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
           />
         );
 
+      // A empresa e prop das abas: sem `key` o estado local (apuracao escolhida,
+      // mes/ano, filtros) sobrevive a troca de empresa e o calculo do IRPJ/CSLL
+      // gravava na apuracao da empresa anterior. A chave e a empresa efetiva de
+      // cada aba (sem filtro, a primeira da lista), para alternar entre as duas
+      // que apontam para a mesma empresa sem perder o que foi digitado.
       case 'apuracao':
-        return <ApuracaoMensal />;
+        return <ApuracaoMensal key={chaveEmpresaAba} empresaId={empresaIdFiltro} />;
       case 'operacoes':
-        return <OperacoesLista />;
+        return <OperacoesLista key={chaveEmpresaAba} empresaId={empresaIdFiltro} />;
       case 'creditos':
-        return <GestorCreditosTributarios />;
+        return <GestorCreditosTributarios key={chaveEmpresaAba} empresaId={empresaIdFiltro} />;
       case 'calculadora':
         return <CalculadoraTributos />;
       case 'simulador':
@@ -211,7 +217,7 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       case 'cronograma':
         return <CronogramaTransicao />;
       case 'irpj-csll':
-        return <ModuloIRPJCSLL />;
+        return <ModuloIRPJCSLL key={chaveEmpresaAba} empresaId={empresaIdFiltro} />;
       case 'retencoes':
         return <RetencoesFonte />;
       case 'exportacao':

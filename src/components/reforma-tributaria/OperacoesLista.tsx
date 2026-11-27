@@ -20,9 +20,14 @@ import { useOperacoesTributaveis } from '@/hooks/useOperacoesTributaveis';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 
-export function OperacoesLista() {
+interface OperacoesListaProps {
+  empresaId?: string;
+}
+
+export function OperacoesLista({ empresaId: empresaIdProp }: OperacoesListaProps = {}) {
   const { data: empresas } = useAllEmpresas();
-  const empresaId = empresas?.[0]?.id;
+  // A empresa do relatorio/painel manda; sem filtro, mantem a primeira da lista.
+  const empresaId = empresaIdProp || empresas?.[0]?.id;
   const { operacoes } = useOperacoesTributaveis(empresaId);
   const [busca, setBusca] = useState('');
 

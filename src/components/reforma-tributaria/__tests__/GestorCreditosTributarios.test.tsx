@@ -2,13 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { GestorCreditosTributarios } from '../GestorCreditosTributarios';
 
-const { mockUseCreditos } = vi.hoisted(() => ({ mockUseCreditos: vi.fn() }));
+const { mockUseCreditos, mockEmpresas } = vi.hoisted(() => ({
+  mockUseCreditos: vi.fn(),
+  // Lista viva: o mock de `useAllEmpresas` devolve este objeto, então cada teste
+  // pode trocar as empresas sem remontar o módulo.
+  mockEmpresas: { data: [] as { id: string; nome: string }[] },
+}));
 
 vi.mock('@/hooks/useCreditosTributarios', () => ({
   useCreditosTributarios: mockUseCreditos,
 }));
 vi.mock('@/hooks/useEmpresas', () => ({
-  useAllEmpresas: () => ({ data: [{ id: 'emp-1', nome: 'Empresa' }] }),
+  useAllEmpresas: () => mockEmpresas,
 }));
 vi.mock('../NaoCumulatividadeInfoCard', () => ({
   NaoCumulatividadeInfoCard: () => null,
@@ -37,7 +42,10 @@ const monta = (lista: Record<string, unknown>[]) =>
   mockUseCreditos.mockReturnValue({ creditos: lista, isLoading: false });
 
 describe('GestorCreditosTributarios - coluna Disponível (etapa 48/88)', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockEmpresas.data = [{ id: 'emp-1', nome: 'Empresa' }];
+  });
 
   it('crédito informativo não exibe saldo disponível na linha', () => {
     // Antes a coluna fazia valor_credito - valor_utilizado para toda linha:
@@ -68,5 +76,29 @@ describe('GestorCreditosTributarios - coluna Disponível (etapa 48/88)', () => {
         return tds[tds.length - 3]?.textContent?.includes('1.000');
       })
     ).toBe(true);
+  });
+
+  it('busca os créditos da empresa informada pelo painel, não da primeira da lista', () => {
+    // A aba abria sempre em `empresas[0]` (ordem por razão social): o PDF gerado
+    // para a Beta mandava o leitor para uma aba com os documentos da Alfa.
+    mockEmpresas.data = [
+      { id: 'emp-alfa', nome: 'Alfa' },
+      { id: 'emp-beta', nome: 'Beta' },
+    ];
+    monta([credito()]);
+    render(<GestorCreditosTributarios empresaId="emp-beta" />);
+
+    expect(mockUseCreditos).toHaveBeenCalledWith('emp-beta');
+  });
+
+  it('sem empresa informada continua usando a primeira da lista', () => {
+    mockEmpresas.data = [
+      { id: 'emp-alfa', nome: 'Alfa' },
+      { id: 'emp-beta', nome: 'Beta' },
+    ];
+    monta([credito()]);
+    render(<GestorCreditosTributarios />);
+
+    expect(mockUseCreditos).toHaveBeenCalledWith('emp-alfa');
   });
 });

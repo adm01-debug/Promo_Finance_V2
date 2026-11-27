@@ -8,6 +8,8 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
+import { renderNotaCreditoApuracao } from './memoria-calculo.ts';
+
 import { getRequestId } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
@@ -318,20 +320,16 @@ Deno.serve(
         doc.setFontSize(9);
         doc.setTextColor(100, 116, 139);
         doc.text('Valores consolidados da apuração mensal.', 15, 28);
-        // A apuração soma créditos de origens diferentes (XML destacado e
-        // estimativa por alíquota) e a tabela não guarda essa quebra: dizer
-        // "a partir dos DF-e" era afirmar uma origem que o número não tem.
-        doc.text(
-          'Créditos podem ter origem em XML destacado (grupo IBSCBS da NF-e) ou em estimativa por alíquota; a discriminação consta na tela de apuração.',
-          15,
-          33,
-          { maxWidth: 180 }
-        );
-        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, 44);
+        // A regra do crédito apropriado e o texto da nota vivem em
+        // memoria-calculo.ts; esta página só emite a nota da empresa do relatório.
+        // A funcao devolve o Y livre: razao social longa passa de duas linhas e a
+        // base legal precisa descer em vez de ficar sob o texto.
+        const yBaseLegal = renderNotaCreditoApuracao(doc, empresaNome);
+        doc.text('Base legal: LC 214/2025 arts. 7-11; ADCT 124-133.', 15, yBaseLegal);
         doc.setTextColor(0, 0, 0);
 
         autoTable(doc, {
-          startY: 50,
+          startY: yBaseLegal + 6,
           head: [['Tributo', 'Débitos', 'Créditos', 'Saldo Anterior', 'A Pagar / Compensar']],
           body: [
             [
@@ -366,10 +364,18 @@ Deno.serve(
           15,
           afterTable + 6
         );
+        // Apurações gravadas antes de 6a4604988 somavam crédito vindo de
+        // `operacoes_tributaveis` (compras e serviços tomados) sem filtrar
+        // origem/efeito: o total guardado nelas não segue a regra acima.
+        doc.text(
+          'Apurações gravadas antes de 23/11/2026 podem ter somado crédito estimado por alíquota (regra anterior de apuração).',
+          15,
+          afterTable + 12
+        );
         doc.text(
           `Competência: ${String(body.mesReferencia).padStart(2, '0')}/${body.anoReferencia}`,
           15,
-          afterTable + 12
+          afterTable + 18
         );
       }
 

@@ -43,9 +43,16 @@ const ehApropriavel = (c: { efeito_tributario?: boolean | null; origem?: string 
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
 
-export function GestorCreditosTributarios() {
+interface GestorCreditosTributariosProps {
+  empresaId?: string;
+}
+
+export function GestorCreditosTributarios({
+  empresaId: empresaIdProp,
+}: GestorCreditosTributariosProps = {}) {
   const { data: empresas } = useAllEmpresas();
-  const empresaId = empresas?.[0]?.id;
+  // A empresa do relatorio/painel manda; sem filtro, mantem a primeira da lista.
+  const empresaId = empresaIdProp || empresas?.[0]?.id;
 
   const { creditos, isLoading } = useCreditosTributarios(empresaId);
 

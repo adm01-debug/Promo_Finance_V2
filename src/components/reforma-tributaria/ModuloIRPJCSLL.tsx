@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { formCalculoDaEmpresa } from './irpj-csll/form-calculo';
 import { IRPJCSLLCalculadora } from './irpj-csll/IRPJCSLLCalculadora';
 import { IRPJCSLLResumoCards } from './irpj-csll/IRPJCSLLResumoCards';
 import { IRPJCSLLApuracoesTable } from './irpj-csll/IRPJCSLLApuracoesTable';
@@ -32,9 +33,14 @@ import { Calculator, Plus } from 'lucide-react';
 import { useIRPJCSLL } from '@/hooks/useIRPJCSLL';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
-export function ModuloIRPJCSLL() {
+interface ModuloIRPJCSLLProps {
+  empresaId?: string;
+}
+
+export function ModuloIRPJCSLL({ empresaId: empresaIdProp }: ModuloIRPJCSLLProps = {}) {
   const { data: empresas } = useAllEmpresas();
-  const empresaId = empresas?.[0]?.id;
+  // A empresa do relatorio/painel manda; sem filtro, mantem a primeira da lista.
+  const empresaId = empresaIdProp || empresas?.[0]?.id;
 
   const {
     apuracoes,
@@ -71,6 +77,11 @@ export function ModuloIRPJCSLL() {
     return apuracoes.filter((a) => a.ano === anoSelecionado);
   }, [apuracoes, anoSelecionado]);
 
+  // A escolha da apuracao vive em estado local: com o filtro em outra empresa o
+  // id guardado pode nao existir na lista exibida e o calculo gravaria na
+  // apuracao da empresa anterior usando o saldo de prejuizos da empresa atual.
+  const formCalculoValido = formCalculoDaEmpresa(formCalculo, apuracoesAno);
+
   // Totais do ano
   const totaisAno = useMemo(() => {
     return apuracoesAno.reduce(
@@ -95,9 +106,9 @@ export function ModuloIRPJCSLL() {
   };
 
   const handleCalcular = async () => {
-    if (!formCalculo.apuracaoId) return;
+    if (!formCalculoValido.apuracaoId) return;
     await calcularApuracao.mutateAsync({
-      id: formCalculo.apuracaoId,
+      id: formCalculoValido.apuracaoId,
       lucroContabil: formCalculo.lucroContabil,
       adicoes: {
         permanentes: formCalculo.adicoesPermanentes,
@@ -277,7 +288,7 @@ export function ModuloIRPJCSLL() {
         <TabsContent value="calcular">
           <IRPJCSLLCalculadora
             apuracoesAno={apuracoesAno}
-            formCalculo={formCalculo}
+            formCalculo={formCalculoValido}
             setFormCalculo={setFormCalculo}
             saldoPrejuizos={saldoPrejuizos}
             handleCalcular={handleCalcular}
