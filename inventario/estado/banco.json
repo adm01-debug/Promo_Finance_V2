@@ -8,7 +8,7 @@
     },
     {
       "detalhe": [
-        "246307 linhas com mais de 7 dias"
+        "246308 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -31,9 +31,9 @@
     },
     "historico": {
       "bytes": 147570688,
-      "linhas": 259245,
+      "linhas": 259246,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 246307
+      "mais_de_7_dias": 246308
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -1481,7 +1481,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-27T17:13:07Z",
+  "medido_em": "2026-11-27T17:14:07Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 271,
     "tabelas_em_types_ts": 271
@@ -1497,7 +1497,7 @@
     "postgres": "17.6",
     "tabelas_public": 271,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 423775379,
+    "tamanho_bytes": 425159827,
     "triggers_public": 175,
     "views_public": 18
   },
@@ -2030,7 +2030,7 @@
     {
       "bytes": 802816,
       "citada_no_banco": true,
-      "linhas": 3364,
+      "linhas": 3369,
       "linhas_exatas": true,
       "nome": "auth_logs",
       "policies": 3,
@@ -2223,7 +2223,7 @@
       }
     },
     {
-      "bytes": 6815744,
+      "bytes": 6889472,
       "citada_no_banco": true,
       "linhas": 24831,
       "linhas_exatas": true,
@@ -2688,7 +2688,7 @@
       }
     },
     {
-      "bytes": 884736,
+      "bytes": 892928,
       "citada_no_banco": true,
       "linhas": 1582,
       "linhas_exatas": true,
@@ -2793,7 +2793,7 @@
       }
     },
     {
-      "bytes": 81305600,
+      "bytes": 81313792,
       "citada_no_banco": true,
       "linhas": 255561,
       "linhas_exatas": false,
@@ -3740,7 +3740,7 @@
     {
       "bytes": 4456448,
       "citada_no_banco": true,
-      "linhas": 3225,
+      "linhas": 3227,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4475,7 +4475,7 @@
     {
       "bytes": 1163264,
       "citada_no_banco": true,
-      "linhas": 3366,
+      "linhas": 3371,
       "linhas_exatas": true,
       "nome": "rate_limit_logs",
       "policies": 2,
