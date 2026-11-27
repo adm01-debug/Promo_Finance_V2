@@ -4128,7 +4128,7 @@
    "nome": "sync-catalogo-ncm-nbs",
    "entrada": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
    "arquivos": 2,
-   "linhas": 497,
+   "linhas": 580,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4156,7 +4156,7 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": true,
    "orfa": false,
-   "testes": 1
+   "testes": 2
   },
   {
    "nome": "sync-fundamentacao-legal",

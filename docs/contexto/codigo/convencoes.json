@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (339)",
+   "co-localizado (__tests__) (340)",
    "outro (114)",
    "co-localizado (*.test) (50)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: libera os 4 syncs de catalogos RFB no deploy controlado de Edge Functions (#567)",
    "fix(db): reconcilia colunas de elisao_simulacoes_regime nas migrations (#576)",
    "fix: corrige origem do credito na memoria de calculo do PDF tributario (#582)",
    "feat: liga a pré-validação do grupo IBS/CBS na tela de nova NF-e (#581)",
-   "docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)",
-   "chore(integrity): regera baseline do Gate #26 para produto_cclasstrib_padrao (#579)"
+   "docs: corrige o plano de referencia RT/RFB (etapas 84-96 com evidencia real) (#580)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

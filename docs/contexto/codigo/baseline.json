@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "858a8f1953f46d6d49eff70f48bd2682a185e37a",
+  "commit": "e7ba866728de03db91203d694e7dfc437a592f9f",
   "branch": "main",
-  "data_commit": "2026-11-27T00:29:32-03:00",
+  "data_commit": "2026-11-27T00:29:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e7ba866",
+    "data": "2026-11-27",
+    "assunto": "infra: libera os 4 syncs de catalogos RFB no deploy controlado de Edge Functions (#567)"
+   },
    {
     "sha": "858a8f1",
     "data": "2026-11-27",
@@ -126,14 +131,9 @@
     "sha": "f5e0e48",
     "data": "2026-11-25",
     "assunto": "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)"
-   },
-   {
-    "sha": "de045cd",
-    "data": "2026-11-25",
-    "assunto": "feat: sync do catalogo cClassTrib pela API de dados abertos da RFB (etapa 79) (#549)"
    }
   ],
-  "arquivos_mudados_7d": 359,
+  "arquivos_mudados_7d": 362,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -310,9 +310,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4133,
-  "arquivos_codigo": 2590,
-  "linhas_codigo": 467741,
+  "arquivos_total": 4134,
+  "arquivos_codigo": 2591,
+  "linhas_codigo": 467993,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -324,7 +324,7 @@
   "tabelas": 319,
   "migrations": 1086,
   "cron_jobs": 28,
-  "testes": 545,
+  "testes": 546,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 232
@@ -687,8 +687,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 263,
-   "linhas": 57623
+   "arquivos": 264,
+   "linhas": 57875
   },
   "supabase/tests": {
    "arquivos": 2,

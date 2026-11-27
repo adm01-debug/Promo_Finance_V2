@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 545,
+ "total": 546,
  "por_tipo": {
   "contrato": 5,
   "e2e": 36,
   "pytest": 31,
-  "unit": 466
+  "unit": 467
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 339
+   "arquivos": 340
   },
   {
    "padrao": "outro",
@@ -4812,14 +4812,23 @@
    "casos": 14
   },
   {
+   "arquivo": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/gravar_test.ts",
+   "tipo": "unit",
+   "linhas": 62,
+   "testa": [
+    "supabase/functions/sync-catalogo-ncm-nbs/index.ts"
+   ],
+   "casos": 1
+  },
+  {
    "arquivo": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
    "tipo": "unit",
-   "linhas": 225,
+   "linhas": 332,
    "testa": [
     "supabase/functions/_shared/rfb-dados-abertos.ts",
     "supabase/functions/sync-catalogo-ncm-nbs/montar.ts"
    ],
-   "casos": 17
+   "casos": 23
   },
   {
    "arquivo": "supabase/functions/sync-fundamentacao-legal/__tests__/montar_test.ts",
@@ -5328,6 +5337,7 @@
   "supabase/functions/sso-test-login/pipeline.ts": 1,
   "supabase/functions/sync-aliquota-referencia/montar.ts": 1,
   "supabase/functions/sync-catalogo-cclasstrib/montar.ts": 1,
+  "supabase/functions/sync-catalogo-ncm-nbs/index.ts": 1,
   "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": 1,
   "supabase/functions/sync-fundamentacao-legal/montar.ts": 1,
   "supabase/functions/whatsapp-ia-proativo/index.ts": 1,

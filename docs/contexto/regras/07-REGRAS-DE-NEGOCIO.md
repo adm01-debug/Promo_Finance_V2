@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `858a8f1953` · branch `main` · 2026-11-27 03:30 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e7ba866728` · branch `main` · 2026-11-27 03:30 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5286,7 +5286,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4321 testes em 376 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4328 testes em 377 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5335,6 +5335,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/periodicidade-apuracao.test.ts` | 23 | IRPJ por período de apuração · não aplica adicional até R$ 60 mil no trimestre · aplica 10% sobre o excedente trimestral · usa limite de R$ 240 mil no período anual … |
 | `src/lib/tributario/__tests__/pis-cofins-creditos.test.ts` | 23 | base de cálculo da receita (Tema 69) · exclui ICMS, IPI e descontos incondicionais · nunca retorna base negativa · ignora valores inválidos ou negativos … |
 | `src/lib/tributario/__tests__/validador-ncm-cst.test.ts` | 23 | validarItemFiscal · REG-011: NCM 02013000 com cClassTrib 200035 e CST divergente · n?o acusa quando o CST declarado bate com o do cat?logo · REG-013: cClassTrib fora do cat?logo vigente … |
+| `supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts` | 23 | montarNcms grava so NCM de 8 digitos e mantem a vigencia base · montarNcms usa a descricao da ocorrencia util quando a primeira vem vazia · montarNcms aceita a chave  · montarNbs aceita codigo de 2 a 9 digitos e descarta o resto … |
 | `src/lib/__tests__/navigation.test.ts` | 22 | getRouteMeta · resolve rotas exatas · resolve rotas com parâmetro · retorna undefined para rota desconhecida … |
 | `src/lib/contabil/__tests__/balancete-utils.test.ts` | 22 | round2 · elimina ruído de ponto flutuante · splitSaldo · classifica saldo positivo como devedor … |
 | `src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts` | 22 | detectarDeliberacaoLucros · é aplicável dentro da janela com saldo e sem ata registrada · não é aplicável após 31/12/2025 · não é aplicável quando a ata já foi registrada … |
@@ -5361,7 +5362,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/reforma-tributaria/__tests__/regras-tipos.test.ts` | 17 | LinhaCronograma — shape e campos obrigatórios (etapa 13) · todos os 10 campos obrigatórios presentes em cada linha · cobertura: há linhas para cada ano de 2026 a 2033 · 2026 — ibsMun=0 (ano-teste, art. 343 LC 214/2025) … |
 | `src/lib/tributario/calculadora/__tests__/regimes.test.ts` | 17 | calcularLucroPresumido · comércio presume 8% IRPJ / 12% CSLL · rejeita receita > R$ 78 mi · PIS/COFINS cumulativo (0,65% + 3%) … |
 | `src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts` | 17 | E2E orquestrador-elisao — cobertura das 9 estratégias · Lucro Real maximiza estratégias aplicáveis vs Lucro Presumido vs Simples · JCP só é aplicável em Lucro Real com PL e lucro suficientes · REINTEGRA aplicável apenas com receita de exportação > 0 … |
-| `supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts` | 17 | montarNcms grava so NCM de 8 digitos e mantem a vigencia base · montarNcms usa a descricao da ocorrencia util quando a primeira vem vazia · montarNcms aceita a chave  · montarNbs aceita codigo de 2 a 9 digitos e descarta o resto … |
 | `src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx` | 16 | ContasReceberFilters · Busca textual · renderiza input de busca · chama onSearchChange ao digitar … |
 | `src/components/ui/__tests__/alert.test.tsx` | 16 | Alert · renders with children · has role= · renders default variant with bg-muted … |
 | `src/lib/__tests__/regua-cobranca-template.contract.test.ts` | 16 | executar-regua-cobranca — usa o template real · consulta templates_cobranca · carrega o template em cada envio (chamada real, não código morto) · seleciona assunto e corpo do template … |
@@ -5590,7 +5590,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx` | 4 | useCatalogoCclasstrib · reconsulta ao remontar quando a leitura anterior voltou vazia · nao reconsulta ao remontar quando a leitura esta fresca · releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria |
 | `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
-| … +76 linhas — lista completa em `context.json` | | |
+| … +77 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6185,4 +6185,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Classificação de mensagens de validação SPED (ECF/ECD) em categorias | `src/lib/sped-validacoes-categorias.ts` |
 | # PASSO A PASSO — Validação no ${pvaNome}`, | `src/lib/sped-zip.ts` |
 | Auditoria nunca deve quebrar o fluxo de logout. | `src/lib/sso-slo-audit.ts` |
-| … +539 linhas — lista completa em `context.json` | |
+| … +541 linhas — lista completa em `context.json` | |

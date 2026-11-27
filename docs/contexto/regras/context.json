@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "858a8f1953f46d6d49eff70f48bd2682a185e37a",
+  "sha": "e7ba866728de03db91203d694e7dfc437a592f9f",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "generated_at": "2026-11-27 03:30 UTC",
-  "files_total": 4172,
-  "code_files": 3750,
-  "code_lines": 541246
+  "files_total": 4173,
+  "code_files": 3751,
+  "code_lines": 541499
  },
  "version": "1.3.2",
- "facts_hash": "b131e613f918a3eb",
+ "facts_hash": "3912c2c2f099ee90",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,7 +340,7 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1329,
+   ".ts": 1330,
    ".sql": 1159,
    ".tsx": 1140,
    ".mjs": 68,
@@ -72453,8 +72453,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 263,
-   "lines": 57886,
+   "files": 264,
+   "lines": 58139,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -88772,8 +88772,16 @@
     "text": "Uma ocorrencia sem descricao nao pode consumir o codigo: a Receita manda o"
    },
    {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    "text": "periodo aberto por reativacao: o segundo nao pode voltar para a data-base."
+   },
+   {
     "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
     "text": "descricao continua na Receita e nao pode ser encerrado por falha nossa."
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+    "text": "propria chave dele, e apenas quando a data consultada cai dentro dele."
    },
    {
     "file": "supabase/functions/sync-profile-to-bitrix/index.ts",
@@ -140959,6 +140967,10 @@
     "name": "compararVersao — V0073 depois de V0072 e antes de V0080"
    },
    {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/gravar_test.ts",
+    "name": "gravar nao envia nem conta a linha preservada da carga retroativa"
+   },
+   {
     "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
     "name": "montarNcms grava so NCM de 8 digitos e mantem a vigencia base"
    },
@@ -141017,6 +141029,30 @@
    {
     "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
     "name": "separarReativados nao reativa na data-base do catalogo"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados mantem fora da data-base o periodo reaberto antes"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados preserva o periodo aberto em carga retroativa"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados preserva quando a data e igual ou anterior a base"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados reabre no inicio do periodo aberto quando a data e igual"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "separarReativados reabre quando a data consultada e posterior ao inicio"
+   },
+   {
+    "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    "name": "semFimVigencia tira a coluna do payload sem perder os demais campos"
    },
    {
     "file": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
@@ -249199,8 +249235,9 @@
   },
   "supabase/functions/sync-catalogo-ncm-nbs/index.ts": {
    "path": "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
-   "lines": 290,
+   "lines": 326,
    "exports": [
+    "function gravar",
     "const handler"
    ],
    "dyn_from": 4,
@@ -249230,6 +249267,9 @@
      "value": "200"
     }
    ],
+   "rule_comments": [
+    "periodo aberto por reativacao: o segundo nao pode voltar para a data-base."
+   ],
    "doc": "Edge: sync-catalogo-ncm-nbs (etapa 80 do plano RT/RFB) Mantem os espelhos locais de NCM (`catalogo_ncm`) e NBS (`catalogo_nbs`) alinhados com a API publica de dados abertos da RFB. Sem eles, o validador da etapa 46 (`src/lib/tributario/validador-ncm-cst.ts`) nao tem contra o que comparar o NCM do it …",
    "percents": [
     "// Em lotes: `in(...)` com o teto de 10% de ~10 mil NCMs estoura o tamanho de"
@@ -249238,7 +249278,7 @@
   },
   "supabase/functions/sync-catalogo-ncm-nbs/montar.ts": {
    "path": "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
-   "lines": 209,
+   "lines": 256,
    "exports": [
     "const MIN_NCM_API",
     "const MIN_NBS_API",
@@ -249249,6 +249289,7 @@
     "interface ConjuntosVigencia",
     "interface LinhasPorVigencia",
     "function separarReativados",
+    "function semFimVigencia",
     "function montarNcms",
     "function diaAnterior",
     "function montarNbs"
@@ -249264,18 +249305,33 @@
     }
    ],
    "rule_comments": [
-    "descricao continua na Receita e nao pode ser encerrado por falha nossa."
+    "descricao continua na Receita e nao pode ser encerrado por falha nossa.",
+    "propria chave dele, e apenas quando a data consultada cai dentro dele."
    ],
    "percents": [
     "* ~10% disso, o bastante para barrar resposta truncada sem impedir um catalogo"
    ]
   },
-  "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts": {
-   "path": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
-   "lines": 226,
+  "supabase/functions/sync-catalogo-ncm-nbs/__tests__/gravar_test.ts": {
+   "path": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/gravar_test.ts",
+   "lines": 63,
    "is_test": true,
    "rule_comments": [
-    "(logo nao pode ser encerrado) e nao vira linha."
+    "* `preservadas` (carga retroativa) nao pode chegar ao `upsert` nem ao contador",
+    "fica apenas no relatorio."
+   ],
+   "doc": "Etapa 80 — resumo da gravacao dos catalogos NCM/NBS. `preservadas` (carga retroativa) nao pode chegar ao `upsert` nem ao contador `gravados`: os dois descrevem o que foi para o banco, e a linha preservada fica apenas no relatorio.",
+   "tests": [
+    "gravar nao envia nem conta a linha preservada da carga retroativa"
+   ]
+  },
+  "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts": {
+   "path": "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+   "lines": 333,
+   "is_test": true,
+   "rule_comments": [
+    "(logo nao pode ser encerrado) e nao vira linha.",
+    "O payload do upsert nao pode carregar `fim_vigencia`: com a coluna, o"
    ],
    "doc": "Etapa 80 — mapeamento das listas NCM/NBS para `catalogo_ncm` / `catalogo_nbs` e guardas do cliente da API de dados abertos. O caro de errar aqui nao e o transporte, e o conteudo: um codigo gravado com descricao suposta aparece para o usuario, e um encerramento de vigencia indevido faz o validador ac …",
    "tests": [
@@ -249294,6 +249350,12 @@
     "separarReativados abre periodo novo para codigo que voltou a aparecer",
     "separarReativados nao reativa codigo que continua aberto",
     "separarReativados nao reativa na data-base do catalogo",
+    "separarReativados mantem fora da data-base o periodo reaberto antes",
+    "separarReativados preserva o periodo aberto em carga retroativa",
+    "separarReativados preserva quando a data e igual ou anterior a base",
+    "separarReativados reabre no inicio do periodo aberto quando a data e igual",
+    "separarReativados reabre quando a data consultada e posterior ao inicio",
+    "semFimVigencia tira a coluna do payload sem perder os demais campos",
     "diaAnterior devolve o ultimo dia vigente antes do recorte",
     "diaAnterior atravessa virada de mes, ano e ano bissexto"
    ]
@@ -255536,10 +255598,24 @@
   }
  },
  "git": {
-  "sha": "858a8f1953f46d6d49eff70f48bd2682a185e37a",
+  "sha": "e7ba866728de03db91203d694e7dfc437a592f9f",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e7ba866",
+    "date": "2026-11-27",
+    "author": "adm01-debug",
+    "subject": "infra: libera os 4 syncs de catalogos RFB no deploy controlado de Edge Functions (#567)",
+    "files": [
+     ".github/workflows/functions-deploy.yml",
+     "docs/agentes/vercel-deploy.md",
+     "supabase/functions/sync-catalogo-ncm-nbs/__tests__/gravar_test.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+     "supabase/functions/sync-catalogo-ncm-nbs/montar.ts"
+    ]
+   },
    {
     "sha": "858a8f1",
     "date": "2026-11-27",
@@ -255999,16 +256075,6 @@
      "docs/ci/kpi.json",
      "docs/receitafederal/rfb-changelog-state.json"
     ]
-   },
-   {
-    "sha": "8b0db85",
-    "date": "2026-11-24",
-    "author": "adm01-debug",
-    "subject": "docs: escreve as 35 etapas do plano de QA e o 05-PROGRESSO.md (#551)",
-    "files": [
-     "docs/qa/04-PLANO.md",
-     "docs/qa/05-PROGRESSO.md"
-    ]
    }
   ],
   "hot_files": [
@@ -256031,6 +256097,10 @@
    [
     "docs/receitafederal/DADOS_ABERTOS_RFB.md",
     4
+   ],
+   [
+    "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
+    3
    ],
    [
     "scripts/integrity/baseline/expected-policies.json",
@@ -256057,6 +256127,14 @@
     3
    ],
    [
+    "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
+    2
+   ],
+   [
+    "supabase/functions/sync-catalogo-ncm-nbs/montar.ts",
+    2
+   ],
+   [
     "src/components/nfe/NovaNFeForm.tsx",
     2
    ],
@@ -256077,19 +256155,7 @@
     2
    ],
    [
-    "supabase/functions/sync-catalogo-ncm-nbs/index.ts",
-    2
-   ],
-   [
     "supabase/functions/sync-fundamentacao-legal/index.ts",
-    2
-   ],
-   [
-    "SECURITY_RULES.md",
-    2
-   ],
-   [
-    "scripts/ci/deno-check-functions.sh",
     2
    ]
   ]
