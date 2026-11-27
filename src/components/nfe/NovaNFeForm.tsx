@@ -335,8 +335,9 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
                 />
               </div>
               <div>
-                <Label>Quantidade</Label>
+                <Label htmlFor={`quantidade-${index}`}>Quantidade</Label>
                 <Input
+                  id={`quantidade-${index}`}
                   type="number"
                   min="1"
                   value={item.quantidade}
@@ -346,8 +347,9 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
                 />
               </div>
               <div>
-                <Label>Valor Unitário</Label>
+                <Label htmlFor={`valor-unitario-${index}`}>Valor Unitário</Label>
                 <Input
+                  id={`valor-unitario-${index}`}
                   type="number"
                   step="0.01"
                   min="0"
@@ -395,8 +397,9 @@ export function NovaNFeForm({ onClose }: NovaNFeFormProps) {
                 <Input value={item.cstIbsCbs ?? ''} disabled className="bg-muted" placeholder="—" />
               </div>
               <div>
-                <Label>CBS + IBS</Label>
+                <Label htmlFor={`cbs-ibs-${index}`}>CBS + IBS</Label>
                 <Input
+                  id={`cbs-ibs-${index}`}
                   value={formatCurrency((item.vCBS ?? 0) + (item.vIBS ?? 0))}
                   disabled
                   className="bg-muted"

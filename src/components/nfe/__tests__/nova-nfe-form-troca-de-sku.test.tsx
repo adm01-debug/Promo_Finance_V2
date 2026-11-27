@@ -10,6 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { resolverPadraoPorCodigo } from '@/lib/tributario/produtos/cclasstrib-padrao';
 import { crtDoRegime, totaisDaNota } from '@/lib/nfe/pre-validacao-nota';
+import { formatCurrency } from '@/lib/formatters';
 import { NovaNFeForm } from '../NovaNFeForm';
 import type { ItemNFe } from '../nfe-types';
 
@@ -68,6 +69,7 @@ beforeEach(() => {
 });
 
 const campo = (placeholder: string) => screen.getByPlaceholderText(placeholder) as HTMLInputElement;
+const campoDoItem = (rotulo: string) => screen.getByLabelText(rotulo) as HTMLInputElement;
 const sku = () => campo('SKU');
 const ncm = () => campo('00000000');
 
@@ -189,15 +191,25 @@ describe('NovaNFeForm: totais do grupo e CRT do emitente', () => {
     expect(crtDoRegime(null)).toBeUndefined();
   });
 
-  it('nao acusa total ausente quando o item ja tem o grupo calculado', () => {
+  it('nao acusa total ausente nem divergencia 1091 com o item enquadrado e valorizado', () => {
     catalogo.opcoes = [
       { cst: '200', cclasstrib: '200032', descricao: 'tributado', vigencia_inicio: '2026-01-01' },
     ];
     render(<NovaNFeForm onClose={() => {}} />);
 
     digitarSku('KIT-1');
-    // A tela nao tem campo de totais: o aviso de total ausente seria impossivel
-    // de resolver aqui se os totais nao saissem da soma dos itens.
+    // Sem valor unitario a base do item fica zerada e as duas guardas de total
+    // passariam por vacuidade (0 = soma de itens sem grupo). 2 x 100 fixa base
+    // tributavel de 200 para o item enquadrado.
+    fireEvent.change(campoDoItem('Quantidade'), { target: { value: '2' } });
+    fireEvent.change(campoDoItem('Valor Unitário'), { target: { value: '100' } });
+
+    // Vacuidade descartada: o item destacou IBS/CBS sobre a base informada.
+    expect(campoDoItem('CBS + IBS').value).not.toBe(formatCurrency(0));
+
+    // A tela nao tem campo de totais: o total da nota sai da soma dos itens, entao
+    // nem o aviso de total ausente nem a divergencia 1091 podem aparecer.
     expect(screen.queryByText(/não informa os totais/)).toBeNull();
+    expect(screen.queryByText(/difere da soma dos itens/)).toBeNull();
   });
 });
