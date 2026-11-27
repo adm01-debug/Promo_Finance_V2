@@ -11572,6 +11572,7 @@
    "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts"
   ],
   "supabase/functions/gerar-relatorio-anual/index.ts": [
+   "supabase/functions/_shared/auth-guard.ts",
    "supabase/functions/_shared/contract-validator.ts",
    "supabase/functions/_shared/correlation.ts",
    "supabase/functions/_shared/cors.ts",

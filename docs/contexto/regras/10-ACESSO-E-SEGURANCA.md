@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e7ba866728` · branch `main` · 2026-11-27 03:30 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `254c8f958b` · branch `main` · 2026-11-27 17:13 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -233,7 +233,7 @@
 | `regua_cobranca_etapas` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (regua_id IN ( SELECT regua_cobranca.id FROM regua_cobranca WHERE (regua_cobranca.empresa_id IN ( SELECT user_empresas.empres …<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM regua_cobranca r WHERE ((r.id … | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM regua_cobranca r WHERE ((r.id … | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM regua_cobranca r WHERE ((r.id … | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role)<br>authenticated: (has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) AND (EXISTS ( SELECT 1 FROM regua_cobranca r WHERE ((r.id … |
 | `regua_cobranca_status` | enabled | public: auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = regua_cobranca_status.empresa_id)<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
 | `relatorios_agendados` | enabled | authenticated: ( created_by = auth.uid() OR public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) …<br>authenticated: ((created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) AND empresa_acessivel(empresa_id) | authenticated: created_by = auth.uid()<br>authenticated: ((created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) AND empresa_acessivel(empresa_id) | authenticated: ( created_by = auth.uid() OR public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) …<br>authenticated: ((created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) AND empresa_acessivel(empresa_id) | authenticated: ( created_by = auth.uid() OR public.has_any_role(auth.uid(), ARRAY['admin'::public.app_role, 'financeiro'::public.app_role]) …<br>authenticated: ((created_by = (SELECT auth.uid())) OR has_role((SELECT auth.uid()), 'admin'::app_role)) AND empresa_acessivel(empresa_id) |
-| `relatorios_tributarios_agendados` | enabled | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: ((empresa_id IN ( SELECT profiles.empresa_id FROM profiles WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1 … | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: ( public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') ) AND empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: ( public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') ) AND empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …<br>authenticated: public.has_role(auth.uid(), 'admin') AND empresa_acessivel(empresa_id) |
+| `relatorios_tributarios_agendados` | enabled | authenticated: public.empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: ( public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') ) AND empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: ( public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') ) AND empresa_acessivel(empresa_id) | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: public.has_role(auth.uid(), 'admin') AND empresa_acessivel(empresa_id) |
 | `resumos_executivos_semanais` | enabled | service_role: true<br>public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | service_role: true<br>public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | service_role: true<br>public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | service_role: true<br>public: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
 | `retencao_politicas` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | — | — |
 | `retencoes_fonte` | enabled | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … | authenticated: true<br>authenticated: ((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND … |
@@ -306,7 +306,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728104255_519fc6e0-ce25-48fc-870f-064bbcff22cb.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql`, `supabase/migrations/20260825230000_initplan_rls_e67.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 375 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 376 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -415,6 +415,7 @@
 - `supabase/functions/exportar-sped-contribuicoes/index.ts`
 - `supabase/functions/external-data/index.ts`
 - `supabase/functions/gerar-acoes-recomendadas/index.ts`
+- `supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts`
 - `supabase/functions/gerar-alertas-tributarios/index.test.ts`
 - `supabase/functions/gerar-alertas-tributarios/index.ts`
 - `supabase/functions/gerar-alertas/index.ts`
@@ -457,8 +458,7 @@
 - `supabase/functions/sso-callback/index.ts`
 - `supabase/functions/sso-initiate/index.ts`
 - `supabase/functions/sso-logout/index.ts`
-- `supabase/functions/sso-test-login/index.ts`
-- … +225 (lista completa em `context.json`)
+- … +226 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 
@@ -697,10 +697,12 @@
 - `sefaz-dfe-puxar`
 - `convidar-usuario`
 - `digest-silenciamentos-erro`
+- `enviar-relatorios-tributarios-agendados`
 - `gerar-alertas-dispatcher`
 - `gerar-dre-tributaria`
 - `gerar-heatmap-tributario`
 - `guardar-xml-nfe-autorizada`
+- `gerar-relatorio-anual`
 - `api-keys-manage`
 - `health`
 - `mcp-query`

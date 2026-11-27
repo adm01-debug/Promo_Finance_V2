@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e7ba866728` · branch `main` · 2026-11-27 03:30 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `254c8f958b` · branch `main` · 2026-11-27 17:13 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `solicitacoes_lgpd` | lgpd_owner_insert | INSERT | authenticated | permissive |  | `((user_id = ( SELECT auth.uid() AS uid)) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id)))` |
 | `solicitacoes_lgpd` | lgpd_scoped_select | SELECT | authenticated | permissive | `((user_id = ( SELECT auth.uid() AS uid)) OR (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id)))` |  |
 | `solicitacoes_lgpd` | lgpd_scoped_update | UPDATE | authenticated | permissive | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` | `(public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (empresa_id IS NOT NULL) AND public.empresa_membro_ativo(empresa_id))` |
-| … +532 linhas — lista completa em `context.json` | | | | | | |
+| … +530 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -4490,7 +4490,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `RATE_LIMIT_WINDOW_MIN` | `60` | `supabase/functions/cnpja-lookup/index.ts` |
 | `STATUS_NOTIFICADO` | `'notificado'` | `supabase/functions/enviar-digest-conformidade/index.ts` |
 | `FUSO` | `'America/Sao_Paulo'` | `supabase/functions/enviar-digest-conformidade/index.ts` |
-| `SIMPLES_SUBLIMITE` | `4` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
+| `SIMPLES_SUBLIMITE` | `3` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
+| `SIMPLES_TETO_FEDERAL` | `4` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
 | `FATOR_R_MIN` | `0.28` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
 | `IRPFM_MENSAL_LIMITE` | `50` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
 | `DIAS_VENCIMENTO_ALERTA` | `5` | `supabase/functions/gerar-alertas-tributarios/index.ts` |
@@ -4521,8 +4522,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `SCENARIOS` | `1000` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
 | `TICKS` | `96` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
 | `TICK_MS` | `15` | `supabase/functions/sefaz-dfe-dispatcher/policy_test.ts` |
-| `MAX_BATCHES_PER_CNPJ` | `10` | `supabase/functions/sefaz-dfe-puxar/index.ts` |
-| … +38 linhas — lista completa em `context.json` | | |
+| … +39 linhas — lista completa em `context.json` | | |
 
 ### H.2 Prazos, expirações e janelas de tempo
 
@@ -4905,6 +4905,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 10 | `supabase/functions/gerar-acoes-recomendadas/index.ts` |
 | 5 | `supabase/functions/gerar-acoes-recomendadas/index.ts` |
 | 1 | `supabase/functions/gerar-alertas-tributarios/index.ts` |
+| 5 | `supabase/functions/gerar-alertas-tributarios/index.ts` |
 | 50000 | `supabase/functions/gerar-pacote-evidencias/index.ts` |
 | 12 | `supabase/functions/gerar-snapshots-conformidade/index.ts` |
 | 1 | `supabase/functions/gerar-sped-ecf/index.ts` |
@@ -5286,7 +5287,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (4328 testes em 377 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (4347 testes em 382 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5497,6 +5498,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/pages/auth/__tests__/CorporateOnboardingAudit.test.tsx` | 8 | useSsoOnboardingAudit · payload por cenário em /auth/corporate · domínio sem providers: registra domain_resolved com domain e providers_count=0 · password_fallback_used após domínio sem providers carrega o domain no contexto · domínio com 1 provider sem force: domain_resolved tem providers_count=1 e force_sso=false … |
 | `src/pages/auth/__tests__/CorporateOnboardingCountdown.test.tsx` | 8 | /auth/corporate · bordas determinísticas do countdown (3s, ticks de 1000ms) · cancelar imediatamente (0ms decorridos) impede o invoke mesmo após o tempo total passar · cancelar entre o 2º e 3º tick (~2.1s) impede o invoke quando o restante é avançado · cancelar nos últimos 200ms do último tick (2800ms) ainda impede o invoke … |
 | `supabase/functions/api-keys-manage/index.test.ts` | 8 | api-keys: preflight não exige autenticação · api-keys: método não permitido falha fechado · api-keys: usuário não autenticado não alcança o banco · api-keys: payload inválido não gera escrita … |
+| `supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts` | 8 | decidirAlerta cria quando nao ha linha recente da mesma origem · decidirAlerta ignora repeticao de prioridade igual ou menor na linha aberta · decidirAlerta escala a linha aberta quando a severidade sobe · decidirAlerta nao escala alerta de outra origem … |
 | `src/components/layout/transitions/__tests__/presets.test.ts` | 7 | resolvePreset · retorna variants completas para %s · marca needsPerspective em flip-x/flip-y · aplica duração customizada (ms → s) … |
 | `src/components/reforma-tributaria/__tests__/ImportacaoXMLPanel.test.tsx` | 7 | ImportacaoXMLPanel — etapa 47 · mostra CST, cClassTrib, vIBS e vCBS do XML · classifica 2026 como informativo · classifica 2027 como apropriavel … |
 | `src/components/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts` | 7 | extrairOffline · devolve null para payloads sem metadado · rejeita metadado malformado · extrai metadado válido … |
@@ -5589,8 +5591,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/ui/__tests__/calendar.test.tsx` | 4 | Calendar (react-day-picker v10 mapping) · renderiza grid, cabecalho de semana e navegacao · aplica aria-selected e as classes de estado na celula do dia · mantem range middle/end com classes proprias |
 | `src/hooks/__tests__/kpis-comparativo-anterior.test.ts` | 4 | KPIs não fabricam o período anterior · a receber: os  · a receber: mês anterior sem recebimento vale 0, não 95% do mês atual · a pagar: mês anterior sem pagamento vale 0, não 95% do mês atual |
 | `src/hooks/__tests__/useCatalogoCclasstrib.remontagem.test.tsx` | 4 | useCatalogoCclasstrib · reconsulta ao remontar quando a leitura anterior voltou vazia · nao reconsulta ao remontar quando a leitura esta fresca · releitura vazia ao remontar nao apaga o catalogo que ja estava em memoria |
-| `src/hooks/__tests__/useFluxoCaixaPage.dispensas.test.tsx` | 4 | useFluxoCaixaPage — dispensas de alerta por empresa · dispensar na empresa A não esconde o mesmo alerta na empresa B · voltar para a empresa A preserva a dispensa feita nela · o id do alerta não carrega a empresa, que é a razão da separação |
-| … +77 linhas — lista completa em `context.json` | | |
+| … +82 linhas — lista completa em `context.json` | | |
 
 ## L. Eventos de webhook tratados (contratos com sistemas externos)
 
@@ -6111,6 +6112,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Aprende uma regra de conciliação a partir de um match manual confirmado. | `src/hooks/useRegrasConciliacao.ts` |
 | Verifica se já existe regra com mesmo padrão; se sim, incrementa vezes_aplicada. | `src/hooks/useRegrasConciliacao.ts` |
 | Retorna a regra mais relevante, se houver. | `src/hooks/useRegrasConciliacao.ts` |
+| envio em diante (a edge reprograma com a mesma regra: | `src/hooks/useRelatoriosTributariosAgendados.ts` |
 | Calcular data de vencimento (último dia útil do mês seguinte) | `src/hooks/useRetencoesFonte.ts` |
 | Retenções pendentes próximas do vencimento | `src/hooks/useRetencoesFonte.ts` |
 | * Severidades padronizadas reutilizadas pelos pickers de UI/validação. */ | `src/hooks/useSavedFilterSubscriptions.ts` |
@@ -6184,5 +6186,4 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Parse + validação estrutural. NÃO valida ainda contra o tenant de destino; | `src/lib/sharedFiltersExport.ts` |
 | * Classificação de mensagens de validação SPED (ECF/ECD) em categorias | `src/lib/sped-validacoes-categorias.ts` |
 | # PASSO A PASSO — Validação no ${pvaNome}`, | `src/lib/sped-zip.ts` |
-| Auditoria nunca deve quebrar o fluxo de logout. | `src/lib/sso-slo-audit.ts` |
-| … +541 linhas — lista completa em `context.json` | |
+| … +544 linhas — lista completa em `context.json` | |

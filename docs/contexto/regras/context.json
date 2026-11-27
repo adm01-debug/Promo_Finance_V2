@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "e7ba866728de03db91203d694e7dfc437a592f9f",
+  "sha": "254c8f958bb2c50ee7a40e06f0add46671eb7f35",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-27 03:30 UTC",
-  "files_total": 4173,
-  "code_files": 3751,
-  "code_lines": 541499
+  "generated_at": "2026-11-27 17:13 UTC",
+  "files_total": 4181,
+  "code_files": 3759,
+  "code_lines": 542283
  },
  "version": "1.3.2",
- "facts_hash": "3912c2c2f099ee90",
+ "facts_hash": "dfdcd162dabd519b",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -340,8 +340,8 @@
   ],
   "package_manager": "bun",
   "languages": {
-   ".ts": 1330,
-   ".sql": 1159,
+   ".ts": 1335,
+   ".sql": 1162,
    ".tsx": 1140,
    ".mjs": 68,
    ".py": 46,
@@ -393,10 +393,12 @@
     "sefaz-dfe-puxar",
     "convidar-usuario",
     "digest-silenciamentos-erro",
+    "enviar-relatorios-tributarios-agendados",
     "gerar-alertas-dispatcher",
     "gerar-dre-tributaria",
     "gerar-heatmap-tributario",
     "guardar-xml-nfe-autorizada",
+    "gerar-relatorio-anual",
     "api-keys-manage",
     "health",
     "mcp-query",
@@ -35075,26 +35077,6 @@
     "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
    },
    {
-    "name": "relatorios_tributarios_agendados_all_admin",
-    "table": "relatorios_tributarios_agendados",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))",
-    "check": "(EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))",
-    "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
-   },
-   {
-    "name": "relatorios_tributarios_agendados_select_own",
-    "table": "relatorios_tributarios_agendados",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "((empresa_id IN ( SELECT profiles.empresa_id FROM profiles WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))))",
-    "check": "",
-    "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
-   },
-   {
     "name": "Empresa-based access",
     "table": "resumos_executivos_semanais",
     "cmd": "ALL",
@@ -50454,6 +50436,18 @@
     "schedule": "30 8 * * *",
     "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sync-fundamentacao-legal', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM integration_secrets WHERE chave = 'internal_jobs' LIMIT 1 ) ), body := '{\"source\":\"pg …",
     "src": "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql"
+   },
+   {
+    "job": "gerar-alertas-tributarios-diario",
+    "schedule": "15 6 * * *",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/gerar-alertas-tributarios', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM public.integration_secrets WHERE chave = 'gerar_alertas_tributarios' LIMIT 1 ) ), bo …",
+    "src": "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql"
+   },
+   {
+    "job": "enviar-relatorios-tributarios",
+    "schedule": "5 * * * *",
+    "body": "SELECT net.http_post( url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-relatorios-tributarios-agendados', headers := jsonb_build_object( 'Content-Type', 'application/json', 'x-cron-secret', ( SELECT valor FROM public.integration_secrets WHERE chave = 'relatorios_tributarios_cron' …",
+    "src": "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql"
    }
   ],
   "views": {
@@ -51641,6 +51635,9 @@
    "supabase/migrations/20261126111000_cron_sync_fundamentacao_legal.sql",
    "supabase/migrations/20261126120000_produto_cclasstrib_padrao.sql",
    "supabase/migrations/20261126121500_reconciliar_elisao_simulacoes_regime.sql",
+   "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql",
+   "supabase/migrations/20261126123000_endurece_rls_relatorios_agendados.sql",
+   "supabase/migrations/20261126123500_normaliza_proximo_envio_agendados.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -64416,7 +64413,7 @@
     "methods": [
      "OPTIONS"
     ],
-    "auth": "service_role (ignora RLS) + valida JWT do usuário",
+    "auth": "PÚBLICA (verify_jwt=false em config.toml)",
     "tables": [
      "edge_function_logs",
      "empresas",
@@ -64919,17 +64916,17 @@
     "methods": [
      "OPTIONS"
     ],
-    "auth": "service_role (ignora RLS) + valida JWT do usuário",
+    "auth": "PÚBLICA (verify_jwt=false em config.toml)",
     "tables": [
      "alertas_tributarios",
      "edge_function_logs",
      "empresas",
+     "integration_secrets",
      "user_empresas",
      "user_roles",
      "vw_tributario_dashboard"
     ],
     "env": [
-     "SUPABASE_ANON_KEY",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -71545,8 +71542,8 @@
   },
   {
    "module": "src/hooks",
-   "files": 335,
-   "lines": 50757,
+   "files": 337,
+   "lines": 50939,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71887,8 +71884,8 @@
   },
   {
    "module": "src/lib",
-   "files": 457,
-   "lines": 64144,
+   "files": 458,
+   "lines": 64260,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -72453,8 +72450,8 @@
   },
   {
    "module": "supabase/functions",
-   "files": 264,
-   "lines": 58139,
+   "files": 266,
+   "lines": 58430,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -72578,7 +72575,7 @@
     "contract-response.ts: VALIDATION_ERROR_CODE, ContractFieldError, ContractValidationError, normalizeValidationFields, createValidationErrorResponse",
     "contract-validator.ts: CommonSchemas, validateContract, contractSuccess",
     "correlation.ts: CORRELATION_HEADER, getRequestId, correlationResponseHeaders, correlationHeaders",
-    "cors.ts: origemCorsPermitida, origemCors, corsHeadersPara, corsHeaders, respostaPreflight, jsonComCors",
+    "cors.ts: origensPermitidas, origemCorsPermitida, origemCors, corsHeadersPara, corsHeaders, respostaPreflight",
     "edge-observability.ts: ObservabilityContext, framesDo, capturarExcecaoSentry, segundoPlano, withEdgeObservability",
     "erros.ts: mensagemErro, contextoErro",
     "fuzzer.ts: FuzzPayload, Fuzzer",
@@ -72716,8 +72713,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1086,
-   "lines": 84033,
+   "files": 1089,
+   "lines": 84228,
    "tables": [
     "vw_webhooks_recentes"
    ],
@@ -72914,7 +72911,8 @@
     ],
     "update": [
      "src/hooks/useAlertasTributarios.ts",
-     "supabase/functions/enviar-digest-conformidade/index.ts"
+     "supabase/functions/enviar-digest-conformidade/index.ts",
+     "supabase/functions/gerar-alertas-tributarios/index.ts"
     ],
     "insert": [
      "supabase/functions/gerar-alertas-tributarios/index.ts",
@@ -75212,7 +75210,6 @@
      "supabase/functions/executar-fechamento-tributario/index.ts",
      "supabase/functions/exportar-sped-contribuicoes/index.ts",
      "supabase/functions/gerar-pacote-evidencias/index.ts",
-     "supabase/functions/gerar-relatorio-anual/index.ts",
      "supabase/functions/gerar-sped-ecd/index.ts",
      "supabase/functions/gerar-sped-ecf/index.ts",
      "supabase/functions/monitorar-erros-frontend/index.ts",
@@ -75422,6 +75419,7 @@
     "created_at",
     "descricao",
     "empresa_id",
+    "entidade_id",
     "id",
     "lido",
     "mensagem",
@@ -76935,7 +76933,6 @@
     "supabase/functions/gerar-alertas-dispatcher/index.ts",
     "supabase/functions/gerar-pacote-evidencias/index.ts",
     "supabase/functions/gerar-pdf-tributario/index.ts",
-    "supabase/functions/gerar-relatorio-anual/index.ts",
     "supabase/functions/log-sped-bitrix24/index.ts",
     "supabase/functions/nfe-upload-certificado/index.ts",
     "supabase/functions/nfe-vinculo-proxy/index.ts",
@@ -86452,6 +86449,10 @@
     "text": "Retorna a regra mais relevante, se houver."
    },
    {
+    "file": "src/hooks/useRelatoriosTributariosAgendados.ts",
+    "text": "envio em diante (a edge reprograma com a mesma regra:"
+   },
+   {
     "file": "src/hooks/useRetencoesFonte.ts",
     "text": "Calcular data de vencimento (último dia útil do mês seguinte)"
    },
@@ -88542,6 +88543,14 @@
    {
     "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
     "text": "Regime NAO pode ter default: `?? 'simples_nacional'` fazia o cron"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "text": "5 dias antes do vencimento escondia o 'critica' de 2 dias e o usuario"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "text": "fumaca provar que a inicializacao responde, e nao apenas a funcao interna:"
    },
    {
     "file": "supabase/functions/gerar-heatmap-tributario/index.ts",
@@ -103408,6 +103417,11 @@
    {
     "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
     "name": "SIMPLES_SUBLIMITE",
+    "value": "3"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "name": "SIMPLES_TETO_FEDERAL",
     "value": "4"
    },
    {
@@ -123665,10 +123679,6 @@
     "line": "if (desvio > cargaBench * 0.2) {"
    },
    {
-    "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
-    "line": "prioridade: rbt12 >= SIMPLES_SUBLIMITE * 0.95 ? 'critica' : 'alta',"
-   },
-   {
     "file": "supabase/functions/gerar-dre-tributaria/index.ts",
     "line": "// Simulação regime ótimo: Lucro Real quando carga > 20%"
    },
@@ -123719,6 +123729,10 @@
    {
     "file": "supabase/functions/gerar-heatmap-tributario/index.ts",
     "line": "// zero fazia a ausencia virar vale do ano e variacao de -100% em relacao ao"
+   },
+   {
+    "file": "supabase/functions/gerar-relatorio-anual/index.ts",
+    "line": "// o envio agendado levava 401 em 100% das execucoes: o relatorio nunca saia"
    },
    {
     "file": "supabase/functions/gerar-sped-ecf/layout.ts",
@@ -127459,6 +127473,18 @@
     "name": "detecta inadimplência provável com clientes em atraso > 15 dias"
    },
    {
+    "file": "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts",
+    "name": "useAlertasTributarios — escalada via UPDATE do cron"
+   },
+   {
+    "file": "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts",
+    "name": "mescla o payload do UPDATE na cópia de realtime em vez de manter a prioridade antiga"
+   },
+   {
+    "file": "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts",
+    "name": "não altera outras linhas quando o UPDATE chega para outro alerta"
+   },
+   {
     "file": "src/hooks/__tests__/useAlertasTributariosCount.test.ts",
     "name": "useAlertasTributariosCount"
    },
@@ -128855,6 +128881,22 @@
     "name": "propaga o erro do banco quando existe"
    },
    {
+    "file": "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+    "name": "proximoEnvioInicial"
+   },
+   {
+    "file": "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+    "name": "agenda para o dia escolhido ainda neste mes quando ele nao passou"
+   },
+   {
+    "file": "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+    "name": "avanca um periodo quando o dia escolhido ja passou"
+   },
+   {
+    "file": "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+    "name": "nunca devolve um instante ja vencido"
+   },
+   {
     "file": "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx",
     "name": "gerarDARF"
    },
@@ -130065,6 +130107,14 @@
    {
     "file": "src/lib/__tests__/correlation-id.test.ts",
     "name": "ids são únicos entre chamadas"
+   },
+   {
+    "file": "src/lib/__tests__/crons-tributarios.contract.test.ts",
+    "name": "crons tributários — contrato entre pg_cron, config.toml e edge function"
+   },
+   {
+    "file": "src/lib/__tests__/crons-tributarios.contract.test.ts",
+    "name": "o job de alertas usa o jobname que o painel admin consulta"
    },
    {
     "file": "src/lib/__tests__/csv-importer.test.ts",
@@ -140379,6 +140429,46 @@
     "name": "mensagem cita o numero correto de notas (singular)"
    },
    {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts",
+    "name": "gerar-alertas-tributarios responde pela porta HTTP sem credencial (401)"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts",
+    "name": "gerar-alertas-tributarios preserva o preflight CORS pela porta HTTP"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta cria quando nao ha linha recente da mesma origem"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta ignora repeticao de prioridade igual ou menor na linha aberta"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta escala a linha aberta quando a severidade sobe"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta nao escala alerta de outra origem"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta respeita alerta resolvido quando a prioridade nao sobe"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta cria alerta novo quando a escalada e real sobre linha resolvida"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta prefere a linha aberta quando ha aberta e resolvida"
+   },
+   {
+    "file": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+    "name": "decidirAlerta reconhece a linha legada sem entidade_id"
+   },
+   {
     "file": "supabase/functions/gerar-heatmap-tributario/index.test.ts",
     "name": "ano sem lancamento: contrato completo, sem numero inventado"
    },
@@ -148087,26 +148177,6 @@
     "roles": "authenticated",
     "mode": "permissive",
     "using": "((empresa_id IN ( SELECT user_empresas.empresa_id FROM user_empresas WHERE ((user_empresas.user_id = (SELECT auth.uid())) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role)))))",
-    "check": "",
-    "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
-   },
-   {
-    "name": "relatorios_tributarios_agendados_all_admin",
-    "table": "relatorios_tributarios_agendados",
-    "cmd": "ALL",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "(EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))",
-    "check": "(EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text])))))",
-    "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
-   },
-   {
-    "name": "relatorios_tributarios_agendados_select_own",
-    "table": "relatorios_tributarios_agendados",
-    "cmd": "SELECT",
-    "roles": "authenticated",
-    "mode": "permissive",
-    "using": "((empresa_id IN ( SELECT profiles.empresa_id FROM profiles WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 'super_admin'::text]))))))",
     "check": "",
     "src": "supabase/migrations/20260825230000_initplan_rls_e67.sql"
    },
@@ -158889,6 +158959,10 @@
     "limit": "1"
    },
    {
+    "file": "supabase/functions/gerar-alertas-tributarios/index.ts",
+    "limit": "5"
+   },
+   {
     "file": "supabase/functions/gerar-pacote-evidencias/index.ts",
     "limit": "50000"
    },
@@ -166123,23 +166197,18 @@
    "relatorios_tributarios_agendados": {
     "rls": "enabled",
     "SELECT": [
-     "authenticated: public.empresa_acessivel(empresa_id)",
-     "authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …",
-     "authenticated: ((empresa_id IN ( SELECT profiles.empresa_id FROM profiles WHERE (profiles.id = (SELECT auth.uid())))) OR (EXISTS ( SELECT 1 …"
+     "authenticated: public.empresa_acessivel(empresa_id)"
     ],
     "INSERT": [
      "authenticated: public.empresa_acessivel(empresa_id)",
-     "authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …",
      "authenticated: ( public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') ) AND empresa_acessivel(empresa_id)"
     ],
     "UPDATE": [
      "authenticated: public.empresa_acessivel(empresa_id)",
-     "authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …",
      "authenticated: ( public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') ) AND empresa_acessivel(empresa_id)"
     ],
     "DELETE": [
      "authenticated: public.empresa_acessivel(empresa_id)",
-     "authenticated: (EXISTS ( SELECT 1 FROM profiles WHERE ((profiles.id = (SELECT auth.uid())) AND (profiles.role = ANY (ARRAY['admin'::text, 's …",
      "authenticated: public.has_role(auth.uid(), 'admin') AND empresa_acessivel(empresa_id)"
     ]
    },
@@ -167223,6 +167292,7 @@
    "supabase/functions/exportar-sped-contribuicoes/index.ts",
    "supabase/functions/external-data/index.ts",
    "supabase/functions/gerar-acoes-recomendadas/index.ts",
+   "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts",
    "supabase/functions/gerar-alertas-tributarios/index.test.ts",
    "supabase/functions/gerar-alertas-tributarios/index.ts",
    "supabase/functions/gerar-alertas/index.ts",
@@ -167727,10 +167797,12 @@
    "sefaz-dfe-puxar",
    "convidar-usuario",
    "digest-silenciamentos-erro",
+   "enviar-relatorios-tributarios-agendados",
    "gerar-alertas-dispatcher",
    "gerar-dre-tributaria",
    "gerar-heatmap-tributario",
    "guardar-xml-nfe-autorizada",
+   "gerar-relatorio-anual",
    "api-keys-manage",
    "health",
    "mcp-query",
@@ -205089,7 +205161,7 @@
   },
   "src/hooks/useAlertasTributarios.ts": {
    "path": "src/hooks/useAlertasTributarios.ts",
-   "lines": 338,
+   "lines": 347,
    "exports": [
     "type TipoAlerta",
     "type PrioridadeAlerta",
@@ -213810,14 +213882,18 @@
   },
   "src/hooks/useRelatoriosTributariosAgendados.ts": {
    "path": "src/hooks/useRelatoriosTributariosAgendados.ts",
-   "lines": 95,
+   "lines": 124,
    "exports": [
     "interface RelatorioTributarioAgendado",
     "interface CreateAgendamentoInput",
+    "function proximoEnvioInicial",
     "function useRelatoriosTributariosAgendados"
    ],
    "errors": [
     "Erro ao criar agendamento"
+   ],
+   "rule_comments": [
+    "envio em diante (a edge reprograma com a mesma regra:"
    ],
    "hooks": [
     "useRelatoriosTributariosAgendados"
@@ -216121,6 +216197,17 @@
     "detecta inadimplência provável com clientes em atraso > 15 dias"
    ]
   },
+  "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts": {
+   "path": "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts",
+   "lines": 109,
+   "is_test": true,
+   "doc": "============================================ TESTES — useAlertasTributarios (realtime) ============================================",
+   "tests": [
+    "useAlertasTributarios — escalada via UPDATE do cron",
+    "mescla o payload do UPDATE na cópia de realtime em vez de manter a prioridade antiga",
+    "não altera outras linhas quando o UPDATE chega para outro alerta"
+   ]
+  },
   "src/hooks/__tests__/useAlertasTributariosCount.test.ts": {
    "path": "src/hooks/__tests__/useAlertasTributariosCount.test.ts",
    "lines": 73,
@@ -216896,6 +216983,17 @@
     "useCriarTemplate falha quando o insert não devolve linha",
     "useExcluirTemplate falha quando o delete não devolve linha",
     "propaga o erro do banco quando existe"
+   ]
+  },
+  "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts": {
+   "path": "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+   "lines": 35,
+   "is_test": true,
+   "tests": [
+    "proximoEnvioInicial",
+    "agenda para o dia escolhido ainda neste mes quando ele nao passou",
+    "avanca um periodo quando o dia escolhido ja passou",
+    "nunca devolve um instante ja vencido"
    ]
   },
   "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx": {
@@ -220368,6 +220466,24 @@
     "withCorrelationHeader usa getCorrelationId quando id não é passado",
     "gera fallback quando crypto.randomUUID não está disponível",
     "ids são únicos entre chamadas"
+   ]
+  },
+  "src/lib/__tests__/crons-tributarios.contract.test.ts": {
+   "path": "src/lib/__tests__/crons-tributarios.contract.test.ts",
+   "lines": 116,
+   "is_test": true,
+   "errors": [
+    "cron.schedule do job ${jobname} nao encontrado"
+   ],
+   "params": [
+    {
+     "name": "TRIBUTARIO_JOB",
+     "value": "'([^'"
+    }
+   ],
+   "tests": [
+    "crons tributários — contrato entre pg_cron, config.toml e edge function",
+    "o job de alertas usa o jobname que o painel admin consulta"
    ]
   },
   "src/lib/__tests__/csv-importer.test.ts": {
@@ -237890,8 +238006,9 @@
   },
   "supabase/functions/_shared/cors.ts": {
    "path": "supabase/functions/_shared/cors.ts",
-   "lines": 116,
+   "lines": 117,
    "exports": [
+    "const origensPermitidas",
     "function origemCorsPermitida",
     "function origemCors",
     "function corsHeadersPara",
@@ -244419,9 +244536,13 @@
   },
   "supabase/functions/gerar-alertas-tributarios/index.ts": {
    "path": "supabase/functions/gerar-alertas-tributarios/index.ts",
-   "lines": 518,
+   "lines": 638,
    "exports": [
     "const handler",
+    "interface LinhaAlerta",
+    "type DecisaoAlerta",
+    "function decidirAlerta",
+    "function bootstrap",
     "interface AlertasRtParams",
     "interface AlertaRT",
     "function determinarAlertasRt"
@@ -244466,6 +244587,10 @@
     {
      "table": "alertas_tributarios",
      "op": "select"
+    },
+    {
+     "table": "alertas_tributarios",
+     "op": "update"
     },
     {
      "table": "alertas_tributarios",
@@ -244528,7 +244653,10 @@
     ],
     "alertas_tributarios": [
      "empresa_id",
+     "entidade_id",
      "id",
+     "prioridade",
+     "resolvido",
      "tipo"
     ]
    },
@@ -244539,6 +244667,10 @@
    "params": [
     {
      "name": "SIMPLES_SUBLIMITE",
+     "value": "3"
+    },
+    {
+     "name": "SIMPLES_TETO_FEDERAL",
      "value": "4"
     },
     {
@@ -244597,16 +244729,18 @@
     }
    ],
    "rule_comments": [
-    "Regime NAO pode ter default: `?? 'simples_nacional'` fazia o cron"
+    "Regime NAO pode ter default: `?? 'simples_nacional'` fazia o cron",
+    "5 dias antes do vencimento escondia o 'critica' de 2 dias e o usuario",
+    "fumaca provar que a inicializacao responde, e nao apenas a funcao interna:"
    ],
    "doc": "============================================ EDGE FUNCTION: gerar-alertas-tributarios (cron diário) Detecta sublimite Simples, Fator R, vencimentos, desvios setoriais, IRPFM Hardened: structured logging, retry com exponential backoff, top-level try/catch ============================================",
    "percents": [
     "const SIMPLES_LIMITE_ALERTA = SIMPLES_SUBLIMITE * 0.9;",
-    "if (desvio > cargaBench * 0.2) {",
-    "prioridade: rbt12 >= SIMPLES_SUBLIMITE * 0.95 ? 'critica' : 'alta',"
+    "if (desvio > cargaBench * 0.2) {"
    ],
    "pagination": [
-    "1"
+    "1",
+    "5"
    ],
    "uses_service_role": true
   },
@@ -244622,6 +244756,40 @@
     "Simples Nacional sem NF-e pendente nao gera alerta",
     "regime nao sujeito (mei) nao gera alerta RT",
     "mensagem cita o numero correto de notas (singular)"
+   ]
+  },
+  "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts": {
+   "path": "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts",
+   "lines": 112,
+   "is_test": true,
+   "external_urls": [
+    "http://127.0.0.1:${porta}/gerar-alertas-tributarios"
+   ],
+   "params": [
+    {
+     "name": "ORIGEM_BLOQUEADA",
+     "value": "'https://origem-fora-da-allowlist.test'"
+    }
+   ],
+   "tests": [
+    "gerar-alertas-tributarios responde pela porta HTTP sem credencial (401)",
+    "gerar-alertas-tributarios preserva o preflight CORS pela porta HTTP"
+   ],
+   "uses_service_role": true
+  },
+  "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts": {
+   "path": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+   "lines": 71,
+   "is_test": true,
+   "tests": [
+    "decidirAlerta cria quando nao ha linha recente da mesma origem",
+    "decidirAlerta ignora repeticao de prioridade igual ou menor na linha aberta",
+    "decidirAlerta escala a linha aberta quando a severidade sobe",
+    "decidirAlerta nao escala alerta de outra origem",
+    "decidirAlerta respeita alerta resolvido quando a prioridade nao sobe",
+    "decidirAlerta cria alerta novo quando a escalada e real sobre linha resolvida",
+    "decidirAlerta prefere a linha aberta quando ha aberta e resolvida",
+    "decidirAlerta reconhece a linha legada sem entidade_id"
    ]
   },
   "supabase/functions/gerar-dre-tributaria/index.ts": {
@@ -244920,12 +245088,8 @@
   },
   "supabase/functions/gerar-relatorio-anual/index.ts": {
    "path": "supabase/functions/gerar-relatorio-anual/index.ts",
-   "lines": 204,
+   "lines": 191,
    "tables": [
-    {
-     "table": "user_roles",
-     "op": "select"
-    },
     {
      "table": "user_empresas",
      "op": "select"
@@ -244944,10 +245108,6 @@
     }
    ],
    "table_cols": {
-    "user_roles": [
-     "role",
-     "user_id"
-    ],
     "user_empresas": [
      "ativo",
      "empresa_id",
@@ -244975,7 +245135,6 @@
     ]
    },
    "env": [
-    "SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -244989,6 +245148,9 @@
     }
    ],
    "doc": "============================================ EDGE FUNCTION: gerar-relatorio-anual Agrega dados anuais para Relatório Tributário PDF (P6) ============================================",
+   "percents": [
+    "// o envio agendado levava 401 em 100% das execucoes: o relatorio nunca saia"
+   ],
    "uses_service_role": true
   },
   "supabase/functions/gerar-resumo-executivo-semanal/index.ts": {
@@ -255479,6 +255641,18 @@
    "path": "supabase/migrations/20261126121500_reconciliar_elisao_simulacoes_regime.sql",
    "lines": 111
   },
+  "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql": {
+   "path": "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql",
+   "lines": 99
+  },
+  "supabase/migrations/20261126123000_endurece_rls_relatorios_agendados.sql": {
+   "path": "supabase/migrations/20261126123000_endurece_rls_relatorios_agendados.sql",
+   "lines": 53
+  },
+  "supabase/migrations/20261126123500_normaliza_proximo_envio_agendados.sql": {
+   "path": "supabase/migrations/20261126123500_normaliza_proximo_envio_agendados.sql",
+   "lines": 43
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -255598,10 +255772,33 @@
   }
  },
  "git": {
-  "sha": "e7ba866728de03db91203d694e7dfc437a592f9f",
+  "sha": "254c8f958bb2c50ee7a40e06f0add46671eb7f35",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "254c8f9",
+    "date": "2026-11-27",
+    "author": "adm01-debug",
+    "subject": "infra: agendar os crons tributarios que nunca rodavam (#572)",
+    "files": [
+     "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts",
+     "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+     "src/hooks/useAlertasTributarios.ts",
+     "src/hooks/useRelatoriosTributariosAgendados.ts",
+     "src/lib/__tests__/crons-tributarios.contract.test.ts",
+     "src/lib/arquitetura/grafo-observado.json",
+     "supabase/config.toml",
+     "supabase/functions/_shared/cors.ts",
+     "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts",
+     "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+     "supabase/functions/gerar-alertas-tributarios/index.ts",
+     "supabase/functions/gerar-relatorio-anual/index.ts",
+     "supabase/migrations/20261126122000_cron_tributarios_alertas_relatorios.sql",
+     "supabase/migrations/20261126123000_endurece_rls_relatorios_agendados.sql",
+     "supabase/migrations/20261126123500_normaliza_proximo_envio_agendados.sql"
+    ]
+   },
    {
     "sha": "e7ba866",
     "date": "2026-11-27",
@@ -256063,24 +256260,16 @@
      "docs/ci/README.md",
      "docs/ci/kpi.json"
     ]
-   },
-   {
-    "sha": "45de89c",
-    "date": "2026-11-24",
-    "author": "adm01-debug",
-    "subject": "chore(docs): regenera docs/ci e atualiza baseline de CHANGELOG da RFB (#552)",
-    "files": [
-     "docs/ci/MATRIZ_EDGE_TABELA.md",
-     "docs/ci/README.md",
-     "docs/ci/kpi.json",
-     "docs/receitafederal/rfb-changelog-state.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "docs/receitafederal/PLANO_100_ETAPAS_RT_RFB.md",
     5
+   ],
+   [
+    "supabase/config.toml",
+    4
    ],
    [
     "docs/receitafederal/PLANO_CONFORMIDADE_RT_RECEITAFEDERAL_100_ETAPAS.md",
@@ -256119,12 +256308,12 @@
     3
    ],
    [
-    "supabase/config.toml",
+    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
     3
    ],
    [
-    "src/hooks/__tests__/useImportacaoXMLNFe.itens.test.tsx",
-    3
+    "src/lib/arquitetura/grafo-observado.json",
+    2
    ],
    [
     "supabase/functions/sync-catalogo-ncm-nbs/__tests__/montar_test.ts",
@@ -256152,10 +256341,6 @@
    ],
    [
     "supabase/functions/sync-catalogo-cclasstrib/index.ts",
-    2
-   ],
-   [
-    "supabase/functions/sync-fundamentacao-legal/index.ts",
     2
    ]
   ]

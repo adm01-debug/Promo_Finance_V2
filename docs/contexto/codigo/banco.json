@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1086,
+ "migrations": 1089,
  "seeds": [],
  "avisos": [
   "204 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -2693,9 +2693,21 @@
    "chama_edge": "enviar-digest-conformidade"
   },
   {
+   "nome": "enviar-relatorios-tributarios",
+   "agenda": "5 * * * *",
+   "migration": "20261126122000_cron_tributarios_alertas_relatorios.sql",
+   "chama_edge": "enviar-relatorios-tributarios-agendados"
+  },
+  {
    "nome": "executar-regua-cobranca-diaria",
    "agenda": "0 12 * * *",
    "migration": "20260822115000_agendar_regua_cobranca.sql"
+  },
+  {
+   "nome": "gerar-alertas-tributarios-diario",
+   "agenda": "15 6 * * *",
+   "migration": "20261126122000_cron_tributarios_alertas_relatorios.sql",
+   "chama_edge": "gerar-alertas-tributarios"
   },
   {
    "nome": "gerar-alertas-vencimento-diario",
@@ -39884,18 +39896,6 @@
      "comando": "all",
      "para": "authenticated",
      "tipo": "permissive"
-    },
-    {
-     "nome": "relatorios_tributarios_agendados_all_admin",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    },
-    {
-     "nome": "relatorios_tributarios_agendados_select_own",
-     "comando": "select",
-     "para": "authenticated",
-     "tipo": "permissive"
     }
    ],
    "indices": [
@@ -48199,7 +48199,6 @@
     "executar-fechamento-tributario",
     "exportar-sped-contribuicoes",
     "gerar-pacote-evidencias",
-    "gerar-relatorio-anual",
     "gerar-sped-ecd",
     "gerar-sped-ecf",
     "monitorar-erros-frontend",

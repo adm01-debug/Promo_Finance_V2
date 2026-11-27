@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 546,
+ "total": 551,
  "por_tipo": {
-  "contrato": 5,
+  "contrato": 6,
   "e2e": 36,
   "pytest": 31,
-  "unit": 467
+  "unit": 471
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 340
+   "arquivos": 345
   },
   {
    "padrao": "outro",
@@ -1586,6 +1586,15 @@
    "casos": 5
   },
   {
+   "arquivo": "src/hooks/__tests__/useAlertasTributarios.realtime.test.ts",
+   "tipo": "unit",
+   "linhas": 108,
+   "testa": [
+    "src/hooks/useAlertasTributarios.ts"
+   ],
+   "casos": 2
+  },
+  {
    "arquivo": "src/hooks/__tests__/useAlertasTributariosCount.test.ts",
    "tipo": "unit",
    "linhas": 72,
@@ -1988,6 +1997,15 @@
    "casos": 6
   },
   {
+   "arquivo": "src/hooks/__tests__/useRelatoriosTributariosAgendados.test.ts",
+   "tipo": "unit",
+   "linhas": 34,
+   "testa": [
+    "src/hooks/useRelatoriosTributariosAgendados.ts"
+   ],
+   "casos": 3
+  },
+  {
    "arquivo": "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx",
    "tipo": "unit",
    "linhas": 267,
@@ -2280,6 +2298,13 @@
     "src/lib/correlation-id.ts"
    ],
    "casos": 10
+  },
+  {
+   "arquivo": "src/lib/__tests__/crons-tributarios.contract.test.ts",
+   "tipo": "contrato",
+   "linhas": 115,
+   "testa": [],
+   "casos": 4
   },
   {
    "arquivo": "src/lib/__tests__/csv-importer.test.ts",
@@ -4519,6 +4544,25 @@
    "casos": 6
   },
   {
+   "arquivo": "supabase/functions/gerar-alertas-tributarios/__tests__/bootstrapHttp.test.ts",
+   "tipo": "unit",
+   "linhas": 111,
+   "testa": [
+    "supabase/functions/_shared/cors.ts",
+    "supabase/functions/gerar-alertas-tributarios/index.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "supabase/functions/gerar-alertas-tributarios/__tests__/decidirAlerta.test.ts",
+   "tipo": "unit",
+   "linhas": 70,
+   "testa": [
+    "supabase/functions/gerar-alertas-tributarios/index.ts"
+   ],
+   "casos": 8
+  },
+  {
    "arquivo": "supabase/functions/gerar-alertas-tributarios/index.test.ts",
    "tipo": "unit",
    "linhas": 81,
@@ -5028,7 +5072,7 @@
   "src/hooks/use-toast.ts": 1,
   "src/hooks/useAcordosParcelamento.ts": 2,
   "src/hooks/useAlertasPreditivos.ts": 1,
-  "src/hooks/useAlertasTributarios.ts": 1,
+  "src/hooks/useAlertasTributarios.ts": 2,
   "src/hooks/useAlertasTributariosCount.ts": 1,
   "src/hooks/useAnomaliaPreferences.ts": 1,
   "src/hooks/useApiKeys.ts": 1,
@@ -5076,6 +5120,7 @@
   "src/hooks/useQueuedMessage.ts": 1,
   "src/hooks/useRegrasConciliacao.ts": 1,
   "src/hooks/useReguaCobranca.ts": 1,
+  "src/hooks/useRelatoriosTributariosAgendados.ts": 1,
   "src/hooks/useRetencoesFonte.ts": 1,
   "src/hooks/useSelectiveEmpresaInvalidation.ts": 1,
   "src/hooks/useSimulacaoRegimes.ts": 1,
@@ -5262,7 +5307,7 @@
   "supabase/functions/_shared/carga-tributaria.ts": 1,
   "supabase/functions/_shared/cnae.ts": 1,
   "supabase/functions/_shared/contract-response.ts": 1,
-  "supabase/functions/_shared/cors.ts": 1,
+  "supabase/functions/_shared/cors.ts": 2,
   "supabase/functions/_shared/edge-observability.ts": 1,
   "supabase/functions/_shared/fuzzer.ts": 1,
   "supabase/functions/_shared/load-tester.ts": 1,
@@ -5311,7 +5356,7 @@
   "supabase/functions/executar-analise-preditiva/index.ts": 1,
   "supabase/functions/executar-regua-cobranca/domain.ts": 2,
   "supabase/functions/exportar-sped-contribuicoes/layout.ts": 2,
-  "supabase/functions/gerar-alertas-tributarios/index.ts": 2,
+  "supabase/functions/gerar-alertas-tributarios/index.ts": 4,
   "supabase/functions/gerar-heatmap-tributario/index.ts": 1,
   "supabase/functions/gerar-pdf-tributario/memoria-calculo.ts": 1,
   "supabase/functions/gerar-sped-ecd/layout.ts": 2,
@@ -5641,7 +5686,6 @@
    "src/hooks/useRelatorioAnual.ts",
    "src/hooks/useRelatoriosAgendados.ts",
    "src/hooks/useRelatoriosData.ts",
-   "src/hooks/useRelatoriosTributariosAgendados.ts",
    "src/hooks/useResumosExecutivos.ts",
    "src/hooks/useSavedFilterAlerts.ts",
    "src/hooks/useSavedFilters.ts",

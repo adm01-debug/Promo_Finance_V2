@@ -1243,7 +1243,7 @@
    "hooks_exportados": [
     "useAlertasTributarios"
    ],
-   "linhas": 337,
+   "linhas": 346,
    "dominio": "hooks",
    "tabelas": [
     "alertas_tributarios",
@@ -1273,7 +1273,7 @@
     "src/components/tributario/dashboard/ProximosVencimentosTimeline.tsx",
     "src/hooks/useDashboardTributario.ts"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
   },
   {
    "arquivo": "src/hooks/useAlertasTributariosCount.ts",
@@ -5946,7 +5946,7 @@
    "hooks_exportados": [
     "useRelatoriosTributariosAgendados"
    ],
-   "linhas": 94,
+   "linhas": 123,
    "dominio": "hooks",
    "tabelas": [
     "relatorios_tributarios_agendados"
@@ -5963,7 +5963,7 @@
    "usado_por_arquivos": [
     "src/components/tributario/dashboard/RelatoriosAgendadosCard.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useResumosExecutivos.ts",

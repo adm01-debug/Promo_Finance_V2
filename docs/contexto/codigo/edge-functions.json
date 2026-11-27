@@ -22,6 +22,7 @@
   "digest-silenciamentos-erro",
   "enviar-alerta-email",
   "enviar-bitrix24-tributario",
+  "enviar-relatorios-tributarios-agendados",
   "executar-analise-preditiva",
   "executar-regua-cobranca",
   "executar-relatorios",
@@ -33,6 +34,7 @@
   "gerar-dre-tributaria",
   "gerar-heatmap-tributario",
   "gerar-pdf-tributario",
+  "gerar-relatorio-anual",
   "get-vapid-key",
   "guardar-xml-nfe-autorizada",
   "health",
@@ -1598,7 +1600,7 @@
    "entrada": "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
    "arquivos": 1,
    "linhas": 224,
-   "verify_jwt": true,
+   "verify_jwt": false,
    "metodos": [
     "OPTIONS"
    ],
@@ -1631,8 +1633,8 @@
    ],
    "chamada_pelo_front": [],
    "chamada_por_edges": [],
-   "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
    "testes": 0
   },
   {
@@ -2026,7 +2028,7 @@
    ],
    "chamada_pelo_front": [],
    "chamada_por_edges": [],
-   "chamada_por_sql_ou_cron": false,
+   "chamada_por_sql_ou_cron": true,
    "orfa": false,
    "testes": 0
   },
@@ -2067,7 +2069,7 @@
    "nome": "gerar-alertas-tributarios",
    "entrada": "supabase/functions/gerar-alertas-tributarios/index.ts",
    "arquivos": 1,
-   "linhas": 517,
+   "linhas": 637,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2100,9 +2102,9 @@
    ],
    "chamada_pelo_front": [],
    "chamada_por_edges": [],
-   "chamada_por_sql_ou_cron": false,
+   "chamada_por_sql_ou_cron": true,
    "orfa": false,
-   "testes": 2
+   "testes": 4
   },
   {
    "nome": "gerar-dre-tributaria",
@@ -2273,8 +2275,8 @@
    "nome": "gerar-relatorio-anual",
    "entrada": "supabase/functions/gerar-relatorio-anual/index.ts",
    "arquivos": 1,
-   "linhas": 203,
-   "verify_jwt": true,
+   "linhas": 190,
+   "verify_jwt": false,
    "metodos": [
     "OPTIONS"
    ],
@@ -2282,12 +2284,10 @@
     "alertas_tributarios",
     "empresas",
     "user_empresas",
-    "user_roles",
     "vw_tributario_dashboard"
    ],
    "rpcs": [],
    "env": [
-    "SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -2297,6 +2297,7 @@
    ],
    "hosts_externos": [],
    "usa_shared": [
+    "auth-guard.ts",
     "contract-validator.ts",
     "correlation.ts",
     "cors.ts",

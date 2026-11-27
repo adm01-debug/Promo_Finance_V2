@@ -2,7 +2,7 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "nos": 2052,
- "arestas": 8670,
+ "arestas": 8671,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -62,7 +62,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/cors.ts",
-   "importado_por": 106
+   "importado_por": 107
   },
   {
    "arquivo": "src/components/layout/MainLayout.tsx",
@@ -102,7 +102,7 @@
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
-   "importado_por": 58
+   "importado_por": 59
   },
   {
    "arquivo": "supabase/functions/_shared/erros.ts",

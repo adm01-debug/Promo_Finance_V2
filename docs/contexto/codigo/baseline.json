@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e7ba866728de03db91203d694e7dfc437a592f9f",
+  "commit": "254c8f958bb2c50ee7a40e06f0add46671eb7f35",
   "branch": "main",
-  "data_commit": "2026-11-27T00:29:36-03:00",
+  "data_commit": "2026-11-27T14:12:33-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "254c8f9",
+    "data": "2026-11-27",
+    "assunto": "infra: agendar os crons tributarios que nunca rodavam (#572)"
+   },
    {
     "sha": "e7ba866",
     "data": "2026-11-27",
@@ -126,14 +131,9 @@
     "sha": "cdaca4d",
     "data": "2026-11-25",
     "assunto": "fix: mock do supabase nos testes de itens da NFe cobre a sonda .limit(1) (#555)"
-   },
-   {
-    "sha": "f5e0e48",
-    "data": "2026-11-25",
-    "assunto": "fix: restaura policy de UPDATE em elisao_creditos_auditoria (RLS) (#546)"
    }
   ],
-  "arquivos_mudados_7d": 362,
+  "arquivos_mudados_7d": 369,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "src/lib/tributario",
@@ -161,15 +161,15 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 94
-   },
-   {
-    "pasta": "src/lib/__tests__",
-    "mudancas": 78
+    "mudancas": 95
    },
    {
     "pasta": "src/hooks/__tests__",
-    "mudancas": 77
+    "mudancas": 79
+   },
+   {
+    "pasta": "src/lib/__tests__",
+    "mudancas": 79
    },
    {
     "pasta": "src/components/contas-receber",
@@ -250,6 +250,10 @@
     "mudancas": 7
    },
    {
+    "arquivo": "supabase/config.toml",
+    "mudancas": 7
+   },
+   {
     "arquivo": "docs/prod-readiness.md",
     "mudancas": 6
    },
@@ -258,11 +262,11 @@
     "mudancas": 6
    },
    {
-    "arquivo": "src/lib/tributario/catalogos/cclasstrib.ts",
+    "arquivo": "src/lib/arquitetura/grafo-observado.json",
     "mudancas": 6
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "src/lib/tributario/catalogos/cclasstrib.ts",
     "mudancas": 6
    },
    {
@@ -286,10 +290,6 @@
     "mudancas": 5
    },
    {
-    "arquivo": "src/lib/arquitetura/grafo-observado.json",
-    "mudancas": 5
-   },
-   {
     "arquivo": "src/lib/reforma-tributaria/regras.ts",
     "mudancas": 5
    },
@@ -310,9 +310,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 4134,
-  "arquivos_codigo": 2591,
-  "linhas_codigo": 467993,
+  "arquivos_total": 4142,
+  "arquivos_codigo": 2596,
+  "linhas_codigo": 468577,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -322,9 +322,9 @@
   "hooks": 278,
   "edge_functions": 112,
   "tabelas": 319,
-  "migrations": 1086,
-  "cron_jobs": 28,
-  "testes": 546,
+  "migrations": 1089,
+  "cron_jobs": 30,
+  "testes": 551,
   "workflows": 20,
   "scripts": 117,
   "docs_md": 232
@@ -651,8 +651,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 335,
-   "linhas": 50422
+   "arquivos": 337,
+   "linhas": 50602
   },
   "src/i18n.ts": {
    "arquivos": 1,
@@ -663,8 +663,8 @@
    "linhas": 20252
   },
   "src/lib": {
-   "arquivos": 457,
-   "linhas": 63687
+   "arquivos": 458,
+   "linhas": 63802
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -687,8 +687,8 @@
    "linhas": 1096
   },
   "supabase/functions": {
-   "arquivos": 264,
-   "linhas": 57875
+   "arquivos": 266,
+   "linhas": 58164
   },
   "supabase/tests": {
    "arquivos": 2,
@@ -797,16 +797,16 @@
    "linhas": 690
   },
   {
+   "arquivo": "supabase/functions/gerar-alertas-tributarios/index.ts",
+   "linhas": 637
+  },
+  {
    "arquivo": "supabase/functions/sefaz-dfe-puxar/index.ts",
    "linhas": 593
   },
   {
    "arquivo": "supabase/functions/executar-relatorios/index.ts",
    "linhas": 582
-  },
-  {
-   "arquivo": "supabase/functions/_shared/auth-guard.ts",
-   "linhas": 571
   }
  ],
  "qualidade": {
@@ -907,7 +907,6 @@
   "edges_orfas": [
    "calcular-slo-metrics-diario",
    "calculo-iva",
-   "enviar-relatorios-tributarios-agendados",
    "gerar-snapshots-conformidade",
    "get-mapbox-token",
    "n8n-dispatch",

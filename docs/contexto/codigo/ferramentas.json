@@ -3,8 +3,8 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2470)",
-   "SQL (1159)",
+   "TypeScript (2475)",
+   "SQL (1162)",
    "Markdown (232)",
    "JavaScript (77)",
    "Python (46)",
@@ -1563,7 +1563,7 @@
    },
    {
     "host": "app.promo-finance.com",
-    "arquivos": 5
+    "arquivos": 6
    },
    {
     "host": "app.test",
@@ -1878,6 +1878,10 @@
     "arquivos": 1
    },
    {
+    "host": "origem-fora-da-allowlist.test",
+    "arquivos": 1
+   },
+   {
     "host": "outro.exemplo",
     "arquivos": 1
    },
@@ -2031,6 +2035,7 @@
    "digest-silenciamentos-erro",
    "enviar-alerta-email",
    "enviar-bitrix24-tributario",
+   "enviar-relatorios-tributarios-agendados",
    "executar-analise-preditiva",
    "executar-regua-cobranca",
    "executar-relatorios",
@@ -2042,6 +2047,7 @@
    "gerar-dre-tributaria",
    "gerar-heatmap-tributario",
    "gerar-pdf-tributario",
+   "gerar-relatorio-anual",
    "get-vapid-key",
    "guardar-xml-nfe-autorizada",
    "health",
