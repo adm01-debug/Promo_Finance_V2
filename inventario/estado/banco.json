@@ -8,7 +8,7 @@
     },
     {
       "detalhe": [
-        "245242 linhas com mais de 7 dias"
+        "245259 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -28,10 +28,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 146866176,
-      "linhas": 258162,
+      "bytes": 146874368,
+      "linhas": 258180,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 245242
+      "mais_de_7_dias": 245259
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -505,7 +505,7 @@
         ],
         "duracao_max_s_7d": 0,
         "execucoes_24h": 24,
-        "execucoes_7d": 38,
+        "execucoes_7d": 39,
         "falhas_24h": 0,
         "falhas_7d": 0,
         "nome": "reprocessar-creditos-ibscbs",
@@ -1477,7 +1477,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-27T03:18:24Z",
+  "medido_em": "2026-11-27T03:30:08Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 271,
     "tabelas_em_types_ts": 271
@@ -1493,7 +1493,7 @@
     "postgres": "17.6",
     "tabelas_public": 271,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 419064979,
+    "tamanho_bytes": 419294355,
     "triggers_public": 175,
     "views_public": 18
   },
@@ -2026,7 +2026,7 @@
     {
       "bytes": 802816,
       "citada_no_banco": true,
-      "linhas": 3336,
+      "linhas": 3345,
       "linhas_exatas": true,
       "nome": "auth_logs",
       "policies": 3,
@@ -2686,7 +2686,7 @@
     {
       "bytes": 860160,
       "citada_no_banco": true,
-      "linhas": 1527,
+      "linhas": 1528,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2789,7 +2789,7 @@
       }
     },
     {
-      "bytes": 79732736,
+      "bytes": 79863808,
       "citada_no_banco": true,
       "linhas": 255561,
       "linhas_exatas": false,
@@ -3421,7 +3421,7 @@
     {
       "bytes": 39182336,
       "citada_no_banco": true,
-      "linhas": 38265,
+      "linhas": 38321,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3736,7 +3736,7 @@
     {
       "bytes": 4456448,
       "citada_no_banco": true,
-      "linhas": 3214,
+      "linhas": 3216,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4456,7 +4456,7 @@
     {
       "bytes": 13221888,
       "citada_no_banco": true,
-      "linhas": 8288,
+      "linhas": 8290,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4471,7 +4471,7 @@
     {
       "bytes": 1155072,
       "citada_no_banco": true,
-      "linhas": 3338,
+      "linhas": 3347,
       "linhas_exatas": true,
       "nome": "rate_limit_logs",
       "policies": 2,
