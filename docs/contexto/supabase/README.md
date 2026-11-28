@@ -88,20 +88,3 @@ Cada fonte é atualizada independentemente; referências anteriores não comprov
 | `manifest.json` | data UTC da coleta concluída, erros e seções reaproveitadas; usado pelo índice de contexto |
 | `CHANGELOG.md` | diff semântico a cada mudança |
 | `errors.md` | seções que falharam na última coleta |
-
-## ⚠️ Problemas na última coleta
-
-Seções reaproveitadas da coleta anterior: `api.secrets_names`, `api.auth_config`, `api.postgrest_config`, `api.postgres_config`, `api.pooler_config`, `api.storage_config`, `api.ssl_enforcement`, `api.branches`.
-
-| seção | erro |
-|---|---|
-| api.secrets | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/secrets |
-| api.auth_config | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/auth |
-| api.postgrest_config | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/postgrest |
-| api.postgres_config | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/postgres |
-| api.pooler_config | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/pooler |
-| api.storage_config | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/storage |
-| api.ssl_enforcement | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/ssl-enforcement |
-| api.custom_hostname | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/custom-hostname |
-| api.branches | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/branches |
-| api.health | HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/health?services=auth,db,pooler,realtime,rest,storage |

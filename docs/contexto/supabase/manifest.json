@@ -1,58 +1,8 @@
 {
-  "carried": [
-    "api.secrets_names",
-    "api.auth_config",
-    "api.postgrest_config",
-    "api.postgres_config",
-    "api.pooler_config",
-    "api.storage_config",
-    "api.ssl_enforcement",
-    "api.branches"
-  ],
+  "carried": [],
   "entrada": "README.md",
-  "erros": [
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/secrets",
-      "section": "api.secrets"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/auth",
-      "section": "api.auth_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/postgrest",
-      "section": "api.postgrest_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/postgres",
-      "section": "api.postgres_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/pooler",
-      "section": "api.pooler_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/storage",
-      "section": "api.storage_config"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/ssl-enforcement",
-      "section": "api.ssl_enforcement"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/custom-hostname",
-      "section": "api.custom_hostname"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/branches",
-      "section": "api.branches"
-    },
-    {
-      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/health?services=auth,db,pooler,realtime,rest,storage",
-      "section": "api.health"
-    }
-  ],
-  "gerado_em": "2026-11-28T14:14:19Z",
+  "erros": [],
+  "gerado_em": "2026-11-28T15:14:50Z",
   "gerador": "scripts/supabase_snapshot/snapshot.py",
   "produtor": "supabase-snapshot"
 }
