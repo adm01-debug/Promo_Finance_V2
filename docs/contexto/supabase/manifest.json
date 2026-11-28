@@ -1,8 +1,15 @@
 {
-  "carried": [],
+  "carried": [
+    "api.auth_config"
+  ],
   "entrada": "README.md",
-  "erros": [],
-  "gerado_em": "2026-11-27T22:16:01Z",
+  "erros": [
+    {
+      "error": "HTTP 500 em /projects/bwwbeyolnnzppeuhgkcd/config/auth",
+      "section": "api.auth_config"
+    }
+  ],
+  "gerado_em": "2026-11-28T00:35:52Z",
   "gerador": "scripts/supabase_snapshot/snapshot.py",
   "produtor": "supabase-snapshot"
 }

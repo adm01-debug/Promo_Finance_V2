@@ -1,3 +1,5 @@
 # Erros da última coleta
 
-_nenhum_
+| seção | erro |
+|---|---|
+| api.auth_config | HTTP 500 em /projects/bwwbeyolnnzppeuhgkcd/config/auth |
