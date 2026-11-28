@@ -1742,7 +1742,16 @@
     },
     "url": "https://bwwbeyolnnzppeuhgkcd.supabase.co"
   },
-  "carried": [],
+  "carried": [
+    "api.secrets_names",
+    "api.auth_config",
+    "api.postgrest_config",
+    "api.postgres_config",
+    "api.pooler_config",
+    "api.storage_config",
+    "api.ssl_enforcement",
+    "api.branches"
+  ],
   "db": {
     "columns": [
       {
@@ -108153,6 +108162,11 @@
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
           "table": "messages_2026_11_30"
+        },
+        {
+          "publication": "supabase_realtime_messages_publication",
+          "schema": "realtime",
+          "table": "messages_2026_12_01"
         }
       ]
     },
@@ -115403,6 +115417,47 @@
     ],
     "webhooks": []
   },
-  "errors": [],
+  "errors": [
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/secrets",
+      "section": "api.secrets"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/auth",
+      "section": "api.auth_config"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/postgrest",
+      "section": "api.postgrest_config"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/postgres",
+      "section": "api.postgres_config"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/database/pooler",
+      "section": "api.pooler_config"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/config/storage",
+      "section": "api.storage_config"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/ssl-enforcement",
+      "section": "api.ssl_enforcement"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/custom-hostname",
+      "section": "api.custom_hostname"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/branches",
+      "section": "api.branches"
+    },
+    {
+      "error": "HTTP 502 em /projects/bwwbeyolnnzppeuhgkcd/health?services=auth,db,pooler,realtime,rest,storage",
+      "section": "api.health"
+    }
+  ],
   "format_version": 2
 }
