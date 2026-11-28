@@ -1742,9 +1742,7 @@
     },
     "url": "https://bwwbeyolnnzppeuhgkcd.supabase.co"
   },
-  "carried": [
-    "api.auth_config"
-  ],
+  "carried": [],
   "db": {
     "columns": [
       {
@@ -115405,11 +115403,6 @@
     ],
     "webhooks": []
   },
-  "errors": [
-    {
-      "error": "HTTP 500 em /projects/bwwbeyolnnzppeuhgkcd/config/auth",
-      "section": "api.auth_config"
-    }
-  ],
+  "errors": [],
   "format_version": 2
 }
